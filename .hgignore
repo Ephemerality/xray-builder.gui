@@ -8,3 +8,4 @@ syntax: glob
 bin/Debug/dist/KindleUnpack_v65
 *.asc
 obj/*
+*.manifest

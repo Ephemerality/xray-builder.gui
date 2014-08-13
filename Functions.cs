@@ -105,6 +105,16 @@ namespace XRayBuilderGUI
             match = Regex.Match(unpackInfo, @"(\d*) unique_id");
             if (match.Success && match.Groups.Count > 1)
                 uniqid = match.Groups[1].Value;
+            match = Regex.Match(unpackInfo, @"Document Type\s*(\w*)");
+            if (match.Success && match.Groups.Count > 1)
+            {
+                if (match.Groups[1].Value != "EBOK")
+                {
+                    output.Add("The document type is not set to EBOK; Kindle will not display an X-Ray for this book.\r\nYou must either use Calibre's convert feature (Personal Doc tag under MOBI Output) or a Mobi editor (exth 501) to change this.");
+                    MessageBox.Show("The document type is not set to EBOK; Kindle will not display an X-Ray for this book.\r\nYou must either use Calibre's convert feature (Personal Doc tag under MOBI Output) or a Mobi editor (exth 501) to change this.");
+                    return output;
+                }
+            }
             //Attempt to get database name from the mobi file.
             //If mobi_unpack ran successfully, then hopefully this will always be valid?
             byte[] dbinput = new byte[32];

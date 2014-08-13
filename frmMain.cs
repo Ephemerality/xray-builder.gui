@@ -131,6 +131,9 @@ namespace XRayBuilderGUI
             Log("XRay file created successfully!\r\nSaved to " + settings.outDir + "\\" + ss.getXRayName());
             Directory.Delete(randomFile, true);
             this.TopMost = false;
+
+            //frmXRay frm = new frmXRay(ss, results[3]);
+            //frm.Show(this);
         }
         public void Log(string message)
         {

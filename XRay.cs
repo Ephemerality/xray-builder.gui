@@ -32,7 +32,7 @@ using System.Windows.Forms;
 
 namespace XRayBuilderGUI
 {
-    class XRay
+    public class XRay
     {
         string shelfariURL = "";
         string databaseName = "";
@@ -40,7 +40,7 @@ namespace XRayBuilderGUI
         string asin = "";
         string version = "1";
         string aliaspath = "";
-        List<Term> terms = new List<Term>(100);
+        public List<Term> terms = new List<Term>(100);
         List<Chapter> chapters = new List<Chapter>();
         long srl = 0;
         long erl = 0;
@@ -464,7 +464,7 @@ namespace XRayBuilderGUI
             }
         }
 
-        class Term
+        public class Term
         {
             public string type = "";
             public string termName = "";
@@ -495,6 +495,7 @@ namespace XRayBuilderGUI
                         type, termName, desc, descSrc, descUrl);
                 }
             }
+
         }
 
         public void saveChapters()

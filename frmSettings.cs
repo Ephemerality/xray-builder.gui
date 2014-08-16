@@ -27,6 +27,7 @@ namespace XRayBuilderGUI
             System.Windows.Forms.ToolTip ToolTip1 = new System.Windows.Forms.ToolTip();
             ToolTip1.SetToolTip(chkRaw, "Save the .rawml (raw markup) of the book in the output directory so you can review it.");
             ToolTip1.SetToolTip(chkSpoilers, "Use Shelfari descriptions that contain spoilers when they exist.");
+            this.TopMost = true;
         }
 
         private void btnBrowseUnpack_Click(object sender, EventArgs e)
@@ -41,12 +42,16 @@ namespace XRayBuilderGUI
 
         private void btnSave_Click(object sender, EventArgs e)
         {
+            this.Close();
+        }
+
+        private void frmSettings_FormClosing(object sender, FormClosingEventArgs e)
+        {
             XRayBuilderGUI.Properties.Settings.Default.outDir = txtOut.Text;
             XRayBuilderGUI.Properties.Settings.Default.mobi_unpack = txtUnpack.Text;
             XRayBuilderGUI.Properties.Settings.Default.spoilers = chkSpoilers.Checked;
             XRayBuilderGUI.Properties.Settings.Default.saverawml = chkRaw.Checked;
             XRayBuilderGUI.Properties.Settings.Default.Save();
-            this.Close();
         }
     }
 }

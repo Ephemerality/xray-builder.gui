@@ -21,8 +21,38 @@ namespace XRayBuilderGUI
             InitializeComponent();
         }
 
+        private void frmMain_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+        }
+
+        private void frmMain_DragDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] filePaths = (string[])(e.Data.GetData(DataFormats.FileDrop));
+                foreach (string fileLoc in filePaths)
+                {
+                    if (File.Exists(fileLoc))
+                    {
+                        txtMobi.Text = fileLoc;
+                        return;
+                    }
+                }
+            }
+        }
+
         private void Form1_Load(object sender, EventArgs e)
         {
+            this.DragEnter += frmMain_DragEnter;
+            this.DragDrop += frmMain_DragDrop;
             Version dd = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             string xrayversion = dd.Major.ToString() + "." + dd.Minor.ToString() + dd.Build.ToString();
             this.Text = "X-Ray Builder GUI v" + xrayversion;
@@ -68,8 +98,10 @@ namespace XRayBuilderGUI
 
         private void btnSettings_Click(object sender, EventArgs e)
         {
+            this.TopMost = false;
             Form frm = new frmSettings();
             frm.ShowDialog();
+            this.TopMost = true;
         }
 
         private void btnBuild_Click(object sender, EventArgs e)

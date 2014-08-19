@@ -37,11 +37,13 @@
             this.label2 = new System.Windows.Forms.Label();
             this.chkRaw = new System.Windows.Forms.CheckBox();
             this.chkSpoilers = new System.Windows.Forms.CheckBox();
+            this.txtOffset = new System.Windows.Forms.TextBox();
+            this.lblOffset = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(181, 102);
+            this.btnSave.Location = new System.Drawing.Point(181, 125);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(75, 23);
             this.btnSave.TabIndex = 0;
@@ -106,7 +108,7 @@
             // chkRaw
             // 
             this.chkRaw.AutoSize = true;
-            this.chkRaw.Location = new System.Drawing.Point(15, 75);
+            this.chkRaw.Location = new System.Drawing.Point(15, 98);
             this.chkRaw.Name = "chkRaw";
             this.chkRaw.Size = new System.Drawing.Size(95, 17);
             this.chkRaw.TabIndex = 17;
@@ -116,18 +118,37 @@
             // chkSpoilers
             // 
             this.chkSpoilers.AutoSize = true;
-            this.chkSpoilers.Location = new System.Drawing.Point(116, 75);
+            this.chkSpoilers.Location = new System.Drawing.Point(116, 98);
             this.chkSpoilers.Name = "chkSpoilers";
             this.chkSpoilers.Size = new System.Drawing.Size(63, 17);
             this.chkSpoilers.TabIndex = 18;
             this.chkSpoilers.Text = "Spoilers";
             this.chkSpoilers.UseVisualStyleBackColor = true;
             // 
+            // txtOffset
+            // 
+            this.txtOffset.Location = new System.Drawing.Point(120, 64);
+            this.txtOffset.Name = "txtOffset";
+            this.txtOffset.Size = new System.Drawing.Size(42, 20);
+            this.txtOffset.TabIndex = 20;
+            // 
+            // lblOffset
+            // 
+            this.lblOffset.AutoSize = true;
+            this.lblOffset.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblOffset.Location = new System.Drawing.Point(73, 64);
+            this.lblOffset.Name = "lblOffset";
+            this.lblOffset.Size = new System.Drawing.Size(45, 16);
+            this.lblOffset.TabIndex = 19;
+            this.lblOffset.Text = "Offset:";
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(477, 136);
+            this.ClientSize = new System.Drawing.Size(477, 160);
+            this.Controls.Add(this.txtOffset);
+            this.Controls.Add(this.lblOffset);
             this.Controls.Add(this.chkSpoilers);
             this.Controls.Add(this.chkRaw);
             this.Controls.Add(this.btnBrowseUnpack);
@@ -158,5 +179,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.CheckBox chkRaw;
         private System.Windows.Forms.CheckBox chkSpoilers;
+        private System.Windows.Forms.TextBox txtOffset;
+        private System.Windows.Forms.Label lblOffset;
     }
 }

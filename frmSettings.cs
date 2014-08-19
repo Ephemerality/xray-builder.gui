@@ -22,6 +22,7 @@ namespace XRayBuilderGUI
             txtUnpack.Text = XRayBuilderGUI.Properties.Settings.Default.mobi_unpack;
             chkSpoilers.Checked = XRayBuilderGUI.Properties.Settings.Default.spoilers;
             chkRaw.Checked = XRayBuilderGUI.Properties.Settings.Default.saverawml;
+            txtOffset.Text = XRayBuilderGUI.Properties.Settings.Default.offset.ToString();
             if (txtUnpack.Text == "") txtUnpack.Text = "dist/kindleunpack.exe";
 
             System.Windows.Forms.ToolTip ToolTip1 = new System.Windows.Forms.ToolTip();
@@ -47,10 +48,18 @@ namespace XRayBuilderGUI
 
         private void frmSettings_FormClosing(object sender, FormClosingEventArgs e)
         {
+            int offset = 0;
+            if (!int.TryParse(txtOffset.Text, out offset))
+            {
+                MessageBox.Show("The offset must be an integer.", "Offset Error");
+                e.Cancel = true;
+                return;
+            }
             XRayBuilderGUI.Properties.Settings.Default.outDir = txtOut.Text;
             XRayBuilderGUI.Properties.Settings.Default.mobi_unpack = txtUnpack.Text;
             XRayBuilderGUI.Properties.Settings.Default.spoilers = chkSpoilers.Checked;
             XRayBuilderGUI.Properties.Settings.Default.saverawml = chkRaw.Checked;
+            XRayBuilderGUI.Properties.Settings.Default.offset = offset;
             XRayBuilderGUI.Properties.Settings.Default.Save();
         }
     }

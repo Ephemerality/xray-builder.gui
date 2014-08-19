@@ -15,6 +15,7 @@ namespace XRayBuilderGUI
     public partial class frmMain : Form
     {
         private Properties.Settings settings = XRayBuilderGUI.Properties.Settings.Default;
+        public bool exiting = false;
 
         public frmMain()
         {
@@ -88,6 +89,7 @@ namespace XRayBuilderGUI
             XRayBuilderGUI.Properties.Settings.Default.mobiFile = txtMobi.Text;
             XRayBuilderGUI.Properties.Settings.Default.shelfari = txtShelfari.Text;
             XRayBuilderGUI.Properties.Settings.Default.Save();
+            exiting = true;
             Application.Exit();
         }
 
@@ -110,6 +112,11 @@ namespace XRayBuilderGUI
             if (!File.Exists(txtMobi.Text))
             {
                 MessageBox.Show("Specified book was not found.", "Book Not Found");
+                return;
+            }
+            if (txtShelfari.Text == "")
+            {
+                MessageBox.Show("No Shelfari link was specified.", "Missing Shelfari Link");
                 return;
             }
             if (!File.Exists(settings.mobi_unpack))
@@ -140,9 +147,10 @@ namespace XRayBuilderGUI
             }
             Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nUniqueID: {2}\r\nAttempting to build X-Ray...", results[2], results[0], results[1]));
             Log(String.Format("Spoilers: {0}", settings.spoilers ? "Enabled" : "Disabled"));
+            Log("Offset: " + settings.offset.ToString());
             //Console.WriteLine("Location Offset: {0}", offset);
             //Create X-Ray and attempt to create the base file (essentially the same as the site)
-            XRay ss = new XRay(txtShelfari.Text, results[2], results[1], results[0], this, settings.spoilers, 0, "", false);
+            XRay ss = new XRay(txtShelfari.Text, results[2], results[1], results[0], this, settings.spoilers, settings.offset, "", false);
             if (ss.createXRAY() > 0)
             {
                 Log("Error while processing.");
@@ -169,6 +177,7 @@ namespace XRayBuilderGUI
         }
         public void Log(string message)
         {
+            if (exiting) return;
             txtOutput.AppendText(message + "\r\n");
         }
     }

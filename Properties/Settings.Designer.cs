@@ -94,5 +94,17 @@ namespace XRayBuilderGUI.Properties {
                 this["spoilers"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int offset {
+            get {
+                return ((int)(this["offset"]));
+            }
+            set {
+                this["offset"] = value;
+            }
+        }
     }
 }

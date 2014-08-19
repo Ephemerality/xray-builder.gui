@@ -316,6 +316,7 @@ namespace XRayBuilderGUI
             main.prgBar.Maximum = nodes.Count;
             for (int i = 0; i < nodes.Count; i++)
             {
+                if (main.exiting) return 1;
                 main.prgBar.Value = (i + 1);
                 if(((i + 1) % 5) == 0) Application.DoEvents();
 

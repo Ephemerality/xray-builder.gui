@@ -6,10 +6,12 @@ using System.IO;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace XRayBuilderGUI
 {
-    class Functions
+    public static class Functions
     {
         public static string getDir(string defaultFolder)
         {
@@ -170,6 +172,55 @@ namespace XRayBuilderGUI
             {
                 MessageBox.Show("Error trying to launch notepad.");
             }
+        }
+
+        //http://stackoverflow.com/questions/4123590/serialize-an-object-to-xml
+        public static string Serialize<T>(T value)
+        {
+            if (value == null)
+            {
+                return string.Empty;
+            }
+            try
+            {
+                var xmlserializer = new XmlSerializer(typeof(T));
+                var stringWriter = new StringWriter();
+                using (var writer = XmlWriter.Create(stringWriter))
+                {
+                    xmlserializer.Serialize(writer, value);
+                    return stringWriter.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred", ex);
+            }
+        }
+
+        public static void Save<T>(T output, string FileName)
+        {
+            using (var writer = new System.IO.StreamWriter(FileName))
+            {
+                var serializer = new XmlSerializer(typeof(T));
+                serializer.Serialize(writer, output);
+                writer.Flush();
+            }
+        }
+
+        //http://stackoverflow.com/questions/14562415/xml-deserialization-generic-method
+        public static List<T> DeserializeList<T>(string filePath)
+        {
+            var itemList = new List<T>();
+
+            if (File.Exists(filePath))
+            {
+                var serializer = new XmlSerializer(typeof(List<T>));
+                TextReader reader = new StreamReader(filePath);
+                itemList = (List<T>)serializer.Deserialize(reader);
+                reader.Close();
+            }
+
+            return itemList;
         }
     }
 }

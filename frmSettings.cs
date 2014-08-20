@@ -28,6 +28,7 @@ namespace XRayBuilderGUI
             System.Windows.Forms.ToolTip ToolTip1 = new System.Windows.Forms.ToolTip();
             ToolTip1.SetToolTip(chkRaw, "Save the .rawml (raw markup) of the book in the output directory so you can review it.");
             ToolTip1.SetToolTip(chkSpoilers, "Use Shelfari descriptions that contain spoilers when they exist.");
+            ToolTip1.SetToolTip(txtOffset, "This offset will be applied to every book location (usually a negative number). Must be an integer.");
             this.TopMost = true;
         }
 

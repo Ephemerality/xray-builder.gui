@@ -70,7 +70,8 @@ namespace XRayBuilderGUI
                     }
                 }
             }
-            if(txtMobi.Text == "") txtMobi.Text = XRayBuilderGUI.Properties.Settings.Default.mobiFile;
+            if (txtMobi.Text == "") txtMobi.Text = XRayBuilderGUI.Properties.Settings.Default.mobiFile;
+            if (txtXMLFile.Text == "") txtXMLFile.Text = XRayBuilderGUI.Properties.Settings.Default.xmlFile;
             if (XRayBuilderGUI.Properties.Settings.Default.outDir == "")
             {
                 XRayBuilderGUI.Properties.Settings.Default.outDir = Environment.CurrentDirectory + "/out";
@@ -85,8 +86,8 @@ namespace XRayBuilderGUI
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-
             XRayBuilderGUI.Properties.Settings.Default.mobiFile = txtMobi.Text;
+            XRayBuilderGUI.Properties.Settings.Default.xmlFile = txtXMLFile.Text;
             XRayBuilderGUI.Properties.Settings.Default.shelfari = txtShelfari.Text;
             XRayBuilderGUI.Properties.Settings.Default.Save();
             exiting = true;
@@ -96,6 +97,10 @@ namespace XRayBuilderGUI
         private void btnBrowseMobi_Click(object sender, EventArgs e)
         {
             txtMobi.Text = Functions.getFile(txtMobi.Text);
+        }
+        private void btnBrowseXML_Click(object sender, EventArgs e)
+        {
+            txtXMLFile.Text = Functions.getFile(txtXMLFile.Text);
         }
 
         private void btnSettings_Click(object sender, EventArgs e)
@@ -148,9 +153,12 @@ namespace XRayBuilderGUI
             Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nUniqueID: {2}\r\nAttempting to build X-Ray...", results[2], results[0], results[1]));
             Log(String.Format("Spoilers: {0}", settings.spoilers ? "Enabled" : "Disabled"));
             Log("Offset: " + settings.offset.ToString());
-            //Console.WriteLine("Location Offset: {0}", offset);
             //Create X-Ray and attempt to create the base file (essentially the same as the site)
-            XRay ss = new XRay(txtShelfari.Text, results[2], results[1], results[0], this, settings.spoilers, settings.offset, "", false);
+            XRay ss;
+            if (rdoShelfari.Checked)
+                ss = new XRay(txtShelfari.Text, results[2], results[1], results[0], this, settings.spoilers, settings.offset, "", false);
+            else
+                ss = new XRay(txtXMLFile.Text, results[2], results[1], results[0], this, settings.spoilers, settings.offset, "");
             if (ss.createXRAY() > 0)
             {
                 Log("Error while processing.");
@@ -179,6 +187,41 @@ namespace XRayBuilderGUI
         {
             if (exiting) return;
             txtOutput.AppendText(message + "\r\n");
+        }
+
+        private void btnShelfari_Click(object sender, EventArgs e)
+        {
+            if (!File.Exists(txtMobi.Text))
+            {
+                MessageBox.Show("Specified book was not found.", "Book Not Found");
+                return;
+            }
+            if (txtShelfari.Text == "")
+            {
+                MessageBox.Show("No Shelfari link was specified.", "Missing Shelfari Link");
+                return;
+            }
+            string path = Environment.CurrentDirectory + "/ext/" + Path.GetFileNameWithoutExtension(txtMobi.Text) + ".xml";
+            XRay xray = new XRay(txtShelfari.Text, this, settings.spoilers);
+            if (xray.saveXML(path) > 0)
+            {
+                Log("Error while processing.");
+                return;
+            }
+            Log("Shelfari info has been saved to: " + path);
+        }
+
+        private void rdoSource_CheckedChanged(object sender, EventArgs e)
+        {
+            if (((RadioButton)sender).Text == "Shelfari")
+            {
+                lblShelfari.Visible = !lblShelfari.Visible;
+                txtShelfari.Visible = !txtShelfari.Visible;
+                lblXMLFile.Visible = !lblXMLFile.Visible;
+                txtXMLFile.Visible = !txtXMLFile.Visible;
+                btnBrowseXML.Visible = !btnBrowseXML.Visible;
+                btnSaveShelfari.Enabled = !btnSaveShelfari.Enabled;
+            }
         }
     }
 }

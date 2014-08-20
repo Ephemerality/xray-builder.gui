@@ -29,12 +29,14 @@ using System.IO;
 using HtmlAgilityPack;
 using System.Diagnostics;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 
 namespace XRayBuilderGUI
 {
     public class XRay
     {
         string shelfariURL = "";
+        string xmlFile = "";
         string databaseName = "";
         string guid = "";
         string asin = "";
@@ -47,6 +49,7 @@ namespace XRayBuilderGUI
         bool shortEx = true;
         bool useSpoilers = false;
         bool unattended = false;
+        bool skipShelfari = false;
         int locOffset = 0;
         frmMain main;
         
@@ -55,11 +58,22 @@ namespace XRayBuilderGUI
         {
         }
 
+        public XRay(string shelfari, frmMain frm, bool useSpoilers = false)
+        {
+            if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
+                shelfari = "http://" + shelfari;
+            this.shelfariURL = shelfari;
+            this.useSpoilers = useSpoilers;
+            this.main = frm;
+        }
+
         public XRay(string shelfari, string db, string guid, string asin, frmMain frm, bool useSpoilers = false, int locOffset = 0, string aliaspath = "", bool unattended = false)
         {
             if (shelfari == "" || db == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
-                
+
+            if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
+                shelfari = "http://" + shelfari;
             this.shelfariURL = shelfari;
             this.databaseName = db;
             this.guid = guid;
@@ -69,6 +83,30 @@ namespace XRayBuilderGUI
             this.aliaspath = aliaspath;
             this.unattended = unattended;
             this.main = frm;
+        }
+        public XRay(string xml, string db, string guid, string asin, frmMain frm, bool useSpoilers = false, int locOffset = 0, string aliaspath = "")
+        {
+            if (xml == "" || db == "" || guid == "" || asin == "")
+                throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
+            this.xmlFile = xml;
+            this.databaseName = db;
+            this.guid = guid;
+            this.asin = asin;
+            this.useSpoilers = useSpoilers;
+            this.locOffset = locOffset;
+            this.aliaspath = aliaspath;
+            this.unattended = false;
+            this.main = frm;
+            this.skipShelfari = true;
+        }
+
+        public int saveXML(string outfile)
+        {
+            if (!GetShelfari())
+                return 1;
+
+            Functions.Save<List<Term>>(terms, outfile);
+            return 0;
         }
 
         public override string ToString()
@@ -109,84 +147,24 @@ namespace XRayBuilderGUI
             }
             if (guid == "0")
             {
-                Console.WriteLine("Something bad happened while converting the GUID.");
+                main.Log("Something bad happened while converting the GUID.");
                 return 1;
             }
 
-            main.Log(String.Format("Downloading Shelfari page... {0}", useSpoilers ? "SHOWING SPOILERS!" : ""));
-            //Download HTML of Shelfari URL, try 3 times just in case it fails the first time
-            string shelfariHTML = "";
-            int tries = 3;
-            do
+            //Download Shelfari info if not skipping
+            if (skipShelfari)
             {
-                try
+                if (!File.Exists(xmlFile))
                 {
-                    //Enable cookies on extended webclient
-                    CookieContainer jar = new CookieContainer();
-                    using (WebClientEx client = new WebClientEx(jar))
-                    {
-                        //shelfariURL = "http://www.shelfari.com/books/25411/The-Path-of-Daggers";
-                        if (useSpoilers)
-                        {
-                            //Grab book ID from url (search for 5 digits between slashes) and create spoiler cookie
-                            string bookID = Regex.Match(shelfariURL, @"\/\d{5}").Value.Substring(1, 5);
-                            Cookie spoilers = new Cookie("ShelfariBookWikiSession", "", "/", "www.shelfari.com");
-                            spoilers.Value = "{\"SpoilerShowAll\":true%2C\"SpoilerShowCharacters\":true%2C\"SpoilerBookId\":" + bookID + "%2C\"SpoilerShowPSS\":true%2C\"SpoilerShowQuotations\":true%2C\"SpoilerShowParents\":true%2C\"SpoilerShowThemes\":true}";
-                            jar.Add(spoilers);
-                        }
-                        shelfariHTML = client.DownloadString(shelfariURL);
-                        break;
-                    }
+                    main.Log("Error opening XML file.");
+                    return 1;
                 }
-                catch
-                {
-                    if (tries <= 0)
-                    {
-                        main.Log("Failed to connect to Shelfari URL.");
-                        return 1;
-                    }
-                }
-            } while (tries-- > 0);
-
-            /*** Constants for wiki processing ***/
-            Dictionary<string, string> sections = new Dictionary<string, string>{
-                {"WikiModule_Characters", "character"}, {"WikiModule_Organizations", "topic"}, {"WikiModule_Settings", "topic"},
-                {"WikiModule_Glossary", "topic"} }; //, {"WikiModule_Themes", "topic"} };
-            string[] patterns = { @"""" }; //, @"\[\d\]", @"\s*?\(.*\)\s*?" }; //Escape quotes, numbers in brackets, and anything within brackets at all
-            string[] replacements = { @"\""" }; //, @"", @"" };
-            /************************************/
-
-            //Parse elements from various headers listed in sections
-            HtmlAgilityPack.HtmlDocument shelfariDoc = new HtmlAgilityPack.HtmlDocument();
-            shelfariDoc.LoadHtml(shelfariHTML);
-            foreach (string header in sections.Keys)
-            {
-                if (!shelfariHTML.Contains(header)) continue; //Skip section if not found on page
-                //Select <li> nodes on page from within the <div id=header> tag, under <ul class=li_6>
-                HtmlNodeCollection characterNodes = shelfariDoc.DocumentNode.SelectNodes("//div[@id='" + header + "']//ul[@class='li_6']/li");
-                foreach (HtmlNode li in characterNodes)
-                {
-                    string tmpString = li.InnerText;
-                    Term newTerm = new Term(sections[header]); //Create term as either character/topic
-                    if (tmpString.Contains(":"))
-                    {
-                        newTerm.termName = tmpString.Substring(0, tmpString.IndexOf(":"));
-                        newTerm.desc = tmpString.Substring(tmpString.IndexOf(":") + 1).Trim();
-                    }
-                    else
-                    {
-                        newTerm.termName = tmpString;
-                    }
-                    newTerm.termName = newTerm.termName.PregReplace(patterns, replacements);
-                    newTerm.desc = newTerm.desc.PregReplace(patterns, replacements);
-                    newTerm.descSrc = "shelfari";
-                    //Use either the associated shelfari URL of the term or if none exists, use the book's url
-                    //Could use a wikipedia page instead as the xray plugin/site does but I decided not to
-                    newTerm.descUrl = (li.InnerHtml.IndexOf("<a href") == 0 ? li.InnerHtml.Substring(9, li.InnerHtml.IndexOf("\"", 9) - 9) : shelfariURL);
-                    if (header == "WikiModule_Glossary") newTerm.matchCase = false; //Default glossary terms to be case insensitive when searching through book
-                    terms.Add(newTerm);
-                }
+                main.Log("Loading terms from XML file...");
+                terms = Functions.DeserializeList<Term>(xmlFile);
             }
+            else
+                if (!GetShelfari())
+                    return 1;
 
             //Export list of Shelfari characters to a file to make it easier to create aliases or import the modified aliases if they exist
             //Could potentially just attempt to automate the creation of aliases, but in some cases it is very subjective...
@@ -203,7 +181,10 @@ namespace XRayBuilderGUI
                 main.Log(String.Format("Characters exported to {0} for adding aliases.", aliasFile));
             }
 
-            main.Log("Terms found on Shelfari:");
+            if (skipShelfari)
+                main.Log("Terms found in XML:");
+            else
+                main.Log("Terms found on Shelfari:");
             string tmp = "";
             foreach (Term t in terms)
                 tmp += t.termName + ", ";
@@ -211,7 +192,7 @@ namespace XRayBuilderGUI
 
             if (!unattended)
             {
-                if(DialogResult.Yes == MessageBox.Show(main, "Terms have been exported to a file or already exist in that file. Would you like to open the file in notepad for editing?", "Aliases", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
+                if(DialogResult.Yes == MessageBox.Show(main, "Terms have been exported to an alias file or already exist in that file. Would you like to open the file in notepad for editing?", "Aliases", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
                 {
                     main.TopMost = false;
                     Functions.RunNotepad(aliasFile);
@@ -468,12 +449,18 @@ namespace XRayBuilderGUI
         public class Term
         {
             public string type = "";
+            [XmlElement("name")]
             public string termName = "";
             public string desc = "";
+            [XmlElement("src")]
             public string descSrc = "";
+            [XmlElement("url")]
             public string descUrl = "";
+            [XmlIgnore]
             public List<string> aliases = new List<string>();
+            [XmlIgnore]
             public List<string> locs = new List<string>(1000);
+            [XmlIgnore]
             public List<string> assets = new List<string> { "" };
             public bool matchCase = true;
 
@@ -553,6 +540,84 @@ namespace XRayBuilderGUI
                 if (d.ContainsKey(t.termName))
                     t.aliases = new List<string>(d[t.termName]);
             }
+        }
+
+        public bool GetShelfari()
+        {
+            //Download HTML of Shelfari URL, try 3 times just in case it fails the first time
+            main.Log(String.Format("Downloading Shelfari page... {0}", useSpoilers ? "SHOWING SPOILERS!" : ""));
+            string shelfariHTML = "";
+            int tries = 3;
+            do
+            {
+                try
+                {
+                    //Enable cookies on extended webclient
+                    CookieContainer jar = new CookieContainer();
+                    using (WebClientEx client = new WebClientEx(jar))
+                    {
+                        if (useSpoilers)
+                        {
+                            //Grab book ID from url (search for 5 digits between slashes) and create spoiler cookie
+                            string bookID = Regex.Match(shelfariURL, @"\/\d{5}").Value.Substring(1, 5);
+                            Cookie spoilers = new Cookie("ShelfariBookWikiSession", "", "/", "www.shelfari.com");
+                            spoilers.Value = "{\"SpoilerShowAll\":true%2C\"SpoilerShowCharacters\":true%2C\"SpoilerBookId\":" + bookID + "%2C\"SpoilerShowPSS\":true%2C\"SpoilerShowQuotations\":true%2C\"SpoilerShowParents\":true%2C\"SpoilerShowThemes\":true}";
+                            jar.Add(spoilers);
+                        }
+                        shelfariHTML = client.DownloadString(shelfariURL);
+                        break;
+                    }
+                }
+                catch
+                {
+                    if (tries <= 0)
+                    {
+                        main.Log("Failed to connect to Shelfari URL.");
+                        return false;
+                    }
+                }
+            } while (tries-- > 0);
+
+            /*** Constants for wiki processing ***/
+            Dictionary<string, string> sections = new Dictionary<string, string>{
+                {"WikiModule_Characters", "character"}, {"WikiModule_Organizations", "topic"}, {"WikiModule_Settings", "topic"},
+                {"WikiModule_Glossary", "topic"} }; //, {"WikiModule_Themes", "topic"} };
+            string[] patterns = { @"""" }; //, @"\[\d\]", @"\s*?\(.*\)\s*?" }; //Escape quotes, numbers in brackets, and anything within brackets at all
+            string[] replacements = { @"\""" }; //, @"", @"" };
+            /************************************/
+
+            //Parse elements from various headers listed in sections
+            HtmlAgilityPack.HtmlDocument shelfariDoc = new HtmlAgilityPack.HtmlDocument();
+            shelfariDoc.LoadHtml(shelfariHTML);
+            foreach (string header in sections.Keys)
+            {
+                if (!shelfariHTML.Contains(header)) continue; //Skip section if not found on page
+                //Select <li> nodes on page from within the <div id=header> tag, under <ul class=li_6>
+                HtmlNodeCollection characterNodes = shelfariDoc.DocumentNode.SelectNodes("//div[@id='" + header + "']//ul[@class='li_6']/li");
+                foreach (HtmlNode li in characterNodes)
+                {
+                    string tmpString = li.InnerText;
+                    Term newTerm = new Term(sections[header]); //Create term as either character/topic
+                    if (tmpString.Contains(":"))
+                    {
+                        newTerm.termName = tmpString.Substring(0, tmpString.IndexOf(":"));
+                        newTerm.desc = tmpString.Substring(tmpString.IndexOf(":") + 1).Trim();
+                    }
+                    else
+                    {
+                        newTerm.termName = tmpString;
+                    }
+                    newTerm.termName = newTerm.termName.PregReplace(patterns, replacements);
+                    newTerm.desc = newTerm.desc.PregReplace(patterns, replacements);
+                    newTerm.descSrc = "shelfari";
+                    //Use either the associated shelfari URL of the term or if none exists, use the book's url
+                    //Could use a wikipedia page instead as the xray plugin/site does but I decided not to
+                    newTerm.descUrl = (li.InnerHtml.IndexOf("<a href") == 0 ? li.InnerHtml.Substring(9, li.InnerHtml.IndexOf("\"", 9) - 9) : shelfariURL);
+                    if (header == "WikiModule_Glossary") newTerm.matchCase = false; //Default glossary terms to be case insensitive when searching through book
+                    terms.Add(newTerm);
+                }
+            }
+            return true;
         }
     }
 

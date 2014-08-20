@@ -106,5 +106,17 @@ namespace XRayBuilderGUI.Properties {
                 this["offset"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string xmlFile {
+            get {
+                return ((string)(this["xmlFile"]));
+            }
+            set {
+                this["xmlFile"] = value;
+            }
+        }
     }
 }

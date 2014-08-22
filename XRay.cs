@@ -161,6 +161,7 @@ namespace XRayBuilderGUI
                 }
                 main.Log("Loading terms from XML file...");
                 terms = Functions.DeserializeList<Term>(xmlFile);
+                if (terms == null) return 1;
             }
             else
                 if (!GetShelfari())

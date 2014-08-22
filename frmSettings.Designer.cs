@@ -39,7 +39,6 @@
             this.chkSpoilers = new System.Windows.Forms.CheckBox();
             this.txtOffset = new System.Windows.Forms.TextBox();
             this.lblOffset = new System.Windows.Forms.Label();
-            this.chkTerms = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnSave
@@ -143,22 +142,11 @@
             this.lblOffset.TabIndex = 19;
             this.lblOffset.Text = "Offset:";
             // 
-            // chkTerms
-            // 
-            this.chkTerms.AutoSize = true;
-            this.chkTerms.Location = new System.Drawing.Point(183, 98);
-            this.chkTerms.Name = "chkTerms";
-            this.chkTerms.Size = new System.Drawing.Size(116, 17);
-            this.chkTerms.TabIndex = 21;
-            this.chkTerms.Text = "Save terms to XML";
-            this.chkTerms.UseVisualStyleBackColor = true;
-            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(477, 160);
-            this.Controls.Add(this.chkTerms);
             this.Controls.Add(this.txtOffset);
             this.Controls.Add(this.lblOffset);
             this.Controls.Add(this.chkSpoilers);
@@ -193,6 +181,5 @@
         private System.Windows.Forms.CheckBox chkSpoilers;
         private System.Windows.Forms.TextBox txtOffset;
         private System.Windows.Forms.Label lblOffset;
-        private System.Windows.Forms.CheckBox chkTerms;
     }
 }

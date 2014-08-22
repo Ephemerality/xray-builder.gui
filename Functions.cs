@@ -216,7 +216,15 @@ namespace XRayBuilderGUI
             {
                 var serializer = new XmlSerializer(typeof(List<T>));
                 TextReader reader = new StreamReader(filePath);
-                itemList = (List<T>)serializer.Deserialize(reader);
+                try
+                {
+                    itemList = (List<T>)serializer.Deserialize(reader);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error processing XML file: " + ex.Message + "\r\nIf the error contains a (#, #), the first number is the line the error occurred on.", "XML Error");
+                    return null;
+                }
                 reader.Close();
             }
 

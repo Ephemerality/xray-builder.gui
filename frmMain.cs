@@ -150,6 +150,11 @@ namespace XRayBuilderGUI
                 Log(results[0]);
                 return;
             }
+            if (settings.saverawml)
+            {
+                Log("Saving rawML to output directory.");
+                File.Copy(results[3], Path.Combine(settings.outDir, Path.GetFileName(results[3])), true);
+            }
             Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nUniqueID: {2}\r\nAttempting to build X-Ray...", results[2], results[0], results[1]));
             Log(String.Format("Spoilers: {0}", settings.spoilers ? "Enabled" : "Disabled"));
             Log("Offset: " + settings.offset.ToString());
@@ -202,6 +207,7 @@ namespace XRayBuilderGUI
                 return;
             }
             string path = Environment.CurrentDirectory + "/ext/" + Path.GetFileNameWithoutExtension(txtMobi.Text) + ".xml";
+            txtXMLFile.Text = path;
             XRay xray = new XRay(txtShelfari.Text, this, settings.spoilers);
             if (xray.saveXML(path) > 0)
             {

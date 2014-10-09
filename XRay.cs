@@ -200,9 +200,14 @@ namespace XRayBuilderGUI
                     main.TopMost = true;
                 }
             }
-            //Load the aliases now that we know they exists
-            loadAliases(aliasFile);
-            main.Log("Character aliases read from " + aliasFile + ".");
+            //Load the aliases now that we know they exist
+            if (!File.Exists(aliasFile))
+                main.Log("Aliases file not found.");
+            else
+            {
+                loadAliases(aliasFile);
+                main.Log("Character aliases read from " + aliasFile + ".");
+            }
             return 0;
         }
 
@@ -490,7 +495,7 @@ namespace XRayBuilderGUI
         public void saveChapters()
         {
             if (!Directory.Exists(Environment.CurrentDirectory + "\\ext\\")) Directory.CreateDirectory(Environment.CurrentDirectory + "\\ext\\");
-            using (StreamWriter streamWriter = new StreamWriter(Environment.CurrentDirectory + "\\ext\\" + asin + ".chapters", false))
+            using (StreamWriter streamWriter = new StreamWriter(Environment.CurrentDirectory + "\\ext\\" + asin + ".chapters", false, Encoding.Default))
             {
                 foreach (Chapter c in chapters)
                     streamWriter.WriteLine(c.name + "|" + c.start + "|" + c.end);
@@ -500,7 +505,8 @@ namespace XRayBuilderGUI
         public void loadChapters()
         {
             chapters = new List<Chapter>();
-            using (StreamReader streamReader = new StreamReader(Environment.CurrentDirectory + "\\ext\\" + asin + ".chapters"))
+            if (!File.Exists(Environment.CurrentDirectory + "\\ext\\" + asin + ".chapters")) return;
+            using (StreamReader streamReader = new StreamReader(Environment.CurrentDirectory + "\\ext\\" + asin + ".chapters", Encoding.Default))
             {
                 while (!streamReader.EndOfStream)
                 {
@@ -514,7 +520,7 @@ namespace XRayBuilderGUI
         public void saveCharacters(string aliasFile)
         {
             if (!Directory.Exists(Environment.CurrentDirectory + "\\ext\\")) Directory.CreateDirectory(Environment.CurrentDirectory + "\\ext\\");
-            using (StreamWriter streamWriter = new StreamWriter(aliasFile))
+            using (StreamWriter streamWriter = new StreamWriter(aliasFile, false, Encoding.Default))
             {
                 foreach (Term c in terms)// if(c.type == "character")
                     streamWriter.WriteLine(c.termName + "|");
@@ -524,7 +530,8 @@ namespace XRayBuilderGUI
         public void loadAliases(string aliasFile)
         {
             Dictionary<string, string[]> d = new Dictionary<string, string[]>();
-            using (StreamReader streamReader = new StreamReader(aliasFile))
+            if (!File.Exists(aliasFile)) return;
+            using (StreamReader streamReader = new StreamReader(aliasFile, Encoding.Default))
             {
                 while (!streamReader.EndOfStream)
                 {

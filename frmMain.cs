@@ -9,6 +9,8 @@ using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using ExceptionReporting;
+using System.Threading;
 
 namespace XRayBuilderGUI
 {
@@ -171,9 +173,28 @@ namespace XRayBuilderGUI
             }
             Log("Initial X-Ray built, adding locs and chapters...");
             //Expand the X-Ray file from the unpacked mobi
-            if (ss.expandFromRawML(results[3]) > 0)
+            try
             {
-                Log("Error while processing locations and chapters.");
+                if (ss.expandFromRawML(results[3]) > 0)
+                {
+                    Log("Error while processing locations and chapters.");
+                    return;
+                }
+            }
+            catch (Exception exception)
+            {
+                ExceptionReporter reporter = new ExceptionReporter();
+                reporter.ReadConfig();
+                reporter.Config.ShowSysInfoTab = false;
+                reporter.Config.EmailReportAddress = "revensoftware@gmail.com";
+                reporter.Config.ShowAssembliesTab = false;
+                reporter.Config.ShowConfigTab = false;
+
+                reporter.Config.UserExplanationLabel = "No description required, but you can enter one if you like:";
+                this.TopMost = false;
+                reporter.Show(exception);
+                this.TopMost = true;
+                Log("Unhandled error occurred while processing this book, please report it.");
                 return;
             }
             Log("Saving X-Ray to file...");

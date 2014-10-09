@@ -170,7 +170,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception e)
             {
-                MessageBox.Show("Error trying to launch notepad.");
+                MessageBox.Show("Error trying to launch notepad: " + e.Message);
             }
         }
 
@@ -199,7 +199,7 @@ namespace XRayBuilderGUI
 
         public static void Save<T>(T output, string FileName)
         {
-            using (var writer = new System.IO.StreamWriter(FileName))
+            using (var writer = new System.IO.StreamWriter(FileName, false, Encoding.Default))
             {
                 var serializer = new XmlSerializer(typeof(T));
                 serializer.Serialize(writer, output);
@@ -215,7 +215,7 @@ namespace XRayBuilderGUI
             if (File.Exists(filePath))
             {
                 var serializer = new XmlSerializer(typeof(List<T>));
-                TextReader reader = new StreamReader(filePath);
+                TextReader reader = new StreamReader(filePath, Encoding.Default);
                 try
                 {
                     itemList = (List<T>)serializer.Deserialize(reader);

@@ -39,6 +39,7 @@
             this.chkSpoilers = new System.Windows.Forms.CheckBox();
             this.txtOffset = new System.Windows.Forms.TextBox();
             this.lblOffset = new System.Windows.Forms.Label();
+            this.chkSoftHyphen = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnSave
@@ -142,11 +143,22 @@
             this.lblOffset.TabIndex = 19;
             this.lblOffset.Text = "Offset:";
             // 
+            // chkSoftHyphen
+            // 
+            this.chkSoftHyphen.AutoSize = true;
+            this.chkSoftHyphen.Location = new System.Drawing.Point(187, 98);
+            this.chkSoftHyphen.Name = "chkSoftHyphen";
+            this.chkSoftHyphen.Size = new System.Drawing.Size(123, 17);
+            this.chkSoftHyphen.TabIndex = 21;
+            this.chkSoftHyphen.Text = "Ignore Soft Hyphens";
+            this.chkSoftHyphen.UseVisualStyleBackColor = true;
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(477, 160);
+            this.Controls.Add(this.chkSoftHyphen);
             this.Controls.Add(this.txtOffset);
             this.Controls.Add(this.lblOffset);
             this.Controls.Add(this.chkSpoilers);
@@ -181,5 +193,6 @@
         private System.Windows.Forms.CheckBox chkSpoilers;
         private System.Windows.Forms.TextBox txtOffset;
         private System.Windows.Forms.Label lblOffset;
+        private System.Windows.Forms.CheckBox chkSoftHyphen;
     }
 }

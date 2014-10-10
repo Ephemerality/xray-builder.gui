@@ -323,8 +323,8 @@ namespace XRayBuilderGUI
                     //TODO: Improve location searching, as IndexOf will not work if book length exceeds 2,147,483,647...
                     List<string> search = character.aliases.ToList<string>();
                     search.Insert(0, character.termName);
-                    if ((character.matchCase && (search.Any(node.InnerText.Contains) || search.Any(node.InnerHtml.Contains))) ||
-                        (!character.matchCase && (search.Any(node.InnerText.ContainsIgnorecase) || search.Any(node.InnerHtml.ContainsIgnorecase))))
+                    if ((character.matchCase && (search.Any(node.InnerText.Contains) || search.Any(node.InnerHtml.Contains)))
+                        || (!character.matchCase && (search.Any(node.InnerText.ContainsIgnorecase) || search.Any(node.InnerHtml.ContainsIgnorecase))))
                     {
                         int locHighlight = -1;
                         int lenHighlight = -1;

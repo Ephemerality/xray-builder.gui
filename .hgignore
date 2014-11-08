@@ -1,0 +1,12 @@
+syntax: glob
+*.exe
+*.config
+*.pdb
+*.aliases
+*.chapters
+*.mobi
+bin/Debug/dist/KindleUnpack_v65
+*.asc
+obj/*
+*.manifest
+*.xml

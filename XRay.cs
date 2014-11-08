@@ -227,8 +227,10 @@ namespace XRayBuilderGUI
             string chapterFile = Environment.CurrentDirectory + "\\ext\\" + asin + ".chapters";
             if (File.Exists(chapterFile))
             {
-                loadChapters();
-                main.Log(String.Format("Chapters read from {0}.\r\nDelete this file if you want chapters built automatically.", chapterFile));
+                if(loadChapters())
+                    main.Log(String.Format("Chapters read from {0}.\r\nDelete this file if you want chapters built automatically.", chapterFile));
+                else
+                    main.Log(String.Format("Failed to read chapters from {0}.\r\nFile is missing or not formatted correctly.", chapterFile));
             }
             else
             {
@@ -271,8 +273,10 @@ namespace XRayBuilderGUI
                 Functions.RunNotepad(chapterFile);
                 main.TopMost = true;
                 chapters.Clear();
-                loadChapters();
-                main.Log("Reloaded chapters from edited file.");
+                if (loadChapters())
+                    main.Log("Reloaded chapters from edited file.");
+                else
+                    main.Log(String.Format("Failed to reload chapters from {0}.\r\nFile is missing or not formatted correctly.", chapterFile));
             }
 
             //If no chapters were found, add a default chapter that spans the entire book
@@ -502,19 +506,21 @@ namespace XRayBuilderGUI
             }
         }
 
-        public void loadChapters()
+        public bool loadChapters()
         {
             chapters = new List<Chapter>();
-            if (!File.Exists(Environment.CurrentDirectory + "\\ext\\" + asin + ".chapters")) return;
+            if (!File.Exists(Environment.CurrentDirectory + "\\ext\\" + asin + ".chapters")) return false;
             using (StreamReader streamReader = new StreamReader(Environment.CurrentDirectory + "\\ext\\" + asin + ".chapters", Encoding.Default))
             {
                 while (!streamReader.EndOfStream)
                 {
                     string[] tmp = streamReader.ReadLine().Split('|');
+                    if (tmp.Length != 3) return false; //Malformed chapters file
                     if (tmp[0].Substring(0, 1) == "#") continue;
                     chapters.Add(new Chapter(tmp[0], Convert.ToInt32(tmp[1]), Convert.ToInt64(tmp[2])));
                 }
             }
+            return true;
         }
 
         public void saveCharacters(string aliasFile)

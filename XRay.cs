@@ -216,7 +216,7 @@ namespace XRayBuilderGUI
             HtmlAgilityPack.HtmlDocument web = new HtmlAgilityPack.HtmlDocument();
 
             string readContents;
-            using (StreamReader streamReader = new StreamReader(rawML, Encoding.Default))
+            using (StreamReader streamReader = new StreamReader(rawML, Encoding.UTF8))
             {
                 readContents = streamReader.ReadToEnd();
             }
@@ -320,8 +320,12 @@ namespace XRayBuilderGUI
                 string noSoftHypen = "";
                 if (ignoreSoftHypen)
                 {
-                    noSoftHypen = node.InnerText.Replace(Encoding.UTF8.GetString(new byte[] { 0xC2, 0xAD }), ""); //Replace soft hyphens 
-                    noSoftHypen = noSoftHypen.Replace("Â", "");
+                    noSoftHypen = node.InnerText;
+                    noSoftHypen = noSoftHypen.Replace("&shy;", "");
+                    noSoftHypen = noSoftHypen.Replace("\u00AD", "");
+                    noSoftHypen = noSoftHypen.Replace("&#xad;", "");
+                    noSoftHypen = noSoftHypen.Replace("&#173;", "");
+                    noSoftHypen = noSoftHypen.Replace("&#0173;", "");
                 }
                 foreach (Term character in terms)
                 {
@@ -329,8 +333,6 @@ namespace XRayBuilderGUI
                     //TODO: Improve location searching as IndexOf will not work if book length exceeds 2,147,483,647...
                     List<string> search = character.aliases.ToList<string>();
                     search.Insert(0, character.termName);
-                    if (noSoftHypen.Contains("ed North") && character.termName.StartsWith("North­­­"))
-                        break;
                     if ((character.matchCase && (search.Any(node.InnerText.Contains) || search.Any(node.InnerHtml.Contains)))
                         || (!character.matchCase && (search.Any(node.InnerText.ContainsIgnorecase) || search.Any(node.InnerHtml.ContainsIgnorecase)))
                         || (character.matchCase && search.Any(noSoftHypen.Contains))
@@ -348,11 +350,6 @@ namespace XRayBuilderGUI
                                 lenHighlight = s.Length;
                                 break;
                             }
-                            else if (ignoreSoftHypen)
-                            {
-                                index = noSoftHypen.IndexOf(s, character.matchCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
-
-                            }
                         }
                         //If normal search fails, use regexp to search in case there is some wacky html nested in term
                         //Regexp may be less than ideal for parsing HTML but seems to work ok so far in these small paragraphs
@@ -361,8 +358,17 @@ namespace XRayBuilderGUI
                         {
                             foreach (string s in search)
                             {
-                                string pattern = "(?:<[^>]*>)*"; //Match HTML tags -- provided there's nothing malformed
-                                pattern = string.Format("{0}{1}{0}(?=[^a-zA-Z])", pattern, string.Join(pattern, Regex.Unescape(s).ToCharArray()));
+                                string pattern;
+                                if (ignoreSoftHypen)
+                                {
+                                    pattern = "(\u00AD|&shy;|&#173;|&#xad;|&#0173;|&#x00AD;)*"; //Match soft hyphens and various aliases for them
+                                    pattern = string.Join(pattern, Regex.Unescape(s).ToCharArray());
+                                }
+                                else
+                                {
+                                    pattern = "(?:<[^>]*>)*"; //Match HTML tags -- provided there's nothing malformed
+                                    pattern = string.Format("{0}{1}{0}(?=[^a-zA-Z])", pattern, string.Join(pattern, Regex.Unescape(s).ToCharArray()));
+                                }
                                 Match match;
                                 if (character.matchCase)
                                     match = Regex.Match(node.InnerHtml, pattern);

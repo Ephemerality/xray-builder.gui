@@ -211,12 +211,12 @@ namespace XRayBuilderGUI
             return 0;
         }
 
-        public int expandFromRawML(string rawML)
+        public int expandFromRawML(string rawML, bool ignoreSoftHypen = false)
         {
             HtmlAgilityPack.HtmlDocument web = new HtmlAgilityPack.HtmlDocument();
 
             string readContents;
-            using (StreamReader streamReader = new StreamReader(rawML, Encoding.Default))
+            using (StreamReader streamReader = new StreamReader(rawML, Encoding.UTF8))
             {
                 readContents = streamReader.ReadToEnd();
             }
@@ -321,14 +321,26 @@ namespace XRayBuilderGUI
                     return 1;
                 }
                 if (location < srl || location > erl) continue; //Skip paragraph if outside chapter range
+                string noSoftHypen = "";
+                if (ignoreSoftHypen)
+                {
+                    noSoftHypen = node.InnerText;
+                    noSoftHypen = noSoftHypen.Replace("&shy;", "");
+                    noSoftHypen = noSoftHypen.Replace("\u00AD", "");
+                    noSoftHypen = noSoftHypen.Replace("&#xad;", "");
+                    noSoftHypen = noSoftHypen.Replace("&#173;", "");
+                    noSoftHypen = noSoftHypen.Replace("&#0173;", "");
+                }
                 foreach (Term character in terms)
                 {
                     //Search for character name and aliases in the html-less text. If failed, try in the HTML for rare situations.
-                    //TODO: Improve location searching, as IndexOf will not work if book length exceeds 2,147,483,647...
+                    //TODO: Improve location searching as IndexOf will not work if book length exceeds 2,147,483,647...
                     List<string> search = character.aliases.ToList<string>();
                     search.Insert(0, character.termName);
                     if ((character.matchCase && (search.Any(node.InnerText.Contains) || search.Any(node.InnerHtml.Contains)))
-                        || (!character.matchCase && (search.Any(node.InnerText.ContainsIgnorecase) || search.Any(node.InnerHtml.ContainsIgnorecase))))
+                        || (!character.matchCase && (search.Any(node.InnerText.ContainsIgnorecase) || search.Any(node.InnerHtml.ContainsIgnorecase)))
+                        || (character.matchCase && search.Any(noSoftHypen.Contains))
+                        || (!character.matchCase && search.Any(noSoftHypen.ContainsIgnorecase)))
                     {
                         int locHighlight = -1;
                         int lenHighlight = -1;
@@ -345,14 +357,24 @@ namespace XRayBuilderGUI
                         }
                         //If normal search fails, use regexp to search in case there is some wacky html nested in term
                         //Regexp may be less than ideal for parsing HTML but seems to work ok so far in these small paragraphs
+                        //Also search in soft hyphen-less text if option is set to do so
                         if (locHighlight < 0)
                         {
                             foreach (string s in search)
                             {
-                                string pattern = "(?:<[^>]*>)*"; //Match HTML tags -- provided there's nothing malformed
-                                pattern = string.Format("{0}{1}{0}(?=[^a-zA-Z])", pattern, string.Join(pattern, Regex.Unescape(s).ToCharArray()));
+                                string pattern;
+                                if (ignoreSoftHypen)
+                                {
+                                    pattern = "(\u00AD|&shy;|&#173;|&#xad;|&#0173;|&#x00AD;)*"; //Match soft hyphens and various aliases for them
+                                    pattern = string.Join(pattern, Regex.Unescape(s).ToCharArray());
+                                }
+                                else
+                                {
+                                    pattern = "(?:<[^>]*>)*"; //Match HTML tags -- provided there's nothing malformed
+                                    pattern = string.Format("{0}{1}{0}(?=[^a-zA-Z])", pattern, string.Join(pattern, Regex.Unescape(s).ToCharArray()));
+                                }
                                 Match match;
-                                if(character.matchCase)
+                                if (character.matchCase)
                                     match = Regex.Match(node.InnerHtml, pattern);
                                 else
                                     match = Regex.Match(node.InnerHtml, pattern, RegexOptions.IgnoreCase);

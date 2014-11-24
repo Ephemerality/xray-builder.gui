@@ -122,9 +122,9 @@ namespace XRayBuilderGUI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public string ignoresofthyphen {
+        public bool ignoresofthyphen {
             get {
-                return ((string)(this["ignoresofthyphen"]));
+                return ((bool)(this["ignoresofthyphen"]));
             }
             set {
                 this["ignoresofthyphen"] = value;

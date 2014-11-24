@@ -175,7 +175,7 @@ namespace XRayBuilderGUI
             //Expand the X-Ray file from the unpacked mobi
             try
             {
-                if (ss.expandFromRawML(results[3]) > 0)
+                if (ss.expandFromRawML(results[3], settings.ignoresofthyphen) > 0)
                 {
                     Log("Error while processing locations and chapters.");
                     return;

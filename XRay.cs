@@ -1,7 +1,7 @@
 /*   Builds an X-Ray file to be used on the Amazon Kindle
 *   Original xray builder by shinew, http://www.mobileread.com/forums/showthread.php?t=157770 , http://www.xunwang.me/xray/
 *   
-*   Copyright (C) 2013 Ephemerality <Nick Niemi - ephemeral.vilification@gmail.com>
+*   Copyright (C) 2014 Ephemerality <Nick Niemi - ephemeral.vilification@gmail.com>
 *
 *   This program is free software: you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -214,9 +214,8 @@ namespace XRayBuilderGUI
         public int expandFromRawML(string rawML, bool ignoreSoftHypen = false)
         {
             HtmlAgilityPack.HtmlDocument web = new HtmlAgilityPack.HtmlDocument();
-
             string readContents;
-            using (StreamReader streamReader = new StreamReader(rawML, Encoding.UTF8))
+            using (StreamReader streamReader = new StreamReader(rawML, Encoding.Default))
             {
                 readContents = streamReader.ReadToEnd();
             }
@@ -325,8 +324,9 @@ namespace XRayBuilderGUI
                 if (ignoreSoftHypen)
                 {
                     noSoftHypen = node.InnerText;
+                    noSoftHypen = noSoftHypen.Replace("\u00C2\u00AD", "");
                     noSoftHypen = noSoftHypen.Replace("&shy;", "");
-                    noSoftHypen = noSoftHypen.Replace("\u00AD", "");
+                    //noSoftHypen = noSoftHypen.Replace("\u00AD", "");
                     noSoftHypen = noSoftHypen.Replace("&#xad;", "");
                     noSoftHypen = noSoftHypen.Replace("&#173;", "");
                     noSoftHypen = noSoftHypen.Replace("&#0173;", "");
@@ -339,8 +339,8 @@ namespace XRayBuilderGUI
                     search.Insert(0, character.termName);
                     if ((character.matchCase && (search.Any(node.InnerText.Contains) || search.Any(node.InnerHtml.Contains)))
                         || (!character.matchCase && (search.Any(node.InnerText.ContainsIgnorecase) || search.Any(node.InnerHtml.ContainsIgnorecase)))
-                        || (character.matchCase && search.Any(noSoftHypen.Contains))
-                        || (!character.matchCase && search.Any(noSoftHypen.ContainsIgnorecase)))
+                        || (ignoreSoftHypen && (character.matchCase && search.Any(noSoftHypen.Contains))
+                            || (!character.matchCase && search.Any(noSoftHypen.ContainsIgnorecase))))
                     {
                         int locHighlight = -1;
                         int lenHighlight = -1;
@@ -362,28 +362,29 @@ namespace XRayBuilderGUI
                         {
                             foreach (string s in search)
                             {
+                                List<string> patterns = new List<string>();
                                 string pattern;
-                                if (ignoreSoftHypen)
+                                string patternHTML = "(?:<[^>]*>)*"; //Match HTML tags -- provided there's nothing malformed
+                                string patternSoftHypen = "(\u00C2\u00AD|&shy;|&#173;|&#xad;|&#0173;|&#x00AD;)*";
+                                pattern = string.Format("{0}{1}{0}(?=[^a-zA-Z])", patternHTML, string.Join(patternHTML + patternSoftHypen, Regex.Unescape(s).ToCharArray()));
+                                patterns.Add(pattern);
+                                bool found = false;
+                                foreach (string pat in patterns)
                                 {
-                                    pattern = "(\u00AD|&shy;|&#173;|&#xad;|&#0173;|&#x00AD;)*"; //Match soft hyphens and various aliases for them
-                                    pattern = string.Join(pattern, Regex.Unescape(s).ToCharArray());
+                                    Match match;
+                                    if (character.matchCase)
+                                        match = Regex.Match(node.InnerHtml, pat);
+                                    else
+                                        match = Regex.Match(node.InnerHtml, pat, RegexOptions.IgnoreCase);
+                                    if (match.Success)
+                                    {
+                                        locHighlight = match.Index;
+                                        lenHighlight = match.Length;
+                                        found = true;
+                                        break;
+                                    }
                                 }
-                                else
-                                {
-                                    pattern = "(?:<[^>]*>)*"; //Match HTML tags -- provided there's nothing malformed
-                                    pattern = string.Format("{0}{1}{0}(?=[^a-zA-Z])", pattern, string.Join(pattern, Regex.Unescape(s).ToCharArray()));
-                                }
-                                Match match;
-                                if (character.matchCase)
-                                    match = Regex.Match(node.InnerHtml, pattern);
-                                else
-                                    match = Regex.Match(node.InnerHtml, pattern, RegexOptions.IgnoreCase);
-                                if (match.Success)
-                                {
-                                    locHighlight = match.Index;
-                                    lenHighlight = match.Length;
-                                    break;
-                                }
+                                if (found) break;
                             }
                         }
                         if (locHighlight < 0) //something went wrong

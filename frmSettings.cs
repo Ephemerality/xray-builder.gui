@@ -30,7 +30,7 @@ namespace XRayBuilderGUI
             ToolTip1.SetToolTip(chkRaw, "Save the .rawml (raw markup) of the book in the output directory so you can review it.");
             ToolTip1.SetToolTip(chkSpoilers, "Use Shelfari descriptions that contain spoilers when they exist.");
             ToolTip1.SetToolTip(txtOffset, "This offset will be applied to every book location (usually a negative number). Must be an integer.");
-            ToolTip1.SetToolTip(chkSoftHyphen, "Ignore soft hyphens (Unicode U+00AD) while searching for terms.");
+            ToolTip1.SetToolTip(chkSoftHyphen, "Ignore soft hyphens (Unicode U+00AD) while searching for terms. This will slow down the parsing process slightly.");
             this.TopMost = true;
         }
 

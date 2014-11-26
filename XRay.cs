@@ -44,6 +44,7 @@ namespace XRayBuilderGUI
         string aliaspath = "";
         public List<Term> terms = new List<Term>(100);
         List<Chapter> chapters = new List<Chapter>();
+        List<Excerpt> excerpts = new List<Excerpt>();
         long srl = 0;
         long erl = 0;
         bool shortEx = true;
@@ -187,8 +188,12 @@ namespace XRayBuilderGUI
             else
                 main.Log("Terms found on Shelfari:");
             string tmp = "";
+            int termID = 1;
             foreach (Term t in terms)
+            {
                 tmp += t.termName + ", ";
+                t.id = termID++;
+            }
             main.Log(tmp);
 
             if (!unattended)
@@ -213,6 +218,7 @@ namespace XRayBuilderGUI
 
         public int expandFromRawML(string rawML, bool ignoreSoftHypen = false)
         {
+            int excerptID = 0;
             HtmlAgilityPack.HtmlDocument web = new HtmlAgilityPack.HtmlDocument();
             string readContents;
             using (StreamReader streamReader = new StreamReader(rawML, Encoding.Default))
@@ -335,6 +341,7 @@ namespace XRayBuilderGUI
                 {
                     //Search for character name and aliases in the html-less text. If failed, try in the HTML for rare situations.
                     //TODO: Improve location searching as IndexOf will not work if book length exceeds 2,147,483,647...
+                    //If soft hyphen ignoring is turned on, also search hyphen-less text.
                     List<string> search = character.aliases.ToList<string>();
                     search.Insert(0, character.termName);
                     if ((character.matchCase && (search.Any(node.InnerText.Contains) || search.Any(node.InnerHtml.Contains)))
@@ -437,7 +444,19 @@ namespace XRayBuilderGUI
                         }
 
                         character.locs.Add(String.Format("[{0},{1},{2},{3}]", location + locOffset, lenQuote, locHighlight, lenHighlight));
-
+                        character.occurrences.Add(new int[] { location + locOffset + locHighlight, lenHighlight });
+                        List<Excerpt> exCheck = excerpts.Where(t => t.start.Equals(location + locOffset)).ToList();
+                        if (exCheck.Count > 0)
+                        {
+                            if (!exCheck[0].related_entities.Contains(character.id))
+                                exCheck[0].related_entities.Add(character.id);
+                        }
+                        else
+                        {
+                            Excerpt newExcerpt = new Excerpt(excerptID++, location + locOffset, lenQuote);
+                            newExcerpt.related_entities.Add(character.id);
+                            excerpts.Add(newExcerpt);
+                        }
                         //Console.WriteLine(node.OuterHtml);
                     }
                 }
@@ -451,6 +470,34 @@ namespace XRayBuilderGUI
                     main.Log(String.Format("No locations were found for the term \"{0}\". You should add aliases for this term using the book or rawml as a reference.", t.termName));
             }
             return 0;
+        }
+
+        class Excerpt
+        {
+            public int id;
+            public int start;
+            public int length;
+            public string image = "";
+            public List<int> related_entities = new List<int>();
+            public int go_to = -1;
+
+            public Excerpt(int id, int start, int length)
+            {
+                this.id = id;
+                this.start = start;
+                this.length = length;
+            }
+
+            public string GetQuery()
+            {
+                string sql = String.Format("insert into excerpt (id, start, length, image, related_entities, goto) values ({0}, {1}, {2}, {3}, '{4}', {5});\n",
+                    id, start, length, image == "" ? "null" : image, String.Join(",", related_entities), go_to == -1 ? "null" : go_to.ToString());
+                foreach (int i in related_entities)
+                {
+                    sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", i, id);
+                }
+                return sql;
+            }
         }
 
         class Chapter
@@ -495,6 +542,10 @@ namespace XRayBuilderGUI
             public List<string> locs = new List<string>(1000);
             [XmlIgnore]
             public List<string> assets = new List<string> { "" };
+            [XmlIgnore]
+            public int id = -1;
+            [XmlIgnore]
+            public List<int[]> occurrences = new List<int[]>();
             public bool matchCase = true;
 
             public Term() { }

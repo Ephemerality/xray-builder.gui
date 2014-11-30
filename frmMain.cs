@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using ExceptionReporting;
 using System.Threading;
+using System.Data.SQLite;
 
 namespace XRayBuilderGUI
 {
@@ -175,7 +176,7 @@ namespace XRayBuilderGUI
             //Expand the X-Ray file from the unpacked mobi
             try
             {
-                if (ss.expandFromRawML(results[3], settings.ignoresofthyphen) > 0)
+                if (ss.expandFromRawML(results[3], settings.ignoresofthyphen, !settings.useNewVersion) > 0)
                 {
                     Log("Error while processing locations and chapters.");
                     return;
@@ -183,26 +184,63 @@ namespace XRayBuilderGUI
             }
             catch (Exception exception)
             {
-                ExceptionReporter reporter = new ExceptionReporter();
-                reporter.ReadConfig();
-                reporter.Config.ShowSysInfoTab = false;
-                reporter.Config.EmailReportAddress = "revensoftware@gmail.com";
-                reporter.Config.ShowAssembliesTab = false;
-                reporter.Config.ShowConfigTab = false;
-
-                reporter.Config.UserExplanationLabel = "No description required, but you can enter one if you like:";
-                this.TopMost = false;
-                reporter.Show(exception);
-                this.TopMost = true;
-                Log("Unhandled error occurred while processing this book, please report it.");
+                ExceptionHandler(exception);
                 return;
             }
             Log("Saving X-Ray to file...");
-            using (StreamWriter streamWriter = new StreamWriter(settings.outDir + "\\" + ss.getXRayName(), false, Encoding.Default))
+            string newPath = settings.outDir + "\\" + ss.getXRayName();
+            if (settings.useNewVersion)
             {
-                streamWriter.Write(ss.ToString());
+                try
+                {
+                    SQLiteConnection.CreateFile(newPath);
+                } catch (Exception ex) {
+                    Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\n" + ex.Message);
+                    return;
+                }
+                SQLiteConnection m_dbConnection;
+                m_dbConnection = new SQLiteConnection(("Data Source=" + newPath + ";Version=3;"));
+                m_dbConnection.Open();
+                string sql;
+                try
+                {
+                    using (StreamReader streamReader = new StreamReader("BaseDB.sql", Encoding.UTF8))
+                    {
+                        sql = streamReader.ReadToEnd();
+                    }
+                } catch (Exception ex) {
+                    Log("An error occurred while opening the BaseDB.sql file. Ensure you extracted it to the same directory as the program.\n" + ex.Message);
+                    m_dbConnection.Close();
+                    return;
+                }
+                SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+                Log("\nBuilding new X-ray database. May take a few minutes...");
+                command.ExecuteNonQuery();
+                Console.WriteLine("Done building initial database. Populating with info from source X-Ray...");
+                try
+                {
+                    ss.PopulateDB(m_dbConnection);
+                } catch (Exception ex) {
+                    ExceptionHandler(ex);
+                    m_dbConnection.Close();
+                    return;
+                }
+                Console.WriteLine("Updating indices...");
+                sql = "CREATE INDEX idx_occurrence_start ON occurrence(start ASC);\n"
+                    + "CREATE INDEX idx_entity_type ON entity(type ASC);\n"
+                    + "CREATE INDEX idx_entity_excerpt ON entity_excerpt(entity ASC);";
+                command = new SQLiteCommand(sql, m_dbConnection);
+                command.ExecuteNonQuery();
+                m_dbConnection.Close();
             }
-            Log("XRay file created successfully!\r\nSaved to " + settings.outDir + "\\" + ss.getXRayName());
+            else
+            {
+                using (StreamWriter streamWriter = new StreamWriter(newPath, false, Encoding.Default))
+                {
+                    streamWriter.Write(ss.ToString());
+                }
+            }
+            Log("XRay file created successfully!\r\nSaved to " + newPath);
             Directory.Delete(randomFile, true);
             this.TopMost = false;
 
@@ -249,6 +287,22 @@ namespace XRayBuilderGUI
                 btnBrowseXML.Visible = !btnBrowseXML.Visible;
                 btnSaveShelfari.Enabled = !btnSaveShelfari.Enabled;
             }
+        }
+
+        public void ExceptionHandler(Exception exception)
+        {
+            ExceptionReporter reporter = new ExceptionReporter();
+            reporter.ReadConfig();
+            reporter.Config.ShowSysInfoTab = false;
+            reporter.Config.EmailReportAddress = "revensoftware@gmail.com";
+            reporter.Config.ShowAssembliesTab = false;
+            reporter.Config.ShowConfigTab = false;
+
+            reporter.Config.UserExplanationLabel = "No description required, but you can enter one if you like:";
+            this.TopMost = false;
+            reporter.Show(exception);
+            this.TopMost = true;
+            Log("Unhandled error occurred while processing this book, please report it.");
         }
     }
 }

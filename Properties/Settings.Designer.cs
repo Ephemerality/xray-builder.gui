@@ -130,5 +130,17 @@ namespace XRayBuilderGUI.Properties {
                 this["ignoresofthyphen"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool useNewVersion {
+            get {
+                return ((bool)(this["useNewVersion"]));
+            }
+            set {
+                this["useNewVersion"] = value;
+            }
+        }
     }
 }

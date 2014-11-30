@@ -30,6 +30,7 @@ using HtmlAgilityPack;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using System.Data.SQLite;
 
 namespace XRayBuilderGUI
 {
@@ -216,9 +217,10 @@ namespace XRayBuilderGUI
             return 0;
         }
 
-        public int expandFromRawML(string rawML, bool ignoreSoftHypen = false)
+        public int expandFromRawML(string rawML, bool ignoreSoftHypen = false, bool shortEx = true)
         {
             int excerptID = 0;
+            this.shortEx = shortEx;
             HtmlAgilityPack.HtmlDocument web = new HtmlAgilityPack.HtmlDocument();
             string readContents;
             using (StreamReader streamReader = new StreamReader(rawML, Encoding.Default))
@@ -253,6 +255,7 @@ namespace XRayBuilderGUI
                     HtmlNodeCollection tocnodes = tocdoc.DocumentNode.SelectNodes("//a");
                     foreach (HtmlNode chapter in tocnodes)
                     {
+                        if (chapter.InnerHtml == "") continue;
                         int filepos = Convert.ToInt32(Regex.Replace(chapter.GetAttributeValue("filepos", "0"), leadingZeros, ""));
                         if (chapters.Count > 0)
                         {
@@ -472,6 +475,91 @@ namespace XRayBuilderGUI
             return 0;
         }
 
+        public int PopulateDB(SQLiteConnection db)
+        {
+            string sql = "";
+            int entity = 1;
+            int excerpt = 1;
+            int personCount = 0;
+            int termCount = 0;
+            SQLiteCommand command;
+            command = new SQLiteCommand(db);
+            command.CommandText = "update string set text=@text where id=15";
+            command.Parameters.AddWithValue("text", shelfariURL);
+            command.ExecuteNonQuery();
+            main.Log("Updating database with terms, descriptions, and excerpts...");
+            main.prgBar.Maximum = terms.Count;
+            //Write all entities and occurrences
+            main.Log(String.Format("Writing {0} terms...", terms.Count));
+            foreach (Term t in terms)
+            {
+                if (main.exiting) return 1;
+                main.prgBar.Value = entity++;
+                Application.DoEvents();
+                command = new SQLiteCommand(db);
+                if (t.type == "character") personCount++;
+                else if (t.type == "topic") termCount++;
+                command.CommandText = String.Format("insert into entity (id, label, loc_label, type, count, has_info_card) values ({0}, @label, null, {1}, {2}, 1);",
+                    t.id, t.type == "character" ? 1 : 2, t.occurrences.Count);
+                command.Parameters.AddWithValue("label", t.termName);
+                command.ExecuteNonQuery();
+
+                command = new SQLiteCommand(db);
+                command.CommandText = String.Format("insert into entity_description (text, source_wildcard, source, entity) values (@text, @source_wildcard, {0}, {1});",
+                    t.descSrc == "shelfari" ? 2 : 4, entity);
+                command.Parameters.AddWithValue("text", t.desc);
+                command.Parameters.AddWithValue("source_wildcard", t.termName);
+                command.ExecuteNonQuery();
+
+                sql = "";
+                foreach (int[] loc in t.occurrences)
+                    sql += String.Format("insert into occurrence (entity, start, length) values ({0}, {1}, {2});\n", t.id, loc[0], loc[1]);
+                command = new SQLiteCommand(sql, db);
+                command.ExecuteNonQuery();
+            }
+            //Write excerpts and entity_excerpt table
+            main.prgBar.Maximum = excerpts.Count;
+            main.Log(String.Format("Writing {0} excerpts...", excerpts.Count));
+            sql = "";
+            command = new SQLiteCommand(db);
+            command.CommandText = String.Format("insert into excerpt (id, start, length, image, related_entities, goto) values (@id, @start, @length, @image, @rel_ent, null);");
+            foreach (Excerpt e in excerpts)
+            {
+                if (main.exiting) return 1;
+                main.prgBar.Value = excerpt++;
+                Application.DoEvents();
+                command.Parameters.AddWithValue("id", e.id);
+                command.Parameters.AddWithValue("start", e.start);
+                command.Parameters.AddWithValue("length", e.length);
+                command.Parameters.AddWithValue("image", e.image);
+                command.Parameters.AddWithValue("rel_ent", String.Join(",", e.related_entities));
+                command.ExecuteNonQuery();
+                foreach (int ent in e.related_entities)
+                {
+                    sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", ent, e.id);
+                }
+            }
+            main.prgBar.Value = main.prgBar.Maximum;
+            Application.DoEvents();
+            main.Log("Writing top mentions...");
+            List<int> sorted = terms.Where<Term>(t => t.type.Equals("character")).OrderByDescending(t => t.locs.Count).Select(t => t.id).ToList<int>();
+            sql = String.Format("update type set top_mentioned_entities='{0}' where id=1;\n",
+                String.Join(",", sorted.GetRange(0, Math.Min(10, sorted.Count))));
+            sorted = terms.Where<Term>(t => t.type.Equals("topic")).OrderByDescending(t => t.locs.Count).Select(t => t.id).ToList<int>();
+            sql += String.Format("update type set top_mentioned_entities='{0}' where id=2;",
+                String.Join(",", sorted.GetRange(0, Math.Min(10, sorted.Count))));
+            command = new SQLiteCommand(sql, db);
+            command.ExecuteNonQuery();
+
+            Console.WriteLine("Writing metadata...");
+            sql = String.Format("insert into book_metadata (srl, erl, has_images, has_excerpts, show_spoilers_default, num_people, num_terms, num_images, preview_images) "
+                + "values ({0}, {1}, 0, 1, 0, {2}, {3}, 0, null);", srl, erl, personCount, termCount);
+
+            command = new SQLiteCommand(sql, db);
+            command.ExecuteNonQuery();
+            return 0;
+        }
+
         class Excerpt
         {
             public int id;
@@ -590,7 +678,7 @@ namespace XRayBuilderGUI
                 {
                     string[] tmp = streamReader.ReadLine().Split('|');
                     if (tmp.Length != 3) return false; //Malformed chapters file
-                    if (tmp[0].Substring(0, 1) == "#") continue;
+                    if (tmp[0] == "" || tmp[0].Substring(0, 1) == "#") continue;
                     chapters.Add(new Chapter(tmp[0], Convert.ToInt32(tmp[1]), Convert.ToInt64(tmp[2])));
                 }
             }

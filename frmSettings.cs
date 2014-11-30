@@ -23,6 +23,7 @@ namespace XRayBuilderGUI
             chkSpoilers.Checked = XRayBuilderGUI.Properties.Settings.Default.spoilers;
             chkRaw.Checked = XRayBuilderGUI.Properties.Settings.Default.saverawml;
             chkSoftHyphen.Checked = XRayBuilderGUI.Properties.Settings.Default.ignoresofthyphen;
+            chkUseNew.Checked = XRayBuilderGUI.Properties.Settings.Default.useNewVersion;
             txtOffset.Text = XRayBuilderGUI.Properties.Settings.Default.offset.ToString();
             if (txtUnpack.Text == "") txtUnpack.Text = "dist/kindleunpack.exe";
 
@@ -30,7 +31,8 @@ namespace XRayBuilderGUI
             ToolTip1.SetToolTip(chkRaw, "Save the .rawml (raw markup) of the book in the output directory so you can review it.");
             ToolTip1.SetToolTip(chkSpoilers, "Use Shelfari descriptions that contain spoilers when they exist.");
             ToolTip1.SetToolTip(txtOffset, "This offset will be applied to every book location (usually a negative number). Must be an integer.");
-            ToolTip1.SetToolTip(chkSoftHyphen, "Ignore soft hyphens (Unicode U+00AD) while searching for terms. This will slow down the parsing process slightly.");
+            ToolTip1.SetToolTip(chkSoftHyphen, "Ignore soft hyphens (Unicode U+00AD) while searching for terms. This may slow down the parsing process slightly.");
+            ToolTip1.SetToolTip(chkUseNew, "Write the X-Ray file in the new format for Paperwhite 2 / Voyage firmware 5.6+. Massively slower than the normal build process and is still in alpha testing.");
             this.TopMost = true;
         }
 
@@ -63,6 +65,7 @@ namespace XRayBuilderGUI
             XRayBuilderGUI.Properties.Settings.Default.spoilers = chkSpoilers.Checked;
             XRayBuilderGUI.Properties.Settings.Default.saverawml = chkRaw.Checked;
             XRayBuilderGUI.Properties.Settings.Default.ignoresofthyphen = chkSoftHyphen.Checked;
+            XRayBuilderGUI.Properties.Settings.Default.useNewVersion = chkUseNew.Checked;
             XRayBuilderGUI.Properties.Settings.Default.offset = offset;
             XRayBuilderGUI.Properties.Settings.Default.Save();
         }

@@ -40,6 +40,7 @@
             this.txtOffset = new System.Windows.Forms.TextBox();
             this.lblOffset = new System.Windows.Forms.Label();
             this.chkSoftHyphen = new System.Windows.Forms.CheckBox();
+            this.chkUseNew = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnSave
@@ -153,11 +154,22 @@
             this.chkSoftHyphen.Text = "Ignore Soft Hyphens";
             this.chkSoftHyphen.UseVisualStyleBackColor = true;
             // 
+            // chkUseNew
+            // 
+            this.chkUseNew.AutoSize = true;
+            this.chkUseNew.Location = new System.Drawing.Point(316, 98);
+            this.chkUseNew.Name = "chkUseNew";
+            this.chkUseNew.Size = new System.Drawing.Size(137, 17);
+            this.chkUseNew.TabIndex = 22;
+            this.chkUseNew.Text = "Use New X-Ray Format";
+            this.chkUseNew.UseVisualStyleBackColor = true;
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(477, 160);
+            this.Controls.Add(this.chkUseNew);
             this.Controls.Add(this.chkSoftHyphen);
             this.Controls.Add(this.txtOffset);
             this.Controls.Add(this.lblOffset);
@@ -194,5 +206,6 @@
         private System.Windows.Forms.TextBox txtOffset;
         private System.Windows.Forms.Label lblOffset;
         private System.Windows.Forms.CheckBox chkSoftHyphen;
+        private System.Windows.Forms.CheckBox chkUseNew;
     }
 }

@@ -704,11 +704,14 @@ namespace XRayBuilderGUI
                 while (!streamReader.EndOfStream)
                 {
                     string[] temp = streamReader.ReadLine().Split('|');
-                    if (temp[0].Substring(0, 1) == "#") continue;
-                    if (temp.Length <= 1) continue;
+                    if (temp.Length <= 1 || temp[0] == "") continue;
+                    else if (temp[0].Substring(0, 1) == "#") continue;
                     string[] temp2 = temp[1].Split(',');
                     if (temp2.Length == 0 || temp2[0] == "") continue;
-                    d.Add(temp[0], temp2);
+                    if (d.ContainsKey(temp[0]))
+                        main.Log("Duplicate alias of " + temp[0] + " found. Ignoring the duplicate.");
+                    else
+                        d.Add(temp[0], temp2);
                 }
             }
             foreach (Term t in terms)
@@ -790,7 +793,10 @@ namespace XRayBuilderGUI
                     //Could use a wikipedia page instead as the xray plugin/site does but I decided not to
                     newTerm.descUrl = (li.InnerHtml.IndexOf("<a href") == 0 ? li.InnerHtml.Substring(9, li.InnerHtml.IndexOf("\"", 9) - 9) : shelfariURL);
                     if (header == "WikiModule_Glossary") newTerm.matchCase = false; //Default glossary terms to be case insensitive when searching through book
-                    terms.Add(newTerm);
+                    if (terms.Select<Term, string>(t => t.termName).Contains<string>(newTerm.termName))
+                        main.Log("Duplicate term \"" + newTerm.termName + "\" found. Ignoring this duplicate.");
+                    else
+                        terms.Add(newTerm);
                 }
             }
             return true;

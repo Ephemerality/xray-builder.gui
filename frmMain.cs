@@ -216,6 +216,8 @@ namespace XRayBuilderGUI
                 SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
                 Log("\nBuilding new X-ray database. May take a few minutes...");
                 command.ExecuteNonQuery();
+                command = new SQLiteCommand("PRAGMA user_version = 1", m_dbConnection);
+                command.ExecuteNonQuery();
                 Console.WriteLine("Done building initial database. Populating with info from source X-Ray...");
                 try
                 {

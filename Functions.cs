@@ -101,9 +101,9 @@ namespace XRayBuilderGUI
             string databaseName = "";
             string uniqid = "";
             string asin = "";
-            Match match = Regex.Match(unpackInfo, @"ASIN\s*(\S*)");
+            Match match = Regex.Match(unpackInfo, @"ASIN\s*(.*)");
             if (match.Success && match.Groups.Count > 1)
-                asin = match.Groups[1].Value;
+                asin = match.Groups[1].Value.Replace("\r", "");
             match = Regex.Match(unpackInfo, @"(\d*) unique_id");
             if (match.Success && match.Groups.Count > 1)
                 uniqid = match.Groups[1].Value;

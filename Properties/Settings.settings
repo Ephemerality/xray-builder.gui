@@ -32,5 +32,8 @@
     <Setting Name="useNewVersion" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="buildSource" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Shelfari</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

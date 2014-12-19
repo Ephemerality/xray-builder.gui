@@ -142,5 +142,17 @@ namespace XRayBuilderGUI.Properties {
                 this["useNewVersion"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Shelfari")]
+        public string buildSource {
+            get {
+                return ((string)(this["buildSource"]));
+            }
+            set {
+                this["buildSource"] = value;
+            }
+        }
     }
 }

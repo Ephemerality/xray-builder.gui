@@ -506,7 +506,7 @@ namespace XRayBuilderGUI
 
                 command = new SQLiteCommand(db);
                 command.CommandText = String.Format("insert into entity_description (text, source_wildcard, source, entity) values (@text, null, {0}, {1});",
-                    t.descSrc == "shelfari" ? 2 : 4, entity);
+                    t.descSrc == "shelfari" ? 2 : 4, t.id);
                 command.Parameters.AddWithValue("text", t.desc);
                 //command.Parameters.AddWithValue("source_wildcard", t.termName);
                 command.ExecuteNonQuery();

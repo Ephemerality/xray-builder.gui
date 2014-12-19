@@ -85,6 +85,10 @@ namespace XRayBuilderGUI
                 XRayBuilderGUI.Properties.Settings.Default.mobi_unpack = Environment.CurrentDirectory + "/dist/kindleunpack.exe";
             }
             txtShelfari.Text = XRayBuilderGUI.Properties.Settings.Default.shelfari;
+            if (XRayBuilderGUI.Properties.Settings.Default.buildSource == "Shelfari")
+                rdoShelfari.Checked = true;
+            else
+                rdoFile.Checked = true;
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -92,6 +96,10 @@ namespace XRayBuilderGUI
             XRayBuilderGUI.Properties.Settings.Default.mobiFile = txtMobi.Text;
             XRayBuilderGUI.Properties.Settings.Default.xmlFile = txtXMLFile.Text;
             XRayBuilderGUI.Properties.Settings.Default.shelfari = txtShelfari.Text;
+            if (rdoShelfari.Checked)
+                XRayBuilderGUI.Properties.Settings.Default.buildSource = "Shelfari";
+            else
+                XRayBuilderGUI.Properties.Settings.Default.buildSource = "XML";
             XRayBuilderGUI.Properties.Settings.Default.Save();
             exiting = true;
             Application.Exit();
@@ -122,7 +130,7 @@ namespace XRayBuilderGUI
                 MessageBox.Show("Specified book was not found.", "Book Not Found");
                 return;
             }
-            if (txtShelfari.Text == "")
+            if (rdoShelfari.Checked && txtShelfari.Text == "")
             {
                 MessageBox.Show("No Shelfari link was specified.", "Missing Shelfari Link");
                 return;
@@ -163,19 +171,19 @@ namespace XRayBuilderGUI
             Log("Offset: " + settings.offset.ToString());
             //Create X-Ray and attempt to create the base file (essentially the same as the site)
             XRay ss;
-            if (rdoShelfari.Checked)
-                ss = new XRay(txtShelfari.Text, results[2], results[1], results[0], this, settings.spoilers, settings.offset, "", false);
-            else
-                ss = new XRay(txtXMLFile.Text, results[2], results[1], results[0], this, settings.spoilers, settings.offset, "");
-            if (ss.createXRAY() > 0)
-            {
-                Log("Error while processing.");
-                return;
-            }
-            Log("Initial X-Ray built, adding locs and chapters...");
-            //Expand the X-Ray file from the unpacked mobi
             try
             {
+                if (rdoShelfari.Checked)
+                    ss = new XRay(txtShelfari.Text, results[2], results[1], results[0], this, settings.spoilers, settings.offset, "", false);
+                else
+                    ss = new XRay(txtXMLFile.Text, results[2], results[1], results[0], this, settings.spoilers, settings.offset, "");
+                if (ss.createXRAY() > 0)
+                {
+                    Log("Error while processing.");
+                    return;
+                }
+                Log("Initial X-Ray built, adding locs and chapters...");
+                //Expand the X-Ray file from the unpacked mobi
                 if (ss.expandFromRawML(results[3], settings.ignoresofthyphen, !settings.useNewVersion) > 0)
                 {
                     Log("Error while processing locations and chapters.");
@@ -216,7 +224,7 @@ namespace XRayBuilderGUI
                 SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
                 Log("\nBuilding new X-ray database. May take a few minutes...");
                 command.ExecuteNonQuery();
-                command = new SQLiteCommand("PRAGMA user_version = 1", m_dbConnection);
+                command = new SQLiteCommand("PRAGMA user_version = 1; PRAGMA encoding = utf8;", m_dbConnection);
                 command.ExecuteNonQuery();
                 Console.WriteLine("Done building initial database. Populating with info from source X-Ray...");
                 try
@@ -268,14 +276,23 @@ namespace XRayBuilderGUI
                 return;
             }
             string path = Environment.CurrentDirectory + "/ext/" + Path.GetFileNameWithoutExtension(txtMobi.Text) + ".xml";
-            txtXMLFile.Text = path;
-            XRay xray = new XRay(txtShelfari.Text, this, settings.spoilers);
-            if (xray.saveXML(path) > 0)
+            try
             {
-                Log("Error while processing.");
+                txtXMLFile.Text = path;
+                XRay xray = new XRay(txtShelfari.Text, this, settings.spoilers);
+                if (xray.saveXML(path) > 0)
+                {
+                    Log("Error while processing.");
+                    return;
+                }
+                Log("Shelfari info has been saved to: " + path);
+            }
+            catch (Exception exception)
+            {
+                Log("Error while saving Shelfari data to XML. Path was: " + path);
+                ExceptionHandler(exception);
                 return;
             }
-            Log("Shelfari info has been saved to: " + path);
         }
 
         private void rdoSource_CheckedChanged(object sender, EventArgs e)

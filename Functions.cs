@@ -199,7 +199,7 @@ namespace XRayBuilderGUI
 
         public static void Save<T>(T output, string FileName)
         {
-            using (var writer = new System.IO.StreamWriter(FileName, false, Encoding.Default))
+            using (var writer = new System.IO.StreamWriter(FileName, false, Encoding.UTF8))
             {
                 var serializer = new XmlSerializer(typeof(T));
                 serializer.Serialize(writer, output);
@@ -215,7 +215,7 @@ namespace XRayBuilderGUI
             if (File.Exists(filePath))
             {
                 var serializer = new XmlSerializer(typeof(List<T>));
-                TextReader reader = new StreamReader(filePath, Encoding.Default);
+                TextReader reader = new StreamReader(filePath, Encoding.UTF8);
                 try
                 {
                     itemList = (List<T>)serializer.Deserialize(reader);

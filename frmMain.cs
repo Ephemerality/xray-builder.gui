@@ -275,6 +275,8 @@ namespace XRayBuilderGUI
                 MessageBox.Show("No Shelfari link was specified.", "Missing Shelfari Link");
                 return;
             }
+            if (!Directory.Exists(Environment.CurrentDirectory + "/ext/"))
+                Directory.CreateDirectory(Environment.CurrentDirectory + "/ext/");
             string path = Environment.CurrentDirectory + "/ext/" + Path.GetFileNameWithoutExtension(txtMobi.Text) + ".xml";
             try
             {

@@ -221,10 +221,10 @@ namespace XRayBuilderGUI
                     m_dbConnection.Close();
                     return;
                 }
-                SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+                SQLiteCommand command = new SQLiteCommand("BEGIN; " + sql + " COMMIT;", m_dbConnection);
                 Log("\nBuilding new X-ray database. May take a few minutes...");
                 command.ExecuteNonQuery();
-                command = new SQLiteCommand("PRAGMA user_version = 1; PRAGMA encoding = utf8;", m_dbConnection);
+                command = new SQLiteCommand("PRAGMA user_version = 1; PRAGMA encoding = utf8; BEGIN;", m_dbConnection);
                 command.ExecuteNonQuery();
                 Console.WriteLine("Done building initial database. Populating with info from source X-Ray...");
                 try
@@ -238,7 +238,7 @@ namespace XRayBuilderGUI
                 Console.WriteLine("Updating indices...");
                 sql = "CREATE INDEX idx_occurrence_start ON occurrence(start ASC);\n"
                     + "CREATE INDEX idx_entity_type ON entity(type ASC);\n"
-                    + "CREATE INDEX idx_entity_excerpt ON entity_excerpt(entity ASC);";
+                    + "CREATE INDEX idx_entity_excerpt ON entity_excerpt(entity ASC); COMMIT;";
                 command = new SQLiteCommand(sql, m_dbConnection);
                 command.ExecuteNonQuery();
                 m_dbConnection.Close();

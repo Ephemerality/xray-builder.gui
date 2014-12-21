@@ -376,7 +376,9 @@ namespace XRayBuilderGUI
                                 string pattern;
                                 string patternHTML = "(?:<[^>]*>)*"; //Match HTML tags -- provided there's nothing malformed
                                 string patternSoftHypen = "(\u00C2\u00AD|&shy;|&#173;|&#xad;|&#0173;|&#x00AD;)*";
-                                pattern = string.Format("{0}{1}{0}(?=[^a-zA-Z])", patternHTML, string.Join(patternHTML + patternSoftHypen, Regex.Unescape(s).ToCharArray()));
+                                pattern = string.Format("{0}{1}{0}", patternHTML, string.Join(patternHTML + patternSoftHypen, Regex.Unescape(s).ToCharArray()));
+                                if (character.matchCase)
+                                    pattern += "(?=[^a-zA-Z])";
                                 patterns.Add(pattern);
                                 bool found = false;
                                 foreach (string pat in patterns)
@@ -505,10 +507,10 @@ namespace XRayBuilderGUI
                 command.ExecuteNonQuery();
 
                 command = new SQLiteCommand(db);
-                command.CommandText = String.Format("insert into entity_description (text, source_wildcard, source, entity) values (@text, null, {0}, {1});",
+                command.CommandText = String.Format("insert into entity_description (text, source_wildcard, source, entity) values (@text, @source_wildcard, {0}, {1});",
                     t.descSrc == "shelfari" ? 2 : 4, t.id);
                 command.Parameters.AddWithValue("text", t.desc);
-                //command.Parameters.AddWithValue("source_wildcard", t.termName);
+                command.Parameters.AddWithValue("source_wildcard", t.termName);
                 command.ExecuteNonQuery();
 
                 sql = "";

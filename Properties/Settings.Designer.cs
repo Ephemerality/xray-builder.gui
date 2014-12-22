@@ -154,5 +154,17 @@ namespace XRayBuilderGUI.Properties {
                 this["buildSource"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool android {
+            get {
+                return ((bool)(this["android"]));
+            }
+            set {
+                this["android"] = value;
+            }
+        }
     }
 }

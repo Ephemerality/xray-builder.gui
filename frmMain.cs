@@ -196,7 +196,7 @@ namespace XRayBuilderGUI
                 return;
             }
             Log("Saving X-Ray to file...");
-            string newPath = settings.outDir + "\\" + ss.getXRayName();
+            string newPath = settings.outDir + "\\" + ss.getXRayName(settings.android);
             if (settings.useNewVersion)
             {
                 try

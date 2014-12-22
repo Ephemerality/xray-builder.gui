@@ -130,9 +130,12 @@ namespace XRayBuilderGUI
             }
         }
 
-        public string getXRayName()
+        public string getXRayName(bool android = false)
         {
-            return "XRAY.entities." + asin + ".asc";
+            if (android)
+                return String.Format("XRAY.{0}.{1}_{2}.db", asin, databaseName, guid);
+            else
+                return "XRAY.entities." + asin + ".asc";
         }
 
         public int createXRAY()

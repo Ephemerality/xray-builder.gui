@@ -25,6 +25,7 @@ namespace XRayBuilderGUI
             chkSoftHyphen.Checked = XRayBuilderGUI.Properties.Settings.Default.ignoresofthyphen;
             chkUseNew.Checked = XRayBuilderGUI.Properties.Settings.Default.useNewVersion;
             txtOffset.Text = XRayBuilderGUI.Properties.Settings.Default.offset.ToString();
+            chkAndroid.Checked = XRayBuilderGUI.Properties.Settings.Default.android;
             if (txtUnpack.Text == "") txtUnpack.Text = "dist/kindleunpack.exe";
 
             System.Windows.Forms.ToolTip ToolTip1 = new System.Windows.Forms.ToolTip();
@@ -33,6 +34,7 @@ namespace XRayBuilderGUI
             ToolTip1.SetToolTip(txtOffset, "This offset will be applied to every book location (usually a negative number). Must be an integer.");
             ToolTip1.SetToolTip(chkSoftHyphen, "Ignore soft hyphens (Unicode U+00AD) while searching for terms. This may slow down the parsing process slightly.");
             ToolTip1.SetToolTip(chkUseNew, "Write the X-Ray file in the new format for Paperwhite 2 / Voyage firmware 5.6+. Massively slower than the normal build process and is still in alpha testing.");
+            ToolTip1.SetToolTip(chkAndroid, "Changes the naming convention of the X-Ray file for the Android Kindle app. Forces building with the new format.");
             this.TopMost = true;
         }
 
@@ -66,8 +68,20 @@ namespace XRayBuilderGUI
             XRayBuilderGUI.Properties.Settings.Default.saverawml = chkRaw.Checked;
             XRayBuilderGUI.Properties.Settings.Default.ignoresofthyphen = chkSoftHyphen.Checked;
             XRayBuilderGUI.Properties.Settings.Default.useNewVersion = chkUseNew.Checked;
+            XRayBuilderGUI.Properties.Settings.Default.android = chkAndroid.Checked;
             XRayBuilderGUI.Properties.Settings.Default.offset = offset;
             XRayBuilderGUI.Properties.Settings.Default.Save();
+        }
+
+        private void chkAndroid_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkAndroid.Checked == true)
+            {
+                chkUseNew.Checked = true;
+                chkUseNew.Enabled = false;
+            }
+            else
+                chkUseNew.Enabled = true;
         }
     }
 }

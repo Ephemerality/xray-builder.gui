@@ -41,11 +41,12 @@
             this.lblOffset = new System.Windows.Forms.Label();
             this.chkSoftHyphen = new System.Windows.Forms.CheckBox();
             this.chkUseNew = new System.Windows.Forms.CheckBox();
+            this.chkAndroid = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(181, 125);
+            this.btnSave.Location = new System.Drawing.Point(181, 143);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(75, 23);
             this.btnSave.TabIndex = 0;
@@ -164,11 +165,23 @@
             this.chkUseNew.Text = "Use New X-Ray Format";
             this.chkUseNew.UseVisualStyleBackColor = true;
             // 
+            // chkAndroid
+            // 
+            this.chkAndroid.AutoSize = true;
+            this.chkAndroid.Location = new System.Drawing.Point(316, 121);
+            this.chkAndroid.Name = "chkAndroid";
+            this.chkAndroid.Size = new System.Drawing.Size(103, 17);
+            this.chkAndroid.TabIndex = 23;
+            this.chkAndroid.Text = "Build for Android";
+            this.chkAndroid.UseVisualStyleBackColor = true;
+            this.chkAndroid.CheckedChanged += new System.EventHandler(this.chkAndroid_CheckedChanged);
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(477, 160);
+            this.ClientSize = new System.Drawing.Size(477, 172);
+            this.Controls.Add(this.chkAndroid);
             this.Controls.Add(this.chkUseNew);
             this.Controls.Add(this.chkSoftHyphen);
             this.Controls.Add(this.txtOffset);
@@ -207,5 +220,6 @@
         private System.Windows.Forms.Label lblOffset;
         private System.Windows.Forms.CheckBox chkSoftHyphen;
         private System.Windows.Forms.CheckBox chkUseNew;
+        private System.Windows.Forms.CheckBox chkAndroid;
     }
 }

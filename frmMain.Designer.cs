@@ -113,12 +113,12 @@
             // 
             // txtOutput
             // 
-            this.txtOutput.Location = new System.Drawing.Point(12, 110);
+            this.txtOutput.Location = new System.Drawing.Point(12, 108);
             this.txtOutput.Multiline = true;
             this.txtOutput.Name = "txtOutput";
             this.txtOutput.ReadOnly = true;
             this.txtOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtOutput.Size = new System.Drawing.Size(461, 280);
+            this.txtOutput.Size = new System.Drawing.Size(461, 284);
             this.txtOutput.TabIndex = 17;
             // 
             // prgBar
@@ -146,7 +146,7 @@
             this.groupBox1.Controls.Add(this.rdoShelfari);
             this.groupBox1.Location = new System.Drawing.Point(12, 55);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(77, 49);
+            this.groupBox1.Size = new System.Drawing.Size(77, 47);
             this.groupBox1.TabIndex = 20;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Source";
@@ -156,10 +156,10 @@
             this.rdoFile.AutoSize = true;
             this.rdoFile.Location = new System.Drawing.Point(9, 27);
             this.rdoFile.Name = "rdoFile";
-            this.rdoFile.Size = new System.Drawing.Size(66, 17);
+            this.rdoFile.Size = new System.Drawing.Size(41, 17);
             this.rdoFile.TabIndex = 1;
             this.rdoFile.TabStop = true;
-            this.rdoFile.Text = "XML File";
+            this.rdoFile.Text = "File";
             this.rdoFile.UseVisualStyleBackColor = true;
             this.rdoFile.CheckedChanged += new System.EventHandler(this.rdoSource_CheckedChanged);
             // 
@@ -188,11 +188,11 @@
             // 
             this.lblXMLFile.AutoSize = true;
             this.lblXMLFile.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblXMLFile.Location = new System.Drawing.Point(60, 36);
+            this.lblXMLFile.Location = new System.Drawing.Point(89, 35);
             this.lblXMLFile.Name = "lblXMLFile";
-            this.lblXMLFile.Size = new System.Drawing.Size(62, 16);
+            this.lblXMLFile.Size = new System.Drawing.Size(33, 16);
             this.lblXMLFile.TabIndex = 21;
-            this.lblXMLFile.Text = "XML File:";
+            this.lblXMLFile.Text = "File:";
             this.lblXMLFile.Visible = false;
             // 
             // btnBrowseXML

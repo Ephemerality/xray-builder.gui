@@ -42,6 +42,7 @@
             this.chkSoftHyphen = new System.Windows.Forms.CheckBox();
             this.chkUseNew = new System.Windows.Forms.CheckBox();
             this.chkAndroid = new System.Windows.Forms.CheckBox();
+            this.chkUTF8 = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnSave
@@ -168,6 +169,7 @@
             // chkAndroid
             // 
             this.chkAndroid.AutoSize = true;
+            this.chkAndroid.Enabled = false;
             this.chkAndroid.Location = new System.Drawing.Point(316, 121);
             this.chkAndroid.Name = "chkAndroid";
             this.chkAndroid.Size = new System.Drawing.Size(103, 17);
@@ -176,11 +178,22 @@
             this.chkAndroid.UseVisualStyleBackColor = true;
             this.chkAndroid.CheckedChanged += new System.EventHandler(this.chkAndroid_CheckedChanged);
             // 
+            // chkUTF8
+            // 
+            this.chkUTF8.AutoSize = true;
+            this.chkUTF8.Location = new System.Drawing.Point(187, 120);
+            this.chkUTF8.Name = "chkUTF8";
+            this.chkUTF8.Size = new System.Drawing.Size(99, 17);
+            this.chkUTF8.TabIndex = 24;
+            this.chkUTF8.Text = "Output in UTF8";
+            this.chkUTF8.UseVisualStyleBackColor = true;
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(477, 172);
+            this.Controls.Add(this.chkUTF8);
             this.Controls.Add(this.chkAndroid);
             this.Controls.Add(this.chkUseNew);
             this.Controls.Add(this.chkSoftHyphen);
@@ -221,5 +234,6 @@
         private System.Windows.Forms.CheckBox chkSoftHyphen;
         private System.Windows.Forms.CheckBox chkUseNew;
         private System.Windows.Forms.CheckBox chkAndroid;
+        private System.Windows.Forms.CheckBox chkUTF8;
     }
 }

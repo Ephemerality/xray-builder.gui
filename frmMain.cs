@@ -111,7 +111,7 @@ namespace XRayBuilderGUI
         }
         private void btnBrowseXML_Click(object sender, EventArgs e)
         {
-            txtXMLFile.Text = Functions.getFile(txtXMLFile.Text);
+            txtXMLFile.Text = Functions.getFile(txtXMLFile.Text, "XML files (*.xml)|*.xml|TXT files (*.txt)|*.txt|All files (*.*)|*.*");
         }
 
         private void btnSettings_Click(object sender, EventArgs e)
@@ -245,7 +245,7 @@ namespace XRayBuilderGUI
             }
             else
             {
-                using (StreamWriter streamWriter = new StreamWriter(newPath, false, Encoding.Default))
+                using (StreamWriter streamWriter = new StreamWriter(newPath, false, settings.utf8 ? Encoding.UTF8 :  Encoding.Default))
                 {
                     streamWriter.Write(ss.ToString());
                 }
@@ -299,7 +299,8 @@ namespace XRayBuilderGUI
 
         private void rdoSource_CheckedChanged(object sender, EventArgs e)
         {
-            if (((RadioButton)sender).Text == "Shelfari")
+            RadioButton source = (RadioButton)sender;
+            if (source.Text == "Shelfari")
             {
                 lblShelfari.Visible = !lblShelfari.Visible;
                 txtShelfari.Visible = !txtShelfari.Visible;

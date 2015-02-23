@@ -161,12 +161,27 @@ namespace XRayBuilderGUI
             {
                 if (!File.Exists(xmlFile))
                 {
-                    main.Log("Error opening XML file.");
+                    main.Log("Error opening file (" + xmlFile + ")");
                     return 1;
                 }
-                main.Log("Loading terms from XML file...");
-                terms = Functions.DeserializeList<Term>(xmlFile);
-                if (terms == null) return 1;
+                main.Log("Loading terms from file...");
+                string filetype = Path.GetExtension(xmlFile);
+                if (filetype == ".xml")
+                    terms = Functions.DeserializeList<Term>(xmlFile);
+                else if (filetype == ".txt")
+                {
+                    if (LoadTermsFromTXT(xmlFile) > 0)
+                    {
+                        main.Log("Error loading from text file.");
+                        return 1;
+                    }
+                }
+                else
+                {
+                    main.Log("Bad file type \"" + filetype + "\"");
+                    return 1;
+                }
+                if (terms == null || terms.Count == 0) return 1;
             }
             else
                 if (!GetShelfari())
@@ -188,7 +203,7 @@ namespace XRayBuilderGUI
             }
 
             if (skipShelfari)
-                main.Log("Terms found in XML:");
+                main.Log("Terms found in file:");
             else
                 main.Log("Terms found on Shelfari:");
             string tmp = "";
@@ -565,6 +580,46 @@ namespace XRayBuilderGUI
             return 0;
         }
 
+        private int LoadTermsFromTXT(string txtfile)
+        {
+            if (!File.Exists(txtfile)) return 1;
+            using (StreamReader streamReader = new StreamReader(txtfile, Encoding.UTF8))
+            {
+                int termID = 1;
+                int lineCount = 1;
+                terms.Clear();
+                while (!streamReader.EndOfStream)
+                {
+                    try
+                    {
+                        string temp = streamReader.ReadLine().ToLower(); //type
+                        lineCount++;
+                        if (temp == "") continue;
+                        if (temp != "character" && temp != "topic")
+                        {
+                            main.Log("Invalid term type \"" + temp + "\" on line " + lineCount);
+                            return 1;
+                        }
+                        Term newTerm = new Term();
+                        newTerm.type = temp;
+                        newTerm.termName = streamReader.ReadLine();
+                        newTerm.desc = streamReader.ReadLine();
+                        lineCount += 2;
+                        newTerm.matchCase = temp == "character" ? true : false;
+                        newTerm.descSrc = "shelfari";
+                        newTerm.id = termID++;
+                        terms.Add(newTerm);
+                    }
+                    catch (Exception ex)
+                    {
+                        main.Log("Failed to read from txt file: " + ex.Message);
+                        return 1;
+                    }
+                }
+            }
+            return 0;
+        }
+
         class Excerpt
         {
             public int id;
@@ -666,7 +721,7 @@ namespace XRayBuilderGUI
         public void saveChapters()
         {
             if (!Directory.Exists(Environment.CurrentDirectory + "\\ext\\")) Directory.CreateDirectory(Environment.CurrentDirectory + "\\ext\\");
-            using (StreamWriter streamWriter = new StreamWriter(Environment.CurrentDirectory + "\\ext\\" + asin + ".chapters", false, Encoding.Default))
+            using (StreamWriter streamWriter = new StreamWriter(Environment.CurrentDirectory + "\\ext\\" + asin + ".chapters", false, Encoding.UTF8))
             {
                 foreach (Chapter c in chapters)
                     streamWriter.WriteLine(c.name + "|" + c.start + "|" + c.end);
@@ -677,7 +732,7 @@ namespace XRayBuilderGUI
         {
             chapters = new List<Chapter>();
             if (!File.Exists(Environment.CurrentDirectory + "\\ext\\" + asin + ".chapters")) return false;
-            using (StreamReader streamReader = new StreamReader(Environment.CurrentDirectory + "\\ext\\" + asin + ".chapters", Encoding.Default))
+            using (StreamReader streamReader = new StreamReader(Environment.CurrentDirectory + "\\ext\\" + asin + ".chapters", Encoding.UTF8))
             {
                 while (!streamReader.EndOfStream)
                 {
@@ -693,7 +748,7 @@ namespace XRayBuilderGUI
         public void saveCharacters(string aliasFile)
         {
             if (!Directory.Exists(Environment.CurrentDirectory + "\\ext\\")) Directory.CreateDirectory(Environment.CurrentDirectory + "\\ext\\");
-            using (StreamWriter streamWriter = new StreamWriter(aliasFile, false, Encoding.Default))
+            using (StreamWriter streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8))
             {
                 foreach (Term c in terms)// if(c.type == "character")
                     streamWriter.WriteLine(c.termName + "|");
@@ -704,7 +759,7 @@ namespace XRayBuilderGUI
         {
             Dictionary<string, string[]> d = new Dictionary<string, string[]>();
             if (!File.Exists(aliasFile)) return;
-            using (StreamReader streamReader = new StreamReader(aliasFile, Encoding.Default))
+            using (StreamReader streamReader = new StreamReader(aliasFile, Encoding.UTF8))
             {
                 while (!streamReader.EndOfStream)
                 {

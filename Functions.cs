@@ -23,11 +23,11 @@ namespace XRayBuilderGUI
                 return defaultFolder;
         }
 
-        public static string getFile(string defaultFile)
+        public static string getFile(string defaultFile, string filter = "All files (*.*)|*.*")
         {
             OpenFileDialog f = new OpenFileDialog();
             if (defaultFile != "") f.InitialDirectory = Path.GetDirectoryName(defaultFile);
-            f.Filter = "All files (*.*)|*.*|All files (*.*)|*.*";
+            f.Filter = filter;
             //ff.FilterIndex = 2;
             f.RestoreDirectory = true;
             if (f.ShowDialog() == DialogResult.OK)
@@ -66,6 +66,7 @@ namespace XRayBuilderGUI
                     {
                         unpackInfo = reader1.ReadToEnd();
                     }
+                    process.Close();
                 }
             }
             catch (Exception ex)

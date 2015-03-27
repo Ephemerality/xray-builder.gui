@@ -559,6 +559,9 @@ namespace XRayBuilderGUI
                     sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", ent, e.id);
                 }
             }
+            main.Log("Writing entity_excerpt table...");
+            command = new SQLiteCommand(sql, db);
+            command.ExecuteNonQuery();
             main.prgBar.Value = main.prgBar.Maximum;
             Application.DoEvents();
             main.Log("Writing top mentions...");

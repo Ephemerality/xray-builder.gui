@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
@@ -12,6 +13,7 @@ using System.Text.RegularExpressions;
 using ExceptionReporting;
 using System.Threading;
 using System.Data.SQLite;
+using HtmlAgilityPack;
 
 namespace XRayBuilderGUI
 {
@@ -55,6 +57,15 @@ namespace XRayBuilderGUI
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            ToolTip ToolTip1 = new ToolTip();
+            ToolTip1.SetToolTip(btnBrowseMobi, "Open a Kindle book.");
+            ToolTip1.SetToolTip(btnBrowseOutput, "Open the default output directory.");
+            ToolTip1.SetToolTip(btnLink, "Open the Shelfari link in your default web browser.");
+            ToolTip1.SetToolTip(btnBrowseXML, "Open a supported alias file containg Characters and Topics.");
+            ToolTip1.SetToolTip(btnSearchShelfari, "Try to search for this book on Shelfari.");
+            ToolTip1.SetToolTip(btnShelfari, "Save Shelfari info to an XML file.");
+            ToolTip1.SetToolTip(btnKindleExtras, "Try to build the Author Profile and End Action files for this book.");
+
             this.DragEnter += frmMain_DragEnter;
             this.DragDrop += frmMain_DragDrop;
             Version dd = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
@@ -156,7 +167,7 @@ namespace XRayBuilderGUI
             //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML
             this.TopMost = true;
             List<string> results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
-            if (results.Count != 4)
+            if (results.Count != 6)
             {
                 Log(results[0]);
                 return;
@@ -251,9 +262,15 @@ namespace XRayBuilderGUI
                 }
             }
             Log("XRay file created successfully!\r\nSaved to " + newPath);
-            Directory.Delete(randomFile, true);
             this.TopMost = false;
-
+            try
+            {
+                Directory.Delete(randomFile, true);
+            }
+            catch (Exception ex)
+            {
+                Log("Error deleting temp directory: " + ex.Message);
+            }
             //frmXRay frm = new frmXRay(ss, results[3]);
             //frm.Show(this);
         }
@@ -306,9 +323,149 @@ namespace XRayBuilderGUI
                 txtShelfari.Visible = !txtShelfari.Visible;
                 lblXMLFile.Visible = !lblXMLFile.Visible;
                 txtXMLFile.Visible = !txtXMLFile.Visible;
+                txtShelfari.Visible = !txtShelfari.Visible;
                 btnBrowseXML.Visible = !btnBrowseXML.Visible;
-                btnSaveShelfari.Enabled = !btnSaveShelfari.Enabled;
+                btnShelfari.Enabled = !btnShelfari.Enabled;
+                btnLink.Visible = !btnLink.Visible;
             }
+        }
+        private void btnLink_Click(object sender, EventArgs e)
+        {
+            if (txtShelfari.Text.Trim().Length == 0)
+                MessageBox.Show("No Shelfari link was specified.", "Missing Shelfari Link");
+            else
+                Process.Start(txtShelfari.Text);
+        }
+
+        private void btnBrowseOutput_Click(object sender, EventArgs e)
+        {
+            if (!Directory.Exists(settings.outDir))
+            {
+                MessageBox.Show("Specified output directory does not exist. Please review the settings page.",
+                    "Output Directory Not found");
+                return;
+            }
+            else
+                Process.Start(settings.outDir);
+        }
+
+        private void btnSearchShelfari_Click(object sender, EventArgs e)
+        {
+            bool bookFoundShelfari = false;
+
+            if (!File.Exists(txtMobi.Text))
+            {
+                MessageBox.Show("Specified book was not found.", "Book Not Found");
+                return;
+            }
+            if (!File.Exists(settings.mobi_unpack))
+            {
+                MessageBox.Show("Kindleunpack was not found. Please review the settings page.", "Kindleunpack Not Found");
+                return;
+            }
+            if (!Directory.Exists(settings.outDir))
+            {
+                MessageBox.Show("Specified output directory does not exist. Please review the settings page.",
+                    "Output Directory Not found");
+                return;
+            }
+
+            //Create temp dir and ensure it exists
+            string randomFile = Functions.GetTempDirectory();
+            if (!Directory.Exists(randomFile))
+            {
+                MessageBox.Show("Temporary path not accessible for some reason.", "Temporary Directory Error");
+                return;
+            }
+
+            Log("Running Kindleunpack to get metadata...");
+
+            //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
+            //this.TopMost = true;
+            List<string> results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+            if (results.Count != 6)
+            {
+                Log(results[0]);
+                return;
+            }
+
+            try
+            {
+                Directory.Delete(randomFile, true);
+            }
+            catch (Exception ex)
+            {
+                Log("Error deleting temp directory: " + ex.Message);
+            }
+            // Added author name to log output
+            Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
+                    results[2], results[0], results[4], results[5], results[1]));
+
+            //Get Shelfari Search URL
+            var shelfariSearchUrl = @"http://www.shelfari.com/search/books?Author=" + results[4].Replace(" ", "%20") +
+                                    "&Title=" + results[5].Replace(" ", "%20"); // +"&Binding=Hardcover";
+
+            // Search book on Shelfari
+            Log("Searching for book on Shelfari...");
+            HtmlAgilityPack.HtmlDocument shelfariHtmlDoc = new HtmlAgilityPack.HtmlDocument();
+            CookieContainer jar = new CookieContainer();
+            using (var webClient = new WebClientEx(jar))
+            {
+                try
+                {
+                    using (var stream = webClient.OpenRead(shelfariSearchUrl))
+                    {
+                        shelfariHtmlDoc.Load(stream);
+                    }
+                    webClient.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    Log("Error searching Shelfari: " + ex.Message);
+                    return;
+                }
+            }
+
+            // Try to find book's page from Shelfari search
+            string shelfariBookUrl = "";
+            string bookSeries = "";
+            int index = 0;
+            List<string> listofthings = new List<string>();
+            List<string> listoflinks = new List<string>();
+            foreach (HtmlNode bookItems in shelfariHtmlDoc.DocumentNode.SelectNodes("//li[@class='item']/div[@class='text']"))
+            {
+                if (bookItems == null) continue;
+                listofthings.Clear();
+                listoflinks.Clear();
+                for (var i = 1; i < bookItems.ChildNodes.Count; i++)
+                {
+                    listofthings.Add(bookItems.ChildNodes[i].InnerText.Trim());
+                    listoflinks.Add(bookItems.ChildNodes[i].InnerHtml);
+                }
+                index = 0;
+                foreach (string line in listofthings)
+                {
+                    if (listofthings.Contains("(Author)") &&
+                        line.StartsWith(results[5], StringComparison.OrdinalIgnoreCase) &&
+                        listofthings.Contains(results[4]))
+                    {
+                        shelfariBookUrl = listoflinks[index].ToString();
+                        bookSeries = listofthings[0].ToString();
+                        shelfariBookUrl = Regex.Replace(shelfariBookUrl, "<a href=\"", "", RegexOptions.None);
+                        shelfariBookUrl = Regex.Replace(shelfariBookUrl, "\">.*", "", RegexOptions.None);
+                        Log("Book found on Shelfari!");
+                        Log(results[5] + " by " + results[4] + " (" + bookSeries + ")");
+                        txtShelfari.Text = shelfariBookUrl;
+                        txtShelfari.Refresh();
+                        Log("Shelfari URL updated!");
+                        bookFoundShelfari = true;
+                        break;
+                    }
+                    index++;
+                }
+            }
+            if (!bookFoundShelfari)
+                Log("Unable to find a Hardcover edition of this book on Shelfari!");
         }
 
         public void ExceptionHandler(Exception exception)

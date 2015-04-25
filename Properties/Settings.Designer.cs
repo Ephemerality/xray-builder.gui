@@ -178,5 +178,29 @@ namespace XRayBuilderGUI.Properties {
                 this["utf8"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool enableEdit {
+            get {
+                return ((bool)(this["enableEdit"]));
+            }
+            set {
+                this["enableEdit"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool useSubDirs {
+            get {
+                return ((bool)(this["useSubDirs"]));
+            }
+            set {
+                this["useSubDirs"] = value;
+            }
+        }
     }
 }

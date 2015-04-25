@@ -796,19 +796,19 @@ namespace XRayBuilderGUI
                 {
                     //Enable cookies on extended webclient
                     CookieContainer jar = new CookieContainer();
-                    using (WebClientEx client = new WebClientEx(jar))
+                    //using (WebClientEx client = new WebClientEx(jar))
+                    HttpDownloader client = new HttpDownloader(shelfariURL, jar, "", "");
+                    if (useSpoilers)
                     {
-                        if (useSpoilers)
-                        {
-                            //Grab book ID from url (search for 5 digits between slashes) and create spoiler cookie
-                            string bookID = Regex.Match(shelfariURL, @"\/\d{5}").Value.Substring(1, 5);
-                            Cookie spoilers = new Cookie("ShelfariBookWikiSession", "", "/", "www.shelfari.com");
-                            spoilers.Value = "{\"SpoilerShowAll\":true%2C\"SpoilerShowCharacters\":true%2C\"SpoilerBookId\":" + bookID + "%2C\"SpoilerShowPSS\":true%2C\"SpoilerShowQuotations\":true%2C\"SpoilerShowParents\":true%2C\"SpoilerShowThemes\":true}";
-                            jar.Add(spoilers);
-                        }
-                        shelfariHTML = client.DownloadString(shelfariURL);
-                        break;
+                        //Grab book ID from url (search for 5 digits between slashes) and create spoiler cookie
+                        string bookID = Regex.Match(shelfariURL, @"\/\d{5}").Value.Substring(1, 5);
+                        Cookie spoilers = new Cookie("ShelfariBookWikiSession", "", "/", "www.shelfari.com");
+                        spoilers.Value = "{\"SpoilerShowAll\":true%2C\"SpoilerShowCharacters\":true%2C\"SpoilerBookId\":" + bookID + "%2C\"SpoilerShowPSS\":true%2C\"SpoilerShowQuotations\":true%2C\"SpoilerShowParents\":true%2C\"SpoilerShowThemes\":true}";
+                        jar.Add(spoilers);
                     }
+                    //shelfariHTML = client.DownloadString(shelfariURL);
+                    shelfariHTML = client.GetPage();
+                    break;
                 }
                 catch
                 {

@@ -182,9 +182,9 @@ namespace XRayBuilderGUI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public string enableEdit {
+        public bool enableEdit {
             get {
-                return ((string)(this["enableEdit"]));
+                return ((bool)(this["enableEdit"]));
             }
             set {
                 this["enableEdit"] = value;
@@ -194,9 +194,9 @@ namespace XRayBuilderGUI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public string useSubDirs {
+        public bool useSubDirs {
             get {
-                return ((string)(this["useSubDirs"]));
+                return ((bool)(this["useSubDirs"]));
             }
             set {
                 this["useSubDirs"] = value;

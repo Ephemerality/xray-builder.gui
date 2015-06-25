@@ -796,6 +796,7 @@ namespace XRayBuilderGUI
                 {
                     //Enable cookies on extended webclient
                     CookieContainer jar = new CookieContainer();
+                    //using (WebClientEx client = new WebClientEx(jar))
                     HttpDownloader client = new HttpDownloader(shelfariURL, jar, "", "");
                     if (useSpoilers)
                     {
@@ -805,6 +806,7 @@ namespace XRayBuilderGUI
                         spoilers.Value = "{\"SpoilerShowAll\":true%2C\"SpoilerShowCharacters\":true%2C\"SpoilerBookId\":" + bookID + "%2C\"SpoilerShowPSS\":true%2C\"SpoilerShowQuotations\":true%2C\"SpoilerShowParents\":true%2C\"SpoilerShowThemes\":true}";
                         jar.Add(spoilers);
                     }
+                    //shelfariHTML = client.DownloadString(shelfariURL);
                     shelfariHTML = client.GetPage();
                     break;
                 }

@@ -41,10 +41,10 @@
     <Setting Name="utf8" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="enableEdit" Type="System.String" Scope="User">
+    <Setting Name="enableEdit" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="useSubDirs" Type="System.String" Scope="User">
+    <Setting Name="useSubDirs" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>

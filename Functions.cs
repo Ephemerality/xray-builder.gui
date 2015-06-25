@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Net;
 
 namespace XRayBuilderGUI
 {
@@ -104,6 +105,8 @@ namespace XRayBuilderGUI
             string databaseName = "";
             string uniqid = "";
             string asin = "";
+            string author = "";
+            string title = "";
             Match match = Regex.Match(unpackInfo, @"ASIN\s*(.*)");
             if (match.Success && match.Groups.Count > 1)
                 asin = match.Groups[1].Value.Replace("\r", "");
@@ -120,6 +123,13 @@ namespace XRayBuilderGUI
                     return output;
                 }
             }
+            match = Regex.Match(unpackInfo, @" Creator\s*(.*)");
+            if (match.Success && match.Groups.Count > 1)
+                author = match.Groups[1].Value.Replace("\r", "");
+            match = Regex.Match(unpackInfo, @" Updated_Title\s*(.*)");
+            if (match.Success && match.Groups.Count > 1)
+                title = match.Groups[1].Value.Replace("\r", "");
+
             //Attempt to get database name from the mobi file.
             //If mobi_unpack ran successfully, then hopefully this will always be valid?
             byte[] dbinput = new byte[32];
@@ -155,6 +165,8 @@ namespace XRayBuilderGUI
             output.Add(uniqid);
             output.Add(databaseName);
             output.Add(rawML);
+            output.Add(author);
+            output.Add(title);
             return output;
         }
 

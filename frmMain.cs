@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+using System.Data.SQLite;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Windows.Forms;
-using System.IO;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
-using ExceptionReporting;
 using System.Threading;
-using System.Data.SQLite;
+using System.Windows.Forms;
+
+using ExceptionReporting;
 using HtmlAgilityPack;
 
 namespace XRayBuilderGUI
@@ -465,7 +463,7 @@ namespace XRayBuilderGUI
                 }
             }
             if (!bookFoundShelfari)
-                Log("Unable to find a Hardcover edition of this book on Shelfari!");
+                Log("Unable to find this book on Shelfari!");
         }
 
         public void ExceptionHandler(Exception exception)
@@ -473,7 +471,7 @@ namespace XRayBuilderGUI
             ExceptionReporter reporter = new ExceptionReporter();
             reporter.ReadConfig();
             reporter.Config.ShowSysInfoTab = false;
-            reporter.Config.EmailReportAddress = "revensoftware@gmail.com";
+            reporter.Config.EmailReportAddress = "revensoftware+xraybuilder@gmail.com";
             reporter.Config.ShowAssembliesTab = false;
             reporter.Config.ShowConfigTab = false;
 

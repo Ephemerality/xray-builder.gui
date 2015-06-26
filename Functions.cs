@@ -10,7 +10,6 @@ using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
-using System.Net;
 
 namespace XRayBuilderGUI
 {

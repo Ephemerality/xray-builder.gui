@@ -57,7 +57,6 @@
             this.chkAmazonUSA = new System.Windows.Forms.CheckBox();
             this.gbSite = new System.Windows.Forms.GroupBox();
             this.lblVersion = new System.Windows.Forms.Label();
-            this.btnLogs = new System.Windows.Forms.Button();
             this.gbDirectories.SuspendLayout();
             this.gbXray.SuspendLayout();
             this.gbDetails.SuspendLayout();
@@ -336,7 +335,6 @@
             // 
             this.gbSite.Controls.Add(this.chkAmazonUSA);
             this.gbSite.Controls.Add(this.chkAmazonUK);
-            this.gbSite.Enabled = false;
             this.gbSite.Location = new System.Drawing.Point(332, 230);
             this.gbSite.Name = "gbSite";
             this.gbSite.Size = new System.Drawing.Size(110, 86);
@@ -348,28 +346,17 @@
             // 
             this.lblVersion.AutoSize = true;
             this.lblVersion.ForeColor = System.Drawing.SystemColors.ControlDark;
-            this.lblVersion.Location = new System.Drawing.Point(84, 327);
+            this.lblVersion.Location = new System.Drawing.Point(9, 327);
             this.lblVersion.Name = "lblVersion";
             this.lblVersion.Size = new System.Drawing.Size(115, 13);
             this.lblVersion.TabIndex = 29;
             this.lblVersion.Text = "X-ray Builder GUI vx.xx";
-            // 
-            // btnLogs
-            // 
-            this.btnLogs.Location = new System.Drawing.Point(12, 322);
-            this.btnLogs.Name = "btnLogs";
-            this.btnLogs.Size = new System.Drawing.Size(63, 23);
-            this.btnLogs.TabIndex = 30;
-            this.btnLogs.Text = "Logs";
-            this.btnLogs.UseVisualStyleBackColor = true;
-            this.btnLogs.Click += new System.EventHandler(this.btnLogs_Click);
             // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(454, 356);
-            this.Controls.Add(this.btnLogs);
             this.Controls.Add(this.lblVersion);
             this.Controls.Add(this.gbSite);
             this.Controls.Add(this.gbDetails);
@@ -428,7 +415,6 @@
         private System.Windows.Forms.Label lblVersion;
         private System.Windows.Forms.CheckBox chkEnableEdit;
         private System.Windows.Forms.CheckBox chkSubDirectories;
-        private System.Windows.Forms.Button btnLogs;
         private System.Windows.Forms.CheckBox chkUTF8;
     }
 }

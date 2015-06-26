@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
 using System.Windows.Forms;
 
 namespace XRayBuilderGUI
@@ -31,7 +25,13 @@ namespace XRayBuilderGUI
             chkUTF8.Checked = XRayBuilderGUI.Properties.Settings.Default.utf8;
             chkEnableEdit.Checked = XRayBuilderGUI.Properties.Settings.Default.enableEdit;
             chkSubDirectories.Checked = XRayBuilderGUI.Properties.Settings.Default.useSubDirs;
+            chkAmazonUK.Checked = XRayBuilderGUI.Properties.Settings.Default.amazonUK;
             if (txtUnpack.Text == "") txtUnpack.Text = "dist/kindleunpack.exe";
+
+            Version dd = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            string xrayversion = dd.Major.ToString() + "." + dd.Minor.ToString() +
+                dd.Build.ToString() + "." + dd.Revision.ToString();
+            lblVersion.Text = "X-ray Builder GUI v" + xrayversion;
 
             System.Windows.Forms.ToolTip ToolTip1 = new System.Windows.Forms.ToolTip();
             ToolTip1.SetToolTip(chkRaw, "Save the .rawml (raw markup) of the book in the output directory so you can review it.");
@@ -46,7 +46,6 @@ namespace XRayBuilderGUI
             ToolTip1.SetToolTip(chkAmazonUK, "Search Amazon.co.uk first, use Amazon.com as fallback.\r\n(Amazon.com is used if Amazon.co.uk is not selected.)");
             ToolTip1.SetToolTip(chkEnableEdit, "Open Notepad to enable editing of detected Chapters\r\nand Aliases before final X-Ray creation.");
             ToolTip1.SetToolTip(chkSubDirectories, "Save generated files to an \"Author - Book\" subdirectory within the defined output directory.");
-            ToolTip1.SetToolTip(btnLogs, "Open the log files directory.");
             this.TopMost = true;
         }
 
@@ -58,18 +57,6 @@ namespace XRayBuilderGUI
         private void btnBrowseOut_Click(object sender, EventArgs e)
         {
             txtOut.Text = Functions.getDir(txtOut.Text);
-        }
-
-        private void btnLogs_Click(object sender, EventArgs e)
-        {
-            if (!Directory.Exists(Environment.CurrentDirectory + @"\log"))
-            {
-                MessageBox.Show("Log directory does not exist.", "Logs Directory Not found");
-                return;
-            }
-            else
-                this.TopMost = false;
-            Process.Start(Environment.CurrentDirectory + @"\log");
         }
 
         private void btnSave_Click(object sender, EventArgs e)

@@ -202,5 +202,17 @@ namespace XRayBuilderGUI.Properties {
                 this["useSubDirs"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool amazonUK {
+            get {
+                return ((bool)(this["amazonUK"]));
+            }
+            set {
+                this["amazonUK"] = value;
+            }
+        }
     }
 }

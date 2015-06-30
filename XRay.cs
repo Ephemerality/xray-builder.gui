@@ -1,6 +1,6 @@
-/*   Builds an X-Ray file to be used on the Amazon Kindle
+/*  Builds an X-Ray file to be used on the Amazon Kindle
 *   Original xray builder by shinew, http://www.mobileread.com/forums/showthread.php?t=157770 , http://www.xunwang.me/xray/
-*   
+*
 *   Copyright (C) 2014 Ephemerality <Nick Niemi - ephemeral.vilification@gmail.com>
 *
 *   This program is free software: you can redistribute it and/or modify
@@ -21,40 +21,40 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Net;
-using System.IO;
-using HtmlAgilityPack;
-using System.Diagnostics;
 using System.Windows.Forms;
 using System.Xml.Serialization;
-using System.Data.SQLite;
+using HtmlAgilityPack;
 
 namespace XRayBuilderGUI
 {
     public class XRay
     {
-        string shelfariURL = "";
-        string xmlFile = "";
-        string databaseName = "";
-        string guid = "";
-        string asin = "";
-        string version = "1";
-        string aliaspath = "";
-        public List<Term> terms = new List<Term>(100);
-        List<Chapter> chapters = new List<Chapter>();
-        List<Excerpt> excerpts = new List<Excerpt>();
-        long srl = 0;
-        long erl = 0;
-        bool shortEx = true;
-        bool useSpoilers = false;
-        bool unattended = false;
-        bool skipShelfari = false;
-        int locOffset = 0;
-        frmMain main;
-        
+        private string shelfariURL = "";
+        private string xmlFile = "";
+        private string databaseName = "";
+        private string _guid = "";
+        private string asin = "";
+        private string version = "1";
+        private string aliaspath = "";
+        public List<Term> Terms = new List<Term>(100);
+        private List<Chapter> _chapters = new List<Chapter>();
+        private List<Excerpt> excerpts = new List<Excerpt>();
+        private long _srl;
+        private long _erl;
+        private bool _shortEx = true;
+        private bool useSpoilers;
+        private bool unattended;
+        private bool skipShelfari;
+        private int locOffset;
+
+        private bool enableEdit = Properties.Settings.Default.enableEdit;
+        private frmMain main;
 
         public XRay()
         {
@@ -69,7 +69,8 @@ namespace XRayBuilderGUI
             this.main = frm;
         }
 
-        public XRay(string shelfari, string db, string guid, string asin, frmMain frm, bool useSpoilers = false, int locOffset = 0, string aliaspath = "", bool unattended = false)
+        public XRay(string shelfari, string db, string guid, string asin, frmMain frm, bool useSpoilers = false,
+            int locOffset = 0, string aliaspath = "", bool unattended = false)
         {
             if (shelfari == "" || db == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
@@ -78,7 +79,7 @@ namespace XRayBuilderGUI
                 shelfari = "http://" + shelfari;
             this.shelfariURL = shelfari;
             this.databaseName = db;
-            this.guid = guid;
+            this._guid = guid;
             this.asin = asin;
             this.useSpoilers = useSpoilers;
             this.locOffset = locOffset;
@@ -86,13 +87,15 @@ namespace XRayBuilderGUI
             this.unattended = unattended;
             this.main = frm;
         }
-        public XRay(string xml, string db, string guid, string asin, frmMain frm, bool useSpoilers = false, int locOffset = 0, string aliaspath = "")
+
+        public XRay(string xml, string db, string guid, string asin, frmMain frm, bool useSpoilers = false,
+            int locOffset = 0, string aliaspath = "")
         {
             if (xml == "" || db == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
             this.xmlFile = xml;
             this.databaseName = db;
-            this.guid = guid;
+            this._guid = guid;
             this.asin = asin;
             this.useSpoilers = useSpoilers;
             this.locOffset = locOffset;
@@ -102,12 +105,12 @@ namespace XRayBuilderGUI
             this.skipShelfari = true;
         }
 
-        public int saveXML(string outfile)
+        public int SaveXml(string outfile)
         {
             if (!GetShelfari())
                 return 1;
 
-            Functions.Save<List<Term>>(terms, outfile);
+            Functions.Save<List<Term>>(Terms, outfile);
             return 0;
         }
 
@@ -119,38 +122,42 @@ namespace XRayBuilderGUI
             string xrayversion = dd.Major.ToString() + "." + dd.Minor.ToString() + dd.Build.ToString();
             //Insert creation date... seems useful?
             string date = DateTime.Now.ToString("MM/dd/yy HH:mm:ss");
-            //If there are no chapters built (someone only ran createXRAY), just use the default version
-            if (chapters.Count > 0)
-                return String.Format(@"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{8}"",""created"":""{9}"",""terms"":[{4}],""chapters"":[{5}],""assets"":{{}},""srl"":{6},""erl"":{7}}}",
-                    asin, databaseName, guid, version, string.Join<Term>(",", terms), string.Join<Chapter>(",", chapters), srl, erl, xrayversion, date);
+            //If there are no chapters built (someone only ran create X-Ray), just use the default version
+            if (_chapters.Count > 0)
+                return
+                    String.Format(
+                        @"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{8}"",""created"":""{9}"",""terms"":[{4}],""chapters"":[{5}],""assets"":{{}},""srl"":{6},""erl"":{7}}}",
+                        asin, databaseName, _guid, version, string.Join<Term>(",", Terms),
+                        string.Join<Chapter>(",", _chapters), _srl, _erl, xrayversion, date);
             else
             {
-                return String.Format(@"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{5}"",""created"":""{6}"",""terms"":[{4}],""chapters"":[{{""name"":null,""start"":1,""end"":9999999}}]}}",
-                    asin, databaseName, guid, version, string.Join<Term>(",", terms), xrayversion, date);
+                return
+                    String.Format(
+                        @"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{5}"",""created"":""{6}"",""terms"":[{4}],""chapters"":[{{""name"":null,""start"":1,""end"":9999999}}]}}",
+                        asin, databaseName, _guid, version, string.Join<Term>(",", Terms), xrayversion, date);
             }
         }
 
-        public string getXRayName(bool android = false)
+        public string GetXRayName(bool android = false)
         {
             if (android)
-                return String.Format("XRAY.{0}.{1}_{2}.db", asin, databaseName, guid);
+                return String.Format("XRAY.{0}.{1}_{2}.db", asin, databaseName, _guid);
             else
                 return "XRAY.entities." + asin + ".asc";
         }
 
-        public int createXRAY()
+        public int CreateXray()
         {
-
             //Process GUID. If in decimal form, convert to hex.
-            if (Regex.IsMatch(guid, "/[a-zA-Z]/"))
-                guid = guid.ToUpper();
+            if (Regex.IsMatch(_guid, "/[a-zA-Z]/"))
+                _guid = _guid.ToUpper();
             else
             {
                 long guidDec;
-                long.TryParse(guid, out guidDec);
-                guid = guidDec.ToString("X");
+                long.TryParse(_guid, out guidDec);
+                _guid = guidDec.ToString("X");
             }
-            if (guid == "0")
+            if (_guid == "0")
             {
                 main.Log("Something bad happened while converting the GUID.");
                 return 1;
@@ -167,10 +174,10 @@ namespace XRayBuilderGUI
                 main.Log("Loading terms from file...");
                 string filetype = Path.GetExtension(xmlFile);
                 if (filetype == ".xml")
-                    terms = Functions.DeserializeList<Term>(xmlFile);
+                    Terms = Functions.DeserializeList<Term>(xmlFile);
                 else if (filetype == ".txt")
                 {
-                    if (LoadTermsFromTXT(xmlFile) > 0)
+                    if (LoadTermsFromTxt(xmlFile) > 0)
                     {
                         main.Log("Error loading from text file.");
                         return 1;
@@ -181,11 +188,10 @@ namespace XRayBuilderGUI
                     main.Log("Bad file type \"" + filetype + "\"");
                     return 1;
                 }
-                if (terms == null || terms.Count == 0) return 1;
+                if (Terms == null || Terms.Count == 0) return 1;
             }
-            else
-                if (!GetShelfari())
-                    return 1;
+            else if (!GetShelfari())
+                return 1;
 
             //Export list of Shelfari characters to a file to make it easier to create aliases or import the modified aliases if they exist
             //Could potentially just attempt to automate the creation of aliases, but in some cases it is very subjective...
@@ -193,12 +199,12 @@ namespace XRayBuilderGUI
             //Other characters have one name on Shelfari but can have completely different names within the book
             string aliasFile;
             if (aliaspath == "")
-                aliasFile = Environment.CurrentDirectory + "\\ext\\" + asin + ".aliases";
+                aliasFile = Environment.CurrentDirectory + @"\ext\" + asin + ".aliases";
             else
                 aliasFile = aliaspath;
             if (!File.Exists(aliasFile))
             {
-                saveCharacters(aliasFile);
+                SaveCharacters(aliasFile);
                 main.Log(String.Format("Characters exported to {0} for adding aliases.", aliasFile));
             }
 
@@ -207,21 +213,27 @@ namespace XRayBuilderGUI
             else
                 main.Log("Terms found on Shelfari:");
             string tmp = "";
-            int termID = 1;
-            foreach (Term t in terms)
+            int termId = 1;
+            foreach (Term t in Terms)
             {
-                tmp += t.termName + ", ";
-                t.id = termID++;
+                tmp += t.TermName + ", ";
+                t.Id = termId++;
             }
             main.Log(tmp);
 
-            if (!unattended)
+            if (!unattended && enableEdit)
             {
-                if(DialogResult.Yes == MessageBox.Show(main, "Terms have been exported to an alias file or already exist in that file. Would you like to open the file in notepad for editing?", "Aliases", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
+                if (DialogResult.Yes ==
+                    MessageBox.Show(main,
+                        "Terms have been exported to an alias file or already exist in that file. Would you like to open the file in notepad for editing?",
+                        "Aliases",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question,
+                        MessageBoxDefaultButton.Button2))
                 {
-                    main.TopMost = false;
+                    //main.TopMost = false;
                     Functions.RunNotepad(aliasFile);
-                    main.TopMost = true;
+                    //main.TopMost = true;
                 }
             }
             //Load the aliases now that we know they exist
@@ -229,19 +241,19 @@ namespace XRayBuilderGUI
                 main.Log("Aliases file not found.");
             else
             {
-                loadAliases(aliasFile);
+                LoadAliases(aliasFile);
                 main.Log("Character aliases read from " + aliasFile + ".");
             }
             return 0;
         }
 
-        public int expandFromRawML(string rawML, bool ignoreSoftHypen = false, bool shortEx = true)
+        public int ExpandFromRawMl(string rawMl, bool ignoreSoftHypen = false, bool shortEx = true)
         {
-            int excerptID = 0;
-            this.shortEx = shortEx;
+            int excerptId = 0;
+            this._shortEx = shortEx;
             HtmlAgilityPack.HtmlDocument web = new HtmlAgilityPack.HtmlDocument();
             string readContents;
-            using (StreamReader streamReader = new StreamReader(rawML, Encoding.Default))
+            using (StreamReader streamReader = new StreamReader(rawMl, Encoding.Default))
             {
                 readContents = streamReader.ReadToEnd();
             }
@@ -249,79 +261,101 @@ namespace XRayBuilderGUI
             //if (web.ParseErrors != null && web.ParseErrors.Count() > 0)
             //    web = web;
             //Similar to aliases, if chapters definition exists, load it. Otherwise, attempt to build it from the book
-            string chapterFile = Environment.CurrentDirectory + "\\ext\\" + asin + ".chapters";
+            string chapterFile = Environment.CurrentDirectory + @"\ext\" + asin + ".chapters";
             if (File.Exists(chapterFile))
             {
-                if(loadChapters())
-                    main.Log(String.Format("Chapters read from {0}.\r\nDelete this file if you want chapters built automatically.", chapterFile));
+                if (LoadChapters())
+                    main.Log(
+                        String.Format(
+                            "Chapters read from {0}.\r\nDelete this file if you want chapters built automatically.",
+                            chapterFile));
                 else
-                    main.Log(String.Format("Failed to read chapters from {0}.\r\nFile is missing or not formatted correctly.", chapterFile));
+                    main.Log(
+                        String.Format(
+                            "Failed to read chapters from {0}.\r\nFile is missing or not formatted correctly.",
+                            chapterFile));
             }
             else
             {
                 string leadingZeros = @"^0+(?=\d)";
-                chapters.Clear();
+                _chapters.Clear();
                 //Find table of contents, using case-insensitive search
-                HtmlNode toc = web.DocumentNode.SelectSingleNode("//reference[translate(@title,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='TABLE OF CONTENTS']");
+                HtmlNode toc =
+                    web.DocumentNode.SelectSingleNode(
+                        "//reference[translate(@title,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='TABLE OF CONTENTS']");
                 if (toc != null)
                 {
                     int tocloc = Convert.ToInt32(Regex.Replace(toc.GetAttributeValue("filepos", ""), leadingZeros, ""));
                     //string tochtml = readContents.Substring(readContents.IndexOf("<p", tocloc), readContents.IndexOf("<mbp:pagebreak/>", tocloc + 1) - tocloc);
-                    string tochtml = readContents.Substring(tocloc, readContents.IndexOf("<mbp:pagebreak/>", tocloc + 1) - tocloc);
+                    string tochtml = readContents.Substring(tocloc,
+                        readContents.IndexOf("<mbp:pagebreak/>", tocloc + 1) - tocloc);
                     HtmlAgilityPack.HtmlDocument tocdoc = new HtmlAgilityPack.HtmlDocument();
                     tocdoc.LoadHtml(tochtml);
                     HtmlNodeCollection tocnodes = tocdoc.DocumentNode.SelectNodes("//a");
                     foreach (HtmlNode chapter in tocnodes)
                     {
                         if (chapter.InnerHtml == "") continue;
-                        int filepos = Convert.ToInt32(Regex.Replace(chapter.GetAttributeValue("filepos", "0"), leadingZeros, ""));
-                        if (chapters.Count > 0)
+                        int filepos =
+                            Convert.ToInt32(Regex.Replace(chapter.GetAttributeValue("filepos", "0"), leadingZeros, ""));
+                        if (_chapters.Count > 0)
                         {
-                            chapters[chapters.Count - 1].end = filepos;
-                            if (chapters[chapters.Count - 1].start > filepos) chapters.RemoveAt(chapters.Count - 1); //remove broken chapters
+                            _chapters[_chapters.Count - 1].End = filepos;
+                            if (_chapters[_chapters.Count - 1].start > filepos)
+                                _chapters.RemoveAt(_chapters.Count - 1); //remove broken chapters
                         }
-                        chapters.Add(new Chapter(chapter.InnerText, filepos, readContents.Length));
+                        _chapters.Add(new Chapter(chapter.InnerText, filepos, readContents.Length));
                     }
                 }
                 //Built chapters list is saved for manual editing
-                if (chapters.Count > 0)
+                if (_chapters.Count > 0)
                 {
-                    saveChapters();
+                    SaveChapters();
                     main.Log(String.Format("Chapters exported to {0} for manual editing.", chapterFile));
                 }
                 else
-                    main.Log(String.Format("No chapters detected.\r\nYou can create a file at {0} if you want to define chapters manually.", chapterFile));
+                    main.Log(
+                        String.Format(
+                            "No chapters detected.\r\nYou can create a file at {0} if you want to define chapters manually.",
+                            chapterFile));
             }
 
-            if (DialogResult.Yes == MessageBox.Show("Would you like to open the chapters file in notepad for editing?", "Chapters", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
-            {
-                main.TopMost = false;
-                Functions.RunNotepad(chapterFile);
-                main.TopMost = true;
-                chapters.Clear();
-                if (loadChapters())
-                    main.Log("Reloaded chapters from edited file.");
-                else
-                    main.Log(String.Format("Failed to reload chapters from {0}.\r\nFile is missing or not formatted correctly.", chapterFile));
-            }
+            if (enableEdit)
+                if (DialogResult.Yes ==
+                    MessageBox.Show("Would you like to open the chapters file in notepad for editing?", "Chapters",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
+                {
+                    //main.TopMost = false;
+                    Functions.RunNotepad(chapterFile);
+                    //main.TopMost = true;
+                    _chapters.Clear();
+                    if (LoadChapters())
+                        main.Log("Reloaded chapters from edited file.");
+                    else
+                        main.Log(
+                            String.Format(
+                                "Failed to reload chapters from {0}.\r\nFile is missing or not formatted correctly.",
+                                chapterFile));
+                }
 
             //If no chapters were found, add a default chapter that spans the entire book
             //Define srl and erl so "progress bar" shows up correctly
-            if (chapters.Count == 0)
+            if (_chapters.Count == 0)
             {
-                long len = (new FileInfo(rawML)).Length;
-                chapters.Add(new Chapter("", 1, len));
-                srl = 1;
-                erl = len;
-            } else {
+                long len = (new FileInfo(rawMl)).Length;
+                _chapters.Add(new Chapter("", 1, len));
+                _srl = 1;
+                _erl = len;
+            }
+            else
+            {
                 //Run through all chapters and take the highest value, in case some chapters can be defined in individual chapters and parts.
                 //EG. Part 1 includes chapters 1-6, Part 2 includes chapters 7-12.
-                srl = chapters[0].start;
+                _srl = _chapters[0].start;
                 main.Log("Found chapters:");
-                foreach (Chapter c in chapters)
+                foreach (Chapter c in _chapters)
                 {
-                    if (c.end > erl) erl = c.end;
-                    main.Log(String.Format("{0} | start: {1} | end: {2}", c.name, c.start, c.end));
+                    if (c.End > _erl) _erl = c.End;
+                    main.Log(String.Format("{0} | start: {1} | end: {2}", c.name, c.start, c.End));
                 }
             }
 
@@ -333,9 +367,9 @@ namespace XRayBuilderGUI
             main.prgBar.Maximum = nodes.Count;
             for (int i = 0; i < nodes.Count; i++)
             {
-                if (main.exiting) return 1;
+                if (main.Exiting) return 1;
                 main.prgBar.Value = (i + 1);
-                if(((i + 1) % 5) == 0) Application.DoEvents();
+                if (((i + 1)%5) == 0) Application.DoEvents();
 
                 HtmlNode node = nodes[i];
                 if (node.FirstChild == null) continue; //If the inner HTML is just empty, skip the paragraph!
@@ -346,7 +380,7 @@ namespace XRayBuilderGUI
                     main.Log("There was an error locating the paragraph within the book content.");
                     return 1;
                 }
-                if (location < srl || location > erl) continue; //Skip paragraph if outside chapter range
+                if (location < _srl || location > _erl) continue; //Skip paragraph if outside chapter range
                 string noSoftHypen = "";
                 if (ignoreSoftHypen)
                 {
@@ -358,24 +392,28 @@ namespace XRayBuilderGUI
                     noSoftHypen = noSoftHypen.Replace("&#173;", "");
                     noSoftHypen = noSoftHypen.Replace("&#0173;", "");
                 }
-                foreach (Term character in terms)
+                foreach (Term character in Terms)
                 {
                     //Search for character name and aliases in the html-less text. If failed, try in the HTML for rare situations.
                     //TODO: Improve location searching as IndexOf will not work if book length exceeds 2,147,483,647...
                     //If soft hyphen ignoring is turned on, also search hyphen-less text.
-                    List<string> search = character.aliases.ToList<string>();
-                    search.Insert(0, character.termName);
-                    if ((character.matchCase && (search.Any(node.InnerText.Contains) || search.Any(node.InnerHtml.Contains)))
-                        || (!character.matchCase && (search.Any(node.InnerText.ContainsIgnorecase) || search.Any(node.InnerHtml.ContainsIgnorecase)))
-                        || (ignoreSoftHypen && (character.matchCase && search.Any(noSoftHypen.Contains))
-                            || (!character.matchCase && search.Any(noSoftHypen.ContainsIgnorecase))))
+                    List<string> search = character.Aliases.ToList<string>();
+                    search.Insert(0, character.TermName);
+                    if ((character.MatchCase &&
+                         (search.Any(node.InnerText.Contains) || search.Any(node.InnerHtml.Contains)))
+                        ||
+                        (!character.MatchCase &&
+                         (search.Any(node.InnerText.ContainsIgnorecase) || search.Any(node.InnerHtml.ContainsIgnorecase)))
+                        || (ignoreSoftHypen && (character.MatchCase && search.Any(noSoftHypen.Contains))
+                            || (!character.MatchCase && search.Any(noSoftHypen.ContainsIgnorecase))))
                     {
                         int locHighlight = -1;
                         int lenHighlight = -1;
                         //Search html for the matching term out of all aliases
                         foreach (string s in search)
                         {
-                            int index = node.InnerHtml.IndexOf(s, character.matchCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
+                            int index = node.InnerHtml.IndexOf(s,
+                                character.MatchCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
                             if (index >= 0)
                             {
                                 locHighlight = index;
@@ -392,17 +430,19 @@ namespace XRayBuilderGUI
                             {
                                 List<string> patterns = new List<string>();
                                 string pattern;
-                                string patternHTML = "(?:<[^>]*>)*"; //Match HTML tags -- provided there's nothing malformed
+                                string patternHTML = "(?:<[^>]*>)*";
+                                //Match HTML tags -- provided there's nothing malformed
                                 string patternSoftHypen = "(\u00C2\u00AD|&shy;|&#173;|&#xad;|&#0173;|&#x00AD;)*";
-                                pattern = string.Format("{0}{1}{0}", patternHTML, string.Join(patternHTML + patternSoftHypen, Regex.Unescape(s).ToCharArray()));
-                                if (character.matchCase)
+                                pattern = string.Format("{0}{1}{0}", patternHTML,
+                                    string.Join(patternHTML + patternSoftHypen, Regex.Unescape(s).ToCharArray()));
+                                if (character.MatchCase)
                                     pattern += "(?=[^a-zA-Z])";
                                 patterns.Add(pattern);
                                 bool found = false;
                                 foreach (string pat in patterns)
                                 {
                                     Match match;
-                                    if (character.matchCase)
+                                    if (character.MatchCase)
                                         match = Regex.Match(node.InnerHtml, pat);
                                     else
                                         match = Regex.Match(node.InnerHtml, pat, RegexOptions.IgnoreCase);
@@ -419,7 +459,10 @@ namespace XRayBuilderGUI
                         }
                         if (locHighlight < 0) //something went wrong
                         {
-                            main.Log(string.Format("Something went wrong while searching for start of highlight.\nWas looking for (or one of the aliases of): {0}\nSearching in: {1}", character.termName, node.InnerHtml));
+                            main.Log(
+                                string.Format(
+                                    "Something went wrong while searching for start of highlight.\nWas looking for (or one of the aliases of): {0}\nSearching in: {1}",
+                                    character.TermName, node.InnerHtml));
                             continue;
                         }
 
@@ -441,7 +484,8 @@ namespace XRayBuilderGUI
                             while ((start > -1) && (at > -1))
                             {
                                 //TODO: Match more sentence-endings. For whatever reason, couldn't get regex working.
-                                at = node.InnerHtml.LastIndexOf(". ", start); //Any(new char[] { '.', '?', '!' }, start, start);
+                                at = node.InnerHtml.LastIndexOf(". ", start);
+                                //Any(new char[] { '.', '?', '!' }, start, start);
                                 //at += Regex.Match(node.InnerHtml.Substring(at + 1), "\\S").Index;
                                 if (at > -1)
                                 {
@@ -461,23 +505,25 @@ namespace XRayBuilderGUI
                             //Only add new locs if shorter excerpt was found
                             if (newLoc >= 0)
                             {
-                                character.locs.Add(String.Format("[{0},{1},{2},{3}]", newLoc + locOffset, newLenQuote, newLocHighlight, lenHighlight));
+                                character.Locs.Add(String.Format("[{0},{1},{2},{3}]", newLoc + locOffset, newLenQuote,
+                                    newLocHighlight, lenHighlight));
                                 continue;
                             }
                         }
 
-                        character.locs.Add(String.Format("[{0},{1},{2},{3}]", location + locOffset, lenQuote, locHighlight, lenHighlight));
-                        character.occurrences.Add(new int[] { location + locOffset + locHighlight, lenHighlight });
+                        character.Locs.Add(String.Format("[{0},{1},{2},{3}]", location + locOffset, lenQuote,
+                            locHighlight, lenHighlight));
+                        character.Occurrences.Add(new int[] {location + locOffset + locHighlight, lenHighlight});
                         List<Excerpt> exCheck = excerpts.Where(t => t.start.Equals(location + locOffset)).ToList();
                         if (exCheck.Count > 0)
                         {
-                            if (!exCheck[0].related_entities.Contains(character.id))
-                                exCheck[0].related_entities.Add(character.id);
+                            if (!exCheck[0].related_entities.Contains(character.Id))
+                                exCheck[0].related_entities.Add(character.Id);
                         }
                         else
                         {
-                            Excerpt newExcerpt = new Excerpt(excerptID++, location + locOffset, lenQuote);
-                            newExcerpt.related_entities.Add(character.id);
+                            Excerpt newExcerpt = new Excerpt(excerptId++, location + locOffset, lenQuote);
+                            newExcerpt.related_entities.Add(character.Id);
                             excerpts.Add(newExcerpt);
                         }
                         //Console.WriteLine(node.OuterHtml);
@@ -487,15 +533,18 @@ namespace XRayBuilderGUI
             timer.Stop();
             main.Log("Scan time: " + timer.Elapsed);
             //output list of terms with no locs
-            foreach (Term t in terms)
+            foreach (Term t in Terms)
             {
-                if (t.locs.Count == 0)
-                    main.Log(String.Format("No locations were found for the term \"{0}\". You should add aliases for this term using the book or rawml as a reference.", t.termName));
+                if (t.Locs.Count == 0)
+                    main.Log(
+                        String.Format(
+                            "No locations were found for the term \"{0}\".\r\nYou should add aliases for this term using the book or rawml as a reference.",
+                            t.TermName));
             }
             return 0;
         }
 
-        public int PopulateDB(SQLiteConnection db)
+        public int PopulateDb(SQLiteConnection db)
         {
             string sql = "";
             int entity = 1;
@@ -508,32 +557,37 @@ namespace XRayBuilderGUI
             command.Parameters.AddWithValue("text", shelfariURL);
             command.ExecuteNonQuery();
             main.Log("Updating database with terms, descriptions, and excerpts...");
-            main.prgBar.Maximum = terms.Count;
+            main.prgBar.Maximum = Terms.Count;
             //Write all entities and occurrences
-            main.Log(String.Format("Writing {0} terms...", terms.Count));
-            foreach (Term t in terms)
+            main.Log(String.Format("Writing {0} terms...", Terms.Count));
+            foreach (Term t in Terms)
             {
-                if (main.exiting) return 1;
+                if (main.Exiting) return 1;
                 main.prgBar.Value = entity++;
                 Application.DoEvents();
                 command = new SQLiteCommand(db);
-                if (t.type == "character") personCount++;
-                else if (t.type == "topic") termCount++;
-                command.CommandText = String.Format("insert into entity (id, label, loc_label, type, count, has_info_card) values ({0}, @label, null, {1}, {2}, 1);",
-                    t.id, t.type == "character" ? 1 : 2, t.occurrences.Count);
-                command.Parameters.AddWithValue("label", t.termName);
+                if (t.Type == "character") personCount++;
+                else if (t.Type == "topic") termCount++;
+                command.CommandText =
+                    String.Format(
+                        "insert into entity (id, label, loc_label, type, count, has_info_card) values ({0}, @label, null, {1}, {2}, 1);",
+                        t.Id, t.Type == "character" ? 1 : 2, t.Occurrences.Count);
+                command.Parameters.AddWithValue("label", t.TermName);
                 command.ExecuteNonQuery();
 
                 command = new SQLiteCommand(db);
-                command.CommandText = String.Format("insert into entity_description (text, source_wildcard, source, entity) values (@text, @source_wildcard, {0}, {1});",
-                    t.descSrc == "shelfari" ? 2 : 4, t.id);
-                command.Parameters.AddWithValue("text", t.desc);
-                command.Parameters.AddWithValue("source_wildcard", t.termName);
+                command.CommandText =
+                    String.Format(
+                        "insert into entity_description (text, source_wildcard, source, entity) values (@text, @source_wildcard, {0}, {1});",
+                        t.DescSrc == "shelfari" ? 2 : 4, t.Id);
+                command.Parameters.AddWithValue("text", t.Desc);
+                command.Parameters.AddWithValue("source_wildcard", t.TermName);
                 command.ExecuteNonQuery();
 
                 sql = "";
-                foreach (int[] loc in t.occurrences)
-                    sql += String.Format("insert into occurrence (entity, start, length) values ({0}, {1}, {2});\n", t.id, loc[0], loc[1]);
+                foreach (int[] loc in t.Occurrences)
+                    sql += String.Format("insert into occurrence (entity, start, length) values ({0}, {1}, {2});\n",
+                        t.Id, loc[0], loc[1]);
                 command = new SQLiteCommand(sql, db);
                 command.ExecuteNonQuery();
             }
@@ -542,10 +596,12 @@ namespace XRayBuilderGUI
             main.Log(String.Format("Writing {0} excerpts...", excerpts.Count));
             sql = "";
             command = new SQLiteCommand(db);
-            command.CommandText = String.Format("insert into excerpt (id, start, length, image, related_entities, goto) values (@id, @start, @length, @image, @rel_ent, null);");
+            command.CommandText =
+                String.Format(
+                    "insert into excerpt (id, start, length, image, related_entities, goto) values (@id, @start, @length, @image, @rel_ent, null);");
             foreach (Excerpt e in excerpts)
             {
-                if (main.exiting) return 1;
+                if (main.Exiting) return 1;
                 main.prgBar.Value = excerpt++;
                 Application.DoEvents();
                 command.Parameters.AddWithValue("id", e.id);
@@ -565,32 +621,42 @@ namespace XRayBuilderGUI
             main.prgBar.Value = main.prgBar.Maximum;
             Application.DoEvents();
             main.Log("Writing top mentions...");
-            List<int> sorted = terms.Where<Term>(t => t.type.Equals("character")).OrderByDescending(t => t.locs.Count).Select(t => t.id).ToList<int>();
+            List<int> sorted =
+                Terms.Where<Term>(t => t.Type.Equals("character"))
+                    .OrderByDescending(t => t.Locs.Count)
+                    .Select(t => t.Id)
+                    .ToList<int>();
             sql = String.Format("update type set top_mentioned_entities='{0}' where id=1;\n",
                 String.Join(",", sorted.GetRange(0, Math.Min(10, sorted.Count))));
-            sorted = terms.Where<Term>(t => t.type.Equals("topic")).OrderByDescending(t => t.locs.Count).Select(t => t.id).ToList<int>();
+            sorted =
+                Terms.Where<Term>(t => t.Type.Equals("topic"))
+                    .OrderByDescending(t => t.Locs.Count)
+                    .Select(t => t.Id)
+                    .ToList<int>();
             sql += String.Format("update type set top_mentioned_entities='{0}' where id=2;",
                 String.Join(",", sorted.GetRange(0, Math.Min(10, sorted.Count))));
             command = new SQLiteCommand(sql, db);
             command.ExecuteNonQuery();
 
             Console.WriteLine("Writing metadata...");
-            sql = String.Format("insert into book_metadata (srl, erl, has_images, has_excerpts, show_spoilers_default, num_people, num_terms, num_images, preview_images) "
-                + "values ({0}, {1}, 0, 1, 0, {2}, {3}, 0, null);", srl, erl, personCount, termCount);
+            sql =
+                String.Format(
+                    "insert into book_metadata (srl, erl, has_images, has_excerpts, show_spoilers_default, num_people, num_terms, num_images, preview_images) "
+                    + "values ({0}, {1}, 0, 1, 0, {2}, {3}, 0, null);", _srl, _erl, personCount, termCount);
 
             command = new SQLiteCommand(sql, db);
             command.ExecuteNonQuery();
             return 0;
         }
 
-        private int LoadTermsFromTXT(string txtfile)
+        private int LoadTermsFromTxt(string txtfile)
         {
             if (!File.Exists(txtfile)) return 1;
             using (StreamReader streamReader = new StreamReader(txtfile, Encoding.UTF8))
             {
-                int termID = 1;
+                int termId = 1;
                 int lineCount = 1;
-                terms.Clear();
+                Terms.Clear();
                 while (!streamReader.EndOfStream)
                 {
                     try
@@ -604,14 +670,14 @@ namespace XRayBuilderGUI
                             return 1;
                         }
                         Term newTerm = new Term();
-                        newTerm.type = temp;
-                        newTerm.termName = streamReader.ReadLine();
-                        newTerm.desc = streamReader.ReadLine();
+                        newTerm.Type = temp;
+                        newTerm.TermName = streamReader.ReadLine();
+                        newTerm.Desc = streamReader.ReadLine();
                         lineCount += 2;
-                        newTerm.matchCase = temp == "character" ? true : false;
-                        newTerm.descSrc = "shelfari";
-                        newTerm.id = termID++;
-                        terms.Add(newTerm);
+                        newTerm.MatchCase = temp == "character" ? true : false;
+                        newTerm.DescSrc = "shelfari";
+                        newTerm.Id = termId++;
+                        Terms.Add(newTerm);
                     }
                     catch (Exception ex)
                     {
@@ -623,7 +689,7 @@ namespace XRayBuilderGUI
             return 0;
         }
 
-        class Excerpt
+        private class Excerpt
         {
             public int id;
             public int start;
@@ -641,8 +707,11 @@ namespace XRayBuilderGUI
 
             public string GetQuery()
             {
-                string sql = String.Format("insert into excerpt (id, start, length, image, related_entities, goto) values ({0}, {1}, {2}, {3}, '{4}', {5});\n",
-                    id, start, length, image == "" ? "null" : image, String.Join(",", related_entities), go_to == -1 ? "null" : go_to.ToString());
+                string sql =
+                    String.Format(
+                        "insert into excerpt (id, start, length, image, related_entities, goto) values ({0}, {1}, {2}, {3}, '{4}', {5});\n",
+                        id, start, length, image == "" ? "null" : image, String.Join(",", related_entities),
+                        go_to == -1 ? "null" : go_to.ToString());
                 foreach (int i in related_entities)
                 {
                     sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", i, id);
@@ -651,118 +720,135 @@ namespace XRayBuilderGUI
             }
         }
 
-        class Chapter
+        private class Chapter
         {
             public string name;
             public long start;
-            public long end;
+            public long End;
 
             public Chapter()
             {
                 this.name = "";
                 this.start = 1;
-                this.end = 9999999;
+                this.End = 9999999;
             }
 
             public Chapter(string name, long start, long end)
             {
                 this.name = name;
                 this.start = start;
-                this.end = end;
+                this.End = end;
             }
 
             public override string ToString()
             {
-                return String.Format(@"{{""name"":{0},""start"":{1},""end"":{2}}}", (name == "" ? "null" : "\"" + name + "\""), start, end);
+                return String.Format(@"{{""name"":{0},""start"":{1},""end"":{2}}}",
+                    (name == "" ? "null" : "\"" + name + "\""), start, End);
             }
         }
 
         public class Term
         {
-            public string type = "";
-            [XmlElement("name")]
-            public string termName = "";
-            public string desc = "";
-            [XmlElement("src")]
-            public string descSrc = "";
-            [XmlElement("url")]
-            public string descUrl = "";
-            [XmlIgnore]
-            public List<string> aliases = new List<string>();
-            [XmlIgnore]
-            public List<string> locs = new List<string>(1000);
-            [XmlIgnore]
-            public List<string> assets = new List<string> { "" };
-            [XmlIgnore]
-            public int id = -1;
-            [XmlIgnore]
-            public List<int[]> occurrences = new List<int[]>();
-            public bool matchCase = true;
+            public string Type = "";
 
-            public Term() { }
+            [XmlElement("name")] public string TermName = "";
+
+            public string Desc = "";
+
+            [XmlElement("src")] public string DescSrc = "";
+
+            [XmlElement("url")] public string DescUrl = "";
+
+            [XmlIgnore] public List<string> Aliases = new List<string>();
+
+            [XmlIgnore] public List<string> Locs = new List<string>(1000);
+
+            [XmlIgnore] public List<string> Assets = new List<string> {""};
+
+            [XmlIgnore] public int Id = -1;
+
+            [XmlIgnore] public List<int[]> Occurrences = new List<int[]>();
+
+            public bool MatchCase = true;
+
+            public Term()
+            {
+            }
 
             public Term(string type)
             {
-                this.type = type;
+                this.Type = type;
             }
 
             public override string ToString()
             {
                 //Note that the Amazon X-Ray files declare an "assets" var for each term, but I have not seen one that actually uses them to contain anything
-                if (locs.Count > 0)
-                    return String.Format(@"{{""type"":""{0}"",""term"":""{1}"",""desc"":""{2}"",""descSrc"":""{3}"",""descUrl"":""{4}"",""locs"":[{5}]}}", //,""assets"":[{6}]}}",
-                        type, termName, desc, descSrc, descUrl, string.Join(",", locs));
+                if (Locs.Count > 0)
+                    return
+                        String.Format(
+                            @"{{""type"":""{0}"",""term"":""{1}"",""desc"":""{2}"",""descSrc"":""{3}"",""descUrl"":""{4}"",""locs"":[{5}]}}",
+                            //,""assets"":[{6}]}}",
+                            Type, TermName, Desc, DescSrc, DescUrl, string.Join(",", Locs));
                 else
                 {
-                    return String.Format(@"{{""type"":""{0}"",""term"":""{1}"",""desc"":""{2}"",""descSrc"":""{3}"",""descUrl"":""{4}"",""locs"":[[100,100,100,6]]}}", //,""assets"":[{6}]}}",
-                        type, termName, desc, descSrc, descUrl);
+                    return
+                        String.Format(
+                            @"{{""type"":""{0}"",""term"":""{1}"",""desc"":""{2}"",""descSrc"":""{3}"",""descUrl"":""{4}"",""locs"":[[100,100,100,6]]}}",
+                            //,""assets"":[{6}]}}",
+                            Type, TermName, Desc, DescSrc, DescUrl);
                 }
             }
-
         }
 
-        public void saveChapters()
+        public void SaveChapters()
         {
-            if (!Directory.Exists(Environment.CurrentDirectory + "\\ext\\")) Directory.CreateDirectory(Environment.CurrentDirectory + "\\ext\\");
-            using (StreamWriter streamWriter = new StreamWriter(Environment.CurrentDirectory + "\\ext\\" + asin + ".chapters", false, Encoding.UTF8))
+            if (!Directory.Exists(Environment.CurrentDirectory + @"\ext\"))
+                Directory.CreateDirectory(Environment.CurrentDirectory + @"\ext\");
+            using (
+                StreamWriter streamWriter =
+                    new StreamWriter(Environment.CurrentDirectory + @"\ext\" + asin + ".chapters", false,
+                        Encoding.UTF8))
             {
-                foreach (Chapter c in chapters)
-                    streamWriter.WriteLine(c.name + "|" + c.start + "|" + c.end);
+                foreach (Chapter c in _chapters)
+                    streamWriter.WriteLine(c.name + "|" + c.start + "|" + c.End);
             }
         }
 
-        public bool loadChapters()
+        public bool LoadChapters()
         {
-            chapters = new List<Chapter>();
-            if (!File.Exists(Environment.CurrentDirectory + "\\ext\\" + asin + ".chapters")) return false;
-            using (StreamReader streamReader = new StreamReader(Environment.CurrentDirectory + "\\ext\\" + asin + ".chapters", Encoding.UTF8))
+            _chapters = new List<Chapter>();
+            if (!File.Exists(Environment.CurrentDirectory + @"\ext\" + asin + ".chapters")) return false;
+            using (
+                var streamReader =
+                    new StreamReader(Environment.CurrentDirectory + @"\ext\" + asin + ".chapters", Encoding.UTF8))
             {
                 while (!streamReader.EndOfStream)
                 {
                     string[] tmp = streamReader.ReadLine().Split('|');
                     if (tmp.Length != 3) return false; //Malformed chapters file
                     if (tmp[0] == "" || tmp[0].Substring(0, 1) == "#") continue;
-                    chapters.Add(new Chapter(tmp[0], Convert.ToInt32(tmp[1]), Convert.ToInt64(tmp[2])));
+                    _chapters.Add(new Chapter(tmp[0], Convert.ToInt32(tmp[1]), Convert.ToInt64(tmp[2])));
                 }
             }
             return true;
         }
 
-        public void saveCharacters(string aliasFile)
+        public void SaveCharacters(string aliasFile)
         {
-            if (!Directory.Exists(Environment.CurrentDirectory + "\\ext\\")) Directory.CreateDirectory(Environment.CurrentDirectory + "\\ext\\");
-            using (StreamWriter streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8))
+            if (!Directory.Exists(Environment.CurrentDirectory + @"\ext\"))
+                Directory.CreateDirectory(Environment.CurrentDirectory + @"\ext\");
+            using (var streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8))
             {
-                foreach (Term c in terms)// if(c.type == "character")
-                    streamWriter.WriteLine(c.termName + "|");
+                foreach (var c in Terms) // if(c.type == "character")
+                    streamWriter.WriteLine(c.TermName + "|");
             }
         }
 
-        public void loadAliases(string aliasFile)
+        public void LoadAliases(string aliasFile)
         {
-            Dictionary<string, string[]> d = new Dictionary<string, string[]>();
+            var d = new Dictionary<string, string[]>();
             if (!File.Exists(aliasFile)) return;
-            using (StreamReader streamReader = new StreamReader(aliasFile, Encoding.UTF8))
+            using (var streamReader = new StreamReader(aliasFile, Encoding.UTF8))
             {
                 while (!streamReader.EndOfStream)
                 {
@@ -777,10 +863,10 @@ namespace XRayBuilderGUI
                         d.Add(temp[0], temp2);
                 }
             }
-            foreach (Term t in terms)
+            foreach (Term t in Terms)
             {
-                if (d.ContainsKey(t.termName))
-                    t.aliases = new List<string>(d[t.termName]);
+                if (d.ContainsKey(t.TermName))
+                    t.Aliases = new List<string>(d[t.TermName]);
             }
         }
 
@@ -788,24 +874,30 @@ namespace XRayBuilderGUI
         {
             //Download HTML of Shelfari URL, try 3 times just in case it fails the first time
             main.Log(String.Format("Downloading Shelfari page... {0}", useSpoilers ? "SHOWING SPOILERS!" : ""));
-            string shelfariHTML = "";
-            int tries = 3;
+            main.Log(String.Format("Shelfari URL: {0}", shelfariURL));
+            var shelfariHtml = "";
+            var tries = 3;
             do
             {
                 try
                 {
                     //Enable cookies on extended webclient
-                    CookieContainer jar = new CookieContainer();
-                    HttpDownloader client = new HttpDownloader(shelfariURL, jar, "", "");
+                    var jar = new CookieContainer();
+                    var client = new HttpDownloader(shelfariURL, jar, "", "");
+
                     if (useSpoilers)
                     {
                         //Grab book ID from url (search for 5 digits between slashes) and create spoiler cookie
-                        string bookID = Regex.Match(shelfariURL, @"\/\d{5}").Value.Substring(1, 5);
-                        Cookie spoilers = new Cookie("ShelfariBookWikiSession", "", "/", "www.shelfari.com");
-                        spoilers.Value = "{\"SpoilerShowAll\":true%2C\"SpoilerShowCharacters\":true%2C\"SpoilerBookId\":" + bookID + "%2C\"SpoilerShowPSS\":true%2C\"SpoilerShowQuotations\":true%2C\"SpoilerShowParents\":true%2C\"SpoilerShowThemes\":true}";
+                        var bookId = Regex.Match(shelfariURL, @"\/\d{5}").Value.Substring(1, 5);
+                        var spoilers = new Cookie("ShelfariBookWikiSession", "", "/", "www.shelfari.com")
+                        {
+                            Value = "{\"SpoilerShowAll\":true%2C\"SpoilerShowCharacters\":true%2C\"SpoilerBookId\":" +
+                                    bookId +
+                                    "%2C\"SpoilerShowPSS\":true%2C\"SpoilerShowQuotations\":true%2C\"SpoilerShowParents\":true%2C\"SpoilerShowThemes\":true}"
+                        };
                         jar.Add(spoilers);
                     }
-                    shelfariHTML = client.GetPage();
+                    shelfariHtml = client.GetPage();
                     break;
                 }
                 catch
@@ -816,48 +908,59 @@ namespace XRayBuilderGUI
                         return false;
                     }
                 }
-            } while (tries-- > 0);
+            }
+            while (tries-- > 0);
 
             /*** Constants for wiki processing ***/
-            Dictionary<string, string> sections = new Dictionary<string, string>{
-                {"WikiModule_Characters", "character"}, {"WikiModule_Organizations", "topic"}, {"WikiModule_Settings", "topic"},
-                {"WikiModule_Glossary", "topic"} }; //, {"WikiModule_Themes", "topic"} };
-            string[] patterns = { @"""" }; //, @"\[\d\]", @"\s*?\(.*\)\s*?" }; //Escape quotes, numbers in brackets, and anything within brackets at all
-            string[] replacements = { @"\""" }; //, @"", @"" };
+            Dictionary<string, string> sections = new Dictionary<string, string>
+            {
+                {"WikiModule_Characters", "character"},
+                {"WikiModule_Organizations", "topic"},
+                {"WikiModule_Settings", "topic"},
+                {"WikiModule_Glossary", "topic"}
+            }; //, {"WikiModule_Themes", "topic"} };
+            string[] patterns = {@""""};
+            //, @"\[\d\]", @"\s*?\(.*\)\s*?" }; //Escape quotes, numbers in brackets, and anything within brackets at all
+            string[] replacements = {@"\"""}; //, @"", @"" };
             /************************************/
 
             //Parse elements from various headers listed in sections
             HtmlAgilityPack.HtmlDocument shelfariDoc = new HtmlAgilityPack.HtmlDocument();
-            shelfariDoc.LoadHtml(shelfariHTML);
+            shelfariDoc.LoadHtml(shelfariHtml);
             foreach (string header in sections.Keys)
             {
-                if (!shelfariHTML.Contains(header)) continue; //Skip section if not found on page
+                if (!shelfariHtml.Contains(header)) continue; //Skip section if not found on page
                 //Select <li> nodes on page from within the <div id=header> tag, under <ul class=li_6>
-                HtmlNodeCollection characterNodes = shelfariDoc.DocumentNode.SelectNodes("//div[@id='" + header + "']//ul[@class='li_6']/li");
+                HtmlNodeCollection characterNodes =
+                    shelfariDoc.DocumentNode.SelectNodes("//div[@id='" + header + "']//ul[@class='li_6']/li");
                 foreach (HtmlNode li in characterNodes)
                 {
                     string tmpString = li.InnerText;
                     Term newTerm = new Term(sections[header]); //Create term as either character/topic
                     if (tmpString.Contains(":"))
                     {
-                        newTerm.termName = tmpString.Substring(0, tmpString.IndexOf(":"));
-                        newTerm.desc = tmpString.Substring(tmpString.IndexOf(":") + 1).Trim();
+                        newTerm.TermName = tmpString.Substring(0, tmpString.IndexOf(":"));
+                        newTerm.Desc = tmpString.Substring(tmpString.IndexOf(":") + 1).Trim();
                     }
                     else
                     {
-                        newTerm.termName = tmpString;
+                        newTerm.TermName = tmpString;
                     }
-                    newTerm.termName = newTerm.termName.PregReplace(patterns, replacements);
-                    newTerm.desc = newTerm.desc.PregReplace(patterns, replacements);
-                    newTerm.descSrc = "shelfari";
+                    newTerm.TermName = newTerm.TermName.PregReplace(patterns, replacements);
+                    newTerm.Desc = newTerm.Desc.PregReplace(patterns, replacements);
+                    newTerm.DescSrc = "shelfari";
                     //Use either the associated shelfari URL of the term or if none exists, use the book's url
                     //Could use a wikipedia page instead as the xray plugin/site does but I decided not to
-                    newTerm.descUrl = (li.InnerHtml.IndexOf("<a href") == 0 ? li.InnerHtml.Substring(9, li.InnerHtml.IndexOf("\"", 9) - 9) : shelfariURL);
-                    if (header == "WikiModule_Glossary") newTerm.matchCase = false; //Default glossary terms to be case insensitive when searching through book
-                    if (terms.Select<Term, string>(t => t.termName).Contains<string>(newTerm.termName))
-                        main.Log("Duplicate term \"" + newTerm.termName + "\" found. Ignoring this duplicate.");
+                    newTerm.DescUrl = (li.InnerHtml.IndexOf("<a href") == 0
+                        ? li.InnerHtml.Substring(9, li.InnerHtml.IndexOf("\"", 9) - 9)
+                        : shelfariURL);
+                    if (header == "WikiModule_Glossary")
+                        newTerm.MatchCase = false;
+                    //Default glossary terms to be case insensitive when searching through book
+                    if (Terms.Select<Term, string>(t => t.TermName).Contains<string>(newTerm.TermName))
+                        main.Log("Duplicate term \"" + newTerm.TermName + "\" found. Ignoring this duplicate.");
                     else
-                        terms.Add(newTerm);
+                        Terms.Add(newTerm);
                 }
             }
             return true;
@@ -874,7 +977,7 @@ namespace XRayBuilderGUI
 
             for (var i = 0; i < pattern.Length; i++)
             {
-                bool s = Regex.IsMatch(input, "\"");
+                var s = Regex.IsMatch(input, "\"");
                 input = Regex.Replace(input, pattern[i], replacements[i]);
             }
 
@@ -900,32 +1003,32 @@ namespace XRayBuilderGUI
     {
         public WebClientEx(CookieContainer container)
         {
-            this.container = container;
+            this._container = container;
         }
 
-        private readonly CookieContainer container = new CookieContainer();
+        private readonly CookieContainer _container = new CookieContainer();
 
         protected override WebRequest GetWebRequest(Uri address)
         {
-            WebRequest r = base.GetWebRequest(address);
+            var r = base.GetWebRequest(address);
             var request = r as HttpWebRequest;
             if (request != null)
             {
-                request.CookieContainer = container;
+                request.CookieContainer = _container;
             }
             return r;
         }
 
         protected override WebResponse GetWebResponse(WebRequest request, IAsyncResult result)
         {
-            WebResponse response = base.GetWebResponse(request, result);
+            var response = base.GetWebResponse(request, result);
             ReadCookies(response);
             return response;
         }
 
         protected override WebResponse GetWebResponse(WebRequest request)
         {
-            WebResponse response = base.GetWebResponse(request);
+            var response = base.GetWebResponse(request);
             ReadCookies(response);
             return response;
         }
@@ -935,8 +1038,8 @@ namespace XRayBuilderGUI
             var response = r as HttpWebResponse;
             if (response != null)
             {
-                CookieCollection cookies = response.Cookies;
-                container.Add(cookies);
+                var cookies = response.Cookies;
+                _container.Add(cookies);
             }
         }
     }

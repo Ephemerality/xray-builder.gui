@@ -169,6 +169,66 @@ namespace XRayBuilderGUI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string penName {
+            get {
+                return ((string)(this["penName"]));
+            }
+            set {
+                this["penName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string realName {
+            get {
+                return ((string)(this["realName"]));
+            }
+            set {
+                this["realName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool amazonUk {
+            get {
+                return ((bool)(this["amazonUk"]));
+            }
+            set {
+                this["amazonUk"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool enableEdit {
+            get {
+                return ((bool)(this["enableEdit"]));
+            }
+            set {
+                this["enableEdit"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool useSubDirectories {
+            get {
+                return ((bool)(this["useSubDirectories"]));
+            }
+            set {
+                this["useSubDirectories"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool utf8 {
             get {
@@ -182,24 +242,60 @@ namespace XRayBuilderGUI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public string enableEdit {
+        public bool overwrite {
             get {
-                return ((string)(this["enableEdit"]));
+                return ((bool)(this["overwrite"]));
             }
             set {
-                this["enableEdit"] = value;
+                this["overwrite"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string docDir {
+            get {
+                return ((string)(this["docDir"]));
+            }
+            set {
+                this["docDir"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string saveTemplate {
+            get {
+                return ((string)(this["saveTemplate"]));
+            }
+            set {
+                this["saveTemplate"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public string useSubDirs {
+        public bool sendtoKindle {
             get {
-                return ((string)(this["useSubDirs"]));
+                return ((bool)(this["sendtoKindle"]));
             }
             set {
-                this["useSubDirs"] = value;
+                this["sendtoKindle"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool saveHtml {
+            get {
+                return ((bool)(this["saveHtml"]));
+            }
+            set {
+                this["saveHtml"] = value;
             }
         }
     }

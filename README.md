@@ -1,6 +1,7 @@
 # X-Ray Builder GUI
 A .Net application that processes e-books to create an X-Ray file for the Amazon Kindle (Paperwhite, Voyage, Fire).  
-X-Ray files are built complete with chapter locations and excerpts.
+X-Ray files are built complete with chapter locations and excerpts.  
+The darrenmcg branch can also build Author Profile and End Actions files.
 
 ## Acknowledgements
 Created by Ephemerality <Nick Niemi - ephemeral.vilification@gmail.com>  

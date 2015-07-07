@@ -124,7 +124,6 @@ namespace XRayBuilderGUI
             if (txtReal.Text.Trim().Length == 0 | txtPen.Text.Trim().Length == 0)
             {
                 MessageBox.Show("Both Real and Pen names are required for\r\nEnd Action file creation.");
-                return;
             }
             if (chkSendToKindle.Checked)
             {

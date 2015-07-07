@@ -463,8 +463,8 @@ namespace XRayBuilderGUI
                 String.Format(
                     "Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
                     results[2], results[0], results[4], results[5], results[1]));
-            try
-            {
+            //try
+            //{
                 AuthorProfile aa;
                 aa = new AuthorProfile(results[5], results[4], results[0],
                     results[1], results[2], randomFile, this);
@@ -472,7 +472,8 @@ namespace XRayBuilderGUI
                 frmAP.lblTitle.Text = aa.ApTitle;
                 frmAP.pbAuthorImage.Image = aa.ApAuthorImage;
                 frmAP.lblBio1.Text = aa.BioTrimmed.Substring(0, 315);
-                frmAP.lblBio2.Text = aa.BioTrimmed.Substring(315, 340) + "...";
+                if (aa.BioTrimmed.Length >= 655)
+                    frmAP.lblBio2.Text = aa.BioTrimmed.Substring(315, 340) + "...";
                 frmAP.lblKindleBooks.Text = aa.ApSubTitle;
                 for (var i = 0; i < 4; i++)
                 {
@@ -511,15 +512,18 @@ namespace XRayBuilderGUI
                         }
                     }
                 }
-                frmEA.lblBook6.Text = aa.PurchAlsoBoughtTitles[0];
-                frmEA.lblAuthor1.Text = aa.PpurchAlsoBoughtAuthorNames[0];
-                frmEA.lblBook7.Text = aa.PurchAlsoBoughtTitles[1];
-                frmEA.lblAuthor2.Text = aa.PpurchAlsoBoughtAuthorNames[1];
-            }
-            catch (Exception ex)
+                if (aa.PurchAlsoBoughtTitles.Count > 1 && aa.PpurchAlsoBoughtAuthorNames.Count > 1)
+                {
+                    frmEA.lblBook6.Text = aa.PurchAlsoBoughtTitles[0];
+                    frmEA.lblAuthor1.Text = aa.PpurchAlsoBoughtAuthorNames[0];
+                    frmEA.lblBook7.Text = aa.PurchAlsoBoughtTitles[1];
+                    frmEA.lblAuthor2.Text = aa.PpurchAlsoBoughtAuthorNames[1];
+                }
+            //}
+            /*catch (Exception ex)
             {
                 Log("An error occurred while creating the new Author Profile and/or End Action files: " + ex.Message);
-            }
+            }*/
         }
 
         private void btnLink_Click(object sender, EventArgs e)

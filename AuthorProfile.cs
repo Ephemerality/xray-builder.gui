@@ -8,7 +8,8 @@ using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Xml;
-using HtmlDocument = HtmlAgilityPack.HtmlDocument;
+
+using HtmlAgilityPack;
 
 namespace XRayBuilderGUI
 {
@@ -80,15 +81,23 @@ namespace XRayBuilderGUI
             }
 
             //Generate Author search URL from author's name
-            var percAuthorName = Regex.Replace(author, " ", "%20", RegexOptions.IgnoreCase);
-            var dashAuthorName = Regex.Replace(author, " ", "-", RegexOptions.IgnoreCase);
-            var amazonAuthorSearchUrl = @"http://www.amazon.com/s/?url=search-alias%3Dstripbooks&field-keywords=" +
+            if (author.IndexOf(';') > 0)
+                author = author.Split(';')[0];
+            if (author.IndexOf(',') > 0)
+            {
+                string[] parts = author.Split(',');
+                author = parts[1].Trim() + " " + parts[0].Trim();
+            }
+            string percAuthorName = author.Replace(" ", "%20");
+            string dashAuthorName = author.Replace(" ", "-");
+            string amazonAuthorSearchUrl = @"http://www.amazon.com/s/?url=search-alias%3Dstripbooks&field-keywords=" +
                                         percAuthorName;
             main.Log("Searching for Author's page on Amazon...");
 
             // Search Amazon for Author
-            var authorHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
-            var authorsearchHtml = Functions.GetPageHtml(amazonAuthorSearchUrl);
+            HtmlDocument authorHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
+            HttpDownloader client = new HttpDownloader(amazonAuthorSearchUrl);
+            string authorsearchHtml = client.GetPage();
             authorHtmlDoc.LoadHtml(authorsearchHtml);
 
             if (Properties.Settings.Default.saveHtml)
@@ -107,16 +116,28 @@ namespace XRayBuilderGUI
             }
 
             // Try to find Author's page from Amazon search
-            var node = authorHtmlDoc.DocumentNode.SelectSingleNode("//*[@id='result_1']");
-            if (node == null)
-                main.Log("Could not find Author's page on Amazon.\r\nUnable to create Author Profile.");
-            var authorAsin = node.OuterHtml;
-            var index1 = authorAsin.IndexOf("data-asin");
+            HtmlNode node = authorHtmlDoc.DocumentNode.SelectSingleNode("//*[@id='result_1']");
+            if (node == null || !node.OuterHtml.Contains("/e/B"))
+            {
+                main.Log("Could not find Author's page on Amazon.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at " + amazonAuthorSearchUrl);
+                return;
+            }
+            string authorAsin = node.OuterHtml;
+            int index1 = authorAsin.IndexOf("data-asin");
             if (index1 > 0)
                 authorAsin = authorAsin.Substring(index1 + 11, 10);
+            
             //var authorAmazonWebsiteLocation = @"http://www.amazon.com/" + dashAuthorName + "/e/" + authorAsin;
-            var authorAmazonWebsiteLocationLog = @"http://www.amazon.com/" + dashAuthorName + "/e/" + authorAsin;
-            var authorAmazonWebsiteLocation = @"http://www.amazon.com/" + percAuthorName + "/e/" + authorAsin +
+            node = node.SelectSingleNode("//*[@id='result_1']/div/div/div/div/a");
+            string properAuthor = node.GetAttributeValue("href", "not found");
+            if (properAuthor == "not found" || properAuthor.IndexOf('/', 1) < 3)
+            {
+                main.Log("Found author's page, but could not parse URL properly. Report this URL on the MobileRead thread: " + amazonAuthorSearchUrl);
+                return;
+            }
+            properAuthor = properAuthor.Substring(1, properAuthor.IndexOf('/', 1) - 1);
+            var authorAmazonWebsiteLocationLog = @"http://www.amazon.com/" + properAuthor + "/e/" + authorAsin;
+            var authorAmazonWebsiteLocation = @"http://www.amazon.com/" + properAuthor + "/e/" + authorAsin +
                                               "/ref=la_" + authorAsin +
                                               "_rf_p_n_feature_browse-b_2?fst=as%3Aoff&rh=n%3A283155%2Cp_82%3A" +
                                               authorAsin +
@@ -154,16 +175,10 @@ namespace XRayBuilderGUI
                 {
                     var bioTrim = bio.InnerHtml.Substring(0, 1500);
                     BioTrimmed = bioTrim.Substring(0, bioTrim.LastIndexOf(".") + 1);
-                    BioTrimmed = Regex.Replace(BioTrimmed, "\"", "'", RegexOptions.None);
-                    BioTrimmed = Regex.Replace(BioTrimmed, @"<br><br>", " ", RegexOptions.IgnoreCase);
-                    main.Log("Author biography found on Amazon!");
                 }
-                else
-                {
-                    BioTrimmed = Regex.Replace(bio.InnerHtml, "\"", "'", RegexOptions.None);
-                    BioTrimmed = Regex.Replace(BioTrimmed, @"<br><br>", " ", RegexOptions.IgnoreCase);
-                    main.Log("Author biography found on Amazon!");
-                }
+                BioTrimmed = bio.InnerHtml.Replace("\"", "'");
+                BioTrimmed = Regex.Replace(BioTrimmed, @"<br><br>", " ", RegexOptions.IgnoreCase);
+                main.Log("Author biography found on Amazon!");
                 main.Log("Attempting to create Author Profile...");
             }
             else
@@ -308,7 +323,7 @@ namespace XRayBuilderGUI
                                           @""",""i"":""" + base64ImageString + @"""}],""a"":""" +
                                           String.Format(@"{0}"",""d"":{1},""o"":[", asin, unixTimestamp) +
                                           string.Join(",", AuthorsOtherBookList.ToArray()) + "]}";
-                File.WriteAllText(ApPath, authorProfileOutput);
+                File.WriteAllText(ApPath, authorProfileOutput, System.Text.Encoding.UTF8);
                 main.btnPreview.Enabled = true;
                 main.cmsPreview.Items[0].Enabled = true;
                 main.Log("Author Profile file created successfully!\r\nSaved to " + ApPath);
@@ -324,6 +339,7 @@ namespace XRayBuilderGUI
             ApAuthorImage = Image.FromFile(path + @"\FinalImage.jpg");
             EaSubTitle = "More books by " + author;
 
+            main.Log("Building End Actions...");
             main.Log("Attempting to find book on Amazon...");
             //Generate Book search URL from book's ASIN
             var ebookLocation = @"http://www.amazon.com/dp/" + asin;
@@ -333,8 +349,15 @@ namespace XRayBuilderGUI
             main.Log(String.Format("Book's Amazon page URL: {0}", ebookLocation));
             
             var bookHlmlDoc = new HtmlDocument {OptionAutoCloseOnEnd = true};
-            bookHlmlDoc.LoadHtml(Functions.GetPageHtml(ebookLocation));
-
+            try
+            {
+                bookHlmlDoc.LoadHtml(Functions.GetPageHtml(ebookLocation));
+            }
+            catch (Exception ex)
+            {
+                main.Log(String.Format("An error ocurred while downloading book's Amazon page: {0}\r\nYour ASIN may not be correct.", ex.Message));
+                return;
+            }
             if (Properties.Settings.Default.saveHtml)
             {
                 try
@@ -401,7 +424,7 @@ namespace XRayBuilderGUI
             //Create final EndActions.data.ASIN.asc
             var dt = DateTime.Now.ToString("s");
             var tz = DateTime.Now.ToString("zzz");
-            var writer = new XmlTextWriter(EaPath, null);
+            var writer = new XmlTextWriter(EaPath, System.Text.Encoding.UTF8);
             try
             {
                 main.Log("Writing End Actions to file...");

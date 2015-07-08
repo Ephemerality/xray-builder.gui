@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -150,7 +151,19 @@ namespace XRayBuilderGUI
             string path;
             path = Path.Combine(Properties.Settings.Default.outDir,
                 String.Format(@"{0}\{1}.sdr", author, title));
-            Directory.CreateDirectory(path);
+            char[] chars = Path.GetInvalidPathChars();
+            string invalidCharsRemoved = new string(path.Where(x => !chars.Contains(x)).ToArray());
+            if (!path.Equals(invalidCharsRemoved))
+                MessageBox.Show("The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.", "Invalid Characters");
+            try
+            {
+                Directory.CreateDirectory(path);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to create output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
+                return "";
+            }
             return path;
         }
 

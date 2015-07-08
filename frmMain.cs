@@ -471,11 +471,14 @@ namespace XRayBuilderGUI
 
                 frmAP.lblTitle.Text = aa.ApTitle;
                 frmAP.pbAuthorImage.Image = aa.ApAuthorImage;
-                frmAP.lblBio1.Text = aa.BioTrimmed.Substring(0, 315);
-                if (aa.BioTrimmed.Length >= 655)
-                    frmAP.lblBio2.Text = aa.BioTrimmed.Substring(315, 340) + "...";
+                if (aa.BioTrimmed != "")
+                {
+                    frmAP.lblBio1.Text = aa.BioTrimmed.Substring(0, Math.Min(aa.BioTrimmed.Length - 1, 315));
+                    if (aa.BioTrimmed.Length >= 655)
+                        frmAP.lblBio2.Text = aa.BioTrimmed.Substring(315, 340) + "...";
+                }
                 frmAP.lblKindleBooks.Text = aa.ApSubTitle;
-                for (var i = 0; i < 4; i++)
+                for (var i = 0; i < Math.Min(aa.AuthorsOtherBookNames.Count - 1, 4); i++)
                 {
                     foreach (Control contrl in frmAP.Controls)
                     {
@@ -495,7 +498,7 @@ namespace XRayBuilderGUI
                 frmEA.lblPost.Text = String.Format("Post on Amazon (as {0})",
                     Properties.Settings.Default.penName);
                 frmEA.lblMoreBooks.Text = aa.EaSubTitle;
-                for (var i = 0; i < 5; i++)
+                for (var i = 0; i < Math.Min(aa.AuthorsOtherBookNames.Count - 1, 5); i++)
                 {
                     foreach (Control contrl in frmEA.Controls)
                     {

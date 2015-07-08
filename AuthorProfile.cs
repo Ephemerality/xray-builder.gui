@@ -18,17 +18,15 @@ namespace XRayBuilderGUI
         private Properties.Settings settings = XRayBuilderGUI.Properties.Settings.Default;
         private frmMain main;
 
-        private string OutFolder = "";
         private string ApPath = "";
         private string EaPath = "";
         private string ApDest = "";
         private string EaDest = "";
-        private bool OverwriteFile;
 
         public string ApTitle = null;
         public Image ApAuthorImage = null;
         public string ApSubTitle = null;
-        public string BioTrimmed = null;
+        public string BioTrimmed = "";
         public List<string> AuthorsOtherBookList = new List<string>();
         public List<string> AuthorsOtherBookNames = new List<string>();
         public List<string> PurchAlsoBoughtTitles = new List<string>();
@@ -37,28 +35,19 @@ namespace XRayBuilderGUI
 
         public string EaSubTitle = null;
 
-        public AuthorProfile(string title, string author, string asin, string guid, string databasename, string path,
-            frmMain frm)
+        public AuthorProfile(string title, string author, string asin, string guid, string databasename, string path, frmMain frm)
         {
             this.main = frm;
-            if (settings.useSubDirectories)
-            {
-                OutFolder = Functions.GetBookOutputDirectory(author, title);
-                ApPath = OutFolder + @"\AuthorProfile.profile." + asin + ".asc";
-                EaPath = OutFolder + @"\EndActions.data." + asin + ".asc";
-            }
-            else
-            {
-                ApPath = settings.outDir + @"\AuthorProfile.profile." + asin + ".asc";
-                EaPath = settings.outDir + @"\EndActions.data." + asin + ".asc";
-            }
-            OverwriteFile = XRayBuilderGUI.Properties.Settings.Default.overwrite;
-            if (!OverwriteFile &&
-                File.Exists(ApPath) &&
-                File.Exists(EaPath))
+            string outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectory(author, title) : "";
+            if (outputDir == "")
+                outputDir = settings.outDir;
+            ApPath = outputDir + @"\AuthorProfile.profile." + asin + ".asc";
+            EaPath = outputDir + @"\EndActions.data." + asin + ".asc";
+
+            if (!XRayBuilderGUI.Properties.Settings.Default.overwrite && File.Exists(ApPath) && File.Exists(EaPath))
             {
                 main.Log("AuthorProfile and EndActions files already exist... Skipping!\r\n" +
-                         "Please review the settings page if you want to overwite and existing files.");
+                         "Please review the settings page if you want to overwite any existing files.");
                 return;
             }
             ApDest = settings.docDir + @"\" + author + @"\" + title + @".sdr" + @"\AuthorProfile.profile." + asin +
@@ -136,8 +125,8 @@ namespace XRayBuilderGUI
                 return;
             }
             properAuthor = properAuthor.Substring(1, properAuthor.IndexOf('/', 1) - 1);
-            var authorAmazonWebsiteLocationLog = @"http://www.amazon.com/" + properAuthor + "/e/" + authorAsin;
-            var authorAmazonWebsiteLocation = @"http://www.amazon.com/" + properAuthor + "/e/" + authorAsin +
+            string authorAmazonWebsiteLocationLog = @"http://www.amazon.com/" + properAuthor + "/e/" + authorAsin;
+            string authorAmazonWebsiteLocation = @"http://www.amazon.com/" + properAuthor + "/e/" + authorAsin +
                                               "/ref=la_" + authorAsin +
                                               "_rf_p_n_feature_browse-b_2?fst=as%3Aoff&rh=n%3A283155%2Cp_82%3A" +
                                               authorAsin +
@@ -148,7 +137,7 @@ namespace XRayBuilderGUI
             main.Log(String.Format("Author's Amazon Page URL: {0}", authorAmazonWebsiteLocationLog));
 
             // Load Author's Amazon page
-            var authorpageHtml = Functions.GetPageHtml(authorAmazonWebsiteLocation);
+            string authorpageHtml = Functions.GetPageHtml(authorAmazonWebsiteLocation);
             authorHtmlDoc.LoadHtml(authorpageHtml);
 
             if (Properties.Settings.Default.saveHtml)
@@ -167,13 +156,13 @@ namespace XRayBuilderGUI
             }
 
             // Try to find Author's Biography
-            var bio = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-bio' and @class='a-row']/div/div/span");
+            HtmlNode bio = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-bio' and @class='a-row']/div/div/span");
             //Trim authour biography to less than 1500 characters and/or replace " -> '
             if (bio.InnerText.Trim().Length != 0)
             {
                 if (bio.InnerHtml.Length > 1500)
                 {
-                    var bioTrim = bio.InnerHtml.Substring(0, 1500);
+                    string bioTrim = bio.InnerHtml.Substring(0, 1500);
                     BioTrimmed = bioTrim.Substring(0, bioTrim.LastIndexOf(".") + 1);
                 }
                 BioTrimmed = bio.InnerHtml.Replace("\"", "'");
@@ -183,7 +172,7 @@ namespace XRayBuilderGUI
             }
             else
             {
-                main.Log("No Author biography found on Amazon!\r\nUnable to create Author Profile.");
+                main.Log("No Author biography found on Amazon!");
             }
 
             //bio.InnerHtml = Regex.Replace(bio.InnerHtml, @"\t", " ", RegexOptions.IgnoreCase);
@@ -194,14 +183,14 @@ namespace XRayBuilderGUI
             //bio.InnerHtml = Regex.Replace(bio.InnerHtml, @"&amp;#133;", "...", RegexOptions.Multiline);
 
             // Try to download Author image
-            var imageXpath = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-image']/img");
+            HtmlNode imageXpath = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-image']/img");
             //Full size image (overkill?)
             //var imageUrl = Regex.Replace(imageXpath.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
-            var imageUrl = imageXpath.GetAttributeValue("src", "");
-            var downloadedAuthorImage = path + @"\DownloadedAuthorImage.jpg";
+            string imageUrl = imageXpath.GetAttributeValue("src", "");
+            string downloadedAuthorImage = path + @"\DownloadedAuthorImage.jpg";
             try
             {
-                using (var webClient = new WebClient())
+                using (WebClient webClient = new WebClient())
                 {
                     webClient.DownloadFile(new Uri(imageUrl), downloadedAuthorImage);
                     webClient.Dispose();
@@ -216,14 +205,14 @@ namespace XRayBuilderGUI
 
             main.Log("Resizing and cropping Author image...");
             //Resize and Crop Author image
-            var o = (Bitmap) Image.FromFile(downloadedAuthorImage);
-            var nb = new Bitmap(o, o.Width, o.Height);
+            Bitmap o = (Bitmap) Image.FromFile(downloadedAuthorImage);
+            Bitmap nb = new Bitmap(o, o.Width, o.Height);
 
-            var sourceWidth = o.Width;
-            var sourceHeight = o.Height;
+            int sourceWidth = o.Width;
+            int sourceHeight = o.Height;
             float nPercent;
-            var nPercentW = (185/(float) sourceWidth);
-            var nPercentH = (278/(float) sourceHeight);
+            float nPercentW = (185/(float) sourceWidth);
+            float nPercentH = (278/(float) sourceHeight);
 
             //nPercent = nPercentH > nPercentW ? nPercentH : nPercentW;
             if (nPercentH > nPercentW)
@@ -231,18 +220,18 @@ namespace XRayBuilderGUI
             else
                 nPercent = nPercentW;
 
-            var destWidth = (int) (sourceWidth*nPercent);
-            var destHeight = (int) (sourceHeight*nPercent);
+            int destWidth = (int) (sourceWidth*nPercent);
+            int destHeight = (int) (sourceHeight*nPercent);
 
-            var b = new Bitmap(destWidth, destHeight);
-            var g = Graphics.FromImage(b);
+            Bitmap b = new Bitmap(destWidth, destHeight);
+            Graphics g = Graphics.FromImage(b);
             g.InterpolationMode = InterpolationMode.HighQualityBicubic;
             g.SmoothingMode = SmoothingMode.HighQuality;
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
             g.CompositingQuality = CompositingQuality.HighQuality;
             g.CompositingMode = CompositingMode.SourceOver;
 
-            var ia = new ImageAttributes();
+            ImageAttributes ia = new ImageAttributes();
             ia.SetWrapMode(WrapMode.TileFlipXY);
 
             g.DrawImage(nb, 0, 0, destWidth, destHeight);
@@ -252,8 +241,8 @@ namespace XRayBuilderGUI
             o.Dispose();
             nb.Dispose();
 
-            var target = new Bitmap(185, destHeight);
-            var cropRect = new Rectangle(((destWidth - 185)/2), 0, 185, destHeight);
+            Bitmap target = new Bitmap(185, destHeight);
+            Rectangle cropRect = new Rectangle(((destWidth - 185)/2), 0, 185, destHeight);
             using (g = Graphics.FromImage(target))
             {
                 g.DrawImage(Image.FromFile(path + @"\ResizedAuthorImage.jpg"),
@@ -263,40 +252,40 @@ namespace XRayBuilderGUI
             target.Save(path + @"\CroppedAuthorImage.jpg");
             target.Dispose();
             g.Dispose();
-            var bc = new Bitmap(path + @"\CroppedAuthorImage.jpg");
+            Bitmap bc = new Bitmap(path + @"\CroppedAuthorImage.jpg");
 
             //Convert Author image to Grayscale and save as jpeg
-            var bgs = Functions.MakeGrayscale3(bc);
+            Bitmap bgs = Functions.MakeGrayscale3(bc);
 
-            var availableCodecs = ImageCodecInfo.GetImageEncoders();
-            var jpgCodec = availableCodecs.FirstOrDefault(codec => codec.MimeType == "image/jpeg");
+            ImageCodecInfo[] availableCodecs = ImageCodecInfo.GetImageEncoders();
+            ImageCodecInfo jpgCodec = availableCodecs.FirstOrDefault(codec => codec.MimeType == "image/jpeg");
             if (jpgCodec == null)
                 throw new NotSupportedException("Encoder for JPEG not found.");
-            var encoderParams = new EncoderParameters(1);
+            EncoderParameters encoderParams = new EncoderParameters(1);
             encoderParams.Param[0] = new EncoderParameter(Encoder.ColorDepth, 8L);
             bgs.Save(path + @"\FinalImage.jpg", jpgCodec, encoderParams);
             //190
-            var authorImageHeight = bgs.Height;
+            int authorImageHeight = bgs.Height;
             bc.Dispose();
 
             //Convert final grayscale Author image to Base64 Format String
-            var base64ImageString = Functions.ImageToBase64(bgs, ImageFormat.Jpeg);
+            string base64ImageString = Functions.ImageToBase64(bgs, ImageFormat.Jpeg);
             main.Log("Grayscale Base-64 encoded Author image created!");
             bgs.Dispose();
 
             main.Log("Writing Author Profile to file...");
             //Parse Authors other Kindle titles names.
-            var authorsOtherBooksTitle =
+            HtmlNodeCollection authorsOtherBooksTitle =
                 authorHtmlDoc.DocumentNode.SelectNodes("//div[@id='mainResults']/div/div/h3/a/@href");
-            foreach (var book in authorsOtherBooksTitle)
+            foreach (HtmlNode book in authorsOtherBooksTitle)
                 AuthorsOtherBookNames.Add(book.InnerText);
 
             //Parse Authors other Kindle titles ASINs.
-            var authorsOtherBookAsins = new List<string>();
-            var authorsOtherBooksAsin = authorHtmlDoc.DocumentNode.SelectNodes("//*[@class='tpType']");
-            foreach (var book in authorsOtherBooksAsin)
+            List<string> authorsOtherBookAsins = new List<string>();
+            HtmlNodeCollection authorsOtherBooksAsin = authorHtmlDoc.DocumentNode.SelectNodes("//*[@class='tpType']");
+            foreach (HtmlNode book in authorsOtherBooksAsin)
             {
-                var index = book.OuterHtml.IndexOf("/dp/B");
+                int index = book.OuterHtml.IndexOf("/dp/B");
                 if (index != -1)
                 {
                     authorsOtherBookAsins.Add(book.OuterHtml.Substring(index + 4, 10));
@@ -307,17 +296,17 @@ namespace XRayBuilderGUI
             //var authorsOtherBookList = new List<string>();
             //List<String> controlsToChange = new List<String> { "lblPreviewBook1", "lblPreviewBook2","lblPreviewBook3", "lblPreviewBook4" };
 
-            for (var i = 0; i < AuthorsOtherBookNames.Count; i++)
+            for (int i = 0; i < AuthorsOtherBookNames.Count; i++)
             {
                 AuthorsOtherBookList.Add(string.Format(@"{{""e"":1,""a"":""{0}"",""t"":""{1}""}}",
                     authorsOtherBookAsins[i], AuthorsOtherBookNames[i]));
             }
 
             //Create finalAuthorProfile.profile.ASIN.asc
-            var unixTimestamp = (Int32) (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            int unixTimestamp = (Int32) (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             try
             {
-                var authorProfileOutput = @"{""u"":[{""y"":" + authorImageHeight + @",""l"":[""" +
+                string authorProfileOutput = @"{""u"":[{""y"":" + authorImageHeight + @",""l"":[""" +
                                           string.Join(@""",""", authorsOtherBookAsins.ToArray()) + @"""],""n"":""" +
                                           author + @""",""a"":""" + authorAsin + @""",""b"":""" + BioTrimmed +
                                           @""",""i"":""" + base64ImageString + @"""}],""a"":""" +
@@ -342,13 +331,13 @@ namespace XRayBuilderGUI
             main.Log("Building End Actions...");
             main.Log("Attempting to find book on Amazon...");
             //Generate Book search URL from book's ASIN
-            var ebookLocation = @"http://www.amazon.com/dp/" + asin;
+            string ebookLocation = @"http://www.amazon.com/dp/" + asin;
 
             // Search Amazon for book
             main.Log("Book found on Amazon!");
             main.Log(String.Format("Book's Amazon page URL: {0}", ebookLocation));
             
-            var bookHlmlDoc = new HtmlDocument {OptionAutoCloseOnEnd = true};
+            HtmlDocument bookHlmlDoc = new HtmlDocument {OptionAutoCloseOnEnd = true};
             try
             {
                 bookHlmlDoc.LoadHtml(Functions.GetPageHtml(ebookLocation));
@@ -374,29 +363,33 @@ namespace XRayBuilderGUI
             }
 
             // Parse Book image URL
-            //var bookImageLoc = bookHlmlDoc.DocumentNode.SelectSingleNode("//*[@id='main-image']");
-            //var bookImageUrl = Regex.Replace(bookImageLoc.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
+            HtmlNode bookImageLoc2 = bookHlmlDoc.DocumentNode.SelectSingleNode("//*[@id='imgBlkFront']");
+            string bookImageUrl = bookImageLoc2.GetAttributeValue("src", "");
+            //var bookImageUrl2 = Regex.Replace(bookImageLoc2.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
 
             // Generate random book image URL because Amazon keep changing format!
-            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            var random = new Random();
-            var result = new string(
-                Enumerable.Repeat(chars, 11)
-                    .Select(s => s[random.Next(s.Length)])
-                    .ToArray());
-            var bookImageUrl = String.Format("http://ecx.images-amazon.com/images/I/{0}.jpg",
-                Uri.EscapeDataString(result));
+            if (bookImageUrl == "")
+            {
+                string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+                Random random = new Random();
+                string result = new string(
+                    Enumerable.Repeat(chars, 11)
+                        .Select(s => s[random.Next(s.Length)])
+                        .ToArray());
+                bookImageUrl = String.Format("http://ecx.images-amazon.com/images/I/{0}.jpg",
+                    Uri.EscapeDataString(result));
+            }
 
             //Parse Recommended Author titles and ASINs
             try
             {
-                var recomendationList = bookHlmlDoc.DocumentNode.SelectNodes("//li[@class='a-carousel-card a-float-left']");
+                HtmlNodeCollection recomendationList = bookHlmlDoc.DocumentNode.SelectNodes("//li[@class='a-carousel-card a-float-left']");
                 if (recomendationList == null)
                     main.Log("Could not find related book list page on Amazon.\r\nUnable to create End Actions.");
-                foreach (var item in recomendationList.Where(item => item != null))
+                foreach (HtmlNode item in recomendationList.Where(item => item != null))
                 {
-                    var nodeTitle = item.SelectSingleNode(".//div/a");
-                    var nodeTitleCheck = nodeTitle.GetAttributeValue("title", "");
+                    HtmlNode nodeTitle = item.SelectSingleNode(".//div/a");
+                    string nodeTitleCheck = nodeTitle.GetAttributeValue("title", "");
                     if (nodeTitleCheck == "")
                     {
                         nodeTitle = item.SelectSingleNode(".//div/a");
@@ -408,10 +401,10 @@ namespace XRayBuilderGUI
                         PurchAlsoBoughtTitles.Add(nodeTitle.GetAttributeValue("title", ""));
                     }
 
-                    var nodeAsin = item.SelectSingleNode(".//div");
+                    HtmlNode nodeAsin = item.SelectSingleNode(".//div");
                     PurchAlsoBoughtAsinNumbers.Add(nodeAsin.GetAttributeValue("data-asin", ""));
 
-                    var nodeAuthor = item.SelectSingleNode(".//div/div");
+                    HtmlNode nodeAuthor = item.SelectSingleNode(".//div/div");
                     PpurchAlsoBoughtAuthorNames.Add(nodeAuthor.InnerText.Trim());
                 }
             }
@@ -422,9 +415,9 @@ namespace XRayBuilderGUI
             }
 
             //Create final EndActions.data.ASIN.asc
-            var dt = DateTime.Now.ToString("s");
-            var tz = DateTime.Now.ToString("zzz");
-            var writer = new XmlTextWriter(EaPath, System.Text.Encoding.UTF8);
+            string dt = DateTime.Now.ToString("s");
+            string tz = DateTime.Now.ToString("zzz");
+            XmlTextWriter writer = new XmlTextWriter(EaPath, System.Text.Encoding.UTF8);
             try
             {
                 main.Log("Writing End Actions to file...");
@@ -449,7 +442,7 @@ namespace XRayBuilderGUI
                 writer.WriteEndElement();
                 writer.WriteStartElement("recs");
                 writer.WriteAttributeString("type", "author");
-                for (var i = 0; i < 5; i++)
+                for (int i = 0; i < Math.Min(AuthorsOtherBookNames.Count - 1, 5); i++)
                 {
                     writer.WriteStartElement("rec");
                     writer.WriteAttributeString("hasSample", "false");
@@ -461,7 +454,7 @@ namespace XRayBuilderGUI
                 writer.WriteEndElement();
                 writer.WriteStartElement("recs");
                 writer.WriteAttributeString("type", "purchase");
-                for (var i = 0; i < 5; i++)
+                for (int i = 0; i < Math.Min(PurchAlsoBoughtTitles.Count - 1, 5); i++)
                 {
                     writer.WriteStartElement("rec");
                     writer.WriteAttributeString("hasSample", "false");

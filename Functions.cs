@@ -148,22 +148,15 @@ namespace XRayBuilderGUI
 
         public static string GetBookOutputDirectory(string author, string title)
         {
-            string path;
+            string path, newAuthor, newTitle;
+            char[] fileChars = Path.GetInvalidFileNameChars();
+            newAuthor = new string(author.Where(x => !fileChars.Contains(x)).ToArray());
+            newTitle = new string(title.Where(x => !fileChars.Contains(x)).ToArray());
             path = Path.Combine(Properties.Settings.Default.outDir,
-                String.Format(@"{0}\{1}.sdr", author, title));
-            char[] chars = Path.GetInvalidPathChars();
-            string invalidCharsRemoved = new string(path.Where(x => !chars.Contains(x)).ToArray());
-            if (!path.Equals(invalidCharsRemoved))
+                String.Format(@"{0}\{1}.sdr", newAuthor, newTitle));
+            if (!author.Equals(newAuthor) || !title.Equals(newTitle))
                 MessageBox.Show("The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.", "Invalid Characters");
-            try
-            {
-                Directory.CreateDirectory(path);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Failed to create output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
-                return "";
-            }
+            Directory.CreateDirectory(path);
             return path;
         }
 

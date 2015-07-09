@@ -23,8 +23,6 @@ namespace XRayBuilderGUI
         private string currentLog = Environment.CurrentDirectory + @"\log\" +
                                     string.Format("{0:yyyy.MM.dd.hh.mm.ss}.txt", DateTime.Now);
 
-        private string _newPath = "";
-        private string _outFolder = "";
         private Properties.Settings settings = Properties.Settings.Default;
 
         public frmMain()
@@ -237,17 +235,20 @@ namespace XRayBuilderGUI
                     ex.Message);
                 return;
             }
-            Log("Saving X-Ray to file...");
 
-            if (settings.useSubDirectories)
+            Log("Saving X-Ray to file...");
+            string outFolder = "";
+            string _newPath = "";
+            try
             {
-                _outFolder = Functions.GetBookOutputDirectory(results[4], results[5]);
-                _newPath = _outFolder + "\\" + ss.GetXRayName(settings.android);
+                outFolder = settings.useSubDirectories ? Functions.GetBookOutputDirectory(results[4], results[5]) : settings.outDir;
             }
-            else
+            catch (Exception ex)
             {
-                _newPath = settings.outDir + "\\" + ss.GetXRayName(settings.android);
+                Log("Failed to create output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
+                outFolder = settings.outDir;
             }
+            _newPath = outFolder + "\\" + ss.GetXRayName(settings.android);
 
             if (settings.useNewVersion)
             {

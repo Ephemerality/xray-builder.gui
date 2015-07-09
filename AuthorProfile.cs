@@ -38,9 +38,16 @@ namespace XRayBuilderGUI
         public AuthorProfile(string title, string author, string asin, string guid, string databasename, string path, frmMain frm)
         {
             this.main = frm;
-            string outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectory(author, title) : "";
-            if (outputDir == "")
+            string outputDir;
+            try
+            {
+                outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectory(author, title) : settings.outDir;
+            }
+            catch (Exception ex)
+            {
+                main.Log("Failed to create output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
                 outputDir = settings.outDir;
+            }
             ApPath = outputDir + @"\AuthorProfile.profile." + asin + ".asc";
             EaPath = outputDir + @"\EndActions.data." + asin + ".asc";
 

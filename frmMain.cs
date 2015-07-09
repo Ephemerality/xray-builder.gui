@@ -241,7 +241,7 @@ namespace XRayBuilderGUI
             string _newPath = "";
             try
             {
-                outFolder = settings.useSubDirectories ? Functions.GetBookOutputDirectory(results[4], results[5]) : settings.outDir;
+                outFolder = settings.useSubDirectories ? Functions.GetBookOutputDirectory(results[4], Path.GetFileNameWithoutExtension(txtMobi.Text)) : settings.outDir;
             }
             catch (Exception ex)
             {
@@ -468,7 +468,7 @@ namespace XRayBuilderGUI
             //{
                 AuthorProfile aa;
                 aa = new AuthorProfile(results[5], results[4], results[0],
-                    results[1], results[2], randomFile, this);
+                    results[1], results[2], randomFile, Path.GetFileNameWithoutExtension(txtMobi.Text), this);
 
                 frmAP.lblTitle.Text = aa.ApTitle;
                 frmAP.pbAuthorImage.Image = aa.ApAuthorImage;

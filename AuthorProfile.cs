@@ -35,13 +35,13 @@ namespace XRayBuilderGUI
 
         public string EaSubTitle = null;
 
-        public AuthorProfile(string title, string author, string asin, string guid, string databasename, string path, frmMain frm)
+        public AuthorProfile(string title, string author, string asin, string guid, string databasename, string path, string sidecarName, frmMain frm)
         {
             this.main = frm;
             string outputDir;
             try
             {
-                outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectory(author, title) : settings.outDir;
+                outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectory(author, sidecarName) : settings.outDir;
             }
             catch (Exception ex)
             {

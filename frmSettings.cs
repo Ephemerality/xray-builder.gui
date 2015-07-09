@@ -79,7 +79,7 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(chkSoftHyphen,
                 "Ignore soft hyphens (Unicode U+00AD) while searching\r\nfor terms. This may slow down the parsing process slightly.");
             toolTip1.SetToolTip(chkUseNew,
-                "Write the X-Ray file in the new format for Paperwhite 2\r\nor Voyage firmware 5.6+. Massively slower than the\r\nnormal build process and is still in alpha testing.");
+                "Write the X-Ray file in the new format for Paperwhite 2\r\nor Voyage firmware 5.6+.\r\nIf you have one of these devices but this does not work, try the old format.");
             toolTip1.SetToolTip(chkAndroid,
                 "Changes the naming convention of the X-Ray file for the\r\nAndroid Kindle app. Forces building with the new format.");
             toolTip1.SetToolTip(chkUTF8, "Write the X-Ray file in UTF8 instead of ANSI.");
@@ -93,7 +93,7 @@ namespace XRayBuilderGUI
                 "Search Amazon.co.uk first, use Amazon.com as fallback.\r\n(Amazon.com is used if Amazon.co.uk is not selected.)");
             toolTip1.SetToolTip(chkEnableEdit,
                 "Open Notepad to enable editing of detected Chapters\r\nand Aliases before final X-Ray creation.");
-            toolTip1.SetToolTip(chkSubDirectories, "Save generated files to an \"Author\\Title.sdr\" subdirectory.");
+            toolTip1.SetToolTip(chkSubDirectories, "Save generated files to an \"Author\\Filename.sdr\" subdirectory.");
             toolTip1.SetToolTip(btnLogs, "Open the log files directory.");
             toolTip1.SetToolTip(chkOverwrite,
                 "Overwrite exiting AuthorProfile and\r\nEndActions files, if they exist.");

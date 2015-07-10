@@ -218,6 +218,8 @@ namespace XRayBuilderGUI
             startInfo.Arguments = "-r -d \"" + mobiFile + @""" """ + randomFile + @"""";
             startInfo.RedirectStandardOutput = true;
             startInfo.RedirectStandardError = true;
+            startInfo.StandardOutputEncoding = Encoding.UTF8;
+            startInfo.StandardErrorEncoding = Encoding.UTF8;
             startInfo.UseShellExecute = false;
             // Hide console window
             startInfo.CreateNoWindow = true;

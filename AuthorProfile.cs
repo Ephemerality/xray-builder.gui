@@ -371,7 +371,11 @@ namespace XRayBuilderGUI
 
             // Parse Book image URL
             HtmlNode bookImageLoc2 = bookHlmlDoc.DocumentNode.SelectSingleNode("//*[@id='imgBlkFront']");
-            string bookImageUrl = bookImageLoc2.GetAttributeValue("src", "");
+            string bookImageUrl = "";
+            if (bookImageLoc2 == null)
+                main.Log("Error finding book image. If you want, you can report the book's Amazon URL to help with parsing.");
+            else
+                bookImageUrl = bookImageLoc2.GetAttributeValue("src", "");
             //var bookImageUrl2 = Regex.Replace(bookImageLoc2.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
 
             // Generate random book image URL because Amazon keep changing format!

@@ -39,10 +39,10 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="penName" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">Anonymous</Value>
     </Setting>
     <Setting Name="realName" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">Anonymous</Value>
     </Setting>
     <Setting Name="amazonUk" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -54,7 +54,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="utf8" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="overwrite" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>

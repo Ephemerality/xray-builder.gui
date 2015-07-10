@@ -169,7 +169,7 @@ namespace XRayBuilderGUI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Anonymous")]
         public string penName {
             get {
                 return ((string)(this["penName"]));
@@ -181,7 +181,7 @@ namespace XRayBuilderGUI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Anonymous")]
         public string realName {
             get {
                 return ((string)(this["realName"]));
@@ -229,7 +229,7 @@ namespace XRayBuilderGUI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool utf8 {
             get {
                 return ((bool)(this["utf8"]));

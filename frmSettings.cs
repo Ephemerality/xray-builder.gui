@@ -82,7 +82,7 @@ namespace XRayBuilderGUI
                 "Write the X-Ray file in the new format for Paperwhite 2\r\nor Voyage firmware 5.6+.\r\nIf you have one of these devices but this does not work, try the old format.");
             toolTip1.SetToolTip(chkAndroid,
                 "Changes the naming convention of the X-Ray file for the\r\nAndroid Kindle app. Forces building with the new format.");
-            toolTip1.SetToolTip(chkUTF8, "Write the X-Ray file in UTF8 instead of ANSI.");
+            toolTip1.SetToolTip(chkUTF8, "Write the X-Ray file in UTF8 instead of ANSI.\r\nUse this option if there are accented characters in your book, the title, or author's name.");
             toolTip1.SetToolTip(txtReal, "Required during the EndActions.data file\r\n" +
                                          "creation. This information allows you to\r\n" +
                                          "rate this book on Amazon.");

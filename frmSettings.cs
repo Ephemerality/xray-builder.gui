@@ -79,10 +79,15 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(chkSoftHyphen,
                 "Ignore soft hyphens (Unicode U+00AD) while searching\r\nfor terms. This may slow down the parsing process slightly.");
             toolTip1.SetToolTip(chkUseNew,
-                "Write the X-Ray file in the new format for Paperwhite 2\r\nor Voyage firmware 5.6+.\r\nIf you have one of these devices but this does not work, try the old format.");
+                "Write the X-Ray file in the new format for\r\n" +
+                "Paperwhite 2 or Voyage firmware 5.6+. If\r\n" +
+                "you have one of these devices but this\r\n" +
+                "does notwork, try the old format.");
             toolTip1.SetToolTip(chkAndroid,
                 "Changes the naming convention of the X-Ray file for the\r\nAndroid Kindle app. Forces building with the new format.");
-            toolTip1.SetToolTip(chkUTF8, "Write the X-Ray file in UTF8 instead of ANSI.\r\nUse this option if there are accented characters in your book, the title, or author's name.");
+            toolTip1.SetToolTip(chkUTF8, "Write the X-Ray file in UTF8 instead of ANSI.\r\n" +
+                "Use this option if there are accented characters\r\n" +
+                "in your book, the title, or author's name.");
             toolTip1.SetToolTip(txtReal, "Required during the EndActions.data file\r\n" +
                                          "creation. This information allows you to\r\n" +
                                          "rate this book on Amazon.");
@@ -93,13 +98,15 @@ namespace XRayBuilderGUI
                 "Search Amazon.co.uk first, use Amazon.com as fallback.\r\n(Amazon.com is used if Amazon.co.uk is not selected.)");
             toolTip1.SetToolTip(chkEnableEdit,
                 "Open Notepad to enable editing of detected Chapters\r\nand Aliases before final X-Ray creation.");
-            toolTip1.SetToolTip(chkSubDirectories, "Save generated files to an \"Author\\Filename.sdr\" subdirectory.");
+            toolTip1.SetToolTip(chkSubDirectories, "Save generated files to an\r\n" +
+                                         "\"Author\\Filename.sdr\" subdirectory.");
             toolTip1.SetToolTip(btnLogs, "Open the log files directory.");
             toolTip1.SetToolTip(chkOverwrite,
                 "Overwrite exiting AuthorProfile and\r\nEndActions files, if they exist.");
             toolTip1.SetToolTip(chkSendToKindle,
                 "Automatically send to your Kindle documents folder\r\nif your Kindle is connected when files are generated.");
-            toolTip1.SetToolTip(chkSaveHtml, "Save parsed HTML files. This is generally used\r\n for debugging and can be left unchecked");
+            toolTip1.SetToolTip(chkSaveHtml, "Save parsed HTML files. This is generally used\r\n" +
+                                         "for debugging and can be left unchecked.");
             toolTip1.SetToolTip(btnHelp, "View the included help documentation.");
         }
 

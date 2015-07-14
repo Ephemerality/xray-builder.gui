@@ -18,7 +18,6 @@ namespace XRayBuilderGUI
         public bool Exiting = false;
         public bool BookFoundShelfari = false;
         public bool CheckTimestamp = false;
-        private bool _previewClear;
 
         private string currentLog = Environment.CurrentDirectory + @"\log\" +
                                     string.Format("{0:yyyy.MM.dd.hh.mm.ss}.txt", DateTime.Now);
@@ -48,6 +47,42 @@ namespace XRayBuilderGUI
             {
                 txtOutput.AppendText(message + "\r\n");
             }
+        }
+
+        private bool previewClear()
+        {
+            frmAP.lblTitle.Text = "";
+            frmAP.pbAuthorImage.Image = Properties.Resources.AI;
+            frmAP.lblBio1.Text = "";
+            frmAP.lblBio2.Text = "";
+            frmAP.lblKindleBooks.Text = "";
+            for (var i = 0; i < 4; i++)
+            {
+                foreach (Control contrl in frmAP.Controls)
+                {
+                    if (contrl.Name == ("lblBook" + (i + 1)))
+                    {
+                        contrl.Text = "";
+                    }
+                }
+            }
+            frmEA.lblPost.Text = "";
+            frmEA.lblMoreBooks.Text = "";
+            for (var i = 0; i < 5; i++)
+            {
+                foreach (Control contrl in frmEA.Controls)
+                {
+                    if (contrl.Name == ("lblBook" + (i + 1)))
+                    {
+                        contrl.Text = "";
+                    }
+                }
+            }
+            frmEA.lblBook6.Text = "";
+            frmEA.lblAuthor1.Text = "";
+            frmEA.lblBook7.Text = "";
+            frmEA.lblAuthor2.Text = "";
+            return true;
         }
         
         private void btnBrowseMobi_Click(object sender, EventArgs e)
@@ -470,30 +505,37 @@ namespace XRayBuilderGUI
                 aa = new AuthorProfile(results[5], results[4], results[0],
                     results[1], results[2], randomFile, Path.GetFileNameWithoutExtension(txtMobi.Text), this);
 
+            previewClear();
+
                 frmAP.lblTitle.Text = aa.ApTitle;
                 frmAP.pbAuthorImage.Image = aa.ApAuthorImage;
+
+                var g = Graphics.FromHwnd(frmAP.lblBio1.Handle);
+                int charFitted, linesFitted;
+                g.MeasureString(aa.BioTrimmed, frmAP.lblBio1.Font, frmAP.lblBio1.Size,
+                    StringFormat.GenericTypographic, out charFitted, out linesFitted);
+
                 if (aa.BioTrimmed != "")
                 {
-                    frmAP.lblBio1.Text = aa.BioTrimmed.Substring(0, Math.Min(aa.BioTrimmed.Length - 1, 315));
-                    if (aa.BioTrimmed.Length >= 655)
-                        frmAP.lblBio2.Text = aa.BioTrimmed.Substring(315, 340) + "...";
+                    if (aa.BioTrimmed.Length > charFitted)
+                    {
+                        string bio1Trim = aa.BioTrimmed.Substring(0, Math.Min(aa.BioTrimmed.Length, charFitted - 10));
+                        frmAP.lblBio1.Text = bio1Trim.Substring(0, bio1Trim.LastIndexOf(" "));
+                        frmAP.lblBio2.Text = aa.BioTrimmed.Substring(bio1Trim.LastIndexOf(" ") + 1);
+                    }
+                    else
+                    {
+                        frmAP.lblBio1.Text = aa.BioTrimmed;
+                    }
                 }
+
                 frmAP.lblKindleBooks.Text = aa.ApSubTitle;
                 for (var i = 0; i < Math.Min(aa.AuthorsOtherBookNames.Count - 1, 4); i++)
                 {
                     foreach (Control contrl in frmAP.Controls)
                     {
                         if (contrl.Name == ("lblBook" + (i + 1)))
-                        {
-                            if (aa.AuthorsOtherBookNames[i].Length > 40)
-                            {
-                                contrl.Text = aa.AuthorsOtherBookNames[i].Substring(0, 40);
-                            }
-                            else
-                            {
-                                contrl.Text = aa.AuthorsOtherBookNames[i];
-                            }
-                        }
+                            contrl.Text = aa.AuthorsOtherBookNames[i];
                     }
                 }
                 frmEA.lblPost.Text = String.Format("Post on Amazon (as {0})",
@@ -504,17 +546,8 @@ namespace XRayBuilderGUI
                     foreach (Control contrl in frmEA.Controls)
                     {
                         if (contrl.Name == ("lblBook" + (i + 1)))
-                        {
-                            if (aa.AuthorsOtherBookNames[i].Length > 40)
-                            {
-                                contrl.Text = aa.AuthorsOtherBookNames[i].Substring(0, 40);
-                            }
-                            else
-                            {
-                                contrl.Text = aa.AuthorsOtherBookNames[i];
-                            }
-                        }
-                    }
+                            contrl.Text = aa.AuthorsOtherBookNames[i];
+}
                 }
                 if (aa.PurchAlsoBoughtTitles.Count > 1 && aa.PpurchAlsoBoughtAuthorNames.Count > 1)
                 {

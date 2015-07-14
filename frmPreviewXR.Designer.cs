@@ -68,9 +68,9 @@
             this.lblTitle.AutoEllipsis = true;
             this.lblTitle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(242)))), ((int)(((byte)(242)))));
             this.lblTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
-            this.lblTitle.Location = new System.Drawing.Point(18, 17);
+            this.lblTitle.Location = new System.Drawing.Point(21, 17);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(265, 20);
+            this.lblTitle.Size = new System.Drawing.Size(260, 20);
             this.lblTitle.TabIndex = 86;
             this.lblTitle.Text = "X-Ray";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;

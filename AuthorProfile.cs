@@ -86,8 +86,9 @@ namespace XRayBuilderGUI
             }
             string percAuthorName = author.Replace(" ", "%20");
             string dashAuthorName = author.Replace(" ", "-");
+            string plusAuthorName = author.Replace(" ", "+");
             string amazonAuthorSearchUrl = @"http://www.amazon.com/s/?url=search-alias%3Dstripbooks&field-keywords=" +
-                                        percAuthorName;
+                                        plusAuthorName;
             main.Log("Searching for Author's page on Amazon...");
 
             // Search Amazon for Author
@@ -174,6 +175,7 @@ namespace XRayBuilderGUI
                 }
                 BioTrimmed = bio.InnerHtml.Replace("\"", "'");
                 BioTrimmed = Regex.Replace(BioTrimmed, @"<br><br>", " ", RegexOptions.IgnoreCase);
+                BioTrimmed = Regex.Replace(bio.InnerHtml, @"[ ]{2,}", " ", RegexOptions.IgnoreCase);
                 main.Log("Author biography found on Amazon!");
                 main.Log("Attempting to create Author Profile...");
             }
@@ -375,8 +377,7 @@ namespace XRayBuilderGUI
             if (bookImageLoc2 == null)
                 main.Log("Error finding book image. If you want, you can report the book's Amazon URL to help with parsing.");
             else
-                bookImageUrl = bookImageLoc2.GetAttributeValue("src", "");
-            //var bookImageUrl2 = Regex.Replace(bookImageLoc2.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
+                bookImageUrl = Regex.Replace(bookImageLoc2.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
 
             // Generate random book image URL because Amazon keep changing format!
             if (bookImageUrl == "")
@@ -404,8 +405,11 @@ namespace XRayBuilderGUI
                     if (nodeTitleCheck == "")
                     {
                         nodeTitle = item.SelectSingleNode(".//div/a");
-                        PurchAlsoBoughtTitles.Add(Regex.Replace(nodeTitle.InnerText, @"&#133;", "...",
-                            RegexOptions.Multiline));
+                        //Remove CR, LF and TAB
+                        string cleanTitle = Regex.Replace(nodeTitle.InnerText, @"\t|\n|\r", String.Empty);
+                        cleanTitle = cleanTitle.Trim();
+                        cleanTitle = Regex.Replace(cleanTitle, @"&#133;", "...");
+                        PurchAlsoBoughtTitles.Add(cleanTitle);
                     }
                     else
                     {

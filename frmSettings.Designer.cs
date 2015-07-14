@@ -191,7 +191,7 @@
             this.chkUseNew.AutoSize = true;
             this.chkUseNew.Location = new System.Drawing.Point(255, 26);
             this.chkUseNew.Name = "chkUseNew";
-            this.chkUseNew.Size = new System.Drawing.Size(132, 17);
+            this.chkUseNew.Size = new System.Drawing.Size(137, 17);
             this.chkUseNew.TabIndex = 22;
             this.chkUseNew.Text = "Use New X-Ray Format";
             this.chkUseNew.UseVisualStyleBackColor = true;
@@ -331,6 +331,7 @@
             // chkSendToKindle
             // 
             this.chkSendToKindle.AutoSize = true;
+            this.chkSendToKindle.Enabled = false;
             this.chkSendToKindle.Location = new System.Drawing.Point(9, 95);
             this.chkSendToKindle.Name = "chkSendToKindle";
             this.chkSendToKindle.Size = new System.Drawing.Size(158, 17);
@@ -466,9 +467,9 @@
             this.lblVersion.AutoSize = true;
             this.lblVersion.Cursor = System.Windows.Forms.Cursors.Hand;
             this.lblVersion.ForeColor = System.Drawing.SystemColors.ControlDark;
-            this.lblVersion.Location = new System.Drawing.Point(283, 393);
+            this.lblVersion.Location = new System.Drawing.Point(281, 393);
             this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(130, 13);
+            this.lblVersion.Size = new System.Drawing.Size(135, 13);
             this.lblVersion.TabIndex = 32;
             this.lblVersion.Text = "X-Ray Builder GUI v0.0.0.0";
             this.lblVersion.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;

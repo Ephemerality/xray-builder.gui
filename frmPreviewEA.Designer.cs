@@ -57,6 +57,7 @@
             this.lblAuthor2.TabIndex = 98;
             this.lblAuthor2.Text = "Author";
             this.lblAuthor2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblAuthor2.UseMnemonic = false;
             // 
             // lblBook7
             // 
@@ -69,6 +70,7 @@
             this.lblBook7.TabIndex = 97;
             this.lblBook7.Text = "Book 2 ...Waiting...";
             this.lblBook7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblBook7.UseMnemonic = false;
             // 
             // lblAuthor1
             // 
@@ -81,6 +83,7 @@
             this.lblAuthor1.TabIndex = 96;
             this.lblAuthor1.Text = "Author";
             this.lblAuthor1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblAuthor1.UseMnemonic = false;
             // 
             // lblBook6
             // 
@@ -93,6 +96,7 @@
             this.lblBook6.TabIndex = 95;
             this.lblBook6.Text = "Book 1 ...Waiting...";
             this.lblBook6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblBook6.UseMnemonic = false;
             // 
             // lblBook5
             // 
@@ -105,6 +109,7 @@
             this.lblBook5.TabIndex = 94;
             this.lblBook5.Text = "Book 5 ...Waiting...";
             this.lblBook5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblBook5.UseMnemonic = false;
             // 
             // lblBook4
             // 
@@ -117,6 +122,7 @@
             this.lblBook4.TabIndex = 93;
             this.lblBook4.Text = "Book 4 ...Waiting...";
             this.lblBook4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblBook4.UseMnemonic = false;
             // 
             // lblBook3
             // 
@@ -129,6 +135,7 @@
             this.lblBook3.TabIndex = 92;
             this.lblBook3.Text = "Book 3 ...Waiting...";
             this.lblBook3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblBook3.UseMnemonic = false;
             // 
             // lblBook2
             // 
@@ -141,6 +148,7 @@
             this.lblBook2.TabIndex = 91;
             this.lblBook2.Text = "Book 2 ...Waiting...";
             this.lblBook2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblBook2.UseMnemonic = false;
             // 
             // lblBook1
             // 
@@ -153,6 +161,7 @@
             this.lblBook1.TabIndex = 90;
             this.lblBook1.Text = "Book 1 ...Waiting...";
             this.lblBook1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblBook1.UseMnemonic = false;
             // 
             // label5
             // 
@@ -207,9 +216,9 @@
             // 
             this.lblTitle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(242)))), ((int)(((byte)(242)))));
             this.lblTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
-            this.lblTitle.Location = new System.Drawing.Point(18, 17);
+            this.lblTitle.Location = new System.Drawing.Point(21, 17);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(265, 20);
+            this.lblTitle.Size = new System.Drawing.Size(260, 20);
             this.lblTitle.TabIndex = 85;
             this.lblTitle.Text = "Before you go...";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -223,7 +232,7 @@
             this.pbBackground.TabIndex = 84;
             this.pbBackground.TabStop = false;
             // 
-            // frmPreviewEA
+            // FrmPreviewEa
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;

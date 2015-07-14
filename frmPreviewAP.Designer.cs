@@ -50,9 +50,9 @@ namespace XRayBuilderGUI
             this.lblTitle.AutoEllipsis = true;
             this.lblTitle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(242)))), ((int)(((byte)(242)))));
             this.lblTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
-            this.lblTitle.Location = new System.Drawing.Point(18, 17);
+            this.lblTitle.Location = new System.Drawing.Point(23, 17);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(265, 20);
+            this.lblTitle.Size = new System.Drawing.Size(260, 20);
             this.lblTitle.TabIndex = 68;
             this.lblTitle.Text = "About the Author ...Waiting...";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -89,6 +89,7 @@ namespace XRayBuilderGUI
             this.lblBook4.TabIndex = 74;
             this.lblBook4.Text = "Book 4 ...Waiting...";
             this.lblBook4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblBook4.UseMnemonic = false;
             // 
             // lblBook3
             // 
@@ -101,6 +102,7 @@ namespace XRayBuilderGUI
             this.lblBook3.TabIndex = 73;
             this.lblBook3.Text = "Book 3 ...Waiting...";
             this.lblBook3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblBook3.UseMnemonic = false;
             // 
             // lblBook2
             // 
@@ -113,6 +115,7 @@ namespace XRayBuilderGUI
             this.lblBook2.TabIndex = 72;
             this.lblBook2.Text = "Book 2 ...Waiting...";
             this.lblBook2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblBook2.UseMnemonic = false;
             // 
             // lblBook1
             // 
@@ -125,6 +128,7 @@ namespace XRayBuilderGUI
             this.lblBook1.TabIndex = 71;
             this.lblBook1.Text = "Book 1 ...Waiting...";
             this.lblBook1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblBook1.UseMnemonic = false;
             // 
             // lblKindleBooks
             // 
@@ -159,7 +163,7 @@ namespace XRayBuilderGUI
             this.pbAuthorImage.TabIndex = 75;
             this.pbAuthorImage.TabStop = false;
             // 
-            // frmPreviewAP
+            // FrmPreviewAp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;

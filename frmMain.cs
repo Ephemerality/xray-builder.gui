@@ -696,7 +696,8 @@ namespace XRayBuilderGUI
                             shelfariHtmlDoc.Load(webClient.OpenRead(shelfariSearchUrl));
                             if (shelfariHtmlDoc.DocumentNode.InnerText.Contains("Your search did not return any results"))
                             {
-                                Log("Unable to find a Kindle edition of this book on Shelfari!");
+                                Log("Unable to find a Kindle edition of this book on Shelfari!\r\n" +
+                                    "You may have to search manually, especially if your book's author and/or title contain any accented characters.");
                                 return;
                             }
                         }
@@ -752,7 +753,8 @@ namespace XRayBuilderGUI
                 }
             }
             if (!BookFoundShelfari)
-                Log("Unable to find a Hardcover edition of this book on Shelfari!");
+                Log("Unable to find a hardcover edition of this book on Shelfari!\r\n" + 
+                    "You may have to search manually, especially if your book's author and/or title contain any accented characters.");
         }
 
         private void btnSettings_Click(object sender, EventArgs e)

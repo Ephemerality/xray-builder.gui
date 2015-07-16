@@ -615,7 +615,7 @@ namespace XRayBuilderGUI
                     sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", ent, e.id);
                 }
             }
-            main.Log("Writing entity_excerpt table...");
+            main.Log("Writing entity excerpt table...");
             command = new SQLiteCommand(sql, db);
             command.ExecuteNonQuery();
             main.prgBar.Value = main.prgBar.Maximum;
@@ -769,7 +769,7 @@ namespace XRayBuilderGUI
 
             [XmlIgnore] public List<int[]> Occurrences = new List<int[]>();
 
-            public bool MatchCase = true;
+            public bool MatchCase = false;
 
             public Term()
             {

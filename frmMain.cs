@@ -684,7 +684,7 @@ namespace XRayBuilderGUI
                     {
                         Log("Searching for " + bindingTypes[i] + " edition...");
                         // Insert parameters (mainly for searching with removed diacritics). Seems to work fine without replacing spaces?
-                        shelfariHtmlDoc.LoadHtml(HttpDownloader.DownloadURL(string.Format(shelfariSearchUrlBase, results[4], results[5], bindingTypes[i])));
+                        shelfariHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(string.Format(shelfariSearchUrlBase, results[4], results[5], bindingTypes[i])));
                         if (!shelfariHtmlDoc.DocumentNode.InnerText.Contains("Your search did not return any results"))
                         {
                             shelfariBookUrl = FindShelfariURL(shelfariHtmlDoc, results[4], results[5]);

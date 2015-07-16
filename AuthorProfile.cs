@@ -145,7 +145,7 @@ namespace XRayBuilderGUI
             main.Log(String.Format("Author's Amazon Page URL: {0}", authorAmazonWebsiteLocationLog));
 
             // Load Author's Amazon page
-            string authorpageHtml = Functions.GetPageHtml(authorAmazonWebsiteLocation);
+            string authorpageHtml = HttpDownloader.GetPageHtml(authorAmazonWebsiteLocation);
             authorHtmlDoc.LoadHtml(authorpageHtml);
 
             if (Properties.Settings.Default.saveHtml)
@@ -349,7 +349,7 @@ namespace XRayBuilderGUI
             HtmlDocument bookHlmlDoc = new HtmlDocument {OptionAutoCloseOnEnd = true};
             try
             {
-                bookHlmlDoc.LoadHtml(Functions.GetPageHtml(ebookLocation));
+                bookHlmlDoc.LoadHtml(HttpDownloader.GetPageHtml(ebookLocation));
             }
             catch (Exception ex)
             {

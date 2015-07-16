@@ -16,7 +16,6 @@ namespace XRayBuilderGUI
     {
         public bool CheckInternet = false;
         public bool Exiting = false;
-        public bool BookFoundShelfari = false;
         public bool CheckTimestamp = false;
 
         private string currentLog = Environment.CurrentDirectory + @"\log\" +
@@ -665,59 +664,81 @@ namespace XRayBuilderGUI
                 String.Format(
                     "Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
                     results[2], results[0], results[4], results[5], results[1]));
-
-            //Get Shelfari Search URL
-            var shelfariSearchUrl = @"http://www.shelfari.com/search/books?Author=" +
-                                    Regex.Replace(results[4], " ", "%20", RegexOptions.IgnoreCase) +
-                                    "&Title=" +
-                                    Regex.Replace(results[5], " ", "%20", RegexOptions.IgnoreCase) +
-                                    "&Binding=Hardcover";
-            Log("Searching for book on Shelfari...");
+                        
             Directory.Delete(randomFile, true);
 
+            //Get Shelfari Search URL
+            Log("Searching for book on Shelfari...");
+            string shelfariSearchUrlBase = @"http://www.shelfari.com/search/books?Author={0}&Title={1}&Binding={2}";
+            string[] bindingTypes = {"Hardcover", "Kindle", "Paperback"};
+            
             // Search book on Shelfari
-            var shelfariHtmlDoc = new HtmlAgilityPack.HtmlDocument();
-            using (var webClient = new WebClient())
+            bool bookFound = false;
+            string shelfariBookUrl = "";
+            try
             {
-                try
+                HtmlAgilityPack.HtmlDocument shelfariHtmlDoc = new HtmlAgilityPack.HtmlDocument();
+                for (int j = 0; j <= 1; j++)
                 {
-                    using (var stream = webClient.OpenRead(shelfariSearchUrl))
+                    for (int i = 0; i < bindingTypes.Length; i++)
                     {
-                        shelfariHtmlDoc.Load(stream);
-                        if (shelfariHtmlDoc.DocumentNode.InnerText.Contains("Your search did not return any results"))
+                        Log("Searching for " + bindingTypes[i] + " edition...");
+                        // Insert parameters (mainly for searching with removed diacritics). Seems to work fine without replacing spaces?
+                        shelfariHtmlDoc.LoadHtml(HttpDownloader.DownloadURL(string.Format(shelfariSearchUrlBase, results[4], results[5], bindingTypes[i])));
+                        if (!shelfariHtmlDoc.DocumentNode.InnerText.Contains("Your search did not return any results"))
                         {
-                            Log(
-                                "Unable to find a Hardcover edition of this book on Shelfari!\r\nSearching for Kindle edition...");
-                            shelfariSearchUrl = @"http://www.shelfari.com/search/books?Author=" +
-                                                Regex.Replace(results[4], " ", "%20", RegexOptions.IgnoreCase) +
-                                                "&Title=" +
-                                                Regex.Replace(results[5], " ", "%20", RegexOptions.IgnoreCase) +
-                                                "&Binding=Kindle";
-                            shelfariHtmlDoc.Load(webClient.OpenRead(shelfariSearchUrl));
-                            if (shelfariHtmlDoc.DocumentNode.InnerText.Contains("Your search did not return any results"))
+                            shelfariBookUrl = FindShelfariURL(shelfariHtmlDoc, results[4], results[5]);
+                            if (shelfariBookUrl != "")
                             {
-                                Log("Unable to find a Kindle edition of this book on Shelfari!");
-                                return;
+                                bookFound = true;
+                                break;
                             }
                         }
+                        if (!bookFound)
+                        {
+                            Log("Unable to find a " + bindingTypes[i] + " edition of this book on Shelfari!");
+                        }
                     }
-
-                    webClient.Dispose();
-                }
-                catch (Exception ex)
-                {
-                    Log("Exception caught: " + ex.Message);
-                    return;
+                    if (bookFound) break;
+                    // Attempt to remove diacritics (accented characters) from author & title for searching
+                    string newAuthor = results[4].RemoveDiacritics();
+                    string newTitle = results[5].RemoveDiacritics();
+                    if (!results[4].Equals(newAuthor) || !results[5].Equals(newTitle))
+                    {
+                        results[4] = newAuthor;
+                        results[5] = newTitle;
+                        Log("Accented characters detected. Attempting to search without them.");
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                Log("Error: " + ex.Message);
+                return;
+            }
 
+            if (bookFound)
+            {
+                Log("Book found on Shelfari!");
+                Log(results[5] + " by " + results[4]);
+                txtShelfari.Text = shelfariBookUrl;
+                txtShelfari.Refresh();
+                Log("Shelfari URL updated!\r\nYou may want to visit the URL to ensure it is correct and add/modify terms if necessary.");
+            }
+            else
+            {
+                Log("Unable to find this book on Shelfari! You may have to search manually.");
+            }
+        }
 
+        private string FindShelfariURL(HtmlAgilityPack.HtmlDocument shelfariHtmlDoc, string author, string title)
+        {
             // Try to find book's page from Shelfari search
             string shelfariBookUrl = "";
-            string bookSeries = "";
             int index = 0;
             List<string> listofthings = new List<string>();
             List<string> listoflinks = new List<string>();
+            Dictionary<string, string> retData = new Dictionary<string, string>();
 
             foreach (HtmlAgilityPack.HtmlNode bookItems in shelfariHtmlDoc.DocumentNode.SelectNodes("//li[@class='item']/div[@class='text']"))
             {
@@ -732,27 +753,23 @@ namespace XRayBuilderGUI
                 index = 0;
                 foreach (string line in listofthings)
                 {
-                    if (listofthings.Contains("(Author)") &&
-                        line.StartsWith(results[5], StringComparison.OrdinalIgnoreCase) &&
-                        listofthings.Contains(results[4]))
+                    // Search for author with spaces removed to avoid situations like "J.R.R. Tolkien" / "J. R. R. Tolkien"
+                    // May cause false matches, we'll see.
+                    // Also remove diacritics from titles when matching just in case...
+                    // Searching for Children of Húrin will give a false match on the first pass before diacritics are removed from the search URL
+                    if ((listofthings.Contains("(Author)") || listofthings.Contains("(Author),")) &&
+                        line.RemoveDiacritics().StartsWith(title.RemoveDiacritics(), StringComparison.OrdinalIgnoreCase) &&
+                        (listofthings.Contains(author) || listofthings.Exists(r => r.Replace(" ", "") == author.Replace(" ", ""))))
                     {
                         shelfariBookUrl = listoflinks[index].ToString();
-                        bookSeries = listofthings[0].ToString();
                         shelfariBookUrl = Regex.Replace(shelfariBookUrl, "<a href=\"", "", RegexOptions.None);
                         shelfariBookUrl = Regex.Replace(shelfariBookUrl, "\">.*?</a>", "", RegexOptions.None);
-                        Log("Book found on Shelfari!");
-                        Log(results[5] + " by " + results[4] + " (" + bookSeries + ")");
-                        txtShelfari.Text = shelfariBookUrl;
-                        txtShelfari.Refresh();
-                        Log("Shelfari URL updated!");
-                        BookFoundShelfari = true;
-                        break;
+                        return shelfariBookUrl;
                     }
                     index++;
                 }
             }
-            if (!BookFoundShelfari)
-                Log("Unable to find a Hardcover edition of this book on Shelfari!");
+            return "";
         }
 
         private void btnSettings_Click(object sender, EventArgs e)

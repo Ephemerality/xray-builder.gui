@@ -22,6 +22,12 @@ namespace XRayBuilderGUI
         public WebHeaderCollection Headers { get; set; }
         public Uri Url { get; set; }
 
+        public static string DownloadURL(string url)
+        {
+            HttpDownloader http = new HttpDownloader(url);
+            return http.GetPage();
+        }
+
         public HttpDownloader(string url) : this(url, null, null, null) { }
 
         public HttpDownloader(string url, CookieContainer jar, string referer, string userAgent)

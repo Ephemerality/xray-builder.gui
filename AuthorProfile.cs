@@ -31,7 +31,7 @@ namespace XRayBuilderGUI
         public List<string> AuthorsOtherBookNames = new List<string>();
         public List<string> PurchAlsoBoughtTitles = new List<string>();
         public List<string> PurchAlsoBoughtAsinNumbers = new List<string>();
-        public List<string> PpurchAlsoBoughtAuthorNames = new List<string>();
+        public List<string> PurchAlsoBoughtAuthorNames = new List<string>();
 
         public string EaSubTitle = null;
 
@@ -145,7 +145,7 @@ namespace XRayBuilderGUI
             main.Log(String.Format("Author's Amazon Page URL: {0}", authorAmazonWebsiteLocationLog));
 
             // Load Author's Amazon page
-            string authorpageHtml = Functions.GetPageHtml(authorAmazonWebsiteLocation);
+            string authorpageHtml = HttpDownloader.GetPageHtml(authorAmazonWebsiteLocation);
             authorHtmlDoc.LoadHtml(authorpageHtml);
 
             if (Properties.Settings.Default.saveHtml)
@@ -352,7 +352,7 @@ namespace XRayBuilderGUI
             HtmlDocument bookHlmlDoc = new HtmlDocument {OptionAutoCloseOnEnd = true};
             try
             {
-                bookHlmlDoc.LoadHtml(Functions.GetPageHtml(ebookLocation));
+                bookHlmlDoc.LoadHtml(HttpDownloader.GetPageHtml(ebookLocation));
             }
             catch (Exception ex)
             {
@@ -364,7 +364,7 @@ namespace XRayBuilderGUI
                 try
                 {
                     File.WriteAllText(Environment.CurrentDirectory +
-                                      String.Format(@"\dmp\{0}.bookHlml.txt", asin),
+                                      String.Format(@"\dmp\{0}.bookHtml.txt", asin),
                         authorHtmlDoc.DocumentNode.InnerHtml);
                 }
                 catch (Exception ex)
@@ -419,11 +419,8 @@ namespace XRayBuilderGUI
                         PurchAlsoBoughtTitles.Add(nodeTitle.GetAttributeValue("title", ""));
                     }
 
-                    HtmlNode nodeAsin = item.SelectSingleNode(".//div");
-                    PurchAlsoBoughtAsinNumbers.Add(nodeAsin.GetAttributeValue("data-asin", ""));
-
-                    HtmlNode nodeAuthor = item.SelectSingleNode(".//div/div");
-                    PpurchAlsoBoughtAuthorNames.Add(nodeAuthor.InnerText.Trim());
+                    PurchAlsoBoughtAsinNumbers.Add(item.SelectSingleNode(".//div").GetAttributeValue("data-asin", ""));
+                    PurchAlsoBoughtAuthorNames.Add(item.SelectSingleNode(".//div/div").InnerText.Trim());
                 }
             }
             catch (Exception ex)
@@ -478,7 +475,7 @@ namespace XRayBuilderGUI
                     writer.WriteAttributeString("hasSample", "false");
                     writer.WriteAttributeString("asin", PurchAlsoBoughtAsinNumbers[i]);
                     writer.WriteElementString("title", PurchAlsoBoughtTitles[i]);
-                    writer.WriteElementString("author", PpurchAlsoBoughtAuthorNames[i]);
+                    writer.WriteElementString("author", PurchAlsoBoughtAuthorNames[i]);
                     writer.WriteEndElement();
                 }
                 writer.WriteEndElement();

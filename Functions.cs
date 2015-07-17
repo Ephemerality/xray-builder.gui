@@ -187,12 +187,6 @@ namespace XRayBuilderGUI
             return true;
         }
 
-        public static string GetPageHtml(string strUrl)
-        {
-            HttpDownloader client = new HttpDownloader(strUrl);
-            return client.GetPage();
-        }
-
         public static string GetTempDirectory()
         {
             string path;

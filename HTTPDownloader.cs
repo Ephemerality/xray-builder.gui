@@ -22,7 +22,7 @@ namespace XRayBuilderGUI
         public WebHeaderCollection Headers { get; set; }
         public Uri Url { get; set; }
 
-        public static string DownloadURL(string url)
+        public static string GetPageHtml(string url)
         {
             HttpDownloader http = new HttpDownloader(url);
             return http.GetPage();

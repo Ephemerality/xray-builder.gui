@@ -548,12 +548,12 @@ namespace XRayBuilderGUI
                             contrl.Text = aa.AuthorsOtherBookNames[i];
 }
                 }
-                if (aa.PurchAlsoBoughtTitles.Count > 1 && aa.PpurchAlsoBoughtAuthorNames.Count > 1)
+                if (aa.PurchAlsoBoughtTitles.Count > 1 && aa.PurchAlsoBoughtAuthorNames.Count > 1)
                 {
                     frmEA.lblBook6.Text = aa.PurchAlsoBoughtTitles[0];
-                    frmEA.lblAuthor1.Text = aa.PpurchAlsoBoughtAuthorNames[0];
+                    frmEA.lblAuthor1.Text = aa.PurchAlsoBoughtAuthorNames[0];
                     frmEA.lblBook7.Text = aa.PurchAlsoBoughtTitles[1];
-                    frmEA.lblAuthor2.Text = aa.PpurchAlsoBoughtAuthorNames[1];
+                    frmEA.lblAuthor2.Text = aa.PurchAlsoBoughtAuthorNames[1];
                 }
             //}
             /*catch (Exception ex)
@@ -684,7 +684,7 @@ namespace XRayBuilderGUI
                     {
                         Log("Searching for " + bindingTypes[i] + " edition...");
                         // Insert parameters (mainly for searching with removed diacritics). Seems to work fine without replacing spaces?
-                        shelfariHtmlDoc.LoadHtml(HttpDownloader.DownloadURL(string.Format(shelfariSearchUrlBase, results[4], results[5], bindingTypes[i])));
+                        shelfariHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(string.Format(shelfariSearchUrlBase, results[4], results[5], bindingTypes[i])));
                         if (!shelfariHtmlDoc.DocumentNode.InnerText.Contains("Your search did not return any results"))
                         {
                             shelfariBookUrl = FindShelfariURL(shelfariHtmlDoc, results[4], results[5]);

@@ -165,17 +165,20 @@ namespace XRayBuilderGUI
 
             // Try to find Author's Biography
             HtmlNode bio = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-bio' and @class='a-row']/div/div/span");
-            //Trim authour biography to less than 1500 characters and/or replace " -> '
+            //Trim authour biography to less than 1000 characters and/or replace more problematic characters.
             if (bio.InnerText.Trim().Length != 0)
             {
-                if (bio.InnerHtml.Length > 1500)
-                {
-                    string bioTrim = bio.InnerHtml.Substring(0, 1500);
-                    BioTrimmed = bioTrim.Substring(0, bioTrim.LastIndexOf(".") + 1);
-                }
-                BioTrimmed = bio.InnerHtml.Replace("\"", "'");
-                BioTrimmed = Regex.Replace(BioTrimmed, @"<br><br>", " ", RegexOptions.IgnoreCase);
-                BioTrimmed = Regex.Replace(bio.InnerHtml, @"[ ]{2,}", " ", RegexOptions.IgnoreCase);
+                    if (bio.InnerHtml.Length > 1000)
+                    {
+                        string bioTrim = bio.InnerHtml.Substring(0, 1000);
+                        BioTrimmed = bioTrim.Substring(0, bioTrim.LastIndexOf(".") + 1);
+                    }
+                BioTrimmed = BioTrimmed.Replace("\"", "'");
+                BioTrimmed = BioTrimmed.Replace("<br><br>", " ");
+                BioTrimmed = BioTrimmed.Replace("&amp;#133;", "...");
+                BioTrimmed = BioTrimmed.Replace("&#169;", "©");
+                BioTrimmed = BioTrimmed.Replace("&quot;", "'");
+                BioTrimmed = Regex.Replace(BioTrimmed, @"\s+", " ", RegexOptions.IgnoreCase);
                 main.Log("Author biography found on Amazon!");
                 main.Log("Attempting to create Author Profile...");
             }

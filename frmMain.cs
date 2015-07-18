@@ -494,72 +494,71 @@ namespace XRayBuilderGUI
             }
 
             // Added author name to log output
-            Log(
-                String.Format(
-                    "Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
-                    results[2], results[0], results[4], results[5], results[1]));
-            //try
-            //{
-                AuthorProfile aa;
-                aa = new AuthorProfile(results[5], results[4], results[0],
-                    results[1], results[2], randomFile, Path.GetFileNameWithoutExtension(txtMobi.Text), this);
+            Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
+                            results[2], results[0], results[4], results[5], results[1]));
+            try
+            {
+                BookInfo bookInfo = new BookInfo(results[5], results[4], results[0], results[1], results[2],
+                                                randomFile, Path.GetFileNameWithoutExtension(txtMobi.Text));
+                AuthorProfile ap = new AuthorProfile(bookInfo, this);
+                EndActions ea = new EndActions(ap, bookInfo, this);
+                ea.GenerateOld();
+                previewClear();
 
-            previewClear();
-
-                frmAP.lblTitle.Text = aa.ApTitle;
-                frmAP.pbAuthorImage.Image = aa.ApAuthorImage;
+                frmAP.lblTitle.Text = ap.ApTitle;
+                frmAP.pbAuthorImage.Image = ap.ApAuthorImage;
 
                 var g = Graphics.FromHwnd(frmAP.lblBio1.Handle);
                 int charFitted, linesFitted;
-                g.MeasureString(aa.BioTrimmed, frmAP.lblBio1.Font, frmAP.lblBio1.Size,
+                g.MeasureString(ap.BioTrimmed, frmAP.lblBio1.Font, frmAP.lblBio1.Size,
                     StringFormat.GenericTypographic, out charFitted, out linesFitted);
 
-                if (aa.BioTrimmed != "")
+                if (ap.BioTrimmed != "")
                 {
-                    if (aa.BioTrimmed.Length > charFitted)
+                    if (ap.BioTrimmed.Length > charFitted)
                     {
-                        string bio1Trim = aa.BioTrimmed.Substring(0, Math.Min(aa.BioTrimmed.Length, charFitted - 10));
+                        string bio1Trim = ap.BioTrimmed.Substring(0, Math.Min(ap.BioTrimmed.Length, charFitted - 10));
                         frmAP.lblBio1.Text = bio1Trim.Substring(0, bio1Trim.LastIndexOf(" "));
-                        frmAP.lblBio2.Text = aa.BioTrimmed.Substring(bio1Trim.LastIndexOf(" ") + 1);
+                        frmAP.lblBio2.Text = ap.BioTrimmed.Substring(bio1Trim.LastIndexOf(" ") + 1);
                     }
                     else
                     {
-                        frmAP.lblBio1.Text = aa.BioTrimmed;
+                        frmAP.lblBio1.Text = ap.BioTrimmed;
                     }
                 }
 
-                frmAP.lblKindleBooks.Text = aa.ApSubTitle;
-                for (var i = 0; i < Math.Min(aa.AuthorsOtherBookNames.Count - 1, 4); i++)
+                frmAP.lblKindleBooks.Text = ap.ApSubTitle;
+                for (var i = 0; i < Math.Min(ap.AuthorsOtherBookNames.Count - 1, 4); i++)
                 {
                     foreach (Control contrl in frmAP.Controls)
                     {
                         if (contrl.Name == ("lblBook" + (i + 1)))
-                            contrl.Text = aa.AuthorsOtherBookNames[i];
+                            contrl.Text = ap.AuthorsOtherBookNames[i];
                     }
                 }
                 frmEA.lblPost.Text = String.Format("Post on Amazon (as {0})",
                     Properties.Settings.Default.penName);
-                frmEA.lblMoreBooks.Text = aa.EaSubTitle;
-                for (var i = 0; i < Math.Min(aa.AuthorsOtherBookNames.Count - 1, 5); i++)
+                frmEA.lblMoreBooks.Text = ap.EaSubTitle;
+                for (var i = 0; i < Math.Min(ap.AuthorsOtherBookNames.Count - 1, 5); i++)
                 {
                     foreach (Control contrl in frmEA.Controls)
                     {
                         if (contrl.Name == ("lblBook" + (i + 1)))
-                            contrl.Text = aa.AuthorsOtherBookNames[i];
+                            contrl.Text = ap.AuthorsOtherBookNames[i];
 }
                 }
-                if (aa.PurchAlsoBoughtTitles.Count > 1 && aa.PurchAlsoBoughtAuthorNames.Count > 1)
+                if (ea.PurchAlsoBoughtTitles.Count > 1 && ea.PurchAlsoBoughtAuthorNames.Count > 1)
                 {
-                    frmEA.lblBook6.Text = aa.PurchAlsoBoughtTitles[0];
-                    frmEA.lblAuthor1.Text = aa.PurchAlsoBoughtAuthorNames[0];
-                    frmEA.lblBook7.Text = aa.PurchAlsoBoughtTitles[1];
-                    frmEA.lblAuthor2.Text = aa.PurchAlsoBoughtAuthorNames[1];
+                    frmEA.lblBook6.Text = ea.PurchAlsoBoughtTitles[0];
+                    frmEA.lblAuthor1.Text = ea.PurchAlsoBoughtAuthorNames[0];
+                    frmEA.lblBook7.Text = ea.PurchAlsoBoughtTitles[1];
+                    frmEA.lblAuthor2.Text = ea.PurchAlsoBoughtAuthorNames[1];
                 }
-            //}
-            /*catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Log("An error occurred while creating the new Author Profile and/or End Action files: " + ex.Message);
-            }*/
+            }
         }
 
         private void btnLink_Click(object sender, EventArgs e)

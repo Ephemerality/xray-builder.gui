@@ -91,6 +91,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AuthorProfile.cs" />
+    <Compile Include="BookInfo.cs" />
+    <Compile Include="EndActions.cs" />
     <Compile Include="frmPreviewAP.cs">
       <SubType>Form</SubType>
     </Compile>

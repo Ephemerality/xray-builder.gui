@@ -83,7 +83,7 @@ namespace XRayBuilderGUI
             frmEA.lblAuthor2.Text = "";
             return true;
         }
-        
+
         private void btnBrowseMobi_Click(object sender, EventArgs e)
         {
             txtMobi.Text = Functions.GetBook(txtMobi.Text);
@@ -275,11 +275,14 @@ namespace XRayBuilderGUI
             string _newPath = "";
             try
             {
-                outFolder = settings.useSubDirectories ? Functions.GetBookOutputDirectory(results[4], Path.GetFileNameWithoutExtension(txtMobi.Text)) : settings.outDir;
+                outFolder = settings.useSubDirectories
+                    ? Functions.GetBookOutputDirectory(results[4], Path.GetFileNameWithoutExtension(txtMobi.Text))
+                    : settings.outDir;
             }
             catch (Exception ex)
             {
-                Log("Failed to create output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
+                Log("Failed to create output directory: " + ex.Message +
+                    "\r\nFiles will be placed in the default output directory.");
                 outFolder = settings.outDir;
             }
             _newPath = outFolder + "\\" + ss.GetXRayName(settings.android);
@@ -494,12 +497,14 @@ namespace XRayBuilderGUI
             }
 
             // Added author name to log output
-            Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
-                            results[2], results[0], results[4], results[5], results[1]));
+            Log(
+                String.Format(
+                    "Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
+                    results[2], results[0], results[4], results[5], results[1]));
             try
             {
                 BookInfo bookInfo = new BookInfo(results[5], results[4], results[0], results[1], results[2],
-                                                randomFile, Path.GetFileNameWithoutExtension(txtMobi.Text));
+                    randomFile, Path.GetFileNameWithoutExtension(txtMobi.Text));
                 AuthorProfile ap = new AuthorProfile(bookInfo, this);
                 EndActions ea = new EndActions(ap, bookInfo, this);
                 ea.GenerateOld();
@@ -545,7 +550,7 @@ namespace XRayBuilderGUI
                     {
                         if (contrl.Name == ("lblBook" + (i + 1)))
                             contrl.Text = ap.AuthorsOtherBookNames[i];
-}
+                    }
                 }
                 if (ea.PurchAlsoBoughtTitles.Count > 1 && ea.PurchAlsoBoughtAuthorNames.Count > 1)
                 {
@@ -663,14 +668,14 @@ namespace XRayBuilderGUI
                 String.Format(
                     "Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
                     results[2], results[0], results[4], results[5], results[1]));
-                        
+
             Directory.Delete(randomFile, true);
 
             //Get Shelfari Search URL
             Log("Searching for book on Shelfari...");
             string shelfariSearchUrlBase = @"http://www.shelfari.com/search/books?Author={0}&Title={1}&Binding={2}";
             string[] bindingTypes = {"Hardcover", "Kindle", "Paperback"};
-            
+
             // Search book on Shelfari
             bool bookFound = false;
             string shelfariBookUrl = "";
@@ -683,7 +688,9 @@ namespace XRayBuilderGUI
                     {
                         Log("Searching for " + bindingTypes[i] + " edition...");
                         // Insert parameters (mainly for searching with removed diacritics). Seems to work fine without replacing spaces?
-                        shelfariHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(string.Format(shelfariSearchUrlBase, results[4], results[5], bindingTypes[i])));
+                        shelfariHtmlDoc.LoadHtml(
+                            HttpDownloader.GetPageHtml(string.Format(shelfariSearchUrlBase, results[4], results[5],
+                                bindingTypes[i])));
                         if (!shelfariHtmlDoc.DocumentNode.InnerText.Contains("Your search did not return any results"))
                         {
                             shelfariBookUrl = FindShelfariURL(shelfariHtmlDoc, results[4], results[5]);
@@ -720,9 +727,14 @@ namespace XRayBuilderGUI
             {
                 Log("Book found on Shelfari!");
                 Log(results[5] + " by " + results[4]);
+
+                //Find series and next book
+                FindSeriesInfo(shelfariBookUrl);
+
                 txtShelfari.Text = shelfariBookUrl;
                 txtShelfari.Refresh();
-                Log("Shelfari URL updated!\r\nYou may want to visit the URL to ensure it is correct and add/modify terms if necessary.");
+                Log(
+                    "Shelfari URL updated!\r\nYou may want to visit the URL to ensure it is correct and add/modify terms if necessary.");
             }
             else
             {
@@ -739,7 +751,9 @@ namespace XRayBuilderGUI
             List<string> listoflinks = new List<string>();
             Dictionary<string, string> retData = new Dictionary<string, string>();
 
-            foreach (HtmlAgilityPack.HtmlNode bookItems in shelfariHtmlDoc.DocumentNode.SelectNodes("//li[@class='item']/div[@class='text']"))
+            foreach (
+                HtmlAgilityPack.HtmlNode bookItems in
+                    shelfariHtmlDoc.DocumentNode.SelectNodes("//li[@class='item']/div[@class='text']"))
             {
                 if (bookItems == null) continue;
                 listofthings.Clear();
@@ -758,7 +772,8 @@ namespace XRayBuilderGUI
                     // Searching for Children of Húrin will give a false match on the first pass before diacritics are removed from the search URL
                     if ((listofthings.Contains("(Author)") || listofthings.Contains("(Author),")) &&
                         line.RemoveDiacritics().StartsWith(title.RemoveDiacritics(), StringComparison.OrdinalIgnoreCase) &&
-                        (listofthings.Contains(author) || listofthings.Exists(r => r.Replace(" ", "") == author.Replace(" ", ""))))
+                        (listofthings.Contains(author) ||
+                         listofthings.Exists(r => r.Replace(" ", "") == author.Replace(" ", ""))))
                     {
                         shelfariBookUrl = listoflinks[index].ToString();
                         shelfariBookUrl = Regex.Replace(shelfariBookUrl, "<a href=\"", "", RegexOptions.None);
@@ -767,6 +782,68 @@ namespace XRayBuilderGUI
                     }
                     index++;
                 }
+            }
+            return "";
+        }
+
+        private string FindSeriesInfo(string searchUrl)
+        {
+            bool hasSeries = false;
+            string series = "";
+            string seriesShort = "";
+            string seriesURL = "";
+            int currentSeriesIndex = 0;
+            int currentSeriesCount = 0;
+            string nextTitle = "";
+            //Check if book's Shelfari page contains series info
+            HtmlAgilityPack.HtmlDocument searchHtmlDoc = new HtmlAgilityPack.HtmlDocument();
+            searchHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(string.Format(searchUrl)));
+            HtmlAgilityPack.HtmlNode node = searchHtmlDoc.DocumentNode.SelectSingleNode("//span[@class='series']");
+            if (node != null)
+            {
+                //Series name and book number
+                series = node.InnerText.Trim();
+                //Convert book number string to integer
+                Int32.TryParse(series.Substring(series.LastIndexOf(" ") + 1), out currentSeriesIndex);
+                //Parse series Shelfari URL
+                seriesURL = node.SelectSingleNode("//span[@class='series']/a[@href]")
+                    .GetAttributeValue("href", "");
+                seriesShort = node.FirstChild.InnerText.Trim();
+                //Add series name and book number to log, if found
+                searchHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(string.Format(seriesURL)));
+                //Parse number of books in series and convert to integer
+                node = searchHtmlDoc.DocumentNode.SelectSingleNode("//h2[@class='f_m']");
+                string test = node.FirstChild.InnerText.Trim();
+                Match match = Regex.Match(test, @"\d+");
+                if (match.Success)
+                    Int32.TryParse(match.Value, out currentSeriesCount);
+                hasSeries = true;
+                //Check if there is a next book
+                if (currentSeriesIndex < currentSeriesCount)
+                {
+                    //Add series name and book number to log, if found
+                    Log(String.Format("This is book {0} of {1} in the {2} Series...",
+                        currentSeriesIndex, currentSeriesCount, seriesShort));
+                    foreach (HtmlAgilityPack.HtmlNode seriesItem in
+                        searchHtmlDoc.DocumentNode.SelectNodes(".//ol/li"))
+                    {
+                        node = seriesItem.SelectSingleNode(".//div/span[@class='series bold']");
+                        if (node != null)
+                            if (node.InnerText.Contains((currentSeriesIndex + 1).ToString()))
+                            {
+                                node = seriesItem.SelectSingleNode(".//h3/a");
+                                //Parse title of the next book
+                                nextTitle = node.InnerText.Trim();
+                                //Add next book in series to log, if found
+                                Log(String.Format("The next book in this series is {0}!", nextTitle));
+                                return "";
+                            }
+                    }
+                }
+                if (hasSeries)
+                    Log(String.Format("Unable to find the next book in this series!\r\n" +
+                                      "This is the last title in the {0} series...", seriesShort));
+                return "";
             }
             return "";
         }
@@ -811,7 +888,7 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(btnBuild,
                 "Try to build the X-Ray file for this book.");
             toolTip1.SetToolTip(btnSettings, "Configure X-Ray Builder GUI.");
-            toolTip1.SetToolTip(btnPreview,"View a preview of the generated files.");
+            toolTip1.SetToolTip(btnPreview, "View a preview of the generated files.");
             this.DragEnter += frmMain_DragEnter;
             this.DragDrop += frmMain_DragDrop;
 
@@ -846,7 +923,7 @@ namespace XRayBuilderGUI
             if (Properties.Settings.Default.mobi_unpack == "")
             {
                 Properties.Settings.Default.mobi_unpack = Environment.CurrentDirectory +
-                                                                         @"\dist\kindleunpack.exe";
+                                                          @"\dist\kindleunpack.exe";
             }
             txtShelfari.Text = Properties.Settings.Default.shelfari;
             if (Properties.Settings.Default.buildSource == "Shelfari")

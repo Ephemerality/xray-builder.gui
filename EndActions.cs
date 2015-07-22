@@ -217,6 +217,17 @@ namespace XRayBuilderGUI
             string authors = string.Format(@"""authorBios"":{{""class"":""authorBioList"",""authors"":[{0}]}}", authorProfile.ToJSON());
             string authorRecs = @"""authorRecs"":{{""class"":""featuredRecommendationList"",""recommendations"":[{0}]}}";
             string custRecs = @"""customersWhoBoughtRecs"":{{""class"":""featuredRecommendationList"",""recommendations"":[{0}]}}";
+            BookInfo nextInSeries = null;
+            try
+            {
+                nextInSeries = GetNextInSeries();
+                if (nextInSeries != null)
+                    nextBook = nextInSeries.ToJSON("recommendation", false);
+            }
+            catch (Exception ex)
+            {
+                main.Log("Error finding next book in series: " + ex.Message);
+            }
             authorRecs = String.Format(authorRecs, String.Join(",", authorProfile.otherBooks.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
             custRecs = String.Format(custRecs, String.Join(",", custAlsoBought.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
             //string goodReadsReview = @"""goodReadsReview"":{""class"":""goodReadsReview"",""reviewId"":""NoReviewId"",""rating"":4,""submissionDateMs"":1436900445878}";
@@ -285,6 +296,125 @@ namespace XRayBuilderGUI
                     ex.Message);
             }
             return templates;
+        }
+
+        private BookInfo GetNextInSeries()
+        {
+            if (curBook.shelfariUrl == "") return null;
+
+            // Get title of next book
+            HtmlAgilityPack.HtmlDocument searchHtmlDoc = new HtmlAgilityPack.HtmlDocument();
+            searchHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.shelfariUrl));
+            string nextTitle = GetNextInSeriesTitle(searchHtmlDoc);
+            // If search failed, try other method
+            if (nextTitle == "")
+                nextTitle = GetNextInSeriesTitle2(searchHtmlDoc);
+            if (nextTitle != "")
+            {
+                // Search author's other books for the book (assumes next in series was written by the same author...)
+                // Returns the first one found, though there should probably not be more than 1 of the same name anyway
+                // Null if none found
+                BookInfo nextBook = authorProfile.otherBooks.FirstOrDefault(bk => bk.title == nextTitle);
+                if (nextBook == null)
+                    main.Log("Book was found to be part of a series, but next book could not be found.\r\n" +
+                        "Please report this book and the Shelfari URL to improve parsing.");
+            } else
+                main.Log("Unable to find next book in series, the book may not be part of one.");
+
+            return null;
+        }
+
+        //TODO: Un-yuckify all the return paths without nesting a ton of ifs
+        /// <summary>
+        /// Search Shelfari page for possible series info, returning the next title in the series without downloading any other pages.
+        /// </summary>
+        private string GetNextInSeriesTitle(HtmlAgilityPack.HtmlDocument searchHtmlDoc)
+        {
+            HtmlAgilityPack.HtmlNode wikiNode = searchHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_Series']");
+            if (wikiNode == null)
+                return "";
+            HtmlAgilityPack.HtmlNode node = wikiNode.SelectSingleNode(".//div/div");
+            if (node == null || !node.InnerText.Contains("(standard series)"))
+                return "";
+            main.Log(node.InnerText.Replace(" (standard series)", ""));
+            Match match = Regex.Match(node.InnerText, @"This is book (\d+) of (\d+)");
+            if (!match.Success || match.Groups.Count != 3)
+                return "";
+            // Check if book is the last in the series
+            if (!match.Groups[1].Value.Equals(match.Groups[2].Value))
+            {
+                node = wikiNode.SelectSingleNode(".//div/p");
+                if (node != null && node.InnerText.Contains("followed by ", StringComparison.OrdinalIgnoreCase))
+                {
+                    match = Regex.Match(node.InnerText, @"followed by (.*)\.");
+                    if (match.Success && match.Groups.Count == 2)
+                        return match.Groups[1].Value;
+                }
+            }
+            return "";
+        }
+
+        /// <summary>
+        /// Search Shelfari for series info, scrape series page, and return next title in series.
+        /// </summary>
+        private string GetNextInSeriesTitle2(HtmlAgilityPack.HtmlDocument searchHtmlDoc)
+        {
+            bool hasSeries = false;
+            string series = "";
+            string seriesShort = "";
+            string seriesURL = "";
+            int currentSeriesIndex = 0;
+            int currentSeriesCount = 0;
+            string nextTitle = "";
+            //Check if book's Shelfari page contains series info
+            HtmlAgilityPack.HtmlNode node = searchHtmlDoc.DocumentNode.SelectSingleNode("//span[@class='series']");
+            if (node != null)
+            {
+                //Series name and book number
+                series = node.InnerText.Trim();
+                //Convert book number string to integer
+                Int32.TryParse(series.Substring(series.LastIndexOf(" ") + 1), out currentSeriesIndex);
+                //Parse series Shelfari URL
+                seriesURL = node.SelectSingleNode("//span[@class='series']/a[@href]")
+                    .GetAttributeValue("href", "");
+                seriesShort = node.FirstChild.InnerText.Trim();
+                //Add series name and book number to log, if found
+                searchHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(string.Format(seriesURL)));
+                //Parse number of books in series and convert to integer
+                node = searchHtmlDoc.DocumentNode.SelectSingleNode("//h2[@class='f_m']");
+                string test = node.FirstChild.InnerText.Trim();
+                Match match = Regex.Match(test, @"\d+");
+                if (match.Success)
+                    Int32.TryParse(match.Value, out currentSeriesCount);
+                hasSeries = true;
+                //Check if there is a next book
+                if (currentSeriesIndex < currentSeriesCount)
+                {
+                    //Add series name and book number to log, if found
+                    main.Log(String.Format("This is book {0} of {1} in the {2} Series...",
+                        currentSeriesIndex, currentSeriesCount, seriesShort));
+                    foreach (HtmlAgilityPack.HtmlNode seriesItem in
+                        searchHtmlDoc.DocumentNode.SelectNodes(".//ol/li"))
+                    {
+                        node = seriesItem.SelectSingleNode(".//div/span[@class='series bold']");
+                        if (node != null)
+                            if (node.InnerText.Contains((currentSeriesIndex + 1).ToString()))
+                            {
+                                node = seriesItem.SelectSingleNode(".//h3/a");
+                                //Parse title of the next book
+                                nextTitle = node.InnerText.Trim();
+                                //Add next book in series to log, if found
+                                main.Log(String.Format("The next book in this series is {0}!", nextTitle));
+                                return nextTitle;
+                            }
+                    }
+                }
+                if (hasSeries)
+                    main.Log(String.Format("Unable to find the next book in this series!\r\n" +
+                                      "This is the last title in the {0} series...", seriesShort));
+                return "";
+            }
+            return "";
         }
     }
 }

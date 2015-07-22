@@ -499,7 +499,7 @@ namespace XRayBuilderGUI
             try
             {
                 BookInfo bookInfo = new BookInfo(results[5], results[4], results[0], results[1], results[2],
-                                                randomFile, Path.GetFileNameWithoutExtension(txtMobi.Text));
+                                                randomFile, Path.GetFileNameWithoutExtension(txtMobi.Text), txtShelfari.Text);
                 AuthorProfile ap = new AuthorProfile(bookInfo, this);
                 if (!ap.complete) return;
                 if (!File.Exists(results[3]))
@@ -729,9 +729,6 @@ namespace XRayBuilderGUI
                 Log("Book found on Shelfari!");
                 Log(results[5] + " by " + results[4]);
 
-                //Find series and next book
-                FindSeriesInfo(shelfariBookUrl);
-
                 txtShelfari.Text = shelfariBookUrl;
                 txtShelfari.Refresh();
                 Log("Shelfari URL updated!\r\nYou may want to visit the URL to ensure it is correct and add/modify terms if necessary.");
@@ -782,69 +779,7 @@ namespace XRayBuilderGUI
             }
             return "";
         }
-
-        private string FindSeriesInfo(string searchUrl)
-        {
-            bool hasSeries = false;
-            string series = "";
-            string seriesShort = "";
-            string seriesURL = "";
-            int currentSeriesIndex = 0;
-            int currentSeriesCount = 0;
-            string nextTitle = "";
-            //Check if book's Shelfari page contains series info
-            HtmlAgilityPack.HtmlDocument searchHtmlDoc = new HtmlAgilityPack.HtmlDocument();
-            searchHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(string.Format(searchUrl)));
-            HtmlAgilityPack.HtmlNode node = searchHtmlDoc.DocumentNode.SelectSingleNode("//span[@class='series']");
-            if (node != null)
-            {
-                //Series name and book number
-                series = node.InnerText.Trim();
-                //Convert book number string to integer
-                Int32.TryParse(series.Substring(series.LastIndexOf(" ") + 1), out currentSeriesIndex);
-                //Parse series Shelfari URL
-                seriesURL = node.SelectSingleNode("//span[@class='series']/a[@href]")
-                    .GetAttributeValue("href", "");
-                seriesShort = node.FirstChild.InnerText.Trim();
-                //Add series name and book number to log, if found
-                searchHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(string.Format(seriesURL)));
-                //Parse number of books in series and convert to integer
-                node = searchHtmlDoc.DocumentNode.SelectSingleNode("//h2[@class='f_m']");
-                string test = node.FirstChild.InnerText.Trim();
-                Match match = Regex.Match(test, @"\d+");
-                if (match.Success)
-                    Int32.TryParse(match.Value, out currentSeriesCount);
-                hasSeries = true;
-                //Check if there is a next book
-                if (currentSeriesIndex < currentSeriesCount)
-                {
-                    //Add series name and book number to log, if found
-                    Log(String.Format("This is book {0} of {1} in the {2} Series...",
-                        currentSeriesIndex, currentSeriesCount, seriesShort));
-                    foreach (HtmlAgilityPack.HtmlNode seriesItem in
-                        searchHtmlDoc.DocumentNode.SelectNodes(".//ol/li"))
-                    {
-                        node = seriesItem.SelectSingleNode(".//div/span[@class='series bold']");
-                        if (node != null)
-                            if (node.InnerText.Contains((currentSeriesIndex + 1).ToString()))
-                            {
-                                node = seriesItem.SelectSingleNode(".//h3/a");
-                                //Parse title of the next book
-                                nextTitle = node.InnerText.Trim();
-                                //Add next book in series to log, if found
-                                Log(String.Format("The next book in this series is {0}!", nextTitle));
-                                return "";
-                            }
-                    }
-                }
-                if (hasSeries)
-                    Log(String.Format("Unable to find the next book in this series!\r\n" +
-                                      "This is the last title in the {0} series...", seriesShort));
-                return "";
-            }
-            return "";
-        }
-
+        
         private void btnSettings_Click(object sender, EventArgs e)
         {
             frmSettings frmSet = new frmSettings();

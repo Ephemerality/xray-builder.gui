@@ -502,7 +502,12 @@ namespace XRayBuilderGUI
                                                 randomFile, Path.GetFileNameWithoutExtension(txtMobi.Text));
                 AuthorProfile ap = new AuthorProfile(bookInfo, this);
                 if (!ap.complete) return;
-                EndActions ea = new EndActions(ap, bookInfo, this);
+                if (!File.Exists(results[3]))
+                {
+                    Log("Error: RawML could not be found, aborting.\r\nPath: " + results[3]);
+                    return;
+                }
+                EndActions ea = new EndActions(ap, bookInfo, new FileInfo(results[3]).Length, this);
                 if (!ea.complete) return;
                 if (settings.useNewVersion)
                     ea.GenerateNew();

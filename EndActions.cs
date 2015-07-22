@@ -18,6 +18,7 @@ namespace XRayBuilderGUI
         private string EaPath = "";
         private string EaDest = "";
         private string bookImageUrl = "";
+        private long _erl = 0;
 
         public List<BookInfo> custAlsoBought = new List<BookInfo>();
 
@@ -27,10 +28,11 @@ namespace XRayBuilderGUI
         public bool complete = false; //Set if constructor succeeds in gathering data
         
         //Requires an already-built AuthorProfile and the BaseEndActions.txt file
-        public EndActions(AuthorProfile ap, BookInfo book, frmMain frm)
+        public EndActions(AuthorProfile ap, BookInfo book, long erl, frmMain frm)
         {
             authorProfile = ap;
             curBook = book;
+            _erl = erl;
             main = frm;
 
             main.Log("Building End Actions...");
@@ -203,7 +205,7 @@ namespace XRayBuilderGUI
             // Build bookInfo object
             // "bookInfo":{"class":"bookInfo","asin":"{0}","contentType":"EBOK","timestamp":{1},"refTagSuffix":"AAAgAAB","imageUrl":"{2}","embeddedID":"{3}:{4}","erl":{5}}
             TimeSpan timestamp = DateTime.Now - new DateTime(1970, 1, 1);
-            bookInfoTemplate = string.Format(bookInfoTemplate, curBook.asin, Math.Round(timestamp.TotalMilliseconds), bookImageUrl, curBook.databasename, curBook.guid, 0);
+            bookInfoTemplate = string.Format(bookInfoTemplate, curBook.asin, Math.Round(timestamp.TotalMilliseconds), bookImageUrl, curBook.databasename, curBook.guid, _erl);
 
             // Build data object
             string dataTemplate = @"""data"":{{""nextBook"":{0},{1},{2},""currentBookFeatured"":{3},{4},{5},{6},{7}}}";

@@ -774,7 +774,7 @@ namespace XRayBuilderGUI
                     {
                         shelfariBookUrl = listoflinks[index].ToString();
                         shelfariBookUrl = Regex.Replace(shelfariBookUrl, "<a href=\"", "", RegexOptions.None);
-                        shelfariBookUrl = Regex.Replace(shelfariBookUrl, "\">.*?</a>", "", RegexOptions.None);
+                        shelfariBookUrl = Regex.Replace(shelfariBookUrl, "\".*?</a>", "", RegexOptions.None);
                         return shelfariBookUrl;
                     }
                     index++;

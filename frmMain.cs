@@ -496,13 +496,18 @@ namespace XRayBuilderGUI
             // Added author name to log output
             Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
                             results[2], results[0], results[4], results[5], results[1]));
-            try
-            {
+            //try
+            //{
                 BookInfo bookInfo = new BookInfo(results[5], results[4], results[0], results[1], results[2],
                                                 randomFile, Path.GetFileNameWithoutExtension(txtMobi.Text));
                 AuthorProfile ap = new AuthorProfile(bookInfo, this);
+                if (!ap.complete) return;
                 EndActions ea = new EndActions(ap, bookInfo, this);
-                ea.GenerateOld();
+                if (!ea.complete) return;
+                if (settings.useNewVersion)
+                    ea.GenerateNew();
+                else
+                    ea.GenerateOld();
                 previewClear();
 
                 frmAP.lblTitle.Text = ap.ApTitle;
@@ -528,37 +533,37 @@ namespace XRayBuilderGUI
                 }
 
                 frmAP.lblKindleBooks.Text = ap.ApSubTitle;
-                for (var i = 0; i < Math.Min(ap.AuthorsOtherBookNames.Count - 1, 4); i++)
+                for (var i = 0; i < Math.Min(ap.otherBooks.Count, 4); i++)
                 {
                     foreach (Control contrl in frmAP.Controls)
                     {
                         if (contrl.Name == ("lblBook" + (i + 1)))
-                            contrl.Text = ap.AuthorsOtherBookNames[i];
+                            contrl.Text = ap.otherBooks[i].title;
                     }
                 }
                 frmEA.lblPost.Text = String.Format("Post on Amazon (as {0})",
                     Properties.Settings.Default.penName);
                 frmEA.lblMoreBooks.Text = ap.EaSubTitle;
-                for (var i = 0; i < Math.Min(ap.AuthorsOtherBookNames.Count - 1, 5); i++)
+                for (var i = 0; i < Math.Min(ap.otherBooks.Count, 5); i++)
                 {
                     foreach (Control contrl in frmEA.Controls)
                     {
                         if (contrl.Name == ("lblBook" + (i + 1)))
-                            contrl.Text = ap.AuthorsOtherBookNames[i];
+                            contrl.Text = ap.otherBooks[i].title;
 }
                 }
-                if (ea.PurchAlsoBoughtTitles.Count > 1 && ea.PurchAlsoBoughtAuthorNames.Count > 1)
+                if (ea.custAlsoBought.Count > 1)
                 {
-                    frmEA.lblBook6.Text = ea.PurchAlsoBoughtTitles[0];
-                    frmEA.lblAuthor1.Text = ea.PurchAlsoBoughtAuthorNames[0];
-                    frmEA.lblBook7.Text = ea.PurchAlsoBoughtTitles[1];
-                    frmEA.lblAuthor2.Text = ea.PurchAlsoBoughtAuthorNames[1];
+                    frmEA.lblBook6.Text = ea.custAlsoBought[0].title;
+                    frmEA.lblAuthor1.Text = ea.custAlsoBought[0].author;
+                    frmEA.lblBook7.Text = ea.custAlsoBought[1].title;
+                    frmEA.lblAuthor2.Text = ea.custAlsoBought[1].author;
                 }
-            }
+            /*}
             catch (Exception ex)
             {
                 Log("An error occurred while creating the new Author Profile and/or End Action files: " + ex.Message);
-            }
+            }*/
         }
 
         private void btnLink_Click(object sender, EventArgs e)

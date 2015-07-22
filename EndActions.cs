@@ -207,7 +207,7 @@ namespace XRayBuilderGUI
 
             // Build data object
             string dataTemplate = @"""data"":{{""nextBook"":{0},{1},{2},""currentBookFeatured"":{3},{4},{5},{6},{7}}}";
-            string nextBook = "";
+            string nextBook = "{}";
             string publicSharedRating = @"""publicSharedRating"":{""class"":""publicSharedRating"",""timestamp"":1430656509000,""value"":4}";
             string rating = @"""rating"":{""class"":""personalizationRating"",""timestamp"":1430656509000,""value"":4}";
             string customerProfile = string.Format(@"""customerProfile"":{{""class"":""customerProfile"",""penName"":""{0}"",""realName"":""{1}""}}",

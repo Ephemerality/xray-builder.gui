@@ -496,8 +496,8 @@ namespace XRayBuilderGUI
             // Added author name to log output
             Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
                             results[2], results[0], results[4], results[5], results[1]));
-            //try
-            //{
+            try
+            {
                 BookInfo bookInfo = new BookInfo(results[5], results[4], results[0], results[1], results[2],
                                                 randomFile, Path.GetFileNameWithoutExtension(txtMobi.Text));
                 AuthorProfile ap = new AuthorProfile(bookInfo, this);
@@ -559,11 +559,11 @@ namespace XRayBuilderGUI
                     frmEA.lblBook7.Text = ea.custAlsoBought[1].title;
                     frmEA.lblAuthor2.Text = ea.custAlsoBought[1].author;
                 }
-            /*}
+            }
             catch (Exception ex)
             {
                 Log("An error occurred while creating the new Author Profile and/or End Action files: " + ex.Message);
-            }*/
+            }
         }
 
         private void btnLink_Click(object sender, EventArgs e)
@@ -664,10 +664,8 @@ namespace XRayBuilderGUI
                 File.Copy(results[3], Path.Combine(settings.outDir, Path.GetFileName(results[3])), true);
             }
             // Added author name to log output
-            Log(
-                String.Format(
-                    "Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
-                    results[2], results[0], results[4], results[5], results[1]));
+            Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
+                results[2], results[0], results[4], results[5], results[1]));
 
             Directory.Delete(randomFile, true);
 
@@ -731,8 +729,7 @@ namespace XRayBuilderGUI
 
                 txtShelfari.Text = shelfariBookUrl;
                 txtShelfari.Refresh();
-                Log(
-                    "Shelfari URL updated!\r\nYou may want to visit the URL to ensure it is correct and add/modify terms if necessary.");
+                Log("Shelfari URL updated!\r\nYou may want to visit the URL to ensure it is correct and add/modify terms if necessary.");
             }
             else
             {

@@ -300,6 +300,8 @@ namespace XRayBuilderGUI
 
         private BookInfo GetNextInSeries()
         {
+            BookInfo nextBook = null;
+
             if (curBook.shelfariUrl == "") return null;
 
             // Get title of next book
@@ -313,15 +315,23 @@ namespace XRayBuilderGUI
             {
                 // Search author's other books for the book (assumes next in series was written by the same author...)
                 // Returns the first one found, though there should probably not be more than 1 of the same name anyway
-                // Null if none found
-                BookInfo nextBook = authorProfile.otherBooks.FirstOrDefault(bk => bk.title == nextTitle);
+                nextBook = authorProfile.otherBooks.FirstOrDefault(bk => bk.title == nextTitle);
+                if (nextBook == null)
+                {
+                    // Attempt to search Amazon for the book instead
+                    nextBook = Functions.AmazonSearchBookASIN(nextTitle, curBook.author);
+                    if (nextBook != null)
+                        nextBook.GetAmazonInfo(nextBook.amazonUrl); //fill in desc, imageurl, and ratings
+                }
                 if (nextBook == null)
                     main.Log("Book was found to be part of a series, but next book could not be found.\r\n" +
-                        "Please report this book and the Shelfari URL to improve parsing.");
+                        "Please report this book and the Shelfari URL and output log to improve parsing.");
+                else
+                    main.Log("Next book in the series: " + nextBook.title);
             } else
                 main.Log("Unable to find next book in series, the book may not be part of one.");
 
-            return null;
+            return nextBook;
         }
 
         //TODO: Un-yuckify all the return paths without nesting a ton of ifs

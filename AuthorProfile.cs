@@ -280,7 +280,7 @@ namespace XRayBuilderGUI
             main.Log("Grayscale Base-64 encoded Author image created!");
             bgs.Dispose();
 
-            main.Log("Gathering author's others books...");
+            main.Log("Gathering author's other books...");
             List<string> names = new List<string>();
             List<string> asins = new List<string>();
             List<string> urls = new List<string>();
@@ -308,6 +308,8 @@ namespace XRayBuilderGUI
                     "Please report the Amazon URL: " + authorAmazonWebsiteLocation);
                 return;
             }
+
+            main.Log("Gathering metadata for other books...");
             for (int i = 0; i < names.Count; i++)
             {
                 BookInfo newBook = new BookInfo(names[i], curBook.author, asins[i]);

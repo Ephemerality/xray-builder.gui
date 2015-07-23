@@ -13,6 +13,8 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
 
+using HAP = HtmlAgilityPack;
+
 namespace XRayBuilderGUI
 {
     public static class Functions
@@ -78,7 +80,7 @@ namespace XRayBuilderGUI
                 return defaultFile;
         }
 
-        public static bool CheckForInternetConnection()
+        /*public static bool CheckForInternetConnection()
         {
             try
             {
@@ -92,7 +94,7 @@ namespace XRayBuilderGUI
             {
                 return false;
             }
-        }
+        }*/
 
         public static string ImageToBase64(Image image, ImageFormat format)
         {
@@ -450,6 +452,29 @@ namespace XRayBuilderGUI
             }
 
             return itemList;
+        }
+
+        public static BookInfo AmazonSearchBook(string title, string author)
+        {
+            BookInfo result = null;
+            string searchUrl = @"http://www.amazon.com/s/?url=search-alias%3Ddigital-text&field-keywords=" + 
+                Uri.EscapeDataString(title + " " + author);
+            HAP.HtmlDocument searchDoc = new HAP.HtmlDocument();
+            searchDoc.LoadHtml(HttpDownloader.GetPageHtml(searchUrl));
+            HAP.HtmlNode node = searchDoc.DocumentNode.SelectSingleNode("//li[@id='result_0']");
+            //At least attempt to verify it might be the same book?
+            if (node != null && node.InnerText.StartsWith(title))
+            {
+                string foundASIN = node.GetAttributeValue("data-asin", "");
+                node = node.SelectSingleNode(".//div/div/div/div[@class='a-fixed-left-grid-col a-col-right']/div/a");
+                if (node != null)
+                {
+                    result = new BookInfo(node.InnerText, author, foundASIN);
+                    result.amazonUrl = node.GetAttributeValue("href", ""); // Grab the true link for good measure
+                }
+            }
+
+            return result;
         }
     }
 }

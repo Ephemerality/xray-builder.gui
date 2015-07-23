@@ -22,6 +22,7 @@ namespace XRayBuilderGUI
         public float amazonRating = 0.0F;
         public int numReviews = 0;
         public string shelfariUrl = "";
+        public string amazonUrl = "";
 
         public BookInfo(string title, string author, string asin, string guid, string databasename, string path, string sidecarName, string shelfariUrl)
         {

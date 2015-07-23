@@ -75,14 +75,7 @@ namespace XRayBuilderGUI
             }
 
             //Generate Author search URL from author's name
-            string newAuthor = curBook.author;
-            if (newAuthor.IndexOf(';') > 0)
-                newAuthor = newAuthor.Split(';')[0];
-            if (newAuthor.IndexOf(',') > 0)
-            {
-                string[] parts = newAuthor.Split(',');
-                newAuthor = parts[1].Trim() + " " + parts[0].Trim();
-            }
+            string newAuthor = Functions.FixAuthor(curBook.author);
             string percAuthorName = newAuthor.Replace(" ", "%20");
             string dashAuthorName = newAuthor.Replace(" ", "-");
             string plusAuthorName = newAuthor.Replace(" ", "+");

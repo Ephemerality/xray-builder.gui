@@ -682,6 +682,9 @@ namespace XRayBuilderGUI
             // Search book on Shelfari
             bool bookFound = false;
             string shelfariBookUrl = "";
+
+            results[4] = Functions.FixAuthor(results[4]);
+
             try
             {
                 HtmlAgilityPack.HtmlDocument shelfariHtmlDoc = new HtmlAgilityPack.HtmlDocument();
@@ -755,6 +758,7 @@ namespace XRayBuilderGUI
                 listoflinks.Clear();
                 for (var i = 1; i < bookItems.ChildNodes.Count; i++)
                 {
+                    if (bookItems.ChildNodes[i].GetAttributeValue("class", "") == "series") continue;
                     listofthings.Add(bookItems.ChildNodes[i].InnerText.Trim());
                     listoflinks.Add(bookItems.ChildNodes[i].InnerHtml);
                 }
@@ -771,7 +775,7 @@ namespace XRayBuilderGUI
                     {
                         shelfariBookUrl = listoflinks[index].ToString();
                         shelfariBookUrl = Regex.Replace(shelfariBookUrl, "<a href=\"", "", RegexOptions.None);
-                        shelfariBookUrl = Regex.Replace(shelfariBookUrl, "\".*?</a>", "", RegexOptions.None);
+                        shelfariBookUrl = Regex.Replace(shelfariBookUrl, "\".*?</a>.*", "", RegexOptions.None);
                         return shelfariBookUrl;
                     }
                     index++;

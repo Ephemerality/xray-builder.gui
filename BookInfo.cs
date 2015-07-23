@@ -21,8 +21,9 @@ namespace XRayBuilderGUI
         public string bookImageUrl = "";
         public float amazonRating = 0.0F;
         public int numReviews = 0;
+        public string shelfariUrl = "";
 
-        public BookInfo(string title, string author, string asin, string guid, string databasename, string path, string sidecarName)
+        public BookInfo(string title, string author, string asin, string guid, string databasename, string path, string sidecarName, string shelfariUrl)
         {
             this.title = title;
             this.author = author;
@@ -31,6 +32,7 @@ namespace XRayBuilderGUI
             this.databasename = databasename;
             this.path = path;
             this.sidecarName = sidecarName;
+            this.shelfariUrl = shelfariUrl;
         }
 
         public BookInfo(string title, string author, string asin)

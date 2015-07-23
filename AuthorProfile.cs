@@ -297,7 +297,7 @@ namespace XRayBuilderGUI
             foreach (HtmlNode otherBook in authorsOtherBooksAsin)
             {
                 int index = otherBook.OuterHtml.IndexOf("/dp/B");
-                if (index != -1)
+                if (index != -1 && otherBook.InnerText.Contains("Kindle Edition"))
                 {
                     asins.Add(otherBook.OuterHtml.Substring(index + 4, 10));
                 }

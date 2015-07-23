@@ -273,10 +273,7 @@ namespace XRayBuilderGUI
             string uniqid = "";
             string asin = "";
             string incorrectAsin = "";
-
-            // Add variable to hold author name
             string author = "";
-            // Add variable to hold author name
             string title = "";
 
             Match match = Regex.Match(unpackInfo, @"ASIN\s*(.*)");
@@ -321,6 +318,8 @@ namespace XRayBuilderGUI
 
             // Find book title in Kindleunpack output
             match = Regex.Match(unpackInfo, @" Updated_Title\s*(.*)");
+            if (!match.Success || match.Groups.Count <= 1)
+                match = Regex.Match(unpackInfo, @"Title in header at offset.*'(.*)'");
             if (match.Success && match.Groups.Count > 1)
                 title = match.Groups[1].Value.Replace("\r", "");
 

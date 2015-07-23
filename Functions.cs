@@ -314,7 +314,7 @@ namespace XRayBuilderGUI
                 }
             }
             // Find author name in Kindleunpack output
-            match = Regex.Match(unpackInfo, @" Creator\s*(.*)");
+            match = Regex.Match(unpackInfo, @" Creator\s{2,}(.*)");
             if (match.Success && match.Groups.Count > 1)
                 author = match.Groups[1].Value.Replace("\r", "");
 

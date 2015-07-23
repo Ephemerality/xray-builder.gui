@@ -314,14 +314,14 @@ namespace XRayBuilderGUI
                 }
             }
             // Find author name in Kindleunpack output
-            match = Regex.Match(unpackInfo, @" Creator\s*(.*)");
+            match = Regex.Match(unpackInfo, @" Creator\s{2,}(.*)");
             if (match.Success && match.Groups.Count > 1)
                 author = match.Groups[1].Value.Replace("\r", "");
 
             // Find book title in Kindleunpack output
-            match = Regex.Match(unpackInfo, @" Updated_Title\s*(.*)");
+            match = Regex.Match(unpackInfo, @"Title in header at offset.*'(.*)'");
             if (!match.Success || match.Groups.Count <= 1)
-                match = Regex.Match(unpackInfo, @"Title in header at offset.*'(.*)'");
+                match = Regex.Match(unpackInfo, @" Updated_Title\s*(.*)");
             if (match.Success && match.Groups.Count > 1)
                 title = match.Groups[1].Value.Replace("\r", "");
 
@@ -475,6 +475,21 @@ namespace XRayBuilderGUI
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Fix author name if in last, first format or if multiple authors present (returns first author)
+        /// </summary>
+        public static string FixAuthor(string author)
+        {
+            if (author.IndexOf(';') > 0)
+                author = author.Split(';')[0];
+            if (author.IndexOf(',') > 0)
+            {
+                string[] parts = author.Split(',');
+                author = parts[1].Trim() + " " + parts[0].Trim();
+            }
+            return author;
         }
     }
 }

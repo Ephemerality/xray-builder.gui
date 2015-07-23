@@ -319,7 +319,7 @@ namespace XRayBuilderGUI
                 if (nextBook == null)
                 {
                     // Attempt to search Amazon for the book instead
-                    nextBook = Functions.AmazonSearchBookASIN(nextTitle, curBook.author);
+                    nextBook = Functions.AmazonSearchBook(nextTitle, curBook.author);
                     if (nextBook != null)
                         nextBook.GetAmazonInfo(nextBook.amazonUrl); //fill in desc, imageurl, and ratings
                 }

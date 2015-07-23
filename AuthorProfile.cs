@@ -75,16 +75,10 @@ namespace XRayBuilderGUI
             }
 
             //Generate Author search URL from author's name
-            if (curBook.author.IndexOf(';') > 0)
-                curBook.author = curBook.author.Split(';')[0];
-            if (curBook.author.IndexOf(',') > 0)
-            {
-                string[] parts = curBook.author.Split(',');
-                curBook.author = parts[1].Trim() + " " + parts[0].Trim();
-            }
-            string percAuthorName = curBook.author.Replace(" ", "%20");
-            string dashAuthorName = curBook.author.Replace(" ", "-");
-            string plusAuthorName = curBook.author.Replace(" ", "+");
+            string newAuthor = Functions.FixAuthor(curBook.author);
+            string percAuthorName = newAuthor.Replace(" ", "%20");
+            string dashAuthorName = newAuthor.Replace(" ", "-");
+            string plusAuthorName = newAuthor.Replace(" ", "+");
             string amazonAuthorSearchUrl = @"http://www.amazon.com/s/?url=search-alias%3Dstripbooks&field-keywords=" +
                                         plusAuthorName;
             main.Log("Searching for Author's page on Amazon...");

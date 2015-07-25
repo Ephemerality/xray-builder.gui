@@ -17,7 +17,6 @@ namespace XRayBuilderGUI
 
         private string EaPath = "";
         private string EaDest = "";
-        private string bookImageUrl = "";
         private long _erl = 0;
 
         public List<BookInfo> custAlsoBought = new List<BookInfo>();
@@ -146,7 +145,7 @@ namespace XRayBuilderGUI
                 writer.WriteAttributeString("timestamp", dt + tz);
                 writer.WriteElementString("treatment", "d");
                 writer.WriteStartElement("currentBook");
-                writer.WriteElementString("imageUrl", bookImageUrl);
+                writer.WriteElementString("imageUrl", curBook.bookImageUrl);
                 writer.WriteElementString("asin", curBook.asin);
                 writer.WriteElementString("hasSample", "false");
                 writer.WriteEndElement();
@@ -205,7 +204,7 @@ namespace XRayBuilderGUI
             // Build bookInfo object
             // "bookInfo":{"class":"bookInfo","asin":"{0}","contentType":"EBOK","timestamp":{1},"refTagSuffix":"AAAgAAB","imageUrl":"{2}","embeddedID":"{3}:{4}","erl":{5}}
             TimeSpan timestamp = DateTime.Now - new DateTime(1970, 1, 1);
-            bookInfoTemplate = string.Format(bookInfoTemplate, curBook.asin, Math.Round(timestamp.TotalMilliseconds), bookImageUrl, curBook.databasename, curBook.guid, _erl);
+            bookInfoTemplate = string.Format(bookInfoTemplate, curBook.asin, Math.Round(timestamp.TotalMilliseconds), curBook.bookImageUrl, curBook.databasename, curBook.guid, _erl);
 
             // Build data object
             string dataTemplate = @"""data"":{{""nextBook"":{0},{1},{2},""currentBookFeatured"":{3},{4},{5},{6},{7}}}";

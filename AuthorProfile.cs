@@ -165,6 +165,7 @@ namespace XRayBuilderGUI
                 }
                 BioTrimmed = BioTrimmed.Replace("\"", "'");
                 BioTrimmed = BioTrimmed.Replace("<br><br>", " ");
+                BioTrimmed = BioTrimmed.Replace("<br>", " ");
                 BioTrimmed = BioTrimmed.Replace("&amp;#133;", "...");
                 BioTrimmed = BioTrimmed.Replace("&#169;", "©");
                 BioTrimmed = BioTrimmed.Replace("&quot;", "'");

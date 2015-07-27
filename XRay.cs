@@ -551,10 +551,10 @@ namespace XRayBuilderGUI
                                 if (foundterm != null)
                                     excerpt.related_entities.Add(foundterm.Id);
                             }
+                            excerpts.Add(excerpt);
                         }
                         foundNotables++;
                         excerpt.related_entities.Add(0);
-                        excerpts.Add(excerpt);
                     }
                 }
             }

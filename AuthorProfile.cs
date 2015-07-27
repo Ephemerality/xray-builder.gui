@@ -42,7 +42,13 @@ namespace XRayBuilderGUI
             string outputDir;
             try
             {
-                outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectory(curBook.author, curBook.sidecarName) : settings.outDir;
+                if (settings.android)
+                {
+                    outputDir = settings.outDir + @"\Android\" + curBook.asin;
+                    Directory.CreateDirectory(outputDir);
+                }
+                else
+                    outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectory(curBook.author, curBook.sidecarName) : settings.outDir;
             }
             catch (Exception ex)
             {
@@ -165,6 +171,7 @@ namespace XRayBuilderGUI
                 }
                 BioTrimmed = BioTrimmed.Replace("\"", "'");
                 BioTrimmed = BioTrimmed.Replace("<br><br>", " ");
+                BioTrimmed = BioTrimmed.Replace("<br>", " ");
                 BioTrimmed = BioTrimmed.Replace("&amp;#133;", "...");
                 BioTrimmed = BioTrimmed.Replace("&#169;", "©");
                 BioTrimmed = BioTrimmed.Replace("&quot;", "'");
@@ -275,48 +282,43 @@ namespace XRayBuilderGUI
             bgs.Dispose();
 
             main.Log("Gathering author's other books...");
-            List<string> names = new List<string>();
-            List<string> asins = new List<string>();
-            List<string> urls = new List<string>();
-            //Parse Authors other Kindle titles names.
-            HtmlNodeCollection authorsOtherBooksTitle =
-                authorHtmlDoc.DocumentNode.SelectNodes("//div[@id='mainResults']/div/div/h3/a/@href");
-            foreach (HtmlNode otherBook in authorsOtherBooksTitle)
+            List<BookInfo> bookList = new List<BookInfo>();
+            HtmlNodeCollection resultsNodes =
+                authorHtmlDoc.DocumentNode.SelectNodes("//div[@id='mainResults']/div");
+            foreach (HtmlNode result in resultsNodes)
             {
-                names.Add(otherBook.InnerText);
-                urls.Add(otherBook.GetAttributeValue("href", ""));
-            }
-            //Parse Authors other Kindle titles ASINs.
-            HtmlNodeCollection authorsOtherBooksAsin = authorHtmlDoc.DocumentNode.SelectNodes("//*[@class='tpType']");
-            foreach (HtmlNode otherBook in authorsOtherBooksAsin)
-            {
+                if (!result.Id.StartsWith("result_")) continue;
+                string name, url, asin = "";
+                HtmlNode otherBook = result.SelectSingleNode(".//div/h3/a/@href");
+                name = otherBook.InnerText;
+                url = otherBook.GetAttributeValue("href", "");
+                otherBook = result.SelectSingleNode(".//*[@class='tpType']");
                 int index = otherBook.OuterHtml.IndexOf("/dp/B");
                 if (index != -1 && otherBook.InnerText.Contains("Kindle Edition"))
                 {
-                    asins.Add(otherBook.OuterHtml.Substring(index + 4, 10));
+                    asin = otherBook.OuterHtml.Substring(index + 4, 10);
                 }
-            }
-            if (names.Count != asins.Count)
-            {
-                main.Log("Error parsing author's other books. Name and ASIN count did not match.\r\n" +
-                    "Please report the Amazon URL: " + authorAmazonWebsiteLocation);
-                return;
+                if (name != "" && url != "" && asin != "")
+                {
+                    BookInfo newBook = new BookInfo(name, curBook.author, asin);
+                    newBook.amazonUrl = url;
+                    bookList.Add(newBook);
+                }
             }
 
             main.Log("Gathering metadata for other books...");
-            for (int i = 0; i < names.Count; i++)
+            foreach (BookInfo book in bookList)
             {
-                BookInfo newBook = new BookInfo(names[i], curBook.author, asins[i]);
                 try
                 {
                     //Gather book desc, image url, etc, if using new format
                     if (settings.useNewVersion)
-                        newBook.GetAmazonInfo(urls[i]);
-                    otherBooks.Add(newBook);
+                        book.GetAmazonInfo(book.amazonUrl);
+                    otherBooks.Add(book);
                 }
                 catch (Exception ex)
                 {
-                    main.Log(String.Format("{0}\r\nURL: {1}\r\nBook: {2}\r\nContinuing anyway...", ex.Message, urls[i], names[i]));
+                    main.Log(String.Format("{0}\r\nURL: {1}\r\nBook: {2}\r\nContinuing anyway...", ex.Message, book.amazonUrl, book.title));
                 }
             }
 

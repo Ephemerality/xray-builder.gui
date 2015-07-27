@@ -14,7 +14,5 @@ Original X-Ray script by shinew (http://www.mobileread.com/forums/showthread.php
 * Python 2.X if you plan on using mobi_unpack.py instead of the .exe (Optional)  
 * HtmlAgilityPack (http://htmlagilitypack.codeplex.com/) (Included)  
   
-## Limitations  
-* Some (all?) X-Rays will not work properly on firmware version 5.6+ (Kindle Paperwhite 2 & 3, Voyage).  
-Cause is still unknown.
-* Notable Clips are not displayed. Research is necessary on how these are stored.
+## Instructions
+Furthur instructions are located in the thread on Mobile Read: http://www.mobileread.com/forums/showthread.php?t=245754

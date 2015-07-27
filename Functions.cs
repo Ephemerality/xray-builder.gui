@@ -463,7 +463,7 @@ namespace XRayBuilderGUI
             searchDoc.LoadHtml(HttpDownloader.GetPageHtml(searchUrl));
             HAP.HtmlNode node = searchDoc.DocumentNode.SelectSingleNode("//li[@id='result_0']");
             //At least attempt to verify it might be the same book?
-            if (node != null && node.InnerText.StartsWith(title))
+            if (node != null && node.InnerText.Contains(title))
             {
                 string foundASIN = node.GetAttributeValue("data-asin", "");
                 node = node.SelectSingleNode(".//div/div/div/div[@class='a-fixed-left-grid-col a-col-right']/div/a");

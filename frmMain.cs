@@ -275,7 +275,13 @@ namespace XRayBuilderGUI
             string _newPath = "";
             try
             {
-                outFolder = settings.useSubDirectories ? Functions.GetBookOutputDirectory(results[4], Path.GetFileNameWithoutExtension(txtMobi.Text)) : settings.outDir;
+                if (settings.android)
+                {
+                    outFolder = settings.outDir + @"\Android\" + results[0];
+                    Directory.CreateDirectory(outFolder);
+                }
+                else
+                    outFolder = settings.useSubDirectories ? Functions.GetBookOutputDirectory(results[4], Path.GetFileNameWithoutExtension(txtMobi.Text)) : settings.outDir;
             }
             catch (Exception ex)
             {
@@ -313,6 +319,7 @@ namespace XRayBuilderGUI
                         "An error occurred while opening the BaseDB.sql file. Ensure you extracted it to the same directory as the program.\n" +
                         ex.Message);
                     m_dbConnection.Close();
+                    m_dbConnection.Dispose();
                     return;
                 }
                 SQLiteCommand command = new SQLiteCommand("BEGIN; " + sql + " COMMIT;", m_dbConnection);
@@ -330,6 +337,7 @@ namespace XRayBuilderGUI
                     Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\n" +
                         ex.Message);
                     m_dbConnection.Close();
+                    m_dbConnection.Dispose();
                     return;
                 }
                 Console.WriteLine("Updating indices...");
@@ -339,6 +347,7 @@ namespace XRayBuilderGUI
                 command = new SQLiteCommand(sql, m_dbConnection);
                 command.ExecuteNonQuery();
                 m_dbConnection.Close();
+                m_dbConnection.Dispose();
             }
             else
             {

@@ -17,20 +17,21 @@ namespace XRayBuilderGUI
 
         private string EaPath = "";
         private string EaDest = "";
-        private string bookImageUrl = "";
+        private long _erl = 0;
 
-        public List<string> PurchAlsoBoughtTitles = new List<string>();
-        public List<string> PurchAlsoBoughtAsinNumbers = new List<string>();
-        public List<string> PurchAlsoBoughtAuthorNames = new List<string>();
+        public List<BookInfo> custAlsoBought = new List<BookInfo>();
 
-        AuthorProfile authorProfile = null;
-        BookInfo bookInfo = null;
+        private AuthorProfile authorProfile = null;
+        private BookInfo curBook = null;
+
+        public bool complete = false; //Set if constructor succeeds in gathering data
         
-        //Requires an already-built AuthorProfile
-        public EndActions(AuthorProfile ap, BookInfo book, frmMain frm)
+        //Requires an already-built AuthorProfile and the BaseEndActions.txt file
+        public EndActions(AuthorProfile ap, BookInfo book, long erl, frmMain frm)
         {
             authorProfile = ap;
-            bookInfo = book;
+            curBook = book;
+            _erl = erl;
             main = frm;
 
             main.Log("Building End Actions...");
@@ -42,10 +43,10 @@ namespace XRayBuilderGUI
             main.Log("Book found on Amazon!");
             main.Log(String.Format("Book's Amazon page URL: {0}", ebookLocation));
             
-            HtmlDocument bookHlmlDoc = new HtmlDocument {OptionAutoCloseOnEnd = true};
+            HtmlDocument bookHtmlDoc = new HtmlDocument {OptionAutoCloseOnEnd = true};
             try
             {
-                bookHlmlDoc.LoadHtml(HttpDownloader.GetPageHtml(ebookLocation));
+                bookHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(ebookLocation));
             }
             catch (Exception ex)
             {
@@ -67,52 +68,51 @@ namespace XRayBuilderGUI
                 }
             }
 
-            // Parse Book image URL
-            HtmlNode bookImageLoc2 = bookHlmlDoc.DocumentNode.SelectSingleNode("//*[@id='imgBlkFront']");
-            if (bookImageLoc2 == null)
-                main.Log("Error finding book image. If you want, you can report the book's Amazon URL to help with parsing.");
-            else
-                bookImageUrl = Regex.Replace(bookImageLoc2.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
-
-            // Generate random book image URL because Amazon keep changing format!
-            if (bookImageUrl == "")
+            try
             {
-                string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-                Random random = new Random();
-                string result = new string(
-                    Enumerable.Repeat(chars, 11)
-                        .Select(s => s[random.Next(s.Length)])
-                        .ToArray());
-                bookImageUrl = String.Format("http://ecx.images-amazon.com/images/I/{0}.jpg",
-                    Uri.EscapeDataString(result));
+                curBook.GetAmazonInfo(bookHtmlDoc);
+            }
+            catch (Exception ex)
+            {
+                main.Log(String.Format("An error ocurred parsing Amazon info: {0}", ex.Message));
+                return;
             }
 
+            main.Log("Gathering recommended book info...");
             //Parse Recommended Author titles and ASINs
             try
             {
-                HtmlNodeCollection recomendationList = bookHlmlDoc.DocumentNode.SelectNodes("//li[@class='a-carousel-card a-float-left']");
-                if (recomendationList == null)
+                HtmlNodeCollection recList = bookHtmlDoc.DocumentNode.SelectNodes("//li[@class='a-carousel-card a-float-left']");
+                if (recList == null)
                     main.Log("Could not find related book list page on Amazon.\r\nUnable to create End Actions.");
-                foreach (HtmlNode item in recomendationList.Where(item => item != null))
+                foreach (HtmlNode item in recList.Where(item => item != null))
                 {
                     HtmlNode nodeTitle = item.SelectSingleNode(".//div/a");
                     string nodeTitleCheck = nodeTitle.GetAttributeValue("title", "");
+                    string nodeUrl = nodeTitle.GetAttributeValue("href", "");
+                    if (nodeUrl != "")
+                        nodeUrl = "http://www.amazon.com" + nodeUrl;
                     if (nodeTitleCheck == "")
                     {
                         nodeTitle = item.SelectSingleNode(".//div/a");
                         //Remove CR, LF and TAB
-                        string cleanTitle = Regex.Replace(nodeTitle.InnerText, @"\t|\n|\r", String.Empty);
-                        cleanTitle = cleanTitle.Trim();
-                        cleanTitle = Regex.Replace(cleanTitle, @"&#133;", "...");
-                        PurchAlsoBoughtTitles.Add(cleanTitle);
+                        nodeTitleCheck = Regex.Replace(nodeTitle.InnerText, @"\t|\n|\r", String.Empty);
+                        nodeTitleCheck = nodeTitleCheck.Trim();
+                        nodeTitleCheck = Regex.Replace(nodeTitleCheck, @"&#133;", "...");
                     }
-                    else
+                    BookInfo newBook = new BookInfo(nodeTitleCheck, item.SelectSingleNode(".//div/div").InnerText.Trim(),
+                        item.SelectSingleNode(".//div").GetAttributeValue("data-asin", ""));
+                    try
                     {
-                        PurchAlsoBoughtTitles.Add(nodeTitle.GetAttributeValue("title", ""));
+                        //Gather book desc, image url, etc, if using new format
+                        if (settings.useNewVersion)
+                            newBook.GetAmazonInfo(nodeUrl);
+                        custAlsoBought.Add(newBook);
                     }
-
-                    PurchAlsoBoughtAsinNumbers.Add(item.SelectSingleNode(".//div").GetAttributeValue("data-asin", ""));
-                    PurchAlsoBoughtAuthorNames.Add(item.SelectSingleNode(".//div/div").InnerText.Trim());
+                    catch (Exception ex)
+                    {
+                        main.Log(String.Format("{0}\r\n{1}\r\nContinuing anyway...", ex.Message, nodeUrl));
+                    }
                 }
             }
             catch (Exception ex)
@@ -122,6 +122,7 @@ namespace XRayBuilderGUI
             }
 
             SetPaths();
+            complete = true;
         }
 
         public void GenerateOld()
@@ -138,14 +139,14 @@ namespace XRayBuilderGUI
                 writer.WriteProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"");
                 writer.WriteStartElement("endaction");
                 writer.WriteAttributeString("version", "0");
-                writer.WriteAttributeString("guid", bookInfo.databasename + ":" + bookInfo.guid);
-                writer.WriteAttributeString("key", bookInfo.asin);
+                writer.WriteAttributeString("guid", curBook.databasename + ":" + curBook.guid);
+                writer.WriteAttributeString("key", curBook.asin);
                 writer.WriteAttributeString("type", "EBOK");
                 writer.WriteAttributeString("timestamp", dt + tz);
                 writer.WriteElementString("treatment", "d");
                 writer.WriteStartElement("currentBook");
-                writer.WriteElementString("imageUrl", bookImageUrl);
-                writer.WriteElementString("asin", bookInfo.asin);
+                writer.WriteElementString("imageUrl", curBook.bookImageUrl);
+                writer.WriteElementString("asin", curBook.asin);
                 writer.WriteElementString("hasSample", "false");
                 writer.WriteEndElement();
                 writer.WriteStartElement("customerProfile");
@@ -154,25 +155,25 @@ namespace XRayBuilderGUI
                 writer.WriteEndElement();
                 writer.WriteStartElement("recs");
                 writer.WriteAttributeString("type", "author");
-                for (int i = 0; i < Math.Min(authorProfile.AuthorsOtherBookNames.Count - 1, 5); i++)
+                for (int i = 0; i < Math.Min(authorProfile.otherBooks.Count, 5); i++)
                 {
                     writer.WriteStartElement("rec");
                     writer.WriteAttributeString("hasSample", "false");
-                    writer.WriteAttributeString("asin", authorProfile.AuthorsOtherBookAsins[i]);
-                    writer.WriteElementString("title", authorProfile.AuthorsOtherBookNames[i]);
-                    writer.WriteElementString("author", bookInfo.author);
+                    writer.WriteAttributeString("asin", authorProfile.otherBooks[i].asin);
+                    writer.WriteElementString("title", authorProfile.otherBooks[i].title);
+                    writer.WriteElementString("author", curBook.author);
                     writer.WriteEndElement();
                 }
                 writer.WriteEndElement();
                 writer.WriteStartElement("recs");
                 writer.WriteAttributeString("type", "purchase");
-                for (int i = 0; i < Math.Min(PurchAlsoBoughtTitles.Count - 1, 5); i++)
+                for (int i = 0; i < Math.Min(custAlsoBought.Count, 5); i++)
                 {
                     writer.WriteStartElement("rec");
                     writer.WriteAttributeString("hasSample", "false");
-                    writer.WriteAttributeString("asin", PurchAlsoBoughtAsinNumbers[i]);
-                    writer.WriteElementString("title", PurchAlsoBoughtTitles[i]);
-                    writer.WriteElementString("author", PurchAlsoBoughtAuthorNames[i]);
+                    writer.WriteAttributeString("asin", custAlsoBought[i].asin);
+                    writer.WriteElementString("title", custAlsoBought[i].title);
+                    writer.WriteElementString("author", custAlsoBought[i].author);
                     writer.WriteEndElement();
                 }
                 writer.WriteEndElement();
@@ -180,7 +181,7 @@ namespace XRayBuilderGUI
                 writer.WriteEndElement();
                 writer.Flush();
                 writer.Close();
-                main.Log("End Action file created successfully!\r\nSaved to " + EaPath);
+                main.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
                 main.cmsPreview.Items[1].Enabled = true;
             }
             catch (Exception ex)
@@ -192,7 +193,56 @@ namespace XRayBuilderGUI
 
         public void GenerateNew()
         {
+            string[] templates = GetBaseEndActions();
+            if (templates == null) return;
 
+            string bookInfoTemplate = templates[0];
+            string widgetsTemplate = templates[1];
+            string layoutsTemplate = templates[2];
+            string finalOutput = "{{{0},{1},{2},{3}}}"; //bookInfo, widgets, layouts, data
+            
+            // Build bookInfo object
+            // "bookInfo":{"class":"bookInfo","asin":"{0}","contentType":"EBOK","timestamp":{1},"refTagSuffix":"AAAgAAB","imageUrl":"{2}","embeddedID":"{3}:{4}","erl":{5}}
+            TimeSpan timestamp = DateTime.Now - new DateTime(1970, 1, 1);
+            bookInfoTemplate = string.Format(bookInfoTemplate, curBook.asin, Math.Round(timestamp.TotalMilliseconds), curBook.bookImageUrl, curBook.databasename, curBook.guid, _erl);
+
+            // Build data object
+            string dataTemplate = @"""data"":{{""nextBook"":{0},{1},{2},""currentBookFeatured"":{3},{4},{5},{6},{7}}}";
+            string nextBook = "{}";
+            string publicSharedRating = @"""publicSharedRating"":{""class"":""publicSharedRating"",""timestamp"":1430656509000,""value"":4}";
+            string rating = @"""rating"":{""class"":""personalizationRating"",""timestamp"":1430656509000,""value"":4}";
+            string customerProfile = string.Format(@"""customerProfile"":{{""class"":""customerProfile"",""penName"":""{0}"",""realName"":""{1}""}}",
+                settings.penName, settings.realName);
+            string authors = string.Format(@"""authorBios"":{{""class"":""authorBioList"",""authors"":[{0}]}}", authorProfile.ToJSON());
+            string authorRecs = @"""authorRecs"":{{""class"":""featuredRecommendationList"",""recommendations"":[{0}]}}";
+            string custRecs = @"""customersWhoBoughtRecs"":{{""class"":""featuredRecommendationList"",""recommendations"":[{0}]}}";
+            BookInfo nextInSeries = null;
+            try
+            {
+                nextInSeries = GetNextInSeries();
+                if (nextInSeries != null)
+                    nextBook = nextInSeries.ToJSON("recommendation", false);
+            }
+            catch (Exception ex)
+            {
+                main.Log("Error finding next book in series: " + ex.Message);
+            }
+            authorRecs = String.Format(authorRecs, String.Join(",", authorProfile.otherBooks.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
+            custRecs = String.Format(custRecs, String.Join(",", custAlsoBought.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
+            //string goodReadsReview = @"""goodReadsReview"":{""class"":""goodReadsReview"",""reviewId"":""NoReviewId"",""rating"":4,""submissionDateMs"":1436900445878}";
+            dataTemplate = string.Format(dataTemplate, nextBook, publicSharedRating, customerProfile, curBook.ToJSON("featuredRecommendation", true),
+                rating, authors, authorRecs, custRecs);
+
+            finalOutput = String.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
+
+            using (StreamWriter streamWriter = new StreamWriter(EaPath, false, Encoding.UTF8))
+            {
+                streamWriter.Write(finalOutput);
+                streamWriter.Flush();
+                streamWriter.Close();
+            }
+            main.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
+            main.cmsPreview.Items[1].Enabled = true;
         }
 
         private void SetPaths()
@@ -200,15 +250,21 @@ namespace XRayBuilderGUI
             string outputDir;
             try
             {
-                outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectory(bookInfo.author, bookInfo.sidecarName) : settings.outDir;
+                if (settings.android)
+                {
+                    outputDir = settings.outDir + @"\Android\" + curBook.asin;
+                    Directory.CreateDirectory(outputDir);
+                }
+                else
+                    outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectory(curBook.author, curBook.sidecarName) : settings.outDir;
             }
             catch (Exception ex)
             {
                 main.Log("Failed to create output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
                 outputDir = settings.outDir;
             }
-            EaDest = settings.docDir + @"\" + bookInfo.author + @"\" + bookInfo.title + @".sdr" + @"\EndActions.data." + bookInfo.asin + ".asc";
-            EaPath = outputDir + @"\EndActions.data." + bookInfo.asin + ".asc";
+            EaDest = settings.docDir + @"\" + curBook.author + @"\" + curBook.title + @".sdr" + @"\EndActions.data." + curBook.asin + ".asc";
+            EaPath = outputDir + @"\EndActions.data." + curBook.asin + ".asc";
 
             if (!XRayBuilderGUI.Properties.Settings.Default.overwrite && File.Exists(EaPath))
             {
@@ -216,6 +272,164 @@ namespace XRayBuilderGUI
                          "Please review the settings page if you want to overwite any existing files.");
                 return;
             }
+        }
+
+        /// <summary>
+        /// Retrieve EndActions templates from BaseEndActions.txt.
+        /// Array will always be length 3. Index 0 will always be the bookInfo template.
+        /// </summary>
+        private string[] GetBaseEndActions()
+        {
+            string[] templates = null;
+            try
+            {
+                using (StreamReader streamReader = new StreamReader("BaseEndActions.txt", Encoding.UTF8))
+                {
+                    templates = streamReader.ReadToEnd().Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+                    templates = templates.Where(r => !r.StartsWith("//")).ToArray(); //Remove commented lines
+                    if (templates == null || templates.Length != 3 || !templates[0].StartsWith(@"""bookInfo"""))
+                    {
+                        main.Log("Error parsing BaseEndActions.txt. If you modified it, ensure you followed the specified format.");
+                        return null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                main.Log("An error occurred while opening the BaseEndActions.txt file.\r\n" +
+                    "Ensure you extracted it to the same directory as the program.\r\n" +
+                    ex.Message);
+            }
+            return templates;
+        }
+
+        private BookInfo GetNextInSeries()
+        {
+            BookInfo nextBook = null;
+
+            if (curBook.shelfariUrl == "") return null;
+
+            // Get title of next book
+            HtmlAgilityPack.HtmlDocument searchHtmlDoc = new HtmlAgilityPack.HtmlDocument();
+            searchHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.shelfariUrl));
+            string nextTitle = GetNextInSeriesTitle(searchHtmlDoc);
+            // If search failed, try other method
+            if (nextTitle == "")
+                nextTitle = GetNextInSeriesTitle2(searchHtmlDoc);
+            if (nextTitle != "")
+            {
+                // Search author's other books for the book (assumes next in series was written by the same author...)
+                // Returns the first one found, though there should probably not be more than 1 of the same name anyway
+                nextBook = authorProfile.otherBooks.FirstOrDefault(bk => bk.title == nextTitle);
+                if (nextBook == null)
+                {
+                    // Attempt to search Amazon for the book instead
+                    nextBook = Functions.AmazonSearchBook(nextTitle, curBook.author);
+                    if (nextBook != null)
+                        nextBook.GetAmazonInfo(nextBook.amazonUrl); //fill in desc, imageurl, and ratings
+                }
+                if (nextBook == null)
+                    main.Log("Book was found to be part of a series, but next book could not be found.\r\n" +
+                        "Please report this book and the Shelfari URL and output log to improve parsing.");
+                else
+                    main.Log("Next book in the series: " + nextBook.title);
+            } else
+                main.Log("Unable to find next book in series, the book may not be part of one.");
+
+            return nextBook;
+        }
+
+        //TODO: Un-yuckify all the return paths without nesting a ton of ifs
+        /// <summary>
+        /// Search Shelfari page for possible series info, returning the next title in the series without downloading any other pages.
+        /// </summary>
+        private string GetNextInSeriesTitle(HtmlAgilityPack.HtmlDocument searchHtmlDoc)
+        {
+            HtmlAgilityPack.HtmlNode wikiNode = searchHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_Series']");
+            if (wikiNode == null)
+                return "";
+            HtmlAgilityPack.HtmlNode node = wikiNode.SelectSingleNode(".//div/div");
+            if (node == null || !node.InnerText.Contains("(standard series)"))
+                return "";
+            main.Log(node.InnerText.Replace(" (standard series)", ""));
+            Match match = Regex.Match(node.InnerText, @"This is book (\d+) of (\d+)");
+            if (!match.Success || match.Groups.Count != 3)
+                return "";
+            // Check if book is the last in the series
+            if (!match.Groups[1].Value.Equals(match.Groups[2].Value))
+            {
+                node = wikiNode.SelectSingleNode(".//div/p");
+                if (node != null && node.InnerText.Contains("followed by ", StringComparison.OrdinalIgnoreCase))
+                {
+                    match = Regex.Match(node.InnerText, @"followed by (.*)\.");
+                    if (match.Success && match.Groups.Count == 2)
+                        return match.Groups[1].Value;
+                }
+            }
+            return "";
+        }
+
+        /// <summary>
+        /// Search Shelfari for series info, scrape series page, and return next title in series.
+        /// </summary>
+        private string GetNextInSeriesTitle2(HtmlAgilityPack.HtmlDocument searchHtmlDoc)
+        {
+            bool hasSeries = false;
+            string series = "";
+            string seriesShort = "";
+            string seriesURL = "";
+            int currentSeriesIndex = 0;
+            int currentSeriesCount = 0;
+            string nextTitle = "";
+            //Check if book's Shelfari page contains series info
+            HtmlAgilityPack.HtmlNode node = searchHtmlDoc.DocumentNode.SelectSingleNode("//span[@class='series']");
+            if (node != null)
+            {
+                //Series name and book number
+                series = node.InnerText.Trim();
+                //Convert book number string to integer
+                Int32.TryParse(series.Substring(series.LastIndexOf(" ") + 1), out currentSeriesIndex);
+                //Parse series Shelfari URL
+                seriesURL = node.SelectSingleNode("//span[@class='series']/a[@href]")
+                    .GetAttributeValue("href", "");
+                seriesShort = node.FirstChild.InnerText.Trim();
+                //Add series name and book number to log, if found
+                searchHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(string.Format(seriesURL)));
+                //Parse number of books in series and convert to integer
+                node = searchHtmlDoc.DocumentNode.SelectSingleNode("//h2[@class='f_m']");
+                string test = node.FirstChild.InnerText.Trim();
+                Match match = Regex.Match(test, @"\d+");
+                if (match.Success)
+                    Int32.TryParse(match.Value, out currentSeriesCount);
+                hasSeries = true;
+                //Check if there is a next book
+                if (currentSeriesIndex < currentSeriesCount)
+                {
+                    //Add series name and book number to log, if found
+                    main.Log(String.Format("This is book {0} of {1} in the {2} Series...",
+                        currentSeriesIndex, currentSeriesCount, seriesShort));
+                    foreach (HtmlAgilityPack.HtmlNode seriesItem in
+                        searchHtmlDoc.DocumentNode.SelectNodes(".//ol/li"))
+                    {
+                        node = seriesItem.SelectSingleNode(".//div/span[@class='series bold']");
+                        if (node != null)
+                            if (node.InnerText.Contains((currentSeriesIndex + 1).ToString()))
+                            {
+                                node = seriesItem.SelectSingleNode(".//h3/a");
+                                //Parse title of the next book
+                                nextTitle = node.InnerText.Trim();
+                                //Add next book in series to log, if found
+                                main.Log(String.Format("The next book in this series is {0}!", nextTitle));
+                                return nextTitle;
+                            }
+                    }
+                }
+                if (hasSeries)
+                    main.Log(String.Format("Unable to find the next book in this series!\r\n" +
+                                      "This is the last title in the {0} series...", seriesShort));
+                return "";
+            }
+            return "";
         }
     }
 }

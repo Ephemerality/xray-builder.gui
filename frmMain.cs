@@ -83,7 +83,7 @@ namespace XRayBuilderGUI
             frmEA.lblAuthor2.Text = "";
             return true;
         }
-        
+
         private void btnBrowseMobi_Click(object sender, EventArgs e)
         {
             txtMobi.Text = Functions.GetBook(txtMobi.Text);
@@ -275,7 +275,13 @@ namespace XRayBuilderGUI
             string _newPath = "";
             try
             {
-                outFolder = settings.useSubDirectories ? Functions.GetBookOutputDirectory(results[4], Path.GetFileNameWithoutExtension(txtMobi.Text)) : settings.outDir;
+                if (settings.android)
+                {
+                    outFolder = settings.outDir + @"\Android\" + results[0];
+                    Directory.CreateDirectory(outFolder);
+                }
+                else
+                    outFolder = settings.useSubDirectories ? Functions.GetBookOutputDirectory(results[4], Path.GetFileNameWithoutExtension(txtMobi.Text)) : settings.outDir;
             }
             catch (Exception ex)
             {
@@ -313,6 +319,7 @@ namespace XRayBuilderGUI
                         "An error occurred while opening the BaseDB.sql file. Ensure you extracted it to the same directory as the program.\n" +
                         ex.Message);
                     m_dbConnection.Close();
+                    m_dbConnection.Dispose();
                     return;
                 }
                 SQLiteCommand command = new SQLiteCommand("BEGIN; " + sql + " COMMIT;", m_dbConnection);
@@ -330,6 +337,7 @@ namespace XRayBuilderGUI
                     Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\n" +
                         ex.Message);
                     m_dbConnection.Close();
+                    m_dbConnection.Dispose();
                     return;
                 }
                 Console.WriteLine("Updating indices...");
@@ -339,6 +347,7 @@ namespace XRayBuilderGUI
                 command = new SQLiteCommand(sql, m_dbConnection);
                 command.ExecuteNonQuery();
                 m_dbConnection.Close();
+                m_dbConnection.Dispose();
             }
             else
             {
@@ -499,10 +508,20 @@ namespace XRayBuilderGUI
             try
             {
                 BookInfo bookInfo = new BookInfo(results[5], results[4], results[0], results[1], results[2],
-                                                randomFile, Path.GetFileNameWithoutExtension(txtMobi.Text));
+                                                randomFile, Path.GetFileNameWithoutExtension(txtMobi.Text), txtShelfari.Text);
                 AuthorProfile ap = new AuthorProfile(bookInfo, this);
-                EndActions ea = new EndActions(ap, bookInfo, this);
-                ea.GenerateOld();
+                if (!ap.complete) return;
+                if (!File.Exists(results[3]))
+                {
+                    Log("Error: RawML could not be found, aborting.\r\nPath: " + results[3]);
+                    return;
+                }
+                EndActions ea = new EndActions(ap, bookInfo, new FileInfo(results[3]).Length, this);
+                if (!ea.complete) return;
+                if (settings.useNewVersion)
+                    ea.GenerateNew();
+                else
+                    ea.GenerateOld();
                 previewClear();
 
                 frmAP.lblTitle.Text = ap.ApTitle;
@@ -528,31 +547,31 @@ namespace XRayBuilderGUI
                 }
 
                 frmAP.lblKindleBooks.Text = ap.ApSubTitle;
-                for (var i = 0; i < Math.Min(ap.AuthorsOtherBookNames.Count - 1, 4); i++)
+                for (var i = 0; i < Math.Min(ap.otherBooks.Count, 4); i++)
                 {
                     foreach (Control contrl in frmAP.Controls)
                     {
                         if (contrl.Name == ("lblBook" + (i + 1)))
-                            contrl.Text = ap.AuthorsOtherBookNames[i];
+                            contrl.Text = ap.otherBooks[i].title;
                     }
                 }
                 frmEA.lblPost.Text = String.Format("Post on Amazon (as {0})",
                     Properties.Settings.Default.penName);
                 frmEA.lblMoreBooks.Text = ap.EaSubTitle;
-                for (var i = 0; i < Math.Min(ap.AuthorsOtherBookNames.Count - 1, 5); i++)
+                for (var i = 0; i < Math.Min(ap.otherBooks.Count, 5); i++)
                 {
                     foreach (Control contrl in frmEA.Controls)
                     {
                         if (contrl.Name == ("lblBook" + (i + 1)))
-                            contrl.Text = ap.AuthorsOtherBookNames[i];
+                            contrl.Text = ap.otherBooks[i].title;
 }
                 }
-                if (ea.PurchAlsoBoughtTitles.Count > 1 && ea.PurchAlsoBoughtAuthorNames.Count > 1)
+                if (ea.custAlsoBought.Count > 1)
                 {
-                    frmEA.lblBook6.Text = ea.PurchAlsoBoughtTitles[0];
-                    frmEA.lblAuthor1.Text = ea.PurchAlsoBoughtAuthorNames[0];
-                    frmEA.lblBook7.Text = ea.PurchAlsoBoughtTitles[1];
-                    frmEA.lblAuthor2.Text = ea.PurchAlsoBoughtAuthorNames[1];
+                    frmEA.lblBook6.Text = ea.custAlsoBought[0].title;
+                    frmEA.lblAuthor1.Text = ea.custAlsoBought[0].author;
+                    frmEA.lblBook7.Text = ea.custAlsoBought[1].title;
+                    frmEA.lblAuthor2.Text = ea.custAlsoBought[1].author;
                 }
             }
             catch (Exception ex)
@@ -659,21 +678,22 @@ namespace XRayBuilderGUI
                 File.Copy(results[3], Path.Combine(settings.outDir, Path.GetFileName(results[3])), true);
             }
             // Added author name to log output
-            Log(
-                String.Format(
-                    "Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
-                    results[2], results[0], results[4], results[5], results[1]));
-                        
+            Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
+                results[2], results[0], results[4], results[5], results[1]));
+
             Directory.Delete(randomFile, true);
 
             //Get Shelfari Search URL
             Log("Searching for book on Shelfari...");
             string shelfariSearchUrlBase = @"http://www.shelfari.com/search/books?Author={0}&Title={1}&Binding={2}";
             string[] bindingTypes = {"Hardcover", "Kindle", "Paperback"};
-            
+
             // Search book on Shelfari
             bool bookFound = false;
             string shelfariBookUrl = "";
+
+            results[4] = Functions.FixAuthor(results[4]);
+
             try
             {
                 HtmlAgilityPack.HtmlDocument shelfariHtmlDoc = new HtmlAgilityPack.HtmlDocument();
@@ -720,6 +740,7 @@ namespace XRayBuilderGUI
             {
                 Log("Book found on Shelfari!");
                 Log(results[5] + " by " + results[4]);
+
                 txtShelfari.Text = shelfariBookUrl;
                 txtShelfari.Refresh();
                 Log("Shelfari URL updated!\r\nYou may want to visit the URL to ensure it is correct and add/modify terms if necessary.");
@@ -746,6 +767,7 @@ namespace XRayBuilderGUI
                 listoflinks.Clear();
                 for (var i = 1; i < bookItems.ChildNodes.Count; i++)
                 {
+                    if (bookItems.ChildNodes[i].GetAttributeValue("class", "") == "series") continue;
                     listofthings.Add(bookItems.ChildNodes[i].InnerText.Trim());
                     listoflinks.Add(bookItems.ChildNodes[i].InnerHtml);
                 }
@@ -762,7 +784,7 @@ namespace XRayBuilderGUI
                     {
                         shelfariBookUrl = listoflinks[index].ToString();
                         shelfariBookUrl = Regex.Replace(shelfariBookUrl, "<a href=\"", "", RegexOptions.None);
-                        shelfariBookUrl = Regex.Replace(shelfariBookUrl, "\">.*?</a>", "", RegexOptions.None);
+                        shelfariBookUrl = Regex.Replace(shelfariBookUrl, "\".*?</a>.*", "", RegexOptions.None);
                         return shelfariBookUrl;
                     }
                     index++;
@@ -770,7 +792,7 @@ namespace XRayBuilderGUI
             }
             return "";
         }
-
+        
         private void btnSettings_Click(object sender, EventArgs e)
         {
             frmSettings frmSet = new frmSettings();
@@ -811,7 +833,7 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(btnBuild,
                 "Try to build the X-Ray file for this book.");
             toolTip1.SetToolTip(btnSettings, "Configure X-Ray Builder GUI.");
-            toolTip1.SetToolTip(btnPreview,"View a preview of the generated files.");
+            toolTip1.SetToolTip(btnPreview, "View a preview of the generated files.");
             this.DragEnter += frmMain_DragEnter;
             this.DragDrop += frmMain_DragDrop;
 
@@ -846,7 +868,7 @@ namespace XRayBuilderGUI
             if (Properties.Settings.Default.mobi_unpack == "")
             {
                 Properties.Settings.Default.mobi_unpack = Environment.CurrentDirectory +
-                                                                         @"\dist\kindleunpack.exe";
+                                                          @"\dist\kindleunpack.exe";
             }
             txtShelfari.Text = Properties.Settings.Default.shelfari;
             if (Properties.Settings.Default.buildSource == "Shelfari")

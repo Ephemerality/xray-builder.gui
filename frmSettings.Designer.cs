@@ -199,7 +199,6 @@
             // chkAndroid
             // 
             this.chkAndroid.AutoSize = true;
-            this.chkAndroid.Enabled = false;
             this.chkAndroid.Location = new System.Drawing.Point(122, 49);
             this.chkAndroid.Name = "chkAndroid";
             this.chkAndroid.Size = new System.Drawing.Size(103, 17);

@@ -84,7 +84,8 @@ namespace XRayBuilderGUI
                 "you have one of these devices but this\r\n" +
                 "does notwork, try the old format.");
             toolTip1.SetToolTip(chkAndroid,
-                "Changes the naming convention of the X-Ray file for the\r\nAndroid Kindle app. Forces building with the new format.");
+                "Changes the naming convention of the X-Ray file for the\r\nAndroid Kindle app.\r\nForces building with the new format.\r\n" +
+                "Files will be places in the output directory within the 'Android' folder.");
             toolTip1.SetToolTip(chkUTF8, "Write the X-Ray file in UTF8 instead of ANSI.\r\n" +
                 "Use this option if there are accented characters\r\n" +
                 "in your book, the title, or author's name.");
@@ -176,9 +177,13 @@ namespace XRayBuilderGUI
             {
                 chkUseNew.Checked = true;
                 chkUseNew.Enabled = false;
+                chkSubDirectories.Enabled = false;
             }
             else
+            {
                 chkUseNew.Enabled = true;
+                chkSubDirectories.Enabled = true;
+            }
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)

@@ -52,6 +52,8 @@ namespace XRayBuilderGUI
         private bool unattended;
         private bool skipShelfari;
         private int locOffset;
+        private List<string[]> notableShelfariQuotes = new List<string[]>();
+        private int foundNotables = 0;
 
         private bool enableEdit = Properties.Settings.Default.enableEdit;
         private frmMain main;
@@ -530,6 +532,33 @@ namespace XRayBuilderGUI
                     }
                 }
             }
+
+            // Attempt to match any quotes from Shelfari for Notable Clips, not worried if no matches occur as they will be added later anyway
+            if (Properties.Settings.Default.useNewVersion)
+            {
+                foreach (string[] quote in notableShelfariQuotes)
+                {
+                    int index = readContents.IndexOf(quote[0]);
+                    if (index > -1)
+                    {
+                        Excerpt excerpt = excerpts.FirstOrDefault(e => e.start == index);
+                        if (excerpt == null)
+                        {
+                            excerpt = new Excerpt(excerptId++, index, quote[0].Length);
+                            if (quote[1] != "")
+                            {
+                                Term foundterm = Terms.FirstOrDefault(t => t.TermName == quote[1]);
+                                if (foundterm != null)
+                                    excerpt.related_entities.Add(foundterm.Id);
+                            }
+                        }
+                        foundNotables++;
+                        excerpt.related_entities.Add(0);
+                        excerpts.Add(excerpt);
+                    }
+                }
+            }
+
             timer.Stop();
             main.Log("Scan time: " + timer.Elapsed);
             //output list of terms with no locs
@@ -608,11 +637,26 @@ namespace XRayBuilderGUI
                 command.Parameters.AddWithValue("start", e.start);
                 command.Parameters.AddWithValue("length", e.length);
                 command.Parameters.AddWithValue("image", e.image);
-                command.Parameters.AddWithValue("rel_ent", String.Join(",", e.related_entities));
+                command.Parameters.AddWithValue("rel_ent", String.Join(",", e.related_entities.Where(en => en != 0).ToArray())); // don't write 0 (notable)
                 command.ExecuteNonQuery();
                 foreach (int ent in e.related_entities)
                 {
                     sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", ent, e.id);
+                }
+            }
+            // Populate some more Notable Clips if not enough were found from Shelfari
+            // TODO: Add a config value in settings for this
+            if (foundNotables + excerpts.Count <= 20)
+                excerpts.ForEach(ex => sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", 0, ex.id));
+            else
+            {
+                Random rand = new Random();
+                while (foundNotables <= 20)
+                {
+                    Excerpt randEx = excerpts.ElementAt(rand.Next(excerpts.Count));
+                    sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", 0, randEx.id);
+                    excerpts.Remove(randEx);
+                    foundNotables++;
                 }
             }
             main.Log("Writing entity excerpt table...");
@@ -881,7 +925,7 @@ namespace XRayBuilderGUI
             {
                 try
                 {
-                    //Enable cookies on extended webclient
+                    //Enable cookies
                     var jar = new CookieContainer();
                     var client = new HttpDownloader(shelfariURL, jar, "", "");
 
@@ -963,6 +1007,30 @@ namespace XRayBuilderGUI
                         Terms.Add(newTerm);
                 }
             }
+
+            // Scrape quotes to attempt matching in ExpandRawML
+            if (Properties.Settings.Default.useNewVersion)
+            {
+                HtmlNodeCollection quoteNodes = shelfariDoc.DocumentNode.SelectNodes("//div[@id='WikiModule_Quotations']/div/ul[@class='li_6']/li");
+                if (quoteNodes != null)
+                {
+                    foreach (HtmlNode quoteNode in quoteNodes)
+                    {
+                        HtmlNode node = quoteNode.SelectSingleNode(".//blockquote");
+                        if (node == null) continue;
+                        string quote = node.InnerText;
+                        string character = "";
+                        node = quoteNode.SelectSingleNode(".//cite");
+                        if (node != null)
+                            character = node.InnerText;
+                        // Remove quotes (sometimes people put unnecessary quotes in the quote as well)
+                        quote = Regex.Replace(quote, "^(&ldquo;){1,2}", "");
+                        quote = Regex.Replace(quote, "(&rdquo;){1,2}$", "");
+                        notableShelfariQuotes.Add(new string[] {quote, character});
+                    }
+                }
+            }
+
             return true;
         }
     }

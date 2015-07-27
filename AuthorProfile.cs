@@ -42,7 +42,13 @@ namespace XRayBuilderGUI
             string outputDir;
             try
             {
-                outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectory(curBook.author, curBook.sidecarName) : settings.outDir;
+                if (settings.android)
+                {
+                    outputDir = settings.outDir + @"\Android\" + curBook.asin;
+                    Directory.CreateDirectory(outputDir);
+                }
+                else
+                    outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectory(curBook.author, curBook.sidecarName) : settings.outDir;
             }
             catch (Exception ex)
             {

@@ -263,7 +263,7 @@ namespace XRayBuilderGUI
                 main.Log("Failed to create output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
                 outputDir = settings.outDir;
             }
-            EaDest = settings.docDir + @"\" + curBook.author + @"\" + curBook.title + @".sdr" + @"\EndActions.data." + curBook.asin + ".asc";
+            EaDest = settings.docDir + @"\" + curBook.author + @"\" + curBook.title + @"\EndActions.data." + curBook.asin + ".asc";
             EaPath = outputDir + @"\EndActions.data." + curBook.asin + ".asc";
 
             if (!XRayBuilderGUI.Properties.Settings.Default.overwrite && File.Exists(EaPath))

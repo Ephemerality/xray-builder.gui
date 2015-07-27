@@ -103,7 +103,7 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(chkEnableEdit,
                 "Open Notepad to enable editing of detected Chapters\r\nand Aliases before final X-Ray creation.");
             toolTip1.SetToolTip(chkSubDirectories, "Save generated files to an\r\n" +
-                                         "\"Author\\Filename.sdr\"\r\nsubdirectory.");
+                                         "\"Author\\Filename\"\r\nsubdirectory.");
             toolTip1.SetToolTip(btnLogs, "Open the log files directory.");
             toolTip1.SetToolTip(chkOverwrite,
                 "Overwrite exiting Author Profile and\r\nEnd Actions files, if they exist.");

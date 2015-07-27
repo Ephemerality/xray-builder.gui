@@ -63,7 +63,7 @@ namespace XRayBuilderGUI
                          "Please review the settings page if you want to overwite any existing files.");
                 return;
             }
-            ApDest = settings.docDir + @"\" + curBook.author + @"\" + curBook.title + @".sdr" + @"\AuthorProfile.profile." + curBook.asin + ".asc";
+            ApDest = settings.docDir + @"\" + curBook.author + @"\" + curBook.title + @"\AuthorProfile.profile." + curBook.asin + ".asc";
 
             //Process GUID. If in decimal form, convert to hex.
             if (Regex.IsMatch(curBook.guid, "/[a-zA-Z]/"))

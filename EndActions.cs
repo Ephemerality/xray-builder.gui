@@ -361,7 +361,7 @@ namespace XRayBuilderGUI
                 node = wikiNode.SelectSingleNode(".//div/p");
                 if (node != null && node.InnerText.Contains("followed by ", StringComparison.OrdinalIgnoreCase))
                 {
-                    match = Regex.Match(node.InnerText, @"followed by (.*)\.");
+                    match = Regex.Match(node.InnerText, @"followed by (.*)\.", RegexOptions.IgnoreCase);
                     if (match.Success && match.Groups.Count == 2)
                         return match.Groups[1].Value;
                 }

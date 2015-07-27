@@ -265,7 +265,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\n" +
+                Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n" +
                     ex.Message);
                 return;
             }
@@ -298,7 +298,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\n" +
+                    Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n" +
                         ex.Message);
                     return;
                 }
@@ -323,24 +323,24 @@ namespace XRayBuilderGUI
                     return;
                 }
                 SQLiteCommand command = new SQLiteCommand("BEGIN; " + sql + " COMMIT;", m_dbConnection);
-                Log("\nBuilding new X-Ray database. May take a few minutes...");
+                Log("Building new X-Ray database. May take a few minutes...");
                 command.ExecuteNonQuery();
                 command = new SQLiteCommand("PRAGMA user_version = 1; PRAGMA encoding = utf8; BEGIN;", m_dbConnection);
                 command.ExecuteNonQuery();
-                Console.WriteLine("Done building initial database. Populating with info from source X-Ray...");
+                Log("Done building initial database. Populating with info from source X-Ray...");
                 try
                 {
                     ss.PopulateDb(m_dbConnection);
                 }
                 catch (Exception ex)
                 {
-                    Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\n" +
+                    Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n" +
                         ex.Message);
                     m_dbConnection.Close();
                     m_dbConnection.Dispose();
                     return;
                 }
-                Console.WriteLine("Updating indices...");
+                Log("Updating indices...");
                 sql = "CREATE INDEX idx_occurrence_start ON occurrence(start ASC);\n"
                       + "CREATE INDEX idx_entity_type ON entity(type ASC);\n"
                       + "CREATE INDEX idx_entity_excerpt ON entity_excerpt(entity ASC); COMMIT;";

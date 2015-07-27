@@ -74,8 +74,13 @@ namespace XRayBuilderGUI
                 // Parse Book image URL
                 HtmlNode bookImageLoc = bookDoc.DocumentNode.SelectSingleNode("//*[@id='imgBlkFront']");
                 if (bookImageLoc == null)
+                    bookImageLoc = bookDoc.DocumentNode.SelectSingleNode("//*[@class='series-detail-product-image']");
+                if (bookImageLoc == null)
                     throw new HtmlWebException("Error finding book image. If you want, you can report the book's Amazon URL to help with parsing.");
                 else
+                    bookImageUrl = Regex.Replace(bookImageLoc.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
+                bookImageUrl = bookImageLoc.GetAttributeValue("src", "");
+                if (!bookImageUrl.EndsWith(".png"))
                     bookImageUrl = Regex.Replace(bookImageLoc.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
 
                 // Generate random book image URL because Amazon keep changing format!
@@ -94,6 +99,8 @@ namespace XRayBuilderGUI
             if (desc == "")
             {
                 HtmlNode descNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='bookDescription_feature_div']/noscript");
+                if (descNode == null)
+                    descNode = bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-size-medium series-detail-description-text']");
                 if (descNode != null && descNode.InnerText != "")
                 {
                     desc = descNode.InnerText.Trim();
@@ -125,11 +132,22 @@ namespace XRayBuilderGUI
                 try
                 {
                     HtmlNode ratingNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='acrPopover']");
+                    if (ratingNode == null)
+                        ratingNode = bookDoc.DocumentNode.SelectSingleNode("//*[@class='fl acrStars']/span");
                     if (ratingNode != null)
                     {
                         string aRating = ratingNode.GetAttributeValue("title", "0");
                         amazonRating = float.Parse(ratingNode.GetAttributeValue("title", "0").Substring(0, aRating.IndexOf(' ')));
                         HtmlNode reviewsNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='acrCustomerReviewText']");
+                        if (reviewsNode == null)
+                            reviewsNode = bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-link-normal']");
+                        if (reviewsNode != null)
+                        {
+                            Match match = Regex.Match(reviewsNode.InnerText, @"(\d+)");
+                            if (match.Success)
+                                numReviews = int.Parse(match.Value);
+                            return;
+                        }
                         numReviews = int.Parse(reviewsNode.InnerText.Substring(0, reviewsNode.InnerText.IndexOf(' ')).Replace(",", ""));
                     }
                 }

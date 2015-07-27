@@ -68,6 +68,7 @@
             this.lblVersion = new System.Windows.Forms.Label();
             this.btnClearLogs = new System.Windows.Forms.Button();
             this.btnHelp = new System.Windows.Forms.Button();
+            this.chkSplitAliases = new System.Windows.Forms.CheckBox();
             this.gbDirectories.SuspendLayout();
             this.gbXray.SuspendLayout();
             this.gbDetails.SuspendLayout();
@@ -152,7 +153,7 @@
             // chkSpoilers
             // 
             this.chkSpoilers.AutoSize = true;
-            this.chkSpoilers.Location = new System.Drawing.Point(414, 26);
+            this.chkSpoilers.Location = new System.Drawing.Point(408, 26);
             this.chkSpoilers.Name = "chkSpoilers";
             this.chkSpoilers.Size = new System.Drawing.Size(63, 17);
             this.chkSpoilers.TabIndex = 18;
@@ -199,7 +200,7 @@
             // chkAndroid
             // 
             this.chkAndroid.AutoSize = true;
-            this.chkAndroid.Location = new System.Drawing.Point(122, 49);
+            this.chkAndroid.Location = new System.Drawing.Point(408, 72);
             this.chkAndroid.Name = "chkAndroid";
             this.chkAndroid.Size = new System.Drawing.Size(103, 17);
             this.chkAndroid.TabIndex = 23;
@@ -297,6 +298,7 @@
             // 
             // gbXray
             // 
+            this.gbXray.Controls.Add(this.chkSplitAliases);
             this.gbXray.Controls.Add(this.chkSaveHtml);
             this.gbXray.Controls.Add(this.chkSendToKindle);
             this.gbXray.Controls.Add(this.chkOverwrite);
@@ -320,7 +322,7 @@
             // chkSaveHtml
             // 
             this.chkSaveHtml.AutoSize = true;
-            this.chkSaveHtml.Location = new System.Drawing.Point(414, 49);
+            this.chkSaveHtml.Location = new System.Drawing.Point(408, 49);
             this.chkSaveHtml.Name = "chkSaveHtml";
             this.chkSaveHtml.Size = new System.Drawing.Size(84, 17);
             this.chkSaveHtml.TabIndex = 28;
@@ -342,7 +344,7 @@
             // chkOverwrite
             // 
             this.chkOverwrite.AutoSize = true;
-            this.chkOverwrite.Location = new System.Drawing.Point(255, 72);
+            this.chkOverwrite.Location = new System.Drawing.Point(9, 49);
             this.chkOverwrite.Name = "chkOverwrite";
             this.chkOverwrite.Size = new System.Drawing.Size(130, 17);
             this.chkOverwrite.TabIndex = 26;
@@ -352,7 +354,7 @@
             // chkUTF8
             // 
             this.chkUTF8.AutoSize = true;
-            this.chkUTF8.Location = new System.Drawing.Point(9, 49);
+            this.chkUTF8.Location = new System.Drawing.Point(408, 95);
             this.chkUTF8.Name = "chkUTF8";
             this.chkUTF8.Size = new System.Drawing.Size(99, 17);
             this.chkUTF8.TabIndex = 25;
@@ -377,7 +379,7 @@
             this.gbDetails.Controls.Add(this.lblPen);
             this.gbDetails.Location = new System.Drawing.Point(12, 290);
             this.gbDetails.Name = "gbDetails";
-            this.gbDetails.Size = new System.Drawing.Size(399, 86);
+            this.gbDetails.Size = new System.Drawing.Size(389, 86);
             this.gbDetails.TabIndex = 26;
             this.gbDetails.TabStop = false;
             this.gbDetails.Text = "Amazon Customer Details";
@@ -396,14 +398,14 @@
             // 
             this.txtReal.Location = new System.Drawing.Point(75, 22);
             this.txtReal.Name = "txtReal";
-            this.txtReal.Size = new System.Drawing.Size(310, 20);
+            this.txtReal.Size = new System.Drawing.Size(300, 20);
             this.txtReal.TabIndex = 18;
             // 
             // txtPen
             // 
             this.txtPen.Location = new System.Drawing.Point(75, 51);
             this.txtPen.Name = "txtPen";
-            this.txtPen.Size = new System.Drawing.Size(310, 20);
+            this.txtPen.Size = new System.Drawing.Size(300, 20);
             this.txtPen.TabIndex = 20;
             // 
             // lblPen
@@ -444,9 +446,9 @@
             this.gbSite.Controls.Add(this.chkAmazonUSA);
             this.gbSite.Controls.Add(this.chkAmazonUK);
             this.gbSite.Enabled = false;
-            this.gbSite.Location = new System.Drawing.Point(417, 290);
+            this.gbSite.Location = new System.Drawing.Point(411, 290);
             this.gbSite.Name = "gbSite";
-            this.gbSite.Size = new System.Drawing.Size(114, 86);
+            this.gbSite.Size = new System.Drawing.Size(120, 86);
             this.gbSite.TabIndex = 27;
             this.gbSite.TabStop = false;
             this.gbSite.Text = "Amazon Site";
@@ -492,6 +494,16 @@
             this.btnHelp.Text = "?";
             this.btnHelp.UseVisualStyleBackColor = true;
             this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
+            // 
+            // chkSplitAliases
+            // 
+            this.chkSplitAliases.AutoSize = true;
+            this.chkSplitAliases.Location = new System.Drawing.Point(255, 72);
+            this.chkSplitAliases.Name = "chkSplitAliases";
+            this.chkSplitAliases.Size = new System.Drawing.Size(145, 17);
+            this.chkSplitAliases.TabIndex = 29;
+            this.chkSplitAliases.Text = "Automatically split Aliases";
+            this.chkSplitAliases.UseVisualStyleBackColor = true;
             // 
             // frmSettings
             // 
@@ -572,5 +584,6 @@
         private System.Windows.Forms.Button btnClearLogs;
         private System.Windows.Forms.CheckBox chkSaveHtml;
         private System.Windows.Forms.Button btnHelp;
+        private System.Windows.Forms.CheckBox chkSplitAliases;
     }
 }

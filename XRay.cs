@@ -881,10 +881,27 @@ namespace XRayBuilderGUI
         {
             if (!Directory.Exists(Environment.CurrentDirectory + @"\ext\"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\ext\");
+            string splitName = "";
             using (var streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8))
             {
-                foreach (var c in Terms) // if(c.type == "character")
-                    streamWriter.WriteLine(c.TermName + "|");
+                foreach (var c in Terms)
+                    if (c.Type == "character")
+                    {
+                        if (Properties.Settings.Default.splitAliases)
+                        {
+                            if (!c.TermName.Contains(" "))
+                                splitName = "";
+                            else
+                                splitName = c.TermName.Replace(" ", ",")
+                                    .Replace("(", "")
+                                    .Replace(")", "");
+                            streamWriter.WriteLine(c.TermName + "|" + splitName);
+                        }
+                    }
+                    else
+                    {
+                        streamWriter.WriteLine(c.TermName + "|");
+                    }
             }
         }
 

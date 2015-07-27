@@ -265,7 +265,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\n" +
+                Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n" +
                     ex.Message);
                 return;
             }
@@ -298,7 +298,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\n" +
+                    Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n" +
                         ex.Message);
                     return;
                 }
@@ -323,24 +323,24 @@ namespace XRayBuilderGUI
                     return;
                 }
                 SQLiteCommand command = new SQLiteCommand("BEGIN; " + sql + " COMMIT;", m_dbConnection);
-                Log("\nBuilding new X-Ray database. May take a few minutes...");
+                Log("Building new X-Ray database. May take a few minutes...");
                 command.ExecuteNonQuery();
                 command = new SQLiteCommand("PRAGMA user_version = 1; PRAGMA encoding = utf8; BEGIN;", m_dbConnection);
                 command.ExecuteNonQuery();
-                Console.WriteLine("Done building initial database. Populating with info from source X-Ray...");
+                Log("Done building initial database. Populating with info from source X-Ray...");
                 try
                 {
                     ss.PopulateDb(m_dbConnection);
                 }
                 catch (Exception ex)
                 {
-                    Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\n" +
+                    Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n" +
                         ex.Message);
                     m_dbConnection.Close();
                     m_dbConnection.Dispose();
                     return;
                 }
-                Console.WriteLine("Updating indices...");
+                Log("Updating indices...");
                 sql = "CREATE INDEX idx_occurrence_start ON occurrence(start ASC);\n"
                       + "CREATE INDEX idx_entity_type ON entity(type ASC);\n"
                       + "CREATE INDEX idx_entity_excerpt ON entity_excerpt(entity ASC); COMMIT;";
@@ -680,9 +680,7 @@ namespace XRayBuilderGUI
             // Added author name to log output
             Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
                 results[2], results[0], results[4], results[5], results[1]));
-
-            Directory.Delete(randomFile, true);
-
+            
             //Get Shelfari Search URL
             Log("Searching for book on Shelfari...");
             string shelfariSearchUrlBase = @"http://www.shelfari.com/search/books?Author={0}&Title={1}&Binding={2}";
@@ -749,6 +747,14 @@ namespace XRayBuilderGUI
             {
                 Log("Unable to find this book on Shelfari! You may have to search manually.");
             }
+            try
+            {
+                Directory.Delete(randomFile, true);
+            }
+            catch (Exception)
+            {
+                Log("An error occurred while trying to delete temporary files.\r\nTry deleting these files manually.");
+            }
         }
 
         private string FindShelfariURL(HtmlAgilityPack.HtmlDocument shelfariHtmlDoc, string author, string title)
@@ -775,18 +781,21 @@ namespace XRayBuilderGUI
                 foreach (string line in listofthings)
                 {
                     // Search for author with spaces removed to avoid situations like "J.R.R. Tolkien" / "J. R. R. Tolkien"
+                    // Ignore Collective Work search result.
                     // May cause false matches, we'll see.
                     // Also remove diacritics from titles when matching just in case...
                     // Searching for Children of Húrin will give a false match on the first pass before diacritics are removed from the search URL
                     if ((listofthings.Contains("(Author)") || listofthings.Contains("(Author),")) &&
                         line.RemoveDiacritics().StartsWith(title.RemoveDiacritics(), StringComparison.OrdinalIgnoreCase) &&
                         (listofthings.Contains(author) || listofthings.Exists(r => r.Replace(" ", "") == author.Replace(" ", ""))))
-                    {
-                        shelfariBookUrl = listoflinks[index].ToString();
-                        shelfariBookUrl = Regex.Replace(shelfariBookUrl, "<a href=\"", "", RegexOptions.None);
-                        shelfariBookUrl = Regex.Replace(shelfariBookUrl, "\".*?</a>.*", "", RegexOptions.None);
-                        return shelfariBookUrl;
-                    }
+                        if (!listoflinks.Any(c => c.Contains("(collective work)")))
+                        {
+                            shelfariBookUrl = listoflinks[index].ToString();
+                            shelfariBookUrl = Regex.Replace(shelfariBookUrl, "<a href=\"", "", RegexOptions.None);
+                            shelfariBookUrl = Regex.Replace(shelfariBookUrl, "\".*?</a>.*", "", RegexOptions.None);
+                            if (shelfariBookUrl.ToLower().StartsWith("http://"))
+                                return shelfariBookUrl;
+                        }
                     index++;
                 }
             }

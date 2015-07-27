@@ -67,6 +67,7 @@ namespace XRayBuilderGUI
                 btnTemplate.Enabled = false;
             }
             chkSaveHtml.Checked = Properties.Settings.Default.saveHtml;
+            chkSplitAliases.Checked = Properties.Settings.Default.splitAliases;
 
             // Added \r\n to show smaller tooltips
             ToolTip toolTip1 = new ToolTip();
@@ -84,8 +85,10 @@ namespace XRayBuilderGUI
                 "you have one of these devices but this\r\n" +
                 "does notwork, try the old format.");
             toolTip1.SetToolTip(chkAndroid,
-                "Changes the naming convention of the X-Ray file for the\r\nAndroid Kindle app.\r\nForces building with the new format.\r\n" +
-                "Files will be places in the output directory within the 'Android' folder.");
+                "Changes the naming convention of the X-Ray file\r\n"+
+                "for the Android Kindle app. Forces building with\r\n" +
+                "the new format. Files will be places in the output\r\n" +
+                "directory within the 'Android' folder.");
             toolTip1.SetToolTip(chkUTF8, "Write the X-Ray file in UTF8 instead of ANSI.\r\n" +
                 "Use this option if there are accented characters\r\n" +
                 "in your book, the title, or author's name.");
@@ -100,14 +103,17 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(chkEnableEdit,
                 "Open Notepad to enable editing of detected Chapters\r\nand Aliases before final X-Ray creation.");
             toolTip1.SetToolTip(chkSubDirectories, "Save generated files to an\r\n" +
-                                         "\"Author\\Filename.sdr\" subdirectory.");
+                                         "\"Author\\Filename\"\r\nsubdirectory.");
             toolTip1.SetToolTip(btnLogs, "Open the log files directory.");
             toolTip1.SetToolTip(chkOverwrite,
-                "Overwrite exiting AuthorProfile and\r\nEndActions files, if they exist.");
+                "Overwrite exiting Author Profile and\r\nEnd Actions files, if they exist.");
             toolTip1.SetToolTip(chkSendToKindle,
                 "Automatically send to your Kindle documents folder\r\nif your Kindle is connected when files are generated.");
             toolTip1.SetToolTip(chkSaveHtml, "Save parsed HTML files. This is generally used\r\n" +
                                          "for debugging and can be left unchecked.");
+            toolTip1.SetToolTip(chkSplitAliases, "Automatically split character names\r\n" +
+                "into aliases. This can have undesired\r\n" +
+                "consequences, so use with caution!!!");
             toolTip1.SetToolTip(btnHelp, "View the included help documentation.");
         }
 
@@ -166,6 +172,7 @@ namespace XRayBuilderGUI
             Properties.Settings.Default.saveTemplate = txtTemplate.Text;
             Properties.Settings.Default.sendtoKindle = chkSendToKindle.Checked;
             Properties.Settings.Default.saveHtml = chkSaveHtml.Checked;
+            Properties.Settings.Default.splitAliases = chkSplitAliases.Checked;
             Properties.Settings.Default.Save();
 
             this.Close();

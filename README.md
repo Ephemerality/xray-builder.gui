@@ -14,5 +14,5 @@ Original X-Ray script by shinew (http://www.mobileread.com/forums/showthread.php
 * Python 2.X if you plan on using mobi_unpack.py instead of the .exe (Optional)  
 * HtmlAgilityPack (http://htmlagilitypack.codeplex.com/) (Included)  
   
-## Instructions
-Furthur instructions are located in the thread on Mobile Read: http://www.mobileread.com/forums/showthread.php?t=245754
+## Instructions and Binary Downloads
+Furthur instructions and binaries are located in the thread on Mobile Read: http://www.mobileread.com/forums/showthread.php?t=245754

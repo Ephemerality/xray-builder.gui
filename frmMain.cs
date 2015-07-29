@@ -318,7 +318,6 @@ namespace XRayBuilderGUI
                     Log(
                         "An error occurred while opening the BaseDB.sql file. Ensure you extracted it to the same directory as the program.\n" +
                         ex.Message);
-                    m_dbConnection.Close();
                     m_dbConnection.Dispose();
                     return;
                 }
@@ -346,7 +345,6 @@ namespace XRayBuilderGUI
                       + "CREATE INDEX idx_entity_excerpt ON entity_excerpt(entity ASC); COMMIT;";
                 command = new SQLiteCommand(sql, m_dbConnection);
                 command.ExecuteNonQuery();
-                m_dbConnection.Close();
                 m_dbConnection.Dispose();
             }
             else

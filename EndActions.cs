@@ -239,7 +239,6 @@ namespace XRayBuilderGUI
             {
                 streamWriter.Write(finalOutput);
                 streamWriter.Flush();
-                streamWriter.Close();
             }
             main.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
             main.cmsPreview.Items[1].Enabled = true;

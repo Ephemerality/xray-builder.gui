@@ -202,7 +202,6 @@ namespace XRayBuilderGUI
                 using (WebClient webClient = new WebClient())
                 {
                     webClient.DownloadFile(new Uri(authorImageUrl), downloadedAuthorImage);
-                    webClient.Dispose();
                     main.Log("Downloading Author image...");
                 }
             }
@@ -259,7 +258,6 @@ namespace XRayBuilderGUI
             }
             target.Save(curBook.path + @"\CroppedAuthorImage.jpg");
             target.Dispose();
-            g.Dispose();
             Bitmap bc = new Bitmap(curBook.path + @"\CroppedAuthorImage.jpg");
 
             //Convert Author image to Grayscale and save as jpeg

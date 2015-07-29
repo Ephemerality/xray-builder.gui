@@ -242,13 +242,11 @@ namespace XRayBuilderGUI
                     {
                         unpackInfo = reader.ReadToEnd();
                     }
-                    process.Close();
                 }
             }
             catch (Exception ex)
             {
-                output.Add(String.Format("An error occurred while running Kindleunpack: {0} | {1}\r\n", ex.Message,
-                    ex.Data));
+                output.Add(String.Format("An error occurred while running Kindleunpack: {0}\r\n", ex.Message));
                 MessageBox.Show("Error while running Kindleunpack. See the output log for details.");
                 return output;
             }

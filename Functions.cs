@@ -80,6 +80,49 @@ namespace XRayBuilderGUI
                 return defaultFile;
         }
 
+        public static string GetPageCount(string shelfariBookUrl)
+        {
+            HAP.HtmlDocument shelfariHtmlDoc = new HtmlAgilityPack.HtmlDocument();
+            shelfariHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(shelfariBookUrl));
+            HAP.HtmlNode pageNode = shelfariHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_FirstEdition']");
+            if (pageNode == null)
+                return "";
+            HAP.HtmlNode node = pageNode.SelectSingleNode(".//div/div");
+            if (node == null)
+                return "";
+            Match match = Regex.Match(node.InnerText, @"Page Count: (\d+)");
+            if (match.Success)
+            {
+                return match.Groups[1].Value;
+            }
+            return "";
+        }
+
+        public static string GetQuotes(string shelfariBookUrl)
+        {
+            HAP.HtmlDocument shelfariHtmlDoc = new HtmlAgilityPack.HtmlDocument();
+            shelfariHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(shelfariBookUrl));
+            HAP.HtmlNodeCollection quoteNodes = shelfariHtmlDoc.DocumentNode.SelectNodes("//div[@id='WikiModule_Quotations']/div/ul[@class='li_6']/li");
+            int highlights = 0;
+            string passages = "";
+            if (quoteNodes != null)
+            {
+                foreach (HAP.HtmlNode quoteNode in quoteNodes)
+                {
+                    HAP.HtmlNode node = quoteNode.SelectSingleNode(".//blockquote");
+                    if (node == null) continue;
+                    passages = quoteNodes.Count.ToString();
+                    node = quoteNode.SelectSingleNode(".//cite");
+                    if (node == null) continue;
+                       Match match = Regex.Match(node.InnerText, @"Highlighted by (\d+) Kindle customers");
+                    if (match.Success)
+                        highlights += int.Parse(match.Groups[1].Value);
+                }
+                return String.Format(@"{0} passages have been highlighted {1} times", passages, highlights); ;
+            }
+            return "No highlighted passages were found for this book";
+        }
+
         /*public static bool CheckForInternetConnection()
         {
             try

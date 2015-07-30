@@ -689,7 +689,8 @@ namespace XRayBuilderGUI
             // Search book on Shelfari
             bool bookFound = false;
             string shelfariBookUrl = "";
-
+            string pageCount = "";
+            string popularHighlights = "";
             results[4] = Functions.FixAuthor(results[4]);
 
             try
@@ -708,6 +709,19 @@ namespace XRayBuilderGUI
                             if (shelfariBookUrl != "")
                             {
                                 bookFound = true;
+                                pageCount = Functions.GetPageCount(shelfariBookUrl);
+                                if (pageCount != "")
+                                {
+                                    var minutes = int.Parse(pageCount) * 1.2890625;
+                                    TimeSpan span = TimeSpan.FromMinutes(minutes);
+                                    string time = String.Format(@"{0} hours and {1} minutes", span.Hours, span.Minutes);
+                                    Log(String.Format("Typical time to read: {0} ({1} pages)", time, pageCount));
+                                }
+                                popularHighlights = Functions.GetQuotes(shelfariBookUrl);
+                                if (popularHighlights != "")
+                                {
+                                    Log(String.Format("Popular Highlights: {0}", popularHighlights));
+                                }
                                 break;
                             }
                         }

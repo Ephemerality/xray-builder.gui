@@ -31,6 +31,7 @@ namespace XRayBuilderGUI
         private FrmPreviewAp frmAP = new FrmPreviewAp();
         private FrmPreviewEa frmEA = new FrmPreviewEa();
         private frmPreviewXR frmXR = new frmPreviewXR();
+        private frmPreviewXRN frmXRN = new frmPreviewXRN();
 
         public void Log(string message)
         {
@@ -81,6 +82,13 @@ namespace XRayBuilderGUI
             frmEA.lblAuthor1.Text = "";
             frmEA.lblBook7.Text = "";
             frmEA.lblAuthor2.Text = "";
+            for (var i = 0; i < 5; i++)
+            {
+                foreach (Control contrl in frmXRN.Controls)
+                {
+                    contrl.Visible = false;
+                }
+            }
             return true;
         }
 
@@ -360,6 +368,7 @@ namespace XRayBuilderGUI
             }
             Log("X-Ray file created successfully!\r\nSaved to " + _newPath);
 
+            //Old X-ray Preview
             for (var i = 0; i < 8; i++)
             {
                 foreach (Control contrl in frmXR.Controls)
@@ -413,6 +422,64 @@ namespace XRayBuilderGUI
                                 contrl.Visible = false;
                             }
                             if (contrl.Name == ("pbTerm" + (i)))
+                            {
+                                contrl.Visible = false;
+                            }
+                        }
+                    }
+                }
+            }
+
+            //New X-ray Preview
+            for (var i = 0; i < 4; i++)
+            {
+                foreach (Control contrl in frmXRN.Controls)
+                {
+                    if (contrl.Name == ("lblTermName" + (i + 1)) ||
+                        (contrl.Name == ("lblTermMentions" + (i + 1)) ||
+                        (contrl.Name == ("lblTermDescription" + (i + 1)))))
+                    {
+                        contrl.Visible = true;
+                    }
+                }
+            }
+            frmXRN.lblTitle.Text = "X-Ray — " + results[5];
+            if (ss.Terms.Count != 0)
+            {
+                var numberOfLabels = 0;
+                if (ss.Terms.Count > 4)
+                    numberOfLabels = 4;
+                else
+                    numberOfLabels = ss.Terms.Count;
+
+                for (var i = 0; i < numberOfLabels; i++)
+                {
+                    foreach (Control contrl in frmXRN.Controls)
+                    {
+                        if (contrl.Name == ("lblTermName" + (i + 1)))
+                        {
+                            contrl.Text = ss.Terms[i].TermName;
+                        }
+                        if (contrl.Name == ("lblTermMentions" + (i + 1)))
+                        {
+                            contrl.Text = ss.Terms[i].Locs.Count + " Mentions";
+                        }
+                        if (contrl.Name == ("lblTermDescription" + (i + 1)))
+                        {
+                            contrl.Text = ss.Terms[i].Desc;
+                        }
+
+                    }
+                }
+                if (ss.Terms.Count < 4)
+                {
+                    for (var i = ss.Terms.Count + 1; i < 5; i++)
+                    {
+                        foreach (Control contrl in frmXRN.Controls)
+                        {
+                            if (contrl.Name == ("lblTermName" + (i)) ||
+                                (contrl.Name == ("lblTermMentions" + (i)) ||
+                                (contrl.Name == ("lblTermDescription" + (i)))))
                             {
                                 contrl.Visible = false;
                             }
@@ -974,7 +1041,14 @@ namespace XRayBuilderGUI
 
         private void tmiXray_Click(object sender, EventArgs e)
         {
-            frmXR.ShowDialog();
+            if (Properties.Settings.Default.useNewVersion)
+            {
+                frmXRN.ShowDialog();
+            }
+            else
+            {
+                frmXR.ShowDialog();
+            }
         }
     }
 }

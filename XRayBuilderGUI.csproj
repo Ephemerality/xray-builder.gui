@@ -111,6 +111,12 @@
     <Compile Include="frmPreviewXR.Designer.cs">
       <DependentUpon>frmPreviewXR.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmPreviewXRN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmPreviewXRN.Designer.cs">
+      <DependentUpon>frmPreviewXRN.cs</DependentUpon>
+    </Compile>
     <Compile Include="Functions.cs" />
     <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
@@ -133,6 +139,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Icon.ico" />
+    <None Include="Resources\XRN.png" />
     <None Include="Resources\XR8.png" />
     <None Include="Resources\XR7.png" />
     <None Include="Resources\XR6.png" />
@@ -154,6 +161,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmPreviewXR.resx">
       <DependentUpon>frmPreviewXR.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmPreviewXRN.resx">
+      <DependentUpon>frmPreviewXRN.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmSettings.resx">
       <DependentUpon>frmSettings.cs</DependentUpon>

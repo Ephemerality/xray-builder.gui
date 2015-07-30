@@ -90,17 +90,17 @@ namespace XRayBuilderGUI
                     HtmlNode nodeTitle = item.SelectSingleNode(".//div/a");
                     string nodeTitleCheck = nodeTitle.GetAttributeValue("title", "");
                     string nodeUrl = nodeTitle.GetAttributeValue("href", "");
+                    string cleanAuthor = "";
                     if (nodeUrl != "")
                         nodeUrl = "http://www.amazon.com" + nodeUrl;
                     if (nodeTitleCheck == "")
                     {
                         nodeTitle = item.SelectSingleNode(".//div/a");
                         //Remove CR, LF and TAB
-                        nodeTitleCheck = Regex.Replace(nodeTitle.InnerText, @"\t|\n|\r", String.Empty);
-                        nodeTitleCheck = nodeTitleCheck.Trim();
-                        nodeTitleCheck = Regex.Replace(nodeTitleCheck, @"&#133;", "...");
+                        nodeTitleCheck = Functions.CleanString(nodeTitle.InnerText);
                     }
-                    BookInfo newBook = new BookInfo(nodeTitleCheck, item.SelectSingleNode(".//div/div").InnerText.Trim(),
+                    cleanAuthor = Functions.CleanString(item.SelectSingleNode(".//div/div").InnerText);
+                    BookInfo newBook = new BookInfo(nodeTitleCheck, cleanAuthor,
                         item.SelectSingleNode(".//div").GetAttributeValue("data-asin", ""));
                     try
                     {

@@ -123,6 +123,25 @@ namespace XRayBuilderGUI
             return "No highlighted passages were found for this book";
         }
 
+        public static string CleanString(this string s)
+        {
+            StringBuilder sb = new StringBuilder(s);
+
+            Regex.Replace(sb.ToString(), @"\t|\n|\r|\s+", String.Empty);
+            Regex.Replace(sb.ToString(), "\"", "'");
+            sb.Replace(@"&quot;", "'");
+            sb.Replace(@"<br>", String.Empty);
+            sb.Replace(@"&#133;", "…");
+            sb.Replace(@"&amp;#133;", "…");
+            sb.Replace(@"&#169;", String.Empty);
+            sb.Replace(@"&amp;#169;", String.Empty);
+            sb.Replace(@"&#174;", String.Empty);
+            sb.Replace(@"&amp;#174;", String.Empty);
+
+            return sb.ToString().Trim();
+        }
+
+
         /*public static bool CheckForInternetConnection()
         {
             try

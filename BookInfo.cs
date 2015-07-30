@@ -117,13 +117,7 @@ namespace XRayBuilderGUI
                         else
                             desc = desc.Substring(0, lastSpace) + '\u2026';
                         //Clean up desc the same as biography was... not all of these may be needed?
-                        desc = Regex.Replace(desc, @"\t|\n|\r", " ");
-                        desc = desc.Replace("\"", "'");
-                        desc = desc.Replace("&quot;", "'");
-                        desc = desc.Replace("<br><br>", " ");
-                        desc = desc.Replace("&amp;#133;", "...");
-                        desc = desc.Replace("&#169;", "©");
-                        desc = Regex.Replace(desc, @"\s+", " ");
+                        Functions.CleanString(desc);
                     }
                 }
             }

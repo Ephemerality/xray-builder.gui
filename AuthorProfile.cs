@@ -164,18 +164,12 @@ namespace XRayBuilderGUI
             //Trim authour biography to less than 1000 characters and/or replace more problematic characters.
             if (bio.InnerText.Trim().Length != 0)
             {
-                if (bio.InnerHtml.Length > 1000)
+                if (bio.InnerText.Length > 1000)
                 {
-                    string bioTrim = bio.InnerHtml.Substring(0, 1000);
+                    string bioTrim = bio.InnerText.Substring(0, 1000);
                     BioTrimmed = bioTrim.Substring(0, bioTrim.LastIndexOf(".") + 1);
                 }
-                BioTrimmed = BioTrimmed.Replace("\"", "'");
-                BioTrimmed = BioTrimmed.Replace("<br><br>", " ");
-                BioTrimmed = BioTrimmed.Replace("<br>", " ");
-                BioTrimmed = BioTrimmed.Replace("&amp;#133;", "...");
-                BioTrimmed = BioTrimmed.Replace("&#169;", "©");
-                BioTrimmed = BioTrimmed.Replace("&quot;", "'");
-                BioTrimmed = Regex.Replace(BioTrimmed, @"\s+", " ");
+                Functions.CleanString(BioTrimmed);
                 main.Log("Author biography found on Amazon!");
                 main.Log("Attempting to create Author Profile...");
             }
@@ -183,14 +177,7 @@ namespace XRayBuilderGUI
             {
                 main.Log("No Author biography found on Amazon!");
             }
-
-            //bio.InnerHtml = Regex.Replace(bio.InnerHtml, @"\t", " ", RegexOptions.IgnoreCase);
-            //bio.InnerHtml = Regex.Replace(bio.InnerHtml, @" <br>", " ", RegexOptions.IgnoreCase);
-            //bio.InnerHtml = Regex.Replace(bio.InnerHtml, @"<br>", " ", RegexOptions.IgnoreCase);
-            //bio.InnerHtml = Regex.Replace(bio.InnerHtml, @"&#169;", "©", RegexOptions.None);
-            //bio.InnerHtml = Regex.Replace(bio.InnerHtml, @"\s+", " ", RegexOptions.Multiline);
-            //bio.InnerHtml = Regex.Replace(bio.InnerHtml, @"&amp;#133;", "...", RegexOptions.Multiline);
-
+            
             // Try to download Author image
             HtmlNode imageXpath = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-image']/img");
             //Full size image (overkill?)

@@ -279,34 +279,13 @@ namespace XRayBuilderGUI
             }
             else
             {
-                string leadingZeros = @"^0+(?=\d)";
-                _chapters.Clear();
-                //Find table of contents, using case-insensitive search
-                HtmlNode toc =
-                    web.DocumentNode.SelectSingleNode(
-                        "//reference[translate(@title,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='TABLE OF CONTENTS']");
-                if (toc != null)
+                try
                 {
-                    int tocloc = Convert.ToInt32(Regex.Replace(toc.GetAttributeValue("filepos", ""), leadingZeros, ""));
-                    //string tochtml = readContents.Substring(readContents.IndexOf("<p", tocloc), readContents.IndexOf("<mbp:pagebreak/>", tocloc + 1) - tocloc);
-                    string tochtml = readContents.Substring(tocloc,
-                        readContents.IndexOf("<mbp:pagebreak/>", tocloc + 1) - tocloc);
-                    HtmlAgilityPack.HtmlDocument tocdoc = new HtmlAgilityPack.HtmlDocument();
-                    tocdoc.LoadHtml(tochtml);
-                    HtmlNodeCollection tocnodes = tocdoc.DocumentNode.SelectNodes("//a");
-                    foreach (HtmlNode chapter in tocnodes)
-                    {
-                        if (chapter.InnerHtml == "") continue;
-                        int filepos =
-                            Convert.ToInt32(Regex.Replace(chapter.GetAttributeValue("filepos", "0"), leadingZeros, ""));
-                        if (_chapters.Count > 0)
-                        {
-                            _chapters[_chapters.Count - 1].End = filepos;
-                            if (_chapters[_chapters.Count - 1].start > filepos)
-                                _chapters.RemoveAt(_chapters.Count - 1); //remove broken chapters
-                        }
-                        _chapters.Add(new Chapter(chapter.InnerText, filepos, readContents.Length));
-                    }
+                    SearchChapters(web, readContents);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message); //Just ignore errors
                 }
                 //Built chapters list is saved for manual editing
                 if (_chapters.Count > 0)
@@ -366,6 +345,11 @@ namespace XRayBuilderGUI
             timer.Start();
             //Iterate over all paragraphs in book
             HtmlNodeCollection nodes = web.DocumentNode.SelectNodes("//p");
+            if (nodes == null)
+                nodes = web.DocumentNode.SelectNodes("//div[@class='paragraph']");
+            if (nodes == null)
+                throw new Exception("Could not locate any paragraphs in this book.\r\n" +
+                    "Report this error along with a copy of the book to improve parsing.");
             main.prgBar.Maximum = nodes.Count;
             for (int i = 0; i < nodes.Count; i++)
             {
@@ -571,6 +555,92 @@ namespace XRayBuilderGUI
                             t.TermName));
             }
             return 0;
+        }
+
+        /// <summary>
+        /// Searches for a Table of Contents within the book and adds the chapters to _chapters.
+        /// </summary>
+        private void SearchChapters(HtmlAgilityPack.HtmlDocument bookDoc, string rawML)
+        {
+            string leadingZeros = @"^0+(?=\d)";
+            string tocHtml = "";
+            HtmlAgilityPack.HtmlDocument tocDoc = new HtmlAgilityPack.HtmlDocument();
+            HtmlNodeCollection tocNodes = null;
+            HtmlNode toc = bookDoc.DocumentNode.SelectSingleNode(
+                    "//reference[translate(@title,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='TABLE OF CONTENTS']");
+            _chapters.Clear();
+            //Find table of contents, using case-insensitive search
+            if (toc != null)
+            {
+                int tocloc = Convert.ToInt32(Regex.Replace(toc.GetAttributeValue("filepos", ""), leadingZeros, ""));
+                //string tochtml = readContents.Substring(readContents.IndexOf("<p", tocloc), readContents.IndexOf("<mbp:pagebreak/>", tocloc + 1) - tocloc);
+                tocHtml = rawML.Substring(tocloc, rawML.IndexOf("<mbp:pagebreak/>", tocloc + 1) - tocloc);
+                tocDoc = new HtmlAgilityPack.HtmlDocument();
+                tocDoc.LoadHtml(tocHtml);
+                tocNodes = tocDoc.DocumentNode.SelectNodes("//a");
+                foreach (HtmlNode chapter in tocNodes)
+                {
+                    if (chapter.InnerHtml == "") continue;
+                    int filepos =
+                        Convert.ToInt32(Regex.Replace(chapter.GetAttributeValue("filepos", "0"), leadingZeros, ""));
+                    if (_chapters.Count > 0)
+                    {
+                        _chapters[_chapters.Count - 1].End = filepos;
+                        if (_chapters[_chapters.Count - 1].start > filepos)
+                            _chapters.RemoveAt(_chapters.Count - 1); //remove broken chapters
+                    }
+                    _chapters.Add(new Chapter(chapter.InnerText, filepos, rawML.Length));
+                }
+            }
+
+            //Search again, looking for Calibre's 'new' mobi ToC format
+            if (_chapters.Count == 0)
+            {
+                try
+                {
+                    int index = rawML.LastIndexOf(">Table of Contents<");
+                    index = rawML.IndexOf("<p ", index);
+                    int breakIndex = rawML.IndexOf("<div class=\"mbp_pagebreak\"", index);
+                    if (breakIndex == -1)
+                        breakIndex = rawML.IndexOf("div class=\"mbppagebreak\"", index);
+                    tocHtml = rawML.Substring(index, breakIndex - index);
+                    tocDoc.LoadHtml(tocHtml);
+                    tocNodes = tocDoc.DocumentNode.SelectNodes("//p");
+                    // Search for each chapter heading, ignore any misses (user can go and add any that are missing if necessary)
+                    foreach (HtmlNode chap in tocNodes)
+                    {
+                        index = rawML.IndexOf(chap.InnerText);
+                        if (index > -1)
+                        {
+                            if (_chapters.Count > 0)
+                                _chapters[_chapters.Count - 1].End = index;
+                            _chapters.Add(new Chapter(chap.InnerText, index, rawML.Length));
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+
+            //Try a broad search for chapterish names just for fun
+            if (_chapters.Count == 0)
+            {
+                string chapterPattern = @"((?:chapter|book|section|part)\s+.*)|((?:prolog|prologue|epilogue)(?:\s+|$).*)";
+                IEnumerable<HtmlAgilityPack.HtmlNode> chapterNodes = bookDoc.DocumentNode.SelectNodes("//a").
+                    Where(div => div.GetAttributeValue("class", "") == "chapter" || Regex.IsMatch(div.InnerText, chapterPattern, RegexOptions.IgnoreCase));
+                foreach (HtmlAgilityPack.HtmlNode chap in chapterNodes)
+                {
+                    int index = rawML.IndexOf(chap.InnerText);
+                    if (index > -1)
+                    {
+                        if (_chapters.Count > 0)
+                            _chapters[_chapters.Count - 1].End = index;
+                        _chapters.Add(new Chapter(chap.InnerText, index, rawML.Length));
+                    }
+                }
+            }
         }
 
         public int PopulateDb(SQLiteConnection db)

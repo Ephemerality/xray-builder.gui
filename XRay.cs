@@ -469,10 +469,8 @@ namespace XRayBuilderGUI
 
                             while ((start > -1) && (at > -1))
                             {
-                                //TODO: Match more sentence-endings. For whatever reason, couldn't get regex working.
-                                at = node.InnerHtml.LastIndexOf(". ", start);
-                                //Any(new char[] { '.', '?', '!' }, start, start);
-                                //at += Regex.Match(node.InnerHtml.Substring(at + 1), "\\S").Index;
+                                //at = node.InnerHtml.LastIndexOf(". ", start);
+                                at = node.InnerHtml.LastIndexOfAny(new char[] { '.', '?', '!' }, start);
                                 if (at > -1)
                                 {
                                     start = at - 1;

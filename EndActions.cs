@@ -330,8 +330,7 @@ namespace XRayBuilderGUI
                 if (nextBook == null)
                     main.Log("Book was found to be part of a series, but next book could not be found.\r\n" +
                         "Please report this book and the Shelfari URL and output log to improve parsing.");
-                else
-                    main.Log("Next book in the series: " + nextBook.title);
+
             } else
                 main.Log("Unable to find next book in series, the book may not be part of one.");
 
@@ -344,25 +343,93 @@ namespace XRayBuilderGUI
         /// </summary>
         private string GetNextInSeriesTitle(HtmlAgilityPack.HtmlDocument searchHtmlDoc)
         {
+            //Added estimated reading time and page count from Shelfari, for now...
+            HtmlAgilityPack.HtmlNode pageNode = searchHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_FirstEdition']");
+            if (pageNode == null)
+                return "";
+            HtmlAgilityPack.HtmlNode node1 = pageNode.SelectSingleNode(".//div/div");
+            if (node1 == null)
+                return "";
+            //Parse page count and multiply by average reading time
+            Match match1 = Regex.Match(node1.InnerText, @"Page Count: (\d+)");
+            if (match1.Success)
+            {
+                double minutes = int.Parse(match1.Groups[1].Value) * 1.2890625;
+                TimeSpan span = TimeSpan.FromMinutes(minutes);
+                main.Log(string.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)"
+                    , span.Hours, span.Minutes, match1.Groups[1].Value));
+                curBook.pagesInBook = match1.Groups[1].Value;
+                curBook.readingHours = span.Hours.ToString();
+                curBook.readingMinutes = span.Minutes.ToString();
+            }
+
+            //Added highlighted passage from Shelfari, dummy info for now...
+            HtmlAgilityPack.HtmlNode members = searchHtmlDoc.DocumentNode.SelectSingleNode("//ul[@class='tabs_n tn1']");
+            int highlights = 0;
+            if (members != null)
+            {
+                Match match3 = Regex.Match(members.InnerText, @"Reviews \((\d+)\)");
+                if (match3.Success)
+                    curBook.popularPassages = match3.Groups[1].Value.ToString();
+                match3 = Regex.Match(members.InnerText, @"Readers \((\d+)\)");
+                if (match3.Success)
+                {
+                    curBook.popularHighlights = match3.Groups[1].Value.ToString();
+                    highlights = int.Parse(match3.Groups[1].Value);
+                }
+                main.Log(string.Format("Popular Highlights: {0} passages have been highlighted {1} times"
+                            , curBook.popularPassages, curBook.popularHighlights));
+            }
+
+            //If no "highlighted passages" found from Shelfari, add to log
+            if (highlights == 0)
+            {
+                main.Log("Popular Highlights: No highlighted passages have been found for this book");
+                curBook.popularPassages = "";
+                curBook.popularHighlights = "";
+            }
+
+            HtmlAgilityPack.HtmlNode seriesNode = searchHtmlDoc.DocumentNode.SelectSingleNode("//span[@class='series']/a[@href]");
+            if (seriesNode == null)
+                return "";
+            seriesNode.GetAttributeValue("href", "");
+            curBook.seriesName = seriesNode.FirstChild.InnerText.Trim();
             HtmlAgilityPack.HtmlNode wikiNode = searchHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_Series']");
             if (wikiNode == null)
                 return "";
-            HtmlAgilityPack.HtmlNode node = wikiNode.SelectSingleNode(".//div/div");
-            if (node == null || !node.InnerText.Contains("(standard series)"))
+            HtmlAgilityPack.HtmlNode node3 = wikiNode.SelectSingleNode(".//div/div");
+            if (node3 == null || !node3.InnerText.Contains("(standard series)"))
                 return "";
-            main.Log(node.InnerText.Replace(" (standard series)", ""));
-            Match match = Regex.Match(node.InnerText, @"This is book (\d+) of (\d+)");
+            main.Log("About the series: " + node3.InnerText.Replace(" (standard series)", "").Replace(".", ""));
+            Match match = Regex.Match(node3.InnerText, @"This is book (\d+) of (\d+)");
             if (!match.Success || match.Groups.Count != 3)
                 return "";
             // Check if book is the last in the series
             if (!match.Groups[1].Value.Equals(match.Groups[2].Value))
             {
-                node = wikiNode.SelectSingleNode(".//div/p");
-                if (node != null && node.InnerText.Contains("followed by ", StringComparison.OrdinalIgnoreCase))
+                curBook.seriesPosition = match.Groups[1].Value;
+                curBook.totalInSeries = match.Groups[2].Value;
+
+                node3 = wikiNode.SelectSingleNode(".//div/p");
+                //Parse preceding book
+                if (node3 != null && node3.InnerText.Contains("Preceded by ", StringComparison.OrdinalIgnoreCase))
                 {
-                    match = Regex.Match(node.InnerText, @"followed by (.*)\.", RegexOptions.IgnoreCase);
+                    match = Regex.Match(node3.InnerText, @"Preceded by (.*),", RegexOptions.IgnoreCase);
                     if (match.Success && match.Groups.Count == 2)
+                    {
+                        curBook.previousBook = match.Groups[1].Value;
+                        main.Log("Preceded by: " + curBook.previousBook);
+                    }
+                }
+                //Parse following book
+                if (node3 != null && node3.InnerText.Contains("followed by ", StringComparison.OrdinalIgnoreCase))
+                {
+                    match = Regex.Match(node3.InnerText, @"followed by (.*)\.", RegexOptions.IgnoreCase);
+                    if (match.Success && match.Groups.Count == 2)
+                    {
+                        main.Log("Followed by: " + match.Groups[1].Value);
                         return match.Groups[1].Value;
+                    }
                 }
             }
             return "";
@@ -418,7 +485,8 @@ namespace XRayBuilderGUI
                                 //Parse title of the next book
                                 nextTitle = node.InnerText.Trim();
                                 //Add next book in series to log, if found
-                                main.Log(String.Format("The next book in this series is {0}!", nextTitle));
+                                main.Log($"The next book in this series is: {nextTitle}!");
+                                //main.Log(String.Format("The next book in this series is {0}!", nextTitle));
                                 return nextTitle;
                             }
                     }

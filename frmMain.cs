@@ -19,7 +19,7 @@ namespace XRayBuilderGUI
         public bool CheckTimestamp = false;
 
         private string currentLog = Environment.CurrentDirectory + @"\log\" +
-                                    string.Format("{0:yyyy.MM.dd.hh.mm.ss}.txt", DateTime.Now);
+                                    string.Format("{0:dd.MM.yyyy.H.mm.ss}.txt", DateTime.Now);
 
         private Properties.Settings settings = Properties.Settings.Default;
 
@@ -754,8 +754,6 @@ namespace XRayBuilderGUI
             // Search book on Shelfari
             bool bookFound = false;
             string shelfariBookUrl = "";
-            string pageCount = "";
-            string popularHighlights = "";
             results[4] = Functions.FixAuthor(results[4]);
 
             try
@@ -774,19 +772,6 @@ namespace XRayBuilderGUI
                             if (shelfariBookUrl != "")
                             {
                                 bookFound = true;
-                                pageCount = Functions.GetPageCount(shelfariBookUrl);
-                                if (pageCount != "")
-                                {
-                                    var minutes = int.Parse(pageCount) * 1.2890625;
-                                    TimeSpan span = TimeSpan.FromMinutes(minutes);
-                                    string time = String.Format(@"{0} hours and {1} minutes", span.Hours, span.Minutes);
-                                    Log(String.Format("Typical time to read: {0} ({1} pages)", time, pageCount));
-                                }
-                                popularHighlights = Functions.GetQuotes(shelfariBookUrl);
-                                if (popularHighlights != "")
-                                {
-                                    Log(String.Format("Popular Highlights: {0}", popularHighlights));
-                                }
                                 break;
                             }
                         }
@@ -820,7 +805,7 @@ namespace XRayBuilderGUI
 
                 txtShelfari.Text = shelfariBookUrl;
                 txtShelfari.Refresh();
-                Log("Shelfari URL updated!\r\nYou may want to visit the URL to ensure it is correct and add/modify terms if necessary.");
+                Log(string.Format("Shelfari URL updated: {0}\r\nYou may want to visit the URL to ensure it is correct and add/modify terms if necessary.", shelfariBookUrl));
             }
             else
             {

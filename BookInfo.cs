@@ -24,6 +24,17 @@ namespace XRayBuilderGUI
         public string shelfariUrl = "";
         public string amazonUrl = "";
 
+        // Added StartAction info
+        public string seriesName = "";
+        public string seriesPosition = "";
+        public string totalInSeries = "";
+        public string readingHours = "";
+        public string readingMinutes = "";
+        public string pagesInBook = "";
+        public string popularHighlights = "";
+        public string popularPassages = "";
+        public string previousBook = "";
+
         public BookInfo(string title, string author, string asin, string guid, string databasename, string path, string sidecarName, string shelfariUrl)
         {
             this.title = title;

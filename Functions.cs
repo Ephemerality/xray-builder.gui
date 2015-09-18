@@ -80,49 +80,6 @@ namespace XRayBuilderGUI
                 return defaultFile;
         }
 
-        public static string GetPageCount(string shelfariBookUrl)
-        {
-            HAP.HtmlDocument shelfariHtmlDoc = new HtmlAgilityPack.HtmlDocument();
-            shelfariHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(shelfariBookUrl));
-            HAP.HtmlNode pageNode = shelfariHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_FirstEdition']");
-            if (pageNode == null)
-                return "";
-            HAP.HtmlNode node = pageNode.SelectSingleNode(".//div/div");
-            if (node == null)
-                return "";
-            Match match = Regex.Match(node.InnerText, @"Page Count: (\d+)");
-            if (match.Success)
-            {
-                return match.Groups[1].Value;
-            }
-            return "";
-        }
-
-        public static string GetQuotes(string shelfariBookUrl)
-        {
-            HAP.HtmlDocument shelfariHtmlDoc = new HtmlAgilityPack.HtmlDocument();
-            shelfariHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(shelfariBookUrl));
-            HAP.HtmlNodeCollection quoteNodes = shelfariHtmlDoc.DocumentNode.SelectNodes("//div[@id='WikiModule_Quotations']/div/ul[@class='li_6']/li");
-            int highlights = 0;
-            string passages = "";
-            if (quoteNodes != null)
-            {
-                foreach (HAP.HtmlNode quoteNode in quoteNodes)
-                {
-                    HAP.HtmlNode node = quoteNode.SelectSingleNode(".//blockquote");
-                    if (node == null) continue;
-                    passages = quoteNodes.Count.ToString();
-                    node = quoteNode.SelectSingleNode(".//cite");
-                    if (node == null) continue;
-                       Match match = Regex.Match(node.InnerText, @"Highlighted by (\d+) Kindle customers");
-                    if (match.Success)
-                        highlights += int.Parse(match.Groups[1].Value);
-                }
-                return String.Format(@"{0} passages have been highlighted {1} times", passages, highlights); ;
-            }
-            return "No highlighted passages were found for this book";
-        }
-
         public static string CleanString(this string s)
         {
             StringBuilder sb = new StringBuilder(s);
@@ -341,13 +298,15 @@ namespace XRayBuilderGUI
             Match match = Regex.Match(unpackInfo, @"ASIN\s*(.*)");
             if (match.Success && match.Groups.Count > 1)
             {
-                if (match.Groups[1].Value.Contains("-"))
+                incorrectAsin = match.Groups[1].Value.Replace("\r", "");
+                //Improve actual Amazon ASIN matching
+                match = Regex.Match(match.Groups[1].Value, "(^B[A-Z0-9]{9})");
+                if (!match.Success)
                 {
                     if (DialogResult.No == MessageBox.Show(String.Format("Incorrect ASIN detected: {0}!\n" +
                                       "Kindle may not display an X-Ray for this book.\n" +
                                       "Do you wish to continue?", incorrectAsin), "Incorrect ASIN", MessageBoxButtons.YesNo))
                     {
-                        incorrectAsin = match.Groups[1].Value.Replace("\r", "");
                         output.Add(
                             String.Format("Incorrect ASIN detected: {0}!\r\n" +
                                           "Kindle may not display an X-Ray for this book.\r\n" +
@@ -523,7 +482,8 @@ namespace XRayBuilderGUI
             searchDoc.LoadHtml(HttpDownloader.GetPageHtml(searchUrl));
             HAP.HtmlNode node = searchDoc.DocumentNode.SelectSingleNode("//li[@id='result_0']");
             //At least attempt to verify it might be the same book?
-            if (node != null && node.InnerText.Contains(title))
+            //Ignore case of title
+            if (node != null && node.InnerText.IndexOf(title, StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 string foundASIN = node.GetAttributeValue("data-asin", "");
                 node = node.SelectSingleNode(".//div/div/div/div[@class='a-fixed-left-grid-col a-col-right']/div/a");

@@ -13,7 +13,7 @@ namespace XRayBuilderGUI
         {
             if (keyData == Keys.Escape)
             {
-                this.Close();
+                Close();
                 return true;
             }
             return base.ProcessCmdKey(ref msg, keyData);

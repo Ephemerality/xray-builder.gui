@@ -192,12 +192,12 @@
             // 
             this.lblPost.AutoEllipsis = true;
             this.lblPost.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(242)))), ((int)(((byte)(242)))));
-            this.lblPost.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblPost.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblPost.Location = new System.Drawing.Point(22, 77);
             this.lblPost.Name = "lblPost";
             this.lblPost.Size = new System.Drawing.Size(255, 12);
             this.lblPost.TabIndex = 87;
-            this.lblPost.Text = "Post on Amazon (as Real Name)";
+            this.lblPost.Text = "Post on Amazon (as Real Name) and Goodreads";
             this.lblPost.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblRate
@@ -220,7 +220,7 @@
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(260, 20);
             this.lblTitle.TabIndex = 85;
-            this.lblTitle.Text = "Before you go...";
+            this.lblTitle.Text = "Before You Go...";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pbBackground

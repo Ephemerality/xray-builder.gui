@@ -138,6 +138,9 @@
     <Content Include="BaseEndActions.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="BaseStartActions.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Icon.ico" />
     <None Include="Resources\XRN.png" />
     <None Include="Resources\XR8.png" />

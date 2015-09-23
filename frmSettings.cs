@@ -21,7 +21,7 @@ namespace XRayBuilderGUI
                 int fileCount = Directory.GetFiles(Environment.CurrentDirectory + @"\log").Length;
                 if (fileCount > 0)
                 {
-                    btnClearLogs.Text = "Clear Logs (" + fileCount + ")";
+                    btnClearLogs.Text = string.Format("Clear Logs ({0})", fileCount);
                 }
                 else
                 {
@@ -44,34 +44,11 @@ namespace XRayBuilderGUI
             if (txtUnpack.Text == "") txtUnpack.Text = "dist/kindleunpack.exe";
             chkAmazonUK.Checked = Properties.Settings.Default.amazonUk;
             chkOverwrite.Checked = Properties.Settings.Default.overwrite;
-            txtDoc.Text = Properties.Settings.Default.docDir;
-            txtTemplate.Text = Properties.Settings.Default.saveTemplate;
-            chkSendToKindle.Checked = Properties.Settings.Default.sendtoKindle;
-
-            if (chkSendToKindle.Checked)
-            {
-                lblDoc.Enabled = true;
-                txtDoc.Enabled = true;
-                btnBrowseDoc.Enabled = true;
-                lblTemplate.Enabled = true;
-                txtTemplate.Enabled = true;
-                btnTemplate.Enabled = true;
-            }
-            else
-            {
-                lblDoc.Enabled = false;
-                txtDoc.Enabled = false;
-                btnBrowseDoc.Enabled = false;
-                lblTemplate.Enabled = false;
-                txtTemplate.Enabled = false;
-                btnTemplate.Enabled = false;
-            }
             chkSaveHtml.Checked = Properties.Settings.Default.saveHtml;
             chkSplitAliases.Checked = Properties.Settings.Default.splitAliases;
 
             // Added \r\n to show smaller tooltips
             ToolTip toolTip1 = new ToolTip();
-            //ToolTip1.IsBalloon = true;
             toolTip1.SetToolTip(chkRaw,
                 "Save the .rawml (raw markup) of the book\r\nin the output directory so you can review it.");
             toolTip1.SetToolTip(chkSpoilers, "Use Shelfari descriptions that\r\ncontain spoilers when they exist.");
@@ -107,8 +84,6 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(btnLogs, "Open the log files directory.");
             toolTip1.SetToolTip(chkOverwrite,
                 "Overwrite exiting Author Profile and\r\nEnd Actions files, if they exist.");
-            toolTip1.SetToolTip(chkSendToKindle,
-                "Automatically send to your Kindle documents folder\r\nif your Kindle is connected when files are generated.");
             toolTip1.SetToolTip(chkSaveHtml, "Save parsed HTML files. This is generally used\r\n" +
                                          "for debugging and can be left unchecked.");
             toolTip1.SetToolTip(chkSplitAliases, "Automatically split character names\r\n" +
@@ -139,19 +114,6 @@ namespace XRayBuilderGUI
             {
                 MessageBox.Show("Both Real and Pen names are required for\r\nEnd Action file creation.");
             }
-            if (chkSendToKindle.Checked)
-            {
-                if (txtDoc.Text.Trim().Length == 0)
-                {
-                    MessageBox.Show("No Kindle Documents Directory specified.");
-                    return;
-                }
-                if (txtTemplate.Text.Trim().Length == 0)
-                {
-                    MessageBox.Show("No Kindle Filename specified.");
-                    return;
-                }
-            }
 
             Properties.Settings.Default.outDir = txtOut.Text;
             Properties.Settings.Default.mobi_unpack = txtUnpack.Text;
@@ -168,9 +130,6 @@ namespace XRayBuilderGUI
             Properties.Settings.Default.enableEdit = chkEnableEdit.Checked;
             Properties.Settings.Default.useSubDirectories = chkSubDirectories.Checked;
             Properties.Settings.Default.overwrite = chkOverwrite.Checked;
-            Properties.Settings.Default.docDir = txtDoc.Text;
-            Properties.Settings.Default.saveTemplate = txtTemplate.Text;
-            Properties.Settings.Default.sendtoKindle = chkSendToKindle.Checked;
             Properties.Settings.Default.saveHtml = chkSaveHtml.Checked;
             Properties.Settings.Default.splitAliases = chkSplitAliases.Checked;
             Properties.Settings.Default.Save();
@@ -213,33 +172,6 @@ namespace XRayBuilderGUI
             else
                 this.TopMost = false;
             Process.Start(Environment.CurrentDirectory + @"\log");
-        }
-
-        private void btnBrowseDocuments_Click(object sender, EventArgs e)
-        {
-            txtDoc.Text = Functions.GetDir(txtOut.Text);
-        }
-
-        private void chkSendToKindle_CheckedChanged(object sender, EventArgs e)
-        {
-            if (chkSendToKindle.Checked)
-            {
-                lblDoc.Enabled = true;
-                txtDoc.Enabled = true;
-                btnBrowseDoc.Enabled = true;
-                lblTemplate.Enabled = true;
-                txtTemplate.Enabled = true;
-                btnTemplate.Enabled = true;
-            }
-            else
-            {
-                lblDoc.Enabled = false;
-                txtDoc.Enabled = false;
-                btnBrowseDoc.Enabled = false;
-                lblTemplate.Enabled = false;
-                txtTemplate.Enabled = false;
-                btnTemplate.Enabled = false;
-            }
         }
 
         private void btnClearLogs_Click(object sender, EventArgs e)

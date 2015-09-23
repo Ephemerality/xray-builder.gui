@@ -4,9 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -19,6 +17,9 @@ namespace XRayBuilderGUI
 {
     public static class Functions
     {
+        private static readonly HashSet<char> badChars =
+            new HashSet<char> { '!', '@', '#', '$', '%', '_', '"' };
+
         //http://www.levibotelho.com/development/c-remove-diacritics-accents-from-a-string/
         public static string RemoveDiacritics(this string text)
         {
@@ -82,38 +83,25 @@ namespace XRayBuilderGUI
 
         public static string CleanString(this string s)
         {
-            StringBuilder sb = new StringBuilder(s);
-
-            Regex.Replace(sb.ToString(), @"\t|\n|\r|\s+", String.Empty);
-            Regex.Replace(sb.ToString(), "\"", "'");
-            sb.Replace(@"&quot;", "'");
-            sb.Replace(@"<br>", String.Empty);
-            sb.Replace(@"&#133;", "…");
-            sb.Replace(@"&amp;#133;", "…");
-            sb.Replace(@"&#169;", String.Empty);
-            sb.Replace(@"&amp;#169;", String.Empty);
-            sb.Replace(@"&#174;", String.Empty);
-            sb.Replace(@"&amp;#174;", String.Empty);
-
-            return sb.ToString().Trim();
+            StringBuilder sb = new StringBuilder(s.Length);
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (!badChars.Contains(s[i]))
+                    sb.Append(s[i]);
+            }
+            string cleanedString = sb.ToString();
+            Regex.Replace(cleanedString, @"\t|\n|\r|\s+", string.Empty);
+            Regex.Replace(cleanedString, @"[^\u0000-\u007F]", string.Empty);
+            cleanedString.Replace("&quot;", "'");
+            cleanedString.Replace("<br>", string.Empty);
+            cleanedString.Replace("&#133;", "…");
+            cleanedString.Replace("&amp;#133;", "…");
+            cleanedString.Replace("&#169;", string.Empty);
+            cleanedString.Replace("&amp;#169;", string.Empty);
+            cleanedString.Replace("&#174;", string.Empty);
+            cleanedString.Replace("&amp;#174;", string.Empty);
+            return cleanedString.Trim();
         }
-
-
-        /*public static bool CheckForInternetConnection()
-        {
-            try
-            {
-                using (var client = new WebClient())
-                using (var stream = client.OpenRead("http://www.google.com"))
-                {
-                    return true;
-                }
-            }
-            catch
-            {
-                return false;
-            }
-        }*/
 
         public static string ImageToBase64(Image image, ImageFormat format)
         {
@@ -186,7 +174,7 @@ namespace XRayBuilderGUI
             newAuthor = new string(author.Where(x => !fileChars.Contains(x)).ToArray());
             newTitle = new string(title.Where(x => !fileChars.Contains(x)).ToArray());
             path = Path.Combine(Properties.Settings.Default.outDir,
-                String.Format(@"{0}\{1}", newAuthor, newTitle));
+                string.Format(@"{0}\{1}", newAuthor, newTitle));
             if (!author.Equals(newAuthor) || !title.Equals(newTitle))
                 MessageBox.Show("The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.", "Invalid Characters");
             Directory.CreateDirectory(path);
@@ -256,16 +244,19 @@ namespace XRayBuilderGUI
             {
                 using (Process process = Process.Start(startInfo))
                 {
-                    process.BeginErrorReadLine();
-                    using (StreamReader reader = process.StandardOutput)
+                    if (process != null)
                     {
-                        unpackInfo = reader.ReadToEnd();
+                        process.BeginErrorReadLine();
+                        using (StreamReader reader = process.StandardOutput)
+                        {
+                            unpackInfo = reader.ReadToEnd();
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
-                output.Add(String.Format("An error occurred while running Kindleunpack: {0}\r\n", ex.Message));
+                output.Add(string.Format("An error occurred while running Kindleunpack: {0}\r\n", ex.Message));
                 MessageBox.Show("Error while running Kindleunpack. See the output log for details.");
                 return output;
             }
@@ -303,12 +294,12 @@ namespace XRayBuilderGUI
                 match = Regex.Match(match.Groups[1].Value, "(^B[A-Z0-9]{9})");
                 if (!match.Success)
                 {
-                    if (DialogResult.No == MessageBox.Show(String.Format("Incorrect ASIN detected: {0}!\n" +
+                    if (DialogResult.No == MessageBox.Show(string.Format("Incorrect ASIN detected: {0}!\n" +
                                       "Kindle may not display an X-Ray for this book.\n" +
                                       "Do you wish to continue?", incorrectAsin), "Incorrect ASIN", MessageBoxButtons.YesNo))
                     {
                         output.Add(
-                            String.Format("Incorrect ASIN detected: {0}!\r\n" +
+                            string.Format("Incorrect ASIN detected: {0}!\r\n" +
                                           "Kindle may not display an X-Ray for this book.\r\n" +
                                           "You must either use Calibre's Quality Check plugin (Fix ASIN for Kindle Fire) " +
                                           "or a Mobi editor (exth 113 and 504) to change this.", incorrectAsin));
@@ -365,7 +356,7 @@ namespace XRayBuilderGUI
 
             if (databaseName == "" || uniqid == "" || asin == "")
             {
-                output.Add(String.Format(
+                output.Add(string.Format(
                     "Error: Missing metadata.\r\nDatabase Name: {0}\r\nASIN: {1}\r\nUniqueID: {2}", databaseName, asin,
                     uniqid));
                 MessageBox.Show("Missing metadata. See output log for details.", "Metadata Error");
@@ -374,7 +365,7 @@ namespace XRayBuilderGUI
             else if (databaseName.Length == 31)
             {
                 MessageBox.Show(
-                    String.Format(
+                    string.Format(
                         "WARNING: Database Name is the maximum length. If \"{0}\" is the full book title, this should not be an issue.\r\n" +
                         "If the title is supposed to be longer than that, you may get an error WG on your Kindle.\r\n" +
                         "This can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n",
@@ -476,6 +467,7 @@ namespace XRayBuilderGUI
         public static BookInfo AmazonSearchBook(string title, string author)
         {
             BookInfo result = null;
+            //http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Ddigital-text&field-keywords=In+Plain+Sight+C.+J.+Box
             string searchUrl = @"http://www.amazon.com/s/?url=search-alias%3Ddigital-text&field-keywords=" + 
                 Uri.EscapeDataString(title + " " + author);
             HAP.HtmlDocument searchDoc = new HAP.HtmlDocument();

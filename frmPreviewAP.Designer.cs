@@ -54,7 +54,7 @@ namespace XRayBuilderGUI
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(260, 20);
             this.lblTitle.TabIndex = 68;
-            this.lblTitle.Text = "About the Author ...Waiting...";
+            this.lblTitle.Text = "About ...Waiting...";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblBio2
@@ -140,7 +140,7 @@ namespace XRayBuilderGUI
             this.lblKindleBooks.Name = "lblKindleBooks";
             this.lblKindleBooks.Size = new System.Drawing.Size(250, 20);
             this.lblKindleBooks.TabIndex = 69;
-            this.lblKindleBooks.Text = "Kindle books ...Waiting...";
+            this.lblKindleBooks.Text = "Kindle Books By ...Waiting...";
             this.lblKindleBooks.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pbBackground

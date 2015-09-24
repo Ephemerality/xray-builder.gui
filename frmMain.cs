@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -19,7 +18,7 @@ namespace XRayBuilderGUI
         public bool CheckTimestamp = false;
 
         private string currentLog = Environment.CurrentDirectory + @"\log\" +
-                                    string.Format("{0:yyyy.MM.dd.hh.mm.ss}.txt", DateTime.Now);
+                                    string.Format("{0:dd.MM.yyyy.H.mm.ss}.txt", DateTime.Now);
 
         private Properties.Settings settings = Properties.Settings.Default;
 
@@ -31,6 +30,7 @@ namespace XRayBuilderGUI
         private FrmPreviewAp frmAP = new FrmPreviewAp();
         private FrmPreviewEa frmEA = new FrmPreviewEa();
         private frmPreviewXR frmXR = new frmPreviewXR();
+        private frmPreviewXRN frmXRN = new frmPreviewXRN();
 
         public void Log(string message)
         {
@@ -81,49 +81,19 @@ namespace XRayBuilderGUI
             frmEA.lblAuthor1.Text = "";
             frmEA.lblBook7.Text = "";
             frmEA.lblAuthor2.Text = "";
+            for (var i = 0; i < 5; i++)
+            {
+                foreach (Control contrl in frmXRN.Controls)
+                {
+                    contrl.Visible = false;
+                }
+            }
             return true;
         }
 
         private void btnBrowseMobi_Click(object sender, EventArgs e)
         {
             txtMobi.Text = Functions.GetBook(txtMobi.Text);
-            //if (!_previewClear)
-            //{
-            //    //Log("Clearing previews...");
-            //    frmAP.lblTitle.Text = "";
-            //    frmAP.pbAuthorImage.Image = null;
-            //    frmAP.lblBio1.Text = "";
-            //    frmAP.lblBio2.Text = "";
-            //    frmAP.lblKindleBooks.Text = "";
-            //    for (var i = 0; i < 4; i++)
-            //    {
-            //        foreach (Control contrl in frmAP.Controls)
-            //        {
-            //            if (contrl.Name == ("lblBook" + (i + 1)))
-            //            {
-            //                contrl.Text = "";
-            //            }
-            //        }
-            //    }
-            //    frmEA.lblPost.Text = "";
-            //    frmEA.lblMoreBooks.Text = "";
-            //    for (var i = 0; i < 5; i++)
-            //    {
-            //        foreach (Control contrl in frmEA.Controls)
-            //        {
-            //            if (contrl.Name == ("lblBook" + (i + 1)))
-            //            {
-            //                contrl.Text = "";
-            //            }
-            //        }
-            //    }
-            //    frmEA.lblBook6.Text = "";
-            //    frmEA.lblAuthor1.Text = "";
-            //    frmEA.lblBook7.Text = "";
-            //    frmEA.lblAuthor2.Text = "";
-            //    //Log("Previews updated!");
-            //    _previewClear = true;
-            //}
         }
 
         private void btnBrowseOutput_Click(object sender, EventArgs e)
@@ -136,14 +106,6 @@ namespace XRayBuilderGUI
             }
             else
                 Process.Start(settings.outDir);
-            //if (!cbAuthorProfile.Checked &&
-            //    !cbEndAction.Checked &&
-            //    !cbXray.Checked)
-            //    if (MessageBox.Show("This book has not been processed yet.\r\nDo you want to open the Output directory?", "Unprocessed book", MessageBoxButtons.YesNo) == DialogResult.Yes)
-            //        Process.Start(settings.outDir);
-            //    else
-            //        return;
-            //Process.Start(settings.outDir);
         }
 
         private void btnBrowseXML_Click(object sender, EventArgs e)
@@ -203,19 +165,11 @@ namespace XRayBuilderGUI
                 return;
             }
 
-            //this.Width = 559;
-            //btnPreview.Enabled = false;
-            //cmsPreview.Items[0].Enabled = false;
-            //cmsPreview.Items[1].Enabled = false;
-            //cmsPreview.Items[2].Enabled = false;
-            //txtOutput.Clear();
-            //txtOutput.Refresh();
             prgBar.Value = 0;
 
             Log("Running Kindleunpack to get metadata...");
 
             //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
-            //this.TopMost = true;
             List<string> results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
             if (results.Count != 6)
             {
@@ -232,11 +186,11 @@ namespace XRayBuilderGUI
 
             // Added author name to log output
             Log(
-                String.Format(
+                string.Format(
                     "Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
                     results[2], results[0], results[4], results[5], results[1]));
 
-            Log(String.Format("Attempting to build X-Ray...\r\nSpoilers: {0}",
+            Log(string.Format("Attempting to build X-Ray...\r\nSpoilers: {0}",
                 settings.spoilers ? "Enabled" : "Disabled"));
             Log("Offset: " + settings.offset.ToString());
 
@@ -358,6 +312,7 @@ namespace XRayBuilderGUI
             }
             Log("X-Ray file created successfully!\r\nSaved to " + _newPath);
 
+            //Old X-ray Preview
             for (var i = 0; i < 8; i++)
             {
                 foreach (Control contrl in frmXR.Controls)
@@ -374,8 +329,8 @@ namespace XRayBuilderGUI
                 }
             }
             frmXR.lblBookTitle.Text = results[5];
-            frmXR.lblXrayTermsAll.Text = String.Format("All {0}", ss.Terms.Count);
-            frmXR.lblXrayTermsRest.Text = String.Format("|  People {0}  |  Terms {1}",
+            frmXR.lblXrayTermsAll.Text = string.Format("All {0}", ss.Terms.Count);
+            frmXR.lblXrayTermsRest.Text = string.Format("|  People {0}  |  Terms {1}",
                 ss.Terms.Count(t => t.Type.Equals("character")),
                 ss.Terms.Count(t => t.Type.Equals("topic")));
             if (ss.Terms.Count != 0)
@@ -418,6 +373,65 @@ namespace XRayBuilderGUI
                     }
                 }
             }
+
+            //New X-ray Preview
+            for (var i = 0; i < 4; i++)
+            {
+                foreach (Control contrl in frmXRN.Controls)
+                {
+                    if (contrl.Name == ("lblTermName" + (i + 1)) ||
+                        (contrl.Name == ("lblTermMentions" + (i + 1)) ||
+                        (contrl.Name == ("lblTermDescription" + (i + 1)))))
+                    {
+                        contrl.Visible = true;
+                    }
+                }
+            }
+            frmXRN.lblTitle.Text = string.Format("X-Ray — {0}", results[5]);
+            if (ss.Terms.Count != 0)
+            {
+                var numberOfLabels = 0;
+                if (ss.Terms.Count > 4)
+                    numberOfLabels = 4;
+                else
+                    numberOfLabels = ss.Terms.Count;
+
+                for (var i = 0; i < numberOfLabels; i++)
+                {
+                    foreach (Control contrl in frmXRN.Controls)
+                    {
+                        if (contrl.Name == ("lblTermName" + (i + 1)))
+                        {
+                            contrl.Text = ss.Terms[i].TermName;
+                        }
+                        if (contrl.Name == ("lblTermMentions" + (i + 1)))
+                        {
+                            contrl.Text = ss.Terms[i].Locs.Count + " Mentions";
+                        }
+                        if (contrl.Name == ("lblTermDescription" + (i + 1)))
+                        {
+                            contrl.Text = ss.Terms[i].Desc;
+                        }
+
+                    }
+                }
+                if (ss.Terms.Count < 4)
+                {
+                    for (var i = ss.Terms.Count + 1; i < 5; i++)
+                    {
+                        foreach (Control contrl in frmXRN.Controls)
+                        {
+                            if (contrl.Name == ("lblTermName" + (i)) ||
+                                (contrl.Name == ("lblTermMentions" + (i)) ||
+                                (contrl.Name == ("lblTermDescription" + (i)))))
+                            {
+                                contrl.Visible = false;
+                            }
+                        }
+                    }
+                }
+            }
+
             btnPreview.Enabled = true;
             cmsPreview.Items[2].Enabled = true;
 
@@ -429,8 +443,6 @@ namespace XRayBuilderGUI
             {
                 Log("An error occurred while trying to delete temporary files.\r\nTry deleting these files manually.");
             }
-
-            //this.TopMost = false;
         }
 
         private void btnKindleExtras_Click(object sender, EventArgs e)
@@ -477,15 +489,9 @@ namespace XRayBuilderGUI
                 return;
             }
 
-            //this.Width = 559;
-            //btnPreview.Enabled = false;
-            //txtOutput.Clear();
-            //txtOutput.Refresh();
-
             Log("Running Kindleunpack to get metadata...");
 
             //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
-            //this.TopMost = true;
             List<string> results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
             if (results.Count != 6)
             {
@@ -501,12 +507,13 @@ namespace XRayBuilderGUI
             }
 
             // Added author name to log output
-            Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
+            Log(string.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
                             results[2], results[0], results[4], results[5], results[1]));
             try
             {
                 BookInfo bookInfo = new BookInfo(results[5], results[4], results[0], results[1], results[2],
                                                 randomFile, Path.GetFileNameWithoutExtension(txtMobi.Text), txtShelfari.Text);
+                Log("Attempting to build Author Profile...");
                 AuthorProfile ap = new AuthorProfile(bookInfo, this);
                 if (!ap.complete) return;
                 if (!File.Exists(results[3]))
@@ -514,12 +521,19 @@ namespace XRayBuilderGUI
                     Log("Error: RawML could not be found, aborting.\r\nPath: " + results[3]);
                     return;
                 }
+                Log("Attempting to build Start Actions and End Actions...");
                 EndActions ea = new EndActions(ap, bookInfo, new FileInfo(results[3]).Length, this);
                 if (!ea.complete) return;
                 if (settings.useNewVersion)
+                {
                     ea.GenerateNew();
+                    Log("Attempting to build Start Actions...");
+                    ea.GenerateStartAction();
+                }
                 else
+                {
                     ea.GenerateOld();
+                }
                 previewClear();
 
                 frmAP.lblTitle.Text = ap.ApTitle;
@@ -553,7 +567,7 @@ namespace XRayBuilderGUI
                             contrl.Text = ap.otherBooks[i].title;
                     }
                 }
-                frmEA.lblPost.Text = String.Format("Post on Amazon (as {0})",
+                frmEA.lblPost.Text = string.Format("Post on Amazon (as {0}) and Goodreads",
                     Properties.Settings.Default.penName);
                 frmEA.lblMoreBooks.Text = ap.EaSubTitle;
                 for (var i = 0; i < Math.Min(ap.otherBooks.Count, 5); i++)
@@ -606,9 +620,6 @@ namespace XRayBuilderGUI
             {
                 txtXMLFile.Text = path;
 
-                //txtOutput.Clear();
-                //txtOutput.Refresh();
-
                 XRay xray = new XRay(txtShelfari.Text, this, settings.spoilers);
                 if (xray.SaveXml(path) > 0)
                 {
@@ -626,14 +637,6 @@ namespace XRayBuilderGUI
 
         private void btnSearchShelfari_Click(object sender, EventArgs e)
         {
-            //Check internet connection
-            //Log("Checking internet connection...");
-            //if (Functions.CheckForInternetConnection() != true)
-            //    Log("No Internet connection detected!");
-            //else
-            //    Log("Internet connection ok!");
-
-            //Check current settings
             if (!File.Exists(txtMobi.Text))
             {
                 MessageBox.Show("Specified book was not found.", "Book Not Found");
@@ -657,8 +660,7 @@ namespace XRayBuilderGUI
                 MessageBox.Show("Temporary path not accessible for some reason.", "Temporary Directory Error");
                 return;
             }
-            //txtOutput.Clear();
-            //txtOutput.Refresh();
+
             Log("Running Kindleunpack to get metadata...");
 
             //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
@@ -676,7 +678,7 @@ namespace XRayBuilderGUI
                 File.Copy(results[3], Path.Combine(settings.outDir, Path.GetFileName(results[3])), true);
             }
             // Added author name to log output
-            Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
+            Log(string.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
                 results[2], results[0], results[4], results[5], results[1]));
             
             //Get Shelfari Search URL
@@ -687,7 +689,6 @@ namespace XRayBuilderGUI
             // Search book on Shelfari
             bool bookFound = false;
             string shelfariBookUrl = "";
-
             results[4] = Functions.FixAuthor(results[4]);
 
             try
@@ -739,7 +740,7 @@ namespace XRayBuilderGUI
 
                 txtShelfari.Text = shelfariBookUrl;
                 txtShelfari.Refresh();
-                Log("Shelfari URL updated!\r\nYou may want to visit the URL to ensure it is correct and add/modify terms if necessary.");
+                Log(string.Format("Shelfari URL updated: {0}\r\nYou may want to visit the URL to ensure it is correct and add/modify terms if necessary.", shelfariBookUrl));
             }
             else
             {
@@ -824,11 +825,8 @@ namespace XRayBuilderGUI
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //this.Width = 559;
-            //pnlAuthorProfile.Visible = false;
             this.ActiveControl = lblShelfari;
             ToolTip toolTip1 = new ToolTip();
-            //toolTip1.IsBalloon = true;
             toolTip1.SetToolTip(btnBrowseMobi, "Open a Kindle book.");
             toolTip1.SetToolTip(btnBrowseOutput, "Open the default output directory.");
             toolTip1.SetToolTip(btnLink, "Open the Shelfari link in your default web browser.");
@@ -836,7 +834,7 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(btnSearchShelfari, "Try to search for this book on Shelfari.");
             toolTip1.SetToolTip(btnSaveShelfari, "Save Shelfari info to an XML file.");
             toolTip1.SetToolTip(btnKindleExtras,
-                "Try to build the Author Profile and\r\nEnd Action files for this book.");
+                "Try to build the Start Action, Author Profile\r\nand End Action files for this book.");
             toolTip1.SetToolTip(btnBuild,
                 "Try to build the X-Ray file for this book.");
             toolTip1.SetToolTip(btnSettings, "Configure X-Ray Builder GUI.");
@@ -930,7 +928,6 @@ namespace XRayBuilderGUI
         private void txtMobi_TextChanged(object sender, EventArgs e)
         {
             txtShelfari.Text = "";
-            //this.Width = 559;
             btnPreview.Enabled = false;
         }
 
@@ -958,7 +955,14 @@ namespace XRayBuilderGUI
 
         private void tmiXray_Click(object sender, EventArgs e)
         {
-            frmXR.ShowDialog();
+            if (Properties.Settings.Default.useNewVersion)
+            {
+                frmXRN.ShowDialog();
+            }
+            else
+            {
+                frmXR.ShowDialog();
+            }
         }
     }
 }

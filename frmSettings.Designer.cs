@@ -43,16 +43,10 @@
             this.chkUseNew = new System.Windows.Forms.CheckBox();
             this.chkAndroid = new System.Windows.Forms.CheckBox();
             this.gbDirectories = new System.Windows.Forms.GroupBox();
-            this.btnTemplate = new System.Windows.Forms.Button();
-            this.lblTemplate = new System.Windows.Forms.Label();
-            this.txtTemplate = new System.Windows.Forms.TextBox();
-            this.lblDoc = new System.Windows.Forms.Label();
-            this.txtDoc = new System.Windows.Forms.TextBox();
-            this.btnBrowseDoc = new System.Windows.Forms.Button();
             this.chkSubDirectories = new System.Windows.Forms.CheckBox();
             this.gbXray = new System.Windows.Forms.GroupBox();
+            this.chkSplitAliases = new System.Windows.Forms.CheckBox();
             this.chkSaveHtml = new System.Windows.Forms.CheckBox();
-            this.chkSendToKindle = new System.Windows.Forms.CheckBox();
             this.chkOverwrite = new System.Windows.Forms.CheckBox();
             this.chkUTF8 = new System.Windows.Forms.CheckBox();
             this.chkEnableEdit = new System.Windows.Forms.CheckBox();
@@ -68,7 +62,6 @@
             this.lblVersion = new System.Windows.Forms.Label();
             this.btnClearLogs = new System.Windows.Forms.Button();
             this.btnHelp = new System.Windows.Forms.Button();
-            this.chkSplitAliases = new System.Windows.Forms.CheckBox();
             this.gbDirectories.SuspendLayout();
             this.gbXray.SuspendLayout();
             this.gbDetails.SuspendLayout();
@@ -77,7 +70,7 @@
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(421, 384);
+            this.btnSave.Location = new System.Drawing.Point(422, 327);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(110, 30);
             this.btnSave.TabIndex = 0;
@@ -210,12 +203,6 @@
             // 
             // gbDirectories
             // 
-            this.gbDirectories.Controls.Add(this.btnTemplate);
-            this.gbDirectories.Controls.Add(this.lblTemplate);
-            this.gbDirectories.Controls.Add(this.txtTemplate);
-            this.gbDirectories.Controls.Add(this.lblDoc);
-            this.gbDirectories.Controls.Add(this.txtDoc);
-            this.gbDirectories.Controls.Add(this.btnBrowseDoc);
             this.gbDirectories.Controls.Add(this.lblOut);
             this.gbDirectories.Controls.Add(this.txtOut);
             this.gbDirectories.Controls.Add(this.btnBrowseOut);
@@ -224,67 +211,10 @@
             this.gbDirectories.Controls.Add(this.btnBrowseUnpack);
             this.gbDirectories.Location = new System.Drawing.Point(12, 12);
             this.gbDirectories.Name = "gbDirectories";
-            this.gbDirectories.Size = new System.Drawing.Size(519, 144);
+            this.gbDirectories.Size = new System.Drawing.Size(520, 87);
             this.gbDirectories.TabIndex = 24;
             this.gbDirectories.TabStop = false;
             this.gbDirectories.Text = "Directories";
-            // 
-            // btnTemplate
-            // 
-            this.btnTemplate.Location = new System.Drawing.Point(471, 107);
-            this.btnTemplate.Name = "btnTemplate";
-            this.btnTemplate.Size = new System.Drawing.Size(34, 23);
-            this.btnTemplate.TabIndex = 22;
-            this.btnTemplate.Text = "...";
-            this.btnTemplate.UseVisualStyleBackColor = true;
-            // 
-            // lblTemplate
-            // 
-            this.lblTemplate.AutoSize = true;
-            this.lblTemplate.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTemplate.Location = new System.Drawing.Point(16, 112);
-            this.lblTemplate.Name = "lblTemplate";
-            this.lblTemplate.Size = new System.Drawing.Size(131, 13);
-            this.lblTemplate.TabIndex = 20;
-            this.lblTemplate.Text = "Kindle Filename Template:";
-            this.lblTemplate.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // txtTemplate
-            // 
-            this.txtTemplate.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.txtTemplate.Location = new System.Drawing.Point(153, 109);
-            this.txtTemplate.Name = "txtTemplate";
-            this.txtTemplate.Size = new System.Drawing.Size(312, 20);
-            this.txtTemplate.TabIndex = 21;
-            // 
-            // lblDoc
-            // 
-            this.lblDoc.AutoSize = true;
-            this.lblDoc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDoc.Location = new System.Drawing.Point(6, 83);
-            this.lblDoc.Name = "lblDoc";
-            this.lblDoc.Size = new System.Drawing.Size(141, 13);
-            this.lblDoc.TabIndex = 17;
-            this.lblDoc.Text = "Kindle Documents Directory:";
-            this.lblDoc.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // txtDoc
-            // 
-            this.txtDoc.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.txtDoc.Location = new System.Drawing.Point(153, 80);
-            this.txtDoc.Name = "txtDoc";
-            this.txtDoc.Size = new System.Drawing.Size(312, 20);
-            this.txtDoc.TabIndex = 18;
-            // 
-            // btnBrowseDoc
-            // 
-            this.btnBrowseDoc.Location = new System.Drawing.Point(471, 78);
-            this.btnBrowseDoc.Name = "btnBrowseDoc";
-            this.btnBrowseDoc.Size = new System.Drawing.Size(34, 23);
-            this.btnBrowseDoc.TabIndex = 19;
-            this.btnBrowseDoc.Text = "...";
-            this.btnBrowseDoc.UseVisualStyleBackColor = true;
-            this.btnBrowseDoc.Click += new System.EventHandler(this.btnBrowseDocuments_Click);
             // 
             // chkSubDirectories
             // 
@@ -300,7 +230,6 @@
             // 
             this.gbXray.Controls.Add(this.chkSplitAliases);
             this.gbXray.Controls.Add(this.chkSaveHtml);
-            this.gbXray.Controls.Add(this.chkSendToKindle);
             this.gbXray.Controls.Add(this.chkOverwrite);
             this.gbXray.Controls.Add(this.chkSubDirectories);
             this.gbXray.Controls.Add(this.chkUTF8);
@@ -312,12 +241,22 @@
             this.gbXray.Controls.Add(this.chkAndroid);
             this.gbXray.Controls.Add(this.lblOffset);
             this.gbXray.Controls.Add(this.chkUseNew);
-            this.gbXray.Location = new System.Drawing.Point(12, 162);
+            this.gbXray.Location = new System.Drawing.Point(12, 105);
             this.gbXray.Name = "gbXray";
-            this.gbXray.Size = new System.Drawing.Size(519, 122);
+            this.gbXray.Size = new System.Drawing.Size(520, 122);
             this.gbXray.TabIndex = 25;
             this.gbXray.TabStop = false;
             this.gbXray.Text = "X-Ray Configuration";
+            // 
+            // chkSplitAliases
+            // 
+            this.chkSplitAliases.AutoSize = true;
+            this.chkSplitAliases.Location = new System.Drawing.Point(255, 72);
+            this.chkSplitAliases.Name = "chkSplitAliases";
+            this.chkSplitAliases.Size = new System.Drawing.Size(145, 17);
+            this.chkSplitAliases.TabIndex = 29;
+            this.chkSplitAliases.Text = "Automatically split Aliases";
+            this.chkSplitAliases.UseVisualStyleBackColor = true;
             // 
             // chkSaveHtml
             // 
@@ -328,18 +267,6 @@
             this.chkSaveHtml.TabIndex = 28;
             this.chkSaveHtml.Text = "Save HTML";
             this.chkSaveHtml.UseVisualStyleBackColor = true;
-            // 
-            // chkSendToKindle
-            // 
-            this.chkSendToKindle.AutoSize = true;
-            this.chkSendToKindle.Enabled = false;
-            this.chkSendToKindle.Location = new System.Drawing.Point(9, 95);
-            this.chkSendToKindle.Name = "chkSendToKindle";
-            this.chkSendToKindle.Size = new System.Drawing.Size(158, 17);
-            this.chkSendToKindle.TabIndex = 27;
-            this.chkSendToKindle.Text = "Automatically send to Kindle";
-            this.chkSendToKindle.UseVisualStyleBackColor = true;
-            this.chkSendToKindle.CheckedChanged += new System.EventHandler(this.chkSendToKindle_CheckedChanged);
             // 
             // chkOverwrite
             // 
@@ -354,7 +281,7 @@
             // chkUTF8
             // 
             this.chkUTF8.AutoSize = true;
-            this.chkUTF8.Location = new System.Drawing.Point(408, 95);
+            this.chkUTF8.Location = new System.Drawing.Point(9, 72);
             this.chkUTF8.Name = "chkUTF8";
             this.chkUTF8.Size = new System.Drawing.Size(99, 17);
             this.chkUTF8.TabIndex = 25;
@@ -364,7 +291,7 @@
             // chkEnableEdit
             // 
             this.chkEnableEdit.AutoSize = true;
-            this.chkEnableEdit.Location = new System.Drawing.Point(9, 72);
+            this.chkEnableEdit.Location = new System.Drawing.Point(9, 95);
             this.chkEnableEdit.Name = "chkEnableEdit";
             this.chkEnableEdit.Size = new System.Drawing.Size(207, 17);
             this.chkEnableEdit.TabIndex = 24;
@@ -377,7 +304,7 @@
             this.gbDetails.Controls.Add(this.txtReal);
             this.gbDetails.Controls.Add(this.txtPen);
             this.gbDetails.Controls.Add(this.lblPen);
-            this.gbDetails.Location = new System.Drawing.Point(12, 290);
+            this.gbDetails.Location = new System.Drawing.Point(12, 233);
             this.gbDetails.Name = "gbDetails";
             this.gbDetails.Size = new System.Drawing.Size(389, 86);
             this.gbDetails.TabIndex = 26;
@@ -446,16 +373,16 @@
             this.gbSite.Controls.Add(this.chkAmazonUSA);
             this.gbSite.Controls.Add(this.chkAmazonUK);
             this.gbSite.Enabled = false;
-            this.gbSite.Location = new System.Drawing.Point(411, 290);
+            this.gbSite.Location = new System.Drawing.Point(411, 233);
             this.gbSite.Name = "gbSite";
-            this.gbSite.Size = new System.Drawing.Size(120, 86);
+            this.gbSite.Size = new System.Drawing.Size(121, 86);
             this.gbSite.TabIndex = 27;
             this.gbSite.TabStop = false;
             this.gbSite.Text = "Amazon Site";
             // 
             // btnLogs
             // 
-            this.btnLogs.Location = new System.Drawing.Point(12, 384);
+            this.btnLogs.Location = new System.Drawing.Point(12, 327);
             this.btnLogs.Name = "btnLogs";
             this.btnLogs.Size = new System.Drawing.Size(110, 30);
             this.btnLogs.TabIndex = 30;
@@ -468,7 +395,7 @@
             this.lblVersion.AutoSize = true;
             this.lblVersion.Cursor = System.Windows.Forms.Cursors.Hand;
             this.lblVersion.ForeColor = System.Drawing.SystemColors.ControlDark;
-            this.lblVersion.Location = new System.Drawing.Point(281, 393);
+            this.lblVersion.Location = new System.Drawing.Point(281, 336);
             this.lblVersion.Name = "lblVersion";
             this.lblVersion.Size = new System.Drawing.Size(135, 13);
             this.lblVersion.TabIndex = 32;
@@ -477,7 +404,7 @@
             // 
             // btnClearLogs
             // 
-            this.btnClearLogs.Location = new System.Drawing.Point(128, 384);
+            this.btnClearLogs.Location = new System.Drawing.Point(128, 327);
             this.btnClearLogs.Name = "btnClearLogs";
             this.btnClearLogs.Size = new System.Drawing.Size(110, 30);
             this.btnClearLogs.TabIndex = 33;
@@ -487,7 +414,7 @@
             // 
             // btnHelp
             // 
-            this.btnHelp.Location = new System.Drawing.Point(244, 384);
+            this.btnHelp.Location = new System.Drawing.Point(244, 327);
             this.btnHelp.Name = "btnHelp";
             this.btnHelp.Size = new System.Drawing.Size(30, 30);
             this.btnHelp.TabIndex = 34;
@@ -495,21 +422,11 @@
             this.btnHelp.UseVisualStyleBackColor = true;
             this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
             // 
-            // chkSplitAliases
-            // 
-            this.chkSplitAliases.AutoSize = true;
-            this.chkSplitAliases.Location = new System.Drawing.Point(255, 72);
-            this.chkSplitAliases.Name = "chkSplitAliases";
-            this.chkSplitAliases.Size = new System.Drawing.Size(145, 17);
-            this.chkSplitAliases.TabIndex = 29;
-            this.chkSplitAliases.Text = "Automatically split Aliases";
-            this.chkSplitAliases.UseVisualStyleBackColor = true;
-            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(544, 426);
+            this.ClientSize = new System.Drawing.Size(544, 369);
             this.Controls.Add(this.btnHelp);
             this.Controls.Add(this.btnClearLogs);
             this.Controls.Add(this.lblVersion);
@@ -573,13 +490,6 @@
         private System.Windows.Forms.Button btnLogs;
         private System.Windows.Forms.CheckBox chkUTF8;
         private System.Windows.Forms.CheckBox chkOverwrite;
-        private System.Windows.Forms.Label lblDoc;
-        private System.Windows.Forms.TextBox txtDoc;
-        private System.Windows.Forms.Button btnBrowseDoc;
-        private System.Windows.Forms.CheckBox chkSendToKindle;
-        private System.Windows.Forms.Label lblTemplate;
-        private System.Windows.Forms.TextBox txtTemplate;
-        private System.Windows.Forms.Button btnTemplate;
         private System.Windows.Forms.Label lblVersion;
         private System.Windows.Forms.Button btnClearLogs;
         private System.Windows.Forms.CheckBox chkSaveHtml;

@@ -2,9 +2,9 @@
 
 namespace XRayBuilderGUI
 {
-    public partial class FrmPreviewAp : Form
+    public partial class frmPreviewXRN : Form
     {
-        public FrmPreviewAp()
+        public frmPreviewXRN()
         {
             InitializeComponent();
         }

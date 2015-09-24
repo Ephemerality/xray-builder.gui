@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 using HtmlAgilityPack;
@@ -24,6 +22,17 @@ namespace XRayBuilderGUI
         public string shelfariUrl = "";
         public string amazonUrl = "";
 
+        // Added StartAction info
+        public string seriesName = "";
+        public string seriesPosition = "";
+        public string totalInSeries = "";
+        public string readingHours = "";
+        public string readingMinutes = "";
+        public string pagesInBook = "";
+        public string popularHighlights = "";
+        public string popularPassages = "";
+        public string previousBook = "";
+
         public BookInfo(string title, string author, string asin, string guid, string databasename, string path, string sidecarName, string shelfariUrl)
         {
             this.title = title;
@@ -45,17 +54,22 @@ namespace XRayBuilderGUI
 
         public string ToJSON(string nClass, bool includeDescRatings)
         {
-            string template = String.Format(@"{{""class"":""{0}"",""asin"":""{1}"",""title"":""{2}"",""authors"":[""{3}""],""imageUrl"":""{4}"",""hasSample"":false",
+            string template = string.Format(@"{{""class"":""{0}"",""asin"":""{1}"",""title"":""{2}"",""authors"":[""{3}""],""imageUrl"":""{4}"",""hasSample"":false",
                                             nClass, asin, title, author, bookImageUrl);
             if (includeDescRatings)
-                template += String.Format(@",""description"":""{0}"",""amazonRating"":{1},""numberOfReviews"":{2}", desc, amazonRating, numReviews);
+                template += string.Format(@",""description"":""{0}"",""amazonRating"":{1},""numberOfReviews"":{2}", desc, amazonRating, numReviews);
             template += "}";
             return template;
         }
 
-        /// <summary>
-        /// Retrieves the book's description, image URL, and rating from the book's Amazon URL.
-        /// </summary>
+        public string ToExtraJSON(string nClass)
+        {
+            string template = string.Format(@"{{""class"":""{0}"",""asin"":""{1}"",""title"":""{2}"",""description"":""{3}"",""authors"":[""{4}""],""imageUrl"":""{5}"",""hasSample"":false,""amazonRating"":{6},""numberOfReviews"":{7}}}",
+                nClass, asin, title, desc, author, bookImageUrl, amazonRating, numReviews);
+            return template;
+        }
+
+        // Retrieves the book's description, image URL, and rating from the book's Amazon URL.
         public void GetAmazonInfo(string amazonUrl)
         {
             if (amazonUrl == "") return;
@@ -64,9 +78,7 @@ namespace XRayBuilderGUI
             GetAmazonInfo(bookDoc);
         }
 
-        /// <summary>
-        /// Retrieves the book's description, image URL, and rating from the book's Amazon page.
-        /// </summary>
+        // Retrieves the book's description, image URL, and rating from the book's Amazon page.
         public void GetAmazonInfo(HtmlDocument bookDoc)
         {
             if (bookImageUrl == "")
@@ -92,7 +104,7 @@ namespace XRayBuilderGUI
                         Enumerable.Repeat(chars, 11)
                             .Select(s => s[random.Next(s.Length)])
                             .ToArray());
-                    bookImageUrl = String.Format("http://ecx.images-amazon.com/images/I/{0}.jpg",
+                    bookImageUrl = string.Format("http://ecx.images-amazon.com/images/I/{0}.jpg",
                         Uri.EscapeDataString(result));
                 }
             }
@@ -117,13 +129,7 @@ namespace XRayBuilderGUI
                         else
                             desc = desc.Substring(0, lastSpace) + '\u2026';
                         //Clean up desc the same as biography was... not all of these may be needed?
-                        desc = Regex.Replace(desc, @"\t|\n|\r", " ");
-                        desc = desc.Replace("\"", "'");
-                        desc = desc.Replace("&quot;", "'");
-                        desc = desc.Replace("<br><br>", " ");
-                        desc = desc.Replace("&amp;#133;", "...");
-                        desc = desc.Replace("&#169;", "©");
-                        desc = Regex.Replace(desc, @"\s+", " ");
+                        Functions.CleanString(desc);
                     }
                 }
             }

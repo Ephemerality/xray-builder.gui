@@ -47,6 +47,7 @@
             this.cmsPreview = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tmiEndAction = new System.Windows.Forms.ToolStripMenuItem();
             this.tmiXray = new System.Windows.Forms.ToolStripMenuItem();
+            this.tmiStartAction = new System.Windows.Forms.ToolStripMenuItem();
             this.prgBar = new System.Windows.Forms.ProgressBar();
             this.btnLink = new System.Windows.Forms.Button();
             this.btnSettings = new System.Windows.Forms.Button();
@@ -77,7 +78,7 @@
             // lblSeperator1
             // 
             this.lblSeperator1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.lblSeperator1.Location = new System.Drawing.Point(228, 12);
+            this.lblSeperator1.Location = new System.Drawing.Point(174, 12);
             this.lblSeperator1.Name = "lblSeperator1";
             this.lblSeperator1.Size = new System.Drawing.Size(2, 48);
             this.lblSeperator1.TabIndex = 32;
@@ -85,7 +86,7 @@
             // lblSeperator2
             // 
             this.lblSeperator2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.lblSeperator2.Location = new System.Drawing.Point(344, 12);
+            this.lblSeperator2.Location = new System.Drawing.Point(360, 12);
             this.lblSeperator2.Name = "lblSeperator2";
             this.lblSeperator2.Size = new System.Drawing.Size(2, 48);
             this.lblSeperator2.TabIndex = 33;
@@ -209,7 +210,8 @@
             this.cmsPreview.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tmiAuthorProfile,
             this.tmiEndAction,
-            this.tmiXray});
+            this.tmiXray,
+            this.tmiStartAction});
             this.cmsPreview.Name = "cmsPreview";
             this.cmsPreview.ShowImageMargin = false;
             this.cmsPreview.Size = new System.Drawing.Size(115, 70);
@@ -232,6 +234,14 @@
             this.tmiXray.Text = "X-Ray";
             this.tmiXray.Click += new System.EventHandler(this.tmiXray_Click);
             // 
+            // tmiStartAction
+            // 
+            this.tmiStartAction.AutoSize = false;
+            this.tmiStartAction.Enabled = false;
+            this.tmiStartAction.Name = "tmiStartAction";
+            this.tmiStartAction.Size = new System.Drawing.Size(114, 22);
+            this.tmiStartAction.Text = "Start Action";
+            // 
             // prgBar
             // 
             this.prgBar.Location = new System.Drawing.Point(13, 401);
@@ -244,7 +254,7 @@
             // btnLink
             // 
             this.btnLink.Image = ((System.Drawing.Image)(resources.GetObject("btnLink.Image")));
-            this.btnLink.Location = new System.Drawing.Point(174, 12);
+            this.btnLink.Location = new System.Drawing.Point(120, 12);
             this.btnLink.Name = "btnLink";
             this.btnLink.Size = new System.Drawing.Size(48, 48);
             this.btnLink.TabIndex = 28;
@@ -254,7 +264,7 @@
             // btnSettings
             // 
             this.btnSettings.Image = ((System.Drawing.Image)(resources.GetObject("btnSettings.Image")));
-            this.btnSettings.Location = new System.Drawing.Point(484, 12);
+            this.btnSettings.Location = new System.Drawing.Point(483, 12);
             this.btnSettings.Name = "btnSettings";
             this.btnSettings.Size = new System.Drawing.Size(48, 48);
             this.btnSettings.TabIndex = 16;
@@ -264,7 +274,7 @@
             // btnBrowseXML
             // 
             this.btnBrowseXML.Image = ((System.Drawing.Image)(resources.GetObject("btnBrowseXML.Image")));
-            this.btnBrowseXML.Location = new System.Drawing.Point(174, 12);
+            this.btnBrowseXML.Location = new System.Drawing.Point(120, 12);
             this.btnBrowseXML.Name = "btnBrowseXML";
             this.btnBrowseXML.Size = new System.Drawing.Size(48, 48);
             this.btnBrowseXML.TabIndex = 23;
@@ -276,7 +286,7 @@
             // 
             this.btnPreview.Enabled = false;
             this.btnPreview.Image = ((System.Drawing.Image)(resources.GetObject("btnPreview.Image")));
-            this.btnPreview.Location = new System.Drawing.Point(352, 12);
+            this.btnPreview.Location = new System.Drawing.Point(290, 12);
             this.btnPreview.Name = "btnPreview";
             this.btnPreview.Size = new System.Drawing.Size(64, 48);
             this.btnPreview.TabIndex = 12;
@@ -306,7 +316,7 @@
             // btnKindleExtras
             // 
             this.btnKindleExtras.Image = ((System.Drawing.Image)(resources.GetObject("btnKindleExtras.Image")));
-            this.btnKindleExtras.Location = new System.Drawing.Point(236, 12);
+            this.btnKindleExtras.Location = new System.Drawing.Point(182, 12);
             this.btnKindleExtras.Name = "btnKindleExtras";
             this.btnKindleExtras.Size = new System.Drawing.Size(48, 48);
             this.btnKindleExtras.TabIndex = 27;
@@ -326,7 +336,7 @@
             // btnSaveShelfari
             // 
             this.btnSaveShelfari.Image = ((System.Drawing.Image)(resources.GetObject("btnSaveShelfari.Image")));
-            this.btnSaveShelfari.Location = new System.Drawing.Point(120, 12);
+            this.btnSaveShelfari.Location = new System.Drawing.Point(368, 12);
             this.btnSaveShelfari.Name = "btnSaveShelfari";
             this.btnSaveShelfari.Size = new System.Drawing.Size(48, 48);
             this.btnSaveShelfari.TabIndex = 19;
@@ -336,7 +346,7 @@
             // btnBuild
             // 
             this.btnBuild.Image = ((System.Drawing.Image)(resources.GetObject("btnBuild.Image")));
-            this.btnBuild.Location = new System.Drawing.Point(290, 12);
+            this.btnBuild.Location = new System.Drawing.Point(236, 12);
             this.btnBuild.Name = "btnBuild";
             this.btnBuild.Size = new System.Drawing.Size(48, 48);
             this.btnBuild.TabIndex = 14;
@@ -349,12 +359,12 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(544, 426);
+            this.Controls.Add(this.btnPreview);
             this.Controls.Add(this.btnLink);
             this.Controls.Add(this.btnSettings);
             this.Controls.Add(this.lblSeperator3);
             this.Controls.Add(this.btnBrowseXML);
             this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.btnPreview);
             this.Controls.Add(this.btnBrowseOutput);
             this.Controls.Add(this.lblSeperator2);
             this.Controls.Add(this.lblSeperator1);
@@ -415,6 +425,7 @@
         private System.Windows.Forms.ToolStripMenuItem tmiXray;
         public System.Windows.Forms.ContextMenuStrip cmsPreview;
         public System.Windows.Forms.ProgressBar prgBar;
+        private System.Windows.Forms.ToolStripMenuItem tmiStartAction;
     }
 }
 

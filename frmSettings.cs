@@ -21,7 +21,7 @@ namespace XRayBuilderGUI
                 int fileCount = Directory.GetFiles(Environment.CurrentDirectory + @"\log").Length;
                 if (fileCount > 0)
                 {
-                    btnClearLogs.Text = string.Format("Clear Logs ({0})", fileCount);
+                    btnClearLogs.Text = String.Format("Clear Logs ({0})", fileCount);
                 }
                 else
                 {

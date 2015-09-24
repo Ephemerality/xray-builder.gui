@@ -40,7 +40,7 @@ namespace XRayBuilderGUI
 
             // Search Amazon for book
             main.Log("Book found on Amazon!");
-            main.Log(string.Format("Book's Amazon page URL: {0}", ebookLocation));
+            main.Log(String.Format("Book's Amazon page URL: {0}", ebookLocation));
             
             HtmlDocument bookHtmlDoc = new HtmlDocument {OptionAutoCloseOnEnd = true};
             try
@@ -49,7 +49,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                main.Log(string.Format("An error ocurred while downloading book's Amazon page: {0}\r\nYour ASIN may not be correct.", ex.Message));
+                main.Log(String.Format("An error ocurred while downloading book's Amazon page: {0}\r\nYour ASIN may not be correct.", ex.Message));
                 return;
             }
             if (Properties.Settings.Default.saveHtml)
@@ -57,12 +57,12 @@ namespace XRayBuilderGUI
                 try
                 {
                     File.WriteAllText(Environment.CurrentDirectory +
-                                      string.Format(@"\dmp\{0}.bookHtml.txt", book.asin),
+                                      String.Format(@"\dmp\{0}.bookHtml.txt", book.asin),
                         ap.authorHtmlDoc.DocumentNode.InnerHtml);
                 }
                 catch (Exception ex)
                 {
-                    main.Log(string.Format("An error ocurred saving bookHtml.txt: {0}", ex.Message));
+                    main.Log(String.Format("An error ocurred saving bookHtml.txt: {0}", ex.Message));
                     return;
                 }
             }
@@ -73,7 +73,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                main.Log(string.Format("An error ocurred parsing Amazon info: {0}", ex.Message));
+                main.Log(String.Format("An error ocurred parsing Amazon info: {0}", ex.Message));
                 return;
             }
 
@@ -111,7 +111,7 @@ namespace XRayBuilderGUI
                         }
                         catch (Exception ex)
                         {
-                            main.Log(string.Format("{0}\r\n{1}\r\nContinuing anyway...", ex.Message, nodeUrl));
+                            main.Log(String.Format("{0}\r\n{1}\r\nContinuing anyway...", ex.Message, nodeUrl));
                         }
                     }
             }
@@ -202,17 +202,17 @@ namespace XRayBuilderGUI
             // Build bookInfo object
             // "bookInfo":{"class":"bookInfo","asin":"{0}","contentType":"EBOK","timestamp":{1},"refTagSuffix":"AAAgAAB","imageUrl":"{2}","embeddedID":"{3}:{4}","erl":{5}}
             TimeSpan timestamp = DateTime.Now - new DateTime(1970, 1, 1);
-            bookInfoTemplate = string.Format(bookInfoTemplate, curBook.asin, Math.Round(timestamp.TotalMilliseconds), curBook.bookImageUrl, curBook.databasename, curBook.guid, _erl);
+            bookInfoTemplate = String.Format(bookInfoTemplate, curBook.asin, Math.Round(timestamp.TotalMilliseconds), curBook.bookImageUrl, curBook.databasename, curBook.guid, _erl);
 
             // Build data object
             //string dataTemplate = @"""data"":{{""nextBook"":{0},{1},{2},""currentBookFeatured"":{3},{4},{5},{6},{7}}}";
             string dataTemplate = @"""data"":{{""nextBook"":{0},{1},{2},{3},{4},{5},{6}}}";
             string nextBook = "{}";
             string publicSharedRating = @"""publicSharedRating"":{""class"":""publicSharedRating"",""timestamp"":1430656509000,""value"":4}";
-            string customerProfile = string.Format(@"""customerProfile"":{{""class"":""customerProfile"",""penName"":""{0}"",""realName"":""{1}""}}",
+            string customerProfile = String.Format(@"""customerProfile"":{{""class"":""customerProfile"",""penName"":""{0}"",""realName"":""{1}""}}",
                 settings.penName, settings.realName);
             string rating = @"""rating"":{""class"":""personalizationRating"",""timestamp"":1430656509000,""value"":4}";
-            string authors = string.Format(@"""authorBios"":{{""class"":""authorBioList"",""authors"":[{0}]}}", authorProfile.ToJSON());
+            string authors = String.Format(@"""authorBios"":{{""class"":""authorBioList"",""authors"":[{0}]}}", authorProfile.ToJSON());
             string authorRecs = @"""authorRecs"":{{""class"":""featuredRecommendationList"",""recommendations"":[{0}]}}";
             string custRecs = @"""customersWhoBoughtRecs"":{{""class"":""featuredRecommendationList"",""recommendations"":[{0}]}}";
             BookInfo nextInSeries = null;
@@ -226,13 +226,13 @@ namespace XRayBuilderGUI
             {
                 main.Log("Error finding next book in series: " + ex.Message);
             }
-            authorRecs = string.Format(authorRecs, String.Join(",", authorProfile.otherBooks.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
-            custRecs = string.Format(custRecs, String.Join(",", custAlsoBought.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
+            authorRecs = String.Format(authorRecs, String.Join(",", authorProfile.otherBooks.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
+            custRecs = String.Format(custRecs, String.Join(",", custAlsoBought.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
 
-            dataTemplate = string.Format(dataTemplate, nextBook, publicSharedRating, customerProfile,
+            dataTemplate = String.Format(dataTemplate, nextBook, publicSharedRating, customerProfile,
                 rating, authors, authorRecs, custRecs);
 
-            finalOutput = string.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
+            finalOutput = String.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
 
             using (StreamWriter streamWriter = new StreamWriter(EaPath, false))//, Encoding.UTF8))
             {
@@ -257,30 +257,30 @@ namespace XRayBuilderGUI
 
             // Build bookInfo object
             TimeSpan timestamp = DateTime.Now - new DateTime(1970, 1, 1);
-            bookInfoTemplate = string.Format(bookInfoTemplate, curBook.asin, Math.Round(timestamp.TotalMilliseconds), curBook.bookImageUrl);
+            bookInfoTemplate = String.Format(bookInfoTemplate, curBook.asin, Math.Round(timestamp.TotalMilliseconds), curBook.bookImageUrl);
             string seriesPosition =
-                string.Format(
+                String.Format(
                     @"""seriesPosition"":{{""class"":""seriesPosition"",""positionInSeries"":{0},""totalInSeries"":{1},""seriesName"":""{2}""}}",
                     curBook.seriesPosition, curBook.totalInSeries, curBook.seriesName);
-            string popularHighlights = string.Format(@"""popularHighlightsText"":{{""class"":""dynamicText"",""localizedText"":{{""de"":""{0} Passagen wurden {1} mal markiert"",""en-US"":""{0} passages have been highlighted {1} times"",""ru"":""1\u00A0095 \u043E\u0442\u0440\u044B\u0432\u043A\u043E\u0432 \u0431\u044B\u043B\u043E \u0432\u044B\u0434\u0435\u043B\u0435\u043D\u043E 12\u00A0326 \u0440\u0430\u0437"",""pt-BR"":""{0} trechos foram destacados {1} vezes"",""ja"":""{0}\u7B87\u6240\u304C{1}\u56DE\u30CF\u30A4\u30E9\u30A4\u30C8\u3055\u308C\u307E\u3057\u305F"",""en"":""{0} passages have been highlighted {1} times"",""it"":""{0} brani sono stati evidenziati {1} volte"",""fr"":""{0}\u00A0095 passages ont \u00E9t\u00E9 surlign\u00E9s {1}\u00A0326 fois"",""zh-CN"":""{0} \u4E2A\u6BB5\u843D\u88AB\u6807\u6CE8\u4E86 {1} \u6B21"",""es"":""Se han subrayado {0} pasajes {1} veces"",""nl"":""{0} fragmenten zijn {1} keer gemarkeerd""}}}}", curBook.popularPassages, curBook.popularHighlights);
-            string grokShelfInfo = string.Format(@"""grokShelfInfo"":{{""class"":""goodReadsShelfInfo"",""asin"":""{0}"",""shelves"":[""read""]}}", curBook.asin);
+            string popularHighlights = String.Format(@"""popularHighlightsText"":{{""class"":""dynamicText"",""localizedText"":{{""de"":""{0} Passagen wurden {1} mal markiert"",""en-US"":""{0} passages have been highlighted {1} times"",""ru"":""1\u00A0095 \u043E\u0442\u0440\u044B\u0432\u043A\u043E\u0432 \u0431\u044B\u043B\u043E \u0432\u044B\u0434\u0435\u043B\u0435\u043D\u043E 12\u00A0326 \u0440\u0430\u0437"",""pt-BR"":""{0} trechos foram destacados {1} vezes"",""ja"":""{0}\u7B87\u6240\u304C{1}\u56DE\u30CF\u30A4\u30E9\u30A4\u30C8\u3055\u308C\u307E\u3057\u305F"",""en"":""{0} passages have been highlighted {1} times"",""it"":""{0} brani sono stati evidenziati {1} volte"",""fr"":""{0}\u00A0095 passages ont \u00E9t\u00E9 surlign\u00E9s {1}\u00A0326 fois"",""zh-CN"":""{0} \u4E2A\u6BB5\u843D\u88AB\u6807\u6CE8\u4E86 {1} \u6B21"",""es"":""Se han subrayado {0} pasajes {1} veces"",""nl"":""{0} fragmenten zijn {1} keer gemarkeerd""}}}}", curBook.popularPassages, curBook.popularHighlights);
+            string grokShelfInfo = String.Format(@"""grokShelfInfo"":{{""class"":""goodReadsShelfInfo"",""asin"":""{0}"",""shelves"":[""read""]}}", curBook.asin);
             string currentBook = curBook.ToExtraJSON("featuredRecommendation");
-            string authors = string.Format(@"""authorBios"":{{""class"":""authorBioList"",""authors"":[{0}]}}", authorProfile.ToJSON());
+            string authors = String.Format(@"""authorBios"":{{""class"":""authorBioList"",""authors"":[{0}]}}", authorProfile.ToJSON());
             string authorRecs = @"""authorRecs"":{{""class"":""recommendationList"",""recommendations"":[{0}]}}";
-            authorRecs = string.Format(authorRecs, String.Join(",", authorProfile.otherBooks.Select(bk => bk.ToJSON("recommendation", false)).ToArray()));
+            authorRecs = String.Format(authorRecs, String.Join(",", authorProfile.otherBooks.Select(bk => bk.ToJSON("recommendation", false)).ToArray()));
             string readingTime =
-                string.Format(
+                String.Format(
                     @"""readingTime"":{{""class"":""time"",""hours"":{0},""minutes"":{1},""formattedTime"":{{""de"":""{0} Stunden und {1} Minuten"",""en-US"":""{0} hours and {1} minutes"",""ru"":""{0}\u00A0\u0447 \u043{0} {1}\u00A0\u043C\u043{0}\u043D"",""pt-BR"":""{0} horas e {1} minutos"",""ja"":""{0}\u6642\u9593{1}\u5206"",""en"":""{0} hours and {1} minutes"",""it"":""{0} ore e {1} minuti"",""fr"":""{0} heures et {1} minutes"",""zh-CN"":""{0} \u5C0F\u65F6 {1} \u5206\u949F"",""es"":""{0} horas y {1} minutos"",""nl"":""{0} uur en {1} minuten""}}}}",
                     curBook.readingHours, curBook.readingMinutes);
-            string readingPages = string.Format(@"""readingPages"":{{""class"":""pages"",""pagesInBook"":{0}}}",
+            string readingPages = String.Format(@"""readingPages"":{{""class"":""pages"",""pagesInBook"":{0}}}",
                 curBook.pagesInBook);
 
             // Build data object
             string dataTemplate = @"""data"":{{{0},{1},{2},{3},""bookDescription"":{4},{5},{6},""currentBook"":{7},{8},{9}}}";
-            dataTemplate = string.Format(dataTemplate, seriesPosition, welcomeTextTemplate, popularHighlights,
+            dataTemplate = String.Format(dataTemplate, seriesPosition, welcomeTextTemplate, popularHighlights,
             grokShelfInfo, currentBook, authors, authorRecs, currentBook, readingTime, readingPages);
 
-            finalOutput = string.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
+            finalOutput = String.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
 
             using (StreamWriter streamWriter = new StreamWriter(SaPath, false))//, Encoding.UTF8))
             {
@@ -320,8 +320,10 @@ namespace XRayBuilderGUI
             }
         }
 
-        // Retrieve EndActions templates from BaseEndActions.txt.
-        // Array will always be length 3. Index 0 will always be the bookInfo template.
+        /// <summary>
+        /// Retrieve EndActions templates from BaseEndActions.txt.
+        /// Array will always be length 3. Index 0 will always be the bookInfo template.
+        /// </summary>
         private string[] GetBaseEndActions()
         {
             string[] templates = null;
@@ -409,8 +411,11 @@ namespace XRayBuilderGUI
             return nextBook;
         }
 
-        // TODO: Un-yuckify all the return paths without nesting a ton of ifs
-        // Search Shelfari page for possible series info, returning the next title in the series without downloading any other pages.
+        /// <summary>
+        /// Search Shelfari page for possible series info, returning the next title in the series without downloading any other pages.
+        /// TODO: Un-yuckify all the return paths without nesting a ton of ifs
+        /// </summary>
+        /// <param name="searchHtmlDoc">Book's Shelfari page, pre-downloaded</param>
         private string GetNextInSeriesTitle(HtmlAgilityPack.HtmlDocument searchHtmlDoc)
         {
             //Added estimated reading time and page count from Shelfari, for now...
@@ -426,7 +431,7 @@ namespace XRayBuilderGUI
             {
                 double minutes = int.Parse(match1.Groups[1].Value) * 1.2890625;
                 TimeSpan span = TimeSpan.FromMinutes(minutes);
-                main.Log(string.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)"
+                main.Log(String.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)"
                     , span.Hours, span.Minutes, match1.Groups[1].Value));
                 curBook.pagesInBook = match1.Groups[1].Value;
                 curBook.readingHours = span.Hours.ToString();
@@ -447,7 +452,7 @@ namespace XRayBuilderGUI
                     curBook.popularHighlights = match3.Groups[1].Value.ToString();
                     highlights = int.Parse(match3.Groups[1].Value);
                 }
-                main.Log(string.Format("Popular Highlights: {0} passages have been highlighted {1} times"
+                main.Log(String.Format("Popular Highlights: {0} passages have been highlighted {1} times"
                             , curBook.popularPassages, curBook.popularHighlights));
             }
 
@@ -505,7 +510,10 @@ namespace XRayBuilderGUI
             return "";
         }
 
-        // Search Shelfari for series info, scrape series page, and return next title in series.
+        /// <summary>
+        /// Search Shelfari for series info, scrape series page, and return next title in series.
+        /// </summary>
+        /// <param name="searchHtmlDoc">Book's Shelfari page, pre-downloaded</param>
         private string GetNextInSeriesTitle2(HtmlAgilityPack.HtmlDocument searchHtmlDoc)
         {
             bool hasSeries = false;
@@ -528,7 +536,7 @@ namespace XRayBuilderGUI
                     .GetAttributeValue("href", "");
                 seriesShort = node.FirstChild.InnerText.Trim();
                 //Add series name and book number to log, if found
-                searchHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(string.Format(seriesURL)));
+                searchHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(String.Format(seriesURL)));
                 //Parse number of books in series and convert to integer
                 node = searchHtmlDoc.DocumentNode.SelectSingleNode("//h2[@class='f_m']");
                 string test = node.FirstChild.InnerText.Trim();
@@ -540,7 +548,7 @@ namespace XRayBuilderGUI
                 if (currentSeriesIndex < currentSeriesCount)
                 {
                     //Add series name and book number to log, if found
-                    main.Log(string.Format("This is book {0} of {1} in the {2} Series...",
+                    main.Log(String.Format("This is book {0} of {1} in the {2} Series...",
                         currentSeriesIndex, currentSeriesCount, seriesShort));
                     foreach (HtmlAgilityPack.HtmlNode seriesItem in
                         searchHtmlDoc.DocumentNode.SelectNodes(".//ol/li"))
@@ -553,14 +561,13 @@ namespace XRayBuilderGUI
                                 //Parse title of the next book
                                 nextTitle = node.InnerText.Trim();
                                 //Add next book in series to log, if found
-                                main.Log($"The next book in this series is: {nextTitle}!");
-                                //main.Log(string.Format("The next book in this series is {0}!", nextTitle));
+                                main.Log(String.Format("The next book in this series is {0}!", nextTitle));
                                 return nextTitle;
                             }
                     }
                 }
                 if (hasSeries)
-                    main.Log(string.Format("Unable to find the next book in this series!\r\n" +
+                    main.Log(String.Format("Unable to find the next book in this series!\r\n" +
                                       "This is the last title in the {0} series...", seriesShort));
                 return "";
             }

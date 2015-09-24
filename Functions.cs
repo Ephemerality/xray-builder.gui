@@ -174,7 +174,7 @@ namespace XRayBuilderGUI
             newAuthor = new string(author.Where(x => !fileChars.Contains(x)).ToArray());
             newTitle = new string(title.Where(x => !fileChars.Contains(x)).ToArray());
             path = Path.Combine(Properties.Settings.Default.outDir,
-                string.Format(@"{0}\{1}", newAuthor, newTitle));
+                String.Format(@"{0}\{1}", newAuthor, newTitle));
             if (!author.Equals(newAuthor) || !title.Equals(newTitle))
                 MessageBox.Show("The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.", "Invalid Characters");
             Directory.CreateDirectory(path);
@@ -184,8 +184,8 @@ namespace XRayBuilderGUI
         public static bool ExtrasExist(string location, string asin)
         {
             {
-                if (File.Exists(location + string.Format(@"\AuthorProfile.profile.{0}.asc", asin)) &&
-                    File.Exists(location + string.Format(@"\EndActions.data.{0}.asc", asin)))
+                if (File.Exists(location + String.Format(@"\AuthorProfile.profile.{0}.asc", asin)) &&
+                    File.Exists(location + String.Format(@"\EndActions.data.{0}.asc", asin)))
                     return true;
             }
             return false;
@@ -217,9 +217,9 @@ namespace XRayBuilderGUI
         public static string TimeStamp()
         {
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            var time = string.Format("{0:H:mm:ss}", DateTime.Now);
-            var date = string.Format("{0:dd/MM/yyyy}", DateTime.Now);
-            return string.Format("Running X-Ray Builder GUI v{0}. Log started on {1} at {2}.\r\n",
+            var time = String.Format("{0:H:mm:ss}", DateTime.Now);
+            var date = String.Format("{0:dd/MM/yyyy}", DateTime.Now);
+            return String.Format("Running X-Ray Builder GUI v{0}. Log started on {1} at {2}.\r\n",
                 version, date, time);
         }
 
@@ -256,7 +256,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                output.Add(string.Format("An error occurred while running Kindleunpack: {0}\r\n", ex.Message));
+                output.Add(String.Format("An error occurred while running Kindleunpack: {0}\r\n", ex.Message));
                 MessageBox.Show("Error while running Kindleunpack. See the output log for details.");
                 return output;
             }
@@ -294,12 +294,12 @@ namespace XRayBuilderGUI
                 match = Regex.Match(match.Groups[1].Value, "(^B[A-Z0-9]{9})");
                 if (!match.Success)
                 {
-                    if (DialogResult.No == MessageBox.Show(string.Format("Incorrect ASIN detected: {0}!\n" +
+                    if (DialogResult.No == MessageBox.Show(String.Format("Incorrect ASIN detected: {0}!\n" +
                                       "Kindle may not display an X-Ray for this book.\n" +
                                       "Do you wish to continue?", incorrectAsin), "Incorrect ASIN", MessageBoxButtons.YesNo))
                     {
                         output.Add(
-                            string.Format("Incorrect ASIN detected: {0}!\r\n" +
+                            String.Format("Incorrect ASIN detected: {0}!\r\n" +
                                           "Kindle may not display an X-Ray for this book.\r\n" +
                                           "You must either use Calibre's Quality Check plugin (Fix ASIN for Kindle Fire) " +
                                           "or a Mobi editor (exth 113 and 504) to change this.", incorrectAsin));
@@ -356,7 +356,7 @@ namespace XRayBuilderGUI
 
             if (databaseName == "" || uniqid == "" || asin == "")
             {
-                output.Add(string.Format(
+                output.Add(String.Format(
                     "Error: Missing metadata.\r\nDatabase Name: {0}\r\nASIN: {1}\r\nUniqueID: {2}", databaseName, asin,
                     uniqid));
                 MessageBox.Show("Missing metadata. See output log for details.", "Metadata Error");
@@ -365,7 +365,7 @@ namespace XRayBuilderGUI
             else if (databaseName.Length == 31)
             {
                 MessageBox.Show(
-                    string.Format(
+                    String.Format(
                         "WARNING: Database Name is the maximum length. If \"{0}\" is the full book title, this should not be an issue.\r\n" +
                         "If the title is supposed to be longer than that, you may get an error WG on your Kindle.\r\n" +
                         "This can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n",

@@ -83,7 +83,7 @@ namespace XRayBuilderGUI
                                          "\"Author\\Filename\"\r\nsubdirectory.");
             toolTip1.SetToolTip(btnLogs, "Open the log files directory.");
             toolTip1.SetToolTip(chkOverwrite,
-                "Overwrite exiting Author Profile and\r\nEnd Actions files, if they exist.");
+                "Overwrite exiting Author Profile and\r\nEnd Actions files, if they exist.\r\n(Includes alias and chapter files)");
             toolTip1.SetToolTip(chkSaveHtml, "Save parsed HTML files. This is generally used\r\n" +
                                          "for debugging and can be left unchecked.");
             toolTip1.SetToolTip(chkSplitAliases, "Automatically split character names\r\n" +

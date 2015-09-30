@@ -105,6 +105,12 @@
     <Compile Include="frmPreviewEA.Designer.cs">
       <DependentUpon>frmPreviewEA.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmPreviewSA.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmPreviewSA.Designer.cs">
+      <DependentUpon>frmPreviewSA.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmPreviewXR.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -141,7 +147,17 @@
     <Content Include="BaseStartActions.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="done.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Icon.ico" />
+    <None Include="Resources\SA.png" />
+    <None Include="Resources\STAR5.png" />
+    <None Include="Resources\STAR4.png" />
+    <None Include="Resources\STAR3.png" />
+    <None Include="Resources\STAR2.png" />
+    <None Include="Resources\STAR1.png" />
+    <None Include="Resources\STAR0.png" />
     <None Include="Resources\XRN.png" />
     <None Include="Resources\XR8.png" />
     <None Include="Resources\XR7.png" />
@@ -161,6 +177,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmPreviewEA.resx">
       <DependentUpon>frmPreviewEA.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmPreviewSA.resx">
+      <DependentUpon>frmPreviewSA.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmPreviewXR.resx">
       <DependentUpon>frmPreviewXR.cs</DependentUpon>

@@ -31,6 +31,7 @@ namespace XRayBuilderGUI
         private FrmPreviewEa frmEA = new FrmPreviewEa();
         private frmPreviewXR frmXR = new frmPreviewXR();
         private frmPreviewXRN frmXRN = new frmPreviewXRN();
+        private frmPreviewSA frmSA = new frmPreviewSA();
 
         public void Log(string message)
         {
@@ -147,14 +148,6 @@ namespace XRayBuilderGUI
                     @"file creation. This information allows you to rate this\r\n" +
                     @"book on Amazon. Please review the settings page.",
                     @"Amazon Customer Details Not found");
-                return;
-            }
-            if (Properties.Settings.Default.sendtoKindle &&
-                Properties.Settings.Default.docDir.Trim().Length == 0)
-            {
-                MessageBox.Show(
-                    @"Automatically send to Kindle is enabled but no Kindle Documents\r\nDirectory has been specified. Please review the settings page.",
-                    @"Kindle Documents Directory Not found");
                 return;
             }
             //Create temp dir and ensure it exists
@@ -310,6 +303,9 @@ namespace XRayBuilderGUI
                     streamWriter.Write(ss.ToString());
                 }
             }
+            System.Media.SoundPlayer player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
+            player.Play();
+
             Log("X-Ray file created successfully!\r\nSaved to " + _newPath);
 
             //Old X-ray Preview
@@ -473,14 +469,7 @@ namespace XRayBuilderGUI
                     "Amazon Customer Details Not found");
                 return;
             }
-            if (Properties.Settings.Default.sendtoKindle &&
-                Properties.Settings.Default.docDir.Trim().Length == 0)
-            {
-                MessageBox.Show(
-                    "Automatically send to Kindle is enabled but no Kindle Documents\r\nDirectory has been specified. Please review the settings page.",
-                    "Kindle Documents Directory Not found");
-                return;
-            }
+            
             //Create temp dir and ensure it exists
             string randomFile = Functions.GetTempDirectory();
             if (!Directory.Exists(randomFile))
@@ -534,6 +523,10 @@ namespace XRayBuilderGUI
                 {
                     ea.GenerateOld();
                 }
+
+                System.Media.SoundPlayer player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
+                player.Play();
+
                 previewClear();
 
                 frmAP.lblTitle.Text = ap.ApTitle;
@@ -585,6 +578,26 @@ namespace XRayBuilderGUI
                     frmEA.lblBook7.Text = ea.custAlsoBought[1].title;
                     frmEA.lblAuthor2.Text = ea.custAlsoBought[1].author;
                 }
+
+                // StartActions preview
+                frmSA.lblBookTitle.Text = string.Format("{0} ({1} Book {2})", ea.curBook.title, ea.curBook.seriesName,
+                    ea.curBook.seriesPosition);
+                frmSA.lblBookAuthor.Text = ea.curBook.author;
+                //Convert rating to equivalent Star image
+                string starNum = string.Format("STAR{0}",
+                    Math.Floor(ea.curBook.amazonRating).ToString());
+                //Return an object from the image chan1.png in the project
+                object O = Properties.Resources.ResourceManager.GetObject(starNum);
+                //Set the Image property of channelPic to the returned object as Image
+                frmSA.pbRating.Image = (Image)O;
+                frmSA.lblBookDesc.Text = ea.curBook.desc;
+                frmSA.lblRead.Text = string.Format("{0} hours and {1} minutes", ea.curBook.readingHours, ea.curBook.readingMinutes);
+                frmSA.lblPages.Text = string.Format("{0} pages", ea.curBook.pagesInBook);
+                frmSA.lblSeries.Text = string.Format("This is book {0} of {1} in {2}"
+                    , ea.curBook.seriesPosition, ea.curBook.totalInSeries, ea.curBook.seriesName);
+                frmSA.pbAuthorImage.Image = ap.ApAuthorImage;
+                frmSA.lblAboutAuthor.Text = ea.curBook.author;
+                frmSA.lblAuthorBio.Text = ap.BioTrimmed;
             }
             catch (Exception ex)
             {
@@ -963,6 +976,11 @@ namespace XRayBuilderGUI
             {
                 frmXR.ShowDialog();
             }
+        }
+
+        private void tmiStartAction_Click(object sender, EventArgs e)
+        {
+            frmSA.ShowDialog();
         }
     }
 }

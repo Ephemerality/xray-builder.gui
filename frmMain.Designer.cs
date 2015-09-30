@@ -49,10 +49,10 @@
             this.tmiXray = new System.Windows.Forms.ToolStripMenuItem();
             this.tmiStartAction = new System.Windows.Forms.ToolStripMenuItem();
             this.prgBar = new System.Windows.Forms.ProgressBar();
+            this.btnPreview = new System.Windows.Forms.Button();
             this.btnLink = new System.Windows.Forms.Button();
             this.btnSettings = new System.Windows.Forms.Button();
             this.btnBrowseXML = new System.Windows.Forms.Button();
-            this.btnPreview = new System.Windows.Forms.Button();
             this.btnBrowseOutput = new System.Windows.Forms.Button();
             this.btnBrowseMobi = new System.Windows.Forms.Button();
             this.btnKindleExtras = new System.Windows.Forms.Button();
@@ -214,7 +214,7 @@
             this.tmiStartAction});
             this.cmsPreview.Name = "cmsPreview";
             this.cmsPreview.ShowImageMargin = false;
-            this.cmsPreview.Size = new System.Drawing.Size(115, 70);
+            this.cmsPreview.Size = new System.Drawing.Size(115, 91);
             // 
             // tmiEndAction
             // 
@@ -241,6 +241,7 @@
             this.tmiStartAction.Name = "tmiStartAction";
             this.tmiStartAction.Size = new System.Drawing.Size(114, 22);
             this.tmiStartAction.Text = "Start Action";
+            this.tmiStartAction.Click += new System.EventHandler(this.tmiStartAction_Click);
             // 
             // prgBar
             // 
@@ -250,6 +251,17 @@
             this.prgBar.Step = 1;
             this.prgBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.prgBar.TabIndex = 18;
+            // 
+            // btnPreview
+            // 
+            this.btnPreview.Enabled = false;
+            this.btnPreview.Image = ((System.Drawing.Image)(resources.GetObject("btnPreview.Image")));
+            this.btnPreview.Location = new System.Drawing.Point(290, 12);
+            this.btnPreview.Name = "btnPreview";
+            this.btnPreview.Size = new System.Drawing.Size(64, 48);
+            this.btnPreview.TabIndex = 12;
+            this.btnPreview.UseVisualStyleBackColor = true;
+            this.btnPreview.Click += new System.EventHandler(this.btnPreview_Click);
             // 
             // btnLink
             // 
@@ -281,17 +293,6 @@
             this.btnBrowseXML.UseVisualStyleBackColor = true;
             this.btnBrowseXML.Visible = false;
             this.btnBrowseXML.Click += new System.EventHandler(this.btnBrowseXML_Click);
-            // 
-            // btnPreview
-            // 
-            this.btnPreview.Enabled = false;
-            this.btnPreview.Image = ((System.Drawing.Image)(resources.GetObject("btnPreview.Image")));
-            this.btnPreview.Location = new System.Drawing.Point(290, 12);
-            this.btnPreview.Name = "btnPreview";
-            this.btnPreview.Size = new System.Drawing.Size(64, 48);
-            this.btnPreview.TabIndex = 12;
-            this.btnPreview.UseVisualStyleBackColor = true;
-            this.btnPreview.Click += new System.EventHandler(this.btnPreview_Click);
             // 
             // btnBrowseOutput
             // 

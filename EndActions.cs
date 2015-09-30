@@ -22,7 +22,11 @@ namespace XRayBuilderGUI
         public List<BookInfo> custAlsoBought = new List<BookInfo>();
 
         private AuthorProfile authorProfile = null;
-        private BookInfo curBook = null;
+        public BookInfo curBook = null;
+        private BookInfo nextInSeries = null;
+        private BookInfo previousInSeries = null;
+        private string previousTitle = "";
+        private BookInfo previousBook = null;
 
         public bool complete = false; //Set if constructor succeeds in gathering data
         
@@ -215,7 +219,6 @@ namespace XRayBuilderGUI
             string authors = String.Format(@"""authorBios"":{{""class"":""authorBioList"",""authors"":[{0}]}}", authorProfile.ToJSON());
             string authorRecs = @"""authorRecs"":{{""class"":""featuredRecommendationList"",""recommendations"":[{0}]}}";
             string custRecs = @"""customersWhoBoughtRecs"":{{""class"":""featuredRecommendationList"",""recommendations"":[{0}]}}";
-            BookInfo nextInSeries = null;
             try
             {
                 nextInSeries = GetNextInSeries();
@@ -252,8 +255,9 @@ namespace XRayBuilderGUI
             string widgetsTemplate = templates[1];
             string layoutsTemplate = templates[2];
             string welcomeTextTemplate = templates[3];
+            string dataTemplate = "";
 
-            string finalOutput = "{{{0},{1},{2},{3}}}"; //bookInfo, widgets, layouts, data
+            string finalOutput = "{{{0},{1},{2},{3}}}"; //bookInfo, widgets, layouts, welcometext, data
 
             // Build bookInfo object
             TimeSpan timestamp = DateTime.Now - new DateTime(1970, 1, 1);
@@ -275,12 +279,25 @@ namespace XRayBuilderGUI
             string readingPages = String.Format(@"""readingPages"":{{""class"":""pages"",""pagesInBook"":{0}}}",
                 curBook.pagesInBook);
 
-            // Build data object
-            string dataTemplate = @"""data"":{{{0},{1},{2},{3},""bookDescription"":{4},{5},{6},""currentBook"":{7},{8},{9}}}";
-            dataTemplate = String.Format(dataTemplate, seriesPosition, welcomeTextTemplate, popularHighlights,
-            grokShelfInfo, currentBook, authors, authorRecs, currentBook, readingTime, readingPages);
+            // Current book has a previous book in the series
+            if (previousInSeries != null)
+            {
+                string previousBookInTheSeries = previousInSeries.ToExtraJSON("featuredRecommendation");
 
-            finalOutput = String.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
+                dataTemplate = @"""data"":{{{0},{1},{2},{3},""bookDescription"":{4},{5},{6},""currentBook"":{7},{8},""previousBookInTheSeries"":{9},{10}}}";
+                dataTemplate = string.Format(dataTemplate, seriesPosition, welcomeTextTemplate, popularHighlights,
+                grokShelfInfo, currentBook, authors, authorRecs, currentBook, readingTime, previousBookInTheSeries, readingPages);
+            }
+
+            // Current book doesn't have a previous book in the series
+            if (previousInSeries == null)
+            {
+                dataTemplate = @"""data"":{{{0},{1},{2},{3},""bookDescription"":{4},{5},{6},""currentBook"":{7},{8},{9}}}";
+                dataTemplate = string.Format(dataTemplate, seriesPosition, welcomeTextTemplate, popularHighlights,
+                grokShelfInfo, currentBook, authors, authorRecs, currentBook, readingTime, readingPages);
+            }
+
+            finalOutput = string.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
 
             using (StreamWriter streamWriter = new StreamWriter(SaPath, false))//, Encoding.UTF8))
             {
@@ -408,6 +425,27 @@ namespace XRayBuilderGUI
             } else
                 main.Log("Unable to find next book in series, the book may not be part of one.");
 
+            if (previousTitle != "")
+            {
+                // Search author's other books for the book (assumes next in series was written by the same author...)
+                // Returns the first one found, though there should probably not be more than 1 of the same name anyway
+                //nextBook = authorProfile.otherBooks.FirstOrDefault(bk => bk.title == nextTitle);
+                if (previousBook == null)
+                {
+                    // Attempt to search Amazon for the book instead
+                    previousBook = Functions.AmazonSearchBook(previousTitle, curBook.author);
+                    if (previousBook != null)
+                    {
+                        previousBook.GetAmazonInfo(previousBook.amazonUrl); //fill in desc, imageurl, and ratings
+                        previousInSeries = previousBook;
+                    }
+                }
+                if (previousBook == null)
+                    main.Log("Book was found to be part of a series, but previous book could not be found.\r\n" +
+                        "Please report this book and the Shelfari URL and output log to improve parsing.");
+
+            }
+
             return nextBook;
         }
 
@@ -493,6 +531,7 @@ namespace XRayBuilderGUI
                     if (match.Success && match.Groups.Count == 2)
                     {
                         curBook.previousBook = match.Groups[1].Value;
+                        previousTitle = match.Groups[1].Value;
                         main.Log("Preceded by: " + curBook.previousBook);
                     }
                 }

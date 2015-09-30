@@ -122,12 +122,12 @@ namespace XRayBuilderGUI
                 if (descNode != null && descNode.InnerText != "")
                 {
                     desc = descNode.InnerText.Trim();
-                    // Following the example of Amazon, cut off desc around 400-410 characters.
+                    // Following the example of Amazon, cut off desc around 1000 characters.
                     // If conveniently trimmed at the end of the sentence, let it end with the punctuation.
                     // If the sentence continues, cut it off and replace the space with an ellipsis
-                    if (desc.Length > 410)
+                    if (desc.Length > 1000)
                     {
-                        desc = desc.Substring(0, 410);
+                        desc = desc.Substring(0, 1000);
                         int lastPunc = desc.LastIndexOfAny(new char[] {'.', '!', '?'});
                         int lastSpace = desc.LastIndexOf(' ');
                         if (lastPunc > lastSpace)

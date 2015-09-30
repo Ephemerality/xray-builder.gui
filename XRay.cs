@@ -58,6 +58,31 @@ namespace XRayBuilderGUI
         private bool enableEdit = Properties.Settings.Default.enableEdit;
         private frmMain main;
 
+        #region CommonTitles
+        string[] CommonTitles = new string[] { "Mr", "Mrs", "Ms", "Miss", "Dr", "Herr", "Monsieur", "Hr", "Frau",
+            "A V M", "Admiraal", "Admiral", "Alderman", "Alhaji", "Ambassador", "Baron", "Barones", "Brig",
+            "Brigadier", "Brother", "Canon", "Capt", "Captain", "Cardinal", "Cdr", "Chief", "Cik", "Cmdr", "Col",
+            "Colonel", "Commandant", "Commander", "Commissioner", "Commodore", "Comte", "Comtessa", "Congressman",
+            "Conseiller", "Consul", "Conte", "Contessa", "Corporal", "Councillor", "Count", "Countess", "Air Cdre",
+            "Air Commodore", "Air Marshal", "Air Vice Marshal", "Brig Gen", "Brig General", "Brigadier General",
+            "Crown Prince", "Crown Princess", "Dame", "Datin", "Dato", "Datuk", "Datuk Seri", "Deacon", "Deaconess",
+            "Dean", "Dhr", "Dipl Ing", "Doctor", "Dott", "Dott Sa", "Dr", "Dr Ing", "Dra", "Drs", "Embajador",
+            "Embajadora", "En", "Encik", "Eng", "Eur Ing", "Exma Sra", "Exmo Sr", "F O", "Father", "First Lieutient",
+            "First Officer", "Flt Lieut", "Flying Officer", "Fr", "Frau", "Fraulein", "Fru", "Gen", "Generaal",
+            "General", "Governor", "Graaf", "Gravin", "Group Captain", "Grp Capt", "H E Dr", "H H", "H M", "H R H",
+            "Hajah", "Haji", "Hajim", "Her Highness", "Her Majesty", "Herr", "High Chief", "His Highness",
+            "His Holiness", "His Majesty", "Hon", "Hr", "Hra", "Ing", "Ir", "Jonkheer", "Judge", "Justice",
+            "Khun Ying", "Kolonel", "Lady", "Lcda", "Lic", "Lieut", "Lieut Cdr", "Lieut Col", "Lieut Gen", "Lord",
+            "Madame", "Mademoiselle", "Maj Gen", "Major", "Master", "Mevrouw", "Miss", "Mlle", "Mme", "Monsieur",
+            "Monsignor", "Mstr", "Nti", "Pastor", "President", "Prince", "Princess", "Princesse", "Prinses", "Prof",
+            "Prof Dr", "Prof Sir", "Professor", "Puan", "Puan Sri", "Rabbi", "Rear Admiral", "Rev", "Rev Canon",
+            "Rev Dr", "Rev Mother", "Reverend", "Rva", "Senator", "Sergeant", "Sheikh", "Sheikha", "Sig", "Sig Na",
+            "Sig Ra", "Sir", "Sister", "Sqn Ldr", "Sr", "Sr D", "Sra", "Srta", "Sultan", "Tan Sri", "Tan Sri Dato",
+            "Tengku", "Teuku", "Than Puying", "The Hon Dr", "The Hon Justice", "The Hon Miss", "The Hon Mr",
+            "The Hon Mrs", "The Hon Ms", "The Hon Sir", "The Very Rev", "Toh Puan", "Tun", "Vice Admiral",
+            "Viscount", "Viscountess", "Wg Cdr", "Jr", "Sr" };
+        #endregion
+
         public XRay()
         {
         }
@@ -204,7 +229,7 @@ namespace XRayBuilderGUI
                 aliasFile = Environment.CurrentDirectory + @"\ext\" + asin + ".aliases";
             else
                 aliasFile = aliaspath;
-            if (!File.Exists(aliasFile))
+            if (!File.Exists(aliasFile)||(Properties.Settings.Default.overwrite))
             {
                 SaveCharacters(aliasFile);
                 main.Log(String.Format("Characters exported to {0} for adding aliases.", aliasFile));
@@ -260,7 +285,7 @@ namespace XRayBuilderGUI
             web.LoadHtml(readContents);
             //Similar to aliases, if chapters definition exists, load it. Otherwise, attempt to build it from the book
             string chapterFile = Environment.CurrentDirectory + @"\ext\" + asin + ".chapters";
-            if (File.Exists(chapterFile))
+            if (File.Exists(chapterFile) && (!Properties.Settings.Default.overwrite))
             {
                 if (LoadChapters())
                     main.Log(
@@ -937,7 +962,8 @@ namespace XRayBuilderGUI
         {
             if (!Directory.Exists(Environment.CurrentDirectory + @"\ext\"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\ext\");
-            string splitName = "";
+
+            //Try to remove common titles from aliases
             using (var streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8))
             {
                 foreach (var c in Terms)
@@ -945,18 +971,41 @@ namespace XRayBuilderGUI
                     {
                         if (Properties.Settings.Default.splitAliases)
                         {
-                            if (!c.TermName.Contains(" "))
-                                splitName = "";
+                            string splitName = "";
+                            string titleTrimmed = "";
+                            string[] words;
+                            List<string> aliasList = new List<string>();
+
+                            Match match = Regex.Match(c.TermName, (
+                                @"( ?(" + string.Join("|", CommonTitles) + ")\\. ?)|([A-Z]\\. ?)")
+                                , RegexOptions.IgnoreCase);
+                            if (match.Success)
+                            {
+                                titleTrimmed = c.TermName.Replace(match.Value, String.Empty);
+                                aliasList.Add(titleTrimmed);
+                            }
                             else
-                                splitName = c.TermName.Replace(" ", ",")
-                                    .Replace("(", "")
-                                    .Replace(")", "");
-                            streamWriter.WriteLine(c.TermName + "|" + splitName);
+                                titleTrimmed = c.TermName;
+                            if (titleTrimmed.Contains(" "))
+                            {
+                                words = titleTrimmed.Split(' ');
+                                foreach (string word in words)
+                                {
+                                    aliasList.Add(word);
+                                }
+                            }
+                            if (aliasList.Count > 0)
+                            {
+                                aliasList.Sort((a, b) => b.Length.CompareTo(a.Length));
+                                foreach (string word in aliasList)
+                                {
+                                    splitName += word + ",";
+                                }
+                                streamWriter.WriteLine(c.TermName + "|" + splitName.Substring(0, splitName.LastIndexOf(",")));
+                            }
+                            else
+                                streamWriter.WriteLine(c.TermName + "|");
                         }
-                    }
-                    else
-                    {
-                        streamWriter.WriteLine(c.TermName + "|");
                     }
             }
         }

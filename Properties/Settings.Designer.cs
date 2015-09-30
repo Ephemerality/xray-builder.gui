@@ -133,7 +133,7 @@ namespace XRayBuilderGUI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool useNewVersion {
             get {
                 return ((bool)(this["useNewVersion"]));
@@ -284,6 +284,18 @@ namespace XRayBuilderGUI.Properties {
             }
             set {
                 this["splitAliases"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool playSound {
+            get {
+                return ((bool)(this["playSound"]));
+            }
+            set {
+                this["playSound"] = value;
             }
         }
     }

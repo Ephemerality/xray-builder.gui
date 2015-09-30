@@ -285,7 +285,7 @@ namespace XRayBuilderGUI
                 string previousBookInTheSeries = previousInSeries.ToExtraJSON("featuredRecommendation");
 
                 dataTemplate = @"""data"":{{{0},{1},{2},{3},""bookDescription"":{4},{5},{6},""currentBook"":{7},{8},""previousBookInTheSeries"":{9},{10}}}";
-                dataTemplate = string.Format(dataTemplate, seriesPosition, welcomeTextTemplate, popularHighlights,
+                dataTemplate = String.Format(dataTemplate, seriesPosition, welcomeTextTemplate, popularHighlights,
                 grokShelfInfo, currentBook, authors, authorRecs, currentBook, readingTime, previousBookInTheSeries, readingPages);
             }
 
@@ -293,11 +293,11 @@ namespace XRayBuilderGUI
             if (previousInSeries == null)
             {
                 dataTemplate = @"""data"":{{{0},{1},{2},{3},""bookDescription"":{4},{5},{6},""currentBook"":{7},{8},{9}}}";
-                dataTemplate = string.Format(dataTemplate, seriesPosition, welcomeTextTemplate, popularHighlights,
+                dataTemplate = String.Format(dataTemplate, seriesPosition, welcomeTextTemplate, popularHighlights,
                 grokShelfInfo, currentBook, authors, authorRecs, currentBook, readingTime, readingPages);
             }
 
-            finalOutput = string.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
+            finalOutput = String.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
 
             using (StreamWriter streamWriter = new StreamWriter(SaPath, false))//, Encoding.UTF8))
             {

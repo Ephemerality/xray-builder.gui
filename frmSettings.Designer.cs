@@ -62,15 +62,18 @@
             this.lblVersion = new System.Windows.Forms.Label();
             this.btnClearLogs = new System.Windows.Forms.Button();
             this.btnHelp = new System.Windows.Forms.Button();
+            this.gbGeneral = new System.Windows.Forms.GroupBox();
+            this.chkSound = new System.Windows.Forms.CheckBox();
             this.gbDirectories.SuspendLayout();
             this.gbXray.SuspendLayout();
             this.gbDetails.SuspendLayout();
             this.gbSite.SuspendLayout();
+            this.gbGeneral.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(422, 327);
+            this.btnSave.Location = new System.Drawing.Point(422, 384);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(110, 30);
             this.btnSave.TabIndex = 0;
@@ -241,7 +244,7 @@
             this.gbXray.Controls.Add(this.chkAndroid);
             this.gbXray.Controls.Add(this.lblOffset);
             this.gbXray.Controls.Add(this.chkUseNew);
-            this.gbXray.Location = new System.Drawing.Point(12, 105);
+            this.gbXray.Location = new System.Drawing.Point(12, 164);
             this.gbXray.Name = "gbXray";
             this.gbXray.Size = new System.Drawing.Size(520, 122);
             this.gbXray.TabIndex = 25;
@@ -304,7 +307,7 @@
             this.gbDetails.Controls.Add(this.txtReal);
             this.gbDetails.Controls.Add(this.txtPen);
             this.gbDetails.Controls.Add(this.lblPen);
-            this.gbDetails.Location = new System.Drawing.Point(12, 233);
+            this.gbDetails.Location = new System.Drawing.Point(12, 292);
             this.gbDetails.Name = "gbDetails";
             this.gbDetails.Size = new System.Drawing.Size(389, 86);
             this.gbDetails.TabIndex = 26;
@@ -373,7 +376,7 @@
             this.gbSite.Controls.Add(this.chkAmazonUSA);
             this.gbSite.Controls.Add(this.chkAmazonUK);
             this.gbSite.Enabled = false;
-            this.gbSite.Location = new System.Drawing.Point(411, 233);
+            this.gbSite.Location = new System.Drawing.Point(411, 292);
             this.gbSite.Name = "gbSite";
             this.gbSite.Size = new System.Drawing.Size(121, 86);
             this.gbSite.TabIndex = 27;
@@ -382,7 +385,7 @@
             // 
             // btnLogs
             // 
-            this.btnLogs.Location = new System.Drawing.Point(12, 327);
+            this.btnLogs.Location = new System.Drawing.Point(12, 384);
             this.btnLogs.Name = "btnLogs";
             this.btnLogs.Size = new System.Drawing.Size(110, 30);
             this.btnLogs.TabIndex = 30;
@@ -395,7 +398,7 @@
             this.lblVersion.AutoSize = true;
             this.lblVersion.Cursor = System.Windows.Forms.Cursors.Hand;
             this.lblVersion.ForeColor = System.Drawing.SystemColors.ControlDark;
-            this.lblVersion.Location = new System.Drawing.Point(281, 336);
+            this.lblVersion.Location = new System.Drawing.Point(281, 393);
             this.lblVersion.Name = "lblVersion";
             this.lblVersion.Size = new System.Drawing.Size(135, 13);
             this.lblVersion.TabIndex = 32;
@@ -404,7 +407,7 @@
             // 
             // btnClearLogs
             // 
-            this.btnClearLogs.Location = new System.Drawing.Point(128, 327);
+            this.btnClearLogs.Location = new System.Drawing.Point(128, 384);
             this.btnClearLogs.Name = "btnClearLogs";
             this.btnClearLogs.Size = new System.Drawing.Size(110, 30);
             this.btnClearLogs.TabIndex = 33;
@@ -414,7 +417,7 @@
             // 
             // btnHelp
             // 
-            this.btnHelp.Location = new System.Drawing.Point(244, 327);
+            this.btnHelp.Location = new System.Drawing.Point(244, 384);
             this.btnHelp.Name = "btnHelp";
             this.btnHelp.Size = new System.Drawing.Size(30, 30);
             this.btnHelp.TabIndex = 34;
@@ -422,11 +425,32 @@
             this.btnHelp.UseVisualStyleBackColor = true;
             this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
             // 
+            // gbGeneral
+            // 
+            this.gbGeneral.Controls.Add(this.chkSound);
+            this.gbGeneral.Location = new System.Drawing.Point(12, 105);
+            this.gbGeneral.Name = "gbGeneral";
+            this.gbGeneral.Size = new System.Drawing.Size(520, 53);
+            this.gbGeneral.TabIndex = 35;
+            this.gbGeneral.TabStop = false;
+            this.gbGeneral.Text = "General";
+            // 
+            // chkSound
+            // 
+            this.chkSound.AutoSize = true;
+            this.chkSound.Location = new System.Drawing.Point(9, 26);
+            this.chkSound.Name = "chkSound";
+            this.chkSound.Size = new System.Drawing.Size(216, 17);
+            this.chkSound.TabIndex = 30;
+            this.chkSound.Text = "Play a sound when a process completes";
+            this.chkSound.UseVisualStyleBackColor = true;
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(544, 369);
+            this.ClientSize = new System.Drawing.Size(544, 426);
+            this.Controls.Add(this.gbGeneral);
             this.Controls.Add(this.btnHelp);
             this.Controls.Add(this.btnClearLogs);
             this.Controls.Add(this.lblVersion);
@@ -454,6 +478,8 @@
             this.gbDetails.PerformLayout();
             this.gbSite.ResumeLayout(false);
             this.gbSite.PerformLayout();
+            this.gbGeneral.ResumeLayout(false);
+            this.gbGeneral.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -495,5 +521,7 @@
         private System.Windows.Forms.CheckBox chkSaveHtml;
         private System.Windows.Forms.Button btnHelp;
         private System.Windows.Forms.CheckBox chkSplitAliases;
+        private System.Windows.Forms.GroupBox gbGeneral;
+        private System.Windows.Forms.CheckBox chkSound;
     }
 }

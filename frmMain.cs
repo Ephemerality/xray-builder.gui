@@ -18,7 +18,7 @@ namespace XRayBuilderGUI
         public bool CheckTimestamp = false;
 
         private string currentLog = Environment.CurrentDirectory + @"\log\" +
-                                    string.Format("{0:dd.MM.yyyy.H.mm.ss}.txt", DateTime.Now);
+                                    String.Format("{0:dd.MM.yyyy.H.mm.ss}.txt", DateTime.Now);
 
         private Properties.Settings settings = Properties.Settings.Default;
 
@@ -303,8 +303,11 @@ namespace XRayBuilderGUI
                     streamWriter.Write(ss.ToString());
                 }
             }
-            System.Media.SoundPlayer player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
-            player.Play();
+            if (Properties.Settings.Default.playSound)
+            {
+                System.Media.SoundPlayer player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
+                player.Play();
+            }
 
             Log("X-Ray file created successfully!\r\nSaved to " + _newPath);
 
@@ -524,8 +527,12 @@ namespace XRayBuilderGUI
                     ea.GenerateOld();
                 }
 
-                System.Media.SoundPlayer player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
-                player.Play();
+                if (Properties.Settings.Default.playSound)
+                {
+                    System.Media.SoundPlayer player =
+                        new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
+                    player.Play();
+                }
 
                 previewClear();
 
@@ -580,20 +587,20 @@ namespace XRayBuilderGUI
                 }
 
                 // StartActions preview
-                frmSA.lblBookTitle.Text = string.Format("{0} ({1} Book {2})", ea.curBook.title, ea.curBook.seriesName,
+                frmSA.lblBookTitle.Text = String.Format("{0} ({1} Book {2})", ea.curBook.title, ea.curBook.seriesName,
                     ea.curBook.seriesPosition);
                 frmSA.lblBookAuthor.Text = ea.curBook.author;
                 //Convert rating to equivalent Star image
-                string starNum = string.Format("STAR{0}",
+                string starNum = String.Format("STAR{0}",
                     Math.Floor(ea.curBook.amazonRating).ToString());
                 //Return an object from the image chan1.png in the project
                 object O = Properties.Resources.ResourceManager.GetObject(starNum);
                 //Set the Image property of channelPic to the returned object as Image
                 frmSA.pbRating.Image = (Image)O;
                 frmSA.lblBookDesc.Text = ea.curBook.desc;
-                frmSA.lblRead.Text = string.Format("{0} hours and {1} minutes", ea.curBook.readingHours, ea.curBook.readingMinutes);
-                frmSA.lblPages.Text = string.Format("{0} pages", ea.curBook.pagesInBook);
-                frmSA.lblSeries.Text = string.Format("This is book {0} of {1} in {2}"
+                frmSA.lblRead.Text = String.Format("{0} hours and {1} minutes", ea.curBook.readingHours, ea.curBook.readingMinutes);
+                frmSA.lblPages.Text = String.Format("{0} pages", ea.curBook.pagesInBook);
+                frmSA.lblSeries.Text = String.Format("This is book {0} of {1} in {2}"
                     , ea.curBook.seriesPosition, ea.curBook.totalInSeries, ea.curBook.seriesName);
                 frmSA.pbAuthorImage.Image = ap.ApAuthorImage;
                 frmSA.lblAboutAuthor.Text = ea.curBook.author;

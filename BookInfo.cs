@@ -54,22 +54,25 @@ namespace XRayBuilderGUI
 
         public string ToJSON(string nClass, bool includeDescRatings)
         {
-            string template = string.Format(@"{{""class"":""{0}"",""asin"":""{1}"",""title"":""{2}"",""authors"":[""{3}""],""imageUrl"":""{4}"",""hasSample"":false",
+            string template = String.Format(@"{{""class"":""{0}"",""asin"":""{1}"",""title"":""{2}"",""authors"":[""{3}""],""imageUrl"":""{4}"",""hasSample"":false",
                                             nClass, asin, title, author, bookImageUrl);
             if (includeDescRatings)
-                template += string.Format(@",""description"":""{0}"",""amazonRating"":{1},""numberOfReviews"":{2}", desc, amazonRating, numReviews);
+                template += String.Format(@",""description"":""{0}"",""amazonRating"":{1},""numberOfReviews"":{2}", desc, amazonRating, numReviews);
             template += "}";
             return template;
         }
 
         public string ToExtraJSON(string nClass)
         {
-            string template = string.Format(@"{{""class"":""{0}"",""asin"":""{1}"",""title"":""{2}"",""description"":""{3}"",""authors"":[""{4}""],""imageUrl"":""{5}"",""hasSample"":false,""amazonRating"":{6},""numberOfReviews"":{7}}}",
+            string template = String.Format(@"{{""class"":""{0}"",""asin"":""{1}"",""title"":""{2}"",""description"":""{3}"",""authors"":[""{4}""],""imageUrl"":""{5}"",""hasSample"":false,""amazonRating"":{6},""numberOfReviews"":{7}}}",
                 nClass, asin, title, desc, author, bookImageUrl, amazonRating, numReviews);
             return template;
         }
 
-        // Retrieves the book's description, image URL, and rating from the book's Amazon URL.
+        /// <summary>
+        /// Retrieves the book's description, image URL, and rating from the book's Amazon URL.
+        /// </summary>
+        /// <param name="amazonUrl">Book's Amazon URL</param>
         public void GetAmazonInfo(string amazonUrl)
         {
             if (amazonUrl == "") return;
@@ -78,7 +81,10 @@ namespace XRayBuilderGUI
             GetAmazonInfo(bookDoc);
         }
 
-        // Retrieves the book's description, image URL, and rating from the book's Amazon page.
+        /// <summary>
+        /// Retrieves the book's description, image URL, and rating from the book's Amazon page.
+        /// </summary>
+        /// <param name="bookDoc">Book's Amazon page, pre-downloaded</param>
         public void GetAmazonInfo(HtmlDocument bookDoc)
         {
             if (bookImageUrl == "")
@@ -104,7 +110,7 @@ namespace XRayBuilderGUI
                         Enumerable.Repeat(chars, 11)
                             .Select(s => s[random.Next(s.Length)])
                             .ToArray());
-                    bookImageUrl = string.Format("http://ecx.images-amazon.com/images/I/{0}.jpg",
+                    bookImageUrl = String.Format("http://ecx.images-amazon.com/images/I/{0}.jpg",
                         Uri.EscapeDataString(result));
                 }
             }

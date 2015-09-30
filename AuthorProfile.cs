@@ -93,12 +93,12 @@ namespace XRayBuilderGUI
                 try
                 {
                     File.WriteAllText(Environment.CurrentDirectory +
-                                      string.Format(@"\dmp\{0}.authorsearchHtml.txt", curBook.asin),
+                                      String.Format(@"\dmp\{0}.authorsearchHtml.txt", curBook.asin),
                         authorHtmlDoc.DocumentNode.InnerHtml);
                 }
                 catch (Exception ex)
                 {
-                    main.Log(string.Format("An error ocurred saving authorsearchHtml.txt: {0}", ex.Message));
+                    main.Log(String.Format("An error ocurred saving authorsearchHtml.txt: {0}", ex.Message));
                     return;
                 }
             }
@@ -131,7 +131,7 @@ namespace XRayBuilderGUI
                                               "%2Cp_n_feature_browse-bin%3A618073011&bbn=283155&ie=UTF8&qid=1432378570&rnid=618072011";
 
             main.Log("Author page found on Amazon!");
-            main.Log(string.Format("Author's Amazon Page URL: {0}", authorAmazonWebsiteLocationLog));
+            main.Log(String.Format("Author's Amazon Page URL: {0}", authorAmazonWebsiteLocationLog));
 
             // Load Author's Amazon page
             string authorpageHtml = HttpDownloader.GetPageHtml(authorAmazonWebsiteLocation);
@@ -142,12 +142,12 @@ namespace XRayBuilderGUI
                 try
                 {
                     File.WriteAllText(Environment.CurrentDirectory +
-                                      string.Format(@"\dmp\{0}.authorpageHtml.txt", curBook.asin),
+                                      String.Format(@"\dmp\{0}.authorpageHtml.txt", curBook.asin),
                         authorHtmlDoc.DocumentNode.InnerHtml);
                 }
                 catch (Exception ex)
                 {
-                    main.Log(string.Format("An error ocurred saving authorpageHtml.txt: {0}", ex.Message));
+                    main.Log(String.Format("An error ocurred saving authorpageHtml.txt: {0}", ex.Message));
                     return;
                 }
             }
@@ -192,7 +192,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                main.Log(string.Format("Failed to download Author image: {0}", ex.Message));
+                main.Log(String.Format("Failed to download Author image: {0}", ex.Message));
                 return;
             }
 
@@ -296,7 +296,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    main.Log(string.Format("{0}\r\nURL: {1}\r\nBook: {2}\r\nContinuing anyway...", ex.Message, book.amazonUrl, book.title));
+                    main.Log(String.Format("{0}\r\nURL: {1}\r\nBook: {2}\r\nContinuing anyway...", ex.Message, book.amazonUrl, book.title));
                 }
             }
 
@@ -306,7 +306,7 @@ namespace XRayBuilderGUI
             List<string> authorsOtherBookList = new List<string>();
             foreach (BookInfo bk in otherBooks)
             {
-                authorsOtherBookList.Add(string.Format(@"{{""e"":1,""a"":""{0}"",""t"":""{1}""}}",
+                authorsOtherBookList.Add(String.Format(@"{{""e"":1,""a"":""{0}"",""t"":""{1}""}}",
                     bk.asin, bk.title));
             }
 
@@ -318,7 +318,7 @@ namespace XRayBuilderGUI
                                           string.Join(@""",""", otherBooks.Select(book => book.asin).ToArray()) + @"""],""n"":""" +
                                           curBook.author + @""",""a"":""" + authorAsin + @""",""b"":""" + BioTrimmed +
                                           @""",""i"":""" + base64ImageString + @"""}],""a"":""" +
-                                          string.Format(@"{0}"",""d"":{1},""o"":[", curBook.asin, unixTimestamp) +
+                                          String.Format(@"{0}"",""d"":{1},""o"":[", curBook.asin, unixTimestamp) +
                                           string.Join(",", authorsOtherBookList.ToArray()) + "]}";
                 File.WriteAllText(ApPath, authorProfileOutput);
                 main.btnPreview.Enabled = true;
@@ -362,7 +362,7 @@ namespace XRayBuilderGUI
         public string ToJSON()
         {
             string template = @"{{""class"":""authorBio"",""asin"":""{0}"",""name"":""{1}"",""bio"":""{2}"",""imageUrl"":""{3}""}}";
-            return string.Format(template, authorAsin, curBook.author, BioTrimmed, authorImageUrl);
+            return String.Format(template, authorAsin, curBook.author, BioTrimmed, authorImageUrl);
         }
     }
 }

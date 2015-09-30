@@ -179,11 +179,11 @@ namespace XRayBuilderGUI
 
             // Added author name to log output
             Log(
-                string.Format(
+                String.Format(
                     "Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
                     results[2], results[0], results[4], results[5], results[1]));
 
-            Log(string.Format("Attempting to build X-Ray...\r\nSpoilers: {0}",
+            Log(String.Format("Attempting to build X-Ray...\r\nSpoilers: {0}",
                 settings.spoilers ? "Enabled" : "Disabled"));
             Log("Offset: " + settings.offset.ToString());
 
@@ -325,8 +325,8 @@ namespace XRayBuilderGUI
                 }
             }
             frmXR.lblBookTitle.Text = results[5];
-            frmXR.lblXrayTermsAll.Text = string.Format("All {0}", ss.Terms.Count);
-            frmXR.lblXrayTermsRest.Text = string.Format("|  People {0}  |  Terms {1}",
+            frmXR.lblXrayTermsAll.Text = String.Format("All {0}", ss.Terms.Count);
+            frmXR.lblXrayTermsRest.Text = String.Format("|  People {0}  |  Terms {1}",
                 ss.Terms.Count(t => t.Type.Equals("character")),
                 ss.Terms.Count(t => t.Type.Equals("topic")));
             if (ss.Terms.Count != 0)
@@ -383,7 +383,7 @@ namespace XRayBuilderGUI
                     }
                 }
             }
-            frmXRN.lblTitle.Text = string.Format("X-Ray — {0}", results[5]);
+            frmXRN.lblTitle.Text = String.Format("X-Ray — {0}", results[5]);
             if (ss.Terms.Count != 0)
             {
                 var numberOfLabels = 0;
@@ -496,7 +496,7 @@ namespace XRayBuilderGUI
             }
 
             // Added author name to log output
-            Log(string.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
+            Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
                             results[2], results[0], results[4], results[5], results[1]));
             try
             {
@@ -560,7 +560,7 @@ namespace XRayBuilderGUI
                             contrl.Text = ap.otherBooks[i].title;
                     }
                 }
-                frmEA.lblPost.Text = string.Format("Post on Amazon (as {0}) and Goodreads",
+                frmEA.lblPost.Text = String.Format("Post on Amazon (as {0}) and Goodreads",
                     Properties.Settings.Default.penName);
                 frmEA.lblMoreBooks.Text = ap.EaSubTitle;
                 for (var i = 0; i < Math.Min(ap.otherBooks.Count, 5); i++)
@@ -691,7 +691,7 @@ namespace XRayBuilderGUI
                 File.Copy(results[3], Path.Combine(settings.outDir, Path.GetFileName(results[3])), true);
             }
             // Added author name to log output
-            Log(string.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
+            Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
                 results[2], results[0], results[4], results[5], results[1]));
             
             //Get Shelfari Search URL
@@ -713,7 +713,7 @@ namespace XRayBuilderGUI
                     {
                         Log("Searching for " + bindingTypes[i] + " edition...");
                         // Insert parameters (mainly for searching with removed diacritics). Seems to work fine without replacing spaces?
-                        shelfariHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(string.Format(shelfariSearchUrlBase, results[4], results[5], bindingTypes[i])));
+                        shelfariHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(String.Format(shelfariSearchUrlBase, results[4], results[5], bindingTypes[i])));
                         if (!shelfariHtmlDoc.DocumentNode.InnerText.Contains("Your search did not return any results"))
                         {
                             shelfariBookUrl = FindShelfariURL(shelfariHtmlDoc, results[4], results[5]);
@@ -753,7 +753,7 @@ namespace XRayBuilderGUI
 
                 txtShelfari.Text = shelfariBookUrl;
                 txtShelfari.Refresh();
-                Log(string.Format("Shelfari URL updated: {0}\r\nYou may want to visit the URL to ensure it is correct and add/modify terms if necessary.", shelfariBookUrl));
+                Log(String.Format("Shelfari URL updated: {0}\r\nYou may want to visit the URL to ensure it is correct and add/modify terms if necessary.", shelfariBookUrl));
             }
             else
             {

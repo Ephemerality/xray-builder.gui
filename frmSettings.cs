@@ -46,6 +46,7 @@ namespace XRayBuilderGUI
             chkOverwrite.Checked = Properties.Settings.Default.overwrite;
             chkSaveHtml.Checked = Properties.Settings.Default.saveHtml;
             chkSplitAliases.Checked = Properties.Settings.Default.splitAliases;
+            chkSound.Checked = Properties.Settings.Default.playSound;
 
             // Added \r\n to show smaller tooltips
             ToolTip toolTip1 = new ToolTip();
@@ -90,6 +91,9 @@ namespace XRayBuilderGUI
                 "into aliases. This can have undesired\r\n" +
                 "consequences, so use with caution!!!");
             toolTip1.SetToolTip(btnHelp, "View the included help documentation.");
+            toolTip1.SetToolTip(chkSound, "Play a sound after finished generating\r\n" +
+                                        "Author Profile, End Action and Start Action\r\n" +
+                                        "files, or after generating X-Ray file.");
         }
 
         private void btnBrowseUnpack_Click(object sender, EventArgs e)
@@ -132,6 +136,7 @@ namespace XRayBuilderGUI
             Properties.Settings.Default.overwrite = chkOverwrite.Checked;
             Properties.Settings.Default.saveHtml = chkSaveHtml.Checked;
             Properties.Settings.Default.splitAliases = chkSplitAliases.Checked;
+            Properties.Settings.Default.playSound = chkSound.Checked;
             Properties.Settings.Default.Save();
 
             this.Close();

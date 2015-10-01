@@ -18,7 +18,7 @@ namespace XRayBuilderGUI
         public bool CheckTimestamp = false;
 
         private string currentLog = Environment.CurrentDirectory + @"\log\" +
-                                    string.Format("{0:dd.MM.yyyy.H.mm.ss}.txt", DateTime.Now);
+                                    String.Format("{0:dd.MM.yyyy.H.mm.ss}.txt", DateTime.Now);
 
         private Properties.Settings settings = Properties.Settings.Default;
 
@@ -275,8 +275,11 @@ namespace XRayBuilderGUI
                     streamWriter.Write(xray.ToString());
                 }
             }
-            System.Media.SoundPlayer player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
-            player.Play();
+            if (Properties.Settings.Default.playSound)
+            {
+                System.Media.SoundPlayer player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
+                player.Play();
+            }
 
             Log("X-Ray file created successfully!\r\nSaved to " + _newPath);
 
@@ -444,8 +447,12 @@ namespace XRayBuilderGUI
                 else
                     ea.GenerateOld();
 
-                System.Media.SoundPlayer player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
-                player.Play();
+                if (Properties.Settings.Default.playSound)
+                {
+                    System.Media.SoundPlayer player =
+                        new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
+                    player.Play();
+                }
 
                 try
                 {

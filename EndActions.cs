@@ -280,7 +280,7 @@ namespace XRayBuilderGUI
             dataTemplate = string.Format(dataTemplate, seriesPosition, welcomeTextTemplate, popularHighlights,
             grokShelfInfo, currentBook, authors, authorRecs, currentBook, readingTime, previousBookInSeries, readingPages);
 
-            finalOutput = string.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
+            finalOutput = String.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
 
             using (StreamWriter streamWriter = new StreamWriter(SaPath, false))//, Encoding.UTF8))
             {

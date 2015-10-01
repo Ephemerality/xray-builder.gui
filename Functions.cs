@@ -17,8 +17,7 @@ namespace XRayBuilderGUI
 {
     public static class Functions
     {
-        private static readonly HashSet<char> badChars =
-            new HashSet<char> { '!', '@', '#', '$', '%', '_', '"' };
+        private static readonly HashSet<char> badChars = new HashSet<char> { '!', '@', '#', '$', '%', '_', '"' };
 
         //http://www.levibotelho.com/development/c-remove-diacritics-accents-from-a-string/
         public static string RemoveDiacritics(this string text)

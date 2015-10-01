@@ -31,7 +31,8 @@ namespace XRayBuilderGUI
         public string pagesInBook = "";
         public string popularHighlights = "";
         public string popularPassages = "";
-        public string previousBook = "";
+        public BookInfo nextInSeries = null;
+        public BookInfo previousInSeries = null;
 
         public BookInfo(string title, string author, string asin, string guid, string databasename, string path, string sidecarName, string shelfariUrl)
         {
@@ -134,9 +135,9 @@ namespace XRayBuilderGUI
                             desc = desc.Substring(0, lastPunc + 1);
                         else
                             desc = desc.Substring(0, lastSpace) + '\u2026';
-                        //Clean up desc the same as biography was... not all of these may be needed?
-                        Functions.CleanString(desc);
                     }
+                    desc = System.Net.WebUtility.HtmlDecode(desc);
+                    desc = desc.CleanString();
                 }
             }
             if (numReviews == 0)

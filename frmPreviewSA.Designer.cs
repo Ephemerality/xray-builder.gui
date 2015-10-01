@@ -106,8 +106,8 @@
             this.lblBookDesc.Name = "lblBookDesc";
             this.lblBookDesc.Size = new System.Drawing.Size(246, 40);
             this.lblBookDesc.TabIndex = 92;
-            this.lblBookDesc.Text = "This information will be updated as soon as the Start Action file has been create" +
-    "d for this book...";
+            this.lblBookDesc.Text = "This information will be updated as soon as the Start Actions file has been creat" +
+    "ed for this book...";
             // 
             // label3
             // 
@@ -142,8 +142,8 @@
             this.lblAuthorBio.Name = "lblAuthorBio";
             this.lblAuthorBio.Size = new System.Drawing.Size(210, 54);
             this.lblAuthorBio.TabIndex = 96;
-            this.lblAuthorBio.Text = "This information will be updated as soon as the Start Action file has been create" +
-    "d for this book...";
+            this.lblAuthorBio.Text = "This information will be updated as soon as the Start Actions file has been creat" +
+    "ed for this book...";
             // 
             // lblPages
             // 
@@ -273,7 +273,7 @@
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Start Action Preview";
+            this.Text = "Start Actions Preview";
             ((System.ComponentModel.ISupportInitialize)(this.pbRating)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbBackground)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbAuthorImage)).EndInit();

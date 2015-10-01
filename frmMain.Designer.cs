@@ -222,7 +222,7 @@
             this.tmiEndAction.Enabled = false;
             this.tmiEndAction.Name = "tmiEndAction";
             this.tmiEndAction.Size = new System.Drawing.Size(114, 22);
-            this.tmiEndAction.Text = "End Action";
+            this.tmiEndAction.Text = "End Actions";
             this.tmiEndAction.Click += new System.EventHandler(this.tmiEndAction_Click);
             // 
             // tmiXray
@@ -240,7 +240,7 @@
             this.tmiStartAction.Enabled = false;
             this.tmiStartAction.Name = "tmiStartAction";
             this.tmiStartAction.Size = new System.Drawing.Size(114, 22);
-            this.tmiStartAction.Text = "Start Action";
+            this.tmiStartAction.Text = "Start Actions";
             this.tmiStartAction.Click += new System.EventHandler(this.tmiStartAction_Click);
             // 
             // prgBar

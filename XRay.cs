@@ -229,7 +229,7 @@ namespace XRayBuilderGUI
                 aliasFile = Environment.CurrentDirectory + @"\ext\" + asin + ".aliases";
             else
                 aliasFile = aliaspath;
-            if (!File.Exists(aliasFile)||(Properties.Settings.Default.overwrite))
+            if (!File.Exists(aliasFile) || Properties.Settings.Default.overwrite)
             {
                 SaveCharacters(aliasFile);
                 main.Log(String.Format("Characters exported to {0} for adding aliases.", aliasFile));
@@ -285,18 +285,12 @@ namespace XRayBuilderGUI
             web.LoadHtml(readContents);
             //Similar to aliases, if chapters definition exists, load it. Otherwise, attempt to build it from the book
             string chapterFile = Environment.CurrentDirectory + @"\ext\" + asin + ".chapters";
-            if (File.Exists(chapterFile) && (!Properties.Settings.Default.overwrite))
+            if (File.Exists(chapterFile) && !Properties.Settings.Default.overwrite)
             {
                 if (LoadChapters())
-                    main.Log(
-                        String.Format(
-                            "Chapters read from {0}.\r\nDelete this file if you want chapters built automatically.",
-                            chapterFile));
+                    main.Log(String.Format("Chapters read from {0}.\r\nDelete this file if you want chapters built automatically.", chapterFile));
                 else
-                    main.Log(
-                        String.Format(
-                            "Failed to read chapters from {0}.\r\nFile is missing or not formatted correctly.",
-                            chapterFile));
+                    main.Log(String.Format("Failed to read chapters from {0}.\r\nFile is missing or not formatted correctly.", chapterFile));
             }
             else
             {
@@ -403,11 +397,8 @@ namespace XRayBuilderGUI
                     //If soft hyphen ignoring is turned on, also search hyphen-less text.
                     List<string> search = character.Aliases.ToList<string>();
                     search.Insert(0, character.TermName);
-                    if ((character.MatchCase &&
-                         (search.Any(node.InnerText.Contains) || search.Any(node.InnerHtml.Contains)))
-                        ||
-                        (!character.MatchCase &&
-                         (search.Any(node.InnerText.ContainsIgnorecase) || search.Any(node.InnerHtml.ContainsIgnorecase)))
+                    if ((character.MatchCase && (search.Any(node.InnerText.Contains) || search.Any(node.InnerHtml.Contains)))
+                        || (!character.MatchCase && (search.Any(node.InnerText.ContainsIgnorecase) || search.Any(node.InnerHtml.ContainsIgnorecase)))
                         || (ignoreSoftHypen && (character.MatchCase && search.Any(noSoftHypen.Contains))
                             || (!character.MatchCase && search.Any(noSoftHypen.ContainsIgnorecase))))
                     {
@@ -416,8 +407,7 @@ namespace XRayBuilderGUI
                         //Search html for the matching term out of all aliases
                         foreach (string s in search)
                         {
-                            int index = node.InnerHtml.IndexOf(s,
-                                character.MatchCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
+                            int index = node.InnerHtml.IndexOf(s, character.MatchCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
                             if (index >= 0)
                             {
                                 locHighlight = index;
@@ -1003,9 +993,9 @@ namespace XRayBuilderGUI
                                 }
                                 streamWriter.WriteLine(c.TermName + "|" + splitName.Substring(0, splitName.LastIndexOf(",")));
                             }
-                            else
-                                streamWriter.WriteLine(c.TermName + "|");
                         }
+                        else
+                            streamWriter.WriteLine(c.TermName + "|");
                     }
             }
         }

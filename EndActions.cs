@@ -101,6 +101,12 @@ namespace XRayBuilderGUI
                             nodeTitleCheck = nodeTitle.InnerText.CleanString();
                         }
                         cleanAuthor = item.SelectSingleNode(".//div/div").InnerText.CleanString();
+                        Match match = Regex.Match(nodeTitleCheck, "SERIES READING ORDER", RegexOptions.IgnoreCase);
+                        if (match.Success)
+                        {
+                            nodeTitleCheck = "";
+                            continue;
+                        }
                         BookInfo newBook = new BookInfo(nodeTitleCheck, cleanAuthor,
                             item.SelectSingleNode(".//div").GetAttributeValue("data-asin", ""));
                         try

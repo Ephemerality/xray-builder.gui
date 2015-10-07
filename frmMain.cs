@@ -517,13 +517,21 @@ namespace XRayBuilderGUI
             }
 
             // StartActions preview
-            frmSA.lblBookTitle.Text = string.Format("{0} ({1} Book {2})", ea.curBook.title, ea.curBook.seriesName,
-                ea.curBook.seriesPosition);
+            if (ea.curBook.seriesName == "")
+            {
+                frmSA.lblBookTitle.Text = ea.curBook.title;
+            }
+            else
+            {
+                frmSA.lblBookTitle.Text = string.Format("{0} ({1} Book {2})", ea.curBook.title, ea.curBook.seriesName,
+                    ea.curBook.seriesPosition);
+            }
             frmSA.lblBookAuthor.Text = ea.curBook.author;
             //Convert rating to equivalent Star image
             string starNum = string.Format("STAR{0}",
                 Math.Floor(ea.curBook.amazonRating).ToString());
-            //Return an object from the image chan1.png in the project, set the Image property of channelPic to the returned object as Image
+            //Return an object from the star image in the project,
+            //set the Image property of pbRating to the returned object as Image
             frmSA.pbRating.Image = (Image)Properties.Resources.ResourceManager.GetObject(starNum);
             frmSA.lblBookDesc.Text = ea.curBook.desc;
             frmSA.lblRead.Text = string.Format("{0} hours and {1} minutes", ea.curBook.readingHours, ea.curBook.readingMinutes);

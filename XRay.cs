@@ -966,22 +966,29 @@ namespace XRayBuilderGUI
                             string[] words;
                             List<string> aliasList = new List<string>();
 
-                            Match match = Regex.Match(c.TermName, (
-                                @"( ?(" + string.Join("|", CommonTitles) + ")\\. ?)|([A-Z]\\. ?)")
-                                , RegexOptions.IgnoreCase);
-                            if (match.Success)
+                            string pattern = @"( ?(" + string.Join("|", CommonTitles) + ")\\. ?)|([A-Z]\\. ?)|(\\\\\")";
+
+                            Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
+                            Match matchCheck = Regex.Match(c.TermName, pattern , RegexOptions.IgnoreCase);
+                            if (matchCheck.Success)
                             {
-                                titleTrimmed = c.TermName.Replace(match.Value, String.Empty);
+                                titleTrimmed = c.TermName;
+                                foreach (Match match in regex.Matches(titleTrimmed))
+                                {
+                                    titleTrimmed = titleTrimmed.Replace(match.Value, String.Empty);
+                                }
                                 aliasList.Add(titleTrimmed);
                             }
                             else
                                 titleTrimmed = c.TermName;
+
                             if (titleTrimmed.Contains(" "))
                             {
                                 words = titleTrimmed.Split(' ');
                                 foreach (string word in words)
                                 {
-                                    aliasList.Add(word);
+                                    //if (!aliasList.Contains(word))
+                                        aliasList.Add(word);
                                 }
                             }
                             if (aliasList.Count > 0)

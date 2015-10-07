@@ -268,6 +268,11 @@ namespace XRayBuilderGUI
                 if (!result.Id.StartsWith("result_")) continue;
                 string name, url, asin = "";
                 HtmlNode otherBook = result.SelectSingleNode(".//div/h3/a/@href");
+                Match match = Regex.Match(otherBook.InnerText, "German Edition", RegexOptions.IgnoreCase);
+                if (match.Success)
+                {
+                    continue;
+                }
                 name = otherBook.InnerText;
                 url = otherBook.GetAttributeValue("href", "");
                 otherBook = result.SelectSingleNode(".//*[@class='tpType']");

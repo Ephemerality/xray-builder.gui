@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -422,10 +423,10 @@ namespace XRayBuilderGUI
             if (node1 == null)
                 return "";
             //Parse page count and multiply by average reading time
-            Match match1 = Regex.Match(node1.InnerText, @"Page Count: (\d+)");
+            Match match1 = Regex.Match(node1.InnerText, @"Page Count: ((\d+)|(\d+,\d+))");
             if (match1.Success)
             {
-                double minutes = int.Parse(match1.Groups[1].Value) * 1.2890625;
+                double minutes = int.Parse(match1.Groups[1].Value, NumberStyles.AllowThousands) * 1.2890625;
                 TimeSpan span = TimeSpan.FromMinutes(minutes);
                 main.Log(String.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)"
                     , span.Hours, span.Minutes, match1.Groups[1].Value));
@@ -439,14 +440,14 @@ namespace XRayBuilderGUI
             int highlights = 0;
             if (members != null)
             {
-                Match match3 = Regex.Match(members.InnerText, @"Reviews \((\d+)\)");
+                Match match3 = Regex.Match(members.InnerText, @"Reviews \(((\d+)|(\d+,\d+))\)");
                 if (match3.Success)
                     curBook.popularPassages = match3.Groups[1].Value.ToString();
-                match3 = Regex.Match(members.InnerText, @"Readers \((\d+)\)");
+                match3 = Regex.Match(members.InnerText, @"Readers \(((\d+)|(\d+,\d+))\)");
                 if (match3.Success)
                 {
                     curBook.popularHighlights = match3.Groups[1].Value.ToString();
-                    highlights = int.Parse(match3.Groups[1].Value);
+                    highlights = int.Parse(match3.Groups[1].Value, NumberStyles.AllowThousands);
                 }
                 main.Log(String.Format("Popular Highlights: {0} passages have been highlighted {1} times"
                             , curBook.popularPassages, curBook.popularHighlights));

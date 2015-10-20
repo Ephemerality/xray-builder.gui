@@ -89,16 +89,19 @@ namespace XRayBuilderGUI
                     sb.Append(s[i]);
             }
             string cleanedString = sb.ToString();
-            Regex.Replace(cleanedString, @"\t|\n|\r|\s+", string.Empty);
-            Regex.Replace(cleanedString, @"[^\u0000-\u007F]", string.Empty);
-            cleanedString.Replace("&quot;", "'");
-            cleanedString.Replace("<br>", string.Empty);
-            cleanedString.Replace("&#133;", "…");
-            cleanedString.Replace("&amp;#133;", "…");
-            cleanedString.Replace("&#169;", string.Empty);
-            cleanedString.Replace("&amp;#169;", string.Empty);
-            cleanedString.Replace("&#174;", string.Empty);
-            cleanedString.Replace("&amp;#174;", string.Empty);
+            //cleanedString = Regex.Replace(cleanedString, @"([\u0000-\u007F])", string.Empty);
+            cleanedString = Regex.Replace(cleanedString, @"(“)|(”)", "'");
+            cleanedString = cleanedString.Replace("\"", "'")
+                .Replace("<br>", string.Empty)
+                .Replace("&#133;", "…")
+                .Replace("&amp;#133;", "…")
+                .Replace("&#169;", string.Empty)
+                .Replace("&amp;#169;", string.Empty)
+                .Replace("&#174;", string.Empty)
+                .Replace("&amp;#174;", string.Empty);
+            cleanedString = Regex.Replace(cleanedString, @"\t|\n|\r|•", " ", RegexOptions.Multiline);
+            cleanedString = Regex.Replace(cleanedString, @"\s+", " ", RegexOptions.Multiline);
+            cleanedString = Regex.Replace(cleanedString, @"^ | $", string.Empty, RegexOptions.Multiline);
             return cleanedString.Trim();
         }
 
@@ -466,6 +469,13 @@ namespace XRayBuilderGUI
         public static BookInfo AmazonSearchBook(string title, string author)
         {
             BookInfo result = null;
+
+            Regex regex = new Regex(@"( [A-Z]\.)", RegexOptions.Compiled);
+            foreach (Match m in regex.Matches(author))
+            {
+                author = author.Replace(m.Value, m.Value.Trim());
+            }
+
             //http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Ddigital-text&field-keywords=In+Plain+Sight+C.+J.+Box
             string searchUrl = @"http://www.amazon.com/s/?url=search-alias%3Ddigital-text&field-keywords=" + 
                 Uri.EscapeDataString(title + " " + author);

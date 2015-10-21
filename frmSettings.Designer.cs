@@ -64,6 +64,7 @@
             this.btnHelp = new System.Windows.Forms.Button();
             this.gbGeneral = new System.Windows.Forms.GroupBox();
             this.chkSound = new System.Windows.Forms.CheckBox();
+            this.chkAliasChapters = new System.Windows.Forms.CheckBox();
             this.gbDirectories.SuspendLayout();
             this.gbXray.SuspendLayout();
             this.gbDetails.SuspendLayout();
@@ -231,6 +232,7 @@
             // 
             // gbXray
             // 
+            this.gbXray.Controls.Add(this.chkAliasChapters);
             this.gbXray.Controls.Add(this.chkSplitAliases);
             this.gbXray.Controls.Add(this.chkSaveHtml);
             this.gbXray.Controls.Add(this.chkOverwrite);
@@ -280,6 +282,7 @@
             this.chkOverwrite.TabIndex = 26;
             this.chkOverwrite.Text = "Overwrite existing files";
             this.chkOverwrite.UseVisualStyleBackColor = true;
+            this.chkOverwrite.CheckedChanged += new System.EventHandler(this.chkOverwrite_CheckedChanged);
             // 
             // chkUTF8
             // 
@@ -445,6 +448,16 @@
             this.chkSound.Text = "Play a sound when a process completes";
             this.chkSound.UseVisualStyleBackColor = true;
             // 
+            // chkAliasChapters
+            // 
+            this.chkAliasChapters.AutoSize = true;
+            this.chkAliasChapters.Location = new System.Drawing.Point(140, 49);
+            this.chkAliasChapters.Name = "chkAliasChapters";
+            this.chkAliasChapters.Size = new System.Drawing.Size(106, 17);
+            this.chkAliasChapters.TabIndex = 30;
+            this.chkAliasChapters.Text = "Aliases/Chapters";
+            this.chkAliasChapters.UseVisualStyleBackColor = true;
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -523,5 +536,6 @@
         private System.Windows.Forms.CheckBox chkSplitAliases;
         private System.Windows.Forms.GroupBox gbGeneral;
         private System.Windows.Forms.CheckBox chkSound;
+        private System.Windows.Forms.CheckBox chkAliasChapters;
     }
 }

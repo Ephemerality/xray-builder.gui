@@ -44,6 +44,7 @@ namespace XRayBuilderGUI
             if (txtUnpack.Text == "") txtUnpack.Text = "dist/kindleunpack.exe";
             chkAmazonUK.Checked = Properties.Settings.Default.amazonUk;
             chkOverwrite.Checked = Properties.Settings.Default.overwrite;
+            chkAliasChapters.Checked = Properties.Settings.Default.overwriteAliases;
             chkSaveHtml.Checked = Properties.Settings.Default.saveHtml;
             chkSplitAliases.Checked = Properties.Settings.Default.splitAliases;
             chkSound.Checked = Properties.Settings.Default.playSound;
@@ -80,11 +81,10 @@ namespace XRayBuilderGUI
                 "Search Amazon.co.uk first, use Amazon.com as fallback.\r\n(Amazon.com is used if Amazon.co.uk is not selected.)");
             toolTip1.SetToolTip(chkEnableEdit,
                 "Open Notepad to enable editing of detected Chapters\r\nand Aliases before final X-Ray creation.");
-            toolTip1.SetToolTip(chkSubDirectories, "Save generated files to an\r\n" +
-                                         "\"Author\\Filename\"\r\nsubdirectory.");
+            toolTip1.SetToolTip(chkSubDirectories, "Save generated files to an\r\n\"Author\\Filename\"\r\nsubdirectory.");
             toolTip1.SetToolTip(btnLogs, "Open the log files directory.");
-            toolTip1.SetToolTip(chkOverwrite,
-                "Overwrite exiting Author Profile and\r\nEnd Actions files, if they exist.\r\n(Includes alias and chapter files)");
+            toolTip1.SetToolTip(chkOverwrite, "Overwrite existing Author Profile and\r\nStart/End Actions files.");
+            toolTip1.SetToolTip(chkAliasChapters, "Overwrite existing alias and chapter files as well.");
             toolTip1.SetToolTip(chkSaveHtml, "Save parsed HTML files. This is generally used\r\n" +
                                          "for debugging and can be left unchecked.");
             toolTip1.SetToolTip(chkSplitAliases, "Automatically split character names\r\n" +
@@ -134,6 +134,7 @@ namespace XRayBuilderGUI
             Properties.Settings.Default.enableEdit = chkEnableEdit.Checked;
             Properties.Settings.Default.useSubDirectories = chkSubDirectories.Checked;
             Properties.Settings.Default.overwrite = chkOverwrite.Checked;
+            Properties.Settings.Default.overwriteAliases = chkAliasChapters.Checked;
             Properties.Settings.Default.saveHtml = chkSaveHtml.Checked;
             Properties.Settings.Default.splitAliases = chkSplitAliases.Checked;
             Properties.Settings.Default.playSound = chkSound.Checked;
@@ -210,6 +211,12 @@ namespace XRayBuilderGUI
             }
             else
                 Process.Start(Environment.CurrentDirectory + @"\doc\readme.txt");
+        }
+
+        private void chkOverwrite_CheckedChanged(object sender, EventArgs e)
+        {
+            chkAliasChapters.Visible = chkOverwrite.Checked;
+            if (!chkOverwrite.Checked) chkAliasChapters.Checked = false;
         }
     }
 }

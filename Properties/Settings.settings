@@ -30,7 +30,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="useNewVersion" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="buildSource" Type="System.String" Scope="User">
       <Value Profile="(Default)">Shelfari</Value>
@@ -69,6 +69,9 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="playSound" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="overwriteAliases" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>

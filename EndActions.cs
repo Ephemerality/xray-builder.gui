@@ -234,7 +234,7 @@ namespace XRayBuilderGUI
 
             finalOutput = String.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
 
-            using (StreamWriter streamWriter = new StreamWriter(EaPath, false))//, Encoding.UTF8))
+            using (StreamWriter streamWriter = new StreamWriter(EaPath, false))
             {
                 streamWriter.Write(finalOutput);
                 streamWriter.Flush();

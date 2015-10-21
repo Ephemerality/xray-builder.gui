@@ -362,7 +362,7 @@ namespace XRayBuilderGUI
         public string ToJSON()
         {
             string template = @"{{""class"":""authorBio"",""asin"":""{0}"",""name"":""{1}"",""bio"":""{2}"",""imageUrl"":""{3}""}}";
-            return String.Format(template, authorAsin, curBook.author, BioTrimmed, authorImageUrl);
+            return Functions.ExpandUnicode(String.Format(template, authorAsin, curBook.author, BioTrimmed, authorImageUrl));
         }
     }
 }

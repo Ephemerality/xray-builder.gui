@@ -60,14 +60,14 @@ namespace XRayBuilderGUI
             if (includeDescRatings)
                 template += String.Format(@",""description"":""{0}"",""amazonRating"":{1},""numberOfReviews"":{2}", desc, amazonRating, numReviews);
             template += "}";
-            return template;
+            return Functions.ExpandUnicode(template);
         }
 
         public string ToExtraJSON(string nClass)
         {
             string template = String.Format(@"{{""class"":""{0}"",""asin"":""{1}"",""title"":""{2}"",""description"":""{3}"",""authors"":[""{4}""],""imageUrl"":""{5}"",""hasSample"":false,""amazonRating"":{6},""numberOfReviews"":{7}}}",
                 nClass, asin, title, desc, author, bookImageUrl, amazonRating, numReviews);
-            return template;
+            return Functions.ExpandUnicode(template);
         }
 
         /// <summary>

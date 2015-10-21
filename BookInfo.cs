@@ -98,7 +98,7 @@ namespace XRayBuilderGUI
                     throw new HtmlWebException("Error finding book image. If you want, you can report the book's Amazon URL to help with parsing.");
                 else
                     bookImageUrl = Regex.Replace(bookImageLoc.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
-                bookImageUrl = bookImageLoc.GetAttributeValue("src", "");
+                //bookImageUrl = bookImageLoc.GetAttributeValue("src", "");
                 if (!bookImageUrl.EndsWith(".png"))
                     bookImageUrl = Regex.Replace(bookImageLoc.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
 

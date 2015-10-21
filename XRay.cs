@@ -22,6 +22,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -67,7 +68,7 @@ namespace XRayBuilderGUI
             "Air Commodore", "Air Marshal", "Air Vice Marshal", "Brig Gen", "Brig General", "Brigadier General",
             "Crown Prince", "Crown Princess", "Dame", "Datin", "Dato", "Datuk", "Datuk Seri", "Deacon", "Deaconess",
             "Dean", "Dhr", "Dipl Ing", "Doctor", "Dott", "Dott Sa", "Dr", "Dr Ing", "Dra", "Drs", "Embajador",
-            "Embajadora", "En", "Encik", "Eng", "Eur Ing", "Exma Sra", "Exmo Sr", "F O", "Father", "First Lieutient",
+            "Embajadora", "En", "Encik", "Eng", "Eur Ing", "Exma Sra", "Exmo Sr", "Father", "First Lieutient",
             "First Officer", "Flt Lieut", "Flying Officer", "Fr", "Frau", "Fraulein", "Fru", "Gen", "Generaal",
             "General", "Governor", "Graaf", "Gravin", "Group Captain", "Grp Capt", "H E Dr", "H H", "H M", "H R H",
             "Hajah", "Haji", "Hajim", "Her Highness", "Her Majesty", "Herr", "High Chief", "His Highness",
@@ -965,23 +966,33 @@ namespace XRayBuilderGUI
                             string titleTrimmed = "";
                             string[] words;
                             List<string> aliasList = new List<string>();
+                            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+                            
+                            string pattern = @"( ?(" + string.Join("|", CommonTitles) + ")\\. ?)|(^[A-Z]\\. )|( [A-Z]\\.)|(\\\\\")|(“)|(”)";
 
-                            Match match = Regex.Match(c.TermName, (
-                                @"( ?(" + string.Join("|", CommonTitles) + ")\\. ?)|([A-Z]\\. ?)")
-                                , RegexOptions.IgnoreCase);
-                            if (match.Success)
+                            Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
+                            Match matchCheck = Regex.Match(c.TermName, pattern , RegexOptions.IgnoreCase);
+                            if (matchCheck.Success)
                             {
-                                titleTrimmed = c.TermName.Replace(match.Value, String.Empty);
+                                titleTrimmed = c.TermName;
+                                foreach (Match match in regex.Matches(titleTrimmed))
+                                {
+                                    titleTrimmed = titleTrimmed.Replace(match.Value, String.Empty);
+                                }
                                 aliasList.Add(titleTrimmed);
                             }
                             else
                                 titleTrimmed = c.TermName;
+
                             if (titleTrimmed.Contains(" "))
                             {
                                 words = titleTrimmed.Split(' ');
                                 foreach (string word in words)
                                 {
-                                    aliasList.Add(word);
+                                    if (word.ToUpper() == word)
+                                        aliasList.Add(textInfo.ToTitleCase(word.ToLower()));
+                                    else
+                                        aliasList.Add(word);
                                 }
                             }
                             if (aliasList.Count > 0)
@@ -997,6 +1008,8 @@ namespace XRayBuilderGUI
                         else
                             streamWriter.WriteLine(c.TermName + "|");
                     }
+                    else
+                        streamWriter.WriteLine(c.TermName + "|");
             }
         }
 

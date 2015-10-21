@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("X-Ray Builder GUI")]
-[assembly: AssemblyDescription("Generate X-Ray, Start Action, Author profile and End Action files for use on your Amazon Kindle.")]
+[assembly: AssemblyDescription("Generate X-Ray, Start Action, Author Profile and End Action files for use on your Amazon Kindle.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("X-Ray Builder GUI")]
 [assembly: AssemblyProduct("X-Ray Builder GUI")]
@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.0.8.0")]
-[assembly: AssemblyFileVersion("2.0.8.0")]
+[assembly: AssemblyVersion("2.0.8.1")]
+[assembly: AssemblyFileVersion("2.0.8.1")]

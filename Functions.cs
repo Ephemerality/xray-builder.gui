@@ -521,7 +521,7 @@ namespace XRayBuilderGUI
                 if (input[i] > 255)
                 {
                     byte[] uniBytes = Encoding.Unicode.GetBytes(input.Substring(i, 1));
-                    output.AppendFormat(@"\u{0:X2}{1:X2}", uniBytes[0], uniBytes[1]);
+                    output.AppendFormat(@"\u{0:X2}{1:X2}", uniBytes[1], uniBytes[0]);
                 }
                 else
                     output.Append(input[i]);

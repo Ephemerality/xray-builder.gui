@@ -45,6 +45,7 @@
             this.gbDirectories = new System.Windows.Forms.GroupBox();
             this.chkSubDirectories = new System.Windows.Forms.CheckBox();
             this.gbXray = new System.Windows.Forms.GroupBox();
+            this.chkAliasChapters = new System.Windows.Forms.CheckBox();
             this.chkSplitAliases = new System.Windows.Forms.CheckBox();
             this.chkSaveHtml = new System.Windows.Forms.CheckBox();
             this.chkOverwrite = new System.Windows.Forms.CheckBox();
@@ -64,7 +65,6 @@
             this.btnHelp = new System.Windows.Forms.Button();
             this.gbGeneral = new System.Windows.Forms.GroupBox();
             this.chkSound = new System.Windows.Forms.CheckBox();
-            this.chkAliasChapters = new System.Windows.Forms.CheckBox();
             this.gbDirectories.SuspendLayout();
             this.gbXray.SuspendLayout();
             this.gbDetails.SuspendLayout();
@@ -140,7 +140,7 @@
             // chkRaw
             // 
             this.chkRaw.AutoSize = true;
-            this.chkRaw.Location = new System.Drawing.Point(9, 26);
+            this.chkRaw.Location = new System.Drawing.Point(145, 26);
             this.chkRaw.Name = "chkRaw";
             this.chkRaw.Size = new System.Drawing.Size(81, 17);
             this.chkRaw.TabIndex = 17;
@@ -177,7 +177,7 @@
             // chkSoftHyphen
             // 
             this.chkSoftHyphen.AutoSize = true;
-            this.chkSoftHyphen.Location = new System.Drawing.Point(122, 26);
+            this.chkSoftHyphen.Location = new System.Drawing.Point(9, 26);
             this.chkSoftHyphen.Name = "chkSoftHyphen";
             this.chkSoftHyphen.Size = new System.Drawing.Size(123, 17);
             this.chkSoftHyphen.TabIndex = 21;
@@ -252,6 +252,16 @@
             this.gbXray.TabIndex = 25;
             this.gbXray.TabStop = false;
             this.gbXray.Text = "X-Ray Configuration";
+            // 
+            // chkAliasChapters
+            // 
+            this.chkAliasChapters.AutoSize = true;
+            this.chkAliasChapters.Location = new System.Drawing.Point(145, 49);
+            this.chkAliasChapters.Name = "chkAliasChapters";
+            this.chkAliasChapters.Size = new System.Drawing.Size(106, 17);
+            this.chkAliasChapters.TabIndex = 30;
+            this.chkAliasChapters.Text = "Aliases/Chapters";
+            this.chkAliasChapters.UseVisualStyleBackColor = true;
             // 
             // chkSplitAliases
             // 
@@ -447,16 +457,6 @@
             this.chkSound.TabIndex = 30;
             this.chkSound.Text = "Play a sound when a process completes";
             this.chkSound.UseVisualStyleBackColor = true;
-            // 
-            // chkAliasChapters
-            // 
-            this.chkAliasChapters.AutoSize = true;
-            this.chkAliasChapters.Location = new System.Drawing.Point(140, 49);
-            this.chkAliasChapters.Name = "chkAliasChapters";
-            this.chkAliasChapters.Size = new System.Drawing.Size(106, 17);
-            this.chkAliasChapters.TabIndex = 30;
-            this.chkAliasChapters.Text = "Aliases/Chapters";
-            this.chkAliasChapters.UseVisualStyleBackColor = true;
             // 
             // frmSettings
             // 

@@ -340,21 +340,23 @@ namespace XRayBuilderGUI
             //Attempt to get database name from the mobi file.
             //If mobi_unpack ran successfully, then hopefully this will always be valid?
             byte[] dbinput = new byte[32];
-            FileStream stream = File.Open(mobiFile, FileMode.Open, FileAccess.Read);
-            if (stream == null)
+            using (FileStream stream = File.Open(mobiFile, FileMode.Open, FileAccess.Read))
             {
-                output.Add("Error opening mobi file (stream error).");
-                MessageBox.Show("Error opening mobi file (stream error).");
-                return output;
+                if (stream == null)
+                {
+                    output.Add("Error opening mobi file (stream error).");
+                    MessageBox.Show("Error opening mobi file (stream error).");
+                    return output;
+                }
+                int bytesRead = stream.Read(dbinput, 0, 32);
+                if (bytesRead != 32)
+                {
+                    output.Add("Error reading from mobi file.");
+                    MessageBox.Show("Error reading from mobi file.");
+                    return output;
+                }
+                databaseName = Encoding.Default.GetString(dbinput).Trim('\0');
             }
-            int bytesRead = stream.Read(dbinput, 0, 32);
-            if (bytesRead != 32)
-            {
-                output.Add("Error reading from mobi file.");
-                MessageBox.Show("Error reading from mobi file.");
-                return output;
-            }
-            databaseName = Encoding.Default.GetString(dbinput).Trim('\0');
 
             if (databaseName == "" || uniqid == "" || asin == "")
             {
@@ -521,7 +523,7 @@ namespace XRayBuilderGUI
                 if (input[i] > 255)
                 {
                     byte[] uniBytes = Encoding.Unicode.GetBytes(input.Substring(i, 1));
-                    output.AppendFormat(@"\u{0:X2}{1:X2}", uniBytes[0], uniBytes[1]);
+                    output.AppendFormat(@"\u{0:X2}{1:X2}", uniBytes[1], uniBytes[0]);
                 }
                 else
                     output.Append(input[i]);

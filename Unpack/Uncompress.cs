@@ -69,4 +69,11 @@ namespace XRayBuilderGUI.Unpack
             return temp;
         }
     }
+
+    class HUFFCDICReader : Decompressor
+    {
+        public override byte[] unpack(byte[] data, uint unpackedSize)
+        {
+        }
+    }
 }

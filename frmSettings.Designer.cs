@@ -65,6 +65,7 @@
             this.btnHelp = new System.Windows.Forms.Button();
             this.gbGeneral = new System.Windows.Forms.GroupBox();
             this.chkSound = new System.Windows.Forms.CheckBox();
+            this.chkKindleUnpack = new System.Windows.Forms.CheckBox();
             this.gbDirectories.SuspendLayout();
             this.gbXray.SuspendLayout();
             this.gbDetails.SuspendLayout();
@@ -122,6 +123,7 @@
             // txtUnpack
             // 
             this.txtUnpack.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtUnpack.Enabled = false;
             this.txtUnpack.Location = new System.Drawing.Point(153, 22);
             this.txtUnpack.Name = "txtUnpack";
             this.txtUnpack.Size = new System.Drawing.Size(312, 20);
@@ -133,9 +135,9 @@
             this.lblUnpack.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblUnpack.Location = new System.Drawing.Point(28, 25);
             this.lblUnpack.Name = "lblUnpack";
-            this.lblUnpack.Size = new System.Drawing.Size(119, 13);
+            this.lblUnpack.Size = new System.Drawing.Size(121, 13);
             this.lblUnpack.TabIndex = 14;
-            this.lblUnpack.Text = "Kindleunpack Location:";
+            this.lblUnpack.Text = "KindleUnpack Location:";
             // 
             // chkRaw
             // 
@@ -440,6 +442,7 @@
             // 
             // gbGeneral
             // 
+            this.gbGeneral.Controls.Add(this.chkKindleUnpack);
             this.gbGeneral.Controls.Add(this.chkSound);
             this.gbGeneral.Location = new System.Drawing.Point(12, 105);
             this.gbGeneral.Name = "gbGeneral";
@@ -457,6 +460,17 @@
             this.chkSound.TabIndex = 30;
             this.chkSound.Text = "Play a sound when a process completes";
             this.chkSound.UseVisualStyleBackColor = true;
+            // 
+            // chkKindleUnpack
+            // 
+            this.chkKindleUnpack.AutoSize = true;
+            this.chkKindleUnpack.Location = new System.Drawing.Point(232, 26);
+            this.chkKindleUnpack.Name = "chkKindleUnpack";
+            this.chkKindleUnpack.Size = new System.Drawing.Size(115, 17);
+            this.chkKindleUnpack.TabIndex = 31;
+            this.chkKindleUnpack.Text = "Use KindleUnpack";
+            this.chkKindleUnpack.UseVisualStyleBackColor = true;
+            this.chkKindleUnpack.CheckedChanged += new System.EventHandler(this.chkKindleUnpack_CheckedChanged);
             // 
             // frmSettings
             // 
@@ -537,5 +551,6 @@
         private System.Windows.Forms.GroupBox gbGeneral;
         private System.Windows.Forms.CheckBox chkSound;
         private System.Windows.Forms.CheckBox chkAliasChapters;
+        private System.Windows.Forms.CheckBox chkKindleUnpack;
     }
 }

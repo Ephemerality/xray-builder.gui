@@ -310,5 +310,17 @@ namespace XRayBuilderGUI.Properties {
                 this["overwriteAliases"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool useKindleUnpack {
+            get {
+                return ((bool)(this["useKindleUnpack"]));
+            }
+            set {
+                this["useKindleUnpack"] = value;
+            }
+        }
     }
 }

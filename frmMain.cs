@@ -140,11 +140,27 @@ namespace XRayBuilderGUI
             }
 
             prgBar.Value = 0;
-
-            Log("Running Kindleunpack to get metadata...");
-
+            
             //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
-            List<string> results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+            List<string> results;
+            if (settings.useKindleUnpack)
+            {
+                Log("Running Kindleunpack to get metadata...");
+                results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+            }
+            else
+            {
+                Log("Extracting metadata...");
+                try
+                {
+                    results = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, randomFile);
+                }
+                catch (Exception ex)
+                {
+                    Log("Error getting metadata: " + ex.Message);
+                    return;
+                }
+            }
             if (results.Count != 6)
             {
                 Log(results[0]);
@@ -403,10 +419,26 @@ namespace XRayBuilderGUI
                 return;
             }
 
-            Log("Running Kindleunpack to get metadata...");
-
             //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
-            List<string> results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+            List<string> results;
+            if (settings.useKindleUnpack)
+            {
+                Log("Running Kindleunpack to get metadata...");
+                results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+            }
+            else
+            {
+                Log("Extracting metadata...");
+                try
+                {
+                    results = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, randomFile);
+                }
+                catch (Exception ex)
+                {
+                    Log("Error getting metadata: " + ex.Message);
+                    return;
+                }
+            }
             if (results.Count != 6)
             {
                 Log(results[0]);
@@ -614,11 +646,28 @@ namespace XRayBuilderGUI
                 return;
             }
 
-            Log("Running Kindleunpack to get metadata...");
 
             //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
             //this.TopMost = true;
-            List<string> results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+            List<string> results;
+            if (settings.useKindleUnpack)
+            {
+                Log("Running Kindleunpack to get metadata...");
+                results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+            }
+            else
+            {
+                Log("Extracting metadata...");
+                try
+                {
+                    results = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, randomFile);
+                }
+                catch (Exception ex)
+                {
+                    Log("Error getting metadata: " + ex.Message);
+                    return;
+                }
+            }
             if (results.Count != 6)
             {
                 Log(results[0]);

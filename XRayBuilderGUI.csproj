@@ -139,7 +139,13 @@
     <Compile Include="HTTPDownloader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Unpack\EXTH.cs" />
+    <Compile Include="Unpack\MobiHead.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="Unpack\Metadata.cs" />
+    <Compile Include="Unpack\PalmDocHeader.cs" />
+    <Compile Include="Unpack\PDBHeader.cs" />
+    <Compile Include="Unpack\Uncompress.cs" />
     <Compile Include="XRay.cs" />
     <Content Include="BaseEndActions.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

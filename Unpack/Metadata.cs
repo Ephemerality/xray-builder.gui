@@ -17,6 +17,7 @@ namespace XRayBuilderGUI.Unpack
         public PDBHeader PDB;
         public PalmDOCHeader PDH;
         public MobiHead mobiHeader;
+        private int _startRecord = 1;
 
         public Metadata(FileStream fs)
         {
@@ -24,6 +25,23 @@ namespace XRayBuilderGUI.Unpack
             PDB = new PDBHeader(fs);
             PDH = new PalmDOCHeader(fs);
             mobiHeader = new MobiHead(fs, PDB.MobiHeaderSize);
+
+            // Start at end of first book records, search for a second (KF8) and use it instead (for combo books)
+            for (int i = PDH.RecordCount; i < PDB.NumRecords - 1; i++)
+            {
+                uint recSize = PDB._recInfo[i + 1].RecordDataOffset - PDB._recInfo[i].RecordDataOffset;
+                if (recSize < 8) continue;
+                byte[] buffer = new byte[recSize];
+                fs.Seek(PDB._recInfo[i].RecordDataOffset, SeekOrigin.Begin);
+                fs.Read(buffer, 0, buffer.Length);
+                if (Encoding.ASCII.GetString(buffer, 0, 8) == "BOUNDARY")
+                {
+                    _startRecord = i + 2;
+                    PDH = new PalmDOCHeader(fs);
+                    mobiHeader = new MobiHead(fs, PDB.MobiHeaderSize);
+                    break;
+                }
+            }
         }
 
         public byte[] getRawML(FileStream fs)
@@ -43,7 +61,8 @@ namespace XRayBuilderGUI.Unpack
                     throw new Exception("Unknown compression type " + PDH.Compression + ".");
             }
             byte[] rawML = new byte[0];
-            for (int i = 1; i <= PDH.RecordCount; i++)
+            int endRecord = _startRecord + PDH.RecordCount -1;
+            for (int i = _startRecord; i <= endRecord; i++)
             {
                 byte[] buffer = new byte[PDB._recInfo[i + 1].RecordDataOffset - PDB._recInfo[i].RecordDataOffset];
                 fs.Seek(PDB._recInfo[i].RecordDataOffset, SeekOrigin.Begin);

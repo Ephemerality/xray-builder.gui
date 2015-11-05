@@ -368,7 +368,7 @@ namespace XRayBuilderGUI
                         return output;
                     }
                 }
-                asin = match.Groups[1].Value.Replace("\r", "");
+                asin = incorrectAsin;
             }
             match = Regex.Match(unpackInfo, @"(\d*) unique_id");
             if (match.Success && match.Groups.Count > 1)

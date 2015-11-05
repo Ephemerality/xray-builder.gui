@@ -31,6 +31,7 @@ namespace XRayBuilderGUI.Unpack
             {
                 recordList.Add(new EXTHRecord(fs));
             }
+            fs.Seek(GetPaddingSize(DataSize), SeekOrigin.Current); // Skip padding bytes
         }
 
         protected int DataSize

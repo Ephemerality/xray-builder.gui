@@ -120,22 +120,11 @@ namespace XRayBuilderGUI.Unpack
 
             this.fullName = new byte[fullNameLen];
 
-            if (fullNameIndexInRemainder >= 0)
+            if (fullNameIndexInRemainder >= 0 &&
+                fullNameIndexInRemainder < this.remainder.Length &&
+                fullNameIndexInRemainder + fullNameLen <= this.remainder.Length && fullNameLen > 0)
             {
-                if (fullNameIndexInRemainder < this.remainder.Length)
-                {
-                    if (fullNameIndexInRemainder + fullNameLen <= this.remainder.Length)
-                    {
-                        if (fullNameLen > 0)
-                        {
-                            Array.Copy(this.remainder,
-                            fullNameIndexInRemainder,
-                            this.fullName,
-                            0,
-                            fullNameLen);
-                        }
-                    }
-                }
+                Array.Copy(this.remainder, fullNameIndexInRemainder, this.fullName, 0, fullNameLen);
             }
         }
 
@@ -153,7 +142,7 @@ namespace XRayBuilderGUI.Unpack
 
         public string FullName
         {
-            get { return Encoding.ASCII.GetString(this.remainder).Trim('\0'); }
+            get { return Encoding.UTF8.GetString(this.fullName).Trim('\0'); }
         }
 
         public string IdentifierAsString

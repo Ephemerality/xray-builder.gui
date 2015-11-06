@@ -472,15 +472,26 @@ namespace XRayBuilderGUI
         {
             BookInfo result = null;
 
-            Regex regex = new Regex(@"( [A-Z]\.)", RegexOptions.Compiled);
-            foreach (Match m in regex.Matches(author))
-            {
-                author = author.Replace(m.Value, m.Value.Trim());
-            }
+            string authorTrim = "";
 
-            //http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Ddigital-text&field-keywords=In+Plain+Sight+C.+J.+Box
-            string searchUrl = @"http://www.amazon.com/s/?url=search-alias%3Ddigital-text&field-keywords=" + 
-                Uri.EscapeDataString(title + " " + author);
+            Regex regex = new Regex(@"( [A-Z]\.)", RegexOptions.Compiled);
+            Match match = Regex.Match(author, @"( [A-Z]\.)", RegexOptions.Compiled);
+            if (match.Success)
+            {
+                foreach (Match m in regex.Matches(author))
+                {
+                    authorTrim = author.Replace(m.Value, m.Value.Trim());
+                }
+            }
+            else
+            {
+                authorTrim = author;
+            }
+            if (title.IndexOf(" (") >= 0)
+                title = title.Substring(0, title.IndexOf(" ("));
+
+            string searchUrl = @"http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Ddigital-text&field-keywords=" + 
+            Uri.EscapeDataString(title + " " + authorTrim + " kindle edition");
             HAP.HtmlDocument searchDoc = new HAP.HtmlDocument();
             searchDoc.LoadHtml(HttpDownloader.GetPageHtml(searchUrl));
             HAP.HtmlNode node = searchDoc.DocumentNode.SelectSingleNode("//li[@id='result_0']");

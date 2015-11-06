@@ -1108,14 +1108,14 @@ namespace XRayBuilderGUI
                     if (tmpString.Contains(":"))
                     {
                         newTerm.TermName = tmpString.Substring(0, tmpString.IndexOf(":"));
-                        newTerm.Desc = tmpString.Substring(tmpString.IndexOf(":") + 1).Trim();
+                        newTerm.Desc = tmpString.Substring(tmpString.IndexOf(":") + 1).Replace("&amp;", "&").Trim();
                     }
                     else
                     {
                         newTerm.TermName = tmpString;
                     }
-                    newTerm.TermName = newTerm.TermName.PregReplace(patterns, replacements);
-                    newTerm.Desc = newTerm.Desc.PregReplace(patterns, replacements);
+                    //newTerm.TermName = newTerm.TermName.PregReplace(patterns, replacements);
+                    //newTerm.Desc = newTerm.Desc.PregReplace(patterns, replacements);
                     newTerm.DescSrc = "shelfari";
                     //Use either the associated shelfari URL of the term or if none exists, use the book's url
                     //Could use a wikipedia page instead as the xray plugin/site does but I decided not to

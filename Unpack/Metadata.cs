@@ -56,7 +56,28 @@ namespace XRayBuilderGUI.Unpack
                     decomp = new PalmDOCReader();
                     break;
                 case (17480):
-                    throw new Exception("HUFF/CDIC compression not supported yet. Please use the KindleUnpack option in settings.");
+                    HUFFCDICReader reader = new HUFFCDICReader();
+                    try
+                    {
+                        int recOffset = (int)mobiHeader.HuffmanRecordOffset;
+                        byte[] huffSect = new byte[PDB._recInfo[recOffset + 1].RecordDataOffset - PDB._recInfo[recOffset].RecordDataOffset];
+                        fs.Seek(PDB._recInfo[recOffset].RecordDataOffset, SeekOrigin.Begin);
+                        fs.Read(huffSect, 0, huffSect.Length);
+                        reader.loadHuff(huffSect);
+                        int recCount = (int)mobiHeader.HuffmanRecordCount;
+                        for (int i = 1; i < recCount; i++)
+                        {
+                            huffSect = new byte[PDB._recInfo[recOffset + i + 1].RecordDataOffset - PDB._recInfo[recOffset + i].RecordDataOffset];
+                            fs.Seek(PDB._recInfo[recOffset + i].RecordDataOffset, SeekOrigin.Begin);
+                            fs.Read(huffSect, 0, huffSect.Length);
+                            reader.loadCdic(huffSect);
+                        }
+                    } catch (Exception ex)
+                    {
+                        throw new Exception("Error in HUFF/CDIC decompression: " + ex.Message);
+                    }
+                    decomp = reader;
+                    break;
                 default:
                     throw new Exception("Unknown compression type " + PDH.Compression + ".");
             }

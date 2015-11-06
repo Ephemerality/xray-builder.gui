@@ -147,7 +147,7 @@ namespace XRayBuilderGUI.Unpack
 
         public string IdentifierAsString
         {
-            get { return Encoding.UTF8.GetString(this.identifier).Trim('\0'); }
+            get { return Encoding.ASCII.GetString(this.identifier).Trim('\0'); }
         }
 
         public uint HeaderLength

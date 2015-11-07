@@ -81,7 +81,7 @@ namespace XRayBuilderGUI
             string plusAuthorName = newAuthor.Replace(" ", "+");
             string amazonAuthorSearchUrl = @"http://www.amazon.com/s/?url=search-alias%3Dstripbooks&field-keywords=" +
                                         plusAuthorName;
-            main.Log("Searching for Author's page on Amazon...");
+            main.Log("Searching for author's page on Amazon...");
 
             // Search Amazon for Author
             HtmlDocument authorHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
@@ -106,7 +106,7 @@ namespace XRayBuilderGUI
             HtmlNode node = authorHtmlDoc.DocumentNode.SelectSingleNode("//*[@id='result_1']");
             if (node == null || !node.OuterHtml.Contains("/e/B"))
             {
-                main.Log("Could not find Author's page on Amazon.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at " + amazonAuthorSearchUrl);
+                main.Log("Could not find author's page on Amazon.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at " + amazonAuthorSearchUrl);
                 return;
             }
             authorAsin = node.OuterHtml;
@@ -173,8 +173,7 @@ namespace XRayBuilderGUI
             }
             else
             {
-                main.Log("No Author biography found on Amazon!");
-                return;
+                main.Log("No author biography found on Amazon!");
             }
             // Try to download Author image
             HtmlNode imageXpath = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-image']/img");
@@ -185,12 +184,12 @@ namespace XRayBuilderGUI
                 using (WebClient webClient = new WebClient())
                 {
                     webClient.DownloadFile(new Uri(authorImageUrl), downloadedAuthorImage);
-                    main.Log("Downloading Author image...");
+                    main.Log("Downloading author image...");
                 }
             }
             catch (Exception ex)
             {
-                main.Log(String.Format("Failed to download Author image: {0}", ex.Message));
+                main.Log(String.Format("Failed to download author image: {0}", ex.Message));
                 return;
             }
 
@@ -254,7 +253,7 @@ namespace XRayBuilderGUI
 
             //Convert final grayscale Author image to Base64 Format String
             string base64ImageString = Functions.ImageToBase64(bgs, ImageFormat.Jpeg);
-            main.Log("Grayscale Base-64 encoded Author image created!");
+            main.Log("Grayscale Base-64 encoded author image created!");
             bgs.Dispose();
 
             main.Log("Gathering author's other books...");

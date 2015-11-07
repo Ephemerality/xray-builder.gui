@@ -871,6 +871,16 @@ namespace XRayBuilderGUI
                 rdoShelfari.Checked = true;
             else
                 rdoFile.Checked = true;
+
+            if (!settings.newMessage)
+            {
+                MessageBox.Show("Metadata is now gathered internally rather than with KindleUnpack.\r\n" +
+                    "If you run into any metadata extraction errors, there is a setting to turn KindleUnpack back on.\r\n" +
+                    "Please report any such errors on the MobileRead thread to help improve the program.\r\n" +
+                    "Thanks for using X-Ray Builder!\r\n-Ephemerality and DarrenMcG");
+                settings.newMessage = true;
+                settings.Save();
+            }
         }
 
         private void frmMain_DragDrop(object sender, DragEventArgs e)

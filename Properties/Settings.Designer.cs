@@ -322,5 +322,17 @@ namespace XRayBuilderGUI.Properties {
                 this["useKindleUnpack"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool newMessage {
+            get {
+                return ((bool)(this["newMessage"]));
+            }
+            set {
+                this["newMessage"] = value;
+            }
+        }
     }
 }

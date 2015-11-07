@@ -81,7 +81,7 @@ namespace XRayBuilderGUI
             "Sig Ra", "Sir", "Sister", "Sqn Ldr", "Sr", "Sr D", "Sra", "Srta", "Sultan", "Tan Sri", "Tan Sri Dato",
             "Tengku", "Teuku", "Than Puying", "The Hon Dr", "The Hon Justice", "The Hon Miss", "The Hon Mr",
             "The Hon Mrs", "The Hon Ms", "The Hon Sir", "The Very Rev", "Toh Puan", "Tun", "Vice Admiral",
-            "Viscount", "Viscountess", "Wg Cdr", "Jr", "Sr" };
+            "Viscount", "Viscountess", "Wg Cdr", "Jr", "Sr", "Sheriff", "Special Agent" };
         #endregion
 
         public XRay()
@@ -957,6 +957,7 @@ namespace XRayBuilderGUI
             //Try to remove common titles from aliases
             using (var streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8))
             {
+                List<string> aliasCheck = new List<string>();
                 foreach (var c in Terms)
                     if (c.Type == "character")
                     {
@@ -968,13 +969,19 @@ namespace XRayBuilderGUI
                             List<string> aliasList = new List<string>();
                             TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
                             
-                            string pattern = @"( ?(" + string.Join("|", CommonTitles) + ")\\. ?)|(^[A-Z]\\. )|( [A-Z]\\.)|(\\\\\")|(“)|(”)";
+                            string pattern = @"( ?(" + string.Join("|", CommonTitles) + ")\\.? )|(^[A-Z]\\. )|( [A-Z]\\.)|(\")|(“)|(”)|(,)";
 
-                            Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
-                            Match matchCheck = Regex.Match(c.TermName, pattern , RegexOptions.IgnoreCase);
+                            Regex regex = new Regex(pattern);
+                            Match matchCheck = Regex.Match(c.TermName, pattern);
                             if (matchCheck.Success)
                             {
                                 titleTrimmed = c.TermName;
+                                titleTrimmed = Regex.Replace(titleTrimmed, @"\s+", " ");
+                                titleTrimmed = Regex.Replace(titleTrimmed, @"( ?V?I{0,3}$)", String.Empty);
+                                foreach (Match match in regex.Matches(titleTrimmed))
+                                {
+                                    titleTrimmed = titleTrimmed.Replace(match.Value, String.Empty);
+                                }
                                 foreach (Match match in regex.Matches(titleTrimmed))
                                 {
                                     titleTrimmed = titleTrimmed.Replace(match.Value, String.Empty);
@@ -1000,6 +1007,9 @@ namespace XRayBuilderGUI
                                 aliasList.Sort((a, b) => b.Length.CompareTo(a.Length));
                                 foreach (string word in aliasList)
                                 {
+                                    if (aliasCheck.Any(str => str.Equals(word)))
+                                        continue;
+                                    aliasCheck.Add(word);
                                     splitName += word + ",";
                                 }
                                 streamWriter.WriteLine(c.TermName + "|" + splitName.Substring(0, splitName.LastIndexOf(",")));

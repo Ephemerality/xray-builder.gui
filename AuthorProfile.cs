@@ -99,7 +99,6 @@ namespace XRayBuilderGUI
                 catch (Exception ex)
                 {
                     main.Log(String.Format("An error ocurred saving authorsearchHtml.txt: {0}", ex.Message));
-                    return;
                 }
             }
 
@@ -148,7 +147,6 @@ namespace XRayBuilderGUI
                 catch (Exception ex)
                 {
                     main.Log(String.Format("An error ocurred saving authorpageHtml.txt: {0}", ex.Message));
-                    return;
                 }
             }
 
@@ -262,25 +260,30 @@ namespace XRayBuilderGUI
             main.Log("Gathering author's other books...");
             List<BookInfo> bookList = new List<BookInfo>();
             HtmlNodeCollection resultsNodes =
-                authorHtmlDoc.DocumentNode.SelectNodes("//div[@id='mainResults']/div");
+                authorHtmlDoc.DocumentNode.SelectNodes("//div[@id='mainResults']/ul/li");
             foreach (HtmlNode result in resultsNodes)
             {
                 if (!result.Id.StartsWith("result_")) continue;
                 string name, url, asin = "";
-                HtmlNode otherBook = result.SelectSingleNode(".//div/h3/a/@href");
+                HtmlNode otherBook = result.SelectSingleNode(".//div[@class='a-row a-spacing-small']/a/h2");
                 Match match = Regex.Match(otherBook.InnerText, @"Series Reading Order|Edition|eSpecial", RegexOptions.IgnoreCase);
                 if (match.Success)
                 {
                     continue;
                 }
                 name = otherBook.InnerText;
-                url = otherBook.GetAttributeValue("href", "");
-                otherBook = result.SelectSingleNode(".//*[@class='tpType']");
-                int index = otherBook.OuterHtml.IndexOf("/dp/B");
-                if (index != -1 && otherBook.InnerText.Contains("Kindle Edition"))
+                otherBook = result.SelectSingleNode(".//*[@title='Kindle Edition']");
+                match = Regex.Match(otherBook.OuterHtml, "dp/(B[A-Z0-9]{9})/");
+                if (match.Success)
                 {
-                    asin = otherBook.OuterHtml.Substring(index + 4, 10);
+                    asin = match.Groups[1].Value;
                 }
+                //url = otherBook.GetAttributeValue("href", "");
+                //url = otherBook.GetAttributeValue("href", "").
+                //    Substring(0, otherBook.GetAttributeValue("href", "").
+                //    IndexOf(match.Groups[1].Value) +
+                //    match.Groups[1].Length);
+                url = String.Format("http://www.amazon.com/dp/{0}", asin);
                 if (name != "" && url != "" && asin != "")
                 {
                     BookInfo newBook = new BookInfo(name, curBook.author, asin);
@@ -341,26 +344,6 @@ namespace XRayBuilderGUI
             ApAuthorImage = Image.FromFile(curBook.path + @"\FinalImage.jpg");
             EaSubTitle = "More Books By " + curBook.author;
 
-            
-            /*try
-            {
-                if (settings.sendtoKindle)
-                {
-                    if (Directory.Exists(settings.docDir))
-                    {
-                        File.Copy(ApPath, ApDest, true);
-                        main.Log("Author Profile file successfully copied to your Kindle!");
-                        File.Copy(EaPath, EaDest, true);
-                        main.Log("End Action file successfully copied to your Kindle!");
-                    }
-                    main.Log("Specified Kindle cocuments folder not found. Is your Kindle connected?" +
-                             " If so, please review the settings page.");
-                }
-            }
-            catch (Exception ex)
-            {
-                main.Log("An error occured copying files to your Kindle!\r\nException: " + ex.Message);
-            }*/
             complete = true;
         }
 

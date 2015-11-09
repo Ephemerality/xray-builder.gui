@@ -12,12 +12,13 @@ using System.Text;
 
 namespace XRayBuilderGUI.Unpack
 {
-    class Metadata
+    public class Metadata
     {
         public PDBHeader PDB;
         public PalmDOCHeader PDH;
         public MobiHead mobiHeader;
         private int _startRecord = 1;
+        public string rawMLPath = "";
 
         public Metadata(FileStream fs)
         {
@@ -42,6 +43,56 @@ namespace XRayBuilderGUI.Unpack
                     break;
                 }
             }
+        }
+
+        // Temporary function to mimic old GetMetaData functionality until it can be removed
+        // 0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
+        public List<string> getResults()
+        {
+            List<string> results = new List<string>(6);
+            results.Add(ASIN);
+            results.Add(UniqueID);
+            results.Add(DBName);
+            results.Add(rawMLPath);
+            results.Add(Author);
+            results.Add(Title);
+            return results;
+        }
+
+        public string ASIN
+        {
+            get { return mobiHeader.exthHeader.ASIN != String.Empty ? mobiHeader.exthHeader.ASIN : mobiHeader.exthHeader.ASIN2; }
+        }
+
+        public string DBName
+        {
+            get { return PDB.DBName; }
+        }
+
+        public string UniqueID
+        {
+            get { return mobiHeader.UniqueID.ToString(); }
+        }
+
+        public string Author
+        {
+            get { return mobiHeader.exthHeader.Author; }
+        }
+
+        public string Title
+        {
+            get
+            {
+                if (mobiHeader.FullName != "")
+                    return mobiHeader.FullName;
+                else
+                    return mobiHeader.exthHeader.UpdatedTitle;
+            }
+        }
+
+        public long rawMLSize()
+        {
+            return PDH.TextLength;
         }
 
         public byte[] getRawML(FileStream fs)

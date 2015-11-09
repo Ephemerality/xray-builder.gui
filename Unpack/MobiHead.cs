@@ -8,7 +8,7 @@ using System.Text;
 
 namespace XRayBuilderGUI.Unpack
 {
-    class MobiHead
+    public class MobiHead
     {
         private byte[] identifier = new byte[4];
         private byte[] headerLength = new byte[4];
@@ -179,7 +179,7 @@ namespace XRayBuilderGUI.Unpack
                     case 517: return "TEXT";
                     case 518: return "HTML";
                     default:
-                        return String.Format("Unknown (0)", this.MobiType);
+                        return String.Format("Unknown {0}", this.MobiType);
                 }
             }
         }

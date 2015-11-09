@@ -12,7 +12,7 @@ using System.Text;
 
 namespace XRayBuilderGUI.Unpack
 {
-    class PDBHeader
+    public class PDBHeader
     {
         private byte[] _dbName = new byte[32];
         private byte[] _numRecords = new byte[2];

@@ -12,7 +12,7 @@ using System.Text;
 
 namespace XRayBuilderGUI.Unpack
 {
-    class PalmDOCHeader
+    public class PalmDOCHeader
     {
         private byte[] _compression = new byte[2];
         private byte[] _textLength = new byte[4];

@@ -153,7 +153,7 @@ namespace XRayBuilderGUI
                 Log("Extracting metadata...");
                 try
                 {
-                    results = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, randomFile);
+                    results = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, true, randomFile).getResults();
                 }
                 catch (Exception ex)
                 {
@@ -421,17 +421,27 @@ namespace XRayBuilderGUI
 
             //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
             List<string> results;
+            long rawMLSize = 0;
             if (settings.useKindleUnpack)
             {
                 Log("Running Kindleunpack to get metadata...");
                 results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                if (!File.Exists(results[3]))
+                {
+                    Log("Error: RawML could not be found, aborting.\r\nPath: " + results[3]);
+                    return;
+                }
+                rawMLSize = new FileInfo(results[3]).Length;
             }
             else
             {
                 Log("Extracting metadata...");
                 try
                 {
-                    results = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, randomFile);
+                    Unpack.Metadata md = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, false);
+                    rawMLSize = md.PDH.TextLength;
+                    results = md.getResults();
+
                 }
                 catch (Exception ex)
                 {
@@ -445,7 +455,7 @@ namespace XRayBuilderGUI
                 return;
             }
 
-            if (settings.saverawml)
+            if (settings.saverawml && settings.useKindleUnpack)
             {
                 Log("Saving rawML to dmp directory...");
                 File.Copy(results[3], Path.Combine(Environment.CurrentDirectory + @"\dmp",
@@ -462,13 +472,8 @@ namespace XRayBuilderGUI
                 Log("Attempting to build Author Profile...");
                 AuthorProfile ap = new AuthorProfile(bookInfo, this);
                 if (!ap.complete) return;
-                if (!File.Exists(results[3]))
-                {
-                    Log("Error: RawML could not be found, aborting.\r\nPath: " + results[3]);
-                    return;
-                }
                 Log("Attempting to build Start Actions and End Actions...");
-                EndActions ea = new EndActions(ap, bookInfo, new FileInfo(results[3]).Length, this);
+                EndActions ea = new EndActions(ap, bookInfo, rawMLSize, this);
                 if (!ea.complete) return;
                 if (settings.useNewVersion)
                 {
@@ -646,7 +651,6 @@ namespace XRayBuilderGUI
                 return;
             }
 
-
             //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
             //this.TopMost = true;
             List<string> results;
@@ -660,7 +664,7 @@ namespace XRayBuilderGUI
                 Log("Extracting metadata...");
                 try
                 {
-                    results = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, randomFile);
+                    results = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, false).getResults();
                 }
                 catch (Exception ex)
                 {
@@ -674,12 +678,6 @@ namespace XRayBuilderGUI
                 return;
             }
 
-            if (settings.saverawml)
-            {
-                Log("Saving rawML to output directory...");
-                File.Copy(results[3], Path.Combine(Environment.CurrentDirectory + @"\dmp",
-                    Path.GetFileName(results[3])), true);
-            }
             // Added author name to log output
             Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
                 results[2], results[0], results[4], results[5], results[1]));
@@ -863,6 +861,7 @@ namespace XRayBuilderGUI
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\log");
             if (!Directory.Exists(Environment.CurrentDirectory + @"\dmp"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\dmp");
+            
             if (Properties.Settings.Default.mobi_unpack == "")
                 Properties.Settings.Default.mobi_unpack = Environment.CurrentDirectory + @"\dist\kindleunpack.exe";
 

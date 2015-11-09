@@ -12,7 +12,7 @@ using System.Text;
 
 namespace XRayBuilderGUI.Unpack
 {
-    class EXTHHeader
+    public class EXTHHeader
     {
         private byte[] _identifier = new byte[4];
         private byte[] _headerLength = new byte[4];

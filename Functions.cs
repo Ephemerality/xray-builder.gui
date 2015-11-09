@@ -226,11 +226,9 @@ namespace XRayBuilderGUI
         }
 
         //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
-        public static List<string> GetMetaDataInternal(string mobiFile, string outDir, string randomFile)
+        public static Unpack.Metadata GetMetaDataInternal(string mobiFile, string outDir, bool saveRawML, string randomFile = "")
         {
             List<string> output = new List<string>();
-            string rawMLPath = randomFile + "\\" + Path.GetFileNameWithoutExtension(mobiFile) + ".rawml";
-
             FileStream fs = new FileStream(mobiFile, FileMode.Open, FileAccess.Read);
             if (fs == null)
                 throw new Exception("Unable to open mobi file.");
@@ -245,7 +243,7 @@ namespace XRayBuilderGUI
                 throw new Exception("The document type is not set to EBOK; Kindle will not display an X-Ray for this book.\r\n" +
                     "You must either use Calibre's convert feature (Personal Doc tag under MOBI Output) or a MOBI editor (exth 501) to change this.");
 
-            string ASIN = md.mobiHeader.exthHeader.ASIN != String.Empty ? md.mobiHeader.exthHeader.ASIN : md.mobiHeader.exthHeader.ASIN2;
+            string ASIN = md.ASIN;
             Match match = Regex.Match(ASIN, "(^B[A-Z0-9]{9})");
             if (!match.Success && DialogResult.No == MessageBox.Show(String.Format("Incorrect ASIN detected: {0}!\n" +
                                       "Kindle may not display an X-Ray for this book.\n" +
@@ -257,32 +255,27 @@ namespace XRayBuilderGUI
                                   "or a MOBI editor (exth 113 and optionally 504) to change this.", ASIN));
             }
 
-            if (md.PDB.DBName.Length == 31)
+            if (md.DBName.Length == 31)
             {
                 MessageBox.Show(String.Format(
                     "WARNING: Database Name is the maximum length. If \"{0}\" is the full book title, this should not be an issue.\r\n" +
                     "If the title is supposed to be longer than that, you may get an error on your Kindle (WG on firmware < 5.6 or will not load on higher versions).\r\n" +
                     "This can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n",
-                    md.PDB.DBName));
+                    md.DBName));
             }
-
-            output.Add(ASIN);
-            output.Add(md.mobiHeader.UniqueID.ToString());
-            output.Add(md.PDB.DBName);
-            output.Add(rawMLPath);
-            output.Add(md.mobiHeader.exthHeader.Author);
-            if (md.mobiHeader.FullName != "")
-                output.Add(md.mobiHeader.FullName);
-            else if (md.mobiHeader.exthHeader.UpdatedTitle != String.Empty)
-                output.Add(md.mobiHeader.exthHeader.UpdatedTitle);
-
-            // Everything else checked out, grab rawml and write to the temp file
-            byte[] rawML = md.getRawML(fs);
-            using (FileStream rawMLFile = new FileStream(rawMLPath, FileMode.Create, FileAccess.Write))
+            
+            if (saveRawML)
             {
-                rawMLFile.Write(rawML, 0, rawML.Length);
+                // Everything else checked out, grab rawml and write to the temp file
+                md.rawMLPath = randomFile + "\\" + Path.GetFileNameWithoutExtension(mobiFile) + ".rawml";
+                byte[] rawML = md.getRawML(fs);
+                using (FileStream rawMLFile = new FileStream(md.rawMLPath, FileMode.Create, FileAccess.Write))
+                {
+                    rawMLFile.Write(rawML, 0, rawML.Length);
+                }
             }
-            return output;
+
+            return md;
         }
 
         public static List<string> GetMetaData(string mobiFile, string outDir, string randomFile, string mobiUnpack)
@@ -440,10 +433,7 @@ namespace XRayBuilderGUI
             output.Add(uniqid);
             output.Add(databaseName);
             output.Add(rawMl);
-
-            // Add author name to MetaData output
             output.Add(author);
-            // Add book title to MetaData output
             output.Add(title);
 
             return output;

@@ -274,7 +274,7 @@ namespace XRayBuilderGUI
                     rawMLFile.Write(rawML, 0, rawML.Length);
                 }
             }
-
+            fs.Close();
             return md;
         }
 

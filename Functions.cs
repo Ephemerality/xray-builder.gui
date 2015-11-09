@@ -240,8 +240,18 @@ namespace XRayBuilderGUI
                 throw new Exception("No EXT Header found. Ensure this book was processed with Calibre then try again.");
 
             if (md.mobiHeader.exthHeader.CDEType != "EBOK")
-                throw new Exception("The document type is not set to EBOK; Kindle will not display an X-Ray for this book.\r\n" +
-                    "You must either use Calibre's convert feature (Personal Doc tag under MOBI Output) or a MOBI editor (exth 501) to change this.");
+                if (md.mobiHeader.exthHeader.CDEType.Length == 4 &&
+                    DialogResult.Yes == MessageBox.Show("The document type is not set to EBOK. Would you like this to be updated?\r\n" +
+                        "Caution: This feature is experimental and could potentially ruin your book file.", "Incorrect Content Type", MessageBoxButtons.YesNo))
+                {
+                    fs.Close();
+                    fs = new FileStream(mobiFile, FileMode.Open, FileAccess.ReadWrite);
+                    if (fs == null)
+                        throw new Exception("Unable to re-open mobi file for writing.");
+                    md.mobiHeader.exthHeader.UpdateCDEContentType(fs);
+                } else
+                    throw new Exception("The document type is not set to EBOK; Kindle will not display an X-Ray for this book.\r\n" +
+                        "You must either use Calibre's convert feature (Personal Doc tag under MOBI Output) or a MOBI editor (exth 501) to change this.");
 
             string ASIN = md.ASIN;
             Match match = Regex.Match(ASIN, "(^B[A-Z0-9]{9})");

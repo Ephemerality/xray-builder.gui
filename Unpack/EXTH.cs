@@ -118,9 +118,20 @@ namespace XRayBuilderGUI.Unpack
                 if (rec.RecordType == recType)
                 {
                     record = System.Text.Encoding.UTF8.GetString(rec.RecordData);
+                    break;
                 }
             }
             return record;
+        }
+
+        public void UpdateCDEContentType(FileStream fs)
+        {
+            byte[] newValue = Encoding.UTF8.GetBytes("EBOK");
+            EXTHRecord rec = recordList.First<EXTHRecord>(r => r.RecordType == 501);
+            if (rec == null)
+                throw new Exception("Could not find the CDEContentType record (EXTH 501).");
+            fs.Seek(rec.recordOffset, SeekOrigin.Begin);
+            fs.Write(newValue, 0, newValue.Length);
         }
     }
 
@@ -129,6 +140,7 @@ namespace XRayBuilderGUI.Unpack
         private byte[] _recordType = new byte[4];
         private byte[] _recordLength = new byte[4];
         private byte[] _recordData = null;
+        public long recordOffset;
 
         public EXTHRecord(FileStream fs)
         {
@@ -136,10 +148,16 @@ namespace XRayBuilderGUI.Unpack
             fs.Read(_recordLength, 0, _recordLength.Length);
 
             if (RecordLength < 8) throw new IOException("Invalid EXTH record length");
+            recordOffset = fs.Position;
             _recordData = new byte[RecordLength - 8];
             fs.Read(_recordData, 0, _recordData.Length);
         }
-        
+
+        public override string ToString()
+        {
+            return System.Text.Encoding.UTF8.GetString(_recordData);
+        }
+
         public int DataLength
         {
             get { return _recordData.Length; }

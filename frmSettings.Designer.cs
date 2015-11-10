@@ -64,8 +64,9 @@
             this.btnClearLogs = new System.Windows.Forms.Button();
             this.btnHelp = new System.Windows.Forms.Button();
             this.gbGeneral = new System.Windows.Forms.GroupBox();
-            this.chkSound = new System.Windows.Forms.CheckBox();
             this.chkKindleUnpack = new System.Windows.Forms.CheckBox();
+            this.chkSound = new System.Windows.Forms.CheckBox();
+            this.chkDownloadAliases = new System.Windows.Forms.CheckBox();
             this.gbDirectories.SuspendLayout();
             this.gbXray.SuspendLayout();
             this.gbDetails.SuspendLayout();
@@ -442,6 +443,7 @@
             // 
             // gbGeneral
             // 
+            this.gbGeneral.Controls.Add(this.chkDownloadAliases);
             this.gbGeneral.Controls.Add(this.chkKindleUnpack);
             this.gbGeneral.Controls.Add(this.chkSound);
             this.gbGeneral.Location = new System.Drawing.Point(12, 105);
@@ -450,16 +452,6 @@
             this.gbGeneral.TabIndex = 35;
             this.gbGeneral.TabStop = false;
             this.gbGeneral.Text = "General";
-            // 
-            // chkSound
-            // 
-            this.chkSound.AutoSize = true;
-            this.chkSound.Location = new System.Drawing.Point(9, 26);
-            this.chkSound.Name = "chkSound";
-            this.chkSound.Size = new System.Drawing.Size(216, 17);
-            this.chkSound.TabIndex = 30;
-            this.chkSound.Text = "Play a sound when a process completes";
-            this.chkSound.UseVisualStyleBackColor = true;
             // 
             // chkKindleUnpack
             // 
@@ -471,6 +463,26 @@
             this.chkKindleUnpack.Text = "Use KindleUnpack";
             this.chkKindleUnpack.UseVisualStyleBackColor = true;
             this.chkKindleUnpack.CheckedChanged += new System.EventHandler(this.chkKindleUnpack_CheckedChanged);
+            // 
+            // chkSound
+            // 
+            this.chkSound.AutoSize = true;
+            this.chkSound.Location = new System.Drawing.Point(9, 26);
+            this.chkSound.Name = "chkSound";
+            this.chkSound.Size = new System.Drawing.Size(216, 17);
+            this.chkSound.TabIndex = 30;
+            this.chkSound.Text = "Play a sound when a process completes";
+            this.chkSound.UseVisualStyleBackColor = true;
+            // 
+            // chkDownloadAliases
+            // 
+            this.chkDownloadAliases.AutoSize = true;
+            this.chkDownloadAliases.Location = new System.Drawing.Point(353, 26);
+            this.chkDownloadAliases.Name = "chkDownloadAliases";
+            this.chkDownloadAliases.Size = new System.Drawing.Size(109, 17);
+            this.chkDownloadAliases.TabIndex = 32;
+            this.chkDownloadAliases.Text = "Download aliases";
+            this.chkDownloadAliases.UseVisualStyleBackColor = true;
             // 
             // frmSettings
             // 
@@ -552,5 +564,6 @@
         private System.Windows.Forms.CheckBox chkSound;
         private System.Windows.Forms.CheckBox chkAliasChapters;
         private System.Windows.Forms.CheckBox chkKindleUnpack;
+        private System.Windows.Forms.CheckBox chkDownloadAliases;
     }
 }

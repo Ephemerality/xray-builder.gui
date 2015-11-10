@@ -230,6 +230,25 @@ namespace XRayBuilderGUI
                 aliasFile = Environment.CurrentDirectory + @"\ext\" + asin + ".aliases";
             else
                 aliasFile = aliaspath;
+            if (!File.Exists(aliasFile) && Properties.Settings.Default.downloadAliases)
+            {
+                try
+                {
+                    string aliases = HttpDownloader.GetPageHtml("https://www.revensoftware.com/xray/aliases/" + asin);
+                    StreamWriter fs = new StreamWriter(aliasFile, false, Encoding.UTF8);
+                    fs.Write(aliases);
+                    fs.Close();
+                    main.Log("Found and downloaded pre-made aliases file.");
+                }
+                catch (Exception ex)
+                {
+                    if (!ex.Message.Contains("(404) Not Found"))
+                        main.Log("No pre-made aliases available for this book.");
+                    else
+                        main.Log("Error downloading aliases: " + ex.Message);
+                }
+            }
+
             if (!File.Exists(aliasFile) || Properties.Settings.Default.overwriteAliases)
             {
                 SaveCharacters(aliasFile);

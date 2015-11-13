@@ -265,11 +265,11 @@ namespace XRayBuilderGUI
                                   "or a MOBI editor (exth 113 and optionally 504) to change this.", ASIN));
             }
 
-            if (md.DBName.Length == 31)
+            if (!Properties.Settings.Default.useNewVersion && md.DBName.Length == 31)
             {
                 MessageBox.Show(String.Format(
                     "WARNING: Database Name is the maximum length. If \"{0}\" is the full book title, this should not be an issue.\r\n" +
-                    "If the title is supposed to be longer than that, you may get an error on your Kindle (WG on firmware < 5.6 or will not load on higher versions).\r\n" +
+                    "If the title is supposed to be longer than that, you may get an error on your Kindle (WG on firmware < 5.6).\r\n" +
                     "This can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n",
                     md.DBName));
             }
@@ -429,7 +429,7 @@ namespace XRayBuilderGUI
                 MessageBox.Show("Missing metadata. See output log for details.", "Metadata Error");
                 return output;
             }
-            else if (databaseName.Length == 31)
+            else if (!Properties.Settings.Default.useNewVersion && databaseName.Length == 31)
             {
                 MessageBox.Show(
                     String.Format(

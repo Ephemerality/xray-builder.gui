@@ -97,6 +97,9 @@ namespace XRayBuilderGUI.Unpack
 
         public byte[] getRawML(FileStream fs)
         {
+            if (md.PDH.EncryptionType != 0)
+                throw new Exception("This book has DRM (it is encrypted). X-Ray Builder will only work on books that do not have DRM.");
+
             Decompressor decomp;
             switch (PDH.Compression)
             {

@@ -233,8 +233,6 @@ namespace XRayBuilderGUI
             if (fs == null)
                 throw new Exception("Unable to open mobi file.");
             Unpack.Metadata md = new Unpack.Metadata(fs);
-            if (md.PDH.EncryptionType != 0)
-                throw new Exception("This book has DRM (it is encrypted). X-Ray Builder will only work on books that do not have DRM.");
 
             if (md.mobiHeader.exthHeader == null)
                 throw new Exception("No EXT Header found. Ensure this book was processed with Calibre then try again.");

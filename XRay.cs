@@ -1061,10 +1061,25 @@ namespace XRayBuilderGUI
                         d.Add(temp[0], temp2);
                 }
             }
-            foreach (Term t in Terms)
+            for (int i = 0; i < Terms.Count; i++)
             {
+                Term t = Terms[i];
                 if (d.ContainsKey(t.TermName))
+                {
                     t.Aliases = new List<string>(d[t.TermName]);
+                    // If first alias is "/i", character searches will be case-insensitive
+                    // If it is /d, delete this character
+                    if (t.Aliases[0] == "/i")
+                    {
+                        t.MatchCase = false;
+                        t.Aliases.Remove("/i");
+                    }
+                    else if (t.Aliases[0] == "/d")
+                    {
+                        Terms.Remove(t);
+                        i--;
+                    }
+                }
             }
         }
 

@@ -415,6 +415,7 @@ namespace XRayBuilderGUI
                     //Search for character name and aliases in the html-less text. If failed, try in the HTML for rare situations.
                     //TODO: Improve location searching as IndexOf will not work if book length exceeds 2,147,483,647...
                     //If soft hyphen ignoring is turned on, also search hyphen-less text.
+                    if (!character.Match) continue;
                     List<string> search = character.Aliases.ToList<string>();
                     search.Insert(0, character.TermName);
                     if ((character.MatchCase && (search.Any(node.InnerText.Contains) || search.Any(node.InnerHtml.Contains)))
@@ -908,6 +909,8 @@ namespace XRayBuilderGUI
 
             public bool MatchCase = false;
 
+            public bool Match = true;
+
             public Term()
             {
             }
@@ -1069,6 +1072,7 @@ namespace XRayBuilderGUI
                     t.Aliases = new List<string>(d[t.TermName]);
                     // If first alias is "/i", character searches will be case-insensitive
                     // If it is /d, delete this character
+                    // If /n, will not match excerpts but will leave character in X-Ray
                     if (t.Aliases[0] == "/i")
                     {
                         t.MatchCase = false;
@@ -1078,6 +1082,11 @@ namespace XRayBuilderGUI
                     {
                         Terms.Remove(t);
                         i--;
+                    }
+                    else if (t.Aliases[0] == "/n")
+                    {
+                        t.Match = false;
+                        t.Aliases.Remove("/n");
                     }
                 }
             }

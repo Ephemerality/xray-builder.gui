@@ -32,6 +32,7 @@ namespace XRayBuilderGUI
         private frmPreviewXR frmXR = new frmPreviewXR();
         private frmPreviewXRN frmXRN = new frmPreviewXRN();
         private frmPreviewSA frmSA = new frmPreviewSA();
+        private frmSeries frmSER = new frmSeries();
 
         public void Log(string message)
         {
@@ -708,6 +709,21 @@ namespace XRayBuilderGUI
                             if (shelfariBookUrl != "")
                             {
                                 bookFound = true;
+                                if (Properties.Settings.Default.saveHtml)
+                                {
+                                    try
+                                    {
+                                        Log("Saving book's Shelfari webpage...");
+                                        shelfariHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(shelfariBookUrl));
+                                        File.WriteAllText(Environment.CurrentDirectory +
+                                                          String.Format(@"\dmp\{0}.shelfaripageHtml.txt", results[0]),
+                                            shelfariHtmlDoc.DocumentNode.InnerHtml);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Log(String.Format("An error ocurred saving shelfaripageHtml.txt: {0}", ex.Message));
+                                    }
+                                }
                                 break;
                             }
                         }

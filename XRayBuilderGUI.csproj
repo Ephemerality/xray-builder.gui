@@ -123,6 +123,12 @@
     <Compile Include="frmPreviewXRN.Designer.cs">
       <DependentUpon>frmPreviewXRN.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmSeries.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSeries.Designer.cs">
+      <DependentUpon>frmSeries.cs</DependentUpon>
+    </Compile>
     <Compile Include="Functions.cs" />
     <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
@@ -192,6 +198,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmPreviewXRN.resx">
       <DependentUpon>frmPreviewXRN.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmSeries.resx">
+      <DependentUpon>frmSeries.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmSettings.resx">
       <DependentUpon>frmSettings.cs</DependentUpon>

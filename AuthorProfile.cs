@@ -92,6 +92,7 @@ namespace XRayBuilderGUI
             {
                 try
                 {
+                    main.Log("Saving Amazon's author search webpage...");
                     File.WriteAllText(Environment.CurrentDirectory +
                                       String.Format(@"\dmp\{0}.authorsearchHtml.txt", curBook.asin),
                         authorHtmlDoc.DocumentNode.InnerHtml);
@@ -140,6 +141,7 @@ namespace XRayBuilderGUI
             {
                 try
                 {
+                    main.Log("Saving author's Amazon webpage...");
                     File.WriteAllText(Environment.CurrentDirectory +
                                       String.Format(@"\dmp\{0}.authorpageHtml.txt", curBook.asin),
                         authorHtmlDoc.DocumentNode.InnerHtml);
@@ -173,6 +175,7 @@ namespace XRayBuilderGUI
             }
             else
             {
+                BioTrimmed = "No author biography found on Amazon!";
                 main.Log("No author biography found on Amazon!");
             }
             // Try to download Author image

@@ -230,6 +230,7 @@ namespace XRayBuilderGUI
         private void chkKindleUnpack_CheckedChanged(object sender, EventArgs e)
         {
             txtUnpack.Enabled = chkKindleUnpack.Checked;
+            btnBrowseUnpack.Enabled = chkKindleUnpack.Checked;
         }
     }
 }

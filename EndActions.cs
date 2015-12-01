@@ -61,6 +61,7 @@ namespace XRayBuilderGUI
             {
                 try
                 {
+                    main.Log("Saving book's Amazon webpage...");
                     File.WriteAllText(Environment.CurrentDirectory +
                                       String.Format(@"\dmp\{0}.bookpageHtml.txt", curBook.asin),
                         bookHtmlDoc.DocumentNode.InnerHtml);
@@ -534,6 +535,12 @@ namespace XRayBuilderGUI
                                 }
                             }
                         }
+                        //Stop after first standard series is found maybe
+                        //add popup (already started implimentaton) in
+                        //future to pick which standard series you
+                        //want to use, not sure if worthwhile though.
+                        //eg: http://www.shelfari.com/books/37598923
+                        break;
                     }
                 }
             return "";

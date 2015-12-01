@@ -81,7 +81,7 @@ namespace XRayBuilderGUI
             "Sig Ra", "Sir", "Sister", "Sqn Ldr", "Sr", "Sr D", "Sra", "Srta", "Sultan", "Tan Sri", "Tan Sri Dato",
             "Tengku", "Teuku", "Than Puying", "The Hon Dr", "The Hon Justice", "The Hon Miss", "The Hon Mr",
             "The Hon Mrs", "The Hon Ms", "The Hon Sir", "The Very Rev", "Toh Puan", "Tun", "Vice Admiral",
-            "Viscount", "Viscountess", "Wg Cdr", "Jr", "Sr", "Sheriff", "Special Agent" };
+            "Viscount", "Viscountess", "Wg Cdr", "Jr", "Sr", "Sheriff", "Special Agent", "Detective" };
         #endregion
 
         public XRay()
@@ -651,7 +651,7 @@ namespace XRayBuilderGUI
             //Try a broad search for chapterish names just for fun
             if (_chapters.Count == 0)
             {
-                string chapterPattern = @"((?:chapter|book|section|part)\s+.*)|((?:prolog|prologue|epilogue)(?:\s+|$).*)";
+                string chapterPattern = @"((?:chapter|book|section|part)\s+.*)|((?:prolog|prologue|epilogue)(?:\s+|$).*)|((?:one|two|three|four|five|six|seven|eight|nine|ten)(?:\s+|$).*)";
                 IEnumerable<HtmlAgilityPack.HtmlNode> chapterNodes = bookDoc.DocumentNode.SelectNodes("//a").
                     Where(div => div.GetAttributeValue("class", "") == "chapter" || Regex.IsMatch(div.InnerText, chapterPattern, RegexOptions.IgnoreCase));
                 foreach (HtmlAgilityPack.HtmlNode chap in chapterNodes)
@@ -991,7 +991,7 @@ namespace XRayBuilderGUI
                             List<string> aliasList = new List<string>();
                             TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
                             
-                            string pattern = @"( ?(" + string.Join("|", CommonTitles) + ")\\.? )|(^[A-Z]\\. )|( [A-Z]\\.)|(\")|(“)|(”)|(,)";
+                            string pattern = @"( ?(" + string.Join("|", CommonTitles) + ")\\.? )|(^[A-Z]\\. )|( [A-Z]\\.)|(\")|(“)|(”)|(,)|( ?\\(.*\\))";
 
                             Regex regex = new Regex(pattern);
                             Match matchCheck = Regex.Match(c.TermName, pattern);

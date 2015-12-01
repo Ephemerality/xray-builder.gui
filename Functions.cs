@@ -225,6 +225,67 @@ namespace XRayBuilderGUI
                 version, date, time);
         }
 
+        //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
+        public static Unpack.Metadata GetMetaDataInternal(string mobiFile, string outDir, bool saveRawML, string randomFile = "")
+        {
+            List<string> output = new List<string>();
+            FileStream fs = new FileStream(mobiFile, FileMode.Open, FileAccess.Read);
+            if (fs == null)
+                throw new Exception("Unable to open mobi file.");
+            Unpack.Metadata md = new Unpack.Metadata(fs);
+
+            if (md.mobiHeader.exthHeader == null)
+                throw new Exception("No EXT Header found. Ensure this book was processed with Calibre then try again.");
+
+            if (md.mobiHeader.exthHeader.CDEType != "EBOK")
+                if (md.mobiHeader.exthHeader.CDEType.Length == 4 &&
+                    DialogResult.Yes == MessageBox.Show("The document type is not set to EBOK. Would you like this to be updated?\r\n" +
+                        "Caution: This feature is experimental and could potentially ruin your book file.", "Incorrect Content Type", MessageBoxButtons.YesNo))
+                {
+                    fs.Close();
+                    fs = new FileStream(mobiFile, FileMode.Open, FileAccess.ReadWrite);
+                    if (fs == null)
+                        throw new Exception("Unable to re-open mobi file for writing.");
+                    md.mobiHeader.exthHeader.UpdateCDEContentType(fs);
+                } else
+                    throw new Exception("The document type is not set to EBOK; Kindle will not display an X-Ray for this book.\r\n" +
+                        "You must either use Calibre's convert feature (Personal Doc tag under MOBI Output) or a MOBI editor (exth 501) to change this.");
+
+            string ASIN = md.ASIN;
+            Match match = Regex.Match(ASIN, "(^B[A-Z0-9]{9})");
+            if (!match.Success && DialogResult.No == MessageBox.Show(String.Format("Incorrect ASIN detected: {0}!\n" +
+                                      "Kindle may not display an X-Ray for this book.\n" +
+                                      "Do you wish to continue?", ASIN), "Incorrect ASIN", MessageBoxButtons.YesNo))
+            {
+                throw new Exception(String.Format("Incorrect ASIN detected: {0}!\r\n" +
+                                  "Kindle may not display an X-Ray for this book.\r\n" +
+                                  "You must either use Calibre's Quality Check plugin (Fix ASIN for Kindle Fire) " +
+                                  "or a MOBI editor (exth 113 and optionally 504) to change this.", ASIN));
+            }
+
+            if (!Properties.Settings.Default.useNewVersion && md.DBName.Length == 31)
+            {
+                MessageBox.Show(String.Format(
+                    "WARNING: Database Name is the maximum length. If \"{0}\" is the full book title, this should not be an issue.\r\n" +
+                    "If the title is supposed to be longer than that, you may get an error on your Kindle (WG on firmware < 5.6).\r\n" +
+                    "This can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n",
+                    md.DBName));
+            }
+            
+            if (saveRawML)
+            {
+                // Everything else checked out, grab rawml and write to the temp file
+                md.rawMLPath = randomFile + "\\" + Path.GetFileNameWithoutExtension(mobiFile) + ".rawml";
+                byte[] rawML = md.getRawML(fs);
+                using (FileStream rawMLFile = new FileStream(md.rawMLPath, FileMode.Create, FileAccess.Write))
+                {
+                    rawMLFile.Write(rawML, 0, rawML.Length);
+                }
+            }
+            fs.Close();
+            return md;
+        }
+
         public static List<string> GetMetaData(string mobiFile, string outDir, string randomFile, string mobiUnpack)
         {
             if (mobiUnpack == null) throw new ArgumentNullException("mobiUnpack");
@@ -308,7 +369,7 @@ namespace XRayBuilderGUI
                         return output;
                     }
                 }
-                asin = match.Groups[1].Value.Replace("\r", "");
+                asin = incorrectAsin;
             }
             match = Regex.Match(unpackInfo, @"(\d*) unique_id");
             if (match.Success && match.Groups.Count > 1)
@@ -366,7 +427,7 @@ namespace XRayBuilderGUI
                 MessageBox.Show("Missing metadata. See output log for details.", "Metadata Error");
                 return output;
             }
-            else if (databaseName.Length == 31)
+            else if (!Properties.Settings.Default.useNewVersion && databaseName.Length == 31)
             {
                 MessageBox.Show(
                     String.Format(
@@ -380,10 +441,7 @@ namespace XRayBuilderGUI
             output.Add(uniqid);
             output.Add(databaseName);
             output.Add(rawMl);
-
-            // Add author name to MetaData output
             output.Add(author);
-            // Add book title to MetaData output
             output.Add(title);
 
             return output;
@@ -472,15 +530,26 @@ namespace XRayBuilderGUI
         {
             BookInfo result = null;
 
-            Regex regex = new Regex(@"( [A-Z]\.)", RegexOptions.Compiled);
-            foreach (Match m in regex.Matches(author))
-            {
-                author = author.Replace(m.Value, m.Value.Trim());
-            }
+            string authorTrim = "";
 
-            //http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Ddigital-text&field-keywords=In+Plain+Sight+C.+J.+Box
-            string searchUrl = @"http://www.amazon.com/s/?url=search-alias%3Ddigital-text&field-keywords=" + 
-                Uri.EscapeDataString(title + " " + author);
+            Regex regex = new Regex(@"( [A-Z]\.)", RegexOptions.Compiled);
+            Match match = Regex.Match(author, @"( [A-Z]\.)", RegexOptions.Compiled);
+            if (match.Success)
+            {
+                foreach (Match m in regex.Matches(author))
+                {
+                    authorTrim = author.Replace(m.Value, m.Value.Trim());
+                }
+            }
+            else
+            {
+                authorTrim = author;
+            }
+            if (title.IndexOf(" (") >= 0)
+                title = title.Substring(0, title.IndexOf(" ("));
+
+            string searchUrl = @"http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Ddigital-text&field-keywords=" + 
+            Uri.EscapeDataString(title + " " + authorTrim + " kindle edition");
             HAP.HtmlDocument searchDoc = new HAP.HtmlDocument();
             searchDoc.LoadHtml(HttpDownloader.GetPageHtml(searchUrl));
             HAP.HtmlNode node = searchDoc.DocumentNode.SelectSingleNode("//li[@id='result_0']");
@@ -529,6 +598,15 @@ namespace XRayBuilderGUI
                     output.Append(input[i]);
             }
             return output.ToString();
+        }
+        
+        // Shamelessly stolen from http://www.mobileread.com/forums/showthread.php?t=185565
+        public static byte[] CheckBytes(byte[] bytesToCheck)
+        {
+            byte[] buffer = (byte[])bytesToCheck.Clone();
+            if (BitConverter.IsLittleEndian)
+                Array.Reverse(buffer);
+            return buffer;
         }
     }
 }

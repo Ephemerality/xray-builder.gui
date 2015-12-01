@@ -48,6 +48,8 @@ namespace XRayBuilderGUI
             chkSaveHtml.Checked = Properties.Settings.Default.saveHtml;
             chkSplitAliases.Checked = Properties.Settings.Default.splitAliases;
             chkSound.Checked = Properties.Settings.Default.playSound;
+            chkKindleUnpack.Checked = Properties.Settings.Default.useKindleUnpack;
+            chkDownloadAliases.Checked = Properties.Settings.Default.downloadAliases;
 
             // Added \r\n to show smaller tooltips
             ToolTip toolTip1 = new ToolTip();
@@ -94,6 +96,10 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(chkSound, "Play a sound after finished generating\r\n" +
                                         "Author Profile, End Action and Start Action\r\n" +
                                         "files, or after generating X-Ray file.");
+            toolTip1.SetToolTip(chkKindleUnpack, "If left unchecked, the program will attempt to get metadata and rawML without KindleUnpack.\r\n" +
+                "If it fails, enable this option to use the KindleUnpack tool and report your findings on the MobileRead thread.");
+            toolTip1.SetToolTip(chkDownloadAliases, "Attempt to download pre-made aliases if none exist locally yet.\r\n" +
+                "\"Overwrite aliases\" should not be checked or the downloaded ones will be overwritten.");
         }
 
         private void btnBrowseUnpack_Click(object sender, EventArgs e)
@@ -138,6 +144,8 @@ namespace XRayBuilderGUI
             Properties.Settings.Default.saveHtml = chkSaveHtml.Checked;
             Properties.Settings.Default.splitAliases = chkSplitAliases.Checked;
             Properties.Settings.Default.playSound = chkSound.Checked;
+            Properties.Settings.Default.useKindleUnpack = chkKindleUnpack.Checked;
+            Properties.Settings.Default.downloadAliases = chkDownloadAliases.Checked;
             Properties.Settings.Default.Save();
 
             this.Close();
@@ -217,6 +225,12 @@ namespace XRayBuilderGUI
         {
             chkAliasChapters.Visible = chkOverwrite.Checked;
             if (!chkOverwrite.Checked) chkAliasChapters.Checked = false;
+        }
+
+        private void chkKindleUnpack_CheckedChanged(object sender, EventArgs e)
+        {
+            txtUnpack.Enabled = chkKindleUnpack.Checked;
+            btnBrowseUnpack.Enabled = chkKindleUnpack.Checked;
         }
     }
 }

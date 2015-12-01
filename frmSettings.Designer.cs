@@ -64,6 +64,8 @@
             this.btnClearLogs = new System.Windows.Forms.Button();
             this.btnHelp = new System.Windows.Forms.Button();
             this.gbGeneral = new System.Windows.Forms.GroupBox();
+            this.chkDownloadAliases = new System.Windows.Forms.CheckBox();
+            this.chkKindleUnpack = new System.Windows.Forms.CheckBox();
             this.chkSound = new System.Windows.Forms.CheckBox();
             this.gbDirectories.SuspendLayout();
             this.gbXray.SuspendLayout();
@@ -111,6 +113,7 @@
             // 
             // btnBrowseUnpack
             // 
+            this.btnBrowseUnpack.Enabled = false;
             this.btnBrowseUnpack.Location = new System.Drawing.Point(471, 20);
             this.btnBrowseUnpack.Name = "btnBrowseUnpack";
             this.btnBrowseUnpack.Size = new System.Drawing.Size(34, 23);
@@ -122,6 +125,7 @@
             // txtUnpack
             // 
             this.txtUnpack.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtUnpack.Enabled = false;
             this.txtUnpack.Location = new System.Drawing.Point(153, 22);
             this.txtUnpack.Name = "txtUnpack";
             this.txtUnpack.Size = new System.Drawing.Size(312, 20);
@@ -133,9 +137,9 @@
             this.lblUnpack.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblUnpack.Location = new System.Drawing.Point(28, 25);
             this.lblUnpack.Name = "lblUnpack";
-            this.lblUnpack.Size = new System.Drawing.Size(119, 13);
+            this.lblUnpack.Size = new System.Drawing.Size(121, 13);
             this.lblUnpack.TabIndex = 14;
-            this.lblUnpack.Text = "Kindleunpack Location:";
+            this.lblUnpack.Text = "KindleUnpack Location:";
             // 
             // chkRaw
             // 
@@ -150,7 +154,7 @@
             // chkSpoilers
             // 
             this.chkSpoilers.AutoSize = true;
-            this.chkSpoilers.Location = new System.Drawing.Point(408, 26);
+            this.chkSpoilers.Location = new System.Drawing.Point(411, 26);
             this.chkSpoilers.Name = "chkSpoilers";
             this.chkSpoilers.Size = new System.Drawing.Size(63, 17);
             this.chkSpoilers.TabIndex = 18;
@@ -159,7 +163,7 @@
             // 
             // txtOffset
             // 
-            this.txtOffset.Location = new System.Drawing.Point(337, 93);
+            this.txtOffset.Location = new System.Drawing.Point(342, 93);
             this.txtOffset.Name = "txtOffset";
             this.txtOffset.Size = new System.Drawing.Size(47, 20);
             this.txtOffset.TabIndex = 20;
@@ -168,7 +172,7 @@
             // 
             this.lblOffset.AutoSize = true;
             this.lblOffset.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblOffset.Location = new System.Drawing.Point(252, 96);
+            this.lblOffset.Location = new System.Drawing.Point(257, 96);
             this.lblOffset.Name = "lblOffset";
             this.lblOffset.Size = new System.Drawing.Size(77, 13);
             this.lblOffset.TabIndex = 19;
@@ -187,7 +191,7 @@
             // chkUseNew
             // 
             this.chkUseNew.AutoSize = true;
-            this.chkUseNew.Location = new System.Drawing.Point(255, 26);
+            this.chkUseNew.Location = new System.Drawing.Point(260, 26);
             this.chkUseNew.Name = "chkUseNew";
             this.chkUseNew.Size = new System.Drawing.Size(137, 17);
             this.chkUseNew.TabIndex = 22;
@@ -197,7 +201,7 @@
             // chkAndroid
             // 
             this.chkAndroid.AutoSize = true;
-            this.chkAndroid.Location = new System.Drawing.Point(408, 72);
+            this.chkAndroid.Location = new System.Drawing.Point(411, 72);
             this.chkAndroid.Name = "chkAndroid";
             this.chkAndroid.Size = new System.Drawing.Size(103, 17);
             this.chkAndroid.TabIndex = 23;
@@ -223,7 +227,7 @@
             // chkSubDirectories
             // 
             this.chkSubDirectories.AutoSize = true;
-            this.chkSubDirectories.Location = new System.Drawing.Point(255, 49);
+            this.chkSubDirectories.Location = new System.Drawing.Point(260, 49);
             this.chkSubDirectories.Name = "chkSubDirectories";
             this.chkSubDirectories.Size = new System.Drawing.Size(113, 17);
             this.chkSubDirectories.TabIndex = 25;
@@ -266,7 +270,7 @@
             // chkSplitAliases
             // 
             this.chkSplitAliases.AutoSize = true;
-            this.chkSplitAliases.Location = new System.Drawing.Point(255, 72);
+            this.chkSplitAliases.Location = new System.Drawing.Point(260, 72);
             this.chkSplitAliases.Name = "chkSplitAliases";
             this.chkSplitAliases.Size = new System.Drawing.Size(145, 17);
             this.chkSplitAliases.TabIndex = 29;
@@ -276,7 +280,7 @@
             // chkSaveHtml
             // 
             this.chkSaveHtml.AutoSize = true;
-            this.chkSaveHtml.Location = new System.Drawing.Point(408, 49);
+            this.chkSaveHtml.Location = new System.Drawing.Point(411, 49);
             this.chkSaveHtml.Name = "chkSaveHtml";
             this.chkSaveHtml.Size = new System.Drawing.Size(84, 17);
             this.chkSaveHtml.TabIndex = 28;
@@ -364,7 +368,7 @@
             // chkAmazonUK
             // 
             this.chkAmazonUK.AutoSize = true;
-            this.chkAmazonUK.Location = new System.Drawing.Point(9, 24);
+            this.chkAmazonUK.Location = new System.Drawing.Point(12, 24);
             this.chkAmazonUK.Name = "chkAmazonUK";
             this.chkAmazonUK.Size = new System.Drawing.Size(94, 17);
             this.chkAmazonUK.TabIndex = 24;
@@ -377,7 +381,7 @@
             this.chkAmazonUSA.Checked = true;
             this.chkAmazonUSA.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkAmazonUSA.Enabled = false;
-            this.chkAmazonUSA.Location = new System.Drawing.Point(9, 53);
+            this.chkAmazonUSA.Location = new System.Drawing.Point(12, 53);
             this.chkAmazonUSA.Name = "chkAmazonUSA";
             this.chkAmazonUSA.Size = new System.Drawing.Size(87, 17);
             this.chkAmazonUSA.TabIndex = 25;
@@ -440,6 +444,8 @@
             // 
             // gbGeneral
             // 
+            this.gbGeneral.Controls.Add(this.chkDownloadAliases);
+            this.gbGeneral.Controls.Add(this.chkKindleUnpack);
             this.gbGeneral.Controls.Add(this.chkSound);
             this.gbGeneral.Location = new System.Drawing.Point(12, 105);
             this.gbGeneral.Name = "gbGeneral";
@@ -448,10 +454,31 @@
             this.gbGeneral.TabStop = false;
             this.gbGeneral.Text = "General";
             // 
+            // chkDownloadAliases
+            // 
+            this.chkDownloadAliases.AutoSize = true;
+            this.chkDownloadAliases.Location = new System.Drawing.Point(145, 26);
+            this.chkDownloadAliases.Name = "chkDownloadAliases";
+            this.chkDownloadAliases.Size = new System.Drawing.Size(109, 17);
+            this.chkDownloadAliases.TabIndex = 32;
+            this.chkDownloadAliases.Text = "Download aliases";
+            this.chkDownloadAliases.UseVisualStyleBackColor = true;
+            // 
+            // chkKindleUnpack
+            // 
+            this.chkKindleUnpack.AutoSize = true;
+            this.chkKindleUnpack.Location = new System.Drawing.Point(9, 26);
+            this.chkKindleUnpack.Name = "chkKindleUnpack";
+            this.chkKindleUnpack.Size = new System.Drawing.Size(115, 17);
+            this.chkKindleUnpack.TabIndex = 31;
+            this.chkKindleUnpack.Text = "Use KindleUnpack";
+            this.chkKindleUnpack.UseVisualStyleBackColor = true;
+            this.chkKindleUnpack.CheckedChanged += new System.EventHandler(this.chkKindleUnpack_CheckedChanged);
+            // 
             // chkSound
             // 
             this.chkSound.AutoSize = true;
-            this.chkSound.Location = new System.Drawing.Point(9, 26);
+            this.chkSound.Location = new System.Drawing.Point(260, 26);
             this.chkSound.Name = "chkSound";
             this.chkSound.Size = new System.Drawing.Size(216, 17);
             this.chkSound.TabIndex = 30;
@@ -537,5 +564,7 @@
         private System.Windows.Forms.GroupBox gbGeneral;
         private System.Windows.Forms.CheckBox chkSound;
         private System.Windows.Forms.CheckBox chkAliasChapters;
+        private System.Windows.Forms.CheckBox chkKindleUnpack;
+        private System.Windows.Forms.CheckBox chkDownloadAliases;
     }
 }

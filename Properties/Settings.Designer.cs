@@ -310,5 +310,41 @@ namespace XRayBuilderGUI.Properties {
                 this["overwriteAliases"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool useKindleUnpack {
+            get {
+                return ((bool)(this["useKindleUnpack"]));
+            }
+            set {
+                this["useKindleUnpack"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool newMessage {
+            get {
+                return ((bool)(this["newMessage"]));
+            }
+            set {
+                this["newMessage"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool downloadAliases {
+            get {
+                return ((bool)(this["downloadAliases"]));
+            }
+            set {
+                this["downloadAliases"] = value;
+            }
+        }
     }
 }

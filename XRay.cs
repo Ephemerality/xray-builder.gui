@@ -81,7 +81,7 @@ namespace XRayBuilderGUI
             "Sig Ra", "Sir", "Sister", "Sqn Ldr", "Sr", "Sr D", "Sra", "Srta", "Sultan", "Tan Sri", "Tan Sri Dato",
             "Tengku", "Teuku", "Than Puying", "The Hon Dr", "The Hon Justice", "The Hon Miss", "The Hon Mr",
             "The Hon Mrs", "The Hon Ms", "The Hon Sir", "The Very Rev", "Toh Puan", "Tun", "Vice Admiral",
-            "Viscount", "Viscountess", "Wg Cdr", "Jr", "Sr" };
+            "Viscount", "Viscountess", "Wg Cdr", "Jr", "Sr", "Sheriff", "Special Agent", "Detective" };
         #endregion
 
         public XRay()
@@ -230,6 +230,25 @@ namespace XRayBuilderGUI
                 aliasFile = Environment.CurrentDirectory + @"\ext\" + asin + ".aliases";
             else
                 aliasFile = aliaspath;
+            if (!File.Exists(aliasFile) && Properties.Settings.Default.downloadAliases)
+            {
+                try
+                {
+                    string aliases = HttpDownloader.GetPageHtml("https://www.revensoftware.com/xray/aliases/" + asin);
+                    StreamWriter fs = new StreamWriter(aliasFile, false, Encoding.UTF8);
+                    fs.Write(aliases);
+                    fs.Close();
+                    main.Log("Found and downloaded pre-made aliases file.");
+                }
+                catch (Exception ex)
+                {
+                    if (!ex.Message.Contains("(404) Not Found"))
+                        main.Log("No pre-made aliases available for this book.");
+                    else
+                        main.Log("Error downloading aliases: " + ex.Message);
+                }
+            }
+
             if (!File.Exists(aliasFile) || Properties.Settings.Default.overwriteAliases)
             {
                 SaveCharacters(aliasFile);
@@ -396,6 +415,7 @@ namespace XRayBuilderGUI
                     //Search for character name and aliases in the html-less text. If failed, try in the HTML for rare situations.
                     //TODO: Improve location searching as IndexOf will not work if book length exceeds 2,147,483,647...
                     //If soft hyphen ignoring is turned on, also search hyphen-less text.
+                    if (!character.Match) continue;
                     List<string> search = character.Aliases.ToList<string>();
                     search.Insert(0, character.TermName);
                     if ((character.MatchCase && (search.Any(node.InnerText.Contains) || search.Any(node.InnerHtml.Contains)))
@@ -631,7 +651,7 @@ namespace XRayBuilderGUI
             //Try a broad search for chapterish names just for fun
             if (_chapters.Count == 0)
             {
-                string chapterPattern = @"((?:chapter|book|section|part)\s+.*)|((?:prolog|prologue|epilogue)(?:\s+|$).*)";
+                string chapterPattern = @"((?:chapter|book|section|part)\s+.*)|((?:prolog|prologue|epilogue)(?:\s+|$).*)|((?:one|two|three|four|five|six|seven|eight|nine|ten)(?:\s+|$).*)";
                 IEnumerable<HtmlAgilityPack.HtmlNode> chapterNodes = bookDoc.DocumentNode.SelectNodes("//a").
                     Where(div => div.GetAttributeValue("class", "") == "chapter" || Regex.IsMatch(div.InnerText, chapterPattern, RegexOptions.IgnoreCase));
                 foreach (HtmlAgilityPack.HtmlNode chap in chapterNodes)
@@ -889,6 +909,8 @@ namespace XRayBuilderGUI
 
             public bool MatchCase = false;
 
+            public bool Match = true;
+
             public Term()
             {
             }
@@ -957,6 +979,7 @@ namespace XRayBuilderGUI
             //Try to remove common titles from aliases
             using (var streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8))
             {
+                List<string> aliasCheck = new List<string>();
                 foreach (var c in Terms)
                     if (c.Type == "character")
                     {
@@ -968,13 +991,19 @@ namespace XRayBuilderGUI
                             List<string> aliasList = new List<string>();
                             TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
                             
-                            string pattern = @"( ?(" + string.Join("|", CommonTitles) + ")\\. ?)|(^[A-Z]\\. )|( [A-Z]\\.)|(\\\\\")|(“)|(”)";
+                            string pattern = @"( ?(" + string.Join("|", CommonTitles) + ")\\.? )|(^[A-Z]\\. )|( [A-Z]\\.)|(\")|(“)|(”)|(,)|( ?\\(.*\\))";
 
-                            Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
-                            Match matchCheck = Regex.Match(c.TermName, pattern , RegexOptions.IgnoreCase);
+                            Regex regex = new Regex(pattern);
+                            Match matchCheck = Regex.Match(c.TermName, pattern);
                             if (matchCheck.Success)
                             {
                                 titleTrimmed = c.TermName;
+                                titleTrimmed = Regex.Replace(titleTrimmed, @"\s+", " ");
+                                titleTrimmed = Regex.Replace(titleTrimmed, @"( ?V?I{0,3}$)", String.Empty);
+                                foreach (Match match in regex.Matches(titleTrimmed))
+                                {
+                                    titleTrimmed = titleTrimmed.Replace(match.Value, String.Empty);
+                                }
                                 foreach (Match match in regex.Matches(titleTrimmed))
                                 {
                                     titleTrimmed = titleTrimmed.Replace(match.Value, String.Empty);
@@ -1000,6 +1029,9 @@ namespace XRayBuilderGUI
                                 aliasList.Sort((a, b) => b.Length.CompareTo(a.Length));
                                 foreach (string word in aliasList)
                                 {
+                                    if (aliasCheck.Any(str => str.Equals(word)))
+                                        continue;
+                                    aliasCheck.Add(word);
                                     splitName += word + ",";
                                 }
                                 streamWriter.WriteLine(c.TermName + "|" + splitName.Substring(0, splitName.LastIndexOf(",")));
@@ -1032,10 +1064,31 @@ namespace XRayBuilderGUI
                         d.Add(temp[0], temp2);
                 }
             }
-            foreach (Term t in Terms)
+            for (int i = 0; i < Terms.Count; i++)
             {
+                Term t = Terms[i];
                 if (d.ContainsKey(t.TermName))
+                {
                     t.Aliases = new List<string>(d[t.TermName]);
+                    // If first alias is "/i", character searches will be case-insensitive
+                    // If it is /d, delete this character
+                    // If /n, will not match excerpts but will leave character in X-Ray
+                    if (t.Aliases[0] == "/i")
+                    {
+                        t.MatchCase = false;
+                        t.Aliases.Remove("/i");
+                    }
+                    else if (t.Aliases[0] == "/d")
+                    {
+                        Terms.Remove(t);
+                        i--;
+                    }
+                    else if (t.Aliases[0] == "/n")
+                    {
+                        t.Match = false;
+                        t.Aliases.Remove("/n");
+                    }
+                }
             }
         }
 
@@ -1108,14 +1161,14 @@ namespace XRayBuilderGUI
                     if (tmpString.Contains(":"))
                     {
                         newTerm.TermName = tmpString.Substring(0, tmpString.IndexOf(":"));
-                        newTerm.Desc = tmpString.Substring(tmpString.IndexOf(":") + 1).Trim();
+                        newTerm.Desc = tmpString.Substring(tmpString.IndexOf(":") + 1).Replace("&amp;", "&").Trim();
                     }
                     else
                     {
                         newTerm.TermName = tmpString;
                     }
-                    newTerm.TermName = newTerm.TermName.PregReplace(patterns, replacements);
-                    newTerm.Desc = newTerm.Desc.PregReplace(patterns, replacements);
+                    //newTerm.TermName = newTerm.TermName.PregReplace(patterns, replacements);
+                    //newTerm.Desc = newTerm.Desc.PregReplace(patterns, replacements);
                     newTerm.DescSrc = "shelfari";
                     //Use either the associated shelfari URL of the term or if none exists, use the book's url
                     //Could use a wikipedia page instead as the xray plugin/site does but I decided not to

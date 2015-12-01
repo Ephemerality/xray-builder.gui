@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -60,14 +61,14 @@ namespace XRayBuilderGUI
             {
                 try
                 {
+                    main.Log("Saving book's Amazon webpage...");
                     File.WriteAllText(Environment.CurrentDirectory +
-                                      String.Format(@"\dmp\{0}.bookHtml.txt", book.asin),
-                        ap.authorHtmlDoc.DocumentNode.InnerHtml);
+                                      String.Format(@"\dmp\{0}.bookpageHtml.txt", curBook.asin),
+                        bookHtmlDoc.DocumentNode.InnerHtml);
                 }
                 catch (Exception ex)
                 {
-                    main.Log(String.Format("An error ocurred saving bookHtml.txt: {0}", ex.Message));
-                    return;
+                    main.Log(String.Format("An error ocurred saving bookpageHtml.txt: {0}", ex.Message));
                 }
             }
 
@@ -274,8 +275,10 @@ namespace XRayBuilderGUI
             string seriesPosition = curBook.seriesPosition == "" ? "" :
                 String.Format(@"""seriesPosition"":{{""class"":""seriesPosition"",""positionInSeries"":{0},""totalInSeries"":{1},""seriesName"":""{2}""}},",
                     curBook.seriesPosition, curBook.totalInSeries, curBook.seriesName);
-            string popularHighlights = String.Format(@"""popularHighlightsText"":{{""class"":""dynamicText"",""localizedText"":{{""de"":""{0} Passagen wurden {1} mal markiert"",""en-US"":""{0} passages have been highlighted {1} times"",""ru"":""1\u00A0095 \u043E\u0442\u0440\u044B\u0432\u043A\u043E\u0432 \u0431\u044B\u043B\u043E \u0432\u044B\u0434\u0435\u043B\u0435\u043D\u043E 12\u00A0326 \u0440\u0430\u0437"",""pt-BR"":""{0} trechos foram destacados {1} vezes"",""ja"":""{0}\u7B87\u6240\u304C{1}\u56DE\u30CF\u30A4\u30E9\u30A4\u30C8\u3055\u308C\u307E\u3057\u305F"",""en"":""{0} passages have been highlighted {1} times"",""it"":""{0} brani sono stati evidenziati {1} volte"",""fr"":""{0}\u00A0095 passages ont \u00E9t\u00E9 surlign\u00E9s {1}\u00A0326 fois"",""zh-CN"":""{0} \u4E2A\u6BB5\u843D\u88AB\u6807\u6CE8\u4E86 {1} \u6B21"",""es"":""Se han subrayado {0} pasajes {1} veces"",""nl"":""{0} fragmenten zijn {1} keer gemarkeerd""}}}}", curBook.popularPassages, curBook.popularHighlights);
-            string grokShelfInfo = String.Format(@"""grokShelfInfo"":{{""class"":""goodReadsShelfInfo"",""asin"":""{0}"",""shelves"":[""reading""]}}", curBook.asin);
+
+            string popularHighlights = curBook.popularHighlights == "" ? "" :
+                String.Format(@"""popularHighlightsText"":{{""class"":""dynamicText"",""localizedText"":{{""de"":""{0} Passagen wurden {1} mal markiert"",""en-US"":""{0} passages have been highlighted {1} times"",""ru"":""1\u00A0095 \u043E\u0442\u0440\u044B\u0432\u043A\u043E\u0432 \u0431\u044B\u043B\u043E \u0432\u044B\u0434\u0435\u043B\u0435\u043D\u043E 12\u00A0326 \u0440\u0430\u0437"",""pt-BR"":""{0} trechos foram destacados {1} vezes"",""ja"":""{0}\u7B87\u6240\u304C{1}\u56DE\u30CF\u30A4\u30E9\u30A4\u30C8\u3055\u308C\u307E\u3057\u305F"",""en"":""{0} passages have been highlighted {1} times"",""it"":""{0} brani sono stati evidenziati {1} volte"",""fr"":""{0}\u00A0095 passages ont \u00E9t\u00E9 surlign\u00E9s {1}\u00A0326 fois"",""zh-CN"":""{0} \u4E2A\u6BB5\u843D\u88AB\u6807\u6CE8\u4E86 {1} \u6B21"",""es"":""Se han subrayado {0} pasajes {1} veces"",""nl"":""{0} fragmenten zijn {1} keer gemarkeerd""}}}}", curBook.popularPassages, curBook.popularHighlights);
+            string grokShelfInfo = String.Format(@"""grokShelfInfo"":{{""class"":""goodReadsShelfInfo"",""asin"":""{0}"",""shelves"":[""to-read""]}}", curBook.asin);
             string currentBook = curBook.ToExtraJSON("featuredRecommendation");
             string authors = String.Format(@"""authorBios"":{{""class"":""authorBioList"",""authors"":[{0}]}}", authorProfile.ToJSON());
             string authorRecs = @"""authorRecs"":{{""class"":""recommendationList"",""recommendations"":[{0}]}}";
@@ -390,7 +393,8 @@ namespace XRayBuilderGUI
                     main.Log("Book was found to be part of a series, but next book could not be found.\r\n" +
                         "Please report this book and the Shelfari URL and output log to improve parsing.");
 
-            } else
+            }
+            else if (curBook.seriesPosition != curBook.totalInSeries)
                 main.Log("Unable to find next book in series, the book may not be part of one.");
 
             if (previousTitle != "")
@@ -477,56 +481,68 @@ namespace XRayBuilderGUI
                 curBook.popularHighlights = "";
             }
 
-            HtmlAgilityPack.HtmlNode seriesNode = searchHtmlDoc.DocumentNode.SelectSingleNode("//span[@class='series']/a[@href]");
-            if (seriesNode == null)
-                return "";
-            seriesNode.GetAttributeValue("href", "");
-            curBook.seriesName = seriesNode.FirstChild.InnerText.Trim();
-            HtmlAgilityPack.HtmlNode wikiNode = searchHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_Series']");
-            if (wikiNode == null)
-                return "";
-            HtmlAgilityPack.HtmlNode node3 = wikiNode.SelectSingleNode(".//div/div");
-            if (node3 == null || !node3.InnerText.Contains("(standard series)"))
-                return "";
-            main.Log("About the series: " + node3.InnerText.Replace(" (standard series)", "").Replace(".", ""));
-            Match match = Regex.Match(node3.InnerText, @"This is book (\d+) of (\d+)");
-            if (!match.Success || match.Groups.Count != 3)
-                return "";
-            // Check if book is the last in the series
-            if (!match.Groups[1].Value.Equals(match.Groups[2].Value))
-            {
-                curBook.seriesPosition = match.Groups[1].Value;
-                curBook.totalInSeries = match.Groups[2].Value;
-
-                node3 = wikiNode.SelectSingleNode(".//div/p");
-                //Parse preceding book
-                if (node3 != null && node3.InnerText.Contains("Preceded by ", StringComparison.OrdinalIgnoreCase))
+            //Check if book series is available and displayed in Series & Lists on Shelfari page.
+            HtmlAgilityPack.HtmlNode seriesNode = searchHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_Series']/div");
+            if (seriesNode != null)
+                //If multiple Series found, find and use standard series.
+                foreach (HtmlAgilityPack.HtmlNode seriesType in
+                    seriesNode.SelectNodes(".//div"))
                 {
-                    match = Regex.Match(node3.InnerText, @"Preceded by (.*),", RegexOptions.IgnoreCase);
-                    if (match.Success && match.Groups.Count == 2)
+                    if (seriesType.InnerText.Contains("(standard series)", StringComparison.OrdinalIgnoreCase) && !seriesType.InnerText.Contains("(Reading Order)", StringComparison.OrdinalIgnoreCase))
                     {
-                        previousTitle = match.Groups[1].Value;
-                        List<string> links = wikiNode.Descendants("a")
-                            .Select(a => a.GetAttributeValue("href", ""))
-                            .ToList();
-                        //Grab Shelfari Kindle edition links for these books
-                        previousShelfariUrl = links[4] + "/editions?binding=Kindle";
-                        nextShelfariUrl = links[5] + "/editions?binding=Kindle";
-
-                        main.Log("Preceded by: " + previousTitle);
+                        curBook.seriesName = seriesType.ChildNodes["a"].InnerText.Trim();
+                        main.Log("About the series: " + seriesType.InnerText.Replace(". (standard series)", ""));
+                        Match match = Regex.Match(seriesType.InnerText, @"This is book (\d+) of (\d+)");
+                        if (!match.Success || match.Groups.Count != 3)
+                            return "";
+                        curBook.seriesPosition = match.Groups[1].Value;
+                        curBook.totalInSeries = match.Groups[2].Value;
+                        HtmlAgilityPack.HtmlNode seriesInfo = seriesNode.SelectSingleNode(".//p");
+                        //Parse preceding book
+                        if (seriesInfo != null && seriesInfo.InnerText.Contains("Preceded by ", StringComparison.OrdinalIgnoreCase))
+                        {
+                            match = Regex.Match(seriesInfo.InnerText, @"Preceded by (.*),", RegexOptions.IgnoreCase);
+                            if (match.Success && match.Groups.Count == 2)
+                            {
+                                previousTitle = match.Groups[1].Value;
+                            }
+                            else
+                            {
+                                match = Regex.Match(seriesInfo.InnerText, @"Preceded by (.*)\.", RegexOptions.IgnoreCase);
+                                if (match.Success && match.Groups.Count == 2)
+                                {
+                                    previousTitle = match.Groups[1].Value;
+                                }
+                            }
+                            main.Log("Preceded by: " + previousTitle);
+                            //Grab Shelfari Kindle edition link for this book
+                            previousShelfariUrl = seriesInfo.ChildNodes["a"].GetAttributeValue("href", "") +
+                                                  "/editions?binding=Kindle";
+                        }
+                        // Check if book is the last in the series
+                        if (!curBook.seriesPosition.Equals(curBook.totalInSeries))
+                        {
+                            //Parse following book
+                            if (seriesInfo != null && seriesInfo.InnerText.Contains("followed by ", StringComparison.OrdinalIgnoreCase))
+                            {
+                                match = Regex.Match(seriesInfo.InnerText, @"followed by (.*)\.", RegexOptions.IgnoreCase);
+                                if (match.Success && match.Groups.Count == 2)
+                                {
+                                    main.Log("Followed by: " + match.Groups[1].Value);
+                                    //Grab Shelfari Kindle edition link for this book
+                                    nextShelfariUrl = seriesInfo.ChildNodes["a"].GetAttributeValue("href", "") + "/editions?binding=Kindle";
+                                    return match.Groups[1].Value;
+                                }
+                            }
+                        }
+                        //Stop after first standard series is found maybe
+                        //add popup (already started implimentaton) in
+                        //future to pick which standard series you
+                        //want to use, not sure if worthwhile though.
+                        //eg: http://www.shelfari.com/books/37598923
+                        break;
                     }
                 }
-                //Parse following book
-                if (node3 != null && node3.InnerText.Contains("followed by ", StringComparison.OrdinalIgnoreCase))
-                {
-                    match = Regex.Match(node3.InnerText, @"followed by (.*)\.", RegexOptions.IgnoreCase);
-                    if (match.Success && match.Groups.Count == 2)
-                    {
-                        main.Log("Followed by: " + match.Groups[1].Value);
-                        return match.Groups[1].Value;
-                    }
-                }
-            }
             return "";
         }
 
@@ -587,8 +603,6 @@ namespace XRayBuilderGUI
                     }
                 }
                 if (hasSeries)
-                    main.Log(String.Format("Unable to find the next book in this series!\r\n" +
-                                      "This is the last title in the {0} series...", seriesShort));
                 return "";
             }
             return "";

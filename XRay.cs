@@ -425,14 +425,15 @@ namespace XRayBuilderGUI
                     {
                         int locHighlight = -1;
                         int lenHighlight = -1;
+                        string punctuationMarks = @"[!\.?,""'\);]*";
                         //Search html for the matching term out of all aliases
                         foreach (string s in search)
                         {
-                            int index = node.InnerHtml.IndexOf(s, character.MatchCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
-                            if (index >= 0)
+                            Match match = Regex.Match(node.InnerHtml, s + punctuationMarks, character.MatchCase ? RegexOptions.IgnoreCase : RegexOptions.None);
+                            if (match.Success)
                             {
-                                locHighlight = index;
-                                lenHighlight = s.Length;
+                                locHighlight = match.Index;
+                                lenHighlight = match.Length;
                                 break;
                             }
                         }
@@ -448,8 +449,8 @@ namespace XRayBuilderGUI
                                 string patternHTML = "(?:<[^>]*>)*";
                                 //Match HTML tags -- provided there's nothing malformed
                                 string patternSoftHypen = "(\u00C2\u00AD|&shy;|&#173;|&#xad;|&#0173;|&#x00AD;)*";
-                                pattern = String.Format("{0}{1}{0}", patternHTML,
-                                    string.Join(patternHTML + patternSoftHypen, Regex.Unescape(s).ToCharArray()));
+                                pattern = String.Format("{0}{1}{0}{2}", patternHTML,
+                                    string.Join(patternHTML + patternSoftHypen, Regex.Unescape(s).ToCharArray()), punctuationMarks);
                                 if (character.MatchCase)
                                     pattern += "(?=[^a-zA-Z])";
                                 patterns.Add(pattern);

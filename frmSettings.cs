@@ -14,7 +14,8 @@ namespace XRayBuilderGUI
 
         private void frmSettings_Load(object sender, EventArgs e)
         {
-            lblVersion.Text = Functions.AppVersion();
+            this.Text = String.Format("Settings (X-Ray Builder GUI v{0})", 
+                System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
             if (Directory.Exists(Environment.CurrentDirectory + @"\log"))
             {
@@ -100,6 +101,8 @@ namespace XRayBuilderGUI
                 "If it fails, enable this option to use the KindleUnpack tool and report your findings on the MobileRead thread.");
             toolTip1.SetToolTip(chkDownloadAliases, "Attempt to download pre-made aliases if none exist locally yet.\r\n" +
                 "\"Overwrite aliases\" should not be checked or the downloaded ones will be overwritten.");
+            toolTip1.SetToolTip(btnSupport, "Visit the MobileRead forum for\r\n" +
+                                        "support, bug reports or questions.");
         }
 
         private void btnBrowseUnpack_Click(object sender, EventArgs e)
@@ -231,6 +234,11 @@ namespace XRayBuilderGUI
         {
             txtUnpack.Enabled = chkKindleUnpack.Checked;
             btnBrowseUnpack.Enabled = chkKindleUnpack.Checked;
+        }
+
+        private void btnSupport_Click(object sender, EventArgs e)
+        {
+            Process.Start("http://www.mobileread.com/forums/showthread.php?t=245754");
         }
     }
 }

@@ -210,12 +210,6 @@ namespace XRayBuilderGUI
             return path;
         }
 
-        public static string AppVersion()
-        {
-            var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            return "X-Ray Builder GUI v" + version.ToString();
-        }
-
         public static string TimeStamp()
         {
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;

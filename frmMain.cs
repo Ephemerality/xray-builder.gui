@@ -886,18 +886,6 @@ namespace XRayBuilderGUI
                 rdoShelfari.Checked = true;
             else
                 rdoFile.Checked = true;
-
-            if (!settings.newMessage)
-            {
-                MessageBox.Show("Metadata is now gathered internally rather than with KindleUnpack.\r\n" +
-                    "If you run into any metadata extraction errors, there is a setting to turn KindleUnpack back on.\r\n" +
-                    "Please report any such errors on the MobileRead thread to help improve the program.\r\n\r\n" +
-                    "There is also a new feature that allows you to download pre-made aliases if they exist on our server.\r\n" +
-                    "If the setting is checked, aliases will be downloaded automatically during the build process.\r\n" +
-                    "Thanks for using X-Ray Builder!\r\n-Ephemerality and DarrenMcG");
-                settings.newMessage = true;
-                settings.Save();
-            }
         }
 
         private void frmMain_DragDrop(object sender, DragEventArgs e)
@@ -974,6 +962,21 @@ namespace XRayBuilderGUI
         private void tmiStartAction_Click(object sender, EventArgs e)
         {
             frmSA.ShowDialog();
+        }
+
+        private void frmMain_Shown(object sender, EventArgs e)
+        {
+            if (!settings.newMessage)
+            {
+                MessageBox.Show("Metadata is now gathered internally rather than with KindleUnpack. " +
+                    "If you run into any metadata extraction errors, there is a setting to turn KindleUnpack back on. " +
+                    "Please report any such errors on the MobileRead thread to help improve the program.\r\n\r\n" +
+                    "There is also a new feature that allows you to download pre-made aliases if they exist on our server. " +
+                    "If the setting is checked, aliases will be downloaded automatically during the build process.\r\n\r\n" +
+                    "- Thanks for using X-Ray Builder GUI!\r\n- Ephemerality and darrenmcg","New for X-Ray Builder GUI v2.0.10.0");
+                settings.newMessage = true;
+                settings.Save();
+            }
         }
     }
 }

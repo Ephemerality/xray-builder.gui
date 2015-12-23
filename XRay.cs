@@ -425,18 +425,11 @@ namespace XRayBuilderGUI
                     {
                         int locHighlight = -1;
                         int lenHighlight = -1;
-                        string punctuationMarks = @"[!\.?,""'\);]*";
+                        string punctuationMarks = @"\S*[!\.?,""'\);]*";
                         //Search html for the matching term out of all aliases
                         foreach (string s in search)
                         {
-                            Match match = Regex.Match(node.InnerHtml, s + punctuationMarks, character.MatchCase ? RegexOptions.IgnoreCase : RegexOptions.None);
-                            if (match.Success)
-                            {
-                                locHighlight = match.Index;
-                                lenHighlight = match.Length;
-                                break;
-                            }
-                            match = Regex.Match(node.InnerHtml, s, character.MatchCase ? RegexOptions.IgnoreCase : RegexOptions.None);
+                            Match match = Regex.Match(node.InnerHtml, s + punctuationMarks, character.MatchCase ? RegexOptions.None : RegexOptions.IgnoreCase);
                             if (match.Success)
                             {
                                 locHighlight = match.Index;
@@ -1101,13 +1094,13 @@ namespace XRayBuilderGUI
                 if (d.ContainsKey(t.TermName))
                 {
                     t.Aliases = new List<string>(d[t.TermName]);
-                    // If first alias is "/i", character searches will be case-insensitive
+                    // If first alias is "/c", character searches will be case-sensitive
                     // If it is /d, delete this character
                     // If /n, will not match excerpts but will leave character in X-Ray
-                    if (t.Aliases[0] == "/i")
+                    if (t.Aliases[0] == "/c")
                     {
-                        t.MatchCase = false;
-                        t.Aliases.Remove("/i");
+                        t.MatchCase = true;
+                        t.Aliases.Remove("/c");
                     }
                     else if (t.Aliases[0] == "/d")
                     {

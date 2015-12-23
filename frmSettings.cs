@@ -102,7 +102,7 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(chkDownloadAliases, "Attempt to download pre-made aliases if none exist locally yet.\r\n" +
                 "\"Overwrite aliases\" should not be checked or the downloaded ones will be overwritten.");
             toolTip1.SetToolTip(btnSupport, "Visit the MobileRead forum for\r\n" +
-                                        "support, bug reports or questions.");
+                                        "support, bug reports, or questions.");
         }
 
         private void btnBrowseUnpack_Click(object sender, EventArgs e)

@@ -256,9 +256,9 @@ namespace XRayBuilderGUI
             }
 
             if (skipShelfari)
-                main.Log("Terms found in file:");
+                main.Log(String.Format("{0} Terms found in file:", Terms.Count));
             else
-                main.Log("Terms found on Shelfari:");
+                main.Log(String.Format("{0} Terms found on Shelfari:", Terms.Count));
             string tmp = "";
             int termId = 1;
             foreach (Term t in Terms)
@@ -430,6 +430,13 @@ namespace XRayBuilderGUI
                         foreach (string s in search)
                         {
                             Match match = Regex.Match(node.InnerHtml, s + punctuationMarks, character.MatchCase ? RegexOptions.IgnoreCase : RegexOptions.None);
+                            if (match.Success)
+                            {
+                                locHighlight = match.Index;
+                                lenHighlight = match.Length;
+                                break;
+                            }
+                            match = Regex.Match(node.InnerHtml, s, character.MatchCase ? RegexOptions.IgnoreCase : RegexOptions.None);
                             if (match.Success)
                             {
                                 locHighlight = match.Index;
@@ -982,8 +989,9 @@ namespace XRayBuilderGUI
             {
                 List<string> aliasCheck = new List<string>();
                 foreach (var c in Terms)
-                    if (c.Type == "character")
-                    {
+                    if (c.Type == "character" && c.TermName.Contains(" "))
+                        try
+                        {
                         if (Properties.Settings.Default.splitAliases)
                         {
                             string splitName = "";
@@ -992,15 +1000,14 @@ namespace XRayBuilderGUI
                             List<string> aliasList = new List<string>();
                             TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
                             
-                            string pattern = @"( ?(" + string.Join("|", CommonTitles) + ")\\.? )|(^[A-Z]\\. )|( [A-Z]\\.)|(\")|(“)|(”)|(,)|( ?\\(.*\\))";
+                            string pattern = @"( ?(" + string.Join("|", CommonTitles) +
+                                ")\\.? )|(^[A-Z]\\. )|( [A-Z]\\.)|(\")|(“)|(”)|(,)";
 
                             Regex regex = new Regex(pattern);
                             Match matchCheck = Regex.Match(c.TermName, pattern);
                             if (matchCheck.Success)
                             {
                                 titleTrimmed = c.TermName;
-                                titleTrimmed = Regex.Replace(titleTrimmed, @"\s+", " ");
-                                titleTrimmed = Regex.Replace(titleTrimmed, @"( ?V?I{0,3}$)", String.Empty);
                                 foreach (Match match in regex.Matches(titleTrimmed))
                                 {
                                     titleTrimmed = titleTrimmed.Replace(match.Value, String.Empty);
@@ -1014,8 +1021,22 @@ namespace XRayBuilderGUI
                             else
                                 titleTrimmed = c.TermName;
 
+                            titleTrimmed = Regex.Replace(titleTrimmed, @"\s+", " ");
+                            titleTrimmed = Regex.Replace(titleTrimmed, @"( ?V?I{0,3}$)", String.Empty);
+                            titleTrimmed = Regex.Replace(titleTrimmed, @"(\(aka )", "(");
+
+                            Match bracketedName = Regex.Match(titleTrimmed, @"(.*)(\()(.*)(\))");
+                            if (bracketedName.Success)
+                            {
+                                aliasList.Add(bracketedName.Groups[3].Value);
+                                aliasList.Add(bracketedName.Groups[1].Value.TrimEnd());
+                                titleTrimmed = titleTrimmed.Replace(bracketedName.Groups[2].Value, "")
+                                    .Replace(bracketedName.Groups[4].Value, "");
+                            }
+
                             if (titleTrimmed.Contains(" "))
                             {
+                                titleTrimmed = titleTrimmed.Replace(" &amp;","").Replace(" &", "");
                                 words = titleTrimmed.Split(' ');
                                 foreach (string word in words)
                                 {
@@ -1035,12 +1056,21 @@ namespace XRayBuilderGUI
                                     aliasCheck.Add(word);
                                     splitName += word + ",";
                                 }
-                                streamWriter.WriteLine(c.TermName + "|" + splitName.Substring(0, splitName.LastIndexOf(",")));
-                            }
+                                    if (splitName.LastIndexOf(",") != -1)
+                                    {
+                                        streamWriter.WriteLine(c.TermName + "|" + splitName.Substring(0, splitName.LastIndexOf(",")));
+                                    }
+                                    else
+                                        streamWriter.WriteLine(c.TermName + "|");
+                                }
                         }
                         else
                             streamWriter.WriteLine(c.TermName + "|");
                     }
+                        catch (Exception ex)
+                        {
+                            main.Log("An error occurred while splitting the aliases.\r\n" + ex.Message);
+                        }
                     else
                         streamWriter.WriteLine(c.TermName + "|");
             }

@@ -268,7 +268,7 @@ namespace XRayBuilderGUI
                 if (!result.Id.StartsWith("result_")) continue;
                 string name, url, asin = "";
                 HtmlNode otherBook = result.SelectSingleNode(".//div[@class='a-row a-spacing-small']/a/h2");
-                Match match = Regex.Match(otherBook.InnerText, @"Series Reading Order|Edition|eSpecial", RegexOptions.IgnoreCase);
+                Match match = Regex.Match(otherBook.InnerText, @"Series Reading Order|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase);
                 if (match.Success)
                 {
                     continue;

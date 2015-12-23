@@ -105,7 +105,7 @@ namespace XRayBuilderGUI
                             nodeTitleCheck = nodeTitle.InnerText.CleanString();
                         }
                         cleanAuthor = item.SelectSingleNode(".//div/div").InnerText.CleanString();
-                        Match match = Regex.Match(nodeTitleCheck, @"Series Reading Order|Edition|eSpecial", RegexOptions.IgnoreCase);
+                        Match match = Regex.Match(nodeTitleCheck, @"Series Reading Order|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase);
                         if (match.Success)
                         {
                             nodeTitleCheck = "";
@@ -375,8 +375,8 @@ namespace XRayBuilderGUI
             searchHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.shelfariUrl));
             string nextTitle = GetNextInSeriesTitle(searchHtmlDoc);
             // If search failed, try other method
-            if (nextTitle == "")
-                nextTitle = GetNextInSeriesTitle2(searchHtmlDoc);
+            //if (nextTitle == "")
+            //    nextTitle = GetNextInSeriesTitle2(searchHtmlDoc);
             if (nextTitle != "")
             {
                 // Search author's other books for the book (assumes next in series was written by the same author...)
@@ -395,7 +395,7 @@ namespace XRayBuilderGUI
 
             }
             else if (curBook.seriesPosition != curBook.totalInSeries)
-                main.Log("Unable to find next book in series, the book may not be part of one.");
+                main.Log("Unable to find next book in series, the book may not be part of a series, or it is the latest release.");
 
             if (previousTitle != "")
             {
@@ -469,8 +469,15 @@ namespace XRayBuilderGUI
                     curBook.popularHighlights = match3.Groups[1].Value.ToString();
                     highlights = int.Parse(match3.Groups[1].Value, NumberStyles.AllowThousands);
                 }
-                main.Log(String.Format("Popular Highlights: {0} passages have been highlighted {1} times"
-                            , curBook.popularPassages, curBook.popularHighlights));
+                string textPassages = curBook.popularPassages == "1"
+                    ? String.Format("{0} passage has ", curBook.popularPassages)
+                    : String.Format("{0} passages have ", curBook.popularPassages);
+                string textHighlights = curBook.popularHighlights == "1"
+                    ? String.Format("{0} time", curBook.popularHighlights)
+                    : String.Format("{0} times", curBook.popularHighlights);
+
+                main.Log(String.Format("Popular Highlights: {0}been highlighted {1}"
+                            , textPassages, textHighlights));
             }
 
             //If no "highlighted passages" found from Shelfari, add to log
@@ -490,9 +497,11 @@ namespace XRayBuilderGUI
                 {
                     if (seriesType.InnerText.Contains("(standard series)", StringComparison.OrdinalIgnoreCase) && !seriesType.InnerText.Contains("(Reading Order)", StringComparison.OrdinalIgnoreCase))
                     {
+                        Match match = Regex.Match(seriesType.InnerText, @"This is book (\d+) of (\d+)");
+                        if (!match.Success)
+                            continue;
                         curBook.seriesName = seriesType.ChildNodes["a"].InnerText.Trim();
                         main.Log("About the series: " + seriesType.InnerText.Replace(". (standard series)", ""));
-                        Match match = Regex.Match(seriesType.InnerText, @"This is book (\d+) of (\d+)");
                         if (!match.Success || match.Groups.Count != 3)
                             return "";
                         curBook.seriesPosition = match.Groups[1].Value;

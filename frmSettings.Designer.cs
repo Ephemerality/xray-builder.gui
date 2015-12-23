@@ -60,13 +60,13 @@
             this.chkAmazonUSA = new System.Windows.Forms.CheckBox();
             this.gbSite = new System.Windows.Forms.GroupBox();
             this.btnLogs = new System.Windows.Forms.Button();
-            this.lblVersion = new System.Windows.Forms.Label();
             this.btnClearLogs = new System.Windows.Forms.Button();
             this.btnHelp = new System.Windows.Forms.Button();
             this.gbGeneral = new System.Windows.Forms.GroupBox();
             this.chkDownloadAliases = new System.Windows.Forms.CheckBox();
             this.chkKindleUnpack = new System.Windows.Forms.CheckBox();
             this.chkSound = new System.Windows.Forms.CheckBox();
+            this.btnSupport = new System.Windows.Forms.Button();
             this.gbDirectories.SuspendLayout();
             this.gbXray.SuspendLayout();
             this.gbDetails.SuspendLayout();
@@ -76,9 +76,9 @@
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(422, 384);
+            this.btnSave.Location = new System.Drawing.Point(432, 384);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(110, 30);
+            this.btnSave.Size = new System.Drawing.Size(100, 30);
             this.btnSave.TabIndex = 0;
             this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = true;
@@ -404,29 +404,17 @@
             // 
             this.btnLogs.Location = new System.Drawing.Point(12, 384);
             this.btnLogs.Name = "btnLogs";
-            this.btnLogs.Size = new System.Drawing.Size(110, 30);
+            this.btnLogs.Size = new System.Drawing.Size(99, 30);
             this.btnLogs.TabIndex = 30;
             this.btnLogs.Text = "Logs";
             this.btnLogs.UseVisualStyleBackColor = true;
             this.btnLogs.Click += new System.EventHandler(this.btnLogs_Click);
             // 
-            // lblVersion
-            // 
-            this.lblVersion.AutoSize = true;
-            this.lblVersion.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.lblVersion.ForeColor = System.Drawing.SystemColors.ControlDark;
-            this.lblVersion.Location = new System.Drawing.Point(281, 393);
-            this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(135, 13);
-            this.lblVersion.TabIndex = 32;
-            this.lblVersion.Text = "X-Ray Builder GUI v0.0.0.0";
-            this.lblVersion.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
             // btnClearLogs
             // 
-            this.btnClearLogs.Location = new System.Drawing.Point(128, 384);
+            this.btnClearLogs.Location = new System.Drawing.Point(117, 384);
             this.btnClearLogs.Name = "btnClearLogs";
-            this.btnClearLogs.Size = new System.Drawing.Size(110, 30);
+            this.btnClearLogs.Size = new System.Drawing.Size(99, 30);
             this.btnClearLogs.TabIndex = 33;
             this.btnClearLogs.Text = "Clear Logs";
             this.btnClearLogs.UseVisualStyleBackColor = true;
@@ -434,11 +422,11 @@
             // 
             // btnHelp
             // 
-            this.btnHelp.Location = new System.Drawing.Point(244, 384);
+            this.btnHelp.Location = new System.Drawing.Point(222, 384);
             this.btnHelp.Name = "btnHelp";
-            this.btnHelp.Size = new System.Drawing.Size(30, 30);
+            this.btnHelp.Size = new System.Drawing.Size(99, 30);
             this.btnHelp.TabIndex = 34;
-            this.btnHelp.Text = "?";
+            this.btnHelp.Text = "Readme";
             this.btnHelp.UseVisualStyleBackColor = true;
             this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
             // 
@@ -485,15 +473,25 @@
             this.chkSound.Text = "Play a sound when a process completes";
             this.chkSound.UseVisualStyleBackColor = true;
             // 
+            // btnSupport
+            // 
+            this.btnSupport.Location = new System.Drawing.Point(327, 384);
+            this.btnSupport.Name = "btnSupport";
+            this.btnSupport.Size = new System.Drawing.Size(99, 30);
+            this.btnSupport.TabIndex = 36;
+            this.btnSupport.Text = "Forum";
+            this.btnSupport.UseVisualStyleBackColor = true;
+            this.btnSupport.Click += new System.EventHandler(this.btnSupport_Click);
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(544, 426);
+            this.Controls.Add(this.btnSupport);
             this.Controls.Add(this.gbGeneral);
             this.Controls.Add(this.btnHelp);
             this.Controls.Add(this.btnClearLogs);
-            this.Controls.Add(this.lblVersion);
             this.Controls.Add(this.btnLogs);
             this.Controls.Add(this.gbSite);
             this.Controls.Add(this.gbDetails);
@@ -521,7 +519,6 @@
             this.gbGeneral.ResumeLayout(false);
             this.gbGeneral.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -556,7 +553,6 @@
         private System.Windows.Forms.Button btnLogs;
         private System.Windows.Forms.CheckBox chkUTF8;
         private System.Windows.Forms.CheckBox chkOverwrite;
-        private System.Windows.Forms.Label lblVersion;
         private System.Windows.Forms.Button btnClearLogs;
         private System.Windows.Forms.CheckBox chkSaveHtml;
         private System.Windows.Forms.Button btnHelp;
@@ -566,5 +562,6 @@
         private System.Windows.Forms.CheckBox chkAliasChapters;
         private System.Windows.Forms.CheckBox chkKindleUnpack;
         private System.Windows.Forms.CheckBox chkDownloadAliases;
+        private System.Windows.Forms.Button btnSupport;
     }
 }

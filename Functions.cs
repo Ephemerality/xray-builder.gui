@@ -241,9 +241,13 @@ namespace XRayBuilderGUI
                     if (fs == null)
                         throw new Exception("Unable to re-open mobi file for writing.");
                     md.mobiHeader.exthHeader.UpdateCDEContentType(fs);
-                } else
+                }
+                else
+                {
+                    fs.Close();
                     throw new Exception("The document type is not set to EBOK; Kindle will not display an X-Ray for this book.\r\n" +
                         "You must either use Calibre's convert feature (Personal Doc tag under MOBI Output) or a MOBI editor (exth 501) to change this.");
+                }
 
             string ASIN = md.ASIN;
             Match match = Regex.Match(ASIN, "(^B[A-Z0-9]{9})");
@@ -251,6 +255,7 @@ namespace XRayBuilderGUI
                                       "Kindle may not display an X-Ray for this book.\n" +
                                       "Do you wish to continue?", ASIN), "Incorrect ASIN", MessageBoxButtons.YesNo))
             {
+                fs.Close();
                 throw new Exception(String.Format("Incorrect ASIN detected: {0}!\r\n" +
                                   "Kindle may not display an X-Ray for this book.\r\n" +
                                   "You must either use Calibre's Quality Check plugin (Fix ASIN for Kindle Fire) " +

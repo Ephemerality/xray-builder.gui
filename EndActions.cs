@@ -389,6 +389,19 @@ namespace XRayBuilderGUI
                     if (nextBook != null)
                         nextBook.GetAmazonInfo(nextBook.amazonUrl); //fill in desc, imageurl, and ratings
                 }
+                // Try to fill in desc, imageurl, and ratings using Shelfari Kindle edition link instead
+                if (nextBook == null)
+                {
+                    HtmlDocument bookDoc = new HtmlDocument() { OptionAutoCloseOnEnd = true };
+                    bookDoc.LoadHtml(HttpDownloader.GetPageHtml(nextShelfariUrl));
+                    Match match = Regex.Match(bookDoc.DocumentNode.InnerHtml, "('B[A-Z0-9]{9}')");
+                    if (match.Success)
+                    {
+                        string cleanASIN = match.Value.Replace("'", String.Empty);
+                        nextBook = new BookInfo(nextTitle, curBook.author, cleanASIN);
+                        nextBook.GetAmazonInfo("http://www.amazon.com/dp/" + cleanASIN);
+                    }
+                }
                 if (nextBook == null)
                     main.Log("Book was found to be part of a series, but next book could not be found.\r\n" +
                         "Please report this book and the Shelfari URL and output log to improve parsing.");

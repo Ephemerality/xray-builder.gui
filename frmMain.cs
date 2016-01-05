@@ -20,6 +20,9 @@ namespace XRayBuilderGUI
         private string currentLog = Environment.CurrentDirectory + @"\log\" +
                                     String.Format("{0:dd.MM.yyyy.H.mm.ss}.txt", DateTime.Now);
 
+        string newSidecarName;
+        char[] fileChars = Path.GetInvalidFileNameChars();
+
         private Properties.Settings settings = Properties.Settings.Default;
 
         public frmMain()
@@ -221,7 +224,12 @@ namespace XRayBuilderGUI
                     Directory.CreateDirectory(outFolder);
                 }
                 else
-                    outFolder = settings.useSubDirectories ? Functions.GetBookOutputDirectory(results[4], Path.GetFileNameWithoutExtension(txtMobi.Text)) : settings.outDir;
+                {
+                    newSidecarName = new string(results[5].Where(x => !fileChars.Contains(x)).ToArray());
+                    outFolder = settings.useSubDirectories
+                        ? Functions.GetBookOutputDirectory(results[4], newSidecarName)
+                        : settings.outDir;
+                }
             }
             catch (Exception ex)
             {
@@ -468,8 +476,9 @@ namespace XRayBuilderGUI
                 results[2], results[0], results[4], results[5], results[1]));
             try
             {
+                newSidecarName = new string(results[5].Where(x => !fileChars.Contains(x)).ToArray());
                 BookInfo bookInfo = new BookInfo(results[5], results[4], results[0], results[1], results[2],
-                                                randomFile, Path.GetFileNameWithoutExtension(txtMobi.Text), txtShelfari.Text);
+                                                randomFile, newSidecarName, txtShelfari.Text);
                 Log("Attempting to build Author Profile...");
                 AuthorProfile ap = new AuthorProfile(bookInfo, this);
                 if (!ap.complete) return;
@@ -931,6 +940,7 @@ namespace XRayBuilderGUI
         {
             txtShelfari.Text = "";
             btnPreview.Enabled = false;
+            prgBar.Value = 0;
         }
 
         private void btnPreview_Click(object sender, EventArgs e)

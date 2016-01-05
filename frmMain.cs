@@ -20,9 +20,6 @@ namespace XRayBuilderGUI
         private string currentLog = Environment.CurrentDirectory + @"\log\" +
                                     String.Format("{0:dd.MM.yyyy.H.mm.ss}.txt", DateTime.Now);
 
-        string newSidecarName;
-        char[] fileChars = Path.GetInvalidFileNameChars();
-
         private Properties.Settings settings = Properties.Settings.Default;
 
         public frmMain()
@@ -225,9 +222,8 @@ namespace XRayBuilderGUI
                 }
                 else
                 {
-                    newSidecarName = new string(results[5].Where(x => !fileChars.Contains(x)).ToArray());
                     outFolder = settings.useSubDirectories
-                        ? Functions.GetBookOutputDirectory(results[4], newSidecarName)
+                        ? Functions.GetBookOutputDirectory(results[4], Functions.RemoveInvalidFileChars(results[5]))
                         : settings.outDir;
                 }
             }
@@ -476,9 +472,8 @@ namespace XRayBuilderGUI
                 results[2], results[0], results[4], results[5], results[1]));
             try
             {
-                newSidecarName = new string(results[5].Where(x => !fileChars.Contains(x)).ToArray());
                 BookInfo bookInfo = new BookInfo(results[5], results[4], results[0], results[1], results[2],
-                                                randomFile, newSidecarName, txtShelfari.Text);
+                                                randomFile, Functions.RemoveInvalidFileChars(results[5]), txtShelfari.Text);
                 Log("Attempting to build Author Profile...");
                 AuthorProfile ap = new AuthorProfile(bookInfo, this);
                 if (!ap.complete) return;
@@ -857,7 +852,7 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(btnSearchShelfari, "Try to search for this book on Shelfari.");
             toolTip1.SetToolTip(btnSaveShelfari, "Save Shelfari info to an XML file.");
             toolTip1.SetToolTip(btnKindleExtras,
-                "Try to build the Start Action, Author Profile\r\nand End Action files for this book.");
+                "Try to build the Start Action, Author Profile,\r\nand End Action files for this book.");
             toolTip1.SetToolTip(btnBuild,
                 "Try to build the X-Ray file for this book.");
             toolTip1.SetToolTip(btnSettings, "Configure X-Ray Builder GUI.");

@@ -172,15 +172,20 @@ namespace XRayBuilderGUI
         public static string GetBookOutputDirectory(string author, string title)
         {
             string path, newAuthor, newTitle;
-            char[] fileChars = Path.GetInvalidFileNameChars();
-            newAuthor = new string(author.Where(x => !fileChars.Contains(x)).ToArray());
-            newTitle = new string(title.Where(x => !fileChars.Contains(x)).ToArray());
+            newAuthor = RemoveInvalidFileChars(author);
+            newTitle = RemoveInvalidFileChars(title);
             path = Path.Combine(Properties.Settings.Default.outDir,
                 String.Format(@"{0}\{1}", newAuthor, newTitle));
             if (!author.Equals(newAuthor) || !title.Equals(newTitle))
                 MessageBox.Show("The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.", "Invalid Characters");
             Directory.CreateDirectory(path);
             return path;
+        }
+
+        public static string RemoveInvalidFileChars(string filename)
+        {
+            char[] fileChars = Path.GetInvalidFileNameChars();
+            return new string(filename.Where(x => !fileChars.Contains(x)).ToArray());
         }
 
         public static bool ExtrasExist(string location, string asin)

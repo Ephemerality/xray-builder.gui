@@ -305,7 +305,7 @@ namespace XRayBuilderGUI
             web.LoadHtml(readContents);
             //Similar to aliases, if chapters definition exists, load it. Otherwise, attempt to build it from the book
             string chapterFile = Environment.CurrentDirectory + @"\ext\" + asin + ".chapters";
-            if (File.Exists(chapterFile) && !Properties.Settings.Default.overwriteAliases)
+            if (File.Exists(chapterFile) && !Properties.Settings.Default.overwriteChapters)
             {
                 if (LoadChapters())
                     main.Log(String.Format("Chapters read from {0}.\r\nDelete this file if you want chapters built automatically.", chapterFile));

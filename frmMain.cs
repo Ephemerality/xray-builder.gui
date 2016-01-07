@@ -821,7 +821,8 @@ namespace XRayBuilderGUI
         
         private void btnSettings_Click(object sender, EventArgs e)
         {
-            frmSettings frmSet = new frmSettings();
+            //frmSettings frmSet = new frmSettings();
+            frmSettingsNew frmSet = new frmSettingsNew();
             frmSet.ShowDialog();
         }
 

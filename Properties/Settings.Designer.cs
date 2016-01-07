@@ -346,5 +346,17 @@ namespace XRayBuilderGUI.Properties {
                 this["downloadAliases"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool overwriteChapters {
+            get {
+                return ((bool)(this["overwriteChapters"]));
+            }
+            set {
+                this["overwriteChapters"] = value;
+            }
+        }
     }
 }

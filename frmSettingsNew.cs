@@ -294,5 +294,12 @@ namespace XRayBuilderGUI
         {
             tabSettings.SelectedIndex = listSettings.SelectedIndex;
         }
+
+        private void chkDownloadAliases_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkDownloadAliases.Checked)
+                chkOverwrite.Checked = false;
+        }
+        
     }
 }

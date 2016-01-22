@@ -272,7 +272,8 @@ namespace XRayBuilderGUI
             {
                 if (DialogResult.Yes ==
                     MessageBox.Show(main,
-                        "Terms have been exported to an alias file or already exist in that file. Would you like to open the file in notepad for editing?",
+                        "Terms have been exported to an alias file or already exist in that file. Would you like to open the file in notepad for editing?\r\n"
+                        + "See the MobileRead forum thread (link in Settings) for more information on building aliases.",
                         "Aliases",
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Question,
@@ -416,12 +417,25 @@ namespace XRayBuilderGUI
                     //TODO: Improve location searching as IndexOf will not work if book length exceeds 2,147,483,647...
                     //If soft hyphen ignoring is turned on, also search hyphen-less text.
                     if (!character.Match) continue;
+                    bool termFound = false;
                     List<string> search = character.Aliases.ToList<string>();
-                    search.Insert(0, character.TermName);
-                    if ((character.MatchCase && (search.Any(node.InnerText.Contains) || search.Any(node.InnerHtml.Contains)))
-                        || (!character.MatchCase && (search.Any(node.InnerText.ContainsIgnorecase) || search.Any(node.InnerHtml.ContainsIgnorecase)))
-                        || (ignoreSoftHypen && (character.MatchCase && search.Any(noSoftHypen.Contains))
-                            || (!character.MatchCase && search.Any(noSoftHypen.ContainsIgnorecase))))
+                    if (character.RegEx)
+                    {
+                        if (search.Any(r => Regex.Match(node.InnerText, r).Success)
+                            || search.Any(r => Regex.Match(node.InnerHtml, r).Success)
+                            || (ignoreSoftHypen && (search.Any(r => Regex.Match(noSoftHypen, r).Success) || search.Any(r => Regex.Match(noSoftHypen, r).Success))))
+                            termFound = true;
+                    }
+                    else
+                    {
+                        search.Insert(0, character.TermName);
+                        if ((character.MatchCase && (search.Any(node.InnerText.Contains) || search.Any(node.InnerHtml.Contains)))
+                            || (!character.MatchCase && (search.Any(node.InnerText.ContainsIgnorecase) || search.Any(node.InnerHtml.ContainsIgnorecase)))
+                            || (ignoreSoftHypen && (character.MatchCase && search.Any(noSoftHypen.Contains))
+                                || (!character.MatchCase && search.Any(noSoftHypen.ContainsIgnorecase))))
+                            termFound = true;
+                    }
+                    if (termFound)
                     {
                         int locHighlight = -1;
                         int lenHighlight = -1;
@@ -429,12 +443,21 @@ namespace XRayBuilderGUI
                         //Search html for the matching term out of all aliases
                         foreach (string s in search)
                         {
-                            Match match = Regex.Match(node.InnerHtml, s + punctuationMarks, character.MatchCase ? RegexOptions.None : RegexOptions.IgnoreCase);
+                            Match match = Regex.Match(node.InnerHtml, s + punctuationMarks, character.MatchCase || character.RegEx ? RegexOptions.None : RegexOptions.IgnoreCase);
                             if (match.Success)
                             {
-                                locHighlight = match.Index;
-                                lenHighlight = match.Length;
-                                break;
+                                if (match.Groups.Count > 1)
+                                {
+                                    locHighlight = match.Groups[1].Index;
+                                    lenHighlight = match.Groups[1].Length;
+                                    break;
+                                }
+                                else
+                                {
+                                    locHighlight = match.Index;
+                                    lenHighlight = match.Length;
+                                    break;
+                                }
                             }
                         }
                         //If normal search fails, use regexp to search in case there is some wacky html nested in term
@@ -450,7 +473,7 @@ namespace XRayBuilderGUI
                                 //Match HTML tags -- provided there's nothing malformed
                                 string patternSoftHypen = "(\u00C2\u00AD|&shy;|&#173;|&#xad;|&#0173;|&#x00AD;)*";
                                 pattern = String.Format("{0}{1}{0}{2}", patternHTML,
-                                    string.Join(patternHTML + patternSoftHypen, Regex.Unescape(s).ToCharArray()), punctuationMarks);
+                                    string.Join(patternHTML + patternSoftHypen, character.RegEx ? s.ToCharArray() : Regex.Unescape(s).ToCharArray()), punctuationMarks);
                                 if (character.MatchCase)
                                     pattern += "(?=[^a-zA-Z])";
                                 patterns.Add(pattern);
@@ -458,7 +481,7 @@ namespace XRayBuilderGUI
                                 foreach (string pat in patterns)
                                 {
                                     Match match;
-                                    if (character.MatchCase)
+                                    if (character.MatchCase || character.RegEx)
                                         match = Regex.Match(node.InnerHtml, pat);
                                     else
                                         match = Regex.Match(node.InnerHtml, pat, RegexOptions.IgnoreCase);
@@ -912,6 +935,8 @@ namespace XRayBuilderGUI
 
             public bool Match = true;
 
+            public bool RegEx = false;
+
             public Term()
             {
             }
@@ -1097,6 +1122,7 @@ namespace XRayBuilderGUI
                     // If first alias is "/c", character searches will be case-sensitive
                     // If it is /d, delete this character
                     // If /n, will not match excerpts but will leave character in X-Ray
+                    // If /r, character's aliases (and ONLY the aliases) will be processed as Regular Expressions (case-sensitive unless specified in regex)
                     if (t.Aliases[0] == "/c")
                     {
                         t.MatchCase = true;
@@ -1111,6 +1137,11 @@ namespace XRayBuilderGUI
                     {
                         t.Match = false;
                         t.Aliases.Remove("/n");
+                    }
+                    else if (t.Aliases[0] == "/r")
+                    {
+                        t.RegEx = true;
+                        t.Aliases.Remove("/r");
                     }
                 }
             }

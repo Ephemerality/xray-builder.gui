@@ -120,8 +120,8 @@ namespace XRayBuilderGUI
                 "enable this option to use the KindleUnpack tool and\r\n" +
                 "report your findings on the MobileRead thread.");
             toolTip1.SetToolTip(chkDownloadAliases, "Attempt to download pre-made aliases if none exist\r\n" +
-                                                    "locally yet. \"Overwrite aliases\" should not be\r\n" +
-                                                    "checked or the downloaded ones will be overwritten.");
+                                                    "locally yet. If \"Overwrite aliases\" is enabled,\r\n" +
+                                                    "local aliases will be overwritten with the ones downloaded.");
             toolTip1.SetToolTip(btnSupport, "Visit the MobileRead forum for\r\n" +
                                         "support, bug reports, or questions.");
         }

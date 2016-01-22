@@ -230,7 +230,8 @@ namespace XRayBuilderGUI
                 aliasFile = Environment.CurrentDirectory + @"\ext\" + asin + ".aliases";
             else
                 aliasFile = aliaspath;
-            if (!File.Exists(aliasFile) && Properties.Settings.Default.downloadAliases)
+            bool aliasesDownloaded = false;
+            if ((!File.Exists(aliasFile) || Properties.Settings.Default.overwriteAliases) && Properties.Settings.Default.downloadAliases)
             {
                 try
                 {
@@ -239,6 +240,7 @@ namespace XRayBuilderGUI
                     fs.Write(aliases);
                     fs.Close();
                     main.Log("Found and downloaded pre-made aliases file.");
+                    aliasesDownloaded = true;
                 }
                 catch (Exception ex)
                 {
@@ -249,7 +251,7 @@ namespace XRayBuilderGUI
                 }
             }
 
-            if (!File.Exists(aliasFile) || Properties.Settings.Default.overwriteAliases)
+            if (!aliasesDownloaded && (!File.Exists(aliasFile) || Properties.Settings.Default.overwriteAliases))
             {
                 SaveCharacters(aliasFile);
                 main.Log(String.Format("Characters exported to {0} for adding aliases.", aliasFile));

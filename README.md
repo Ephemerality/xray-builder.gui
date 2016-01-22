@@ -4,7 +4,6 @@ X-Ray files are built complete with chapter locations and excerpts.
 Thanks to darrenmcg, Author Profile and End Actions files can also be built.
 
 ## Acknowledgements
-* Created by Ephemerality (Nick Niemi - ephemeral.vilification@gmail.com)  
 * New GUI, Shelfari search, previews, Start/End Actions, Author Profile, and various other new features by Darrenmcg/PsychoReptile  
 * [Original X-Ray script by shinew](http://www.mobileread.com/forums/showthread.php?t=157770)  
 

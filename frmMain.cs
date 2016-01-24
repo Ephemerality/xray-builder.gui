@@ -206,7 +206,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n" + ex.Message);
+                Log("An error occurred while creating the new X-Ray database.\r\n" + ex.Message);
                 return;
             }
 

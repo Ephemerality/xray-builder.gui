@@ -1104,10 +1104,11 @@ namespace XRayBuilderGUI
             {
                 while (!streamReader.EndOfStream)
                 {
-                    string[] temp = streamReader.ReadLine().Split('|');
+                    string input = streamReader.ReadLine();
+                    string[] temp = input.Split('|');
                     if (temp.Length <= 1 || temp[0] == "") continue;
                     else if (temp[0].Substring(0, 1) == "#") continue;
-                    string[] temp2 = temp[1].Split(',');
+                    string[] temp2 = input.Substring(input.IndexOf('|') + 1).Split(',');
                     if (temp2.Length == 0 || temp2[0] == "") continue;
                     if (d.ContainsKey(temp[0]))
                         main.Log("Duplicate alias of " + temp[0] + " found. Ignoring the duplicate.");

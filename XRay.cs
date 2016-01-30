@@ -597,7 +597,7 @@ namespace XRayBuilderGUI
             //output list of terms with no locs
             foreach (Term t in Terms)
             {
-                if (t.Locs.Count == 0)
+                if (t.Match && t.Locs.Count == 0)
                     main.Log(
                         String.Format(
                             "No locations were found for the term \"{0}\".\r\nYou should add aliases for this term using the book or rawml as a reference.",

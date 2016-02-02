@@ -434,6 +434,7 @@
             this.chkAndroid.TabIndex = 23;
             this.chkAndroid.Text = "Build for Android";
             this.chkAndroid.UseVisualStyleBackColor = true;
+            this.chkAndroid.CheckedChanged += new System.EventHandler(this.chkAndroid_CheckedChanged);
             // 
             // chkUseNew
             // 
@@ -521,6 +522,7 @@
             this.chkDownloadAliases.TabIndex = 33;
             this.chkDownloadAliases.Text = "Download aliases";
             this.chkDownloadAliases.UseVisualStyleBackColor = true;
+            this.chkDownloadAliases.CheckedChanged += new System.EventHandler(this.chkDownloadAliases_CheckedChanged);
             // 
             // chkSplitAliases
             // 

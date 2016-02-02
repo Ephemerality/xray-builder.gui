@@ -112,7 +112,7 @@ namespace XRayBuilderGUI
                 MessageBox.Show(@"No Shelfari link was specified.", @"Missing Shelfari Link");
                 return;
             }
-            if (!File.Exists(settings.mobi_unpack))
+            if (settings.useKindleUnpack && !File.Exists(settings.mobi_unpack))
             {
                 MessageBox.Show(@"Kindleunpack was not found.\r\nPlease review the settings page.", @"Kindleunpack Not Found");
                 return;

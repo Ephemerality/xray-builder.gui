@@ -179,7 +179,18 @@ namespace XRayBuilderGUI
                 results[2], results[0], results[4], results[5], results[1]));
 
             Log(String.Format("Attempting to build X-Ray...\r\nSpoilers: {0}", settings.spoilers ? "Enabled" : "Disabled"));
-            Log("Offset: " + settings.offset.ToString());
+            bool AZW3 = false;
+            if (Path.GetExtension(txtMobi.Text) == ".azw3")
+            {
+                if (settings.offset == -16 && MessageBox.Show("A -16 offset is automatically applied for this AZW3 file.\r\n"
+                    + "Are you sure you want to keep your existing -16 setting?", "Offset Setting", MessageBoxButtons.YesNo) == DialogResult.No)
+                {
+                    settings.offset = 0;
+                    settings.Save();
+                }
+                AZW3 = true;
+            }
+            Log("Offset: " + settings.offset.ToString() + (AZW3 ? " (-16 for AZW3)" : ""));
 
             //Create X-Ray and attempt to create the base file (essentially the same as the site)
             XRay xray;
@@ -187,10 +198,10 @@ namespace XRayBuilderGUI
             {
                 if (rdoShelfari.Checked)
                     xray = new XRay(txtShelfari.Text, results[2], results[1], results[0], this, settings.spoilers,
-                        settings.offset, "", false);
+                        settings.offset - (AZW3 ? 16 : 0), "", false);
                 else
                     xray = new XRay(txtXMLFile.Text, results[2], results[1], results[0], this, settings.spoilers,
-                        settings.offset, "");
+                        settings.offset - (AZW3 ? 16 : 0), "");
                 if (xray.CreateXray() > 0)
                 {
                     Log("Error while processing.");

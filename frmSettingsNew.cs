@@ -70,23 +70,23 @@ namespace XRayBuilderGUI
             // Added \r\n to show smaller tooltips
             ToolTip toolTip1 = new ToolTip();
             toolTip1.SetToolTip(chkRaw,
-                "Save the .rawml (raw markup) of the book\r\nin the output directory so you can review it.");
+                "Save the rawML (raw markup) of the book\r\nin the output directory so you can review it.");
             toolTip1.SetToolTip(chkSpoilers, "Use Shelfari descriptions that\r\ncontain spoilers when they exist.");
             toolTip1.SetToolTip(txtOffset,
                 "This offset will be applied to every book location\r\n(usually a negative number). Must be an integer.");
             toolTip1.SetToolTip(chkSoftHyphen,
                 "Ignore soft hyphens (Unicode U+00AD)\r\n" +
-                "while searchingfor terms. This may\r\n" +
+                "while searching for terms. This may\r\n" +
                 "slow down the parsing process slightly.");
             toolTip1.SetToolTip(chkUseNew,
                 "Write the X-Ray file in the new format for\r\n" +
                 "Paperwhite 2 or Voyage firmware 5.6+. If\r\n" +
                 "you have one of these devices but this\r\n" +
-                "does notwork, try the old format.");
+                "does not work, try the old format.");
             toolTip1.SetToolTip(chkAndroid,
                 "Changes the naming convention of the X-Ray file\r\n"+
                 "for the Android Kindle app. Forces building with\r\n" +
-                "the new format. Files will be places in the output\r\n" +
+                "the new format. Files will be placed in the output\r\n" +
                 "directory within the 'Android' folder.");
             toolTip1.SetToolTip(chkUTF8, "Write the X-Ray file in UTF8 instead of ANSI.\r\n" +
                 "Use this option if there are accented characters\r\n" +
@@ -103,7 +103,7 @@ namespace XRayBuilderGUI
                 "Open Notepad to enable editing of detected Chapters\r\nand Aliases before final X-Ray creation.");
             toolTip1.SetToolTip(chkSubDirectories, "Save generated files to an\r\n\"Author\\Filename\" subdirectory.");
             toolTip1.SetToolTip(btnLogs, "Open the log files directory.");
-            toolTip1.SetToolTip(chkOverwrite, "Overwrite existing Author Profile and\r\nStart/End Actions files.");
+            toolTip1.SetToolTip(chkOverwrite, "Overwrite existing Author Profile,\r\nStart and End Actions files.");
             toolTip1.SetToolTip(chkAlias, "Overwrite existing alias files.");
             toolTip1.SetToolTip(chkChapters, "Overwrite existing chapter files.");
             toolTip1.SetToolTip(chkSaveHtml, "Save parsed HTML files. This is generally used\r\n" +
@@ -112,16 +112,16 @@ namespace XRayBuilderGUI
                 "into aliases. This can have undesired\r\n" +
                 "consequences, so use with caution!!!");
             toolTip1.SetToolTip(btnHelp, "View the included help documentation.");
-            toolTip1.SetToolTip(chkSound, "Play a sound after finished generating\r\n" +
-                                        "Author Profile, End Action and Start Action\r\n" +
-                                        "files, or after generating X-Ray file.");
-            toolTip1.SetToolTip(chkKindleUnpack, "If left unchecked, the program will attempt to get\r\n" +
-                "metadata and rawML without KindleUnpack. If it fails,\r\n" +
-                "enable this option to use the KindleUnpack tool and\r\n" +
-                "report your findings on the MobileRead thread.");
+            toolTip1.SetToolTip(chkSound, "Play a sound after generating the Author\r\n" +
+                                        "Profile, End Action and Start Action\r\n" +
+                                        "files, or after generating an X-Ray file.");
+            toolTip1.SetToolTip(chkKindleUnpack, "If left unchecked, X-Ray Builder GUI will attempt to extract\r\n" +
+                "the metadata and rawML (raw markup) without KindleUnpack.\r\n" +
+                "If it fails, enable this option to use the KindleUnpack tool\r\n" +
+                "and report your findings on the MobileRead thread.");
             toolTip1.SetToolTip(chkDownloadAliases, "Attempt to download pre-made aliases if none exist\r\n" +
-                                                    "locally yet. If \"Overwrite aliases\" is enabled,\r\n" +
-                                                    "local aliases will be overwritten with the ones downloaded.");
+                                                    "locally yet. If \"Overwrite aliases\" is enabled, local\r\n" +
+                                                    "aliases will be overwritten with the ones downloaded.");
             toolTip1.SetToolTip(btnSupport, "Visit the MobileRead forum for\r\n" +
                                         "support, bug reports, or questions.");
         }

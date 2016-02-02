@@ -439,33 +439,31 @@ namespace XRayBuilderGUI
                     }
                     if (termFound)
                     {
-                        int locHighlight = -1;
-                        int lenHighlight = -1;
+                        List<int> locHighlight = new List<int>();
+                        List<int> lenHighlight = new List<int>();
                         string punctuationMarks = @"\S*[!\.?,""'\);]*";
                         //Search html for the matching term out of all aliases
                         foreach (string s in search)
                         {
-                            Match match = Regex.Match(node.InnerHtml, s + punctuationMarks, character.MatchCase || character.RegEx ? RegexOptions.None : RegexOptions.IgnoreCase);
-                            if (match.Success)
+                            MatchCollection matches = Regex.Matches(node.InnerHtml, s + punctuationMarks, character.MatchCase || character.RegEx ? RegexOptions.None : RegexOptions.IgnoreCase);
+                            foreach (Match match in matches)
                             {
                                 if (match.Groups.Count > 1)
                                 {
-                                    locHighlight = match.Groups[1].Index;
-                                    lenHighlight = match.Groups[1].Length;
-                                    break;
+                                    locHighlight.Add(match.Groups[1].Index);
+                                    lenHighlight.Add(match.Groups[1].Length);
                                 }
                                 else
                                 {
-                                    locHighlight = match.Index;
-                                    lenHighlight = match.Length;
-                                    break;
+                                    locHighlight.Add(match.Index);
+                                    lenHighlight.Add(match.Length);
                                 }
                             }
                         }
                         //If normal search fails, use regexp to search in case there is some wacky html nested in term
                         //Regexp may be less than ideal for parsing HTML but seems to work ok so far in these small paragraphs
                         //Also search in soft hyphen-less text if option is set to do so
-                        if (locHighlight < 0)
+                        if (locHighlight.Count == 0)
                         {
                             foreach (string s in search)
                             {
@@ -479,26 +477,22 @@ namespace XRayBuilderGUI
                                 if (character.MatchCase)
                                     pattern += "(?=[^a-zA-Z])";
                                 patterns.Add(pattern);
-                                bool found = false;
                                 foreach (string pat in patterns)
                                 {
-                                    Match match;
+                                    MatchCollection matches;
                                     if (character.MatchCase || character.RegEx)
-                                        match = Regex.Match(node.InnerHtml, pat);
+                                        matches = Regex.Matches(node.InnerHtml, pat);
                                     else
-                                        match = Regex.Match(node.InnerHtml, pat, RegexOptions.IgnoreCase);
-                                    if (match.Success)
+                                        matches = Regex.Matches(node.InnerHtml, pat, RegexOptions.IgnoreCase);
+                                    foreach (Match match in matches)
                                     {
-                                        locHighlight = match.Index;
-                                        lenHighlight = match.Length;
-                                        found = true;
-                                        break;
+                                        locHighlight.Add(match.Index);
+                                        lenHighlight.Add(match.Length);
                                     }
                                 }
-                                if (found) break;
                             }
                         }
-                        if (locHighlight < 0) //something went wrong
+                        if (locHighlight.Count == 0 || locHighlight.Count != lenHighlight.Count) //something went wrong
                         {
                             main.Log(
                                 String.Format(
@@ -512,9 +506,9 @@ namespace XRayBuilderGUI
                         //this section attempts to shorted the excerpt by locating the start of a sentence that is just far enough away from the highlight.
                         //The length is determined by the space the excerpt takes up rather than its actual length... so 135 is just a guess based on what I've seen.
                         int lengthLimit = 135;
-                        if (shortEx && locHighlight + lenHighlight > lengthLimit)
+                        if (shortEx && locHighlight[0] + lenHighlight[0] > lengthLimit)
                         {
-                            int start = locHighlight;
+                            int start = locHighlight[0];
                             int at = 0;
                             long newLoc = -1;
                             int newLenQuote = 0;
@@ -527,11 +521,11 @@ namespace XRayBuilderGUI
                                 {
                                     start = at - 1;
 
-                                    if ((locHighlight + lenHighlight + 1 - at - 2) <= lengthLimit)
+                                    if ((locHighlight[0] + lenHighlight[0] + 1 - at - 2) <= lengthLimit)
                                     {
                                         newLoc = location + at + 2;
                                         newLenQuote = lenQuote - at - 2;
-                                        newLocHighlight = locHighlight - at - 2;
+                                        newLocHighlight = locHighlight[0] - at - 2;
                                         string newQuote = node.InnerHtml.Substring(at + 2);
                                     }
                                     else break;
@@ -547,9 +541,12 @@ namespace XRayBuilderGUI
                             }
                         }
 
-                        character.Locs.Add(String.Format("[{0},{1},{2},{3}]", location + locOffset, lenQuote,
-                            locHighlight, lenHighlight));
-                        character.Occurrences.Add(new int[] {location + locOffset + locHighlight, lenHighlight});
+                        for (int j = 0; j < locHighlight.Count; j++)
+                        {
+                            character.Locs.Add(String.Format("[{0},{1},{2},{3}]", location + locOffset, lenQuote,
+                                locHighlight[j], lenHighlight[j])); // For old format
+                            character.Occurrences.Add(new int[] { location + locOffset + locHighlight[j], lenHighlight[j] }); // For new format
+                        }
                         List<Excerpt> exCheck = excerpts.Where(t => t.start.Equals(location + locOffset)).ToList();
                         if (exCheck.Count > 0)
                         {
@@ -597,7 +594,7 @@ namespace XRayBuilderGUI
             //output list of terms with no locs
             foreach (Term t in Terms)
             {
-                if (t.Locs.Count == 0)
+                if (t.Match && t.Locs.Count == 0)
                     main.Log(
                         String.Format(
                             "No locations were found for the term \"{0}\".\r\nYou should add aliases for this term using the book or rawml as a reference.",

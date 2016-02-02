@@ -19,6 +19,7 @@ namespace XRayBuilderGUI.Unpack
         public MobiHead mobiHeader;
         private int _startRecord = 1;
         public string rawMLPath = "";
+        private string _ASIN = "";
 
         public Metadata(FileStream fs)
         {
@@ -26,6 +27,8 @@ namespace XRayBuilderGUI.Unpack
             PDB = new PDBHeader(fs);
             PDH = new PalmDOCHeader(fs);
             mobiHeader = new MobiHead(fs, PDB.MobiHeaderSize);
+            // Use ASIN of the first book in the mobi
+            _ASIN = mobiHeader.exthHeader.ASIN != "" ? mobiHeader.exthHeader.ASIN : mobiHeader.exthHeader.ASIN2;
 
             // Start at end of first book records, search for a second (KF8) and use it instead (for combo books)
             for (int i = PDH.RecordCount; i < PDB.NumRecords - 1; i++)
@@ -61,7 +64,7 @@ namespace XRayBuilderGUI.Unpack
 
         public string ASIN
         {
-            get { return mobiHeader.exthHeader.ASIN != String.Empty ? mobiHeader.exthHeader.ASIN : mobiHeader.exthHeader.ASIN2; }
+            get { return _ASIN; }
         }
 
         public string DBName

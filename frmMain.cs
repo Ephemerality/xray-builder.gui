@@ -32,7 +32,6 @@ namespace XRayBuilderGUI
         private frmPreviewXR frmXR = new frmPreviewXR();
         private frmPreviewXRN frmXRN = new frmPreviewXRN();
         private frmPreviewSA frmSA = new frmPreviewSA();
-        private frmSeries frmSER = new frmSeries();
 
         public void Log(string message)
         {
@@ -307,13 +306,31 @@ namespace XRayBuilderGUI
                     streamWriter.Write(xray.ToString());
                 }
             }
+
+            //Save the new XRAY.ASIN.previewData file
+            try
+            {
+                string PdPath = outFolder + @"\XRAY." + results[0] + ".previewData";
+                using (
+                    StreamWriter streamWriter = new StreamWriter(PdPath, false,
+                        settings.utf8 ? Encoding.UTF8 : Encoding.Default))
+                {
+                    streamWriter.Write(xray.previewData);
+                }
+                Log("X-Ray previewData file created successfully!\r\nSaved to " + PdPath);
+            }
+            catch (Exception ex)
+            {
+                Log(String.Format("An error ocurred saving the previewData file: {0}", ex.Message));
+            }
+
+            Log("X-Ray file created successfully!\r\nSaved to " + _newPath);
+
             if (Properties.Settings.Default.playSound)
             {
                 System.Media.SoundPlayer player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
                 player.Play();
             }
-
-            Log("X-Ray file created successfully!\r\nSaved to " + _newPath);
 
             try
             {
@@ -832,8 +849,7 @@ namespace XRayBuilderGUI
         
         private void btnSettings_Click(object sender, EventArgs e)
         {
-            //frmSettings frmSet = new frmSettings();
-            frmSettingsNew frmSet = new frmSettingsNew();
+            frmSettings frmSet = new frmSettings();
             frmSet.ShowDialog();
         }
 

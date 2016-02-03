@@ -43,6 +43,7 @@ namespace XRayBuilderGUI
         private string asin = "";
         private string version = "1";
         private string aliaspath = "";
+        public string previewData = "";
         public List<Term> Terms = new List<Term>(100);
         private List<Chapter> _chapters = new List<Chapter>();
         private List<Excerpt> excerpts = new List<Excerpt>();
@@ -799,7 +800,12 @@ namespace XRayBuilderGUI
             command = new SQLiteCommand(sql, db);
             command.ExecuteNonQuery();
 
-            Console.WriteLine("Writing metadata...");
+            main.Log("Writing metadata...");
+
+            //Add string creation for new XRAY.ASIN.previewData file
+            previewData = @"{{""numImages"":0,""numTerms"":{0},""previewImages"":""[]"",""excerptIds"":[],""numPeople"":{1}}}";
+            previewData = String.Format(previewData, termCount, personCount);
+
             sql =
                 String.Format(
                     "insert into book_metadata (srl, erl, has_images, has_excerpts, show_spoilers_default, num_people, num_terms, num_images, preview_images) "

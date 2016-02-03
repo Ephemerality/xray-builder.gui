@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
@@ -12,10 +13,23 @@ namespace XRayBuilderGUI
             InitializeComponent();
         }
 
-        private void frmSettings_Load(object sender, EventArgs e)
+        //http://stackoverflow.com/questions/2612487/how-to-fix-the-flickering-in-user-controls
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                cp.ExStyle |= 0x02000000;  // Turn on WS_EX_COMPOSITED
+                return cp;
+            }
+        }
+
+        private void frmSettingsNew_Load(object sender, EventArgs e)
         {
             this.Text = String.Format("Settings (X-Ray Builder GUI v{0})", 
                 System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+
+            listSettings.SelectedIndex = 0;
 
             if (Directory.Exists(Environment.CurrentDirectory + @"\log"))
             {
@@ -45,7 +59,8 @@ namespace XRayBuilderGUI
             if (txtUnpack.Text == "") txtUnpack.Text = "dist/kindleunpack.exe";
             chkAmazonUK.Checked = Properties.Settings.Default.amazonUk;
             chkOverwrite.Checked = Properties.Settings.Default.overwrite;
-            chkAliasChapters.Checked = Properties.Settings.Default.overwriteAliases;
+            chkAlias.Checked = Properties.Settings.Default.overwriteAliases;
+            chkChapters.Checked = Properties.Settings.Default.overwriteChapters;
             chkSaveHtml.Checked = Properties.Settings.Default.saveHtml;
             chkSplitAliases.Checked = Properties.Settings.Default.splitAliases;
             chkSound.Checked = Properties.Settings.Default.playSound;
@@ -55,21 +70,23 @@ namespace XRayBuilderGUI
             // Added \r\n to show smaller tooltips
             ToolTip toolTip1 = new ToolTip();
             toolTip1.SetToolTip(chkRaw,
-                "Save the .rawml (raw markup) of the book\r\nin the output directory so you can review it.");
+                "Save the rawML (raw markup) of the book\r\nin the output directory so you can review it.");
             toolTip1.SetToolTip(chkSpoilers, "Use Shelfari descriptions that\r\ncontain spoilers when they exist.");
             toolTip1.SetToolTip(txtOffset,
                 "This offset will be applied to every book location\r\n(usually a negative number). Must be an integer.");
             toolTip1.SetToolTip(chkSoftHyphen,
-                "Ignore soft hyphens (Unicode U+00AD) while searching\r\nfor terms. This may slow down the parsing process slightly.");
+                "Ignore soft hyphens (Unicode U+00AD)\r\n" +
+                "while searching for terms. This may\r\n" +
+                "slow down the parsing process slightly.");
             toolTip1.SetToolTip(chkUseNew,
                 "Write the X-Ray file in the new format for\r\n" +
                 "Paperwhite 2 or Voyage firmware 5.6+. If\r\n" +
                 "you have one of these devices but this\r\n" +
-                "does notwork, try the old format.");
+                "does not work, try the old format.");
             toolTip1.SetToolTip(chkAndroid,
                 "Changes the naming convention of the X-Ray file\r\n"+
                 "for the Android Kindle app. Forces building with\r\n" +
-                "the new format. Files will be places in the output\r\n" +
+                "the new format. Files will be placed in the output\r\n" +
                 "directory within the 'Android' folder.");
             toolTip1.SetToolTip(chkUTF8, "Write the X-Ray file in UTF8 instead of ANSI.\r\n" +
                 "Use this option if there are accented characters\r\n" +
@@ -84,23 +101,27 @@ namespace XRayBuilderGUI
                 "Search Amazon.co.uk first, use Amazon.com as fallback.\r\n(Amazon.com is used if Amazon.co.uk is not selected.)");
             toolTip1.SetToolTip(chkEnableEdit,
                 "Open Notepad to enable editing of detected Chapters\r\nand Aliases before final X-Ray creation.");
-            toolTip1.SetToolTip(chkSubDirectories, "Save generated files to an\r\n\"Author\\Filename\"\r\nsubdirectory.");
+            toolTip1.SetToolTip(chkSubDirectories, "Save generated files to an\r\n\"Author\\Filename\" subdirectory.");
             toolTip1.SetToolTip(btnLogs, "Open the log files directory.");
-            toolTip1.SetToolTip(chkOverwrite, "Overwrite existing Author Profile and\r\nStart/End Actions files.");
-            toolTip1.SetToolTip(chkAliasChapters, "Overwrite existing alias and chapter files as well.");
+            toolTip1.SetToolTip(chkOverwrite, "Overwrite existing Author Profile,\r\nStart and End Actions files.");
+            toolTip1.SetToolTip(chkAlias, "Overwrite existing alias files.");
+            toolTip1.SetToolTip(chkChapters, "Overwrite existing chapter files.");
             toolTip1.SetToolTip(chkSaveHtml, "Save parsed HTML files. This is generally used\r\n" +
                                          "for debugging and can be left unchecked.");
             toolTip1.SetToolTip(chkSplitAliases, "Automatically split character names\r\n" +
                 "into aliases. This can have undesired\r\n" +
                 "consequences, so use with caution!!!");
             toolTip1.SetToolTip(btnHelp, "View the included help documentation.");
-            toolTip1.SetToolTip(chkSound, "Play a sound after finished generating\r\n" +
-                                        "Author Profile, End Action and Start Action\r\n" +
-                                        "files, or after generating X-Ray file.");
-            toolTip1.SetToolTip(chkKindleUnpack, "If left unchecked, the program will attempt to get metadata and rawML without KindleUnpack.\r\n" +
-                "If it fails, enable this option to use the KindleUnpack tool and report your findings on the MobileRead thread.");
-            toolTip1.SetToolTip(chkDownloadAliases, "Attempt to download pre-made aliases if none exist locally yet.\r\n" +
-                "\"Overwrite aliases\" should not be checked or the downloaded ones will be overwritten.");
+            toolTip1.SetToolTip(chkSound, "Play a sound after generating the Author\r\n" +
+                                        "Profile, End Action and Start Action\r\n" +
+                                        "files, or after generating an X-Ray file.");
+            toolTip1.SetToolTip(chkKindleUnpack, "If left unchecked, X-Ray Builder GUI will attempt to extract\r\n" +
+                "the metadata and rawML (raw markup) without KindleUnpack.\r\n" +
+                "If it fails, enable this option to use the KindleUnpack tool\r\n" +
+                "and report your findings on the MobileRead thread.");
+            toolTip1.SetToolTip(chkDownloadAliases, "Attempt to download pre-made aliases if none exist\r\n" +
+                                                    "locally yet. If \"Overwrite aliases\" is enabled, local\r\n" +
+                                                    "aliases will be overwritten with the ones downloaded.");
             toolTip1.SetToolTip(btnSupport, "Visit the MobileRead forum for\r\n" +
                                         "support, bug reports, or questions.");
         }
@@ -143,7 +164,8 @@ namespace XRayBuilderGUI
             Properties.Settings.Default.enableEdit = chkEnableEdit.Checked;
             Properties.Settings.Default.useSubDirectories = chkSubDirectories.Checked;
             Properties.Settings.Default.overwrite = chkOverwrite.Checked;
-            Properties.Settings.Default.overwriteAliases = chkAliasChapters.Checked;
+            Properties.Settings.Default.overwriteAliases = chkAlias.Checked;
+            Properties.Settings.Default.overwriteChapters = chkChapters.Checked;
             Properties.Settings.Default.saveHtml = chkSaveHtml.Checked;
             Properties.Settings.Default.splitAliases = chkSplitAliases.Checked;
             Properties.Settings.Default.playSound = chkSound.Checked;
@@ -226,8 +248,13 @@ namespace XRayBuilderGUI
 
         private void chkOverwrite_CheckedChanged(object sender, EventArgs e)
         {
-            chkAliasChapters.Visible = chkOverwrite.Checked;
-            if (!chkOverwrite.Checked) chkAliasChapters.Checked = false;
+            chkAlias.Enabled = chkOverwrite.Checked;
+            chkChapters.Enabled = chkOverwrite.Checked;
+            if (!chkOverwrite.Checked)
+            {
+                chkAlias.Checked = false;
+                chkChapters.Checked = false;
+            }
         }
 
         private void chkKindleUnpack_CheckedChanged(object sender, EventArgs e)
@@ -240,5 +267,39 @@ namespace XRayBuilderGUI
         {
             Process.Start("http://www.mobileread.com/forums/showthread.php?t=245754");
         }
+
+        private void listSettings_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            e.DrawBackground();
+            e.DrawFocusRectangle();
+
+            if ((e.State & DrawItemState.Selected) == DrawItemState.Selected)
+            {
+                e.Graphics.DrawString(listSettings.Items[e.Index].ToString(),
+                    Font, Brushes.White, e.Bounds.X + 3, e.Bounds.Y + 3);
+            }
+            else
+            {
+                e.Graphics.DrawString(listSettings.Items[e.Index].ToString(),
+                    Font, Brushes.Black, e.Bounds.X + 3, e.Bounds.Y + 3);
+            }
+        }
+
+        private void listSettings_MeasureItem(object sender, MeasureItemEventArgs e)
+        {
+            e.ItemHeight = 20;
+        }
+
+        private void listSettings_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            tabSettings.SelectedIndex = listSettings.SelectedIndex;
+        }
+
+        private void chkDownloadAliases_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkDownloadAliases.Checked)
+                chkOverwrite.Checked = false;
+        }
+        
     }
 }

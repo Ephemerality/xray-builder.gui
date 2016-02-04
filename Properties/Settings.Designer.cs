@@ -358,5 +358,29 @@ namespace XRayBuilderGUI.Properties {
                 this["overwriteChapters"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool overrideOffset {
+            get {
+                return ((bool)(this["overrideOffset"]));
+            }
+            set {
+                this["overrideOffset"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-16")]
+        public int offsetAZW3 {
+            get {
+                return ((int)(this["offsetAZW3"]));
+            }
+            set {
+                this["offsetAZW3"] = value;
+            }
+        }
     }
 }

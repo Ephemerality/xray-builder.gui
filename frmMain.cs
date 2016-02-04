@@ -178,18 +178,10 @@ namespace XRayBuilderGUI
                 results[2], results[0], results[4], results[5], results[1]));
 
             Log(String.Format("Attempting to build X-Ray...\r\nSpoilers: {0}", settings.spoilers ? "Enabled" : "Disabled"));
-            bool AZW3 = false;
-            if (Path.GetExtension(txtMobi.Text) == ".azw3")
-            {
-                if (settings.offset == -16 && MessageBox.Show("A -16 offset is automatically applied for this AZW3 file.\r\n"
-                    + "Are you sure you want to keep your existing -16 setting?", "Offset Setting", MessageBoxButtons.YesNo) == DialogResult.No)
-                {
-                    settings.offset = 0;
-                    settings.Save();
-                }
-                AZW3 = true;
-            }
-            Log("Offset: " + settings.offset.ToString() + (AZW3 ? " (-16 for AZW3)" : ""));
+
+            //If AZW3 file use AZW3 offset, if checked. Checked by default.
+            bool AZW3 = Path.GetExtension(txtMobi.Text) == ".azw3" && settings.overrideOffset;
+            Log("Offset: " + (AZW3 ? settings.offsetAZW3.ToString() + " (AZW3)" : settings.offset.ToString()));
 
             //Create X-Ray and attempt to create the base file (essentially the same as the site)
             XRay xray;
@@ -197,10 +189,10 @@ namespace XRayBuilderGUI
             {
                 if (rdoShelfari.Checked)
                     xray = new XRay(txtShelfari.Text, results[2], results[1], results[0], this, settings.spoilers,
-                        settings.offset - (AZW3 ? 16 : 0), "", false);
+                        (AZW3 ? settings.offsetAZW3 : settings.offset), "", false);
                 else
                     xray = new XRay(txtXMLFile.Text, results[2], results[1], results[0], this, settings.spoilers,
-                        settings.offset - (AZW3 ? 16 : 0), "");
+                        (AZW3 ? settings.offsetAZW3 : settings.offset), "");
                 if (xray.CreateXray() > 0)
                 {
                     Log("Error while processing.");
@@ -885,6 +877,7 @@ namespace XRayBuilderGUI
                 "Try to build the X-Ray file for this book.");
             toolTip1.SetToolTip(btnSettings, "Configure X-Ray Builder GUI.");
             toolTip1.SetToolTip(btnPreview, "View a preview of the generated files.");
+            toolTip1.SetToolTip(btnExtract, "Save the rawML (raw markup) of the book\r\nin the output directory so you can review it.");
             this.DragEnter += frmMain_DragEnter;
             this.DragDrop += frmMain_DragDrop;
 
@@ -1010,6 +1003,60 @@ namespace XRayBuilderGUI
                 settings.newMessage = true;
                 settings.Save();
             }
+        }
+
+        private void btnExtract_Click(object sender, EventArgs e)
+        {
+            //Check current settings
+            if (!File.Exists(txtMobi.Text))
+            {
+                MessageBox.Show(@"Specified book was not found.", @"Book Not Found");
+                return;
+            }
+            if (settings.useKindleUnpack && !File.Exists(settings.mobi_unpack))
+            {
+                MessageBox.Show(@"Kindleunpack was not found.\r\nPlease review the settings page.", @"Kindleunpack Not Found");
+                return;
+            }
+            if (!Directory.Exists(settings.outDir))
+            {
+                MessageBox.Show(@"Specified output directory does not exist.\r\nPlease review the settings page.", @"Output Directory Not found");
+                return;
+            }
+            //Create temp dir and ensure it exists
+            string randomFile = Functions.GetTempDirectory();
+            if (!Directory.Exists(randomFile))
+            {
+                MessageBox.Show(@"Temporary path not accessible for some reason.", @"Temporary Directory Error");
+                return;
+            }
+            List<string> results;
+            if (settings.useKindleUnpack)
+            {
+                Log("Running Kindleunpack to extract rawML...");
+                results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+            }
+            else
+            {
+                Log("Extracting rawML...");
+                try
+                {
+                    results = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, true, randomFile).getResults();
+                }
+                catch (Exception ex)
+                {
+                    Log("Error getting rawML: " + ex.Message);
+                    return;
+                }
+            }
+            if (results.Count != 6)
+            {
+                Log(results[0]);
+                return;
+            }
+            string rawmlPath = Path.Combine(Environment.CurrentDirectory + @"\dmp", Path.GetFileName(results[3]));
+            File.Copy(results[3], rawmlPath, true);
+            Log("Extracted rawml successfully!\r\nSaved to " + rawmlPath);
         }
     }
 }

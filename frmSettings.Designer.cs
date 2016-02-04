@@ -80,6 +80,8 @@
             this.txtPen = new System.Windows.Forms.TextBox();
             this.lblPen = new System.Windows.Forms.Label();
             this.listSettings = new System.Windows.Forms.ListBox();
+            this.chkOverrideOffset = new System.Windows.Forms.CheckBox();
+            this.txtAZWOffset = new System.Windows.Forms.TextBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -346,13 +348,15 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.txtAZWOffset);
+            this.groupBox4.Controls.Add(this.chkOverrideOffset);
             this.groupBox4.Controls.Add(this.chkSpoilers);
             this.groupBox4.Controls.Add(this.chkSoftHyphen);
             this.groupBox4.Controls.Add(this.lblOffset);
             this.groupBox4.Controls.Add(this.txtOffset);
             this.groupBox4.Location = new System.Drawing.Point(6, 138);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(378, 70);
+            this.groupBox4.Size = new System.Drawing.Size(378, 73);
             this.groupBox4.TabIndex = 28;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Preferences";
@@ -360,7 +364,7 @@
             // chkSpoilers
             // 
             this.chkSpoilers.AutoSize = true;
-            this.chkSpoilers.Location = new System.Drawing.Point(14, 42);
+            this.chkSpoilers.Location = new System.Drawing.Point(14, 45);
             this.chkSpoilers.Name = "chkSpoilers";
             this.chkSpoilers.Size = new System.Drawing.Size(101, 17);
             this.chkSpoilers.TabIndex = 22;
@@ -389,7 +393,7 @@
             // 
             // txtOffset
             // 
-            this.txtOffset.Location = new System.Drawing.Point(240, 17);
+            this.txtOffset.Location = new System.Drawing.Point(257, 17);
             this.txtOffset.Name = "txtOffset";
             this.txtOffset.Size = new System.Drawing.Size(47, 20);
             this.txtOffset.TabIndex = 20;
@@ -658,7 +662,25 @@
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
             // 
-            // frmSettingsNew
+            // chkOverrideOffset
+            // 
+            this.chkOverrideOffset.AutoSize = true;
+            this.chkOverrideOffset.Location = new System.Drawing.Point(160, 45);
+            this.chkOverrideOffset.Name = "chkOverrideOffset";
+            this.chkOverrideOffset.Size = new System.Drawing.Size(91, 17);
+            this.chkOverrideOffset.TabIndex = 23;
+            this.chkOverrideOffset.Text = "AWZ3 Offset:";
+            this.chkOverrideOffset.UseVisualStyleBackColor = true;
+            this.chkOverrideOffset.CheckedChanged += new System.EventHandler(this.chkOverrideOffset_CheckedChanged);
+            // 
+            // txtAZWOffset
+            // 
+            this.txtAZWOffset.Location = new System.Drawing.Point(257, 43);
+            this.txtAZWOffset.Name = "txtAZWOffset";
+            this.txtAZWOffset.Size = new System.Drawing.Size(47, 20);
+            this.txtAZWOffset.TabIndex = 24;
+            // 
+            // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -674,7 +696,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "frmSettingsNew";
+            this.Name = "frmSettings";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
@@ -766,5 +788,7 @@
         private System.Windows.Forms.CheckBox chkAmazonUK;
         private System.Windows.Forms.CheckBox chkSpoilers;
         private System.Windows.Forms.ListBox listSettings;
+        private System.Windows.Forms.CheckBox chkOverrideOffset;
+        private System.Windows.Forms.TextBox txtAZWOffset;
     }
 }

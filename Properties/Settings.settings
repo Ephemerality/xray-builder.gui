@@ -86,5 +86,11 @@
     <Setting Name="overwriteChapters" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="overrideOffset" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="offsetAZW3" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">-16</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

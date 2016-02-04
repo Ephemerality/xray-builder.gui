@@ -41,6 +41,7 @@
             this.lblXMLFile = new System.Windows.Forms.Label();
             this.txtShelfari = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.btnExtract = new System.Windows.Forms.Button();
             this.txtOutput = new System.Windows.Forms.TextBox();
             this.lblSeperator3 = new System.Windows.Forms.Label();
             this.tmiAuthorProfile = new System.Windows.Forms.ToolStripMenuItem();
@@ -93,9 +94,9 @@
             // 
             // txtMobi
             // 
-            this.txtMobi.Location = new System.Drawing.Point(13, 19);
+            this.txtMobi.Location = new System.Drawing.Point(12, 19);
             this.txtMobi.Name = "txtMobi";
-            this.txtMobi.Size = new System.Drawing.Size(492, 20);
+            this.txtMobi.Size = new System.Drawing.Size(463, 20);
             this.txtMobi.TabIndex = 1;
             this.txtMobi.TextChanged += new System.EventHandler(this.txtMobi_TextChanged);
             // 
@@ -167,6 +168,7 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.btnExtract);
             this.groupBox3.Controls.Add(this.txtMobi);
             this.groupBox3.Location = new System.Drawing.Point(13, 66);
             this.groupBox3.Name = "groupBox3";
@@ -174,6 +176,16 @@
             this.groupBox3.TabIndex = 38;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Book";
+            // 
+            // btnExtract
+            // 
+            this.btnExtract.Image = ((System.Drawing.Image)(resources.GetObject("btnExtract.Image")));
+            this.btnExtract.Location = new System.Drawing.Point(481, 17);
+            this.btnExtract.Name = "btnExtract";
+            this.btnExtract.Size = new System.Drawing.Size(24, 24);
+            this.btnExtract.TabIndex = 2;
+            this.btnExtract.UseVisualStyleBackColor = true;
+            this.btnExtract.Click += new System.EventHandler(this.btnExtract_Click);
             // 
             // txtOutput
             // 
@@ -428,6 +440,7 @@
         public System.Windows.Forms.ContextMenuStrip cmsPreview;
         public System.Windows.Forms.ProgressBar prgBar;
         private System.Windows.Forms.ToolStripMenuItem tmiStartAction;
+        private System.Windows.Forms.Button btnExtract;
     }
 }
 

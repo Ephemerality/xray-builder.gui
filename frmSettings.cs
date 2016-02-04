@@ -66,6 +66,8 @@ namespace XRayBuilderGUI
             chkSound.Checked = Properties.Settings.Default.playSound;
             chkKindleUnpack.Checked = Properties.Settings.Default.useKindleUnpack;
             chkDownloadAliases.Checked = Properties.Settings.Default.downloadAliases;
+            chkOverrideOffset.Checked = Properties.Settings.Default.overrideOffset;
+            txtAZWOffset.Text = Properties.Settings.Default.offsetAZW3.ToString();
 
             // Added \r\n to show smaller tooltips
             ToolTip toolTip1 = new ToolTip();
@@ -73,7 +75,7 @@ namespace XRayBuilderGUI
                 "Save the rawML (raw markup) of the book\r\nin the output directory so you can review it.");
             toolTip1.SetToolTip(chkSpoilers, "Use Shelfari descriptions that\r\ncontain spoilers when they exist.");
             toolTip1.SetToolTip(txtOffset,
-                "This offset will be applied to every book location\r\n(usually a negative number). Must be an integer.");
+                "This offset will be applied to every\r\nbook location (usually a negative\r\nnumber). Must be an integer.");
             toolTip1.SetToolTip(chkSoftHyphen,
                 "Ignore soft hyphens (Unicode U+00AD)\r\n" +
                 "while searching for terms. This may\r\n" +
@@ -124,6 +126,9 @@ namespace XRayBuilderGUI
                                                     "aliases will be overwritten with the ones downloaded.");
             toolTip1.SetToolTip(btnSupport, "Visit the MobileRead forum for\r\n" +
                                         "support, bug reports, or questions.");
+            toolTip1.SetToolTip(chkOverrideOffset, "Override the offset for AZW3 files only.");
+            toolTip1.SetToolTip(txtAZWOffset,
+                "This offset will be applied to every\r\nAWZ3 book location (usually -16).\r\nMust be an integer.");
         }
 
         private void btnBrowseUnpack_Click(object sender, EventArgs e)
@@ -140,6 +145,12 @@ namespace XRayBuilderGUI
         {
             int offset = 0;
             if (!int.TryParse(txtOffset.Text, out offset))
+            {
+                MessageBox.Show("The offset must be an integer.", "Offset Error");
+                return;
+            }
+            int offsetAZW = 0;
+            if (!int.TryParse(txtAZWOffset.Text, out offsetAZW))
             {
                 MessageBox.Show("The offset must be an integer.", "Offset Error");
                 return;
@@ -171,6 +182,8 @@ namespace XRayBuilderGUI
             Properties.Settings.Default.playSound = chkSound.Checked;
             Properties.Settings.Default.useKindleUnpack = chkKindleUnpack.Checked;
             Properties.Settings.Default.downloadAliases = chkDownloadAliases.Checked;
+            Properties.Settings.Default.overrideOffset = chkOverrideOffset.Checked;
+            Properties.Settings.Default.offsetAZW3 = offsetAZW;
             Properties.Settings.Default.Save();
 
             this.Close();
@@ -300,6 +313,10 @@ namespace XRayBuilderGUI
             if (chkDownloadAliases.Checked)
                 chkOverwrite.Checked = false;
         }
-        
+
+        private void chkOverrideOffset_CheckedChanged(object sender, EventArgs e)
+        {
+            txtAZWOffset.Enabled = chkOverrideOffset.Checked;
+        }
     }
 }

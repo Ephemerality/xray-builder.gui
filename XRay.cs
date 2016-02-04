@@ -43,7 +43,6 @@ namespace XRayBuilderGUI
         private string asin = "";
         private string version = "1";
         private string aliaspath = "";
-        public string previewData = "";
         public List<Term> Terms = new List<Term>(100);
         private List<Chapter> _chapters = new List<Chapter>();
         private List<Excerpt> excerpts = new List<Excerpt>();
@@ -165,6 +164,14 @@ namespace XRayBuilderGUI
                         @"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{5}"",""created"":""{6}"",""terms"":[{4}],""chapters"":[{{""name"":null,""start"":1,""end"":9999999}}]}}",
                         asin, databaseName, _guid, version, string.Join<Term>(",", Terms), xrayversion, date);
             }
+        }
+
+        //Add string creation for new XRAY.ASIN.previewData file
+        public string getPreviewData()
+        {
+            string preview = @"{{""numImages"":0,""numTerms"":{0},""previewImages"":""[]"",""excerptIds"":[],""numPeople"":{1}}}";
+            preview = String.Format(preview, Terms.Count(t => t.Type == "topic"), Terms.Count(t => t.Type == "character"));
+            return preview;
         }
 
         public string GetXRayName(bool android = false)
@@ -801,11 +808,7 @@ namespace XRayBuilderGUI
             command.ExecuteNonQuery();
 
             main.Log("Writing metadata...");
-
-            //Add string creation for new XRAY.ASIN.previewData file
-            previewData = @"{{""numImages"":0,""numTerms"":{0},""previewImages"":""[]"",""excerptIds"":[],""numPeople"":{1}}}";
-            previewData = String.Format(previewData, termCount, personCount);
-
+            
             sql =
                 String.Format(
                     "insert into book_metadata (srl, erl, has_images, has_excerpts, show_spoilers_default, num_people, num_terms, num_images, preview_images) "

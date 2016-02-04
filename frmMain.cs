@@ -290,6 +290,22 @@ namespace XRayBuilderGUI
                 command.ExecuteNonQuery();
                 m_dbConnection.Close();
                 m_dbConnection.Dispose();
+                
+                //Save the new XRAY.ASIN.previewData file
+                try
+                {
+                    string PdPath = outFolder + @"\XRAY." + results[0] + ".previewData";
+                    using (StreamWriter streamWriter = new StreamWriter(PdPath, false,
+                        settings.utf8 ? Encoding.UTF8 : Encoding.Default))
+                    {
+                        streamWriter.Write(xray.getPreviewData());
+                    }
+                    Log("X-Ray previewData file created successfully!\r\nSaved to " + PdPath);
+                }
+                catch (Exception ex)
+                {
+                    Log(String.Format("An error occurred saving the previewData file: {0}", ex.Message));
+                }
             }
             else
             {
@@ -297,23 +313,6 @@ namespace XRayBuilderGUI
                 {
                     streamWriter.Write(xray.ToString());
                 }
-            }
-
-            //Save the new XRAY.ASIN.previewData file
-            try
-            {
-                string PdPath = outFolder + @"\XRAY." + results[0] + ".previewData";
-                using (
-                    StreamWriter streamWriter = new StreamWriter(PdPath, false,
-                        settings.utf8 ? Encoding.UTF8 : Encoding.Default))
-                {
-                    streamWriter.Write(xray.previewData);
-                }
-                Log("X-Ray previewData file created successfully!\r\nSaved to " + PdPath);
-            }
-            catch (Exception ex)
-            {
-                Log(String.Format("An error ocurred saving the previewData file: {0}", ex.Message));
             }
 
             Log("X-Ray file created successfully!\r\nSaved to " + _newPath);

@@ -710,6 +710,7 @@ namespace XRayBuilderGUI
             command.CommandText = "update string set text=@text where id=15";
             command.Parameters.AddWithValue("text", shelfariURL);
             command.ExecuteNonQuery();
+            command.Dispose();
             main.Log("Updating database with terms, descriptions, and excerpts...");
             main.prgBar.Maximum = Terms.Count;
             //Write all entities and occurrences
@@ -728,6 +729,7 @@ namespace XRayBuilderGUI
                         t.Id, t.Type == "character" ? 1 : 2, t.Occurrences.Count);
                 command.Parameters.AddWithValue("label", t.TermName);
                 command.ExecuteNonQuery();
+                command.Dispose();
 
                 command = new SQLiteCommand(db);
                 command.CommandText =
@@ -737,6 +739,7 @@ namespace XRayBuilderGUI
                 command.Parameters.AddWithValue("text", t.Desc);
                 command.Parameters.AddWithValue("source_wildcard", t.TermName);
                 command.ExecuteNonQuery();
+                command.Dispose();
 
                 sql = "";
                 foreach (int[] loc in t.Occurrences)
@@ -744,6 +747,7 @@ namespace XRayBuilderGUI
                         t.Id, loc[0], loc[1]);
                 command = new SQLiteCommand(sql, db);
                 command.ExecuteNonQuery();
+                command.Dispose();
             }
             //Write excerpts and entity_excerpt table
             main.prgBar.Maximum = excerpts.Count;
@@ -769,6 +773,7 @@ namespace XRayBuilderGUI
                     sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", ent, e.id);
                 }
             }
+            command.Dispose();
             // Populate some more Notable Clips if not enough were found from Shelfari
             // TODO: Add a config value in settings for this
             if (foundNotables + excerpts.Count <= 20)
@@ -787,6 +792,7 @@ namespace XRayBuilderGUI
             main.Log("Writing entity excerpt table...");
             command = new SQLiteCommand(sql, db);
             command.ExecuteNonQuery();
+            command.Dispose();
             main.prgBar.Value = main.prgBar.Maximum;
             Application.DoEvents();
             main.Log("Writing top mentions...");
@@ -806,6 +812,7 @@ namespace XRayBuilderGUI
                 String.Join(",", sorted.GetRange(0, Math.Min(10, sorted.Count))));
             command = new SQLiteCommand(sql, db);
             command.ExecuteNonQuery();
+            command.Dispose();
 
             main.Log("Writing metadata...");
             
@@ -816,6 +823,7 @@ namespace XRayBuilderGUI
 
             command = new SQLiteCommand(sql, db);
             command.ExecuteNonQuery();
+            command.Dispose();
             return 0;
         }
 

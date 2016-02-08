@@ -247,49 +247,52 @@ namespace XRayBuilderGUI
                     Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n" + ex.Message);
                     return;
                 }
-                SQLiteConnection m_dbConnection;
-                m_dbConnection = new SQLiteConnection(("Data Source=" + _newPath + ";Version=3;"));
-                m_dbConnection.Open();
-                string sql;
-                try
+                using (SQLiteConnection m_dbConnection = new SQLiteConnection(("Data Source=" + _newPath + ";Version=3;")))
                 {
-                    using (StreamReader streamReader = new StreamReader("BaseDB.sql", Encoding.UTF8))
+                    m_dbConnection.Open();
+                    string sql;
+                    try
                     {
-                        sql = streamReader.ReadToEnd();
+                        using (StreamReader streamReader = new StreamReader("BaseDB.sql", Encoding.UTF8))
+                        {
+                            sql = streamReader.ReadToEnd();
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    Log("An error occurred while opening the BaseDB.sql file. Ensure you extracted it to the same directory as the program.\n"
-                        + ex.Message);
-                    m_dbConnection.Dispose();
-                    return;
-                }
-                SQLiteCommand command = new SQLiteCommand("BEGIN; " + sql + " COMMIT;", m_dbConnection);
-                Log("Building new X-Ray database. May take a few minutes...");
-                command.ExecuteNonQuery();
-                command = new SQLiteCommand("PRAGMA user_version = 1; PRAGMA encoding = utf8; BEGIN;", m_dbConnection);
-                command.ExecuteNonQuery();
-                Log("Done building initial database. Populating with info from source X-Ray...");
-                try
-                {
-                    xray.PopulateDb(m_dbConnection);
-                }
-                catch (Exception ex)
-                {
-                    Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n" + ex.Message);
+                    catch (Exception ex)
+                    {
+                        Log("An error occurred while opening the BaseDB.sql file. Ensure you extracted it to the same directory as the program.\n"
+                            + ex.Message);
+                        m_dbConnection.Dispose();
+                        return;
+                    }
+                    SQLiteCommand command = new SQLiteCommand("BEGIN; " + sql + " COMMIT;", m_dbConnection);
+                    Log("Building new X-Ray database. May take a few minutes...");
+                    command.ExecuteNonQuery();
+                    command.Dispose();
+                    command = new SQLiteCommand("PRAGMA user_version = 1; PRAGMA encoding = utf8; BEGIN;", m_dbConnection);
+                    command.ExecuteNonQuery();
+                    command.Dispose();
+                    Log("Done building initial database. Populating with info from source X-Ray...");
+                    try
+                    {
+                        xray.PopulateDb(m_dbConnection);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n" + ex.Message);
+                        command.Dispose();
+                        m_dbConnection.Close();
+                        return;
+                    }
+                    Log("Updating indices...");
+                    sql = "CREATE INDEX idx_occurrence_start ON occurrence(start ASC);\n"
+                          + "CREATE INDEX idx_entity_type ON entity(type ASC);\n"
+                          + "CREATE INDEX idx_entity_excerpt ON entity_excerpt(entity ASC); COMMIT;";
+                    command = new SQLiteCommand(sql, m_dbConnection);
+                    command.ExecuteNonQuery();
+                    command.Dispose();
                     m_dbConnection.Close();
-                    m_dbConnection.Dispose();
-                    return;
                 }
-                Log("Updating indices...");
-                sql = "CREATE INDEX idx_occurrence_start ON occurrence(start ASC);\n"
-                      + "CREATE INDEX idx_entity_type ON entity(type ASC);\n"
-                      + "CREATE INDEX idx_entity_excerpt ON entity_excerpt(entity ASC); COMMIT;";
-                command = new SQLiteCommand(sql, m_dbConnection);
-                command.ExecuteNonQuery();
-                m_dbConnection.Close();
-                m_dbConnection.Dispose();
                 
                 //Save the new XRAY.ASIN.previewData file
                 try

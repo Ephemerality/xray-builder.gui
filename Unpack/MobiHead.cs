@@ -60,6 +60,7 @@ namespace XRayBuilderGUI.Unpack
             fs.Read(this.mobiType, 0, this.mobiType.Length);
             fs.Read(this.textEncoding, 0, this.textEncoding.Length);
             fs.Read(this.uniqueID, 0, this.uniqueID.Length);
+            Array.Reverse(this.uniqueID);
             fs.Read(this.fileVersion, 0, this.fileVersion.Length);
             fs.Read(this.orthographicIndex, 0, this.orthographicIndex.Length);
             fs.Read(this.inflectionIndex, 0, this.inflectionIndex.Length);

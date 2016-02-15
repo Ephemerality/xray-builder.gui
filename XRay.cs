@@ -43,7 +43,6 @@ namespace XRayBuilderGUI
         private string asin = "";
         private string version = "1";
         private string aliaspath = "";
-        public string previewData = "";
         public List<Term> Terms = new List<Term>(100);
         private List<Chapter> _chapters = new List<Chapter>();
         private List<Excerpt> excerpts = new List<Excerpt>();
@@ -165,6 +164,14 @@ namespace XRayBuilderGUI
                         @"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{5}"",""created"":""{6}"",""terms"":[{4}],""chapters"":[{{""name"":null,""start"":1,""end"":9999999}}]}}",
                         asin, databaseName, _guid, version, string.Join<Term>(",", Terms), xrayversion, date);
             }
+        }
+
+        //Add string creation for new XRAY.ASIN.previewData file
+        public string getPreviewData()
+        {
+            string preview = @"{{""numImages"":0,""numTerms"":{0},""previewImages"":""[]"",""excerptIds"":[],""numPeople"":{1}}}";
+            preview = String.Format(preview, Terms.Count(t => t.Type == "topic"), Terms.Count(t => t.Type == "character"));
+            return preview;
         }
 
         public string GetXRayName(bool android = false)
@@ -703,6 +710,7 @@ namespace XRayBuilderGUI
             command.CommandText = "update string set text=@text where id=15";
             command.Parameters.AddWithValue("text", shelfariURL);
             command.ExecuteNonQuery();
+            command.Dispose();
             main.Log("Updating database with terms, descriptions, and excerpts...");
             main.prgBar.Maximum = Terms.Count;
             //Write all entities and occurrences
@@ -721,6 +729,7 @@ namespace XRayBuilderGUI
                         t.Id, t.Type == "character" ? 1 : 2, t.Occurrences.Count);
                 command.Parameters.AddWithValue("label", t.TermName);
                 command.ExecuteNonQuery();
+                command.Dispose();
 
                 command = new SQLiteCommand(db);
                 command.CommandText =
@@ -730,6 +739,7 @@ namespace XRayBuilderGUI
                 command.Parameters.AddWithValue("text", t.Desc);
                 command.Parameters.AddWithValue("source_wildcard", t.TermName);
                 command.ExecuteNonQuery();
+                command.Dispose();
 
                 sql = "";
                 foreach (int[] loc in t.Occurrences)
@@ -737,6 +747,7 @@ namespace XRayBuilderGUI
                         t.Id, loc[0], loc[1]);
                 command = new SQLiteCommand(sql, db);
                 command.ExecuteNonQuery();
+                command.Dispose();
             }
             //Write excerpts and entity_excerpt table
             main.prgBar.Maximum = excerpts.Count;
@@ -762,6 +773,7 @@ namespace XRayBuilderGUI
                     sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", ent, e.id);
                 }
             }
+            command.Dispose();
             // Populate some more Notable Clips if not enough were found from Shelfari
             // TODO: Add a config value in settings for this
             if (foundNotables + excerpts.Count <= 20)
@@ -780,6 +792,7 @@ namespace XRayBuilderGUI
             main.Log("Writing entity excerpt table...");
             command = new SQLiteCommand(sql, db);
             command.ExecuteNonQuery();
+            command.Dispose();
             main.prgBar.Value = main.prgBar.Maximum;
             Application.DoEvents();
             main.Log("Writing top mentions...");
@@ -799,13 +812,10 @@ namespace XRayBuilderGUI
                 String.Join(",", sorted.GetRange(0, Math.Min(10, sorted.Count))));
             command = new SQLiteCommand(sql, db);
             command.ExecuteNonQuery();
+            command.Dispose();
 
             main.Log("Writing metadata...");
-
-            //Add string creation for new XRAY.ASIN.previewData file
-            previewData = @"{{""numImages"":0,""numTerms"":{0},""previewImages"":""[]"",""excerptIds"":[],""numPeople"":{1}}}";
-            previewData = String.Format(previewData, termCount, personCount);
-
+            
             sql =
                 String.Format(
                     "insert into book_metadata (srl, erl, has_images, has_excerpts, show_spoilers_default, num_people, num_terms, num_images, preview_images) "
@@ -813,6 +823,7 @@ namespace XRayBuilderGUI
 
             command = new SQLiteCommand(sql, db);
             command.ExecuteNonQuery();
+            command.Dispose();
             return 0;
         }
 

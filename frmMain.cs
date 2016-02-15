@@ -868,7 +868,7 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(btnBrowseMobi, "Open a Kindle book.");
             toolTip1.SetToolTip(btnBrowseOutput, "Open the default output directory.");
             toolTip1.SetToolTip(btnLink, "Open the Shelfari link in your default web browser.");
-            toolTip1.SetToolTip(btnBrowseXML, "Open a supported alias file containg Characters and Topics.");
+            toolTip1.SetToolTip(btnBrowseXML, "Open a supported XML or TXT file containing characters and topics.");
             toolTip1.SetToolTip(btnSearchShelfari, "Try to search for this book on Shelfari.");
             toolTip1.SetToolTip(btnSaveShelfari, "Save Shelfari info to an XML file.");
             toolTip1.SetToolTip(btnKindleExtras,

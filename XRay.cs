@@ -458,11 +458,13 @@ namespace XRayBuilderGUI
                             {
                                 if (match.Groups.Count > 1)
                                 {
+                                    if (locHighlight.Contains(match.Groups[1].Index)) continue;
                                     locHighlight.Add(match.Groups[1].Index);
                                     lenHighlight.Add(match.Groups[1].Length);
                                 }
                                 else
                                 {
+                                    if (locHighlight.Contains(match.Index)) continue;
                                     locHighlight.Add(match.Index);
                                     lenHighlight.Add(match.Length);
                                 }
@@ -494,6 +496,7 @@ namespace XRayBuilderGUI
                                         matches = Regex.Matches(node.InnerHtml, pat, RegexOptions.IgnoreCase);
                                     foreach (Match match in matches)
                                     {
+                                        if (locHighlight.Contains(match.Index)) continue;
                                         locHighlight.Add(match.Index);
                                         lenHighlight.Add(match.Length);
                                     }

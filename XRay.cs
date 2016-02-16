@@ -449,11 +449,13 @@ namespace XRayBuilderGUI
                     {
                         List<int> locHighlight = new List<int>();
                         List<int> lenHighlight = new List<int>();
-                        string punctuationMarks = @"\S*[!\.?,""'\);]*";
+                        // If there is an apostrophe, attempt to match 's at the end of the term
+                        // Match end of word, then search for any lingering punctuation
+                        string punctuationMarks = @"(?(')'s?|')?\b[!\.?,""'\);]*";
                         //Search html for the matching term out of all aliases
                         foreach (string s in search)
                         {
-                            MatchCollection matches = Regex.Matches(node.InnerHtml, s + punctuationMarks, character.MatchCase || character.RegEx ? RegexOptions.None : RegexOptions.IgnoreCase);
+                            MatchCollection matches = Regex.Matches(node.InnerHtml, @"\b" + s + punctuationMarks, character.MatchCase || character.RegEx ? RegexOptions.None : RegexOptions.IgnoreCase);
                             foreach (Match match in matches)
                             {
                                 if (match.Groups.Count > 1)

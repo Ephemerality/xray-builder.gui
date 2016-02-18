@@ -449,20 +449,24 @@ namespace XRayBuilderGUI
                     {
                         List<int> locHighlight = new List<int>();
                         List<int> lenHighlight = new List<int>();
-                        string punctuationMarks = @"\S*[!\.?,""'\);]*";
+                        // If there is an apostrophe, attempt to match 's at the end of the term
+                        // Match end of word, then search for any lingering punctuation
+                        string punctuationMarks = @"(?(')'s?|')?\b[!\.?,""'\);]*";
                         //Search html for the matching term out of all aliases
                         foreach (string s in search)
                         {
-                            MatchCollection matches = Regex.Matches(node.InnerHtml, s + punctuationMarks, character.MatchCase || character.RegEx ? RegexOptions.None : RegexOptions.IgnoreCase);
+                            MatchCollection matches = Regex.Matches(node.InnerHtml, @"\b" + s + punctuationMarks, character.MatchCase || character.RegEx ? RegexOptions.None : RegexOptions.IgnoreCase);
                             foreach (Match match in matches)
                             {
                                 if (match.Groups.Count > 1)
                                 {
+                                    if (locHighlight.Contains(match.Groups[1].Index)) continue;
                                     locHighlight.Add(match.Groups[1].Index);
                                     lenHighlight.Add(match.Groups[1].Length);
                                 }
                                 else
                                 {
+                                    if (locHighlight.Contains(match.Index)) continue;
                                     locHighlight.Add(match.Index);
                                     lenHighlight.Add(match.Length);
                                 }
@@ -494,6 +498,7 @@ namespace XRayBuilderGUI
                                         matches = Regex.Matches(node.InnerHtml, pat, RegexOptions.IgnoreCase);
                                     foreach (Match match in matches)
                                     {
+                                        if (locHighlight.Contains(match.Index)) continue;
                                         locHighlight.Add(match.Index);
                                         lenHighlight.Add(match.Length);
                                     }

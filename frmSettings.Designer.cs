@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmSettings));
             this.btnSupport = new System.Windows.Forms.Button();
-            this.btnHelp = new System.Windows.Forms.Button();
             this.btnClearLogs = new System.Windows.Forms.Button();
             this.btnLogs = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
@@ -52,6 +52,8 @@
             this.txtUnpack = new System.Windows.Forms.TextBox();
             this.tabPgXray = new System.Windows.Forms.TabPage();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.txtAZWOffset = new System.Windows.Forms.TextBox();
+            this.chkOverrideOffset = new System.Windows.Forms.CheckBox();
             this.chkSpoilers = new System.Windows.Forms.CheckBox();
             this.chkSoftHyphen = new System.Windows.Forms.CheckBox();
             this.lblOffset = new System.Windows.Forms.Label();
@@ -79,9 +81,13 @@
             this.txtReal = new System.Windows.Forms.TextBox();
             this.txtPen = new System.Windows.Forms.TextBox();
             this.lblPen = new System.Windows.Forms.Label();
+            this.tabPgHelp = new System.Windows.Forms.TabPage();
+            this.rtbHelp = new System.Windows.Forms.RichTextBox();
+            this.tabPgAbout = new System.Windows.Forms.TabPage();
+            this.lblVersion = new System.Windows.Forms.Label();
+            this.lblName = new System.Windows.Forms.Label();
+            this.rtbAbout = new System.Windows.Forms.RichTextBox();
             this.listSettings = new System.Windows.Forms.ListBox();
-            this.chkOverrideOffset = new System.Windows.Forms.CheckBox();
-            this.txtAZWOffset = new System.Windows.Forms.TextBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -99,27 +105,19 @@
             this.tabPgAmazon.SuspendLayout();
             this.gbSite.SuspendLayout();
             this.gbDetails.SuspendLayout();
+            this.tabPgHelp.SuspendLayout();
+            this.tabPgAbout.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSupport
             // 
-            this.btnSupport.Location = new System.Drawing.Point(332, 385);
+            this.btnSupport.Location = new System.Drawing.Point(331, 385);
             this.btnSupport.Name = "btnSupport";
             this.btnSupport.Size = new System.Drawing.Size(95, 30);
             this.btnSupport.TabIndex = 41;
             this.btnSupport.Text = "Forum";
             this.btnSupport.UseVisualStyleBackColor = true;
             this.btnSupport.Click += new System.EventHandler(this.btnSupport_Click);
-            // 
-            // btnHelp
-            // 
-            this.btnHelp.Location = new System.Drawing.Point(225, 385);
-            this.btnHelp.Name = "btnHelp";
-            this.btnHelp.Size = new System.Drawing.Size(95, 30);
-            this.btnHelp.TabIndex = 40;
-            this.btnHelp.Text = "Readme";
-            this.btnHelp.UseVisualStyleBackColor = true;
-            this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
             // 
             // btnClearLogs
             // 
@@ -143,9 +141,9 @@
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(439, 385);
+            this.btnSave.Location = new System.Drawing.Point(438, 385);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(94, 30);
+            this.btnSave.Size = new System.Drawing.Size(95, 30);
             this.btnSave.TabIndex = 37;
             this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = true;
@@ -168,6 +166,8 @@
             this.tabSettings.Controls.Add(this.tabPgXray);
             this.tabSettings.Controls.Add(this.tabPgAliasChapter);
             this.tabSettings.Controls.Add(this.tabPgAmazon);
+            this.tabSettings.Controls.Add(this.tabPgHelp);
+            this.tabSettings.Controls.Add(this.tabPgAbout);
             this.tabSettings.ItemSize = new System.Drawing.Size(0, 1);
             this.tabSettings.Location = new System.Drawing.Point(144, 1);
             this.tabSettings.Name = "tabSettings";
@@ -360,6 +360,24 @@
             this.groupBox4.TabIndex = 28;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Preferences";
+            // 
+            // txtAZWOffset
+            // 
+            this.txtAZWOffset.Location = new System.Drawing.Point(257, 43);
+            this.txtAZWOffset.Name = "txtAZWOffset";
+            this.txtAZWOffset.Size = new System.Drawing.Size(47, 20);
+            this.txtAZWOffset.TabIndex = 24;
+            // 
+            // chkOverrideOffset
+            // 
+            this.chkOverrideOffset.AutoSize = true;
+            this.chkOverrideOffset.Location = new System.Drawing.Point(160, 45);
+            this.chkOverrideOffset.Name = "chkOverrideOffset";
+            this.chkOverrideOffset.Size = new System.Drawing.Size(91, 17);
+            this.chkOverrideOffset.TabIndex = 23;
+            this.chkOverrideOffset.Text = "AWZ3 Offset:";
+            this.chkOverrideOffset.UseVisualStyleBackColor = true;
+            this.chkOverrideOffset.CheckedChanged += new System.EventHandler(this.chkOverrideOffset_CheckedChanged);
             // 
             // chkSpoilers
             // 
@@ -642,6 +660,71 @@
             this.lblPen.TabIndex = 19;
             this.lblPen.Text = "Pen Name:";
             // 
+            // tabPgHelp
+            // 
+            this.tabPgHelp.Controls.Add(this.rtbHelp);
+            this.tabPgHelp.Location = new System.Drawing.Point(4, 5);
+            this.tabPgHelp.Name = "tabPgHelp";
+            this.tabPgHelp.Size = new System.Drawing.Size(390, 353);
+            this.tabPgHelp.TabIndex = 5;
+            this.tabPgHelp.Text = "tabPage5";
+            this.tabPgHelp.UseVisualStyleBackColor = true;
+            // 
+            // rtbHelp
+            // 
+            this.rtbHelp.BackColor = System.Drawing.SystemColors.Control;
+            this.rtbHelp.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.rtbHelp.Location = new System.Drawing.Point(12, 15);
+            this.rtbHelp.Name = "rtbHelp";
+            this.rtbHelp.ReadOnly = true;
+            this.rtbHelp.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.rtbHelp.Size = new System.Drawing.Size(373, 327);
+            this.rtbHelp.TabIndex = 0;
+            this.rtbHelp.Text = resources.GetString("rtbHelp.Text");
+            // 
+            // tabPgAbout
+            // 
+            this.tabPgAbout.Controls.Add(this.lblVersion);
+            this.tabPgAbout.Controls.Add(this.lblName);
+            this.tabPgAbout.Controls.Add(this.rtbAbout);
+            this.tabPgAbout.Location = new System.Drawing.Point(4, 5);
+            this.tabPgAbout.Name = "tabPgAbout";
+            this.tabPgAbout.Size = new System.Drawing.Size(390, 353);
+            this.tabPgAbout.TabIndex = 6;
+            this.tabPgAbout.Text = "tabPgAb";
+            this.tabPgAbout.UseVisualStyleBackColor = true;
+            // 
+            // lblVersion
+            // 
+            this.lblVersion.AutoSize = true;
+            this.lblVersion.Location = new System.Drawing.Point(12, 40);
+            this.lblVersion.Name = "lblVersion";
+            this.lblVersion.Size = new System.Drawing.Size(48, 13);
+            this.lblVersion.TabIndex = 3;
+            this.lblVersion.Text = "Version: ";
+            // 
+            // lblName
+            // 
+            this.lblName.AutoSize = true;
+            this.lblName.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblName.Location = new System.Drawing.Point(12, 15);
+            this.lblName.Name = "lblName";
+            this.lblName.Size = new System.Drawing.Size(133, 16);
+            this.lblName.TabIndex = 2;
+            this.lblName.Text = "X-Ray Builder GUI";
+            // 
+            // rtbAbout
+            // 
+            this.rtbAbout.BackColor = System.Drawing.SystemColors.Control;
+            this.rtbAbout.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.rtbAbout.Location = new System.Drawing.Point(15, 65);
+            this.rtbAbout.Name = "rtbAbout";
+            this.rtbAbout.ReadOnly = true;
+            this.rtbAbout.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
+            this.rtbAbout.Size = new System.Drawing.Size(360, 272);
+            this.rtbAbout.TabIndex = 1;
+            this.rtbAbout.Text = resources.GetString("rtbAbout.Text");
+            // 
             // listSettings
             // 
             this.listSettings.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
@@ -653,7 +736,9 @@
             "Directories",
             "X-Ray",
             "Aliases and Chapters",
-            "Amazon"});
+            "Amazon",
+            "Help and Hints",
+            "About"});
             this.listSettings.Location = new System.Drawing.Point(12, 12);
             this.listSettings.Name = "listSettings";
             this.listSettings.Size = new System.Drawing.Size(130, 347);
@@ -661,24 +746,6 @@
             this.listSettings.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listSettings_DrawItem);
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
-            // 
-            // chkOverrideOffset
-            // 
-            this.chkOverrideOffset.AutoSize = true;
-            this.chkOverrideOffset.Location = new System.Drawing.Point(160, 45);
-            this.chkOverrideOffset.Name = "chkOverrideOffset";
-            this.chkOverrideOffset.Size = new System.Drawing.Size(91, 17);
-            this.chkOverrideOffset.TabIndex = 23;
-            this.chkOverrideOffset.Text = "AWZ3 Offset:";
-            this.chkOverrideOffset.UseVisualStyleBackColor = true;
-            this.chkOverrideOffset.CheckedChanged += new System.EventHandler(this.chkOverrideOffset_CheckedChanged);
-            // 
-            // txtAZWOffset
-            // 
-            this.txtAZWOffset.Location = new System.Drawing.Point(257, 43);
-            this.txtAZWOffset.Name = "txtAZWOffset";
-            this.txtAZWOffset.Size = new System.Drawing.Size(47, 20);
-            this.txtAZWOffset.TabIndex = 24;
             // 
             // frmSettings
             // 
@@ -689,7 +756,6 @@
             this.Controls.Add(this.tabSettings);
             this.Controls.Add(this.lblSeperator);
             this.Controls.Add(this.btnSupport);
-            this.Controls.Add(this.btnHelp);
             this.Controls.Add(this.btnClearLogs);
             this.Controls.Add(this.btnLogs);
             this.Controls.Add(this.btnSave);
@@ -731,13 +797,15 @@
             this.gbSite.PerformLayout();
             this.gbDetails.ResumeLayout(false);
             this.gbDetails.PerformLayout();
+            this.tabPgHelp.ResumeLayout(false);
+            this.tabPgAbout.ResumeLayout(false);
+            this.tabPgAbout.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
         private System.Windows.Forms.Button btnSupport;
-        private System.Windows.Forms.Button btnHelp;
         private System.Windows.Forms.Button btnClearLogs;
         private System.Windows.Forms.Button btnLogs;
         private System.Windows.Forms.Button btnSave;
@@ -790,5 +858,11 @@
         private System.Windows.Forms.ListBox listSettings;
         private System.Windows.Forms.CheckBox chkOverrideOffset;
         private System.Windows.Forms.TextBox txtAZWOffset;
+        private System.Windows.Forms.TabPage tabPgHelp;
+        private System.Windows.Forms.RichTextBox rtbHelp;
+        private System.Windows.Forms.TabPage tabPgAbout;
+        private System.Windows.Forms.Label lblName;
+        private System.Windows.Forms.RichTextBox rtbAbout;
+        private System.Windows.Forms.Label lblVersion;
     }
 }

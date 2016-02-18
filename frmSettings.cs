@@ -26,7 +26,7 @@ namespace XRayBuilderGUI
 
         private void frmSettingsNew_Load(object sender, EventArgs e)
         {
-            this.Text = String.Format("Settings (X-Ray Builder GUI v{0})", 
+            lblVersion.Text = String.Format("Vervion: {0}", 
                 System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
 
             listSettings.SelectedIndex = 0;
@@ -113,7 +113,6 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(chkSplitAliases, "Automatically split character names\r\n" +
                 "into aliases. This can have undesired\r\n" +
                 "consequences, so use with caution!!!");
-            toolTip1.SetToolTip(btnHelp, "View the included help documentation.");
             toolTip1.SetToolTip(chkSound, "Play a sound after generating the Author\r\n" +
                                         "Profile, End Action and Start Action\r\n" +
                                         "files, or after generating an X-Ray file.");
@@ -246,17 +245,6 @@ namespace XRayBuilderGUI
                     MessageBox.Show("An error occurred while trying to delete log files.", "Unable to delete Log files");
                 }
             }
-        }
-
-        private void btnHelp_Click(object sender, EventArgs e)
-        {
-            if (!File.Exists(Environment.CurrentDirectory + @"\doc\readme.txt"))
-            {
-                MessageBox.Show("Unable to find the included help file.",
-                    "Help file not found...");
-            }
-            else
-                Process.Start(Environment.CurrentDirectory + @"\doc\readme.txt");
         }
 
         private void chkOverwrite_CheckedChanged(object sender, EventArgs e)

@@ -451,7 +451,8 @@ namespace XRayBuilderGUI
                         List<int> lenHighlight = new List<int>();
                         // If there is an apostrophe, attempt to match 's at the end of the term
                         // Match end of word, then search for any lingering punctuation
-                        string punctuationMarks = @"(?(')'s?|')?\b[!\.?,""'\);]*";
+                        string apostrophes = "'\u2019\u0060\u00B4";
+                        string punctuationMarks = String.Format(@"(?([{0}])[{0}]s?|[{0}])?\b[!\.?,""\);{0}]*", apostrophes);
                         //Search html for the matching term out of all aliases
                         foreach (string s in search)
                         {

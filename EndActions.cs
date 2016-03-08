@@ -105,7 +105,7 @@ namespace XRayBuilderGUI
                             nodeTitleCheck = nodeTitle.InnerText.CleanString();
                         }
                         cleanAuthor = item.SelectSingleNode(".//div/div").InnerText.CleanString();
-                        Match match = Regex.Match(nodeTitleCheck, @"Series Reading Order|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase);
+                        Match match = Regex.Match(nodeTitleCheck, @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase);
                         if (match.Success)
                         {
                             nodeTitleCheck = "";

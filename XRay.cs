@@ -309,7 +309,7 @@ namespace XRayBuilderGUI
             this._shortEx = shortEx;
             HtmlAgilityPack.HtmlDocument web = new HtmlAgilityPack.HtmlDocument();
             string readContents;
-            using (StreamReader streamReader = new StreamReader(rawMl, Encoding.Default))
+            using (StreamReader streamReader = new StreamReader(rawMl, Encoding.UTF8))
             {
                 readContents = streamReader.ReadToEnd();
             }
@@ -463,12 +463,26 @@ namespace XRayBuilderGUI
                                 {
                                     if (locHighlight.Contains(match.Groups[1].Index)) continue;
                                     locHighlight.Add(match.Groups[1].Index);
+                                    //Try to match quotes and dashes, if they exist extend the match length
+                                    Match matchQuote = Regex.Match(node.InnerHtml.Substring(match.Groups[1].Index, match.Groups[1].Length + 1), "\u2013|\u2014|\u2019|\u201D", RegexOptions.IgnoreCase);
+                                    if (matchQuote.Success)
+                                    {
+                                        lenHighlight.Add(match.Groups[1].Length + 1);
+                                        continue;
+                                    }
                                     lenHighlight.Add(match.Groups[1].Length);
                                 }
                                 else
                                 {
                                     if (locHighlight.Contains(match.Index)) continue;
                                     locHighlight.Add(match.Index);
+                                    //Try to match quotes and dashes, if they exist extend the match length
+                                    Match matchQuote = Regex.Match(node.InnerHtml.Substring(match.Index, match.Length + 1), "\u2013|\u2014|\u2019|\u201D", RegexOptions.IgnoreCase);
+                                    if (matchQuote.Success)
+                                    {
+                                        lenHighlight.Add(match.Length + 1);
+                                        continue;
+                                    }
                                     lenHighlight.Add(match.Length);
                                 }
                             }
@@ -510,7 +524,7 @@ namespace XRayBuilderGUI
                         {
                             main.Log(
                                 String.Format(
-                                    "Something went wrong while searching for start of highlight.\nWas looking for (or one of the aliases of): {0}\nSearching in: {1}",
+                                    "Something went wrong while searching for start of highlight.\r\nWas looking for (or one of the aliases of): {0}\r\nSearching in: {1}",
                                     character.TermName, node.InnerHtml));
                             continue;
                         }
@@ -1023,6 +1037,27 @@ namespace XRayBuilderGUI
         {
             if (!Directory.Exists(Environment.CurrentDirectory + @"\ext\"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\ext\");
+
+            //Try to load custom common titles from BaseSplitIgnore.txt
+            string[] CustomSplitIgnore = null;
+            try
+            {
+                using (StreamReader streamReader = new StreamReader("BaseSplitIgnore.txt", Encoding.UTF8))
+                {
+                    CustomSplitIgnore = streamReader.ReadToEnd().Split(new string[] { "\r\n" }, StringSplitOptions.None);
+                    CustomSplitIgnore = CustomSplitIgnore.Where(r => !r.StartsWith("//")).ToArray(); //Remove commented lines
+                    if (CustomSplitIgnore.Length >= 1)
+                    {
+                        CommonTitles = CustomSplitIgnore;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                main.Log("An error occurred while opening the BaseSplitIgnore.txt file.\r\n" +
+                    "Ensure you extracted it to the same directory as the program.\r\n" +
+                    ex.Message + "\r\nUsing built in default terms...");
+            }
 
             //Try to remove common titles from aliases
             using (var streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8))

@@ -150,6 +150,9 @@
     <Content Include="BaseEndActions.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="BaseSplitIgnore.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="BaseStartActions.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -464,11 +464,16 @@ namespace XRayBuilderGUI
                                     if (locHighlight.Contains(match.Groups[1].Index)) continue;
                                     locHighlight.Add(match.Groups[1].Index);
                                     //Try to match quotes and dashes, if they exist extend the match length
-                                    Match matchQuote = Regex.Match(node.InnerHtml.Substring(match.Groups[1].Index, match.Groups[1].Length + 1), "\u2013|\u2014|\u2019|\u201D", RegexOptions.IgnoreCase);
-                                    if (matchQuote.Success)
+                                    if (match.Groups[1].Index + match.Groups[1].Length < node.InnerHtml.Length)
                                     {
-                                        lenHighlight.Add(match.Groups[1].Length + 1);
-                                        continue;
+                                        Match matchQuote =
+                                            Regex.Match(node.InnerHtml.Substring(match.Groups[1].Index, match.Groups[1].Length + 1),
+                                                "(\u2013|\u2014|\u2019|\u201D)$", RegexOptions.IgnoreCase);
+                                        if (matchQuote.Success)
+                                        {
+                                            lenHighlight.Add(match.Groups[1].Length + 1);
+                                            continue;
+                                        }
                                     }
                                     lenHighlight.Add(match.Groups[1].Length);
                                 }
@@ -477,11 +482,16 @@ namespace XRayBuilderGUI
                                     if (locHighlight.Contains(match.Index)) continue;
                                     locHighlight.Add(match.Index);
                                     //Try to match quotes and dashes, if they exist extend the match length
-                                    Match matchQuote = Regex.Match(node.InnerHtml.Substring(match.Index, match.Length + 1), "\u2013|\u2014|\u2019|\u201D", RegexOptions.IgnoreCase);
-                                    if (matchQuote.Success)
+                                    if (match.Index + match.Length < node.InnerHtml.Length)
                                     {
-                                        lenHighlight.Add(match.Length + 1);
-                                        continue;
+                                        Match matchQuote =
+                                            Regex.Match(node.InnerHtml.Substring(match.Index, match.Length + 1),
+                                                "(\u2013|\u2014|\u2019|\u201D)$", RegexOptions.IgnoreCase);
+                                        if (matchQuote.Success)
+                                        {
+                                            lenHighlight.Add(match.Length + 1);
+                                            continue;
+                                        }
                                     }
                                     lenHighlight.Add(match.Length);
                                 }
@@ -1050,6 +1060,7 @@ namespace XRayBuilderGUI
                     {
                         CommonTitles = CustomSplitIgnore;
                     }
+                    main.Log("Splitting aliases using custom common titles file...");
                 }
             }
             catch (Exception ex)

@@ -123,6 +123,7 @@ Lieut
 Lieut Cdr
 Lieut Col
 Lieut Gen
+Lieutenant
 Lord
 Lt
 Madame

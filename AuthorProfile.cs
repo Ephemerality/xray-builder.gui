@@ -306,7 +306,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    main.Log(String.Format("{0}\r\nURL: {1}\r\nBook: {2}\r\nContinuing anyway...", ex.Message, book.amazonUrl, book.title));
+                    main.Log(String.Format("An problem occured gathering metadata for other books: {0}\r\nURL: {1}\r\nBook: {2}\r\nContinuing anyway...", ex.Message, book.amazonUrl, book.title));
                 }
             }
 

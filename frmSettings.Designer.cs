@@ -84,6 +84,7 @@
             this.tabPgHelp = new System.Windows.Forms.TabPage();
             this.rtbHelp = new System.Windows.Forms.RichTextBox();
             this.tabPgAbout = new System.Windows.Forms.TabPage();
+            this.lblBuilt = new System.Windows.Forms.Label();
             this.lblVersion = new System.Windows.Forms.Label();
             this.lblName = new System.Windows.Forms.Label();
             this.rtbAbout = new System.Windows.Forms.RichTextBox();
@@ -111,7 +112,7 @@
             // 
             // btnSupport
             // 
-            this.btnSupport.Location = new System.Drawing.Point(331, 385);
+            this.btnSupport.Location = new System.Drawing.Point(333, 290);
             this.btnSupport.Name = "btnSupport";
             this.btnSupport.Size = new System.Drawing.Size(95, 30);
             this.btnSupport.TabIndex = 41;
@@ -121,7 +122,7 @@
             // 
             // btnClearLogs
             // 
-            this.btnClearLogs.Location = new System.Drawing.Point(118, 385);
+            this.btnClearLogs.Location = new System.Drawing.Point(116, 290);
             this.btnClearLogs.Name = "btnClearLogs";
             this.btnClearLogs.Size = new System.Drawing.Size(95, 30);
             this.btnClearLogs.TabIndex = 39;
@@ -131,7 +132,7 @@
             // 
             // btnLogs
             // 
-            this.btnLogs.Location = new System.Drawing.Point(11, 385);
+            this.btnLogs.Location = new System.Drawing.Point(11, 290);
             this.btnLogs.Name = "btnLogs";
             this.btnLogs.Size = new System.Drawing.Size(95, 30);
             this.btnLogs.TabIndex = 38;
@@ -141,7 +142,7 @@
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(438, 385);
+            this.btnSave.Location = new System.Drawing.Point(438, 290);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(95, 30);
             this.btnSave.TabIndex = 37;
@@ -152,7 +153,7 @@
             // lblSeperator
             // 
             this.lblSeperator.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.lblSeperator.Location = new System.Drawing.Point(0, 373);
+            this.lblSeperator.Location = new System.Drawing.Point(0, 277);
             this.lblSeperator.Name = "lblSeperator";
             this.lblSeperator.Size = new System.Drawing.Size(546, 2);
             this.lblSeperator.TabIndex = 42;
@@ -172,7 +173,7 @@
             this.tabSettings.Location = new System.Drawing.Point(144, 1);
             this.tabSettings.Name = "tabSettings";
             this.tabSettings.SelectedIndex = 0;
-            this.tabSettings.Size = new System.Drawing.Size(398, 362);
+            this.tabSettings.Size = new System.Drawing.Size(398, 268);
             this.tabSettings.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tabSettings.TabIndex = 43;
             // 
@@ -183,7 +184,7 @@
             this.tabPgGeneral.Location = new System.Drawing.Point(4, 5);
             this.tabPgGeneral.Name = "tabPgGeneral";
             this.tabPgGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPgGeneral.Size = new System.Drawing.Size(390, 353);
+            this.tabPgGeneral.Size = new System.Drawing.Size(390, 259);
             this.tabPgGeneral.TabIndex = 0;
             this.tabPgGeneral.Text = "tabPage1";
             this.tabPgGeneral.UseVisualStyleBackColor = true;
@@ -258,7 +259,7 @@
             this.tabPgDirectories.Location = new System.Drawing.Point(4, 5);
             this.tabPgDirectories.Name = "tabPgDirectories";
             this.tabPgDirectories.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPgDirectories.Size = new System.Drawing.Size(390, 353);
+            this.tabPgDirectories.Size = new System.Drawing.Size(390, 259);
             this.tabPgDirectories.TabIndex = 1;
             this.tabPgDirectories.Text = "tabPage2";
             this.tabPgDirectories.UseVisualStyleBackColor = true;
@@ -341,7 +342,7 @@
             this.tabPgXray.Location = new System.Drawing.Point(4, 5);
             this.tabPgXray.Name = "tabPgXray";
             this.tabPgXray.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPgXray.Size = new System.Drawing.Size(390, 353);
+            this.tabPgXray.Size = new System.Drawing.Size(390, 259);
             this.tabPgXray.TabIndex = 2;
             this.tabPgXray.Text = "tabPage3";
             this.tabPgXray.UseVisualStyleBackColor = true;
@@ -475,7 +476,7 @@
             this.tabPgAliasChapter.Location = new System.Drawing.Point(4, 5);
             this.tabPgAliasChapter.Name = "tabPgAliasChapter";
             this.tabPgAliasChapter.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPgAliasChapter.Size = new System.Drawing.Size(390, 353);
+            this.tabPgAliasChapter.Size = new System.Drawing.Size(390, 259);
             this.tabPgAliasChapter.TabIndex = 3;
             this.tabPgAliasChapter.Text = "tabPage4";
             this.tabPgAliasChapter.UseVisualStyleBackColor = true;
@@ -573,7 +574,7 @@
             this.tabPgAmazon.Location = new System.Drawing.Point(4, 5);
             this.tabPgAmazon.Name = "tabPgAmazon";
             this.tabPgAmazon.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPgAmazon.Size = new System.Drawing.Size(390, 353);
+            this.tabPgAmazon.Size = new System.Drawing.Size(390, 259);
             this.tabPgAmazon.TabIndex = 4;
             this.tabPgAmazon.Text = "tabPage5";
             this.tabPgAmazon.UseVisualStyleBackColor = true;
@@ -665,7 +666,7 @@
             this.tabPgHelp.Controls.Add(this.rtbHelp);
             this.tabPgHelp.Location = new System.Drawing.Point(4, 5);
             this.tabPgHelp.Name = "tabPgHelp";
-            this.tabPgHelp.Size = new System.Drawing.Size(390, 353);
+            this.tabPgHelp.Size = new System.Drawing.Size(390, 259);
             this.tabPgHelp.TabIndex = 5;
             this.tabPgHelp.Text = "tabPage5";
             this.tabPgHelp.UseVisualStyleBackColor = true;
@@ -678,26 +679,36 @@
             this.rtbHelp.Name = "rtbHelp";
             this.rtbHelp.ReadOnly = true;
             this.rtbHelp.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.rtbHelp.Size = new System.Drawing.Size(373, 327);
+            this.rtbHelp.Size = new System.Drawing.Size(373, 235);
             this.rtbHelp.TabIndex = 0;
             this.rtbHelp.Text = resources.GetString("rtbHelp.Text");
             // 
             // tabPgAbout
             // 
+            this.tabPgAbout.Controls.Add(this.lblBuilt);
             this.tabPgAbout.Controls.Add(this.lblVersion);
             this.tabPgAbout.Controls.Add(this.lblName);
             this.tabPgAbout.Controls.Add(this.rtbAbout);
             this.tabPgAbout.Location = new System.Drawing.Point(4, 5);
             this.tabPgAbout.Name = "tabPgAbout";
-            this.tabPgAbout.Size = new System.Drawing.Size(390, 353);
+            this.tabPgAbout.Size = new System.Drawing.Size(390, 259);
             this.tabPgAbout.TabIndex = 6;
             this.tabPgAbout.Text = "tabPgAb";
             this.tabPgAbout.UseVisualStyleBackColor = true;
             // 
+            // lblBuilt
+            // 
+            this.lblBuilt.AutoSize = true;
+            this.lblBuilt.Location = new System.Drawing.Point(12, 51);
+            this.lblBuilt.Name = "lblBuilt";
+            this.lblBuilt.Size = new System.Drawing.Size(33, 13);
+            this.lblBuilt.TabIndex = 4;
+            this.lblBuilt.Text = "Built: ";
+            // 
             // lblVersion
             // 
             this.lblVersion.AutoSize = true;
-            this.lblVersion.Location = new System.Drawing.Point(12, 40);
+            this.lblVersion.Location = new System.Drawing.Point(12, 34);
             this.lblVersion.Name = "lblVersion";
             this.lblVersion.Size = new System.Drawing.Size(48, 13);
             this.lblVersion.TabIndex = 3;
@@ -717,11 +728,11 @@
             // 
             this.rtbAbout.BackColor = System.Drawing.SystemColors.Control;
             this.rtbAbout.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.rtbAbout.Location = new System.Drawing.Point(15, 65);
+            this.rtbAbout.Location = new System.Drawing.Point(15, 72);
             this.rtbAbout.Name = "rtbAbout";
             this.rtbAbout.ReadOnly = true;
             this.rtbAbout.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
-            this.rtbAbout.Size = new System.Drawing.Size(360, 272);
+            this.rtbAbout.Size = new System.Drawing.Size(360, 173);
             this.rtbAbout.TabIndex = 1;
             this.rtbAbout.Text = resources.GetString("rtbAbout.Text");
             // 
@@ -741,7 +752,7 @@
             "About"});
             this.listSettings.Location = new System.Drawing.Point(12, 12);
             this.listSettings.Name = "listSettings";
-            this.listSettings.Size = new System.Drawing.Size(130, 347);
+            this.listSettings.Size = new System.Drawing.Size(130, 253);
             this.listSettings.TabIndex = 38;
             this.listSettings.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listSettings_DrawItem);
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
@@ -751,7 +762,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(544, 426);
+            this.ClientSize = new System.Drawing.Size(544, 331);
             this.Controls.Add(this.listSettings);
             this.Controls.Add(this.tabSettings);
             this.Controls.Add(this.lblSeperator);
@@ -864,5 +875,6 @@
         private System.Windows.Forms.Label lblName;
         private System.Windows.Forms.RichTextBox rtbAbout;
         private System.Windows.Forms.Label lblVersion;
+        private System.Windows.Forms.Label lblBuilt;
     }
 }

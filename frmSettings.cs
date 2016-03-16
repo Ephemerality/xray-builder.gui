@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace XRayBuilderGUI
@@ -26,8 +27,10 @@ namespace XRayBuilderGUI
 
         private void frmSettingsNew_Load(object sender, EventArgs e)
         {
-            lblVersion.Text = String.Format("Vervion: {0}", 
-                System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+            string version = Assembly.GetEntryAssembly().GetName().Version.ToString();
+            lblVersion.Text = String.Format("Vervion: {0}", version);
+            DateTime buildDate = new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime;
+            lblBuilt.Text = String.Format("Built: {0}", buildDate);
 
             listSettings.SelectedIndex = 0;
 
@@ -125,9 +128,7 @@ namespace XRayBuilderGUI
                                                     "aliases will be overwritten with the ones downloaded.");
             toolTip1.SetToolTip(btnSupport, "Visit the MobileRead forum for\r\n" +
                                         "support, bug reports, or questions.");
-            toolTip1.SetToolTip(chkOverrideOffset, "Override the offset for AZW3 files only.");
-            toolTip1.SetToolTip(txtAZWOffset,
-                "This offset will be applied to every\r\nAWZ3 book location (usually -16).\r\nMust be an integer.");
+            toolTip1.SetToolTip(chkOverrideOffset, "This offset will be applied to every\r\nAWZ3 book location (usually -16).\r\nMust be an integer.");
         }
 
         private void btnBrowseUnpack_Click(object sender, EventArgs e)

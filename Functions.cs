@@ -553,23 +553,23 @@ namespace XRayBuilderGUI
                 title = title.Substring(0, title.IndexOf(" ("));
 
             string searchUrl = @"http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Ddigital-text&field-keywords=" + 
-            Uri.EscapeDataString(title + " " + authorTrim + " kindle edition");
+            Uri.EscapeDataString(title + " " + authorTrim );
             HAP.HtmlDocument searchDoc = new HAP.HtmlDocument();
             searchDoc.LoadHtml(HttpDownloader.GetPageHtml(searchUrl));
             HAP.HtmlNode node = searchDoc.DocumentNode.SelectSingleNode("//li[@id='result_0']");
+            HAP.HtmlNode nodeASIN = searchDoc.DocumentNode.SelectSingleNode("//a[@title='Kindle Edition']");
             //At least attempt to verify it might be the same book?
             //Ignore case of title
-            if (node != null && node.InnerText.IndexOf(title, StringComparison.OrdinalIgnoreCase) >= 0)
+            if (node != null && nodeASIN != null && node.InnerText.IndexOf(title, StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                string foundASIN = node.GetAttributeValue("data-asin", "");
+                Match foundASIN = Regex.Match(nodeASIN.OuterHtml, "(B[A-Z0-9]{9})");
                 node = node.SelectSingleNode(".//div/div/div/div[@class='a-fixed-left-grid-col a-col-right']/div/a");
                 if (node != null)
                 {
-                    result = new BookInfo(node.InnerText, author, foundASIN);
-                    result.amazonUrl = node.GetAttributeValue("href", ""); // Grab the true link for good measure
+                    result = new BookInfo(node.InnerText, author, foundASIN.Value);
+                    result.amazonUrl = nodeASIN.GetAttributeValue("href", ""); // Grab the true link for good measure
                 }
             }
-
             return result;
         }
 

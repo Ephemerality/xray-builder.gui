@@ -117,15 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="rtbAbout.Text" xml:space="preserve">
-    <value>For those who don't already know, X-Ray is a reference feature available on any Kindle product with a touch screen (Touch, PW, PW2, etc), provided the book has X-Ray available for it.
-
-X-Ray Builder gives users the ability to create fully-functional X-Rays for both retail books that Amazon has not X-Ray-enabled yet as well as side-loaded books.
-
-
-• Thanks for using X-Ray Builder GUI!
-• Ephemerality and darrenmcg</value>
-  </data>
   <data name="rtbHelp.Text" xml:space="preserve">
     <value>Requirements:
 • .Net Framework 4.0+
@@ -183,5 +174,14 @@ Chapter format:
 Name|start|end
 
 If chapters are not detected, you can build them yourself. You need to open the raw markup and use a text editor that allows you to see the file locations, such as Notepad++.</value>
+  </data>
+  <data name="rtbAbout.Text" xml:space="preserve">
+    <value>For those who don't already know, X-Ray is a reference feature available on any Kindle product with a touch screen (Touch, PW, PW2, etc), provided the book has X-Ray available for it.
+
+X-Ray Builder gives users the ability to create fully-functional X-Rays for both retail books that Amazon has not X-Ray-enabled yet as well as side-loaded books.
+
+
+• Thanks for using X-Ray Builder GUI!
+• Ephemerality and darrenmcg</value>
   </data>
 </root>

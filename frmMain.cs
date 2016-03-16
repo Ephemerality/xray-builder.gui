@@ -45,8 +45,22 @@ namespace XRayBuilderGUI
             }
             else
             {
+                if (message.ContainsIgnorecase("successfully"))
+                {
+                    txtOutput.SelectionStart = txtOutput.TextLength;
+                    txtOutput.SelectionLength = 0;
+                    txtOutput.SelectionColor = Color.FromArgb(20, 102, 20);
+                }
+                if (message.ContainsIgnorecase("error") || message.ContainsIgnorecase("failed") || message.ContainsIgnorecase("problem"))
+                {
+                    txtOutput.SelectionStart = txtOutput.TextLength;
+                    txtOutput.SelectionLength = 0;
+                    txtOutput.SelectionColor = Color.FromArgb(102, 20, 20);
+                }
                 txtOutput.AppendText(message + "\r\n");
+                txtOutput.SelectionColor = txtOutput.ForeColor;
             }
+            //txtOutput.Refresh();
         }
 
         private bool ClearPreviews()
@@ -858,7 +872,7 @@ namespace XRayBuilderGUI
                 Properties.Settings.Default.buildSource = "XML";
             Properties.Settings.Default.Save();
             if (txtOutput.Text.Trim().Length != 0)
-                File.WriteAllText(currentLog, txtOutput.Text);
+                File.WriteAllText(currentLog, txtOutput.Text.ToString());
             Exiting = true;
             Application.Exit();
         }
@@ -879,7 +893,7 @@ namespace XRayBuilderGUI
                 "Try to build the X-Ray file for this book.");
             toolTip1.SetToolTip(btnSettings, "Configure X-Ray Builder GUI.");
             toolTip1.SetToolTip(btnPreview, "View a preview of the generated files.");
-            toolTip1.SetToolTip(btnExtract, "Save the rawML (raw markup) of the book\r\nin the output directory so you can review it.");
+            toolTip1.SetToolTip(btnUnpack, "Save the rawML (raw markup) of the book\r\nin the output directory so you can review it.");
             this.DragEnter += frmMain_DragEnter;
             this.DragDrop += frmMain_DragDrop;
 
@@ -950,7 +964,7 @@ namespace XRayBuilderGUI
                 txtShelfari.Visible = !txtShelfari.Visible;
                 btnBrowseXML.Visible = !btnBrowseXML.Visible;
                 btnSaveShelfari.Enabled = !btnSaveShelfari.Enabled;
-                btnLink.Visible = !btnLink.Visible;
+                btnSearchShelfari.Visible = !btnSearchShelfari.Visible;
             }
         }
 
@@ -1007,7 +1021,7 @@ namespace XRayBuilderGUI
             }
         }
 
-        private void btnExtract_Click(object sender, EventArgs e)
+        private void btnUnpack_Click(object sender, EventArgs e)
         {
             //Check current settings
             if (!File.Exists(txtMobi.Text))
@@ -1059,6 +1073,11 @@ namespace XRayBuilderGUI
             string rawmlPath = Path.Combine(Environment.CurrentDirectory + @"\dmp", Path.GetFileName(results[3]));
             File.Copy(results[3], rawmlPath, true);
             Log("Extracted rawml successfully!\r\nSaved to " + rawmlPath);
+        }
+
+        private void txtOutput_LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            Process.Start(e.LinkText);
         }
     }
 }

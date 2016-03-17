@@ -307,8 +307,10 @@ namespace XRayBuilderGUI
         {
             // If there is an apostrophe, attempt to match 's at the end of the term
             // Match end of word, then search for any lingering punctuation
-            string apostrophes = "'\u2019\u0060\u00B4";
-            string punctuationMarks = String.Format(@"(?([{0}])[{0}]s?|[{0}])?\b[!\.?,""\);{0}]*", apostrophes);
+            string apostrophes = Encoding.Default.GetString(Encoding.UTF8.GetBytes("('|\u2019|\u0060|\u00B4)")); // '\u2019\u0060\u00B4
+            string quotes = Encoding.Default.GetString(Encoding.UTF8.GetBytes(@"(""|\u2018|\u2019|\u201A|\u201B|\u201C|\u201D|\u201E|\u201F)")); //U+2018 to U+201F
+            string dashesEllipsis = Encoding.Default.GetString(Encoding.UTF8.GetBytes("(-|\u2010|\u2011|\u2012|\u2013|\u2014|\u2015|\u2026|&#8211;|&#8212;|&#8217;|&#8218;|&#8230;)")); //U+2010 to U+2015 and U+2026
+            string punctuationMarks = String.Format(@"({0}s|{0})?{1}?[!\.?,""\);]*{0}*{1}*{2}*", apostrophes, quotes, dashesEllipsis);
 
             int excerptId = 0;
             this._shortEx = shortEx;
@@ -428,18 +430,16 @@ namespace XRayBuilderGUI
                 }
                 foreach (Term character in Terms)
                 {
-                    //Breakpoint for testing specific passages.
-                    //if (node.InnerHtml.Contains("got two minutes") && character.TermName.Contains("Charlie"))
-                    //{
-                    //    string stop = "";
-                    //}
-
                     //Search for character name and aliases in the html-less text. If failed, try in the HTML for rare situations.
                     //TODO: Improve location searching as IndexOf will not work if book length exceeds 2,147,483,647...
                     //If soft hyphen ignoring is turned on, also search hyphen-less text.
                     if (!character.Match) continue;
                     bool termFound = false;
-                    List<string> search = character.Aliases.ToList<string>();
+                    List<string> search = new List<string>(character.Aliases.Count);
+                    foreach (string alias in character.Aliases)
+                    {
+                        search.Add(Encoding.Default.GetString(Encoding.UTF8.GetBytes(alias)));
+                    }
                     if (character.RegEx)
                     {
                         if (search.Any(r => Regex.Match(node.InnerText, r).Success)
@@ -453,64 +453,26 @@ namespace XRayBuilderGUI
                         // If there is an apostrophe, attempt to match 's at the end of the term
                         // Match end of word, then search for any lingering punctuation
                         search.Insert(0, character.TermName);
-                        foreach (string s in search)
-                        {
-                            MatchCollection matches = Regex.Matches(node.InnerHtml, @"\b" + s + punctuationMarks, character.MatchCase || character.RegEx ? RegexOptions.None : RegexOptions.IgnoreCase);
-                            if (matches.Count > 0)
-                            {
-                                termFound = true;
-                                break;
-                            }
-                        }
+                        if ((character.MatchCase && (search.Any(node.InnerText.Contains) || search.Any(node.InnerHtml.Contains)))
+                            || (!character.MatchCase && (search.Any(node.InnerText.ContainsIgnorecase) || search.Any(node.InnerHtml.ContainsIgnorecase)))
+                                || (ignoreSoftHypen && (character.MatchCase && search.Any(noSoftHypen.Contains))
+                                    || (!character.MatchCase && search.Any(noSoftHypen.ContainsIgnorecase))))
+                            termFound = true;
                     }
                     if (termFound)
                     {
                         List<int> locHighlight = new List<int>();
                         List<int> lenHighlight = new List<int>();
                         //Search html for character name and aliases
-                        //string InnerHtmlUTF8 = Encoding.UTF8.GetString(Encoding.Default.GetBytes(node.InnerHtml));
                         foreach (string s in search)
                         {
-                            MatchCollection matches = Regex.Matches(node.InnerHtml, @"\b" + s + punctuationMarks, character.MatchCase || character.RegEx ? RegexOptions.None : RegexOptions.IgnoreCase);
+                            MatchCollection matches = Regex.Matches(node.InnerHtml, quotes + @"?\b" + s + punctuationMarks, character.MatchCase || character.RegEx ? RegexOptions.None : RegexOptions.IgnoreCase);
                             foreach (Match match in matches)
                             {
-                                if (match.Groups.Count > 1)
-                                {
-                                    if (locHighlight.Contains(match.Groups[1].Index)) continue;
-                                    locHighlight.Add(match.Groups[1].Index);
-                                    //Try to match quotes, dashes or ellipsis, if one exists extend the match length
-                                    if (match.Groups[1].Index + match.Groups[1].Length < node.InnerHtml.Length)
-                                    {
-                                        Match matchQuote =
-                                            Regex.Match(node.InnerHtml.Substring(match.Groups[1].Index, match.Groups[1].Length + 1),
-                                                match.Groups[1].Value + "(\u2013|\u2014|\u2019|\u201D|\u2026|&#8211;|&#8212;|&#8217;|&#8218;|&#823;)$", RegexOptions.IgnoreCase);
-                                        if (matchQuote.Success)
-                                        {
-                                            lenHighlight.Add(matchQuote.Length);
-                                            continue;
-                                        }
-                                    }
-                                    lenHighlight.Add(match.Groups[1].Length);
-                                }
-                                else
-                                {
-                                    if (locHighlight.Contains(match.Index) && lenHighlight.Contains(match.Length))
-                                        continue;
-                                    locHighlight.Add(match.Index);
-                                    //Try to match quotes, dashes or ellipsis, if one exists extend the match length
-                                    if (match.Index + match.Length < node.InnerHtml.Length)
-                                    {
-                                        Match matchQuote =
-                                            Regex.Match(node.InnerHtml.Substring(match.Index, match.Length + 1),
-                                                match.Value + "(\u2013|\u2014|\u2019|\u201D|\u2026|&#8211;|&#8212;|&#8217;|&#8218;|&#823;)$", RegexOptions.IgnoreCase);
-                                        if (matchQuote.Success)
-                                        {
-                                            lenHighlight.Add(matchQuote.Length);
-                                            continue;
-                                        }
-                                    }
-                                    lenHighlight.Add(match.Length);
-                                }
+                                if (locHighlight.Contains(match.Index) && lenHighlight.Contains(match.Length))
+                                    continue;
+                                locHighlight.Add(match.Index);
+                                lenHighlight.Add(match.Length);
                             }
                         }
                         //If normal search fails, use regexp to search in case there is some wacky html nested in term
@@ -527,8 +489,6 @@ namespace XRayBuilderGUI
                                 string patternSoftHypen = "(\u00C2\u00AD|&shy;|&#173;|&#xad;|&#0173;|&#x00AD;)*";
                                 pattern = String.Format("{0}{1}{0}{2}", patternHTML,
                                     string.Join(patternHTML + patternSoftHypen, character.RegEx ? s.ToCharArray() : Regex.Unescape(s).ToCharArray()), punctuationMarks);
-                                if (character.MatchCase)
-                                    pattern += "(?=[^a-zA-Z])";
                                 patterns.Add(pattern);
                                 foreach (string pat in patterns)
                                 {
@@ -539,7 +499,8 @@ namespace XRayBuilderGUI
                                         matches = Regex.Matches(node.InnerHtml, pat, RegexOptions.IgnoreCase);
                                     foreach (Match match in matches)
                                     {
-                                        if (locHighlight.Contains(match.Index)) continue;
+                                        if (locHighlight.Contains(match.Index) && lenHighlight.Contains(match.Length))
+                                            continue;
                                         locHighlight.Add(match.Index);
                                         lenHighlight.Add(match.Length);
                                     }
@@ -1191,7 +1152,7 @@ namespace XRayBuilderGUI
                     if (temp.Length <= 1 || temp[0] == "") continue;
                     else if (temp[0].Substring(0, 1) == "#") continue;
                     string[] temp2 = input.Substring(input.IndexOf('|') + 1).Split(',');
-                    //Check for misplaced pipe charater in aliases
+                    //Check for misplaced pipe character in aliases
                     if (temp2[0] != "" && temp2.Any(r => Regex.Match(@"\|", r).Success))
                     {
                         main.Log("An error occurred parsing the alias file. Ignoring term: " + temp[0] + " aliases.\r\nCheck the file is in the correct format: Character Name|Alias1,Alias2,Etc");

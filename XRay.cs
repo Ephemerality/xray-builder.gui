@@ -308,7 +308,7 @@ namespace XRayBuilderGUI
             // If there is an apostrophe, attempt to match 's at the end of the term
             // Match end of word, then search for any lingering punctuation
             string apostrophes = Encoding.Default.GetString(Encoding.UTF8.GetBytes("('|\u2019|\u0060|\u00B4)")); // '\u2019\u0060\u00B4
-            string quotes = Encoding.Default.GetString(Encoding.UTF8.GetBytes(@"(""|\u2018|\u2019|\u201A|\u201B|\u201C|\u201D|\u201E|\u201F)")); //U+2018 to U+201F
+            string quotes = Encoding.Default.GetString(Encoding.UTF8.GetBytes("(\"|\u2018|\u2019|\u201A|\u201B|\u201C|\u201D|\u201E|\u201F)")); //U+2018 to U+201F
             string dashesEllipsis = Encoding.Default.GetString(Encoding.UTF8.GetBytes("(-|\u2010|\u2011|\u2012|\u2013|\u2014|\u2015|\u2026|&#8211;|&#8212;|&#8217;|&#8218;|&#8230;)")); //U+2010 to U+2015 and U+2026
             string punctuationMarks = String.Format(@"({0}s|{0})?{1}?[!\.?,""\);]*{0}*{1}*{2}*", apostrophes, quotes, dashesEllipsis);
 

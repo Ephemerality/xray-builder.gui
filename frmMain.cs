@@ -51,7 +51,8 @@ namespace XRayBuilderGUI
                     txtOutput.SelectionLength = 0;
                     txtOutput.SelectionColor = Color.FromArgb(20, 102, 20);
                 }
-                if (message.ContainsIgnorecase("error") || message.ContainsIgnorecase("failed") || message.ContainsIgnorecase("problem"))
+                if (message.ContainsIgnorecase("error") || message.ContainsIgnorecase("failed")
+                    || message.ContainsIgnorecase("problem") || message.ContainsIgnorecase("skipping"))
                 {
                     txtOutput.SelectionStart = txtOutput.TextLength;
                     txtOutput.SelectionLength = 0;
@@ -171,7 +172,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Log("Error getting metadata: " + ex.Message);
+                    Log("An error occured extracting metadata: " + ex.Message);
                     return;
                 }
             }
@@ -216,13 +217,13 @@ namespace XRayBuilderGUI
                 //Expand the X-Ray file from the unpacked mobi
                 if (xray.ExpandFromRawMl(results[3], settings.ignoresofthyphen, !settings.useNewVersion) > 0)
                 {
-                    Log("Error while processing locations and chapters.");
+                    Log("An error occured while processing locations and chapters.");
                     return;
                 }
             }
             catch (Exception ex)
             {
-                Log("An error occurred while creating the new X-Ray database.\r\n" + ex.Message);
+                Log("An error occurred while creating the new X-Ray database:\r\n" + ex.Message);
                 return;
             }
 
@@ -348,16 +349,16 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Log("Error populating X-Ray preview windows: " + ex.Message);
+                Log("An error occured populating the X-Ray preview windows: " + ex.Message);
             }
 
             try
             {
                 Directory.Delete(randomFile, true);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                Log("An error occurred while trying to delete temporary files.\r\nTry deleting these files manually.");
+                Log(String.Format("An error occurred while trying to delete temporary files: {0}\r\nTry deleting these files manually.", ex.Message));
             }
         }
 
@@ -486,7 +487,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Log("Error getting metadata: " + ex.Message);
+                    Log("An error occurred extracting metadata: " + ex.Message);
                     return;
                 }
             }
@@ -538,7 +539,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Log("Error populating extras preview windows: " + ex.Message);
+                    Log("An error occurred populating extras preview windows: " + ex.Message);
                 }
             }
             catch (Exception ex)
@@ -654,14 +655,14 @@ namespace XRayBuilderGUI
                 XRay xray = new XRay(txtShelfari.Text, this, settings.spoilers);
                 if (xray.SaveXml(path) > 0)
                 {
-                    Log("Error while processing.");
+                    Log("An error occurred while processing.");
                     return;
                 }
                 Log("Shelfari info has been saved to: " + path);
             }
             catch (Exception)
             {
-                Log("Error while saving Shelfari data to XML. Path was: " + path);
+                Log("An error occurred while saving Shelfari data to XML. Path was: " + path);
                 return;
             }
         }
@@ -709,7 +710,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Log("Error getting metadata: " + ex.Message);
+                    Log("An error occurred metadata: " + ex.Message);
                     return;
                 }
             }
@@ -784,7 +785,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Log("Error: " + ex.Message);
+                Log("An error occurred: " + ex.Message);
                 return;
             }
 
@@ -804,9 +805,9 @@ namespace XRayBuilderGUI
             {
                 Directory.Delete(randomFile, true);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                Log("An error occurred while trying to delete temporary files.\r\nTry deleting these files manually.");
+                Log(String.Format("An error occurred while trying to delete temporary files: {0}\r\nTry deleting these files manually.", ex.Message));
             }
         }
 
@@ -1061,7 +1062,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Log("Error getting rawML: " + ex.Message);
+                    Log("An error occurred extracting rawML: " + ex.Message);
                     return;
                 }
             }

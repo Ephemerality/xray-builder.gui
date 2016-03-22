@@ -49,7 +49,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                main.Log("Failed to create output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
+                main.Log("An error occured creating output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
                 outputDir = settings.outDir;
             }
             ApPath = outputDir + @"\AuthorProfile.profile." + curBook.asin + ".asc";
@@ -72,7 +72,7 @@ namespace XRayBuilderGUI
             }
             if (curBook.guid == "0")
             {
-                main.Log("Something bad happened while converting the GUID.");
+                main.Log("An error occured while converting the GUID.");
                 return;
             }
 
@@ -107,7 +107,7 @@ namespace XRayBuilderGUI
             HtmlNode node = authorHtmlDoc.DocumentNode.SelectSingleNode("//*[@id='result_1']");
             if (node == null || !node.OuterHtml.Contains("/e/B"))
             {
-                main.Log("Could not find author's page on Amazon.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at " + amazonAuthorSearchUrl);
+                main.Log("An error occured finding author's page on Amazon.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at " + amazonAuthorSearchUrl);
                 return;
             }
             authorAsin = node.OuterHtml;
@@ -119,7 +119,7 @@ namespace XRayBuilderGUI
             string properAuthor = node.GetAttributeValue("href", "not found");
             if (properAuthor == "not found" || properAuthor.IndexOf('/', 1) < 3)
             {
-                main.Log("Found author's page, but could not parse URL properly. Report this URL on the MobileRead thread: " + amazonAuthorSearchUrl);
+                main.Log("An error occured parsing author's page URL properly. Report this URL on the MobileRead thread: " + amazonAuthorSearchUrl);
                 return;
             }
             properAuthor = properAuthor.Substring(1, properAuthor.IndexOf('/', 1) - 1);
@@ -176,7 +176,7 @@ namespace XRayBuilderGUI
             else
             {
                 BioTrimmed = "No author biography found on Amazon!";
-                main.Log("No author biography found on Amazon!");
+                main.Log("An error occured finding the author biography on Amazon.");
             }
             // Try to download Author image
             HtmlNode imageXpath = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-image']/img");
@@ -192,7 +192,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                main.Log(String.Format("Failed to download author image: {0}", ex.Message));
+                main.Log(String.Format("An error occured downloading the author image: {0}", ex.Message));
                 return;
             }
 
@@ -306,7 +306,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    main.Log(String.Format("An problem occured gathering metadata for other books: {0}\r\nURL: {1}\r\nBook: {2}\r\nContinuing anyway...", ex.Message, book.amazonUrl, book.title));
+                    main.Log(String.Format("An error occured gathering metadata for other books: {0}\r\nURL: {1}\r\nBook: {2}\r\nContinuing anyway...", ex.Message, book.amazonUrl, book.title));
                 }
             }
 

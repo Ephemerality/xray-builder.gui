@@ -268,7 +268,13 @@ namespace XRayBuilderGUI
                 if (!result.Id.StartsWith("result_")) continue;
                 string name, url, asin = "";
                 HtmlNode otherBook = result.SelectSingleNode(".//div[@class='a-row a-spacing-small']/a/h2");
-                Match match = Regex.Match(otherBook.InnerText, @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase);
+                //Exclude the current book title from other books search
+                Match match = Regex.Match(otherBook.InnerText, curBook.title, RegexOptions.IgnoreCase);
+                if (match.Success)
+                {
+                    continue;
+                }
+                match = Regex.Match(otherBook.InnerText, @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase);
                 if (match.Success)
                 {
                     continue;
@@ -306,7 +312,8 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    main.Log(String.Format("An error occured gathering metadata for other books: {0}\r\nURL: {1}\r\nBook: {2}\r\nContinuing anyway...", ex.Message, book.amazonUrl, book.title));
+                    main.Log(String.Format("An error occured gathering metadata for other books: {0}\r\nURL: {1}\r\nBook: {2}", ex.Message, book.amazonUrl, book.title));
+                    return;
                 }
             }
 

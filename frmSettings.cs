@@ -71,6 +71,7 @@ namespace XRayBuilderGUI
             chkDownloadAliases.Checked = Properties.Settings.Default.downloadAliases;
             chkOverrideOffset.Checked = Properties.Settings.Default.overrideOffset;
             txtAZWOffset.Text = Properties.Settings.Default.offsetAZW3.ToString();
+            chkPageCount.Checked = Properties.Settings.Default.pageCount;
 
             // Added \r\n to show smaller tooltips
             ToolTip toolTip1 = new ToolTip();
@@ -129,6 +130,10 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(btnSupport, "Visit the MobileRead forum for\r\n" +
                                         "support, bug reports, or questions.");
             toolTip1.SetToolTip(chkOverrideOffset, "This offset will be applied to every\r\nAWZ3 book location (usually -16).\r\nMust be an integer.");
+            toolTip1.SetToolTip(chkPageCount, "Try to estimate books page count (based\r\n" +
+                                              "on user_none accurate APNX generation).\r\n" +
+                                              "If no page count is found online, an\r\n" +
+                                              "estimation will be used.");
         }
 
         private void btnBrowseUnpack_Click(object sender, EventArgs e)
@@ -184,6 +189,7 @@ namespace XRayBuilderGUI
             Properties.Settings.Default.downloadAliases = chkDownloadAliases.Checked;
             Properties.Settings.Default.overrideOffset = chkOverrideOffset.Checked;
             Properties.Settings.Default.offsetAZW3 = offsetAZW;
+            Properties.Settings.Default.pageCount = chkPageCount.Checked;
             Properties.Settings.Default.Save();
 
             this.Close();

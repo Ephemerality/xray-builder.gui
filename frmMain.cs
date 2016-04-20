@@ -61,7 +61,7 @@ namespace XRayBuilderGUI
                 txtOutput.AppendText(message + "\r\n");
                 txtOutput.SelectionColor = txtOutput.ForeColor;
             }
-            //txtOutput.Refresh();
+            txtOutput.Refresh();
         }
 
         private bool ClearPreviews()
@@ -121,9 +121,9 @@ namespace XRayBuilderGUI
                 MessageBox.Show(@"Specified book was not found.", @"Book Not Found");
                 return;
             }
-            if (rdoShelfari.Checked && txtShelfari.Text == "")
+            if (rdoGoodreads.Checked && txtGoodreads.Text == "")
             {
-                MessageBox.Show(@"No Shelfari link was specified.", @"Missing Shelfari Link");
+                MessageBox.Show(@"No Goodreads link was specified.", @"Missing Goodreads Link");
                 return;
             }
             if (settings.useKindleUnpack && !File.Exists(settings.mobi_unpack))
@@ -202,8 +202,8 @@ namespace XRayBuilderGUI
             XRay xray;
             try
             {
-                if (rdoShelfari.Checked)
-                    xray = new XRay(txtShelfari.Text, results[2], results[1], results[0], this, settings.spoilers,
+                if (rdoGoodreads.Checked)
+                    xray = new XRay(txtGoodreads.Text, results[2], results[1], results[0], this, settings.spoilers,
                         (AZW3 ? settings.offsetAZW3 : settings.offset), "", false);
                 else
                     xray = new XRay(txtXMLFile.Text, results[2], results[1], results[0], this, settings.spoilers,
@@ -432,9 +432,9 @@ namespace XRayBuilderGUI
                 MessageBox.Show("Specified book was not found.", "Book Not Found");
                 return;
             }
-            if (rdoShelfari.Checked && txtShelfari.Text == "")
+            if (rdoGoodreads.Checked && txtGoodreads.Text == "" && !settings.pageCount)
             {
-                MessageBox.Show("No Shelfari link was specified.", "Missing Shelfari Link");
+                MessageBox.Show("No Goodreads link was specified.", "Missing Goodreads Link");
                 return;
             }
             if (!File.Exists(settings.mobi_unpack))
@@ -480,9 +480,9 @@ namespace XRayBuilderGUI
                 Log("Extracting metadata...");
                 try
                 {
-                    Unpack.Metadata md = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, false);
-                    rawMLSize = md.PDH.TextLength;
-                    results = md.getResults();
+                    //Same results with addition of rawML filename
+                    results = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, true, randomFile).getResults();
+                    rawMLSize = new FileInfo(results[3]).Length;
 
                 }
                 catch (Exception ex)
@@ -510,17 +510,18 @@ namespace XRayBuilderGUI
             try
             {
                 BookInfo bookInfo = new BookInfo(results[5], results[4], results[0], results[1], results[2],
-                                                randomFile, Functions.RemoveInvalidFileChars(results[5]), txtShelfari.Text);
+                                                randomFile, Functions.RemoveInvalidFileChars(results[5]), txtGoodreads.Text, results[3]);
+
                 Log("Attempting to build Author Profile...");
                 AuthorProfile ap = new AuthorProfile(bookInfo, this);
                 if (!ap.complete) return;
                 Log("Attempting to build Start Actions and End Actions...");
                 EndActions ea = new EndActions(ap, bookInfo, rawMLSize, this);
                 if (!ea.complete) return;
+
                 if (settings.useNewVersion)
                 {
                     ea.GenerateNew();
-                    Log("Attempting to build Start Actions...");
                     ea.GenerateStartActions();
                 }
                 else
@@ -627,15 +628,15 @@ namespace XRayBuilderGUI
 
         private void btnLink_Click(object sender, EventArgs e)
         {
-            if (txtShelfari.Text.Trim().Length == 0)
-                MessageBox.Show("No Shelfari link was specified.", "Missing Shelfari Link");
+            if (txtGoodreads.Text.Trim().Length == 0)
+                MessageBox.Show("No Goodreads link was specified.", "Missing Goodreads Link");
             else
-                Process.Start(txtShelfari.Text);
+                Process.Start(txtGoodreads.Text);
         }
 
         private void btnSaveShelfari_Click(object sender, EventArgs e)
         {
-            if (txtShelfari.Text == "")
+            if (txtGoodreads.Text == "")
             {
                 MessageBox.Show("No Shelfari link was specified.", "Missing Shelfari Link");
                 return;
@@ -652,7 +653,7 @@ namespace XRayBuilderGUI
             {
                 txtXMLFile.Text = path;
 
-                XRay xray = new XRay(txtShelfari.Text, this, settings.spoilers);
+                XRay xray = new XRay(txtGoodreads.Text, this, settings.spoilers);
                 if (xray.SaveXml(path) > 0)
                 {
                     Log("An error occurred while processing.");
@@ -667,7 +668,7 @@ namespace XRayBuilderGUI
             }
         }
 
-        private void btnSearchShelfari_Click(object sender, EventArgs e)
+        private void btnSearchGoodreads_Click(object sender, EventArgs e)
         {
             if (!File.Exists(txtMobi.Text))
             {
@@ -721,85 +722,48 @@ namespace XRayBuilderGUI
             }
 
             // Added author name to log output
-            Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
-                results[2], results[0], results[4], results[5], results[1]));
-            
-            //Get Shelfari Search URL
-            Log("Searching for book on Shelfari...");
-            string shelfariSearchUrlBase = @"http://www.shelfari.com/search/books?Author={0}&Title={1}&Binding={2}";
-            string[] bindingTypes = {"Hardcover", "Kindle", "Paperback"};
-
-            // Search book on Shelfari
-            bool bookFound = false;
-            string shelfariBookUrl = "";
-            results[4] = Functions.FixAuthor(results[4]);
+            Log(
+                String.Format(
+                    "Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
+                    results[2], results[0], results[4], results[5], results[1]));
 
             try
-            {
-                HtmlAgilityPack.HtmlDocument shelfariHtmlDoc = new HtmlAgilityPack.HtmlDocument();
-                for (int j = 0; j <= 1; j++)
                 {
-                    for (int i = 0; i < bindingTypes.Length; i++)
-                    {
-                        Log("Searching for " + bindingTypes[i] + " edition...");
-                        // Insert parameters (mainly for searching with removed diacritics). Seems to work fine without replacing spaces?
-                        shelfariHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(String.Format(shelfariSearchUrlBase, results[4], results[5], bindingTypes[i])));
-                        if (!shelfariHtmlDoc.DocumentNode.InnerText.Contains("Your search did not return any results"))
+                    string goodreadsSearchUrlBase = @"http://www.goodreads.com/search?q={0} {1}";
+                    // Search book on Goodreads
+                    //bool bookFound = false;
+                    string goodreadsBookUrl = "";
+                    results[4] = Functions.FixAuthor(results[4]);
+
+                    HtmlAgilityPack.HtmlDocument goodreadsHtmlDoc = new HtmlAgilityPack.HtmlDocument();
+                    goodreadsSearchUrlBase = String.Format(goodreadsSearchUrlBase, results[4], results[5]);
+                    //Load the goodreads search URL
+                    goodreadsHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(goodreadsSearchUrlBase));
+                    if (!goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results"))
+                        results[4] = Functions.TrimAuthor(results[4]);
+                    goodreadsHtmlDoc.LoadHtml(
+                        HttpDownloader.GetPageHtml(String.Format(goodreadsSearchUrlBase, results[4], results[5])));
+                    if (!goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results"))
                         {
-                            shelfariBookUrl = FindShelfariURL(shelfariHtmlDoc, results[4], results[5]);
-                            if (shelfariBookUrl != "")
-                            {
-                                bookFound = true;
-                                if (Properties.Settings.Default.saveHtml)
-                                {
-                                    try
-                                    {
-                                        Log("Saving book's Shelfari webpage...");
-                                        shelfariHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(shelfariBookUrl));
-                                        File.WriteAllText(Environment.CurrentDirectory +
-                                                          String.Format(@"\dmp\{0}.shelfaripageHtml.txt", results[0]),
-                                            shelfariHtmlDoc.DocumentNode.InnerHtml);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Log(String.Format("An error ocurred saving shelfaripageHtml.txt: {0}", ex.Message));
-                                    }
-                                }
-                                break;
-                            }
-                        }
-                        if (!bookFound)
-                            Log("Unable to find a " + bindingTypes[i] + " edition of this book on Shelfari!");
-                    }
-                    if (bookFound) break;
-                    // Attempt to remove diacritics (accented characters) from author & title for searching
-                    string newAuthor = results[4].RemoveDiacritics();
-                    string newTitle = results[5].RemoveDiacritics();
-                    if (!results[4].Equals(newAuthor) || !results[5].Equals(newTitle))
-                    {
-                        results[4] = newAuthor;
-                        results[5] = newTitle;
-                        Log("Accented characters detected. Attempting to search without them.");
+                        goodreadsBookUrl = FindGoodreadsURL(goodreadsHtmlDoc, results[4], results[5]);
+                        if (goodreadsBookUrl != "")
+                        {
+                            txtGoodreads.Text = goodreadsBookUrl;
+                            txtGoodreads.Refresh();
+
+                            Log(
+                                String.Format(
+                                    "Book found on Goodreads!\r\n{0} by {1}\r\nGoodreads URL: {2}\r\nYou may want to visit the URL to ensure it is correct.",
+                                    results[5], results[4], goodreadsBookUrl));
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Log("An error occurred: " + ex.Message);
-                return;
-            }
-
-            if (bookFound)
-            {
-                Log("Book found on Shelfari!");
-                Log(results[5] + " by " + results[4]);
-
-                txtShelfari.Text = shelfariBookUrl;
-                txtShelfari.Refresh();
-                Log(String.Format("Shelfari URL updated: {0}\r\nYou may want to visit the URL to ensure it is correct and add/modify terms if necessary.", shelfariBookUrl));
-            }
-            else
-                Log("Unable to find this book on Shelfari! You may have to search manually.");
+                    else
+                        Log("Unable to find this book on Goodreads!");
+                }
+                catch (Exception ex)
+                {
+                    Log("An error occurred: " + ex.Message);
+                }
 
             try
             {
@@ -807,50 +771,32 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Log(String.Format("An error occurred while trying to delete temporary files: {0}\r\nTry deleting these files manually.", ex.Message));
+                Log(
+                    String.Format(
+                        "An error occurred while trying to delete temporary files: {0}\r\nTry deleting these files manually.",
+                        ex.Message));
             }
         }
 
-        private string FindShelfariURL(HtmlAgilityPack.HtmlDocument shelfariHtmlDoc, string author, string title)
+        private string FindGoodreadsURL(HtmlAgilityPack.HtmlDocument goodreadsHtmlDoc, string author, string title)
         {
-            // Try to find book's page from Shelfari search
-            string shelfariBookUrl = "";
-            int index = 0;
-            List<string> listofthings = new List<string>();
-            List<string> listoflinks = new List<string>();
-            Dictionary<string, string> retData = new Dictionary<string, string>();
-
-            foreach (HtmlAgilityPack.HtmlNode bookItems in shelfariHtmlDoc.DocumentNode.SelectNodes("//li[@class='item']/div[@class='text']"))
+            string goodreadsBookUrl = @"http://www.goodreads.com/book/show/{0}";
+            //Check if results contain title and author
+            foreach (HtmlAgilityPack.HtmlNode link in goodreadsHtmlDoc.DocumentNode.SelectNodes("//tr[@itemtype='http://schema.org/Book']"))
             {
-                if (bookItems == null) continue;
-                listofthings.Clear();
-                listoflinks.Clear();
-                for (var i = 1; i < bookItems.ChildNodes.Count; i++)
+                HtmlAgilityPack.HtmlNode titleNode = link.SelectSingleNode(".//a[@class='bookTitle']");
+                HtmlAgilityPack.HtmlNode authorNode = link.SelectSingleNode(".//a[@class='authorName']");
+                if (titleNode.InnerText.IndexOf(title, StringComparison.OrdinalIgnoreCase) >= 0 &&
+                    (authorNode.InnerText.IndexOf(author, StringComparison.OrdinalIgnoreCase) >= 0))
                 {
-                    if (bookItems.ChildNodes[i].GetAttributeValue("class", "") == "series") continue;
-                    listofthings.Add(bookItems.ChildNodes[i].InnerText.Trim());
-                    listoflinks.Add(bookItems.ChildNodes[i].InnerHtml);
-                }
-                index = 0;
-                foreach (string line in listofthings)
-                {
-                    // Search for author with spaces removed to avoid situations like "J.R.R. Tolkien" / "J. R. R. Tolkien"
-                    // Ignore Collective Work search result.
-                    // May cause false matches, we'll see.
-                    // Also remove diacritics from titles when matching just in case...
-                    // Searching for Children of Húrin will give a false match on the first pass before diacritics are removed from the search URL
-                    if ((listofthings.Contains("(Author)") || listofthings.Contains("(Author),")) &&
-                        line.RemoveDiacritics().StartsWith(title.RemoveDiacritics(), StringComparison.OrdinalIgnoreCase) &&
-                        (listofthings.Contains(author) || listofthings.Exists(r => r.Replace(" ", "") == author.Replace(" ", ""))))
-                        if (!listoflinks.Any(c => c.Contains("(collective work)")))
-                        {
-                            shelfariBookUrl = listoflinks[index].ToString();
-                            shelfariBookUrl = Regex.Replace(shelfariBookUrl, "<a href=\"", "", RegexOptions.None);
-                            shelfariBookUrl = Regex.Replace(shelfariBookUrl, "\".*?</a>.*", "", RegexOptions.None);
-                            if (shelfariBookUrl.ToLower().StartsWith("http://"))
-                                return shelfariBookUrl;
-                        }
-                    index++;
+                    HtmlAgilityPack.HtmlNode node = link.SelectSingleNode(".//a[@class='bookTitle']");
+                    //Parse goodreads ID
+                    Match match = Regex.Match(node.OuterHtml, @"./book/show/([0-9]*)");
+                    if (match.Success)
+                    {
+                        goodreadsBookUrl = String.Format(goodreadsBookUrl, match.Groups[1].Value);
+                        return goodreadsBookUrl;
+                    }
                 }
             }
             return "";
@@ -866,9 +812,9 @@ namespace XRayBuilderGUI
         {
             Properties.Settings.Default.mobiFile = txtMobi.Text;
             Properties.Settings.Default.xmlFile = txtXMLFile.Text;
-            Properties.Settings.Default.shelfari = txtShelfari.Text;
-            if (rdoShelfari.Checked)
-                Properties.Settings.Default.buildSource = "Shelfari";
+            Properties.Settings.Default.Goodreads = txtGoodreads.Text;
+            if (rdoGoodreads.Checked)
+                Properties.Settings.Default.buildSource = "Goodreads";
             else
                 Properties.Settings.Default.buildSource = "XML";
             Properties.Settings.Default.Save();
@@ -880,13 +826,13 @@ namespace XRayBuilderGUI
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            this.ActiveControl = lblShelfari;
+            this.ActiveControl = lblGoodreads;
             ToolTip toolTip1 = new ToolTip();
             toolTip1.SetToolTip(btnBrowseMobi, "Open a Kindle book.");
             toolTip1.SetToolTip(btnBrowseOutput, "Open the default output directory.");
-            toolTip1.SetToolTip(btnLink, "Open the Shelfari link in your default web browser.");
+            toolTip1.SetToolTip(btnLink, "Open the Goodreads link in your default web browser.");
             toolTip1.SetToolTip(btnBrowseXML, "Open a supported XML or TXT file containing characters and topics.");
-            toolTip1.SetToolTip(btnSearchShelfari, "Try to search for this book on Shelfari.");
+            toolTip1.SetToolTip(btnSearchGoodreads, "Try to search for this book on Goodreads.");
             toolTip1.SetToolTip(btnSaveShelfari, "Save Shelfari info to an XML file.");
             toolTip1.SetToolTip(btnKindleExtras,
                 "Try to build the Start Action, Author Profile,\r\nand End Action files for this book.");
@@ -923,9 +869,9 @@ namespace XRayBuilderGUI
             if (Properties.Settings.Default.mobi_unpack == "")
                 Properties.Settings.Default.mobi_unpack = Environment.CurrentDirectory + @"\dist\kindleunpack.exe";
 
-            txtShelfari.Text = Properties.Settings.Default.shelfari;
-            if (Properties.Settings.Default.buildSource == "Shelfari")
-                rdoShelfari.Checked = true;
+            txtGoodreads.Text = Properties.Settings.Default.Goodreads;
+            if (Properties.Settings.Default.buildSource == "Goodreads")
+                rdoGoodreads.Checked = true;
             else
                 rdoFile.Checked = true;
         }
@@ -956,22 +902,22 @@ namespace XRayBuilderGUI
 
         private void rdoSource_CheckedChanged(object sender, EventArgs e)
         {
-            if (((RadioButton)sender).Text == "Shelfari")
+            if (((RadioButton)sender).Text == "Goodreads")
             {
-                lblShelfari.Visible = !lblShelfari.Visible;
-                txtShelfari.Visible = !txtShelfari.Visible;
+                lblGoodreads.Visible = !lblGoodreads.Visible;
+                txtGoodreads.Visible = !txtGoodreads.Visible;
                 lblXMLFile.Visible = !lblXMLFile.Visible;
                 txtXMLFile.Visible = !txtXMLFile.Visible;
-                txtShelfari.Visible = !txtShelfari.Visible;
+                txtGoodreads.Visible = !txtGoodreads.Visible;
                 btnBrowseXML.Visible = !btnBrowseXML.Visible;
-                btnSaveShelfari.Enabled = !btnSaveShelfari.Enabled;
-                btnSearchShelfari.Visible = !btnSearchShelfari.Visible;
+                //btnSaveShelfari.Enabled = !btnSaveShelfari.Enabled;
+                btnSearchGoodreads.Visible = !btnSearchGoodreads.Visible;
             }
         }
 
         private void txtMobi_TextChanged(object sender, EventArgs e)
         {
-            txtShelfari.Text = "";
+            txtGoodreads.Text = "";
             btnPreview.Enabled = false;
             prgBar.Value = 0;
         }

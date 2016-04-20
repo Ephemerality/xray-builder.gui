@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -290,6 +291,53 @@ namespace XRayBuilderGUI
             return md;
         }
 
+
+        public static string GetPageCount(string rawML, BookInfo bookInfo)
+        {
+            string output = "";
+            int lineLength = 0;
+            double lineCount = 0;
+            int pageCount = 0;
+            if (!File.Exists(rawML) || bookInfo == null)
+            {
+                output = "Error: RawML could not be found, aborting.\r\nPath: " + rawML;
+                return output;
+            }
+            HtmlAgilityPack.HtmlDocument bookDoc = new HtmlAgilityPack.HtmlDocument { OptionAutoCloseOnEnd = true };
+            bookDoc.Load(rawML, Encoding.UTF8);
+            HtmlAgilityPack.HtmlNodeCollection booklineNodes = null;
+            booklineNodes = bookDoc.DocumentNode.SelectNodes("//p") ?? bookDoc.DocumentNode.SelectNodes("//div");
+            if (booklineNodes == null)
+            {
+                output = "An error occured while estimating page count!";
+                return output;
+            }
+            foreach (HtmlAgilityPack.HtmlNode line in booklineNodes)
+            {
+                lineLength = line.InnerText.Length + 1;
+                if (lineLength < 70)
+                {
+                    lineCount++;
+                    continue;
+                }
+                lineCount += Math.Ceiling((double)lineLength / 70);
+            }
+            pageCount = Convert.ToInt32(Math.Ceiling(lineCount / 31));
+            if (pageCount == 0)
+            {
+                output = "An error occured while estimating page count!";
+                return output;
+            }
+            double minutes = pageCount * 1.2890625;
+            TimeSpan span = TimeSpan.FromMinutes(minutes);
+            bookInfo.pagesInBook = pageCount.ToString();
+            bookInfo.readingHours = span.Hours.ToString();
+            bookInfo.readingMinutes = span.Minutes.ToString();
+            output = (String.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)"
+                , span.Hours, span.Minutes, bookInfo.pagesInBook));
+            return output;
+        }
+
         public static List<string> GetMetaData(string mobiFile, string outDir, string randomFile, string mobiUnpack)
         {
             if (mobiUnpack == null) throw new ArgumentNullException("mobiUnpack");
@@ -534,26 +582,17 @@ namespace XRayBuilderGUI
         {
             BookInfo result = null;
 
-            string authorTrim = "";
+            author = TrimAuthor(author);
 
-            Regex regex = new Regex(@"( [A-Z]\.)", RegexOptions.Compiled);
-            Match match = Regex.Match(author, @"( [A-Z]\.)", RegexOptions.Compiled);
-            if (match.Success)
-            {
-                foreach (Match m in regex.Matches(author))
-                {
-                    authorTrim = author.Replace(m.Value, m.Value.Trim());
-                }
-            }
-            else
-            {
-                authorTrim = author;
-            }
             if (title.IndexOf(" (") >= 0)
                 title = title.Substring(0, title.IndexOf(" ("));
-
-            string searchUrl = @"http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Ddigital-text&field-keywords=" + 
-            Uri.EscapeDataString(title + " " + authorTrim );
+            //Search Kindle store
+            //string searchUrl = @"http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Ddigital-text&field-keywords=" + 
+            //Uri.EscapeDataString(title + " " + author);
+            
+            //Search "all" Amazon
+            string searchUrl = @"http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=" +
+            Uri.EscapeDataString(title + " " + author);
             HAP.HtmlDocument searchDoc = new HAP.HtmlDocument();
             searchDoc.LoadHtml(HttpDownloader.GetPageHtml(searchUrl));
             HAP.HtmlNode node = searchDoc.DocumentNode.SelectSingleNode("//li[@id='result_0']");
@@ -584,6 +623,23 @@ namespace XRayBuilderGUI
             {
                 string[] parts = author.Split(',');
                 author = parts[1].Trim() + " " + parts[0].Trim();
+            }
+            return author;
+        }
+
+        /// <summary>
+        /// Trim spaces in author names that contain initials (helps with searching)
+        /// </summary>
+        public static string TrimAuthor(string author)
+        {
+            Regex regex = new Regex(@"( [A-Z]\.)|( [a-z]\.)", RegexOptions.Compiled);
+            Match match = Regex.Match(author, @"( [A-Z]\.)|( [a-z]\.)", RegexOptions.Compiled);
+            if (match.Success)
+            {
+                foreach (Match m in regex.Matches(author))
+                {
+                    author = author.Replace(m.Value, m.Value.Trim());
+                }
             }
             return author;
         }

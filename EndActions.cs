@@ -408,6 +408,7 @@ namespace XRayBuilderGUI
                 //}
                 if (nextBook == null)
                     main.Log("Book was found to be part of a series, but an error occured finding the next book.\r\n" +
+                        "Please report this book and the Goodreads URL and output log to improve parsing.");
 
             }
             else if (curBook.seriesPosition != curBook.totalInSeries)

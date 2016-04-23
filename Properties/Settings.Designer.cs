@@ -50,12 +50,12 @@ namespace XRayBuilderGUI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string shelfari {
+        public string Goodreads {
             get {
-                return ((string)(this["shelfari"]));
+                return ((string)(this["Goodreads"]));
             }
             set {
-                this["shelfari"] = value;
+                this["Goodreads"] = value;
             }
         }
         
@@ -145,7 +145,7 @@ namespace XRayBuilderGUI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Shelfari")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Goodreads")]
         public string buildSource {
             get {
                 return ((string)(this["buildSource"]));
@@ -380,6 +380,30 @@ namespace XRayBuilderGUI.Properties {
             }
             set {
                 this["offsetAZW3"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool pageCount {
+            get {
+                return ((bool)(this["pageCount"]));
+            }
+            set {
+                this["pageCount"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool searchGoodreads {
+            get {
+                return ((bool)(this["searchGoodreads"]));
+            }
+            set {
+                this["searchGoodreads"] = value;
             }
         }
     }

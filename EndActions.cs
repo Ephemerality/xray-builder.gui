@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -26,8 +25,8 @@ namespace XRayBuilderGUI
         private AuthorProfile authorProfile = null;
         public BookInfo curBook = null;
         private string previousTitle = "";
-        private string previousShelfariUrl = "";
-        private string nextShelfariUrl = "";
+        //private string previousShelfariUrl = "";
+        //private string nextShelfariUrl = "";
 
         public bool complete = false; //Set if constructor succeeds in gathering data
         
@@ -82,13 +81,13 @@ namespace XRayBuilderGUI
                 return;
             }
 
-            main.Log("Gathering recommended book info...");
+            main.Log("Gathering recommended book metadata...");
             //Parse Recommended Author titles and ASINs
             try
             {
                 HtmlNodeCollection recList = bookHtmlDoc.DocumentNode.SelectNodes("//li[@class='a-carousel-card a-float-left']");
                 if (recList == null)
-                    main.Log("Could not find related book list page on Amazon.\r\nUnable to create End Actions.");
+                    main.Log("An error occured finding related book list page on Amazon.\r\nUnable to create End Actions.");
                 if (recList != null)
                     foreach (HtmlNode item in recList.Where(item => item != null))
                     {
@@ -105,7 +104,13 @@ namespace XRayBuilderGUI
                             nodeTitleCheck = nodeTitle.InnerText.CleanString();
                         }
                         cleanAuthor = item.SelectSingleNode(".//div/div").InnerText.CleanString();
-                        Match match = Regex.Match(nodeTitleCheck, @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase);
+                        //Exclude the current book title from other books search
+                        Match match = Regex.Match(nodeTitleCheck, curBook.title, RegexOptions.IgnoreCase);
+                        if (match.Success)
+                        {
+                            continue;
+                        }
+                        match = Regex.Match(nodeTitleCheck, @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase);
                         if (match.Success)
                         {
                             nodeTitleCheck = "";
@@ -122,7 +127,8 @@ namespace XRayBuilderGUI
                         }
                         catch (Exception ex)
                         {
-                            main.Log(String.Format("{0}\r\n{1}\r\nContinuing anyway...", ex.Message, nodeUrl));
+                            main.Log(String.Format("Error: {0}\r\n{1}", ex.Message, nodeUrl));
+                            return;
                         }
                     }
             }
@@ -144,7 +150,7 @@ namespace XRayBuilderGUI
             XmlTextWriter writer = new XmlTextWriter(EaPath, Encoding.UTF8);
             try
             {
-                main.Log("Writing End Actions to file...");
+                main.Log("Writing EndActions to file...");
                 writer.WriteProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"");
                 writer.WriteStartElement("endaction");
                 writer.WriteAttributeString("version", "0");
@@ -205,20 +211,19 @@ namespace XRayBuilderGUI
             string[] templates = GetBaseTemplates("BaseEndActions.txt", 3);
             if (templates == null) return;
 
+            main.Log(String.Format("Gathering additional metadata for {0}...", curBook.title));
             string bookInfoTemplate = templates[0];
             string widgetsTemplate = templates[1];
             string layoutsTemplate = templates[2];
             string finalOutput = "{{{0},{1},{2},{3}}}"; //bookInfo, widgets, layouts, data
             
             // Build bookInfo object
-            // "bookInfo":{"class":"bookInfo","asin":"{0}","contentType":"EBOK","timestamp":{1},"refTagSuffix":"AAAgAAB","imageUrl":"{2}","embeddedID":"{3}:{4}","erl":{5}}
             TimeSpan timestamp = DateTime.Now - new DateTime(1970, 1, 1);
             bookInfoTemplate = String.Format(bookInfoTemplate, curBook.asin, Math.Round(timestamp.TotalMilliseconds), curBook.bookImageUrl, curBook.databasename, curBook.guid, _erl);
             double dateMs = Math.Round(timestamp.TotalMilliseconds);
             string ratingText = Math.Floor(curBook.amazonRating).ToString();
 
             // Build data object
-            //string dataTemplate = @"""data"":{{""nextBook"":{0},{1},{2},""currentBookFeatured"":{3},{4},{5},{6},{7}}}";
             string dataTemplate = @"""data"":{{""nextBook"":{0},{1},{2},{3},{4},{5},{6},{7}}}";
             string nextBook = "{}";
             string publicSharedRating = String.Format(@"""publicSharedRating"":{{""class"":""publicSharedRating"",""timestamp"":{0},""value"":{1}}}", dateMs, ratingText);
@@ -237,7 +242,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                main.Log("Error finding next book in series: " + ex.Message);
+                main.Log("An error occured finding next book in series: " + ex.Message);
             }
             authorRecs = String.Format(authorRecs, String.Join(",", authorProfile.otherBooks.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
             custRecs = String.Format(custRecs, String.Join(",", custAlsoBought.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
@@ -247,6 +252,7 @@ namespace XRayBuilderGUI
 
             finalOutput = String.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
 
+            main.Log("Writing EndActions to file...");
             using (StreamWriter streamWriter = new StreamWriter(EaPath, false))
             {
                 streamWriter.Write(finalOutput);
@@ -297,6 +303,7 @@ namespace XRayBuilderGUI
 
             finalOutput = String.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
 
+            main.Log("Writing StartActions to file...");
             using (StreamWriter streamWriter = new StreamWriter(SaPath, false))//, Encoding.UTF8))
             {
                 streamWriter.Write(finalOutput);
@@ -321,7 +328,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                main.Log("Failed to create output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
+                main.Log("An error occured creating the output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
                 outputDir = settings.outDir;
             }
             EaPath = outputDir + @"\EndActions.data." + curBook.asin + ".asc";
@@ -329,7 +336,7 @@ namespace XRayBuilderGUI
 
             if (!Properties.Settings.Default.overwrite && File.Exists(EaPath))
             {
-                main.Log("EndActions file already exists... Skipping!\r\n" +
+                main.Log("Error: EndActions file already exists... Skipping!\r\n" +
                          "Please review the settings page if you want to overwite any existing files.");
                 return;
             }
@@ -350,7 +357,7 @@ namespace XRayBuilderGUI
                     templates = templates.Where(r => !r.StartsWith("//")).ToArray(); //Remove commented lines
                     if (templates == null || templates.Length != templateCount || !templates[0].StartsWith(@"""bookInfo"""))
                     {
-                        main.Log("Error parsing " + baseFile + ". If you modified it, ensure you followed the specified format.");
+                        main.Log("An error occured parsing " + baseFile + ". If you modified it, ensure you followed the specified format.");
                         return null;
                     }
                 }
@@ -368,15 +375,12 @@ namespace XRayBuilderGUI
         {
             BookInfo nextBook = null;
 
-            if (curBook.shelfariUrl == "") return null;
+            if (curBook.goodreadsUrl == "") return null;
 
             // Get title of next book
             HtmlAgilityPack.HtmlDocument searchHtmlDoc = new HtmlAgilityPack.HtmlDocument();
-            searchHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.shelfariUrl));
+            searchHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.goodreadsUrl));
             string nextTitle = GetNextInSeriesTitle(searchHtmlDoc);
-            // If search failed, try other method
-            //if (nextTitle == "")
-            //    nextTitle = GetNextInSeriesTitle2(searchHtmlDoc);
             if (nextTitle != "")
             {
                 // Search author's other books for the book (assumes next in series was written by the same author...)
@@ -390,25 +394,25 @@ namespace XRayBuilderGUI
                         nextBook.GetAmazonInfo(nextBook.amazonUrl); //fill in desc, imageurl, and ratings
                 }
                 // Try to fill in desc, imageurl, and ratings using Shelfari Kindle edition link instead
+                //if (nextBook == null)
+                //{
+                //    HtmlDocument bookDoc = new HtmlDocument() { OptionAutoCloseOnEnd = true };
+                //    bookDoc.LoadHtml(HttpDownloader.GetPageHtml(nextShelfariUrl));
+                //    Match match = Regex.Match(bookDoc.DocumentNode.InnerHtml, "('B[A-Z0-9]{9}')");
+                //    if (match.Success)
+                //    {
+                //        string cleanASIN = match.Value.Replace("'", String.Empty);
+                //        nextBook = new BookInfo(nextTitle, curBook.author, cleanASIN);
+                //        nextBook.GetAmazonInfo("http://www.amazon.com/dp/" + cleanASIN);
+                //    }
+                //}
                 if (nextBook == null)
-                {
-                    HtmlDocument bookDoc = new HtmlDocument() { OptionAutoCloseOnEnd = true };
-                    bookDoc.LoadHtml(HttpDownloader.GetPageHtml(nextShelfariUrl));
-                    Match match = Regex.Match(bookDoc.DocumentNode.InnerHtml, "('B[A-Z0-9]{9}')");
-                    if (match.Success)
-                    {
-                        string cleanASIN = match.Value.Replace("'", String.Empty);
-                        nextBook = new BookInfo(nextTitle, curBook.author, cleanASIN);
-                        nextBook.GetAmazonInfo("http://www.amazon.com/dp/" + cleanASIN);
-                    }
-                }
-                if (nextBook == null)
-                    main.Log("Book was found to be part of a series, but next book could not be found.\r\n" +
-                        "Please report this book and the Shelfari URL and output log to improve parsing.");
+                    main.Log("Book was found to be part of a series, but an error occured finding the next book.\r\n" +
+                        "Please report this book and the Goodreads URL and output log to improve parsing.");
 
             }
             else if (curBook.seriesPosition != curBook.totalInSeries)
-                main.Log("Unable to find next book in series, the book may not be part of a series, or it is the latest release.");
+                main.Log("An error occured finding the next book in series, the book may not be part of a series, or it is the latest release.");
 
             if (previousTitle != "")
             {
@@ -420,212 +424,164 @@ namespace XRayBuilderGUI
                         curBook.previousInSeries.GetAmazonInfo(curBook.previousInSeries.amazonUrl); //fill in desc, imageurl, and ratings
                     
                     // Try to fill in desc, imageurl, and ratings using Shelfari Kindle edition link instead
-                    if (curBook.previousInSeries == null)
-                    {
-                        HtmlDocument bookDoc = new HtmlDocument() {OptionAutoCloseOnEnd = true};
-                        bookDoc.LoadHtml(HttpDownloader.GetPageHtml(previousShelfariUrl));
-                        Match match = Regex.Match(bookDoc.DocumentNode.InnerHtml, "('B[A-Z0-9]{9}')");
-                        if (match.Success)
-                        {
-                            string cleanASIN = match.Value.Replace("'", String.Empty);
-                            curBook.previousInSeries = new BookInfo(previousTitle, curBook.author, cleanASIN);
-                            curBook.previousInSeries.GetAmazonInfo("http://www.amazon.com/dp/" + cleanASIN);
-                        }
-                    }
+                    //if (curBook.previousInSeries == null)
+                    //{
+                    //    HtmlDocument bookDoc = new HtmlDocument() {OptionAutoCloseOnEnd = true};
+                    //    bookDoc.LoadHtml(HttpDownloader.GetPageHtml(previousShelfariUrl));
+                    //    Match match = Regex.Match(bookDoc.DocumentNode.InnerHtml, "('B[A-Z0-9]{9}')");
+                    //    if (match.Success)
+                    //    {
+                    //        string cleanASIN = match.Value.Replace("'", String.Empty);
+                    //        curBook.previousInSeries = new BookInfo(previousTitle, curBook.author, cleanASIN);
+                    //        curBook.previousInSeries.GetAmazonInfo("http://www.amazon.com/dp/" + cleanASIN);
+                    //    }
+                    //}
                 }
                 else
-                    main.Log("Book was found to be part of a series, but previous book could not be found.\r\n" +
-                             "Please report this book and the Shelfari URL and output log to improve parsing.");
+                    main.Log("Book was found to be part of a series, but an error occured finding the next book.\r\n" +
+                        "Please report this book and the Goodreads URL and output log to improve parsing.");
             }
-
             return nextBook;
         }
 
         /// <summary>
-        /// Search Shelfari page for possible series info, returning the next title in the series without downloading any other pages.
+        /// Search Goodread for possible series info, returning the next title in the series.
         /// TODO: Un-yuckify all the return paths without nesting a ton of ifs
         /// </summary>
-        /// <param name="searchHtmlDoc">Book's Shelfari page, pre-downloaded</param>
+        /// <param name="searchHtmlDoc">Book's Goodreads page, pre-downloaded</param>
         private string GetNextInSeriesTitle(HtmlAgilityPack.HtmlDocument searchHtmlDoc)
         {
-            //Added estimated reading time and page count from Shelfari, for now...
-            HtmlAgilityPack.HtmlNode pageNode = searchHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_FirstEdition']");
-            if (pageNode == null)
+            //Added estimated reading time and page count from Goodreads, for now...
+            HtmlNode pagesNode = searchHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='details']");
+            if (pagesNode == null)
                 return "";
-            HtmlAgilityPack.HtmlNode node1 = pageNode.SelectSingleNode(".//div/div");
-            if (node1 == null)
-                return "";
-            //Parse page count and multiply by average reading time
-            Match match1 = Regex.Match(node1.InnerText, @"Page Count: ((\d+)|(\d+,\d+))");
-            if (match1.Success)
+            Match match = Regex.Match(pagesNode.InnerText, @"((\d+)|(\d+,\d+)) pages");
+            if (match.Success & !Properties.Settings.Default.pageCount)
             {
-                double minutes = int.Parse(match1.Groups[1].Value, NumberStyles.AllowThousands) * 1.2890625;
+                double minutes = int.Parse(match.Groups[1].Value, NumberStyles.AllowThousands)*1.2890625;
                 TimeSpan span = TimeSpan.FromMinutes(minutes);
                 main.Log(String.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)"
-                    , span.Hours, span.Minutes, match1.Groups[1].Value));
-                curBook.pagesInBook = match1.Groups[1].Value;
+                    , span.Hours, span.Minutes, match.Groups[1].Value));
+                curBook.pagesInBook = match.Groups[1].Value;
                 curBook.readingHours = span.Hours.ToString();
                 curBook.readingMinutes = span.Minutes.ToString();
             }
-
-            //Added highlighted passage from Shelfari, dummy info for now...
-            HtmlAgilityPack.HtmlNode members = searchHtmlDoc.DocumentNode.SelectSingleNode("//ul[@class='tabs_n tn1']");
-            int highlights = 0;
-            if (members != null)
+            else
             {
-                Match match3 = Regex.Match(members.InnerText, @"Reviews \(((\d+)|(\d+,\d+))\)");
-                if (match3.Success)
-                    curBook.popularPassages = match3.Groups[1].Value.ToString();
-                match3 = Regex.Match(members.InnerText, @"Readers \(((\d+)|(\d+,\d+))\)");
-                if (match3.Success)
+                if (!Properties.Settings.Default.pageCount)
+                    main.Log("No page count found on Goodreads");
+                main.Log("Attempting to estimate page count...");
+                main.Log(Functions.GetPageCount(curBook.rawmlPath, curBook));
+            }
+            
+            //Use Goodreads reviews and ratings to generate popular passages dummy
+            int highlights = 0;
+            HtmlNode metaNode = searchHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
+            if (metaNode != null)
+            {
+                HtmlNode passagesNode =
+                    metaNode.SelectSingleNode(".//a[@class='actionLinkLite votes' and @href='#other_reviews']");
+                match = Regex.Match(passagesNode.InnerText, @"(\d+,\d+)|(\d+)");
+                if (match.Success)
                 {
-                    curBook.popularHighlights = match3.Groups[1].Value.ToString();
-                    highlights = int.Parse(match3.Groups[1].Value, NumberStyles.AllowThousands);
+                    int passages = int.Parse(match.Value, NumberStyles.AllowThousands);
+                    if (passages > 10000)
+                        passages = passages/100;
+                    if (passages > 200)
+                        passages = passages/10;
+                    curBook.popularPassages = passages.ToString();
+                }
+                HtmlNode highlightsNode =
+                        metaNode.SelectSingleNode(".//a[@class='actionLinkLite' and @href='#other_reviews']");
+                    match = Regex.Match(highlightsNode.InnerText, @"(\d+,\d+)|(\d+)");
+                    if (match.Success)
+                    {
+                        highlights = int.Parse(match.Value, NumberStyles.AllowThousands);
+                        if (highlights > 10000)
+                            highlights = highlights/100;
+                        if (highlights > 200)
+                            highlights = highlights/10;
+                    curBook.popularHighlights = highlights.ToString();
                 }
                 string textPassages = curBook.popularPassages == "1"
-                    ? String.Format("{0} passage has ", curBook.popularPassages)
-                    : String.Format("{0} passages have ", curBook.popularPassages);
+                ? String.Format("{0} passage has", curBook.popularPassages)
+                : String.Format("{0} passages have", curBook.popularPassages);
                 string textHighlights = curBook.popularHighlights == "1"
                     ? String.Format("{0} time", curBook.popularHighlights)
                     : String.Format("{0} times", curBook.popularHighlights);
 
-                main.Log(String.Format("Popular Highlights: {0}been highlighted {1}"
+                main.Log(String.Format("{0} been highlighted {1}"
                             , textPassages, textHighlights));
             }
-
-            //If no "highlighted passages" found from Shelfari, add to log
             if (highlights == 0)
             {
-                main.Log("Popular Highlights: No highlighted passages have been found for this book");
+                main.Log("No highlighted passages have been found for this book");
                 curBook.popularPassages = "";
                 curBook.popularHighlights = "";
             }
 
-            //Check if book series is available and displayed in Series & Lists on Shelfari page.
-            HtmlAgilityPack.HtmlNode seriesNode = searchHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_Series']/div");
-            if (seriesNode != null)
-                //If multiple Series found, find and use standard series.
-                foreach (HtmlAgilityPack.HtmlNode seriesType in
-                    seriesNode.SelectNodes(".//div"))
-                {
-                    if (seriesType.InnerText.Contains("(standard series)", StringComparison.OrdinalIgnoreCase) && !seriesType.InnerText.Contains("(Reading Order)", StringComparison.OrdinalIgnoreCase))
-                    {
-                        Match match = Regex.Match(seriesType.InnerText, @"This is book (\d+) of (\d+)");
-                        if (!match.Success)
-                            continue;
-                        curBook.seriesName = seriesType.ChildNodes["a"].InnerText.Trim();
-                        main.Log("About the series: " + seriesType.InnerText.Replace(". (standard series)", ""));
-                        if (!match.Success || match.Groups.Count != 3)
-                            return "";
-                        curBook.seriesPosition = match.Groups[1].Value;
-                        curBook.totalInSeries = match.Groups[2].Value;
-                        HtmlAgilityPack.HtmlNode seriesInfo = seriesNode.SelectSingleNode(".//p");
-                        //Parse preceding book
-                        if (seriesInfo != null && seriesInfo.InnerText.Contains("Preceded by ", StringComparison.OrdinalIgnoreCase))
-                        {
-                            match = Regex.Match(seriesInfo.InnerText, @"Preceded by (.*),", RegexOptions.IgnoreCase);
-                            if (match.Success && match.Groups.Count == 2)
-                            {
-                                previousTitle = match.Groups[1].Value;
-                            }
-                            else
-                            {
-                                match = Regex.Match(seriesInfo.InnerText, @"Preceded by (.*)\.", RegexOptions.IgnoreCase);
-                                if (match.Success && match.Groups.Count == 2)
-                                {
-                                    previousTitle = match.Groups[1].Value;
-                                }
-                            }
-                            main.Log("Preceded by: " + previousTitle);
-                            //Grab Shelfari Kindle edition link for this book
-                            previousShelfariUrl = seriesInfo.ChildNodes["a"].GetAttributeValue("href", "") +
-                                                  "/editions?binding=Kindle";
-                        }
-                        // Check if book is the last in the series
-                        if (!curBook.seriesPosition.Equals(curBook.totalInSeries))
-                        {
-                            //Parse following book
-                            if (seriesInfo != null && seriesInfo.InnerText.Contains("followed by ", StringComparison.OrdinalIgnoreCase))
-                            {
-                                match = Regex.Match(seriesInfo.InnerText, @"followed by (.*)\.", RegexOptions.IgnoreCase);
-                                if (match.Success && match.Groups.Count == 2)
-                                {
-                                    main.Log("Followed by: " + match.Groups[1].Value);
-                                    //Grab Shelfari Kindle edition link for this book
-                                    nextShelfariUrl = seriesInfo.ChildNodes["a"].GetAttributeValue("href", "") + "/editions?binding=Kindle";
-                                    return match.Groups[1].Value;
-                                }
-                            }
-                        }
-                        //Stop after first standard series is found maybe
-                        //add popup (already started implimentaton) in
-                        //future to pick which standard series you
-                        //want to use, not sure if worthwhile though.
-                        //eg: http://www.shelfari.com/books/37598923
-                        break;
-                    }
-                }
-            return "";
-        }
-
-        /// <summary>
-        /// Search Shelfari for series info, scrape series page, and return next title in series.
-        /// </summary>
-        /// <param name="searchHtmlDoc">Book's Shelfari page, pre-downloaded</param>
-        private string GetNextInSeriesTitle2(HtmlAgilityPack.HtmlDocument searchHtmlDoc)
-        {
-            bool hasSeries = false;
-            string series = "";
-            string seriesShort = "";
-            string seriesURL = "";
-            int currentSeriesIndex = 0;
-            int currentSeriesCount = 0;
-            string nextTitle = "";
-            //Check if book's Shelfari page contains series info
-            HtmlAgilityPack.HtmlNode node = searchHtmlDoc.DocumentNode.SelectSingleNode("//span[@class='series']");
-            if (node != null)
-            {
-                //Series name and book number
-                series = node.InnerText.Trim();
-                //Convert book number string to integer
-                Int32.TryParse(series.Substring(series.LastIndexOf(" ") + 1), out currentSeriesIndex);
-                //Parse series Shelfari URL
-                seriesURL = node.SelectSingleNode("//span[@class='series']/a[@href]")
-                    .GetAttributeValue("href", "");
-                seriesShort = node.FirstChild.InnerText.Trim();
-                //Add series name and book number to log, if found
-                searchHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(String.Format(seriesURL)));
-                //Parse number of books in series and convert to integer
-                node = searchHtmlDoc.DocumentNode.SelectSingleNode("//h2[@class='f_m']");
-                string test = node.FirstChild.InnerText.Trim();
-                Match match = Regex.Match(test, @"\d+");
-                if (match.Success)
-                    Int32.TryParse(match.Value, out currentSeriesCount);
-                hasSeries = true;
-                //Check if there is a next book
-                if (currentSeriesIndex < currentSeriesCount)
-                {
-                    //Add series name and book number to log, if found
-                    main.Log(String.Format("This is book {0} of {1} in the {2} Series...",
-                        currentSeriesIndex, currentSeriesCount, seriesShort));
-                    foreach (HtmlAgilityPack.HtmlNode seriesItem in
-                        searchHtmlDoc.DocumentNode.SelectNodes(".//ol/li"))
-                    {
-                        node = seriesItem.SelectSingleNode(".//div/span[@class='series bold']");
-                        if (node != null)
-                            if (node.InnerText.Contains((currentSeriesIndex + 1).ToString()))
-                            {
-                                node = seriesItem.SelectSingleNode(".//h3/a");
-                                //Parse title of the next book
-                                nextTitle = node.InnerText.Trim();
-                                //Add next book in series to log, if found
-                                main.Log(String.Format("The next book in this series is {0}!", nextTitle));
-                                return nextTitle;
-                            }
-                    }
-                }
-                if (hasSeries)
+            //Search Goodreads for series info
+            string goodreadsSeriesUrl = @"http://www.goodreads.com/series/{0}";
+            string seriesName = "";
+            HtmlNode SeriesNode = metaNode.SelectSingleNode("//h1[@id='bookTitle']");
+            match = Regex.Match(SeriesNode.OuterHtml, @"/series/([0-9]*)");
+            if (!match.Success)
                 return "";
+            goodreadsSeriesUrl = String.Format(goodreadsSeriesUrl, match.Groups[1].Value);
+            match = Regex.Match(SeriesNode.InnerText, @"\((.*) #([0-9]*)\)");
+            if (match.Success)
+            {
+                curBook.seriesName = match.Groups[1].Value.Trim();
+                curBook.seriesPosition = match.Groups[2].Value.Trim();
+            }
+
+            HtmlDocument seriesHtmlDoc = new HtmlDocument() { OptionAutoCloseOnEnd = true };
+            seriesHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(goodreadsSeriesUrl));
+            if (seriesHtmlDoc != null)
+            {
+                SeriesNode = seriesHtmlDoc.DocumentNode.SelectSingleNode("//div[@class='greyText']");
+                match = Regex.Match(SeriesNode.InnerText, @"([0-9]*) primary works");
+                if (match.Success)
+                {
+                    curBook.totalInSeries = match.Groups[1].Value;
+                }
+                if (int.Parse(curBook.seriesPosition) == 1)
+                {
+                    main.Log(String.Format("This is the first book in the {0} series", curBook.seriesName));
+                }
+                if (int.Parse(curBook.seriesPosition) == int.Parse(curBook.totalInSeries))
+                {
+                    main.Log(String.Format("This is the latest book in the {0} series", curBook.seriesName));
+                }
+                if (int.Parse(curBook.seriesPosition) < int.Parse(curBook.totalInSeries))
+                    main.Log(String.Format("This is book {0} of {1} in the {2} series",
+                            curBook.seriesPosition, curBook.totalInSeries, curBook.seriesName));
+                if (int.Parse(curBook.seriesPosition) > 1)
+                {
+                    string stringSearch = String.Format(@"'#{0}'", int.Parse(curBook.seriesPosition) - 1);
+                    HtmlNode previousBookNode =
+                        seriesHtmlDoc.DocumentNode.SelectSingleNode("//a[@class='bookTitle']/span[contains(., " +
+                                                                stringSearch + ")]/text()");
+                    match = Regex.Match(previousBookNode.InnerText, @"(.*) \(.*#[0-9]*\)");
+                    if (match.Success)
+                    {
+                        previousTitle = match.Groups[1].Value.Trim();
+                        main.Log(String.Format("Preceded by: {0}", match.Groups[1].Value.Trim()));
+                    }
+                }
+                if (int.Parse(curBook.seriesPosition) < int.Parse(curBook.totalInSeries))
+                {
+                    string stringSearch = String.Format(@"'#{0}'", int.Parse(curBook.seriesPosition) + 1);
+                    HtmlNode nextBookNode =
+                        seriesHtmlDoc.DocumentNode.SelectSingleNode("//a[@class='bookTitle']/span[contains(., " +
+                                                                stringSearch + ")]/text()");
+                    match = Regex.Match(nextBookNode.InnerText, @"(.*) \(.*#[0-9]*\)");
+                    if (match.Success)
+                    {
+                        main.Log(String.Format("Followed by: {0}", match.Groups[1].Value.Trim()));
+                        return match.Groups[1].Value.Trim();
+                    }
+                }
             }
             return "";
         }

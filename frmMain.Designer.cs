@@ -30,16 +30,16 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
-            this.lblShelfari = new System.Windows.Forms.Label();
+            this.lblGoodreads = new System.Windows.Forms.Label();
             this.lblSeperator1 = new System.Windows.Forms.Label();
             this.lblSeperator2 = new System.Windows.Forms.Label();
             this.txtMobi = new System.Windows.Forms.TextBox();
             this.txtXMLFile = new System.Windows.Forms.TextBox();
-            this.rdoShelfari = new System.Windows.Forms.RadioButton();
+            this.rdoGoodreads = new System.Windows.Forms.RadioButton();
             this.rdoFile = new System.Windows.Forms.RadioButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.lblXMLFile = new System.Windows.Forms.Label();
-            this.txtShelfari = new System.Windows.Forms.TextBox();
+            this.txtGoodreads = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.lblSeperator3 = new System.Windows.Forms.Label();
             this.tmiAuthorProfile = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,7 +55,7 @@
             this.btnBrowseOutput = new System.Windows.Forms.Button();
             this.btnBrowseMobi = new System.Windows.Forms.Button();
             this.btnKindleExtras = new System.Windows.Forms.Button();
-            this.btnSearchShelfari = new System.Windows.Forms.Button();
+            this.btnSearchGoodreads = new System.Windows.Forms.Button();
             this.btnSaveShelfari = new System.Windows.Forms.Button();
             this.btnBuild = new System.Windows.Forms.Button();
             this.btnUnpack = new System.Windows.Forms.Button();
@@ -67,16 +67,16 @@
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
-            // lblShelfari
+            // lblGoodreads
             // 
-            this.lblShelfari.AutoSize = true;
-            this.lblShelfari.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblShelfari.Location = new System.Drawing.Point(134, 22);
-            this.lblShelfari.Name = "lblShelfari";
-            this.lblShelfari.Size = new System.Drawing.Size(70, 13);
-            this.lblShelfari.TabIndex = 8;
-            this.lblShelfari.Text = "Shelfari URL:";
-            this.lblShelfari.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.lblGoodreads.AutoSize = true;
+            this.lblGoodreads.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblGoodreads.Location = new System.Drawing.Point(134, 22);
+            this.lblGoodreads.Name = "lblGoodreads";
+            this.lblGoodreads.Size = new System.Drawing.Size(87, 13);
+            this.lblGoodreads.TabIndex = 8;
+            this.lblGoodreads.Text = "Goodreads URL:";
+            this.lblGoodreads.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // lblSeperator1
             // 
@@ -110,23 +110,23 @@
             this.txtXMLFile.TabIndex = 22;
             this.txtXMLFile.Visible = false;
             // 
-            // rdoShelfari
+            // rdoGoodreads
             // 
-            this.rdoShelfari.AutoSize = true;
-            this.rdoShelfari.Checked = true;
-            this.rdoShelfari.Location = new System.Drawing.Point(12, 20);
-            this.rdoShelfari.Name = "rdoShelfari";
-            this.rdoShelfari.Size = new System.Drawing.Size(60, 17);
-            this.rdoShelfari.TabIndex = 0;
-            this.rdoShelfari.TabStop = true;
-            this.rdoShelfari.Text = "Shelfari";
-            this.rdoShelfari.UseVisualStyleBackColor = true;
-            this.rdoShelfari.CheckedChanged += new System.EventHandler(this.rdoSource_CheckedChanged);
+            this.rdoGoodreads.AutoSize = true;
+            this.rdoGoodreads.Checked = true;
+            this.rdoGoodreads.Location = new System.Drawing.Point(12, 20);
+            this.rdoGoodreads.Name = "rdoGoodreads";
+            this.rdoGoodreads.Size = new System.Drawing.Size(77, 17);
+            this.rdoGoodreads.TabIndex = 0;
+            this.rdoGoodreads.TabStop = true;
+            this.rdoGoodreads.Text = "Goodreads";
+            this.rdoGoodreads.UseVisualStyleBackColor = true;
+            this.rdoGoodreads.CheckedChanged += new System.EventHandler(this.rdoSource_CheckedChanged);
             // 
             // rdoFile
             // 
             this.rdoFile.AutoSize = true;
-            this.rdoFile.Location = new System.Drawing.Point(78, 20);
+            this.rdoFile.Location = new System.Drawing.Point(92, 20);
             this.rdoFile.Name = "rdoFile";
             this.rdoFile.Size = new System.Drawing.Size(41, 17);
             this.rdoFile.TabIndex = 1;
@@ -139,9 +139,9 @@
             this.groupBox1.Controls.Add(this.lblXMLFile);
             this.groupBox1.Controls.Add(this.rdoFile);
             this.groupBox1.Controls.Add(this.txtXMLFile);
-            this.groupBox1.Controls.Add(this.rdoShelfari);
-            this.groupBox1.Controls.Add(this.lblShelfari);
-            this.groupBox1.Controls.Add(this.txtShelfari);
+            this.groupBox1.Controls.Add(this.rdoGoodreads);
+            this.groupBox1.Controls.Add(this.lblGoodreads);
+            this.groupBox1.Controls.Add(this.txtGoodreads);
             this.groupBox1.Location = new System.Drawing.Point(12, 122);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(578, 53);
@@ -161,12 +161,12 @@
             this.lblXMLFile.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.lblXMLFile.Visible = false;
             // 
-            // txtShelfari
+            // txtGoodreads
             // 
-            this.txtShelfari.Location = new System.Drawing.Point(210, 19);
-            this.txtShelfari.Name = "txtShelfari";
-            this.txtShelfari.Size = new System.Drawing.Size(355, 20);
-            this.txtShelfari.TabIndex = 27;
+            this.txtGoodreads.Location = new System.Drawing.Point(226, 19);
+            this.txtGoodreads.Name = "txtGoodreads";
+            this.txtGoodreads.Size = new System.Drawing.Size(339, 20);
+            this.txtGoodreads.TabIndex = 27;
             // 
             // groupBox3
             // 
@@ -316,18 +316,19 @@
             this.btnKindleExtras.UseVisualStyleBackColor = true;
             this.btnKindleExtras.Click += new System.EventHandler(this.btnKindleExtras_Click);
             // 
-            // btnSearchShelfari
+            // btnSearchGoodreads
             // 
-            this.btnSearchShelfari.Image = ((System.Drawing.Image)(resources.GetObject("btnSearchShelfari.Image")));
-            this.btnSearchShelfari.Location = new System.Drawing.Point(65, 11);
-            this.btnSearchShelfari.Name = "btnSearchShelfari";
-            this.btnSearchShelfari.Size = new System.Drawing.Size(48, 48);
-            this.btnSearchShelfari.TabIndex = 26;
-            this.btnSearchShelfari.UseVisualStyleBackColor = true;
-            this.btnSearchShelfari.Click += new System.EventHandler(this.btnSearchShelfari_Click);
+            this.btnSearchGoodreads.Image = ((System.Drawing.Image)(resources.GetObject("btnSearchGoodreads.Image")));
+            this.btnSearchGoodreads.Location = new System.Drawing.Point(65, 11);
+            this.btnSearchGoodreads.Name = "btnSearchGoodreads";
+            this.btnSearchGoodreads.Size = new System.Drawing.Size(48, 48);
+            this.btnSearchGoodreads.TabIndex = 26;
+            this.btnSearchGoodreads.UseVisualStyleBackColor = true;
+            this.btnSearchGoodreads.Click += new System.EventHandler(this.btnSearchGoodreads_Click);
             // 
             // btnSaveShelfari
             // 
+            this.btnSaveShelfari.Enabled = false;
             this.btnSaveShelfari.Image = ((System.Drawing.Image)(resources.GetObject("btnSaveShelfari.Image")));
             this.btnSaveShelfari.Location = new System.Drawing.Point(247, 11);
             this.btnSaveShelfari.Name = "btnSaveShelfari";
@@ -338,6 +339,7 @@
             // 
             // btnBuild
             // 
+            this.btnBuild.Enabled = false;
             this.btnBuild.Image = ((System.Drawing.Image)(resources.GetObject("btnBuild.Image")));
             this.btnBuild.Location = new System.Drawing.Point(183, 11);
             this.btnBuild.Name = "btnBuild";
@@ -398,7 +400,7 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnBrowseMobi);
             this.Controls.Add(this.btnKindleExtras);
-            this.Controls.Add(this.btnSearchShelfari);
+            this.Controls.Add(this.btnSearchGoodreads);
             this.Controls.Add(this.btnSaveShelfari);
             this.Controls.Add(this.prgBar);
             this.Controls.Add(this.btnBuild);
@@ -428,8 +430,8 @@
         private System.Windows.Forms.Button btnBuild;
         private System.Windows.Forms.Button btnSettings;
         private System.Windows.Forms.Button btnSaveShelfari;
-        private System.Windows.Forms.Button btnSearchShelfari;
-        private System.Windows.Forms.Label lblShelfari;
+        private System.Windows.Forms.Button btnSearchGoodreads;
+        private System.Windows.Forms.Label lblGoodreads;
         private System.Windows.Forms.Button btnKindleExtras;
         private System.Windows.Forms.Label lblSeperator1;
         private System.Windows.Forms.Label lblSeperator2;
@@ -437,12 +439,12 @@
         private System.Windows.Forms.Button btnBrowseMobi;
         private System.Windows.Forms.Button btnBrowseXML;
         private System.Windows.Forms.TextBox txtXMLFile;
-        private System.Windows.Forms.RadioButton rdoShelfari;
+        private System.Windows.Forms.RadioButton rdoGoodreads;
         private System.Windows.Forms.RadioButton rdoFile;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label lblXMLFile;
-        private System.Windows.Forms.TextBox txtShelfari;
+        private System.Windows.Forms.TextBox txtGoodreads;
         private System.Windows.Forms.Button btnLink;
         private System.Windows.Forms.Button btnBrowseOutput;
         public System.Windows.Forms.Button btnPreview;

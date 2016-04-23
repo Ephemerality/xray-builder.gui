@@ -195,7 +195,7 @@ namespace XRayBuilderGUI
             }
             if (_guid == "0")
             {
-                main.Log("Something bad happened while converting the GUID.");
+                main.Log("An error occured while converting the GUID.");
                 return 1;
             }
 
@@ -204,7 +204,7 @@ namespace XRayBuilderGUI
             {
                 if (!File.Exists(xmlFile))
                 {
-                    main.Log("Error opening file (" + xmlFile + ")");
+                    main.Log("An error occurred opening file (" + xmlFile + ")");
                     return 1;
                 }
                 main.Log("Loading terms from file...");
@@ -215,13 +215,13 @@ namespace XRayBuilderGUI
                 {
                     if (LoadTermsFromTxt(xmlFile) > 0)
                     {
-                        main.Log("Error loading from text file.");
+                        main.Log("An error occurred loading from text file.");
                         return 1;
                     }
                 }
                 else
                 {
-                    main.Log("Bad file type \"" + filetype + "\"");
+                    main.Log("Error: Bad file type \"" + filetype + "\"");
                     return 1;
                 }
                 if (Terms == null || Terms.Count == 0) return 1;
@@ -255,7 +255,7 @@ namespace XRayBuilderGUI
                     if (!ex.Message.Contains("(404) Not Found"))
                         main.Log("No pre-made aliases available for this book.");
                     else
-                        main.Log("Error downloading aliases: " + ex.Message);
+                        main.Log("An error occurred downloading aliases: " + ex.Message);
                 }
             }
 
@@ -308,9 +308,9 @@ namespace XRayBuilderGUI
             // If there is an apostrophe, attempt to match 's at the end of the term
             // Match end of word, then search for any lingering punctuation
             string apostrophes = Encoding.Default.GetString(Encoding.UTF8.GetBytes("('|\u2019|\u0060|\u00B4)")); // '\u2019\u0060\u00B4
-            string quotes = Encoding.Default.GetString(Encoding.UTF8.GetBytes("(\"|\u2018|\u2019|\u201A|\u201B|\u201C|\u201D|\u201E|\u201F)")); //U+2018 to U+201F
+            string quotes = Encoding.Default.GetString(Encoding.UTF8.GetBytes("(\"|\u2018|\u2019|\u201A|\u201B|\u201C|\u201D|\u201E|\u201F)"));
             string dashesEllipsis = Encoding.Default.GetString(Encoding.UTF8.GetBytes("(-|\u2010|\u2011|\u2012|\u2013|\u2014|\u2015|\u2026|&#8211;|&#8212;|&#8217;|&#8218;|&#8230;)")); //U+2010 to U+2015 and U+2026
-            string punctuationMarks = String.Format(@"({0}s|{0})?{1}?[!\.?,""\);]*{0}*{1}*{2}*", apostrophes, quotes, dashesEllipsis);
+            string punctuationMarks = String.Format(@"({0}s|{0})?{1}?[!\.?,""\);:]*{0}*{1}*{2}*", apostrophes, quotes, dashesEllipsis);
 
             int excerptId = 0;
             this._shortEx = shortEx;
@@ -328,7 +328,7 @@ namespace XRayBuilderGUI
                 if (LoadChapters())
                     main.Log(String.Format("Chapters read from {0}.\r\nDelete this file if you want chapters built automatically.", chapterFile));
                 else
-                    main.Log(String.Format("Failed to read chapters from {0}.\r\nFile is missing or not formatted correctly.", chapterFile));
+                    main.Log(String.Format("An error occurred reading chapters from {0}.\r\nFile is missing or not formatted correctly.", chapterFile));
             }
             else
             {
@@ -365,7 +365,7 @@ namespace XRayBuilderGUI
                     else
                         main.Log(
                             String.Format(
-                                "Failed to reload chapters from {0}.\r\nFile is missing or not formatted correctly.",
+                                "An error occurred reloading chapters from {0}.\r\nFile is missing or not formatted correctly.",
                                 chapterFile));
                 }
 
@@ -414,7 +414,7 @@ namespace XRayBuilderGUI
                 int location = node.FirstChild.StreamPosition;
                 if (location < 0)
                 {
-                    main.Log("There was an error locating the paragraph within the book content.");
+                    main.Log("An error occurred locating the paragraph within the book content.");
                     return 1;
                 }
                 if (location < _srl || location > _erl) continue; //Skip paragraph if outside chapter range
@@ -511,7 +511,7 @@ namespace XRayBuilderGUI
                         {
                             main.Log(
                                 String.Format(
-                                    "Something went wrong while searching for start of highlight.\r\nWas looking for (or one of the aliases of): {0}\r\nSearching in: {1}",
+                                    "An error occurred while searching for start of highlight.\r\nWas looking for (or one of the aliases of): {0}\r\nSearching in: {1}",
                                     character.TermName, node.InnerHtml));
                             continue;
                         }
@@ -851,7 +851,7 @@ namespace XRayBuilderGUI
                         if (temp == "") continue;
                         if (temp != "character" && temp != "topic")
                         {
-                            main.Log("Invalid term type \"" + temp + "\" on line " + lineCount);
+                            main.Log("Error: Invalid term type \"" + temp + "\" on line " + lineCount);
                             return 1;
                         }
                         Term newTerm = new Term();
@@ -866,7 +866,7 @@ namespace XRayBuilderGUI
                     }
                     catch (Exception ex)
                     {
-                        main.Log("Failed to read from txt file: " + ex.Message);
+                        main.Log("An error occurred reading from txt file: " + ex.Message);
                         return 1;
                     }
                 }
@@ -1233,7 +1233,7 @@ namespace XRayBuilderGUI
                 {
                     if (tries <= 0)
                     {
-                        main.Log("Failed to connect to Shelfari URL.");
+                        main.Log("An error occurred connecting to Shelfari.");
                         return false;
                     }
                 }

@@ -36,7 +36,9 @@
             this.lblSeperator = new System.Windows.Forms.Label();
             this.tabSettings = new System.Windows.Forms.TabControl();
             this.tabPgGeneral = new System.Windows.Forms.TabPage();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.gbProcess = new System.Windows.Forms.GroupBox();
+            this.chkPageCount = new System.Windows.Forms.CheckBox();
+            this.gbUnpack = new System.Windows.Forms.GroupBox();
             this.chkSaveHtml = new System.Windows.Forms.CheckBox();
             this.chkRaw = new System.Windows.Forms.CheckBox();
             this.chkKindleUnpack = new System.Windows.Forms.CheckBox();
@@ -91,7 +93,8 @@
             this.listSettings = new System.Windows.Forms.ListBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
-            this.groupBox2.SuspendLayout();
+            this.gbProcess.SuspendLayout();
+            this.gbUnpack.SuspendLayout();
             this.gbGeneral.SuspendLayout();
             this.tabPgDirectories.SuspendLayout();
             this.gbDirectories.SuspendLayout();
@@ -112,9 +115,9 @@
             // 
             // btnSupport
             // 
-            this.btnSupport.Location = new System.Drawing.Point(333, 290);
+            this.btnSupport.Location = new System.Drawing.Point(328, 290);
             this.btnSupport.Name = "btnSupport";
-            this.btnSupport.Size = new System.Drawing.Size(95, 30);
+            this.btnSupport.Size = new System.Drawing.Size(99, 30);
             this.btnSupport.TabIndex = 41;
             this.btnSupport.Text = "Forum";
             this.btnSupport.UseVisualStyleBackColor = true;
@@ -122,9 +125,9 @@
             // 
             // btnClearLogs
             // 
-            this.btnClearLogs.Location = new System.Drawing.Point(116, 290);
+            this.btnClearLogs.Location = new System.Drawing.Point(117, 290);
             this.btnClearLogs.Name = "btnClearLogs";
-            this.btnClearLogs.Size = new System.Drawing.Size(95, 30);
+            this.btnClearLogs.Size = new System.Drawing.Size(99, 30);
             this.btnClearLogs.TabIndex = 39;
             this.btnClearLogs.Text = "Clear Logs";
             this.btnClearLogs.UseVisualStyleBackColor = true;
@@ -132,9 +135,9 @@
             // 
             // btnLogs
             // 
-            this.btnLogs.Location = new System.Drawing.Point(11, 290);
+            this.btnLogs.Location = new System.Drawing.Point(12, 290);
             this.btnLogs.Name = "btnLogs";
-            this.btnLogs.Size = new System.Drawing.Size(95, 30);
+            this.btnLogs.Size = new System.Drawing.Size(99, 30);
             this.btnLogs.TabIndex = 38;
             this.btnLogs.Text = "Logs";
             this.btnLogs.UseVisualStyleBackColor = true;
@@ -142,9 +145,9 @@
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(438, 290);
+            this.btnSave.Location = new System.Drawing.Point(433, 290);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(95, 30);
+            this.btnSave.Size = new System.Drawing.Size(99, 30);
             this.btnSave.TabIndex = 37;
             this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = true;
@@ -179,7 +182,8 @@
             // 
             // tabPgGeneral
             // 
-            this.tabPgGeneral.Controls.Add(this.groupBox2);
+            this.tabPgGeneral.Controls.Add(this.gbProcess);
+            this.tabPgGeneral.Controls.Add(this.gbUnpack);
             this.tabPgGeneral.Controls.Add(this.gbGeneral);
             this.tabPgGeneral.Location = new System.Drawing.Point(4, 5);
             this.tabPgGeneral.Name = "tabPgGeneral";
@@ -189,17 +193,37 @@
             this.tabPgGeneral.Text = "tabPage1";
             this.tabPgGeneral.UseVisualStyleBackColor = true;
             // 
-            // groupBox2
+            // gbProcess
             // 
-            this.groupBox2.Controls.Add(this.chkSaveHtml);
-            this.groupBox2.Controls.Add(this.chkRaw);
-            this.groupBox2.Controls.Add(this.chkKindleUnpack);
-            this.groupBox2.Location = new System.Drawing.Point(6, 65);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(378, 47);
-            this.groupBox2.TabIndex = 37;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "eBook Unpacking";
+            this.gbProcess.Controls.Add(this.chkPageCount);
+            this.gbProcess.Location = new System.Drawing.Point(6, 120);
+            this.gbProcess.Name = "gbProcess";
+            this.gbProcess.Size = new System.Drawing.Size(378, 48);
+            this.gbProcess.TabIndex = 38;
+            this.gbProcess.TabStop = false;
+            this.gbProcess.Text = "eBook Processing";
+            // 
+            // chkPageCount
+            // 
+            this.chkPageCount.AutoSize = true;
+            this.chkPageCount.Location = new System.Drawing.Point(14, 19);
+            this.chkPageCount.Name = "chkPageCount";
+            this.chkPageCount.Size = new System.Drawing.Size(125, 17);
+            this.chkPageCount.TabIndex = 34;
+            this.chkPageCount.Text = "Estimate Page Count";
+            this.chkPageCount.UseVisualStyleBackColor = true;
+            // 
+            // gbUnpack
+            // 
+            this.gbUnpack.Controls.Add(this.chkSaveHtml);
+            this.gbUnpack.Controls.Add(this.chkRaw);
+            this.gbUnpack.Controls.Add(this.chkKindleUnpack);
+            this.gbUnpack.Location = new System.Drawing.Point(6, 66);
+            this.gbUnpack.Name = "gbUnpack";
+            this.gbUnpack.Size = new System.Drawing.Size(378, 48);
+            this.gbUnpack.TabIndex = 37;
+            this.gbUnpack.TabStop = false;
+            this.gbUnpack.Text = "eBook Unpacking";
             // 
             // chkSaveHtml
             // 
@@ -237,7 +261,7 @@
             this.gbGeneral.Controls.Add(this.chkSound);
             this.gbGeneral.Location = new System.Drawing.Point(6, 12);
             this.gbGeneral.Name = "gbGeneral";
-            this.gbGeneral.Size = new System.Drawing.Size(378, 47);
+            this.gbGeneral.Size = new System.Drawing.Size(378, 48);
             this.gbGeneral.TabIndex = 36;
             this.gbGeneral.TabStop = false;
             this.gbGeneral.Text = "Sounds";
@@ -271,7 +295,7 @@
             this.gbDirectories.Controls.Add(this.btnBrowseOut);
             this.gbDirectories.Location = new System.Drawing.Point(6, 12);
             this.gbDirectories.Name = "gbDirectories";
-            this.gbDirectories.Size = new System.Drawing.Size(378, 77);
+            this.gbDirectories.Size = new System.Drawing.Size(378, 81);
             this.gbDirectories.TabIndex = 39;
             this.gbDirectories.TabStop = false;
             this.gbDirectories.Text = "Output Directory";
@@ -279,7 +303,7 @@
             // chkSubDirectories
             // 
             this.chkSubDirectories.AutoSize = true;
-            this.chkSubDirectories.Location = new System.Drawing.Point(14, 49);
+            this.chkSubDirectories.Location = new System.Drawing.Point(14, 52);
             this.chkSubDirectories.Name = "chkSubDirectories";
             this.chkSubDirectories.Size = new System.Drawing.Size(113, 17);
             this.chkSubDirectories.TabIndex = 26;
@@ -288,16 +312,16 @@
             // 
             // txtOut
             // 
-            this.txtOut.Location = new System.Drawing.Point(14, 22);
+            this.txtOut.Location = new System.Drawing.Point(14, 20);
             this.txtOut.Name = "txtOut";
-            this.txtOut.Size = new System.Drawing.Size(309, 20);
+            this.txtOut.Size = new System.Drawing.Size(308, 20);
             this.txtOut.TabIndex = 12;
             // 
             // btnBrowseOut
             // 
-            this.btnBrowseOut.Location = new System.Drawing.Point(329, 20);
+            this.btnBrowseOut.Location = new System.Drawing.Point(331, 19);
             this.btnBrowseOut.Name = "btnBrowseOut";
-            this.btnBrowseOut.Size = new System.Drawing.Size(34, 23);
+            this.btnBrowseOut.Size = new System.Drawing.Size(34, 22);
             this.btnBrowseOut.TabIndex = 13;
             this.btnBrowseOut.Text = "...";
             this.btnBrowseOut.UseVisualStyleBackColor = true;
@@ -307,9 +331,9 @@
             // 
             this.groupBox1.Controls.Add(this.btnBrowseUnpack);
             this.groupBox1.Controls.Add(this.txtUnpack);
-            this.groupBox1.Location = new System.Drawing.Point(6, 95);
+            this.groupBox1.Location = new System.Drawing.Point(6, 99);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(378, 57);
+            this.groupBox1.Size = new System.Drawing.Size(378, 55);
             this.groupBox1.TabIndex = 38;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "KindleUnpack Location";
@@ -317,9 +341,9 @@
             // btnBrowseUnpack
             // 
             this.btnBrowseUnpack.Enabled = false;
-            this.btnBrowseUnpack.Location = new System.Drawing.Point(329, 20);
+            this.btnBrowseUnpack.Location = new System.Drawing.Point(331, 19);
             this.btnBrowseUnpack.Name = "btnBrowseUnpack";
-            this.btnBrowseUnpack.Size = new System.Drawing.Size(34, 23);
+            this.btnBrowseUnpack.Size = new System.Drawing.Size(34, 22);
             this.btnBrowseUnpack.TabIndex = 16;
             this.btnBrowseUnpack.Text = "...";
             this.btnBrowseUnpack.UseVisualStyleBackColor = true;
@@ -329,9 +353,9 @@
             // 
             this.txtUnpack.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.txtUnpack.Enabled = false;
-            this.txtUnpack.Location = new System.Drawing.Point(14, 22);
+            this.txtUnpack.Location = new System.Drawing.Point(14, 20);
             this.txtUnpack.Name = "txtUnpack";
-            this.txtUnpack.Size = new System.Drawing.Size(309, 20);
+            this.txtUnpack.Size = new System.Drawing.Size(308, 20);
             this.txtUnpack.TabIndex = 15;
             // 
             // tabPgXray
@@ -355,9 +379,9 @@
             this.groupBox4.Controls.Add(this.chkSoftHyphen);
             this.groupBox4.Controls.Add(this.lblOffset);
             this.groupBox4.Controls.Add(this.txtOffset);
-            this.groupBox4.Location = new System.Drawing.Point(6, 138);
+            this.groupBox4.Location = new System.Drawing.Point(6, 146);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(378, 73);
+            this.groupBox4.Size = new System.Drawing.Size(378, 74);
             this.groupBox4.TabIndex = 28;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Preferences";
@@ -420,9 +444,9 @@
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.chkUTF8);
-            this.groupBox3.Location = new System.Drawing.Point(6, 85);
+            this.groupBox3.Location = new System.Drawing.Point(6, 92);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(378, 47);
+            this.groupBox3.Size = new System.Drawing.Size(378, 48);
             this.groupBox3.TabIndex = 27;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Output";
@@ -443,7 +467,7 @@
             this.gbXray.Controls.Add(this.chkUseNew);
             this.gbXray.Location = new System.Drawing.Point(6, 12);
             this.gbXray.Name = "gbXray";
-            this.gbXray.Size = new System.Drawing.Size(378, 67);
+            this.gbXray.Size = new System.Drawing.Size(378, 74);
             this.gbXray.TabIndex = 26;
             this.gbXray.TabStop = false;
             this.gbXray.Text = "Format";
@@ -451,7 +475,7 @@
             // chkAndroid
             // 
             this.chkAndroid.AutoSize = true;
-            this.chkAndroid.Location = new System.Drawing.Point(14, 42);
+            this.chkAndroid.Location = new System.Drawing.Point(14, 45);
             this.chkAndroid.Name = "chkAndroid";
             this.chkAndroid.Size = new System.Drawing.Size(103, 17);
             this.chkAndroid.TabIndex = 23;
@@ -486,9 +510,9 @@
             this.groupBox6.Controls.Add(this.chkChapters);
             this.groupBox6.Controls.Add(this.chkAlias);
             this.groupBox6.Controls.Add(this.chkOverwrite);
-            this.groupBox6.Location = new System.Drawing.Point(6, 113);
+            this.groupBox6.Location = new System.Drawing.Point(6, 118);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(378, 95);
+            this.groupBox6.Size = new System.Drawing.Size(378, 100);
             this.groupBox6.TabIndex = 31;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Output";
@@ -496,7 +520,7 @@
             // chkChapters
             // 
             this.chkChapters.AutoSize = true;
-            this.chkChapters.Location = new System.Drawing.Point(14, 67);
+            this.chkChapters.Location = new System.Drawing.Point(14, 71);
             this.chkChapters.Name = "chkChapters";
             this.chkChapters.Size = new System.Drawing.Size(68, 17);
             this.chkChapters.TabIndex = 23;
@@ -506,7 +530,7 @@
             // chkAlias
             // 
             this.chkAlias.AutoSize = true;
-            this.chkAlias.Location = new System.Drawing.Point(14, 42);
+            this.chkAlias.Location = new System.Drawing.Point(14, 45);
             this.chkAlias.Name = "chkAlias";
             this.chkAlias.Size = new System.Drawing.Size(59, 17);
             this.chkAlias.TabIndex = 30;
@@ -531,7 +555,7 @@
             this.groupBox5.Controls.Add(this.chkEnableEdit);
             this.groupBox5.Location = new System.Drawing.Point(6, 12);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(378, 95);
+            this.groupBox5.Size = new System.Drawing.Size(378, 100);
             this.groupBox5.TabIndex = 26;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Configuration";
@@ -539,7 +563,7 @@
             // chkDownloadAliases
             // 
             this.chkDownloadAliases.AutoSize = true;
-            this.chkDownloadAliases.Location = new System.Drawing.Point(14, 65);
+            this.chkDownloadAliases.Location = new System.Drawing.Point(14, 71);
             this.chkDownloadAliases.Name = "chkDownloadAliases";
             this.chkDownloadAliases.Size = new System.Drawing.Size(109, 17);
             this.chkDownloadAliases.TabIndex = 33;
@@ -550,7 +574,7 @@
             // chkSplitAliases
             // 
             this.chkSplitAliases.AutoSize = true;
-            this.chkSplitAliases.Location = new System.Drawing.Point(14, 42);
+            this.chkSplitAliases.Location = new System.Drawing.Point(14, 45);
             this.chkSplitAliases.Name = "chkSplitAliases";
             this.chkSplitAliases.Size = new System.Drawing.Size(145, 17);
             this.chkSplitAliases.TabIndex = 29;
@@ -584,9 +608,9 @@
             this.gbSite.Controls.Add(this.chkAmazonUSA);
             this.gbSite.Controls.Add(this.chkAmazonUK);
             this.gbSite.Enabled = false;
-            this.gbSite.Location = new System.Drawing.Point(6, 105);
+            this.gbSite.Location = new System.Drawing.Point(6, 106);
             this.gbSite.Name = "gbSite";
-            this.gbSite.Size = new System.Drawing.Size(378, 47);
+            this.gbSite.Size = new System.Drawing.Size(378, 48);
             this.gbSite.TabIndex = 28;
             this.gbSite.TabStop = false;
             this.gbSite.Text = "Amazon Site";
@@ -622,7 +646,7 @@
             this.gbDetails.Controls.Add(this.lblPen);
             this.gbDetails.Location = new System.Drawing.Point(6, 12);
             this.gbDetails.Name = "gbDetails";
-            this.gbDetails.Size = new System.Drawing.Size(378, 87);
+            this.gbDetails.Size = new System.Drawing.Size(378, 88);
             this.gbDetails.TabIndex = 27;
             this.gbDetails.TabStop = false;
             this.gbDetails.Text = "Amazon Customer Details";
@@ -631,7 +655,7 @@
             // 
             this.lblReal.AutoSize = true;
             this.lblReal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblReal.Location = new System.Drawing.Point(12, 25);
+            this.lblReal.Location = new System.Drawing.Point(12, 23);
             this.lblReal.Name = "lblReal";
             this.lblReal.Size = new System.Drawing.Size(63, 13);
             this.lblReal.TabIndex = 17;
@@ -639,23 +663,23 @@
             // 
             // txtReal
             // 
-            this.txtReal.Location = new System.Drawing.Point(81, 22);
+            this.txtReal.Location = new System.Drawing.Point(81, 20);
             this.txtReal.Name = "txtReal";
-            this.txtReal.Size = new System.Drawing.Size(281, 20);
+            this.txtReal.Size = new System.Drawing.Size(283, 20);
             this.txtReal.TabIndex = 18;
             // 
             // txtPen
             // 
-            this.txtPen.Location = new System.Drawing.Point(81, 51);
+            this.txtPen.Location = new System.Drawing.Point(81, 53);
             this.txtPen.Name = "txtPen";
-            this.txtPen.Size = new System.Drawing.Size(281, 20);
+            this.txtPen.Size = new System.Drawing.Size(283, 20);
             this.txtPen.TabIndex = 20;
             // 
             // lblPen
             // 
             this.lblPen.AutoSize = true;
             this.lblPen.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblPen.Location = new System.Drawing.Point(15, 54);
+            this.lblPen.Location = new System.Drawing.Point(15, 56);
             this.lblPen.Name = "lblPen";
             this.lblPen.Size = new System.Drawing.Size(60, 13);
             this.lblPen.TabIndex = 19;
@@ -782,8 +806,10 @@
             this.Load += new System.EventHandler(this.frmSettingsNew_Load);
             this.tabSettings.ResumeLayout(false);
             this.tabPgGeneral.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
+            this.gbProcess.ResumeLayout(false);
+            this.gbProcess.PerformLayout();
+            this.gbUnpack.ResumeLayout(false);
+            this.gbUnpack.PerformLayout();
             this.gbGeneral.ResumeLayout(false);
             this.gbGeneral.PerformLayout();
             this.tabPgDirectories.ResumeLayout(false);
@@ -824,7 +850,6 @@
         private System.Windows.Forms.TabControl tabSettings;
         private System.Windows.Forms.TabPage tabPgGeneral;
         private System.Windows.Forms.TabPage tabPgDirectories;
-        private System.Windows.Forms.TabPage tabPgXray;
         private System.Windows.Forms.TabPage tabPgAliasChapter;
         private System.Windows.Forms.TabPage tabPgAmazon;
         private System.Windows.Forms.GroupBox gbGeneral;
@@ -835,20 +860,11 @@
         private System.Windows.Forms.Button btnBrowseOut;
         private System.Windows.Forms.TextBox txtUnpack;
         private System.Windows.Forms.Button btnBrowseUnpack;
-        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox gbUnpack;
         private System.Windows.Forms.CheckBox chkSaveHtml;
         private System.Windows.Forms.CheckBox chkRaw;
         private System.Windows.Forms.CheckBox chkKindleUnpack;
         private System.Windows.Forms.CheckBox chkSubDirectories;
-        private System.Windows.Forms.GroupBox gbXray;
-        private System.Windows.Forms.CheckBox chkUTF8;
-        private System.Windows.Forms.CheckBox chkSoftHyphen;
-        private System.Windows.Forms.TextBox txtOffset;
-        private System.Windows.Forms.CheckBox chkAndroid;
-        private System.Windows.Forms.Label lblOffset;
-        private System.Windows.Forms.CheckBox chkUseNew;
-        private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.CheckBox chkAlias;
         private System.Windows.Forms.CheckBox chkSplitAliases;
@@ -865,10 +881,7 @@
         private System.Windows.Forms.GroupBox gbSite;
         private System.Windows.Forms.CheckBox chkAmazonUSA;
         private System.Windows.Forms.CheckBox chkAmazonUK;
-        private System.Windows.Forms.CheckBox chkSpoilers;
         private System.Windows.Forms.ListBox listSettings;
-        private System.Windows.Forms.CheckBox chkOverrideOffset;
-        private System.Windows.Forms.TextBox txtAZWOffset;
         private System.Windows.Forms.TabPage tabPgHelp;
         private System.Windows.Forms.RichTextBox rtbHelp;
         private System.Windows.Forms.TabPage tabPgAbout;
@@ -876,5 +889,20 @@
         private System.Windows.Forms.RichTextBox rtbAbout;
         private System.Windows.Forms.Label lblVersion;
         private System.Windows.Forms.Label lblBuilt;
+        private System.Windows.Forms.CheckBox chkPageCount;
+        private System.Windows.Forms.TabPage tabPgXray;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.TextBox txtAZWOffset;
+        private System.Windows.Forms.CheckBox chkOverrideOffset;
+        private System.Windows.Forms.CheckBox chkSpoilers;
+        private System.Windows.Forms.CheckBox chkSoftHyphen;
+        private System.Windows.Forms.Label lblOffset;
+        private System.Windows.Forms.TextBox txtOffset;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.CheckBox chkUTF8;
+        private System.Windows.Forms.GroupBox gbXray;
+        private System.Windows.Forms.CheckBox chkAndroid;
+        private System.Windows.Forms.CheckBox chkUseNew;
+        private System.Windows.Forms.GroupBox gbProcess;
     }
 }

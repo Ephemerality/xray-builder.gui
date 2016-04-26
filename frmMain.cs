@@ -172,7 +172,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Log("An error occured extracting metadata: " + ex.Message);
+                    Log("An error occurred extracting metadata: " + ex.Message);
                     return;
                 }
             }
@@ -217,7 +217,7 @@ namespace XRayBuilderGUI
                 //Expand the X-Ray file from the unpacked mobi
                 if (xray.ExpandFromRawMl(results[3], settings.ignoresofthyphen, !settings.useNewVersion) > 0)
                 {
-                    Log("An error occured while processing locations and chapters.");
+                    Log("An error occurred while processing locations and chapters.");
                     return;
                 }
             }
@@ -349,7 +349,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Log("An error occured populating the X-Ray preview windows: " + ex.Message);
+                Log("An error occurred populating the X-Ray preview windows: " + ex.Message);
             }
 
             try

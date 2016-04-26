@@ -87,7 +87,7 @@ namespace XRayBuilderGUI
             {
                 HtmlNodeCollection recList = bookHtmlDoc.DocumentNode.SelectNodes("//li[@class='a-carousel-card a-float-left']");
                 if (recList == null)
-                    main.Log("An error occured finding related book list page on Amazon.\r\nUnable to create End Actions.");
+                    main.Log("An error occurred finding related book list page on Amazon.\r\nUnable to create End Actions.");
                 if (recList != null)
                     foreach (HtmlNode item in recList.Where(item => item != null))
                     {
@@ -242,7 +242,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                main.Log("An error occured finding next book in series: " + ex.Message);
+                main.Log("An error occurred finding next book in series: " + ex.Message);
             }
             authorRecs = String.Format(authorRecs, String.Join(",", authorProfile.otherBooks.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
             custRecs = String.Format(custRecs, String.Join(",", custAlsoBought.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
@@ -328,7 +328,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                main.Log("An error occured creating the output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
+                main.Log("An error occurred creating the output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
                 outputDir = settings.outDir;
             }
             EaPath = outputDir + @"\EndActions.data." + curBook.asin + ".asc";
@@ -357,7 +357,7 @@ namespace XRayBuilderGUI
                     templates = templates.Where(r => !r.StartsWith("//")).ToArray(); //Remove commented lines
                     if (templates == null || templates.Length != templateCount || !templates[0].StartsWith(@"""bookInfo"""))
                     {
-                        main.Log("An error occured parsing " + baseFile + ". If you modified it, ensure you followed the specified format.");
+                        main.Log("An error occurred parsing " + baseFile + ". If you modified it, ensure you followed the specified format.");
                         return null;
                     }
                 }
@@ -407,12 +407,12 @@ namespace XRayBuilderGUI
                 //    }
                 //}
                 if (nextBook == null)
-                    main.Log("Book was found to be part of a series, but an error occured finding the next book.\r\n" +
+                    main.Log("Book was found to be part of a series, but an error occurred finding the next book.\r\n" +
                         "Please report this book and the Goodreads URL and output log to improve parsing.");
 
             }
             else if (curBook.seriesPosition != curBook.totalInSeries)
-                main.Log("An error occured finding the next book in series, the book may not be part of a series, or it is the latest release.");
+                main.Log("An error occurred finding the next book in series, the book may not be part of a series, or it is the latest release.");
 
             if (previousTitle != "")
             {
@@ -438,7 +438,7 @@ namespace XRayBuilderGUI
                     //}
                 }
                 else
-                    main.Log("Book was found to be part of a series, but an error occured finding the next book.\r\n" +
+                    main.Log("Book was found to be part of a series, but an error occurred finding the next book.\r\n" +
                         "Please report this book and the Goodreads URL and output log to improve parsing.");
             }
             return nextBook;

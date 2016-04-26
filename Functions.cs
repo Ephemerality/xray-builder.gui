@@ -309,7 +309,7 @@ namespace XRayBuilderGUI
             booklineNodes = bookDoc.DocumentNode.SelectNodes("//p") ?? bookDoc.DocumentNode.SelectNodes("//div");
             if (booklineNodes == null)
             {
-                output = "An error occured while estimating page count!";
+                output = "An error occurred while estimating page count!";
                 return output;
             }
             foreach (HtmlAgilityPack.HtmlNode line in booklineNodes)
@@ -325,7 +325,7 @@ namespace XRayBuilderGUI
             pageCount = Convert.ToInt32(Math.Ceiling(lineCount / 31));
             if (pageCount == 0)
             {
-                output = "An error occured while estimating page count!";
+                output = "An error occurred while estimating page count!";
                 return output;
             }
             double minutes = pageCount * 1.2890625;

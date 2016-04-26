@@ -195,7 +195,7 @@ namespace XRayBuilderGUI
             }
             if (_guid == "0")
             {
-                main.Log("An error occured while converting the GUID.");
+                main.Log("An error occurred while converting the GUID.");
                 return 1;
             }
 

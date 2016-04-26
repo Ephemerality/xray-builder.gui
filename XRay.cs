@@ -401,6 +401,12 @@ namespace XRayBuilderGUI
             if (nodes == null)
                 nodes = web.DocumentNode.SelectNodes("//div[@class='p-indent']");
             if (nodes == null)
+            {
+                nodes = web.DocumentNode.SelectNodes("//div");
+                main.Log("Warning: Could not locate paragraphs normally (p elements or divs of class 'paragraph').\r\n" +
+                    "Searching all book contents (all divs), which may produce odd results.");
+            }
+            if (nodes == null)
                 throw new Exception("Could not locate any paragraphs in this book.\r\n" +
                     "Report this error along with a copy of the book to improve parsing.");
             main.prgBar.Maximum = nodes.Count;

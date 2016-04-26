@@ -51,8 +51,8 @@ namespace XRayBuilderGUI
                     txtOutput.SelectionLength = 0;
                     txtOutput.SelectionColor = Color.FromArgb(20, 102, 20);
                 }
-                if (message.ContainsIgnorecase("error") || message.ContainsIgnorecase("failed")
-                    || message.ContainsIgnorecase("problem") || message.ContainsIgnorecase("skipping"))
+                List<string> redFlags = new List<string>() { "error", "failed", "problem", "skipping", "warning" };
+                if (redFlags.Any(s => message.ContainsIgnorecase(s)))
                 {
                     txtOutput.SelectionStart = txtOutput.TextLength;
                     txtOutput.SelectionLength = 0;

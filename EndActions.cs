@@ -242,7 +242,11 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                main.Log("An error occurred finding next book in series: " + ex.Message);
+                if (ex.Message.Contains("(404)"))
+                    main.Log("An error occurred finding next book in series: GoodReads URL not found.\r\n" +
+                        "If reading from a file, you can switch the source to GoodReads to specify a URL, then switch back to File.");
+                else
+                    main.Log("An error occurred finding next book in series: " + ex.Message);
             }
             authorRecs = String.Format(authorRecs, String.Join(",", authorProfile.otherBooks.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
             custRecs = String.Format(custRecs, String.Join(",", custAlsoBought.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));

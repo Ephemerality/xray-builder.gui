@@ -406,5 +406,17 @@ namespace XRayBuilderGUI.Properties {
                 this["searchGoodreads"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("GoodReads")]
+        public string dataSource {
+            get {
+                return ((string)(this["dataSource"]));
+            }
+            set {
+                this["dataSource"] = value;
+            }
+        }
     }
 }

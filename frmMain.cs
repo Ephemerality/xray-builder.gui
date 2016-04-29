@@ -519,7 +519,7 @@ namespace XRayBuilderGUI
                 AuthorProfile ap = new AuthorProfile(bookInfo, this);
                 if (!ap.complete) return;
                 Log("Attempting to build Start Actions and End Actions...");
-                EndActions ea = new EndActions(ap, bookInfo, rawMLSize, this);
+                EndActions ea = new EndActions(ap, bookInfo, rawMLSize, dataSource, this);
                 if (!ea.complete) return;
 
                 if (settings.useNewVersion)
@@ -724,10 +724,8 @@ namespace XRayBuilderGUI
                 return;
             }
 
-            Log(
-                String.Format(
-                    "Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
-                    results[2], results[0], results[4], results[5], results[1]));
+            Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
+                results[2], results[0], results[4], results[5], results[1]));
 
             try
             {

@@ -606,7 +606,9 @@ namespace XRayBuilderGUI
                 if (node != null)
                 {
                     result = new BookInfo(node.InnerText, author, foundASIN.Value);
-                    result.amazonUrl = nodeASIN.GetAttributeValue("href", ""); // Grab the true link for good measure
+                    string trimUrl = nodeASIN.GetAttributeValue("href", "");
+                    trimUrl = trimUrl.Substring(0, trimUrl.IndexOf(foundASIN.Value) + foundASIN.Length);
+                    result.amazonUrl = trimUrl; // Grab the true link for good measure
                 }
             }
             return result;

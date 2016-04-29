@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -158,9 +159,9 @@ namespace XRayBuilderGUI
                             reviewsNode = bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-link-normal']");
                         if (reviewsNode != null)
                         {
-                            Match match = Regex.Match(reviewsNode.InnerText, @"(\d+)");
+                            Match match = Regex.Match(reviewsNode.InnerText, @"(\d+,\d+)|(\d+)");
                             if (match.Success)
-                                numReviews = int.Parse(match.Value);
+                                numReviews = int.Parse(match.Value, NumberStyles.AllowThousands);
                             return;
                         }
                         numReviews = int.Parse(reviewsNode.InnerText.Substring(0, reviewsNode.InnerText.IndexOf(' ')).Replace(",", ""));

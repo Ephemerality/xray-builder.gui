@@ -159,7 +159,7 @@ namespace XRayBuilderGUI.DataSources
                     ? String.Format("{0} time", curBook.popularHighlights)
                     : String.Format("{0} times", curBook.popularHighlights);
 
-                Log(String.Format("{0} been highlighted {1}" , textPassages, textHighlights));
+                Log(String.Format("{0} been highlighted {1}", textPassages, textHighlights));
             }
             if (highlights == 0)
             {
@@ -253,6 +253,66 @@ namespace XRayBuilderGUI.DataSources
                 return true;
             }
             return false;
+        }
+
+        public override List<XRay.Term> GetTerms(bool useSpoilers, string dataUrl, Action<string> Log)
+        {
+            List<XRay.Term> terms = new List<XRay.Term>();
+            if (sourceHtmlDoc == null)
+            {
+                sourceHtmlDoc = new HtmlDocument();
+                sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(dataUrl));
+            }
+            HtmlNodeCollection charNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/a");
+            if (charNodes == null) return terms;
+            foreach (HtmlNode charNode in charNodes)
+            {
+                try
+                {
+                    XRay.Term tempTerm = GetTerm(dataUrl, charNode.GetAttributeValue("href", ""));
+                    if (tempTerm != null)
+                        terms.Add(tempTerm);
+                }
+                catch (Exception ex)
+                {
+                    if (ex.Message.Contains("(404)"))
+                        Log("Error getting page for character. URL: " + "https://www.goodreads.com" + charNode.GetAttributeValue("href", "")
+                            + "\r\nMessage: " + ex.Message);
+                }
+            }
+            return terms;
+        }
+
+        // Are the actually any goodreads pages that aren't at goodreads.com for other languages??
+        private XRay.Term GetTerm(string baseUrl, string relativeUrl)
+        {
+            XRay.Term result = new XRay.Term("character");
+            Uri tempUri = new Uri(baseUrl);
+            tempUri = new Uri(new Uri(tempUri.GetLeftPart(UriPartial.Authority)), relativeUrl);
+            result.DescSrc = "GoodReads";
+            result.DescUrl = tempUri.ToString();
+            HtmlDocument charDoc = new HtmlDocument();
+            charDoc.LoadHtml(HttpDownloader.GetPageHtml(tempUri.ToString()));
+            HtmlNode mainNode = charDoc.DocumentNode.SelectSingleNode("//div[@class='mainContentFloat']");
+            result.TermName = mainNode.SelectSingleNode("./h1").InnerText;
+            mainNode = mainNode.SelectSingleNode("//div[@class='grey500BoxContent']");
+            HtmlNodeCollection tempNodes = mainNode.SelectNodes("//div[@class='floatingBox']");
+            if (tempNodes == null) return result;
+            foreach (HtmlNode tempNode in tempNodes)
+            {
+                if (tempNode.Id.Contains("_aliases")) // If present, add any aliases found
+                {
+                    string aliasStr = tempNodes[0].InnerText.Replace("[close]", "").Trim();
+                    string[] aliases = aliasStr.Split(new [] { ", " }, StringSplitOptions.RemoveEmptyEntries);
+                    if (aliases != null)
+                        result.Aliases.AddRange(aliases);
+                }
+                else
+                {
+                    result.Desc = tempNode.InnerText.Replace("[close]", "").Trim();
+                }
+            }
+            return result;
         }
     }
 }

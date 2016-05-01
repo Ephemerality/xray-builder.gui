@@ -409,7 +409,7 @@ namespace XRayBuilderGUI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("GoodReads")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Goodreads")]
         public string dataSource {
             get {
                 return ((string)(this["dataSource"]));

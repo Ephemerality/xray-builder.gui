@@ -1186,7 +1186,7 @@ namespace XRayBuilderGUI
                 {
                     if (t.Aliases.Count > 0)
                     {
-                        // If aliases exist (loaded from GoodReads), remove any duplicates and add them in the order from the aliases file
+                        // If aliases exist (loaded from Goodreads), remove any duplicates and add them in the order from the aliases file
                         // Otherwise, the website would take precedence and that could be bad?
                         foreach (string alias in d[t.TermName])
                         {

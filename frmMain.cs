@@ -830,8 +830,8 @@ namespace XRayBuilderGUI
                 rdoGoodreads.Checked = true;
             else
                 rdoFile.Checked = true;
-            if (Properties.Settings.Default.dataSource == "GoodReads")
-                dataSource = new GoodReads();
+            if (Properties.Settings.Default.dataSource == "Goodreads")
+                dataSource = new Goodreads();
             else
                 dataSource = new Shelfari();
         }

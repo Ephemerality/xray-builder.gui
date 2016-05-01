@@ -8,9 +8,9 @@ using System.Globalization;
 
 namespace XRayBuilderGUI.DataSources
 {
-    public class GoodReads : DataSource
+    public class Goodreads : DataSource
     {
-        public override string Name { get { return "GoodReads"; } }
+        public override string Name { get { return "Goodreads"; } }
 
         public override string SearchBook(string author, string title, Action<string> Log)
         {
@@ -90,7 +90,7 @@ namespace XRayBuilderGUI.DataSources
                 }
                 if (nextBook == null)
                     Log("Book was found to be part of a series, but an error occurred finding the next book.\r\n" +
-                        "Please report this book and the GoodReads URL and output log to improve parsing.");
+                        "Please report this book and the Goodreads URL and output log to improve parsing.");
 
             }
             else if (curBook.seriesPosition != curBook.totalInSeries)
@@ -283,13 +283,13 @@ namespace XRayBuilderGUI.DataSources
             return terms;
         }
 
-        // Are the actually any goodreads pages that aren't at goodreads.com for other languages??
+        // Are there actually any goodreads pages that aren't at goodreads.com for other languages??
         private XRay.Term GetTerm(string baseUrl, string relativeUrl)
         {
             XRay.Term result = new XRay.Term("character");
             Uri tempUri = new Uri(baseUrl);
             tempUri = new Uri(new Uri(tempUri.GetLeftPart(UriPartial.Authority)), relativeUrl);
-            result.DescSrc = "GoodReads";
+            result.DescSrc = "Goodreads";
             result.DescUrl = tempUri.ToString();
             HtmlDocument charDoc = new HtmlDocument();
             charDoc.LoadHtml(HttpDownloader.GetPageHtml(tempUri.ToString()));

@@ -242,8 +242,8 @@ namespace XRayBuilderGUI
             catch (Exception ex)
             {
                 if (ex.Message.Contains("(404)"))
-                    main.Log("An error occurred finding next book in series: GoodReads URL not found.\r\n" +
-                        "If reading from a file, you can switch the source to GoodReads to specify a URL, then switch back to File.");
+                    main.Log("An error occurred finding next book in series: Goodreads URL not found.\r\n" +
+                        "If reading from a file, you can switch the source to Goodreads to specify a URL, then switch back to File.");
                 else
                     main.Log("An error occurred finding next book in series: " + ex.Message);
             }

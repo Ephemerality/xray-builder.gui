@@ -94,6 +94,7 @@
     <Compile Include="BookInfo.cs" />
     <Compile Include="DataSources\DataSource.cs" />
     <Compile Include="DataSources\GoodReads.cs" />
+    <Compile Include="DataSources\Shelfari.cs" />
     <Compile Include="EndActions.cs" />
     <Compile Include="frmPreviewAP.cs">
       <SubType>Form</SubType>

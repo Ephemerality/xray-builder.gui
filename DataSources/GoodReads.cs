@@ -8,11 +8,11 @@ using System.Globalization;
 
 namespace XRayBuilderGUI.DataSources
 {
-    class GoodReads : DataSource
+    public class GoodReads : DataSource
     {
         public override string Name { get { return "GoodReads"; } }
 
-        public override string SearchBook(string author, string title)
+        public override string SearchBook(string author, string title, Action<string> Log)
         {
             string goodreadsSearchUrlBase = @"http://www.goodreads.com/search?q={0}%20{1}";
             string goodreadsBookUrl = "";
@@ -67,13 +67,13 @@ namespace XRayBuilderGUI.DataSources
             BookInfo nextBook = null;
 
             if (curBook.dataUrl == "") return null;
+            if (sourceHtmlDoc == null)
+            {
+                sourceHtmlDoc = new HtmlDocument();
+                sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.dataUrl));
+            }
 
             // Get title of next book
-            if (searchHtmlDoc == null)
-            {
-                searchHtmlDoc = new HtmlDocument();
-                searchHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.dataUrl));
-            }
             Dictionary<string, string> seriesInfo = GetNextInSeriesTitle(curBook, Log);
             string title;
             if (seriesInfo.TryGetValue("Next", out title))
@@ -116,19 +116,18 @@ namespace XRayBuilderGUI.DataSources
         /// Search Goodread for possible series info, returning the next title in the series.
         /// Modifies curBook.
         /// </summary>
-        /// <param name="searchHtmlDoc">Book's Goodreads page, pre-downloaded</param>
         private Dictionary<string, string> GetNextInSeriesTitle(BookInfo curBook, Action<string> Log)
         {
             Match match;
             Dictionary<string, string> results = new Dictionary<string, string>(2);
-            if (searchHtmlDoc == null)
+            if (sourceHtmlDoc == null)
             {
-                searchHtmlDoc = new HtmlDocument();
-                searchHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.dataUrl));
+                sourceHtmlDoc = new HtmlDocument();
+                sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.dataUrl));
             }
             //Use Goodreads reviews and ratings to generate popular passages dummy
             int highlights = 0;
-            HtmlNode metaNode = searchHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
+            HtmlNode metaNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
             if (metaNode != null)
             {
                 HtmlNode passagesNode =
@@ -239,12 +238,12 @@ namespace XRayBuilderGUI.DataSources
 
         public override bool GetPageCount(BookInfo curBook, Action<string> Log)
         {
-            if (searchHtmlDoc == null)
+            if (sourceHtmlDoc == null)
             {
-                searchHtmlDoc = new HtmlDocument();
-                searchHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.dataUrl));
+                sourceHtmlDoc = new HtmlDocument();
+                sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.dataUrl));
             }
-            HtmlNode pagesNode = searchHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='details']");
+            HtmlNode pagesNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='details']");
             if (pagesNode == null)
                 return false;
             Match match = Regex.Match(pagesNode.InnerText, @"((\d+)|(\d+,\d+)) pages");
@@ -252,8 +251,7 @@ namespace XRayBuilderGUI.DataSources
             {
                 double minutes = int.Parse(match.Groups[1].Value, NumberStyles.AllowThousands) * 1.2890625;
                 TimeSpan span = TimeSpan.FromMinutes(minutes);
-                Log(String.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)"
-                    , span.Hours, span.Minutes, match.Groups[1].Value));
+                Log(String.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)", span.Hours, span.Minutes, match.Groups[1].Value));
                 curBook.pagesInBook = match.Groups[1].Value;
                 curBook.readingHours = span.Hours.ToString();
                 curBook.readingMinutes = span.Minutes.ToString();

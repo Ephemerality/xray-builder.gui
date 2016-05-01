@@ -339,7 +339,6 @@
             // 
             // btnBuild
             // 
-            this.btnBuild.Enabled = false;
             this.btnBuild.Image = ((System.Drawing.Image)(resources.GetObject("btnBuild.Image")));
             this.btnBuild.Location = new System.Drawing.Point(183, 11);
             this.btnBuild.Name = "btnBuild";

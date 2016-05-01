@@ -206,10 +206,10 @@ namespace XRayBuilderGUI
             try
             {
                 if (rdoGoodreads.Checked)
-                    xray = new XRay(txtGoodreads.Text, results[2], results[1], results[0], this, settings.spoilers,
+                    xray = new XRay(txtGoodreads.Text, results[2], results[1], results[0], this, dataSource, settings.spoilers,
                         (AZW3 ? settings.offsetAZW3 : settings.offset), "", false);
                 else
-                    xray = new XRay(txtXMLFile.Text, results[2], results[1], results[0], this, settings.spoilers,
+                    xray = new XRay(txtXMLFile.Text, results[2], results[1], results[0], this, dataSource, settings.spoilers,
                         (AZW3 ? settings.offsetAZW3 : settings.offset), "");
                 if (xray.CreateXray() > 0)
                 {
@@ -656,7 +656,7 @@ namespace XRayBuilderGUI
             {
                 txtXMLFile.Text = path;
 
-                XRay xray = new XRay(txtGoodreads.Text, this, settings.spoilers);
+                XRay xray = new XRay(txtGoodreads.Text, this, dataSource, settings.spoilers);
                 if (xray.SaveXml(path) > 0)
                 {
                     Log("An error occurred while processing.");
@@ -729,7 +729,7 @@ namespace XRayBuilderGUI
 
             try
             {
-                string bookUrl = dataSource.SearchBook(results[4], results[5]);
+                string bookUrl = dataSource.SearchBook(results[4], results[5], Log);
                 if (bookUrl != "")
                 {
                     txtGoodreads.Text = bookUrl;
@@ -832,6 +832,8 @@ namespace XRayBuilderGUI
                 rdoFile.Checked = true;
             if (Properties.Settings.Default.dataSource == "GoodReads")
                 dataSource = new GoodReads();
+            else
+                dataSource = new Shelfari();
         }
 
         private void frmMain_DragDrop(object sender, DragEventArgs e)

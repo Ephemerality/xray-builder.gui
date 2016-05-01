@@ -36,7 +36,7 @@ namespace XRayBuilderGUI
 {
     public class XRay
     {
-        private string shelfariURL = "";
+        private string dataUrl = "";
         private string xmlFile = "";
         private string databaseName = "";
         private string _guid = "";
@@ -58,6 +58,7 @@ namespace XRayBuilderGUI
 
         private bool enableEdit = Properties.Settings.Default.enableEdit;
         private frmMain main;
+        private DataSources.DataSource dataSource;
 
         #region CommonTitles
         string[] CommonTitles = new string[] { "Mr", "Mrs", "Ms", "Miss", "Dr", "Herr", "Monsieur", "Hr", "Frau",
@@ -88,24 +89,25 @@ namespace XRayBuilderGUI
         {
         }
 
-        public XRay(string shelfari, frmMain frm, bool useSpoilers = false)
+        public XRay(string shelfari, frmMain frm, DataSources.DataSource dataSource, bool useSpoilers = false)
         {
             if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
                 shelfari = "http://" + shelfari;
-            this.shelfariURL = shelfari;
+            this.dataUrl = shelfari;
             this.useSpoilers = useSpoilers;
             this.main = frm;
+            this.dataSource = dataSource;
         }
 
-        public XRay(string shelfari, string db, string guid, string asin, frmMain frm, bool useSpoilers = false,
-            int locOffset = 0, string aliaspath = "", bool unattended = false)
+        public XRay(string shelfari, string db, string guid, string asin, frmMain frm, DataSources.DataSource dataSource,
+            bool useSpoilers = false, int locOffset = 0, string aliaspath = "", bool unattended = false)
         {
             if (shelfari == "" || db == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
 
             if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
                 shelfari = "http://" + shelfari;
-            this.shelfariURL = shelfari;
+            this.dataUrl = shelfari;
             this.databaseName = db;
             this._guid = guid;
             this.asin = asin;
@@ -114,9 +116,10 @@ namespace XRayBuilderGUI
             this.aliaspath = aliaspath;
             this.unattended = unattended;
             this.main = frm;
+            this.dataSource = dataSource;
         }
 
-        public XRay(string xml, string db, string guid, string asin, frmMain frm, bool useSpoilers = false,
+        public XRay(string xml, string db, string guid, string asin, frmMain frm, DataSources.DataSource dataSource, bool useSpoilers = false,
             int locOffset = 0, string aliaspath = "")
         {
             if (xml == "" || db == "" || guid == "" || asin == "")
@@ -130,12 +133,14 @@ namespace XRayBuilderGUI
             this.aliaspath = aliaspath;
             this.unattended = false;
             this.main = frm;
+            this.dataSource = dataSource;
             this.skipShelfari = true;
         }
 
         public int SaveXml(string outfile)
         {
-            if (!GetShelfari())
+            Terms = dataSource.GetTerms(useSpoilers, dataUrl, main.Log);
+            if (Terms.Count == 0)
                 return 1;
 
             Functions.Save<List<Term>>(Terms, outfile);
@@ -226,8 +231,11 @@ namespace XRayBuilderGUI
                 }
                 if (Terms == null || Terms.Count == 0) return 1;
             }
-            else if (!GetShelfari())
-                return 1;
+            else
+            {
+                Terms = dataSource.GetTerms(useSpoilers, dataUrl, main.Log);
+                if (Terms.Count == 0) return 1;
+            }
 
             //Export list of Shelfari characters to a file to make it easier to create aliases or import the modified aliases if they exist
             //Could potentially just attempt to automate the creation of aliases, but in some cases it is very subjective...
@@ -723,7 +731,7 @@ namespace XRayBuilderGUI
             SQLiteCommand command;
             command = new SQLiteCommand(db);
             command.CommandText = "update string set text=@text where id=15";
-            command.Parameters.AddWithValue("text", shelfariURL);
+            command.Parameters.AddWithValue("text", dataUrl);
             command.ExecuteNonQuery();
             command.Dispose();
             main.Log("Updating database with terms, descriptions, and excerpts...");
@@ -1205,124 +1213,6 @@ namespace XRayBuilderGUI
                     }
                 }
             }
-        }
-
-        public bool GetShelfari()
-        {
-            //Download HTML of Shelfari URL, try 3 times just in case it fails the first time
-            main.Log(String.Format("Downloading Shelfari page... {0}", useSpoilers ? "SHOWING SPOILERS!" : ""));
-            main.Log(String.Format("Shelfari URL: {0}", shelfariURL));
-            var shelfariHtml = "";
-            var tries = 3;
-            do
-            {
-                try
-                {
-                    //Enable cookies
-                    var jar = new CookieContainer();
-                    var client = new HttpDownloader(shelfariURL, jar, "", "");
-
-                    if (useSpoilers)
-                    {
-                        //Grab book ID from url (search for 5 digits between slashes) and create spoiler cookie
-                        var bookId = Regex.Match(shelfariURL, @"\/\d{5}").Value.Substring(1, 5);
-                        var spoilers = new Cookie("ShelfariBookWikiSession", "", "/", "www.shelfari.com")
-                        {
-                            Value = "{\"SpoilerShowAll\":true%2C\"SpoilerShowCharacters\":true%2C\"SpoilerBookId\":" +
-                                    bookId +
-                                    "%2C\"SpoilerShowPSS\":true%2C\"SpoilerShowQuotations\":true%2C\"SpoilerShowParents\":true%2C\"SpoilerShowThemes\":true}"
-                        };
-                        jar.Add(spoilers);
-                    }
-                    shelfariHtml = client.GetPage();
-                    break;
-                }
-                catch
-                {
-                    if (tries <= 0)
-                    {
-                        main.Log("An error occurred connecting to Shelfari.");
-                        return false;
-                    }
-                }
-            }
-            while (tries-- > 0);
-
-            //Constants for wiki processing
-            Dictionary<string, string> sections = new Dictionary<string, string>
-            {
-                {"WikiModule_Characters", "character"},
-                {"WikiModule_Organizations", "topic"},
-                {"WikiModule_Settings", "topic"},
-                {"WikiModule_Glossary", "topic"}
-            }; //, {"WikiModule_Themes", "topic"} };
-            string[] patterns = {@""""};
-            //, @"\[\d\]", @"\s*?\(.*\)\s*?" }; //Escape quotes, numbers in brackets, and anything within brackets at all
-            string[] replacements = {@"\"""};
-
-            //Parse elements from various headers listed in sections
-            HtmlAgilityPack.HtmlDocument shelfariDoc = new HtmlAgilityPack.HtmlDocument();
-            shelfariDoc.LoadHtml(shelfariHtml);
-            foreach (string header in sections.Keys)
-            {
-                if (!shelfariHtml.Contains(header)) continue; //Skip section if not found on page
-                //Select <li> nodes on page from within the <div id=header> tag, under <ul class=li_6>
-                HtmlNodeCollection characterNodes =
-                    shelfariDoc.DocumentNode.SelectNodes("//div[@id='" + header + "']//ul[@class='li_6']/li");
-                foreach (HtmlNode li in characterNodes)
-                {
-                    string tmpString = li.InnerText;
-                    Term newTerm = new Term(sections[header]); //Create term as either character/topic
-                    if (tmpString.Contains(":"))
-                    {
-                        newTerm.TermName = tmpString.Substring(0, tmpString.IndexOf(":"));
-                        newTerm.Desc = tmpString.Substring(tmpString.IndexOf(":") + 1).Replace("&amp;", "&").Trim();
-                    }
-                    else
-                    {
-                        newTerm.TermName = tmpString;
-                    }
-                    //newTerm.TermName = newTerm.TermName.PregReplace(patterns, replacements);
-                    //newTerm.Desc = newTerm.Desc.PregReplace(patterns, replacements);
-                    newTerm.DescSrc = "shelfari";
-                    //Use either the associated shelfari URL of the term or if none exists, use the book's url
-                    //Could use a wikipedia page instead as the xray plugin/site does but I decided not to
-                    newTerm.DescUrl = (li.InnerHtml.IndexOf("<a href") == 0
-                        ? li.InnerHtml.Substring(9, li.InnerHtml.IndexOf("\"", 9) - 9)
-                        : shelfariURL);
-                    if (header == "WikiModule_Glossary")
-                        newTerm.MatchCase = false;
-                    //Default glossary terms to be case insensitive when searching through book
-                    if (Terms.Select<Term, string>(t => t.TermName).Contains<string>(newTerm.TermName))
-                        main.Log("Duplicate term \"" + newTerm.TermName + "\" found. Ignoring this duplicate.");
-                    else
-                        Terms.Add(newTerm);
-                }
-            }
-
-            // Scrape quotes to attempt matching in ExpandRawML
-            if (Properties.Settings.Default.useNewVersion)
-            {
-                HtmlNodeCollection quoteNodes = shelfariDoc.DocumentNode.SelectNodes("//div[@id='WikiModule_Quotations']/div/ul[@class='li_6']/li");
-                if (quoteNodes != null)
-                {
-                    foreach (HtmlNode quoteNode in quoteNodes)
-                    {
-                        HtmlNode node = quoteNode.SelectSingleNode(".//blockquote");
-                        if (node == null) continue;
-                        string quote = node.InnerText;
-                        string character = "";
-                        node = quoteNode.SelectSingleNode(".//cite");
-                        if (node != null)
-                            character = node.InnerText;
-                        // Remove quotes (sometimes people put unnecessary quotes in the quote as well)
-                        quote = Regex.Replace(quote, "^(&ldquo;){1,2}", "");
-                        quote = Regex.Replace(quote, "(&rdquo;){1,2}$", "");
-                        notableShelfariQuotes.Add(new string[] {quote, character});
-                    }
-                }
-            }
-            return true;
         }
     }
 

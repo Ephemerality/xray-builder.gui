@@ -403,11 +403,9 @@ namespace XRayBuilderGUI
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
             timer.Start();
             //Iterate over all paragraphs in book
-            HtmlNodeCollection nodes = web.DocumentNode.SelectNodes("//p");
-            if (nodes == null)
-                nodes = web.DocumentNode.SelectNodes("//div[@class='paragraph']");
-            if (nodes == null)
-                nodes = web.DocumentNode.SelectNodes("//div[@class='p-indent']");
+            HtmlNodeCollection nodes = web.DocumentNode.SelectNodes("//p")
+                ?? web.DocumentNode.SelectNodes("//div[@class='paragraph']")
+                ?? web.DocumentNode.SelectNodes("//div[@class='p-indent']");
             if (nodes == null)
             {
                 nodes = web.DocumentNode.SelectNodes("//div");

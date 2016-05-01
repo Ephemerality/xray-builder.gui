@@ -130,8 +130,7 @@ namespace XRayBuilderGUI.DataSources
             HtmlNode metaNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
             if (metaNode != null)
             {
-                HtmlNode passagesNode =
-                    metaNode.SelectSingleNode(".//a[@class='actionLinkLite votes' and @href='#other_reviews']");
+                HtmlNode passagesNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite votes' and @href='#other_reviews']");
                 match = Regex.Match(passagesNode.InnerText, @"(\d+,\d+)|(\d+)");
                 if (match.Success)
                 {
@@ -142,8 +141,7 @@ namespace XRayBuilderGUI.DataSources
                         passages = passages / 10;
                     curBook.popularPassages = passages.ToString();
                 }
-                HtmlNode highlightsNode =
-                        metaNode.SelectSingleNode(".//a[@class='actionLinkLite' and @href='#other_reviews']");
+                HtmlNode highlightsNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite' and @href='#other_reviews']");
                 match = Regex.Match(highlightsNode.InnerText, @"(\d+,\d+)|(\d+)");
                 if (match.Success)
                 {
@@ -161,8 +159,7 @@ namespace XRayBuilderGUI.DataSources
                     ? String.Format("{0} time", curBook.popularHighlights)
                     : String.Format("{0} times", curBook.popularHighlights);
 
-                Log(String.Format("{0} been highlighted {1}"
-                            , textPassages, textHighlights));
+                Log(String.Format("{0} been highlighted {1}" , textPassages, textHighlights));
             }
             if (highlights == 0)
             {
@@ -209,9 +206,8 @@ namespace XRayBuilderGUI.DataSources
                 if (int.Parse(curBook.seriesPosition) > 1)
                 {
                     string stringSearch = String.Format(@"'#{0}'", int.Parse(curBook.seriesPosition) - 1);
-                    HtmlNode previousBookNode =
-                        seriesHtmlDoc.DocumentNode.SelectSingleNode("//a[@class='bookTitle']/span[contains(., " +
-                                                                stringSearch + ")]/text()");
+                    HtmlNode previousBookNode = seriesHtmlDoc.DocumentNode.SelectSingleNode("//a[@class='bookTitle']/span[contains(., "
+                        + stringSearch + ")]/text()");
                     match = Regex.Match(previousBookNode.InnerText, @"(.*) \(.*#[0-9]*\)");
                     if (match.Success)
                     {
@@ -222,9 +218,8 @@ namespace XRayBuilderGUI.DataSources
                 if (int.Parse(curBook.seriesPosition) < int.Parse(curBook.totalInSeries))
                 {
                     string stringSearch = String.Format(@"'#{0}'", int.Parse(curBook.seriesPosition) + 1);
-                    HtmlNode nextBookNode =
-                        seriesHtmlDoc.DocumentNode.SelectSingleNode("//a[@class='bookTitle']/span[contains(., " +
-                                                                stringSearch + ")]/text()");
+                    HtmlNode nextBookNode = seriesHtmlDoc.DocumentNode.SelectSingleNode("//a[@class='bookTitle']/span[contains(., "
+                        + stringSearch + ")]/text()");
                     match = Regex.Match(nextBookNode.InnerText, @"(.*) \(.*#[0-9]*\)");
                     if (match.Success)
                     {

@@ -1184,7 +1184,23 @@ namespace XRayBuilderGUI
                 Term t = Terms[i];
                 if (d.ContainsKey(t.TermName))
                 {
-                    t.Aliases = new List<string>(d[t.TermName]);
+                    if (t.Aliases.Count > 0)
+                    {
+                        // If aliases exist (loaded from GoodReads), remove any duplicates and add them in the order from the aliases file
+                        // Otherwise, the website would take precedence and that could be bad?
+                        foreach (string alias in d[t.TermName])
+                        {
+                            if (t.Aliases.Contains(alias))
+                            {
+                                t.Aliases.Remove(alias);
+                                t.Aliases.Add(alias);
+                            }
+                            else
+                                t.Aliases.Add(alias);
+                        }
+                    }
+                    else
+                        t.Aliases = new List<string>(d[t.TermName]);
                     // If first alias is "/c", character searches will be case-sensitive
                     // If it is /d, delete this character
                     // If /n, will not match excerpts but will leave character in X-Ray

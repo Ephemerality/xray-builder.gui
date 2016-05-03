@@ -245,7 +245,7 @@ namespace XRayBuilderGUI
                     main.Log("An error occurred finding next book in series: Goodreads URL not found.\r\n" +
                         "If reading from a file, you can switch the source to Goodreads to specify a URL, then switch back to File.");
                 else
-                    main.Log("An error occurred finding next book in series: " + ex.Message);
+                    main.Log("An error occurred finding next book in series: " + ex.Message + "\r\n" + ex.StackTrace);
             }
             try
             {

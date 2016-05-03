@@ -397,18 +397,6 @@ namespace XRayBuilderGUI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool searchGoodreads {
-            get {
-                return ((bool)(this["searchGoodreads"]));
-            }
-            set {
-                this["searchGoodreads"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Goodreads")]
         public string dataSource {
             get {

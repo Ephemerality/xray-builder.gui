@@ -226,7 +226,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Log("An error occurred while creating the new X-Ray database:\r\n" + ex.Message);
+                Log("An error occurred while building the X-Ray:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                 return;
             }
 
@@ -297,7 +297,7 @@ namespace XRayBuilderGUI
                     }
                     catch (Exception ex)
                     {
-                        Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n" + ex.Message);
+                        Log("An error occurred while populating the X-Ray database.\r\n" + ex.Message);
                         command.Dispose();
                         m_dbConnection.Close();
                         return;

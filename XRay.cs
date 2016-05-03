@@ -381,7 +381,7 @@ namespace XRayBuilderGUI
             //Define srl and erl so "progress bar" shows up correctly
             if (_chapters.Count == 0)
             {
-                long len = (new FileInfo(readContents)).Length;
+                long len = (new FileInfo(rawMl)).Length;
                 _chapters.Add(new Chapter("", 1, len));
                 _srl = 1;
                 _erl = len;

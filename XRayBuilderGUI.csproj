@@ -92,6 +92,9 @@
   <ItemGroup>
     <Compile Include="AuthorProfile.cs" />
     <Compile Include="BookInfo.cs" />
+    <Compile Include="DataSources\DataSource.cs" />
+    <Compile Include="DataSources\Goodreads.cs" />
+    <Compile Include="DataSources\Shelfari.cs" />
     <Compile Include="EndActions.cs" />
     <Compile Include="frmPreviewAP.cs">
       <SubType>Form</SubType>

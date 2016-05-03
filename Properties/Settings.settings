@@ -95,8 +95,8 @@
     <Setting Name="pageCount" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="searchGoodreads" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+    <Setting Name="dataSource" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Goodreads</Value>
     </Setting>
   </Settings>
 </SettingsFile>

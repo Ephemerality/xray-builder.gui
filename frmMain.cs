@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using XRayBuilderGUI.DataSources;
 
 namespace XRayBuilderGUI
 {
@@ -33,6 +34,8 @@ namespace XRayBuilderGUI
         private frmPreviewXRN frmXRN = new frmPreviewXRN();
         private frmPreviewSA frmSA = new frmPreviewSA();
 
+        DataSource dataSource = null;
+
         public void Log(string message)
         {
             if (Exiting) return;
@@ -51,8 +54,8 @@ namespace XRayBuilderGUI
                     txtOutput.SelectionLength = 0;
                     txtOutput.SelectionColor = Color.FromArgb(20, 102, 20);
                 }
-                if (message.ContainsIgnorecase("error") || message.ContainsIgnorecase("failed")
-                    || message.ContainsIgnorecase("problem") || message.ContainsIgnorecase("skipping"))
+                List<string> redFlags = new List<string>() { "error", "failed", "problem", "skipping", "warning" };
+                if (redFlags.Any(s => message.ContainsIgnorecase(s)))
                 {
                     txtOutput.SelectionStart = txtOutput.TextLength;
                     txtOutput.SelectionLength = 0;
@@ -155,7 +158,7 @@ namespace XRayBuilderGUI
             }
 
             prgBar.Value = 0;
-            
+
             //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
             List<string> results;
             if (settings.useKindleUnpack)
@@ -172,7 +175,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Log("An error occured extracting metadata: " + ex.Message);
+                    Log("An error occurred extracting metadata: " + ex.Message);
                     return;
                 }
             }
@@ -203,10 +206,10 @@ namespace XRayBuilderGUI
             try
             {
                 if (rdoGoodreads.Checked)
-                    xray = new XRay(txtGoodreads.Text, results[2], results[1], results[0], this, settings.spoilers,
+                    xray = new XRay(txtGoodreads.Text, results[2], results[1], results[0], this, dataSource, settings.spoilers,
                         (AZW3 ? settings.offsetAZW3 : settings.offset), "", false);
                 else
-                    xray = new XRay(txtXMLFile.Text, results[2], results[1], results[0], this, settings.spoilers,
+                    xray = new XRay(txtXMLFile.Text, results[2], results[1], results[0], this, dataSource, settings.spoilers,
                         (AZW3 ? settings.offsetAZW3 : settings.offset), "");
                 if (xray.CreateXray() > 0)
                 {
@@ -217,7 +220,7 @@ namespace XRayBuilderGUI
                 //Expand the X-Ray file from the unpacked mobi
                 if (xray.ExpandFromRawMl(results[3], settings.ignoresofthyphen, !settings.useNewVersion) > 0)
                 {
-                    Log("An error occured while processing locations and chapters.");
+                    Log("An error occurred while processing locations and chapters.");
                     return;
                 }
             }
@@ -308,7 +311,7 @@ namespace XRayBuilderGUI
                     command.Dispose();
                     m_dbConnection.Close();
                 }
-                
+
                 //Save the new XRAY.ASIN.previewData file
                 try
                 {
@@ -349,7 +352,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Log("An error occured populating the X-Ray preview windows: " + ex.Message);
+                Log("An error occurred populating the X-Ray preview windows: " + ex.Message);
             }
 
             try
@@ -432,10 +435,20 @@ namespace XRayBuilderGUI
                 MessageBox.Show("Specified book was not found.", "Book Not Found");
                 return;
             }
-            if (rdoGoodreads.Checked && txtGoodreads.Text == "" && !settings.pageCount)
+            if (rdoGoodreads.Checked)
             {
-                MessageBox.Show("No Goodreads link was specified.", "Missing Goodreads Link");
-                return;
+                if (txtGoodreads.Text == "")
+                {
+                    MessageBox.Show("No " + dataSource.Name + " link was specified.", "Missing " + dataSource.Name + " Link");
+                    return;
+                }
+                else if (!txtGoodreads.Text.ToLower().Contains(settings.dataSource.ToLower()))
+                {
+                    MessageBox.Show(String.Format("Invalid {0} link was specified.\r\n"
+                        + "If you do not want to use {0}, you can change the data source in Settings.", dataSource.Name)
+                        , "Invalid " + dataSource.Name + " Link");
+                    return;
+                }
             }
             if (!File.Exists(settings.mobi_unpack))
             {
@@ -452,7 +465,7 @@ namespace XRayBuilderGUI
                     "Amazon Customer Details Not found");
                 return;
             }
-            
+
             //Create temp dir and ensure it exists
             string randomFile = Functions.GetTempDirectory();
             if (!Directory.Exists(randomFile))
@@ -516,7 +529,7 @@ namespace XRayBuilderGUI
                 AuthorProfile ap = new AuthorProfile(bookInfo, this);
                 if (!ap.complete) return;
                 Log("Attempting to build Start Actions and End Actions...");
-                EndActions ea = new EndActions(ap, bookInfo, rawMLSize, this);
+                EndActions ea = new EndActions(ap, bookInfo, rawMLSize, dataSource, this);
                 if (!ea.complete) return;
 
                 if (settings.useNewVersion)
@@ -629,7 +642,7 @@ namespace XRayBuilderGUI
         private void btnLink_Click(object sender, EventArgs e)
         {
             if (txtGoodreads.Text.Trim().Length == 0)
-                MessageBox.Show("No Goodreads link was specified.", "Missing Goodreads Link");
+                MessageBox.Show("No link was specified.", "Missing Link");
             else
                 Process.Start(txtGoodreads.Text);
         }
@@ -638,7 +651,7 @@ namespace XRayBuilderGUI
         {
             if (txtGoodreads.Text == "")
             {
-                MessageBox.Show("No Shelfari link was specified.", "Missing Shelfari Link");
+                MessageBox.Show("No link was specified.", "Missing Link");
                 return;
             }
             if (!File.Exists(txtMobi.Text))
@@ -653,17 +666,17 @@ namespace XRayBuilderGUI
             {
                 txtXMLFile.Text = path;
 
-                XRay xray = new XRay(txtGoodreads.Text, this, settings.spoilers);
+                XRay xray = new XRay(txtGoodreads.Text, this, dataSource, settings.spoilers);
                 if (xray.SaveXml(path) > 0)
                 {
                     Log("An error occurred while processing.");
                     return;
                 }
-                Log("Shelfari info has been saved to: " + path);
+                Log("Character data has been saved to: " + path);
             }
             catch (Exception)
             {
-                Log("An error occurred while saving Shelfari data to XML. Path was: " + path);
+                Log("An error occurred while saving character data to XML. Path was: " + path);
                 return;
             }
         }
@@ -721,49 +734,26 @@ namespace XRayBuilderGUI
                 return;
             }
 
-            // Added author name to log output
-            Log(
-                String.Format(
-                    "Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
-                    results[2], results[0], results[4], results[5], results[1]));
+            Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
+                results[2], results[0], results[4], results[5], results[1]));
 
             try
+            {
+                string bookUrl = dataSource.SearchBook(results[4], results[5], Log);
+                if (bookUrl != "")
                 {
-                    string goodreadsSearchUrlBase = @"http://www.goodreads.com/search?q={0} {1}";
-                    // Search book on Goodreads
-                    //bool bookFound = false;
-                    string goodreadsBookUrl = "";
-                    results[4] = Functions.FixAuthor(results[4]);
-
-                    HtmlAgilityPack.HtmlDocument goodreadsHtmlDoc = new HtmlAgilityPack.HtmlDocument();
-                    goodreadsSearchUrlBase = String.Format(goodreadsSearchUrlBase, results[4], results[5]);
-                    //Load the goodreads search URL
-                    goodreadsHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(goodreadsSearchUrlBase));
-                    if (!goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results"))
-                        results[4] = Functions.TrimAuthor(results[4]);
-                    goodreadsHtmlDoc.LoadHtml(
-                        HttpDownloader.GetPageHtml(String.Format(goodreadsSearchUrlBase, results[4], results[5])));
-                    if (!goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results"))
-                        {
-                        goodreadsBookUrl = FindGoodreadsURL(goodreadsHtmlDoc, results[4], results[5]);
-                        if (goodreadsBookUrl != "")
-                        {
-                            txtGoodreads.Text = goodreadsBookUrl;
-                            txtGoodreads.Refresh();
-
-                            Log(
-                                String.Format(
-                                    "Book found on Goodreads!\r\n{0} by {1}\r\nGoodreads URL: {2}\r\nYou may want to visit the URL to ensure it is correct.",
-                                    results[5], results[4], goodreadsBookUrl));
-                    }
+                    txtGoodreads.Text = bookUrl;
+                    txtGoodreads.Refresh();
+                    Log(String.Format("Book found on {3}!\r\n{0} by {1}\r\n{3} URL: {2}\r\nYou may want to visit the URL to ensure it is correct.",
+                            results[5], results[4], bookUrl, dataSource.Name));
                 }
-                    else
-                        Log("Unable to find this book on Goodreads!");
-                }
-                catch (Exception ex)
-                {
-                    Log("An error occurred: " + ex.Message);
-                }
+                else
+                    Log("Unable to find this book on " + dataSource.Name + "!");
+            }
+            catch (Exception ex)
+            {
+                Log("An error occurred while searching: " + ex.Message);
+            }
 
             try
             {
@@ -778,34 +768,11 @@ namespace XRayBuilderGUI
             }
         }
 
-        private string FindGoodreadsURL(HtmlAgilityPack.HtmlDocument goodreadsHtmlDoc, string author, string title)
-        {
-            string goodreadsBookUrl = @"http://www.goodreads.com/book/show/{0}";
-            //Check if results contain title and author
-            foreach (HtmlAgilityPack.HtmlNode link in goodreadsHtmlDoc.DocumentNode.SelectNodes("//tr[@itemtype='http://schema.org/Book']"))
-            {
-                HtmlAgilityPack.HtmlNode titleNode = link.SelectSingleNode(".//a[@class='bookTitle']");
-                HtmlAgilityPack.HtmlNode authorNode = link.SelectSingleNode(".//a[@class='authorName']");
-                if (titleNode.InnerText.IndexOf(title, StringComparison.OrdinalIgnoreCase) >= 0 &&
-                    (authorNode.InnerText.IndexOf(author, StringComparison.OrdinalIgnoreCase) >= 0))
-                {
-                    HtmlAgilityPack.HtmlNode node = link.SelectSingleNode(".//a[@class='bookTitle']");
-                    //Parse goodreads ID
-                    Match match = Regex.Match(node.OuterHtml, @"./book/show/([0-9]*)");
-                    if (match.Success)
-                    {
-                        goodreadsBookUrl = String.Format(goodreadsBookUrl, match.Groups[1].Value);
-                        return goodreadsBookUrl;
-                    }
-                }
-            }
-            return "";
-        }
-        
         private void btnSettings_Click(object sender, EventArgs e)
         {
             frmSettings frmSet = new frmSettings();
             frmSet.ShowDialog();
+            SetDatasourceLabels();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -865,22 +832,37 @@ namespace XRayBuilderGUI
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\log");
             if (!Directory.Exists(Environment.CurrentDirectory + @"\dmp"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\dmp");
-            
+
             if (Properties.Settings.Default.mobi_unpack == "")
                 Properties.Settings.Default.mobi_unpack = Environment.CurrentDirectory + @"\dist\kindleunpack.exe";
-
+            
             txtGoodreads.Text = Properties.Settings.Default.Goodreads;
+            SetDatasourceLabels();
+        }
+
+        private void SetDatasourceLabels()
+        {
             if (Properties.Settings.Default.buildSource == "Goodreads")
                 rdoGoodreads.Checked = true;
             else
                 rdoFile.Checked = true;
+
+            if (Properties.Settings.Default.dataSource == "Goodreads")
+                dataSource = new Goodreads();
+            else
+            {
+                dataSource = new Shelfari();
+                rdoGoodreads.Text = "Shelfari";
+                lblGoodreads.Text = "Shelfari URL:";
+                lblGoodreads.Left = 150;
+            }
         }
 
         private void frmMain_DragDrop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                string[] filePaths = (string[]) (e.Data.GetData(DataFormats.FileDrop));
+                string[] filePaths = (string[])(e.Data.GetData(DataFormats.FileDrop));
                 foreach (string fileLoc in filePaths)
                 {
                     if (File.Exists(fileLoc))
@@ -902,7 +884,7 @@ namespace XRayBuilderGUI
 
         private void rdoSource_CheckedChanged(object sender, EventArgs e)
         {
-            if (((RadioButton)sender).Text == "Goodreads")
+            if (((RadioButton)sender).Text != "File")
             {
                 lblGoodreads.Visible = !lblGoodreads.Visible;
                 txtGoodreads.Visible = !txtGoodreads.Visible;
@@ -913,6 +895,10 @@ namespace XRayBuilderGUI
                 //btnSaveShelfari.Enabled = !btnSaveShelfari.Enabled;
                 btnSearchGoodreads.Visible = !btnSearchGoodreads.Visible;
             }
+            if (((RadioButton)sender).Text == "Shelfari")
+                lblGoodreads.Left = 150;
+            else if (((RadioButton)sender).Text == "Goodreads")
+                lblGoodreads.Left = 134;
         }
 
         private void txtMobi_TextChanged(object sender, EventArgs e)
@@ -962,7 +948,7 @@ namespace XRayBuilderGUI
                     "Please report any such errors on the MobileRead thread to help improve the program.\r\n\r\n" +
                     "There is also a new feature that allows you to download pre-made aliases if they exist on our server. " +
                     "If the setting is checked, aliases will be downloaded automatically during the build process.\r\n\r\n" +
-                    "- Thanks for using X-Ray Builder GUI!\r\n- Ephemerality and darrenmcg","New for X-Ray Builder GUI v2.0.10.0");
+                    "- Thanks for using X-Ray Builder GUI!\r\n- Ephemerality and darrenmcg", "New for X-Ray Builder GUI v2.0.10.0");
                 settings.newMessage = true;
                 settings.Save();
             }

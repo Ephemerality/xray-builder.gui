@@ -20,7 +20,7 @@ namespace XRayBuilderGUI
         public string bookImageUrl = "";
         public float amazonRating = 0.0F;
         public int numReviews = 0;
-        public string goodreadsUrl = "";
+        public string dataUrl = "";
         public string amazonUrl = "";
         public string rawmlPath = "";
 
@@ -36,7 +36,7 @@ namespace XRayBuilderGUI
         public BookInfo nextInSeries = null;
         public BookInfo previousInSeries = null;
 
-        public BookInfo(string title, string author, string asin, string guid, string databasename, string path, string sidecarName, string goodreadsUrl, string rawmlPath)
+        public BookInfo(string title, string author, string asin, string guid, string databasename, string path, string sidecarName, string dataUrl, string rawmlPath)
         {
             this.title = title;
             this.author = author;
@@ -45,7 +45,7 @@ namespace XRayBuilderGUI
             this.databasename = databasename;
             this.path = path;
             this.sidecarName = sidecarName;
-            this.goodreadsUrl = goodreadsUrl;
+            this.dataUrl = dataUrl;
             this.rawmlPath = rawmlPath;
         }
 

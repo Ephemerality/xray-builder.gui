@@ -328,7 +328,6 @@
             // 
             // btnSaveShelfari
             // 
-            this.btnSaveShelfari.Enabled = false;
             this.btnSaveShelfari.Image = ((System.Drawing.Image)(resources.GetObject("btnSaveShelfari.Image")));
             this.btnSaveShelfari.Location = new System.Drawing.Point(247, 11);
             this.btnSaveShelfari.Name = "btnSaveShelfari";
@@ -339,7 +338,6 @@
             // 
             // btnBuild
             // 
-            this.btnBuild.Enabled = false;
             this.btnBuild.Image = ((System.Drawing.Image)(resources.GetObject("btnBuild.Image")));
             this.btnBuild.Location = new System.Drawing.Point(183, 11);
             this.btnBuild.Name = "btnBuild";

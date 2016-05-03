@@ -28,7 +28,7 @@ namespace XRayBuilderGUI
         private void frmSettingsNew_Load(object sender, EventArgs e)
         {
             string version = Assembly.GetEntryAssembly().GetName().Version.ToString();
-            lblVersion.Text = String.Format("Vervion: {0}", version);
+            lblVersion.Text = String.Format("Version: {0}", version);
             DateTime buildDate = new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime;
             lblBuilt.Text = String.Format("Built: {0}", buildDate);
 
@@ -72,12 +72,16 @@ namespace XRayBuilderGUI
             chkOverrideOffset.Checked = Properties.Settings.Default.overrideOffset;
             txtAZWOffset.Text = Properties.Settings.Default.offsetAZW3.ToString();
             chkPageCount.Checked = Properties.Settings.Default.pageCount;
+            if (Properties.Settings.Default.dataSource == "Goodreads")
+                rdoGoodreads.Checked = true;
+            else
+                rdoShelfari.Checked = true;
 
             // Added \r\n to show smaller tooltips
             ToolTip toolTip1 = new ToolTip();
             toolTip1.SetToolTip(chkRaw,
                 "Save the rawML (raw markup) of the book\r\nin the output directory so you can review it.");
-            toolTip1.SetToolTip(chkSpoilers, "Use Shelfari descriptions that\r\ncontain spoilers when they exist.");
+            toolTip1.SetToolTip(chkSpoilers, "Use Shelfari descriptions that\r\ncontain spoilers when they exist. (Shelfari only)");
             toolTip1.SetToolTip(txtOffset,
                 "This offset will be applied to every\r\nbook location (usually a negative\r\nnumber). Must be an integer.");
             toolTip1.SetToolTip(chkSoftHyphen,
@@ -134,6 +138,8 @@ namespace XRayBuilderGUI
                                               "on user_none accurate APNX generation).\r\n" +
                                               "If no page count is found online, an\r\n" +
                                               "estimation will be used.");
+            toolTip1.SetToolTip(rdoGoodreads, "Download all data from Goodreads.");
+            toolTip1.SetToolTip(rdoShelfari, "Download all data from Shelfari.");
         }
 
         private void btnBrowseUnpack_Click(object sender, EventArgs e)
@@ -190,6 +196,10 @@ namespace XRayBuilderGUI
             Properties.Settings.Default.overrideOffset = chkOverrideOffset.Checked;
             Properties.Settings.Default.offsetAZW3 = offsetAZW;
             Properties.Settings.Default.pageCount = chkPageCount.Checked;
+            if (rdoGoodreads.Checked)
+                Properties.Settings.Default.dataSource = "Goodreads";
+            else
+                Properties.Settings.Default.dataSource = "Shelfari";
             Properties.Settings.Default.Save();
 
             this.Close();

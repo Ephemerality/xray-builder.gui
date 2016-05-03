@@ -435,10 +435,20 @@ namespace XRayBuilderGUI
                 MessageBox.Show("Specified book was not found.", "Book Not Found");
                 return;
             }
-            if (rdoGoodreads.Checked && txtGoodreads.Text == "" && !settings.pageCount)
+            if (rdoGoodreads.Checked)
             {
-                MessageBox.Show("No Goodreads link was specified.", "Missing Goodreads Link");
-                return;
+                if (txtGoodreads.Text == "")
+                {
+                    MessageBox.Show("No " + dataSource.Name + " link was specified.", "Missing " + dataSource.Name + " Link");
+                    return;
+                }
+                else if (!txtGoodreads.Text.ToLower().Contains(settings.dataSource.ToLower()))
+                {
+                    MessageBox.Show(String.Format("Invalid {0} link was specified.\r\n"
+                        + "If you do not want to use {0}, you can change the data source in Settings.", dataSource.Name)
+                        , "Invalid " + dataSource.Name + " Link");
+                    return;
+                }
             }
             if (!File.Exists(settings.mobi_unpack))
             {
@@ -632,7 +642,7 @@ namespace XRayBuilderGUI
         private void btnLink_Click(object sender, EventArgs e)
         {
             if (txtGoodreads.Text.Trim().Length == 0)
-                MessageBox.Show("No Goodreads link was specified.", "Missing Goodreads Link");
+                MessageBox.Show("No link was specified.", "Missing Link");
             else
                 Process.Start(txtGoodreads.Text);
         }
@@ -641,7 +651,7 @@ namespace XRayBuilderGUI
         {
             if (txtGoodreads.Text == "")
             {
-                MessageBox.Show("No Shelfari link was specified.", "Missing Shelfari Link");
+                MessageBox.Show("No link was specified.", "Missing Link");
                 return;
             }
             if (!File.Exists(txtMobi.Text))
@@ -662,11 +672,11 @@ namespace XRayBuilderGUI
                     Log("An error occurred while processing.");
                     return;
                 }
-                Log("Shelfari info has been saved to: " + path);
+                Log("Character data has been saved to: " + path);
             }
             catch (Exception)
             {
-                Log("An error occurred while saving Shelfari data to XML. Path was: " + path);
+                Log("An error occurred while saving character data to XML. Path was: " + path);
                 return;
             }
         }
@@ -762,6 +772,7 @@ namespace XRayBuilderGUI
         {
             frmSettings frmSet = new frmSettings();
             frmSet.ShowDialog();
+            SetDatasourceLabels();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -824,16 +835,27 @@ namespace XRayBuilderGUI
 
             if (Properties.Settings.Default.mobi_unpack == "")
                 Properties.Settings.Default.mobi_unpack = Environment.CurrentDirectory + @"\dist\kindleunpack.exe";
-
+            
             txtGoodreads.Text = Properties.Settings.Default.Goodreads;
+            SetDatasourceLabels();
+        }
+
+        private void SetDatasourceLabels()
+        {
             if (Properties.Settings.Default.buildSource == "Goodreads")
                 rdoGoodreads.Checked = true;
             else
                 rdoFile.Checked = true;
+
             if (Properties.Settings.Default.dataSource == "Goodreads")
                 dataSource = new Goodreads();
             else
+            {
                 dataSource = new Shelfari();
+                rdoGoodreads.Text = "Shelfari";
+                lblGoodreads.Text = "Shelfari URL:";
+                lblGoodreads.Left = 150;
+            }
         }
 
         private void frmMain_DragDrop(object sender, DragEventArgs e)
@@ -862,7 +884,7 @@ namespace XRayBuilderGUI
 
         private void rdoSource_CheckedChanged(object sender, EventArgs e)
         {
-            if (((RadioButton)sender).Text == "Goodreads")
+            if (((RadioButton)sender).Text != "File")
             {
                 lblGoodreads.Visible = !lblGoodreads.Visible;
                 txtGoodreads.Visible = !txtGoodreads.Visible;
@@ -873,6 +895,10 @@ namespace XRayBuilderGUI
                 //btnSaveShelfari.Enabled = !btnSaveShelfari.Enabled;
                 btnSearchGoodreads.Visible = !btnSearchGoodreads.Visible;
             }
+            if (((RadioButton)sender).Text == "Shelfari")
+                lblGoodreads.Left = 150;
+            else if (((RadioButton)sender).Text == "Goodreads")
+                lblGoodreads.Left = 134;
         }
 
         private void txtMobi_TextChanged(object sender, EventArgs e)

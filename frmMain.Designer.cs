@@ -328,7 +328,6 @@
             // 
             // btnSaveShelfari
             // 
-            this.btnSaveShelfari.Enabled = false;
             this.btnSaveShelfari.Image = ((System.Drawing.Image)(resources.GetObject("btnSaveShelfari.Image")));
             this.btnSaveShelfari.Location = new System.Drawing.Point(247, 11);
             this.btnSaveShelfari.Name = "btnSaveShelfari";

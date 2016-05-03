@@ -171,6 +171,8 @@ namespace XRayBuilderGUI.DataSources
             //Search Goodreads for series info
             string goodreadsSeriesUrl = @"http://www.goodreads.com/series/{0}";
             HtmlNode SeriesNode = metaNode.SelectSingleNode("//h1[@id='bookTitle']");
+            if (SeriesNode == null)
+                return results;
             match = Regex.Match(SeriesNode.OuterHtml, @"/series/([0-9]*)");
             if (!match.Success)
                 return results;

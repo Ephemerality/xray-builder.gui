@@ -240,15 +240,14 @@ namespace XRayBuilderGUI.DataSources
                 {
                     if (seriesType.InnerText.Contains("(standard series)", StringComparison.OrdinalIgnoreCase) && !seriesType.InnerText.Contains("(Reading Order)", StringComparison.OrdinalIgnoreCase))
                     {
-                        Match match = Regex.Match(seriesType.InnerText, @"This is book (\d+) of (\d+)");
-                        if (!match.Success)
+                        Match match = Regex.Match(seriesType.InnerText, @"This is book (\d+) of (\d+) in (.+)\.");
+                        if (!match.Success || match.Groups.Count != 4)
                             continue;
-                        curBook.seriesName = seriesType.ChildNodes["a"].InnerText.Trim();
+
                         Log("About the series: " + seriesType.InnerText.Replace(". (standard series)", ""));
-                        if (!match.Success || match.Groups.Count != 3)
-                            return results;
                         curBook.seriesPosition = match.Groups[1].Value;
                         curBook.totalInSeries = match.Groups[2].Value;
+                        curBook.seriesName = match.Groups[3].Value;
                         HtmlNode seriesInfo = seriesNode.SelectSingleNode(".//p");
                         //Parse preceding book
                         if (seriesInfo != null && seriesInfo.InnerText.Contains("Preceded by ", StringComparison.OrdinalIgnoreCase))

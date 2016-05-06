@@ -44,6 +44,8 @@ namespace XRayBuilderGUI.DataSources
             {
                 HtmlNode titleNode = link.SelectSingleNode(".//a[@class='bookTitle']");
                 HtmlNode authorNode = link.SelectSingleNode(".//a[@class='authorName']");
+                if (authorNode.InnerText.IndexOf(author, StringComparison.OrdinalIgnoreCase) < 0)
+                    author = Functions.TrimAuthor(author);
                 if (titleNode.InnerText.IndexOf(title, StringComparison.OrdinalIgnoreCase) >= 0 &&
                     (authorNode.InnerText.IndexOf(author, StringComparison.OrdinalIgnoreCase) >= 0))
                 {

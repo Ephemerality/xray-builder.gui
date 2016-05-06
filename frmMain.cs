@@ -639,14 +639,6 @@ namespace XRayBuilderGUI
             frmSA.lblAuthorBio.Text = ap.BioTrimmed;
         }
 
-        private void btnLink_Click(object sender, EventArgs e)
-        {
-            if (txtGoodreads.Text.Trim().Length == 0)
-                MessageBox.Show("No link was specified.", "Missing Link");
-            else
-                Process.Start(txtGoodreads.Text);
-        }
-
         private void btnSaveShelfari_Click(object sender, EventArgs e)
         {
             if (txtGoodreads.Text == "")
@@ -773,6 +765,17 @@ namespace XRayBuilderGUI
             frmSettings frmSet = new frmSettings();
             frmSet.ShowDialog();
             SetDatasourceLabels();
+
+            if (Properties.Settings.Default.dataSource == "Goodreads")
+            {
+                if (txtGoodreads.Text.Contains("shelfari"))
+                    txtGoodreads.Text = "";
+            }
+            if (Properties.Settings.Default.dataSource == "Shelfari")
+            {
+                if (txtGoodreads.Text.Contains("goodreads"))
+                    txtGoodreads.Text = "";
+            }
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -797,7 +800,7 @@ namespace XRayBuilderGUI
             ToolTip toolTip1 = new ToolTip();
             toolTip1.SetToolTip(btnBrowseMobi, "Open a Kindle book.");
             toolTip1.SetToolTip(btnBrowseOutput, "Open the default output directory.");
-            toolTip1.SetToolTip(btnLink, "Open the Goodreads link in your default web browser.");
+            toolTip1.SetToolTip(btnOneClick, "One Click to try to build the Start\r\nAction, Author Profile, End Action\r\nand X-Ray files for this book.");
             toolTip1.SetToolTip(btnBrowseXML, "Open a supported XML or TXT file containing characters and topics.");
             toolTip1.SetToolTip(btnSearchGoodreads, "Try to search for this book on Goodreads.");
             toolTip1.SetToolTip(btnSaveShelfari, "Save Shelfari info to an XML file.");
@@ -848,7 +851,12 @@ namespace XRayBuilderGUI
                 rdoFile.Checked = true;
 
             if (Properties.Settings.Default.dataSource == "Goodreads")
+            {
                 dataSource = new Goodreads();
+                rdoGoodreads.Text = "Goodreads";
+                lblGoodreads.Text = "Goodreads URL:";
+                lblGoodreads.Left = 134;
+            }
             else
             {
                 dataSource = new Shelfari();
@@ -948,7 +956,7 @@ namespace XRayBuilderGUI
                     "Please report any such errors on the MobileRead thread to help improve the program.\r\n\r\n" +
                     "There is also a new feature that allows you to download pre-made aliases if they exist on our server. " +
                     "If the setting is checked, aliases will be downloaded automatically during the build process.\r\n\r\n" +
-                    "- Thanks for using X-Ray Builder GUI!\r\n- Ephemerality and darrenmcg", "New for X-Ray Builder GUI v2.0.10.0");
+                    "- Thanks for using X-Ray Builder GUI!\r\n- Ephemerality and darrenmcg", "New in X-Ray Builder GUI v2.0.10.0");
                 settings.newMessage = true;
                 settings.Save();
             }
@@ -1011,6 +1019,11 @@ namespace XRayBuilderGUI
         private void txtOutput_LinkClicked(object sender, LinkClickedEventArgs e)
         {
             Process.Start(e.LinkText);
+        }
+
+        private void btnOneClick_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

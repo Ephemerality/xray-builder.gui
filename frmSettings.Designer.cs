@@ -53,6 +53,9 @@
             this.btnBrowseUnpack = new System.Windows.Forms.Button();
             this.txtUnpack = new System.Windows.Forms.TextBox();
             this.tabPgXray = new System.Windows.Forms.TabPage();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.rdoShelfari = new System.Windows.Forms.RadioButton();
+            this.rdoGoodreads = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.txtAZWOffset = new System.Windows.Forms.TextBox();
             this.chkOverrideOffset = new System.Windows.Forms.CheckBox();
@@ -91,9 +94,6 @@
             this.lblName = new System.Windows.Forms.Label();
             this.rtbAbout = new System.Windows.Forms.RichTextBox();
             this.listSettings = new System.Windows.Forms.ListBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.rdoGoodreads = new System.Windows.Forms.RadioButton();
-            this.rdoShelfari = new System.Windows.Forms.RadioButton();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.gbProcess.SuspendLayout();
@@ -103,6 +103,7 @@
             this.gbDirectories.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabPgXray.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.gbXray.SuspendLayout();
@@ -114,7 +115,6 @@
             this.gbDetails.SuspendLayout();
             this.tabPgHelp.SuspendLayout();
             this.tabPgAbout.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSupport
@@ -376,6 +376,40 @@
             this.tabPgXray.Text = "tabPage3";
             this.tabPgXray.UseVisualStyleBackColor = true;
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.rdoShelfari);
+            this.groupBox2.Controls.Add(this.rdoGoodreads);
+            this.groupBox2.Location = new System.Drawing.Point(202, 12);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(182, 74);
+            this.groupBox2.TabIndex = 27;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Data Provider";
+            // 
+            // rdoShelfari
+            // 
+            this.rdoShelfari.AutoSize = true;
+            this.rdoShelfari.Location = new System.Drawing.Point(17, 45);
+            this.rdoShelfari.Name = "rdoShelfari";
+            this.rdoShelfari.Size = new System.Drawing.Size(60, 17);
+            this.rdoShelfari.TabIndex = 1;
+            this.rdoShelfari.TabStop = true;
+            this.rdoShelfari.Text = "Shelfari";
+            this.rdoShelfari.UseVisualStyleBackColor = true;
+            // 
+            // rdoGoodreads
+            // 
+            this.rdoGoodreads.AutoSize = true;
+            this.rdoGoodreads.Checked = true;
+            this.rdoGoodreads.Location = new System.Drawing.Point(17, 18);
+            this.rdoGoodreads.Name = "rdoGoodreads";
+            this.rdoGoodreads.Size = new System.Drawing.Size(77, 17);
+            this.rdoGoodreads.TabIndex = 0;
+            this.rdoGoodreads.TabStop = true;
+            this.rdoGoodreads.Text = "Goodreads";
+            this.rdoGoodreads.UseVisualStyleBackColor = true;
+            // 
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.txtAZWOffset);
@@ -472,7 +506,7 @@
             this.gbXray.Controls.Add(this.chkUseNew);
             this.gbXray.Location = new System.Drawing.Point(6, 12);
             this.gbXray.Name = "gbXray";
-            this.gbXray.Size = new System.Drawing.Size(187, 74);
+            this.gbXray.Size = new System.Drawing.Size(183, 74);
             this.gbXray.TabIndex = 26;
             this.gbXray.TabStop = false;
             this.gbXray.Text = "Format";
@@ -787,40 +821,6 @@
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
             // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.rdoShelfari);
-            this.groupBox2.Controls.Add(this.rdoGoodreads);
-            this.groupBox2.Location = new System.Drawing.Point(199, 12);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(185, 74);
-            this.groupBox2.TabIndex = 27;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Data Provider";
-            // 
-            // rdoGoodreads
-            // 
-            this.rdoGoodreads.AutoSize = true;
-            this.rdoGoodreads.Checked = true;
-            this.rdoGoodreads.Location = new System.Drawing.Point(17, 18);
-            this.rdoGoodreads.Name = "rdoGoodreads";
-            this.rdoGoodreads.Size = new System.Drawing.Size(77, 17);
-            this.rdoGoodreads.TabIndex = 0;
-            this.rdoGoodreads.TabStop = true;
-            this.rdoGoodreads.Text = "Goodreads";
-            this.rdoGoodreads.UseVisualStyleBackColor = true;
-            // 
-            // rdoShelfari
-            // 
-            this.rdoShelfari.AutoSize = true;
-            this.rdoShelfari.Location = new System.Drawing.Point(17, 45);
-            this.rdoShelfari.Name = "rdoShelfari";
-            this.rdoShelfari.Size = new System.Drawing.Size(60, 17);
-            this.rdoShelfari.TabIndex = 1;
-            this.rdoShelfari.TabStop = true;
-            this.rdoShelfari.Text = "Shelfari";
-            this.rdoShelfari.UseVisualStyleBackColor = true;
-            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -857,6 +857,8 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tabPgXray.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox3.ResumeLayout(false);
@@ -876,8 +878,6 @@
             this.tabPgHelp.ResumeLayout(false);
             this.tabPgAbout.ResumeLayout(false);
             this.tabPgAbout.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
 
         }

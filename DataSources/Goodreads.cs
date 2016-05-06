@@ -44,10 +44,13 @@ namespace XRayBuilderGUI.DataSources
             {
                 HtmlNode titleNode = link.SelectSingleNode(".//a[@class='bookTitle']");
                 HtmlNode authorNode = link.SelectSingleNode(".//a[@class='authorName']");
+                if (authorNode.InnerText.IndexOf(author, StringComparison.OrdinalIgnoreCase) < 0)
+                    author = Functions.TrimAuthor(author);
                 if (titleNode.InnerText.IndexOf(title, StringComparison.OrdinalIgnoreCase) >= 0 &&
                     (authorNode.InnerText.IndexOf(author, StringComparison.OrdinalIgnoreCase) >= 0))
                 {
                     HtmlNode node = link.SelectSingleNode(".//a[@class='bookTitle']");
+                    //string searchResultTitle = node.InnerText.Trim();
                     //Parse goodreads ID
                     Match match = Regex.Match(node.OuterHtml, @"./book/show/([0-9]*)");
                     if (match.Success)
@@ -120,11 +123,11 @@ namespace XRayBuilderGUI.DataSources
         {
             Match match;
             Dictionary<string, string> results = new Dictionary<string, string>(2);
-            if (sourceHtmlDoc == null)
-            {
+            //if (sourceHtmlDoc == null)
+            //{
                 sourceHtmlDoc = new HtmlDocument();
                 sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.dataUrl));
-            }
+            //}
             //Use Goodreads reviews and ratings to generate popular passages dummy
             int highlights = 0;
             HtmlNode metaNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
@@ -266,7 +269,11 @@ namespace XRayBuilderGUI.DataSources
                 sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(dataUrl));
             }
             HtmlNodeCollection charNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/a");
-            if (charNodes == null) return terms;
+            if (charNodes == null)
+            {
+                Log(String.Format("No character terms found on this Goodreads page."));
+                return terms;
+            }
             foreach (HtmlNode charNode in charNodes)
             {
                 try

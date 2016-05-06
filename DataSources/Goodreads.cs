@@ -269,11 +269,7 @@ namespace XRayBuilderGUI.DataSources
                 sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(dataUrl));
             }
             HtmlNodeCollection charNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/a");
-            if (charNodes == null)
-            {
-                Log(String.Format("No character terms found on this Goodreads page."));
-                return terms;
-            }
+            if (charNodes == null) return terms;
             foreach (HtmlNode charNode in charNodes)
             {
                 try

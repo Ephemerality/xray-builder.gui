@@ -49,7 +49,7 @@
             this.tmiStartAction = new System.Windows.Forms.ToolStripMenuItem();
             this.prgBar = new System.Windows.Forms.ProgressBar();
             this.btnPreview = new System.Windows.Forms.Button();
-            this.btnLink = new System.Windows.Forms.Button();
+            this.btnOneClick = new System.Windows.Forms.Button();
             this.btnSettings = new System.Windows.Forms.Button();
             this.btnBrowseXML = new System.Windows.Forms.Button();
             this.btnBrowseOutput = new System.Windows.Forms.Button();
@@ -89,7 +89,7 @@
             // lblSeperator2
             // 
             this.lblSeperator2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.lblSeperator2.Location = new System.Drawing.Point(238, 12);
+            this.lblSeperator2.Location = new System.Drawing.Point(293, 12);
             this.lblSeperator2.Name = "lblSeperator2";
             this.lblSeperator2.Size = new System.Drawing.Size(2, 47);
             this.lblSeperator2.TabIndex = 33;
@@ -248,22 +248,22 @@
             // 
             this.btnPreview.Enabled = false;
             this.btnPreview.Image = ((System.Drawing.Image)(resources.GetObject("btnPreview.Image")));
-            this.btnPreview.Location = new System.Drawing.Point(301, 11);
+            this.btnPreview.Location = new System.Drawing.Point(355, 11);
             this.btnPreview.Name = "btnPreview";
             this.btnPreview.Size = new System.Drawing.Size(64, 48);
             this.btnPreview.TabIndex = 12;
             this.btnPreview.UseVisualStyleBackColor = true;
             this.btnPreview.Click += new System.EventHandler(this.btnPreview_Click);
             // 
-            // btnLink
+            // btnOneClick
             // 
-            this.btnLink.Image = ((System.Drawing.Image)(resources.GetObject("btnLink.Image")));
-            this.btnLink.Location = new System.Drawing.Point(371, 11);
-            this.btnLink.Name = "btnLink";
-            this.btnLink.Size = new System.Drawing.Size(48, 48);
-            this.btnLink.TabIndex = 28;
-            this.btnLink.UseVisualStyleBackColor = true;
-            this.btnLink.Click += new System.EventHandler(this.btnLink_Click);
+            this.btnOneClick.Image = ((System.Drawing.Image)(resources.GetObject("btnOneClick.Image")));
+            this.btnOneClick.Location = new System.Drawing.Point(237, 11);
+            this.btnOneClick.Name = "btnOneClick";
+            this.btnOneClick.Size = new System.Drawing.Size(48, 48);
+            this.btnOneClick.TabIndex = 28;
+            this.btnOneClick.UseVisualStyleBackColor = true;
+            this.btnOneClick.Click += new System.EventHandler(this.btnOneClick_Click);
             // 
             // btnSettings
             // 
@@ -329,7 +329,7 @@
             // btnSaveShelfari
             // 
             this.btnSaveShelfari.Image = ((System.Drawing.Image)(resources.GetObject("btnSaveShelfari.Image")));
-            this.btnSaveShelfari.Location = new System.Drawing.Point(247, 11);
+            this.btnSaveShelfari.Location = new System.Drawing.Point(301, 11);
             this.btnSaveShelfari.Name = "btnSaveShelfari";
             this.btnSaveShelfari.Size = new System.Drawing.Size(48, 48);
             this.btnSaveShelfari.TabIndex = 19;
@@ -385,10 +385,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(602, 426);
+            this.Controls.Add(this.btnOneClick);
             this.Controls.Add(this.btnPreview);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.btnUnpack);
-            this.Controls.Add(this.btnLink);
             this.Controls.Add(this.btnSettings);
             this.Controls.Add(this.lblSeperator3);
             this.Controls.Add(this.groupBox3);
@@ -442,8 +442,7 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label lblXMLFile;
-        private System.Windows.Forms.TextBox txtGoodreads;
-        private System.Windows.Forms.Button btnLink;
+        private System.Windows.Forms.Button btnOneClick;
         private System.Windows.Forms.Button btnBrowseOutput;
         public System.Windows.Forms.Button btnPreview;
         private System.Windows.Forms.Label lblSeperator3;
@@ -456,6 +455,7 @@
         private System.Windows.Forms.Button btnUnpack;
         private System.Windows.Forms.RichTextBox txtOutput;
         private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.TextBox txtGoodreads;
     }
 }
 

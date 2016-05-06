@@ -234,7 +234,11 @@ namespace XRayBuilderGUI
             else
             {
                 Terms = dataSource.GetTerms(useSpoilers, dataUrl, main.Log);
-                if (Terms.Count == 0) return 1;
+                if (Terms.Count == 0)
+                {
+                    main.Log("Error: No terms found on " + dataSource.Name + ".");
+                    return 1;
+                }
             }
 
             //Export list of Shelfari characters to a file to make it easier to create aliases or import the modified aliases if they exist

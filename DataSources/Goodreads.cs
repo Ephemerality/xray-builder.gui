@@ -18,7 +18,7 @@ namespace XRayBuilderGUI.DataSources
             string goodreadsBookUrl = "";
             author = Functions.FixAuthor(author);
 
-            HtmlAgilityPack.HtmlDocument goodreadsHtmlDoc = new HtmlAgilityPack.HtmlDocument();
+            HtmlDocument goodreadsHtmlDoc = new HtmlDocument();
             goodreadsHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(String.Format(goodreadsSearchUrlBase, author, title)));
             if (goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results"))
             {
@@ -123,11 +123,11 @@ namespace XRayBuilderGUI.DataSources
         {
             Match match;
             Dictionary<string, string> results = new Dictionary<string, string>(2);
-            //if (sourceHtmlDoc == null)
-            //{
+            if (sourceHtmlDoc == null)
+            {
                 sourceHtmlDoc = new HtmlDocument();
                 sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.dataUrl));
-            //}
+            }
             //Use Goodreads reviews and ratings to generate popular passages dummy
             int highlights = 0;
             HtmlNode metaNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");

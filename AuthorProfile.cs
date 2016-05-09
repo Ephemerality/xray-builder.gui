@@ -152,31 +152,64 @@ namespace XRayBuilderGUI
                 }
             }
 
-            // Try to find Author's Biography
-            HtmlNode bio = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-bio' and @class='a-row']/div/div/span");
-            //Trim authour biography to less than 1000 characters and/or replace more problematic characters.
-            if (bio.InnerText.Trim().Length != 0)
+            // Try to find author's biography
+            string bioFile = Environment.CurrentDirectory + @"\ext\" + authorAsin + ".bio";
+            if (settings.saveBio && File.Exists(bioFile))
             {
-                if (bio.InnerText.Length > 1000)
+                if (!readBio(bioFile)) return;
+            }
+            if (BioTrimmed == "")
+            {
+                HtmlNode bio = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-bio' and @class='a-row']/div/div/span");
+                //Trim authour biography to less than 1000 characters and/or replace more problematic characters.
+                if (bio.InnerText.Trim().Length != 0)
                 {
-                    int lastPunc = bio.InnerText.LastIndexOfAny(new char[] { '.', '!', '?' });
-                    int lastSpace = bio.InnerText.LastIndexOf(' ');
-                    if (lastPunc > lastSpace)
-                        BioTrimmed = bio.InnerText.Substring(0, lastPunc + 1);
+                    if (bio.InnerText.Length > 1000)
+                    {
+                        int lastPunc = bio.InnerText.LastIndexOfAny(new char[] { '.', '!', '?' });
+                        int lastSpace = bio.InnerText.LastIndexOf(' ');
+                        if (lastPunc > lastSpace)
+                            BioTrimmed = bio.InnerText.Substring(0, lastPunc + 1);
+                        else
+                            BioTrimmed = bio.InnerText.Substring(0, lastSpace) + '\u2026';
+                    }
                     else
-                        BioTrimmed = bio.InnerText.Substring(0, lastSpace) + '\u2026';
+                    {
+                        BioTrimmed = bio.InnerText;
+                    }
+                    BioTrimmed = Functions.CleanString(BioTrimmed);
+                    main.Log("Author biography found on Amazon!");
                 }
                 else
                 {
-                    BioTrimmed = bio.InnerText;
+                    BioTrimmed = "No author biography found on Amazon!";
+                    main.Log("An error occurred finding the author biography on Amazon.");
                 }
-                BioTrimmed = Functions.CleanString(BioTrimmed);
-                main.Log("Author biography found on Amazon!");
             }
-            else
+            if (settings.saveBio)
             {
-                BioTrimmed = "No author biography found on Amazon!";
-                main.Log("An error occurred finding the author biography on Amazon.");
+                if (!File.Exists(bioFile))
+                {
+                    try
+                    {
+                        main.Log("Saving biography to " + bioFile);
+                        using (var streamWriter = new StreamWriter(bioFile, false, System.Text.Encoding.UTF8))
+                        {
+                            streamWriter.Write(BioTrimmed);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        main.Log("An error occurred while writing biography.\r\n" + ex.Message);
+                        return;
+                    }
+                }
+                if (System.Windows.Forms.DialogResult.Yes == System.Windows.Forms.MessageBox.Show("Would you like to open the biography file in notepad for editing?", "Biography",
+                   System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question, System.Windows.Forms.MessageBoxDefaultButton.Button2))
+                {
+                    Functions.RunNotepad(bioFile);
+                    if (!readBio(bioFile)) return;
+                }
             }
             // Try to download Author image
             HtmlNode imageXpath = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-image']/img");
@@ -367,6 +400,27 @@ namespace XRayBuilderGUI
         {
             string template = @"{{""class"":""authorBio"",""asin"":""{0}"",""name"":""{1}"",""bio"":""{2}"",""imageUrl"":""{3}""}}";
             return Functions.ExpandUnicode(String.Format(template, authorAsin, curBook.author, BioTrimmed, authorImageUrl));
+        }
+
+        private bool readBio(string bioFile)
+        {
+            try
+            {
+                using (StreamReader streamReader = new StreamReader(bioFile, System.Text.Encoding.UTF8))
+                {
+                    BioTrimmed = streamReader.ReadToEnd();
+                    if (BioTrimmed == "")
+                        main.Log("Found biography file, but it is empty!\r\n" + bioFile);
+                    else
+                        main.Log("Using biography from " + bioFile + ".");
+                }
+            }
+            catch (Exception ex)
+            {
+                main.Log("An error occurred while opening " + bioFile + "\r\n" + ex.Message);
+                return false;
+            }
+            return true;
         }
     }
 }

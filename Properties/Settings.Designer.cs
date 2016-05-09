@@ -406,5 +406,17 @@ namespace XRayBuilderGUI.Properties {
                 this["dataSource"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool saveBio {
+            get {
+                return ((bool)(this["saveBio"]));
+            }
+            set {
+                this["saveBio"] = value;
+            }
+        }
     }
 }

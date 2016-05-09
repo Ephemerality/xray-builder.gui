@@ -78,6 +78,8 @@
             this.chkSplitAliases = new System.Windows.Forms.CheckBox();
             this.chkEnableEdit = new System.Windows.Forms.CheckBox();
             this.tabPgAmazon = new System.Windows.Forms.TabPage();
+            this.gbAmazonPrefs = new System.Windows.Forms.GroupBox();
+            this.chkSaveBio = new System.Windows.Forms.CheckBox();
             this.gbSite = new System.Windows.Forms.GroupBox();
             this.chkAmazonUSA = new System.Windows.Forms.CheckBox();
             this.chkAmazonUK = new System.Windows.Forms.CheckBox();
@@ -111,6 +113,7 @@
             this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.tabPgAmazon.SuspendLayout();
+            this.gbAmazonPrefs.SuspendLayout();
             this.gbSite.SuspendLayout();
             this.gbDetails.SuspendLayout();
             this.tabPgHelp.SuspendLayout();
@@ -632,6 +635,7 @@
             // 
             // tabPgAmazon
             // 
+            this.tabPgAmazon.Controls.Add(this.gbAmazonPrefs);
             this.tabPgAmazon.Controls.Add(this.gbSite);
             this.tabPgAmazon.Controls.Add(this.gbDetails);
             this.tabPgAmazon.Location = new System.Drawing.Point(4, 5);
@@ -641,6 +645,26 @@
             this.tabPgAmazon.TabIndex = 4;
             this.tabPgAmazon.Text = "tabPage5";
             this.tabPgAmazon.UseVisualStyleBackColor = true;
+            // 
+            // gbAmazonPrefs
+            // 
+            this.gbAmazonPrefs.Controls.Add(this.chkSaveBio);
+            this.gbAmazonPrefs.Location = new System.Drawing.Point(6, 160);
+            this.gbAmazonPrefs.Name = "gbAmazonPrefs";
+            this.gbAmazonPrefs.Size = new System.Drawing.Size(378, 48);
+            this.gbAmazonPrefs.TabIndex = 29;
+            this.gbAmazonPrefs.TabStop = false;
+            this.gbAmazonPrefs.Text = "Preferences";
+            // 
+            // chkSaveBio
+            // 
+            this.chkSaveBio.AutoSize = true;
+            this.chkSaveBio.Location = new System.Drawing.Point(14, 19);
+            this.chkSaveBio.Name = "chkSaveBio";
+            this.chkSaveBio.Size = new System.Drawing.Size(133, 17);
+            this.chkSaveBio.TabIndex = 24;
+            this.chkSaveBio.Text = "Save author biography";
+            this.chkSaveBio.UseVisualStyleBackColor = true;
             // 
             // gbSite
             // 
@@ -871,6 +895,8 @@
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.tabPgAmazon.ResumeLayout(false);
+            this.gbAmazonPrefs.ResumeLayout(false);
+            this.gbAmazonPrefs.PerformLayout();
             this.gbSite.ResumeLayout(false);
             this.gbSite.PerformLayout();
             this.gbDetails.ResumeLayout(false);
@@ -948,5 +974,7 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.RadioButton rdoShelfari;
         private System.Windows.Forms.RadioButton rdoGoodreads;
+        private System.Windows.Forms.GroupBox gbAmazonPrefs;
+        private System.Windows.Forms.CheckBox chkSaveBio;
     }
 }

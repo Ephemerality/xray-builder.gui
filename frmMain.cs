@@ -203,6 +203,7 @@ namespace XRayBuilderGUI
 
             //Create X-Ray and attempt to create the base file (essentially the same as the site)
             XRay xray;
+            SetDatasourceLabels(); // Reset the dataSource for the new build process
             try
             {
                 if (rdoGoodreads.Checked)
@@ -520,6 +521,7 @@ namespace XRayBuilderGUI
             // Added author name to log output
             Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
                 results[2], results[0], results[4], results[5], results[1]));
+            SetDatasourceLabels(); // Reset the dataSource for the new build process
             try
             {
                 BookInfo bookInfo = new BookInfo(results[5], results[4], results[0], results[1], results[2],
@@ -766,16 +768,8 @@ namespace XRayBuilderGUI
             frmSet.ShowDialog();
             SetDatasourceLabels();
 
-            if (Properties.Settings.Default.dataSource == "Goodreads")
-            {
-                if (txtGoodreads.Text.Contains("shelfari"))
-                    txtGoodreads.Text = "";
-            }
-            if (Properties.Settings.Default.dataSource == "Shelfari")
-            {
-                if (txtGoodreads.Text.Contains("goodreads"))
-                    txtGoodreads.Text = "";
-            }
+            if (!txtGoodreads.Text.ToLower().Contains(Properties.Settings.Default.dataSource.ToLower()))
+                txtGoodreads.Text = "";
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -1023,7 +1017,8 @@ namespace XRayBuilderGUI
 
         private void btnOneClick_Click(object sender, EventArgs e)
         {
-
+            btnKindleExtras_Click(sender, e);
+            btnBuild_Click(sender, e);
         }
     }
 }

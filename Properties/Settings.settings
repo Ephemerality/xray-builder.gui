@@ -98,5 +98,8 @@
     <Setting Name="dataSource" Type="System.String" Scope="User">
       <Value Profile="(Default)">Goodreads</Value>
     </Setting>
+    <Setting Name="saveBio" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -72,6 +72,7 @@ namespace XRayBuilderGUI
             chkOverrideOffset.Checked = Properties.Settings.Default.overrideOffset;
             txtAZWOffset.Text = Properties.Settings.Default.offsetAZW3.ToString();
             chkPageCount.Checked = Properties.Settings.Default.pageCount;
+            chkSaveBio.Checked = Properties.Settings.Default.saveBio;
             if (Properties.Settings.Default.dataSource == "Goodreads")
                 rdoGoodreads.Checked = true;
             else
@@ -140,6 +141,9 @@ namespace XRayBuilderGUI
                                               "estimation will be used.");
             toolTip1.SetToolTip(rdoGoodreads, "Download all data from Goodreads.");
             toolTip1.SetToolTip(rdoShelfari, "Download all data from Shelfari.");
+            toolTip1.SetToolTip(chkSaveBio, "If checked, author biographies will be saved to the \\ext folder\r\n" +
+                                            "and opened in Notepad before continuing to build Author Profiles.\r\n" +
+                                            "Must be enabled for a saved biography to be loaded.");
         }
 
         private void btnBrowseUnpack_Click(object sender, EventArgs e)
@@ -196,6 +200,7 @@ namespace XRayBuilderGUI
             Properties.Settings.Default.overrideOffset = chkOverrideOffset.Checked;
             Properties.Settings.Default.offsetAZW3 = offsetAZW;
             Properties.Settings.Default.pageCount = chkPageCount.Checked;
+            Properties.Settings.Default.saveBio = chkSaveBio.Checked;
             if (rdoGoodreads.Checked)
                 Properties.Settings.Default.dataSource = "Goodreads";
             else

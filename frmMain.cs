@@ -834,16 +834,15 @@ namespace XRayBuilderGUI
                 Properties.Settings.Default.mobi_unpack = Environment.CurrentDirectory + @"\dist\kindleunpack.exe";
             
             txtGoodreads.Text = Properties.Settings.Default.Goodreads;
+            if (Properties.Settings.Default.buildSource == "Goodreads")
+                rdoGoodreads.Checked = true;
+            else
+                rdoFile.Checked = true;
             SetDatasourceLabels();
         }
 
         private void SetDatasourceLabels()
         {
-            if (Properties.Settings.Default.buildSource == "Goodreads")
-                rdoGoodreads.Checked = true;
-            else
-                rdoFile.Checked = true;
-
             if (Properties.Settings.Default.dataSource == "Goodreads")
             {
                 dataSource = new Goodreads();

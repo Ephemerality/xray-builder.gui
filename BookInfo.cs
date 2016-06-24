@@ -94,9 +94,9 @@ namespace XRayBuilderGUI
             if (bookImageUrl == "")
             {
                 // Parse Book image URL
-                HtmlNode bookImageLoc = bookDoc.DocumentNode.SelectSingleNode("//*[@id='imgBlkFront']");
-                if (bookImageLoc == null)
-                    bookImageLoc = bookDoc.DocumentNode.SelectSingleNode("//*[@class='series-detail-product-image']");
+                HtmlNode bookImageLoc = bookDoc.DocumentNode.SelectSingleNode("//*[@id='imgBlkFront']")
+                    ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='series-detail-product-image']")
+                    ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='ebooksImgBlkFront']"); //co.uk seems to use this id sometimes
                 if (bookImageLoc == null)
                     throw new HtmlWebException("Error finding book image. If you want, you can report the book's Amazon URL to help with parsing.");
                 else

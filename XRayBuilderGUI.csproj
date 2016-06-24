@@ -90,6 +90,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataSources\Amazon.cs" />
     <Compile Include="AuthorProfile.cs" />
     <Compile Include="BookInfo.cs" />
     <Compile Include="DataSources\DataSource.cs" />

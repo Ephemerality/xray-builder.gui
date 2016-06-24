@@ -101,7 +101,7 @@ namespace XRayBuilderGUI.DataSources
             return "";
         }
 
-        public override BookInfo GetNextInSeries(BookInfo curBook, AuthorProfile authorProfile, Action<string> Log)
+        public override BookInfo GetNextInSeries(BookInfo curBook, AuthorProfile authorProfile, string TLD, Action<string> Log)
         {
             BookInfo nextBook = null;
 
@@ -123,7 +123,7 @@ namespace XRayBuilderGUI.DataSources
                 if (nextBook == null)
                 {
                     // Attempt to search Amazon for the book instead
-                    nextBook = Functions.AmazonSearchBook(title, curBook.author);
+                    nextBook = Amazon.SearchBook(title, curBook.author, TLD);
                     if (nextBook != null)
                         nextBook.GetAmazonInfo(nextBook.amazonUrl); //fill in desc, imageurl, and ratings
                 }
@@ -153,7 +153,7 @@ namespace XRayBuilderGUI.DataSources
                 if (curBook.previousInSeries == null)
                 {
                     // Attempt to search Amazon for the book
-                    curBook.previousInSeries = Functions.AmazonSearchBook(title, curBook.author);
+                    curBook.previousInSeries = Amazon.SearchBook(title, curBook.author, TLD);
                     if (curBook.previousInSeries != null)
                         curBook.previousInSeries.GetAmazonInfo(curBook.previousInSeries.amazonUrl); //fill in desc, imageurl, and ratings
 

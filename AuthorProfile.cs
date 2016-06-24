@@ -25,14 +25,13 @@ namespace XRayBuilderGUI
         public string BioTrimmed = "";
         public List<BookInfo> otherBooks = new List<BookInfo>();
         public string authorImageUrl = "";
-        public HtmlDocument authorHtmlDoc = null;
         public string authorAsin = "";
 
         public string EaSubTitle = null;
 
         public bool complete = false; //Set if constructor succeeded in generating profile
 
-        public AuthorProfile(BookInfo nBook, frmMain frm)
+        public AuthorProfile(BookInfo nBook, string TLD, frmMain frm)
         {
             this.curBook = nBook;
             this.main = frm;
@@ -76,79 +75,41 @@ namespace XRayBuilderGUI
                 return;
             }
 
-            //Generate Author search URL from author's name
-            string newAuthor = Functions.FixAuthor(curBook.author);
-            string plusAuthorName = newAuthor.Replace(" ", "+");
-            string amazonAuthorSearchUrl = @"http://www.amazon.com/s/?url=search-alias%3Dstripbooks&field-keywords=" +
-                                        plusAuthorName;
-            main.Log("Searching for author's page on Amazon...");
-
-            // Search Amazon for Author
-            HtmlDocument authorHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
-            string authorsearchHtml = HttpDownloader.GetPageHtml(amazonAuthorSearchUrl);
-            authorHtmlDoc.LoadHtml(authorsearchHtml);
-
-            if (Properties.Settings.Default.saveHtml)
+            DataSources.AuthorSearchResults searchResults = null;
+            // Attempt to download from the alternate site, if present. If it fails in some way, try .com
+            // If the .com search crashes, it will crash back to the caller in frmMain
+            try
             {
-                try
+                searchResults = DataSources.Amazon.SearchAuthor(curBook, TLD, main.Log);
+            }
+            catch (Exception ex)
+            {
+                main.Log("Error searching Amazon." + TLD + ": " + ex.Message);
+            }
+            finally
+            {
+                if (searchResults == null)
                 {
-                    main.Log("Saving Amazon's author search webpage...");
-                    File.WriteAllText(Environment.CurrentDirectory +
-                                      String.Format(@"\dmp\{0}.authorsearchHtml.txt", curBook.asin),
-                        authorHtmlDoc.DocumentNode.InnerHtml);
-                }
-                catch (Exception ex)
-                {
-                    main.Log(String.Format("An error ocurred saving authorsearchHtml.txt: {0}", ex.Message));
+                    main.Log("Failed to find author on Amazon." + TLD + ", trying again with Amazon.com.");
+                    TLD = "com";
+                    searchResults = DataSources.Amazon.SearchAuthor(curBook, TLD, main.Log);
                 }
             }
-
-            // Try to find Author's page from Amazon search
-            HtmlNode node = authorHtmlDoc.DocumentNode.SelectSingleNode("//*[@id='result_1']");
-            if (node == null || !node.OuterHtml.Contains("/e/B"))
-            {
-                main.Log("An error occurred finding author's page on Amazon.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at " + amazonAuthorSearchUrl);
-                return;
-            }
-            authorAsin = node.OuterHtml;
-            int index1 = authorAsin.IndexOf("data-asin");
-            if (index1 > 0)
-                authorAsin = authorAsin.Substring(index1 + 11, 10);
-            
-            node = node.SelectSingleNode("//*[@id='result_1']/div/div/div/div/a");
-            string properAuthor = node.GetAttributeValue("href", "not found");
-            if (properAuthor == "not found" || properAuthor.IndexOf('/', 1) < 3)
-            {
-                main.Log("An error occurred parsing author's page URL properly. Report this URL on the MobileRead thread: " + amazonAuthorSearchUrl);
-                return;
-            }
-            properAuthor = properAuthor.Substring(1, properAuthor.IndexOf('/', 1) - 1);
-            string authorAmazonWebsiteLocationLog = @"http://www.amazon.com/" + properAuthor + "/e/" + authorAsin;
-            string authorAmazonWebsiteLocation = @"http://www.amazon.com/" + properAuthor + "/e/" + authorAsin +
-                                              "/ref=la_" + authorAsin +
-                                              "_rf_p_n_feature_browse-b_2?fst=as%3Aoff&rh=n%3A283155%2Cp_82%3A" +
-                                              authorAsin +
-                                              "%2Cp_n_feature_browse-bin%3A618073011&bbn=283155&ie=UTF8&qid=1432378570&rnid=618072011";
-
-            main.Log("Author page found on Amazon!");
-            main.Log(String.Format("Author's Amazon Page URL: {0}", authorAmazonWebsiteLocationLog));
-
-            // Load Author's Amazon page
-            string authorpageHtml = HttpDownloader.GetPageHtml(authorAmazonWebsiteLocation);
-            authorHtmlDoc.LoadHtml(authorpageHtml);
+            if (searchResults == null)
+                return; // Already logged error in search function
+            authorAsin = searchResults.authorAsin;
 
             if (Properties.Settings.Default.saveHtml)
             {
                 try
                 {
                     main.Log("Saving author's Amazon webpage...");
-                    File.WriteAllText(Environment.CurrentDirectory +
-                                      String.Format(@"\dmp\{0}.authorpageHtml.txt", curBook.asin),
-                        authorHtmlDoc.DocumentNode.InnerHtml);
+                    File.WriteAllText(Environment.CurrentDirectory + String.Format(@"\dmp\{0}.authorpageHtml.txt", curBook.asin),
+                        searchResults.authorHtmlDoc.DocumentNode.InnerHtml);
                 }
                 catch (Exception ex)
                 {
-                    main.Log(String.Format("An error ocurred saving authorpageHtml.txt: {0}", ex.Message));
+                    main.Log(String.Format("An error occurred saving authorpageHtml.txt: {0}", ex.Message));
                 }
             }
 
@@ -160,9 +121,9 @@ namespace XRayBuilderGUI
             }
             if (BioTrimmed == "")
             {
-                HtmlNode bio = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-bio' and @class='a-row']/div/div/span");
+                HtmlNode bio = DataSources.Amazon.GetBio(searchResults, TLD);
                 //Trim authour biography to less than 1000 characters and/or replace more problematic characters.
-                if (bio.InnerText.Trim().Length != 0)
+                if (bio == null || bio.InnerText.Trim().Length != 0)
                 {
                     if (bio.InnerText.Length > 1000)
                     {
@@ -212,7 +173,7 @@ namespace XRayBuilderGUI
                 }
             }
             // Try to download Author image
-            HtmlNode imageXpath = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-image']/img");
+            HtmlNode imageXpath = DataSources.Amazon.GetAuthorImage(searchResults, TLD);
             authorImageUrl = imageXpath.GetAttributeValue("src", "");
             string downloadedAuthorImage = curBook.path + @"\DownloadedAuthorImage.jpg";
             try
@@ -293,48 +254,9 @@ namespace XRayBuilderGUI
             bgs.Dispose();
 
             main.Log("Gathering author's other books...");
-            List<BookInfo> bookList = new List<BookInfo>();
-            HtmlNodeCollection resultsNodes =
-                authorHtmlDoc.DocumentNode.SelectNodes("//div[@id='mainResults']/ul/li");
-            if (resultsNodes != null)
+            List<BookInfo> bookList = DataSources.Amazon.GetAuthorBooks(searchResults, curBook.title, curBook.author, TLD);
+            if (bookList != null)
             {
-                foreach (HtmlNode result in resultsNodes)
-                {
-                    if (!result.Id.StartsWith("result_")) continue;
-                    string name, url, asin = "";
-                    HtmlNode otherBook = result.SelectSingleNode(".//div[@class='a-row a-spacing-small']/a/h2");
-                    //Exclude the current book title from other books search
-                    Match match = Regex.Match(otherBook.InnerText, curBook.title, RegexOptions.IgnoreCase);
-                    if (match.Success)
-                    {
-                        continue;
-                    }
-                    match = Regex.Match(otherBook.InnerText, @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase);
-                    if (match.Success)
-                    {
-                        continue;
-                    }
-                    name = otherBook.InnerText;
-                    otherBook = result.SelectSingleNode(".//*[@title='Kindle Edition']");
-                    match = Regex.Match(otherBook.OuterHtml, "dp/(B[A-Z0-9]{9})/");
-                    if (match.Success)
-                    {
-                        asin = match.Groups[1].Value;
-                    }
-                    //url = otherBook.GetAttributeValue("href", "");
-                    //url = otherBook.GetAttributeValue("href", "").
-                    //    Substring(0, otherBook.GetAttributeValue("href", "").
-                    //    IndexOf(match.Groups[1].Value) +
-                    //    match.Groups[1].Length);
-                    url = String.Format("http://www.amazon.com/dp/{0}", asin);
-                    if (name != "" && url != "" && asin != "")
-                    {
-                        BookInfo newBook = new BookInfo(name, curBook.author, asin);
-                        newBook.amazonUrl = url;
-                        bookList.Add(newBook);
-                    }
-                }
-
                 main.Log("Gathering metadata for other books...");
                 foreach (BookInfo book in bookList)
                 {

@@ -12,8 +12,6 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
 
-using HAP = HtmlAgilityPack;
-
 namespace XRayBuilderGUI
 {
     public static class Functions
@@ -576,42 +574,6 @@ namespace XRayBuilderGUI
             }
 
             return itemList;
-        }
-
-        public static BookInfo AmazonSearchBook(string title, string author)
-        {
-            BookInfo result = null;
-
-            author = TrimAuthor(author);
-
-            if (title.IndexOf(" (") >= 0)
-                title = title.Substring(0, title.IndexOf(" ("));
-            //Search Kindle store
-            //string searchUrl = @"http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Ddigital-text&field-keywords=" + 
-            //Uri.EscapeDataString(title + " " + author);
-            
-            //Search "all" Amazon
-            string searchUrl = @"http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=" +
-            Uri.EscapeDataString(title + " " + author);
-            HAP.HtmlDocument searchDoc = new HAP.HtmlDocument();
-            searchDoc.LoadHtml(HttpDownloader.GetPageHtml(searchUrl));
-            HAP.HtmlNode node = searchDoc.DocumentNode.SelectSingleNode("//li[@id='result_0']");
-            HAP.HtmlNode nodeASIN = searchDoc.DocumentNode.SelectSingleNode("//a[@title='Kindle Edition']");
-            //At least attempt to verify it might be the same book?
-            //Ignore case of title
-            if (node != null && nodeASIN != null && node.InnerText.IndexOf(title, StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                Match foundASIN = Regex.Match(nodeASIN.OuterHtml, "(B[A-Z0-9]{9})");
-                node = node.SelectSingleNode(".//div/div/div/div[@class='a-fixed-left-grid-col a-col-right']/div/a");
-                if (node != null)
-                {
-                    result = new BookInfo(node.InnerText, author, foundASIN.Value);
-                    string trimUrl = nodeASIN.GetAttributeValue("href", "");
-                    trimUrl = trimUrl.Substring(0, trimUrl.IndexOf(foundASIN.Value) + foundASIN.Length);
-                    result.amazonUrl = trimUrl; // Grab the true link for good measure
-                }
-            }
-            return result;
         }
 
         /// <summary>

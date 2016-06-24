@@ -528,7 +528,7 @@ namespace XRayBuilderGUI
                                                 randomFile, Functions.RemoveInvalidFileChars(results[5]), txtGoodreads.Text, results[3]);
 
                 Log("Attempting to build Author Profile...");
-                AuthorProfile ap = new AuthorProfile(bookInfo, this);
+                AuthorProfile ap = new AuthorProfile(bookInfo, settings.amazonTLD, this);
                 if (!ap.complete) return;
                 Log("Attempting to build Start Actions and End Actions...");
                 EndActions ea = new EndActions(ap, bookInfo, rawMLSize, dataSource, this);

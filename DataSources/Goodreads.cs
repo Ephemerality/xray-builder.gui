@@ -65,7 +65,7 @@ namespace XRayBuilderGUI.DataSources
         /// Modifies curBook.previousInSeries to contain the found book info.
         /// </summary>
         /// <returns>Next book in series</returns>
-        public override BookInfo GetNextInSeries(BookInfo curBook, AuthorProfile authorProfile, Action<string> Log)
+        public override BookInfo GetNextInSeries(BookInfo curBook, AuthorProfile authorProfile, string TLD, Action<string> Log)
         {
             BookInfo nextBook = null;
 
@@ -87,7 +87,16 @@ namespace XRayBuilderGUI.DataSources
                 if (nextBook == null)
                 {
                     // Attempt to search Amazon for the book instead
-                    nextBook = Functions.AmazonSearchBook(title, curBook.author);
+                    try
+                    {
+                        nextBook = Amazon.SearchBook(title, curBook.author, TLD);
+                    }
+                    catch
+                    {
+                        Log(String.Format("Failed to find {0} on Amazon." + TLD + ", trying again with Amazon.com.", title));
+                        TLD = "com";
+                        nextBook = Amazon.SearchBook(title, curBook.author, TLD);
+                    }
                     if (nextBook != null)
                         nextBook.GetAmazonInfo(nextBook.amazonUrl); //fill in desc, imageurl, and ratings
                 }
@@ -104,7 +113,7 @@ namespace XRayBuilderGUI.DataSources
                 if (curBook.previousInSeries == null)
                 {
                     // Attempt to search Amazon for the book
-                    curBook.previousInSeries = Functions.AmazonSearchBook(title, curBook.author);
+                    curBook.previousInSeries = Amazon.SearchBook(title, curBook.author, TLD);
                     if (curBook.previousInSeries != null)
                         curBook.previousInSeries.GetAmazonInfo(curBook.previousInSeries.amazonUrl); //fill in desc, imageurl, and ratings
                 }

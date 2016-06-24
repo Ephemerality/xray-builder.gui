@@ -44,9 +44,6 @@
     <Setting Name="realName" Type="System.String" Scope="User">
       <Value Profile="(Default)">Anonymous</Value>
     </Setting>
-    <Setting Name="amazonUk" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
     <Setting Name="enableEdit" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
@@ -100,6 +97,9 @@
     </Setting>
     <Setting Name="saveBio" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="amazonTLD" Type="System.String" Scope="User">
+      <Value Profile="(Default)">com</Value>
     </Setting>
   </Settings>
 </SettingsFile>

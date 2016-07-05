@@ -79,10 +79,10 @@
             this.chkEnableEdit = new System.Windows.Forms.CheckBox();
             this.tabPgAmazon = new System.Windows.Forms.TabPage();
             this.gbAmazonPrefs = new System.Windows.Forms.GroupBox();
+            this.chkPromptAsin = new System.Windows.Forms.CheckBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.cmbRegion = new System.Windows.Forms.ComboBox();
             this.chkSaveBio = new System.Windows.Forms.CheckBox();
-            this.gbSite = new System.Windows.Forms.GroupBox();
-            this.chkAmazonUSA = new System.Windows.Forms.CheckBox();
-            this.chkAmazonUK = new System.Windows.Forms.CheckBox();
             this.gbDetails = new System.Windows.Forms.GroupBox();
             this.lblReal = new System.Windows.Forms.Label();
             this.txtReal = new System.Windows.Forms.TextBox();
@@ -114,7 +114,6 @@
             this.groupBox5.SuspendLayout();
             this.tabPgAmazon.SuspendLayout();
             this.gbAmazonPrefs.SuspendLayout();
-            this.gbSite.SuspendLayout();
             this.gbDetails.SuspendLayout();
             this.tabPgHelp.SuspendLayout();
             this.tabPgAbout.SuspendLayout();
@@ -636,7 +635,6 @@
             // tabPgAmazon
             // 
             this.tabPgAmazon.Controls.Add(this.gbAmazonPrefs);
-            this.tabPgAmazon.Controls.Add(this.gbSite);
             this.tabPgAmazon.Controls.Add(this.gbDetails);
             this.tabPgAmazon.Location = new System.Drawing.Point(4, 5);
             this.tabPgAmazon.Name = "tabPgAmazon";
@@ -648,58 +646,55 @@
             // 
             // gbAmazonPrefs
             // 
+            this.gbAmazonPrefs.Controls.Add(this.chkPromptAsin);
+            this.gbAmazonPrefs.Controls.Add(this.label1);
+            this.gbAmazonPrefs.Controls.Add(this.cmbRegion);
             this.gbAmazonPrefs.Controls.Add(this.chkSaveBio);
-            this.gbAmazonPrefs.Location = new System.Drawing.Point(6, 160);
+            this.gbAmazonPrefs.Location = new System.Drawing.Point(6, 106);
             this.gbAmazonPrefs.Name = "gbAmazonPrefs";
-            this.gbAmazonPrefs.Size = new System.Drawing.Size(378, 48);
+            this.gbAmazonPrefs.Size = new System.Drawing.Size(378, 104);
             this.gbAmazonPrefs.TabIndex = 29;
             this.gbAmazonPrefs.TabStop = false;
             this.gbAmazonPrefs.Text = "Preferences";
             // 
+            // chkPromptAsin
+            // 
+            this.chkPromptAsin.AutoSize = true;
+            this.chkPromptAsin.Location = new System.Drawing.Point(14, 19);
+            this.chkPromptAsin.Name = "chkPromptAsin";
+            this.chkPromptAsin.Size = new System.Drawing.Size(116, 17);
+            this.chkPromptAsin.TabIndex = 27;
+            this.chkPromptAsin.Text = "Show ASIN prompt";
+            this.chkPromptAsin.UseVisualStyleBackColor = true;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(12, 71);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(44, 13);
+            this.label1.TabIndex = 26;
+            this.label1.Text = "Region:";
+            // 
+            // cmbRegion
+            // 
+            this.cmbRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbRegion.FormattingEnabled = true;
+            this.cmbRegion.Location = new System.Drawing.Point(62, 68);
+            this.cmbRegion.Name = "cmbRegion";
+            this.cmbRegion.Size = new System.Drawing.Size(78, 21);
+            this.cmbRegion.TabIndex = 25;
+            // 
             // chkSaveBio
             // 
             this.chkSaveBio.AutoSize = true;
-            this.chkSaveBio.Location = new System.Drawing.Point(14, 19);
+            this.chkSaveBio.Location = new System.Drawing.Point(14, 45);
             this.chkSaveBio.Name = "chkSaveBio";
             this.chkSaveBio.Size = new System.Drawing.Size(133, 17);
             this.chkSaveBio.TabIndex = 24;
             this.chkSaveBio.Text = "Save author biography";
             this.chkSaveBio.UseVisualStyleBackColor = true;
-            // 
-            // gbSite
-            // 
-            this.gbSite.Controls.Add(this.chkAmazonUSA);
-            this.gbSite.Controls.Add(this.chkAmazonUK);
-            this.gbSite.Enabled = false;
-            this.gbSite.Location = new System.Drawing.Point(6, 106);
-            this.gbSite.Name = "gbSite";
-            this.gbSite.Size = new System.Drawing.Size(378, 48);
-            this.gbSite.TabIndex = 28;
-            this.gbSite.TabStop = false;
-            this.gbSite.Text = "Amazon Site";
-            // 
-            // chkAmazonUSA
-            // 
-            this.chkAmazonUSA.AutoSize = true;
-            this.chkAmazonUSA.Checked = true;
-            this.chkAmazonUSA.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkAmazonUSA.Enabled = false;
-            this.chkAmazonUSA.Location = new System.Drawing.Point(127, 19);
-            this.chkAmazonUSA.Name = "chkAmazonUSA";
-            this.chkAmazonUSA.Size = new System.Drawing.Size(87, 17);
-            this.chkAmazonUSA.TabIndex = 25;
-            this.chkAmazonUSA.Text = "Amazon.com";
-            this.chkAmazonUSA.UseVisualStyleBackColor = true;
-            // 
-            // chkAmazonUK
-            // 
-            this.chkAmazonUK.AutoSize = true;
-            this.chkAmazonUK.Location = new System.Drawing.Point(14, 19);
-            this.chkAmazonUK.Name = "chkAmazonUK";
-            this.chkAmazonUK.Size = new System.Drawing.Size(94, 17);
-            this.chkAmazonUK.TabIndex = 24;
-            this.chkAmazonUK.Text = "Amazon.co.uk";
-            this.chkAmazonUK.UseVisualStyleBackColor = true;
             // 
             // gbDetails
             // 
@@ -897,8 +892,6 @@
             this.tabPgAmazon.ResumeLayout(false);
             this.gbAmazonPrefs.ResumeLayout(false);
             this.gbAmazonPrefs.PerformLayout();
-            this.gbSite.ResumeLayout(false);
-            this.gbSite.PerformLayout();
             this.gbDetails.ResumeLayout(false);
             this.gbDetails.PerformLayout();
             this.tabPgHelp.ResumeLayout(false);
@@ -945,9 +938,6 @@
         private System.Windows.Forms.TextBox txtReal;
         private System.Windows.Forms.TextBox txtPen;
         private System.Windows.Forms.Label lblPen;
-        private System.Windows.Forms.GroupBox gbSite;
-        private System.Windows.Forms.CheckBox chkAmazonUSA;
-        private System.Windows.Forms.CheckBox chkAmazonUK;
         private System.Windows.Forms.ListBox listSettings;
         private System.Windows.Forms.TabPage tabPgHelp;
         private System.Windows.Forms.RichTextBox rtbHelp;
@@ -976,5 +966,8 @@
         private System.Windows.Forms.RadioButton rdoGoodreads;
         private System.Windows.Forms.GroupBox gbAmazonPrefs;
         private System.Windows.Forms.CheckBox chkSaveBio;
+        private System.Windows.Forms.ComboBox cmbRegion;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.CheckBox chkPromptAsin;
     }
 }

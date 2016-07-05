@@ -25,23 +25,19 @@ namespace XRayBuilderGUI.DataSources
             author = Functions.FixAuthor(author);
 
             HtmlDocument shelfariHtmlDoc = new HtmlDocument();
-            for (int j = 0; j <= 1; j++)
+            for (int i = 0; i < bindingTypes.Length; i++)
             {
-                for (int i = 0; i < bindingTypes.Length; i++)
+                Log("Searching for " + bindingTypes[i] + " edition...");
+                // Insert parameters (mainly for searching with removed diacritics).
+                // Seems to work fine without replacing spaces?
+                shelfariHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(String.Format(shelfariSearchUrlBase, author, title, bindingTypes[i])));
+                if (!shelfariHtmlDoc.DocumentNode.InnerText.Contains("Your search did not return any results"))
                 {
-                    Log("Searching for " + bindingTypes[i] + " edition...");
-                    // Insert parameters (mainly for searching with removed diacritics). Seems to work fine without replacing spaces?
-                    shelfariHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(String.Format(shelfariSearchUrlBase, author, title, bindingTypes[i])));
-                    if (!shelfariHtmlDoc.DocumentNode.InnerText.Contains("Your search did not return any results"))
-                    {
-                        shelfariBookUrl = FindShelfariURL(shelfariHtmlDoc, author, title);
-                        if (shelfariBookUrl != "")
-                        {
-                            return shelfariBookUrl;
-                        }
-                    }
-                    Log("Unable to find a " + bindingTypes[i] + " edition of this book on Shelfari!");
+                    shelfariBookUrl = FindShelfariURL(shelfariHtmlDoc, author, title);
+                    if (shelfariBookUrl != "")
+                        return shelfariBookUrl;
                 }
+                Log("Unable to find a " + bindingTypes[i] + " edition of this book on Shelfari!");
                 if (bookFound) break;
                 // Attempt to remove diacritics (accented characters) from author & title for searching
                 string newAuthor = author.RemoveDiacritics();
@@ -65,6 +61,9 @@ namespace XRayBuilderGUI.DataSources
             List<string> listoflinks = new List<string>();
             Dictionary<string, string> retData = new Dictionary<string, string>();
 
+            HtmlNode nodeResultCheck = shelfariHtmlDoc.DocumentNode.SelectSingleNode("//li[@class='item']/div[@class='text']");
+            if (nodeResultCheck == null)
+                return "";
             foreach (HtmlNode bookItems in shelfariHtmlDoc.DocumentNode.SelectNodes("//li[@class='item']/div[@class='text']"))
             {
                 if (bookItems == null) continue;
@@ -101,7 +100,7 @@ namespace XRayBuilderGUI.DataSources
             return "";
         }
 
-        public override BookInfo GetNextInSeries(BookInfo curBook, AuthorProfile authorProfile, Action<string> Log)
+        public override BookInfo GetNextInSeries(BookInfo curBook, AuthorProfile authorProfile, string TLD, Action<string> Log)
         {
             BookInfo nextBook = null;
 
@@ -123,7 +122,7 @@ namespace XRayBuilderGUI.DataSources
                 if (nextBook == null)
                 {
                     // Attempt to search Amazon for the book instead
-                    nextBook = Functions.AmazonSearchBook(title, curBook.author);
+                    nextBook = Amazon.SearchBook(title, curBook.author, TLD);
                     if (nextBook != null)
                         nextBook.GetAmazonInfo(nextBook.amazonUrl); //fill in desc, imageurl, and ratings
                 }
@@ -153,7 +152,7 @@ namespace XRayBuilderGUI.DataSources
                 if (curBook.previousInSeries == null)
                 {
                     // Attempt to search Amazon for the book
-                    curBook.previousInSeries = Functions.AmazonSearchBook(title, curBook.author);
+                    curBook.previousInSeries = Amazon.SearchBook(title, curBook.author, TLD);
                     if (curBook.previousInSeries != null)
                         curBook.previousInSeries.GetAmazonInfo(curBook.previousInSeries.amazonUrl); //fill in desc, imageurl, and ratings
 

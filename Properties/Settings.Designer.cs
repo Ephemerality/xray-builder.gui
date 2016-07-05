@@ -193,18 +193,6 @@ namespace XRayBuilderGUI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool amazonUk {
-            get {
-                return ((bool)(this["amazonUk"]));
-            }
-            set {
-                this["amazonUk"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool enableEdit {
             get {
@@ -416,6 +404,30 @@ namespace XRayBuilderGUI.Properties {
             }
             set {
                 this["saveBio"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("com")]
+        public string amazonTLD {
+            get {
+                return ((string)(this["amazonTLD"]));
+            }
+            set {
+                this["amazonTLD"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool promtASIN {
+            get {
+                return ((bool)(this["promtASIN"]));
+            }
+            set {
+                this["promtASIN"] = value;
             }
         }
     }

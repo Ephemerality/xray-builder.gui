@@ -5,9 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using System.Xml;
 
 using HtmlAgilityPack;
+using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI
 {
@@ -15,6 +17,7 @@ namespace XRayBuilderGUI
     {
         private Properties.Settings settings = Properties.Settings.Default;
         private frmMain main;
+        //private frmASIN frmAS = new frmASIN();
 
         private string EaPath = "";
         private string SaPath = "";
@@ -39,10 +42,9 @@ namespace XRayBuilderGUI
 
             main.Log("Attempting to find book on Amazon...");
             //Generate Book search URL from book's ASIN
-            string ebookLocation = @"http://www.amazon.com/dp/" + book.asin;
+            string ebookLocation = String.Format(@"http://www.amazon.{0}/dp/{1}", settings.amazonTLD, book.asin);
 
             // Search Amazon for book
-            main.Log("Book found on Amazon!");
             main.Log(String.Format("Book's Amazon page URL: {0}", ebookLocation));
             
             HtmlDocument bookHtmlDoc = new HtmlDocument {OptionAutoCloseOnEnd = true};
@@ -55,6 +57,7 @@ namespace XRayBuilderGUI
                 main.Log(String.Format("An error ocurred while downloading book's Amazon page: {0}\r\nYour ASIN may not be correct.", ex.Message));
                 return;
             }
+            main.Log("Book found on Amazon!");
             if (Properties.Settings.Default.saveHtml)
             {
                 try
@@ -86,7 +89,7 @@ namespace XRayBuilderGUI
             {
                 HtmlNodeCollection recList = bookHtmlDoc.DocumentNode.SelectNodes("//li[@class='a-carousel-card a-float-left']");
                 if (recList == null)
-                    main.Log("An error occurred finding related book list page on Amazon.\r\nUnable to create End Actions.");
+                    main.Log(String.Format("An error occurred finding related book list page on Amazon.{0} (they might not list any).\r\nContinuing without them.", settings.amazonTLD));
                 if (recList != null)
                     foreach (HtmlNode item in recList.Where(item => item != null))
                     {
@@ -95,7 +98,7 @@ namespace XRayBuilderGUI
                         string nodeUrl = nodeTitle.GetAttributeValue("href", "");
                         string cleanAuthor = "";
                         if (nodeUrl != "")
-                            nodeUrl = "http://www.amazon.com" + nodeUrl;
+                            nodeUrl = "http://www.amazon." + settings.amazonTLD + nodeUrl;
                         if (nodeTitleCheck == "")
                         {
                             nodeTitle = item.SelectSingleNode(".//div/a");
@@ -235,7 +238,7 @@ namespace XRayBuilderGUI
             string goodReads = String.Format(@"""goodReadsReview"":{{""class"":""goodReadsReview"",""reviewId"":""NoReviewId"",""rating"":{0},""submissionDateMs"":{1}}}", ratingText, dateMs);
             try
             {
-                curBook.nextInSeries = dataSource.GetNextInSeries(curBook, authorProfile, main.Log);
+                curBook.nextInSeries = dataSource.GetNextInSeries(curBook, authorProfile, settings.amazonTLD, main.Log);
                 if (curBook.nextInSeries != null)
                     nextBook = curBook.nextInSeries.ToJSON("recommendation", false);
             }
@@ -262,7 +265,10 @@ namespace XRayBuilderGUI
                 main.Log("An error occurred while searching for or estimating the page count: " + ex.Message);
             }
             authorRecs = String.Format(authorRecs, String.Join(",", authorProfile.otherBooks.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
-            custRecs = String.Format(custRecs, String.Join(",", custAlsoBought.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
+            if (custAlsoBought.Count > 0)
+                custRecs = String.Format(custRecs, String.Join(",", custAlsoBought.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
+            else
+                custRecs = "";
 
             dataTemplate = String.Format(dataTemplate, nextBook, publicSharedRating, customerProfile,
                 rating, authors, authorRecs, custRecs, goodReads);

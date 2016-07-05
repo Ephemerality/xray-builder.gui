@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -9,9 +10,27 @@ namespace XRayBuilderGUI
 {
     public partial class frmSettings : Form
     {
+        private Dictionary<string, string> regionTLDs = new Dictionary<string, string>() {
+            { "Australia", "com.au" }, { "Brazil", "com.br" }, { "Canada", "ca" }, { "China", "cn" },
+            { "France", "fr" }, { "Germany", "de" }, { "India", "in" }, { "Italy", "it" }, { "Japan", "co.jp" },
+            { "Mexico", "com.mx" }, { "Netherlands", "nl" }, { "Spain", "es" }, { "USA", "com" }, { "UK", "co.uk" }
+        };
+
         public frmSettings()
         {
             InitializeComponent();
+        }
+
+        class AmazonRegion
+        {
+            public string Name { get; set; }
+            public string TLD { get; set; }
+
+            public AmazonRegion(string n, string t)
+            {
+                Name = n;
+                TLD = t;
+            }
         }
 
         //http://stackoverflow.com/questions/2612487/how-to-fix-the-flickering-in-user-controls
@@ -60,7 +79,6 @@ namespace XRayBuilderGUI
             chkSubDirectories.Checked = Properties.Settings.Default.useSubDirectories;
             chkUTF8.Checked = Properties.Settings.Default.utf8;
             if (txtUnpack.Text == "") txtUnpack.Text = "dist/kindleunpack.exe";
-            chkAmazonUK.Checked = Properties.Settings.Default.amazonUk;
             chkOverwrite.Checked = Properties.Settings.Default.overwrite;
             chkAlias.Checked = Properties.Settings.Default.overwriteAliases;
             chkChapters.Checked = Properties.Settings.Default.overwriteChapters;
@@ -77,6 +95,7 @@ namespace XRayBuilderGUI
                 rdoGoodreads.Checked = true;
             else
                 rdoShelfari.Checked = true;
+            chkPromptAsin.Checked = Properties.Settings.Default.promtASIN;
 
             // Added \r\n to show smaller tooltips
             ToolTip toolTip1 = new ToolTip();
@@ -108,8 +127,6 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(txtPen, "Required during the EndActions.data file\r\n" +
                                         "creation. This information allows you to\r\n" +
                                         "rate this book on Amazon.");
-            toolTip1.SetToolTip(chkAmazonUK,
-                "Search Amazon.co.uk first, use Amazon.com as fallback.\r\n(Amazon.com is used if Amazon.co.uk is not selected.)");
             toolTip1.SetToolTip(chkEnableEdit,
                 "Open Notepad to enable editing of detected Chapters\r\nand Aliases before final X-Ray creation.");
             toolTip1.SetToolTip(chkSubDirectories, "Save generated files to an\r\n\"Author\\Filename\" subdirectory.");
@@ -139,11 +156,27 @@ namespace XRayBuilderGUI
                                               "on user_none accurate APNX generation).\r\n" +
                                               "If no page count is found online, an\r\n" +
                                               "estimation will be used.");
-            toolTip1.SetToolTip(rdoGoodreads, "Download all data from Goodreads.");
-            toolTip1.SetToolTip(rdoShelfari, "Download all data from Shelfari.");
+            toolTip1.SetToolTip(rdoGoodreads, "Search for books and download\r\n" +
+                                              "all data from Goodreads.");
+            toolTip1.SetToolTip(rdoShelfari, "Search for books and download\r\n" +
+                                              "all data from Shelfari.");
             toolTip1.SetToolTip(chkSaveBio, "If checked, author biographies will be saved to the \\ext folder\r\n" +
                                             "and opened in Notepad before continuing to build Author Profiles.\r\n" +
                                             "Must be enabled for a saved biography to be loaded.");
+            toolTip1.SetToolTip(cmbRegion, "Default Amazon page to search.\r\n" +
+                                            "If no results are found, Amazom.com (USA) will be used.");
+            toolTip1.SetToolTip(chkPromptAsin, "Allow ASIN entry if the next or previous book\r\n" +
+                                               "in a series cannot automatically be found.\r\n" +
+                                               "This is useful if you have the metadata available\r\n" +
+                                               "in Calibre, and may help file creation.");
+
+            IList<AmazonRegion> regions = new List<AmazonRegion>(regionTLDs.Count);
+            foreach (KeyValuePair<string, string> r in regionTLDs)
+                regions.Add(new AmazonRegion(r.Key, r.Value));
+            cmbRegion.DataSource = regions;
+            cmbRegion.DisplayMember = "Name";
+            cmbRegion.ValueMember = "TLD";
+            cmbRegion.SelectedValue = Properties.Settings.Default.amazonTLD;
         }
 
         private void btnBrowseUnpack_Click(object sender, EventArgs e)
@@ -186,7 +219,6 @@ namespace XRayBuilderGUI
             Properties.Settings.Default.offset = offset;
             Properties.Settings.Default.realName = txtReal.Text;
             Properties.Settings.Default.penName = txtPen.Text;
-            Properties.Settings.Default.amazonUk = chkAmazonUK.Checked;
             Properties.Settings.Default.enableEdit = chkEnableEdit.Checked;
             Properties.Settings.Default.useSubDirectories = chkSubDirectories.Checked;
             Properties.Settings.Default.overwrite = chkOverwrite.Checked;
@@ -201,12 +233,14 @@ namespace XRayBuilderGUI
             Properties.Settings.Default.offsetAZW3 = offsetAZW;
             Properties.Settings.Default.pageCount = chkPageCount.Checked;
             Properties.Settings.Default.saveBio = chkSaveBio.Checked;
+            Properties.Settings.Default.amazonTLD = cmbRegion.SelectedValue.ToString();
             if (rdoGoodreads.Checked)
                 Properties.Settings.Default.dataSource = "Goodreads";
             else
                 Properties.Settings.Default.dataSource = "Shelfari";
+            Properties.Settings.Default.promtASIN = chkPromptAsin.Checked;
             Properties.Settings.Default.Save();
-
+            
             this.Close();
         }
 

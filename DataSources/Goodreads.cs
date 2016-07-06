@@ -89,7 +89,7 @@ namespace XRayBuilderGUI.DataSources
             {
                 // Search author's other books for the book (assumes next in series was written by the same author...)
                 // Returns the first one found, though there should probably not be more than 1 of the same name anyway
-                nextBook = authorProfile.otherBooks.FirstOrDefault(bk => bk.title == title);
+                nextBook = authorProfile.otherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.title, "^" + title + @"(?: \(.*\))?$"));
                 if (nextBook == null)
                 {
                     // Attempt to search Amazon for the book instead
@@ -134,11 +134,24 @@ namespace XRayBuilderGUI.DataSources
             {
                 if (curBook.previousInSeries == null)
                 {
-                    // Attempt to search Amazon for the book
-                    curBook.previousInSeries = Amazon.SearchBook(title, curBook.author, TLD);
-                    //fill in desc, imageurl, and ratings
-                    if (curBook.previousInSeries != null)
-                        curBook.previousInSeries.GetAmazonInfo(curBook.previousInSeries.amazonUrl);
+                    curBook.previousInSeries = authorProfile.otherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.title, "^" + title + @"(?: \(.*\))?$"));
+                    if (curBook.previousInSeries == null)
+                    {
+                        // Attempt to search Amazon for the book instead
+                        try
+                        {
+                            curBook.previousInSeries = Amazon.SearchBook(title, curBook.author, TLD);
+                        }
+                        catch
+                        {
+                            Log(String.Format("Failed to find {0} on Amazon." + TLD + ", trying again with Amazon.com.", title));
+                            TLD = "com";
+                            curBook.previousInSeries = Amazon.SearchBook(title, curBook.author, TLD);
+                        }
+                        //fill in desc, imageurl, and ratings
+                        if (curBook.previousInSeries != null)
+                            curBook.previousInSeries.GetAmazonInfo(curBook.previousInSeries.amazonUrl);
+                    }
                     if (curBook.previousInSeries == null && settings.promptASIN)
                     {
                         //B000W94GH2
@@ -252,7 +265,7 @@ namespace XRayBuilderGUI.DataSources
                 {
                     curBook.totalInSeries = match.Groups[1].Value;
                 }
-                if (!match.Success)
+                else
                 {
                     match = Regex.Match(SeriesNode.InnerText, @"([0-9]*) works,");
                     curBook.totalInSeries = match.Groups[1].Value;
@@ -290,6 +303,7 @@ namespace XRayBuilderGUI.DataSources
                             previousTitle = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", string.Empty);
                             results["Previous"] = previousTitle;
                             Log(String.Format("Preceded by: {0}", previousTitle));
+                            continue;
                         }
                         match = Regex.Match(book.InnerText, stringNextSearch);
                         if (match.Success)
@@ -299,6 +313,7 @@ namespace XRayBuilderGUI.DataSources
                             results["Next"] = nextTitle;
                             Log(String.Format("Followed by: {0}", nextTitle));
                         }
+                        if (results.Count == 2) break; // next and prev found
                     }
                 }
             }

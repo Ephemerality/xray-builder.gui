@@ -422,12 +422,12 @@ namespace XRayBuilderGUI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool promtASIN {
+        public bool promptASIN {
             get {
-                return ((bool)(this["promtASIN"]));
+                return ((bool)(this["promptASIN"]));
             }
             set {
-                this["promtASIN"] = value;
+                this["promptASIN"] = value;
             }
         }
     }

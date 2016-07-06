@@ -106,7 +106,7 @@ namespace XRayBuilderGUI.DataSources
                     if (nextBook != null)
                         nextBook.GetAmazonInfo(nextBook.amazonUrl); //fill in desc, imageurl, and ratings
                 }
-                if (nextBook == null && settings.promtASIN)
+                if (nextBook == null && settings.promptASIN)
                 {
                     //B002DW937Y
                     Log(String.Format("ASIN prompt for {0}...", title));
@@ -115,10 +115,10 @@ namespace XRayBuilderGUI.DataSources
                     frmAS.Text = "Next in Series";
                     frmAS.lblTitle.Text = title;
                     frmAS.ShowDialog();
-                    string Url = String.Format("http://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text);
+                    string Url = String.Format("http://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text.ToUpper());
                     nextBook.GetAmazonInfo(Url);
                     nextBook.amazonUrl = Url;
-                    nextBook.asin = frmAS.tbAsin.Text;
+                    nextBook.asin = frmAS.tbAsin.Text.ToUpper();
                     frmAS.Dispose();
                 }
                 if (nextBook == null)
@@ -139,7 +139,7 @@ namespace XRayBuilderGUI.DataSources
                     //fill in desc, imageurl, and ratings
                     if (curBook.previousInSeries != null)
                         curBook.previousInSeries.GetAmazonInfo(curBook.previousInSeries.amazonUrl);
-                    if (curBook.previousInSeries == null && settings.promtASIN)
+                    if (curBook.previousInSeries == null && settings.promptASIN)
                     {
                         //B000W94GH2
                         Log(String.Format("ASIN prompt for {0}...", title));
@@ -148,10 +148,10 @@ namespace XRayBuilderGUI.DataSources
                         frmAS.Text = "Previous in Series";
                         frmAS.lblTitle.Text = title;
                         frmAS.ShowDialog();
-                        string Url = String.Format("http://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text);
+                        string Url = String.Format("http://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text.ToUpper());
                         curBook.previousInSeries.GetAmazonInfo(Url);
                         curBook.previousInSeries.amazonUrl = Url;
-                        curBook.previousInSeries.asin = frmAS.tbAsin.Text;
+                        curBook.previousInSeries.asin = frmAS.tbAsin.Text.ToUpper();
                         frmAS.Dispose();
                     }
                 }
@@ -344,7 +344,7 @@ namespace XRayBuilderGUI.DataSources
 			charNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/span[@class='toggleContent']/a");
 			if (charNodes != null)
 				allChars.AddRange(charNodes);
-            foreach (HtmlNode charNode in charNodes)
+            foreach (HtmlNode charNode in allChars)
             {
                 try
                 {

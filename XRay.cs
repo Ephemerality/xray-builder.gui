@@ -280,7 +280,7 @@ namespace XRayBuilderGUI
             if (skipShelfari)
                 main.Log(String.Format("{0} Terms found in file:", Terms.Count));
             else
-                main.Log(String.Format("{0} Terms found on Shelfari:", Terms.Count));
+                main.Log(String.Format("{0} Terms found on {1}:", Terms.Count, dataSource.Name));
             string tmp = "";
             int termId = 1;
             foreach (Term t in Terms)

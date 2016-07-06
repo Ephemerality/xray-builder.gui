@@ -95,6 +95,7 @@ namespace XRayBuilderGUI
                 rdoGoodreads.Checked = true;
             else
                 rdoShelfari.Checked = true;
+            chkPromptAsin.Checked = Properties.Settings.Default.promtASIN;
 
             // Added \r\n to show smaller tooltips
             ToolTip toolTip1 = new ToolTip();
@@ -155,13 +156,19 @@ namespace XRayBuilderGUI
                                               "on user_none accurate APNX generation).\r\n" +
                                               "If no page count is found online, an\r\n" +
                                               "estimation will be used.");
-            toolTip1.SetToolTip(rdoGoodreads, "Download all data from Goodreads.");
-            toolTip1.SetToolTip(rdoShelfari, "Download all data from Shelfari.");
+            toolTip1.SetToolTip(rdoGoodreads, "Search for books and download\r\n" +
+                                              "all data from Goodreads.");
+            toolTip1.SetToolTip(rdoShelfari, "Search for books and download\r\n" +
+                                              "all data from Shelfari.");
             toolTip1.SetToolTip(chkSaveBio, "If checked, author biographies will be saved to the \\ext folder\r\n" +
                                             "and opened in Notepad before continuing to build Author Profiles.\r\n" +
                                             "Must be enabled for a saved biography to be loaded.");
             toolTip1.SetToolTip(cmbRegion, "Default Amazon page to search.\r\n" +
                                             "If no results are found, Amazom.com (USA) will be used.");
+            toolTip1.SetToolTip(chkPromptAsin, "Allow ASIN entry if the next or previous book\r\n" +
+                                               "in a series cannot automatically be found.\r\n" +
+                                               "This is useful if you have the metadata available\r\n" +
+                                               "in Calibre, and may help file creation.");
 
             IList<AmazonRegion> regions = new List<AmazonRegion>(regionTLDs.Count);
             foreach (KeyValuePair<string, string> r in regionTLDs)
@@ -231,8 +238,9 @@ namespace XRayBuilderGUI
                 Properties.Settings.Default.dataSource = "Goodreads";
             else
                 Properties.Settings.Default.dataSource = "Shelfari";
+            Properties.Settings.Default.promtASIN = chkPromptAsin.Checked;
             Properties.Settings.Default.Save();
-
+            
             this.Close();
         }
 

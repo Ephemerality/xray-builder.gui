@@ -79,6 +79,9 @@
             this.chkEnableEdit = new System.Windows.Forms.CheckBox();
             this.tabPgAmazon = new System.Windows.Forms.TabPage();
             this.gbAmazonPrefs = new System.Windows.Forms.GroupBox();
+            this.chkPromptAsin = new System.Windows.Forms.CheckBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.cmbRegion = new System.Windows.Forms.ComboBox();
             this.chkSaveBio = new System.Windows.Forms.CheckBox();
             this.gbDetails = new System.Windows.Forms.GroupBox();
             this.lblReal = new System.Windows.Forms.Label();
@@ -93,8 +96,6 @@
             this.lblName = new System.Windows.Forms.Label();
             this.rtbAbout = new System.Windows.Forms.RichTextBox();
             this.listSettings = new System.Windows.Forms.ListBox();
-            this.cmbRegion = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.gbProcess.SuspendLayout();
@@ -645,20 +646,50 @@
             // 
             // gbAmazonPrefs
             // 
+            this.gbAmazonPrefs.Controls.Add(this.chkPromptAsin);
             this.gbAmazonPrefs.Controls.Add(this.label1);
             this.gbAmazonPrefs.Controls.Add(this.cmbRegion);
             this.gbAmazonPrefs.Controls.Add(this.chkSaveBio);
             this.gbAmazonPrefs.Location = new System.Drawing.Point(6, 106);
             this.gbAmazonPrefs.Name = "gbAmazonPrefs";
-            this.gbAmazonPrefs.Size = new System.Drawing.Size(378, 147);
+            this.gbAmazonPrefs.Size = new System.Drawing.Size(378, 104);
             this.gbAmazonPrefs.TabIndex = 29;
             this.gbAmazonPrefs.TabStop = false;
             this.gbAmazonPrefs.Text = "Preferences";
             // 
+            // chkPromptAsin
+            // 
+            this.chkPromptAsin.AutoSize = true;
+            this.chkPromptAsin.Location = new System.Drawing.Point(14, 19);
+            this.chkPromptAsin.Name = "chkPromptAsin";
+            this.chkPromptAsin.Size = new System.Drawing.Size(116, 17);
+            this.chkPromptAsin.TabIndex = 27;
+            this.chkPromptAsin.Text = "Show ASIN prompt";
+            this.chkPromptAsin.UseVisualStyleBackColor = true;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(12, 71);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(44, 13);
+            this.label1.TabIndex = 26;
+            this.label1.Text = "Region:";
+            // 
+            // cmbRegion
+            // 
+            this.cmbRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbRegion.FormattingEnabled = true;
+            this.cmbRegion.Location = new System.Drawing.Point(62, 68);
+            this.cmbRegion.Name = "cmbRegion";
+            this.cmbRegion.Size = new System.Drawing.Size(78, 21);
+            this.cmbRegion.TabIndex = 25;
+            // 
             // chkSaveBio
             // 
             this.chkSaveBio.AutoSize = true;
-            this.chkSaveBio.Location = new System.Drawing.Point(14, 19);
+            this.chkSaveBio.Location = new System.Drawing.Point(14, 45);
             this.chkSaveBio.Name = "chkSaveBio";
             this.chkSaveBio.Size = new System.Drawing.Size(133, 17);
             this.chkSaveBio.TabIndex = 24;
@@ -809,25 +840,6 @@
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
             // 
-            // cmbRegion
-            // 
-            this.cmbRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbRegion.FormattingEnabled = true;
-            this.cmbRegion.Location = new System.Drawing.Point(61, 39);
-            this.cmbRegion.Name = "cmbRegion";
-            this.cmbRegion.Size = new System.Drawing.Size(97, 21);
-            this.cmbRegion.TabIndex = 25;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(11, 42);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(44, 13);
-            this.label1.TabIndex = 26;
-            this.label1.Text = "Region:";
-            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -956,5 +968,6 @@
         private System.Windows.Forms.CheckBox chkSaveBio;
         private System.Windows.Forms.ComboBox cmbRegion;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.CheckBox chkPromptAsin;
     }
 }

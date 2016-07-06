@@ -95,28 +95,27 @@ namespace XRayBuilderGUI
             {
                 // Parse Book image URL
                 HtmlNode bookImageLoc = bookDoc.DocumentNode.SelectSingleNode("//*[@id='imgBlkFront']")
+                    ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='imageBlock']")
                     ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='series-detail-product-image']")
                     ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='ebooksImgBlkFront']"); //co.uk seems to use this id sometimes
                 if (bookImageLoc == null)
                     throw new HtmlWebException("Error finding book image. If you want, you can report the book's Amazon URL to help with parsing.");
                 else
                     bookImageUrl = Regex.Replace(bookImageLoc.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
-                //bookImageUrl = bookImageLoc.GetAttributeValue("src", "");
-                if (!bookImageUrl.EndsWith(".png"))
-                    bookImageUrl = Regex.Replace(bookImageLoc.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
-
-                // Generate random book image URL because Amazon keep changing format!
-                if (bookImageUrl == "")
+                if (bookImageUrl.Contains("base64"))
                 {
-                    string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-                    Random random = new Random();
-                    string result = new string(
-                        Enumerable.Repeat(chars, 11)
-                            .Select(s => s[random.Next(s.Length)])
-                            .ToArray());
-                    bookImageUrl = String.Format("http://ecx.images-amazon.com/images/I/{0}.jpg",
-                        Uri.EscapeDataString(result));
+                    bookImageUrl = bookImageLoc.GetAttributeValue("data-a-dynamic-image", "");
+                    Match match = Regex.Match(bookImageUrl, @"(https://.*?_\.(jpg|jpeg|gif|png))");
+                    if (match.Success)
+                    {
+                        bookImageUrl = match.Groups[1].Value;
+                        if (!bookImageUrl.EndsWith(".png"))
+                            bookImageUrl = Regex.Replace(bookImageUrl, @"_.*?_\.", string.Empty);
+                    }
                 }
+                // Use no image URL
+                if (bookImageUrl == "")
+                    bookImageUrl = "https://images-na.ssl-images-amazon.com/images/G/01/x-site/icons/no-img-sm.gif";
             }
             if (desc == "")
             {

@@ -97,6 +97,12 @@
     <Compile Include="DataSources\Goodreads.cs" />
     <Compile Include="DataSources\Shelfari.cs" />
     <Compile Include="EndActions.cs" />
+    <Compile Include="frmASIN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmASIN.Designer.cs">
+      <DependentUpon>frmASIN.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmPreviewAP.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -114,6 +120,12 @@
     </Compile>
     <Compile Include="frmPreviewSA.Designer.cs">
       <DependentUpon>frmPreviewSA.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmPreviewSAN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmPreviewSAN.Designer.cs">
+      <DependentUpon>frmPreviewSAN.cs</DependentUpon>
     </Compile>
     <Compile Include="frmPreviewXR.cs">
       <SubType>Form</SubType>
@@ -164,6 +176,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Icon.ico" />
+    <None Include="Resources\missing-image.png" />
     <None Include="Resources\SA.png" />
     <None Include="Resources\STAR5.png" />
     <None Include="Resources\STAR4.png" />
@@ -181,6 +194,9 @@
     <None Include="Resources\XR2.png" />
     <None Include="Resources\XR1.png" />
     <None Include="Resources\XR.png" />
+    <EmbeddedResource Include="frmASIN.resx">
+      <DependentUpon>frmASIN.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -193,6 +209,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmPreviewSA.resx">
       <DependentUpon>frmPreviewSA.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmPreviewSAN.resx">
+      <DependentUpon>frmPreviewSAN.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmPreviewXR.resx">
       <DependentUpon>frmPreviewXR.cs</DependentUpon>

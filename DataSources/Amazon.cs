@@ -23,7 +23,7 @@ namespace XRayBuilderGUI.DataSources
             string newAuthor = Functions.FixAuthor(curBook.author);
             string plusAuthorName = newAuthor.Replace(" ", "+");
             string amazonAuthorSearchUrl = String.Format(@"http://www.amazon.{0}/s/?url=search-alias%3Dstripbooks&field-keywords={1}", TLD, plusAuthorName);
-            Log("Searching for author's page on Amazon...");
+            Log(String.Format("Searching for author's page on Amazon.{0}...", Properties.Settings.Default.amazonTLD));
 
             // Search Amazon for Author
             results.authorHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
@@ -43,11 +43,20 @@ namespace XRayBuilderGUI.DataSources
                 }
             }
 
+            // Check for captcha
+            if (results.authorHtmlDoc.DocumentNode.InnerText.Contains("Robot Check"))
+            {
+                Log(String.Format("Warning: Amazon.{0} is requesting a captcha. Please try another region, or try again later.", TLD));
+            }
             // Try to find Author's page from Amazon search
             HtmlNode node = results.authorHtmlDoc.DocumentNode.SelectSingleNode("//*[@id='result_1']");
             if (node == null || !node.OuterHtml.Contains("/e/B"))
             {
-                Log("An error occurred finding author's page on Amazon.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at " + amazonAuthorSearchUrl);
+                Log(String.Format("An error occurred finding author's page on Amazon.{0}." +
+                                  "\r\nUnable to create Author Profile." +
+                                  "\r\nEnsure the author metadata field matches the author's name exactly." +
+                                  "\r\nSearch results can be viewed at {1}"
+                                  , TLD, amazonAuthorSearchUrl));
                 return null;
             }
             results.authorAsin = node.OuterHtml;
@@ -149,7 +158,12 @@ namespace XRayBuilderGUI.DataSources
             HtmlDocument searchDoc = new HtmlDocument();
             searchDoc.LoadHtml(HttpDownloader.GetPageHtml(searchUrl));
             HtmlNode node = searchDoc.DocumentNode.SelectSingleNode("//li[@id='result_0']");
-            HtmlNode nodeASIN = searchDoc.DocumentNode.SelectSingleNode("//a[@title='Kindle Edition']");
+            HtmlNode nodeASIN = node.SelectSingleNode(".//a[@title='Kindle Edition']");
+            if (nodeASIN == null)
+            {
+                node = searchDoc.DocumentNode.SelectSingleNode("//li[@id='result_1']");
+                nodeASIN = node.SelectSingleNode(".//a[@title='Kindle Edition']");
+            }
             //At least attempt to verify it might be the same book?
             if (node != null && nodeASIN != null && node.InnerText.IndexOf(title, StringComparison.OrdinalIgnoreCase) >= 0)
             {

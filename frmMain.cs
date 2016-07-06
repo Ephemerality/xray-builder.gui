@@ -21,6 +21,9 @@ namespace XRayBuilderGUI
         private string currentLog = Environment.CurrentDirectory + @"\log\" +
                                     String.Format("{0:dd.MM.yyyy.H.mm.ss}.txt", DateTime.Now);
 
+        private string EaPath = "";
+        private string SaPath = "";
+
         private Properties.Settings settings = Properties.Settings.Default;
 
         public frmMain()
@@ -33,6 +36,7 @@ namespace XRayBuilderGUI
         private frmPreviewXR frmXR = new frmPreviewXR();
         private frmPreviewXRN frmXRN = new frmPreviewXRN();
         private frmPreviewSA frmSA = new frmPreviewSA();
+        private frmPreviewSAN frmStartAction = new frmPreviewSAN();
 
         DataSource dataSource = null;
 
@@ -54,7 +58,7 @@ namespace XRayBuilderGUI
                     txtOutput.SelectionLength = 0;
                     txtOutput.SelectionColor = Color.FromArgb(20, 102, 20);
                 }
-                List<string> redFlags = new List<string>() { "error", "failed", "problem", "skipping", "warning" };
+                List<string> redFlags = new List<string>() { "error", "failed", "problem", "skipping", "warning", "unable" };
                 if (redFlags.Any(s => message.ContainsIgnorecase(s)))
                 {
                     txtOutput.SelectionStart = txtOutput.TextLength;
@@ -126,7 +130,7 @@ namespace XRayBuilderGUI
             }
             if (rdoGoodreads.Checked && txtGoodreads.Text == "")
             {
-                MessageBox.Show(@"No Goodreads link was specified.", @"Missing Goodreads Link");
+                MessageBox.Show("No " + dataSource.Name + " link was specified.", "Missing " + dataSource.Name + " Link");
                 return;
             }
             if (settings.useKindleUnpack && !File.Exists(settings.mobi_unpack))
@@ -522,11 +526,15 @@ namespace XRayBuilderGUI
             Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
                 results[2], results[0], results[4], results[5], results[1]));
             SetDatasourceLabels(); // Reset the dataSource for the new build process
+
             try
             {
                 BookInfo bookInfo = new BookInfo(results[5], results[4], results[0], results[1], results[2],
                                                 randomFile, Functions.RemoveInvalidFileChars(results[5]), txtGoodreads.Text, results[3]);
 
+                string outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectory(bookInfo.author, bookInfo.sidecarName) : settings.outDir;
+                SaPath = outputDir + @"\StartActions.data." + bookInfo.asin + ".asc";
+                
                 Log("Attempting to build Author Profile...");
                 AuthorProfile ap = new AuthorProfile(bookInfo, settings.amazonTLD, this);
                 if (!ap.complete) return;
@@ -937,7 +945,17 @@ namespace XRayBuilderGUI
 
         private void tmiStartAction_Click(object sender, EventArgs e)
         {
-            frmSA.ShowDialog();
+            if (settings.useNewVersion)
+            {
+                //frmStartAction = new frmPreviewSAN();
+                frmStartAction.ilOtherBooks.ImageSize = new Size(47, 70);
+                frmStartAction.populateStartActions(SaPath);
+                frmStartAction.Location = new Point(this.Left, this.Top);
+                //frmStartAction.TopMost = true;
+                frmStartAction.ShowDialog();
+            }
+            else
+                frmSA.ShowDialog();
         }
 
         private void frmMain_Shown(object sender, EventArgs e)

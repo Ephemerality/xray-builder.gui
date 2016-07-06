@@ -5,9 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using System.Xml;
 
 using HtmlAgilityPack;
+using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI
 {
@@ -15,6 +17,7 @@ namespace XRayBuilderGUI
     {
         private Properties.Settings settings = Properties.Settings.Default;
         private frmMain main;
+        //private frmASIN frmAS = new frmASIN();
 
         private string EaPath = "";
         private string SaPath = "";

@@ -418,5 +418,17 @@ namespace XRayBuilderGUI.Properties {
                 this["amazonTLD"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool promtASIN {
+            get {
+                return ((bool)(this["promtASIN"]));
+            }
+            set {
+                this["promtASIN"] = value;
+            }
+        }
     }
 }

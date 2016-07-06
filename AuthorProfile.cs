@@ -90,9 +90,13 @@ namespace XRayBuilderGUI
             {
                 if (searchResults == null)
                 {
-                    main.Log("Failed to find author on Amazon." + TLD + ", trying again with Amazon.com.");
-                    TLD = "com";
-                    searchResults = DataSources.Amazon.SearchAuthor(curBook, TLD, main.Log);
+                    main.Log(String.Format("Failed to find {0} on Amazon." + TLD, curBook.title));
+                    if (TLD != "com")
+                    {
+                        main.Log("Trying again with Amazon.com.");
+                        TLD = "com";
+                        searchResults = DataSources.Amazon.SearchAuthor(curBook, TLD, main.Log);
+                    }
                 }
             }
             if (searchResults == null)

@@ -83,25 +83,28 @@ namespace XRayBuilderGUI.DataSources
             }
 
             // Get title of next book
-            Dictionary<string, string> seriesInfo = GetNextInSeriesTitle(curBook, Log);
-            string title;
-            if (seriesInfo.TryGetValue("Next", out title))
+            Dictionary<string, BookInfo> seriesInfo = GetNextInSeriesTitle(curBook, Log);
+            BookInfo book;
+            if (seriesInfo.TryGetValue("Next", out book))
             {
                 // Search author's other books for the book (assumes next in series was written by the same author...)
                 // Returns the first one found, though there should probably not be more than 1 of the same name anyway
-                nextBook = authorProfile.otherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.title, "^" + title + @"(?: \(.*\))?$"));
+                nextBook = authorProfile.otherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.title, "^" + book.title + @"(?: \(.*\))?$"));
                 if (nextBook == null)
                 {
                     // Attempt to search Amazon for the book instead
                     try
                     {
-                        nextBook = Amazon.SearchBook(title, curBook.author, TLD);
+                        nextBook = Amazon.SearchBook(book.title, book.author, TLD);
                     }
                     catch
                     {
-                        Log(String.Format("Failed to find {0} on Amazon." + TLD + ", trying again with Amazon.com.", title));
-                        TLD = "com";
-                        nextBook = Amazon.SearchBook(title, curBook.author, TLD);
+                        if (TLD != "com")
+                        {
+                            Log(String.Format("Failed to find {0} on Amazon." + TLD + ", trying again with Amazon.com.", book.title));
+                            TLD = "com";
+                            nextBook = Amazon.SearchBook(book.title, book.author, TLD);
+                        }
                     }
                     if (nextBook != null)
                         nextBook.GetAmazonInfo(nextBook.amazonUrl); //fill in desc, imageurl, and ratings
@@ -109,11 +112,11 @@ namespace XRayBuilderGUI.DataSources
                 if (nextBook == null && settings.promptASIN)
                 {
                     //B002DW937Y
-                    Log(String.Format("ASIN prompt for {0}...", title));
-                    nextBook = new BookInfo(title, curBook.author, "");
+                    Log(String.Format("ASIN prompt for {0}...", book.title));
+                    nextBook = new BookInfo(book.title, curBook.author, "");
                     frmASIN frmAS = new frmASIN();
                     frmAS.Text = "Next in Series";
-                    frmAS.lblTitle.Text = title;
+                    frmAS.lblTitle.Text = book.title;
                     frmAS.ShowDialog();
                     string Url = String.Format("http://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text.ToUpper());
                     nextBook.GetAmazonInfo(Url);
@@ -130,23 +133,26 @@ namespace XRayBuilderGUI.DataSources
             else if (curBook.seriesPosition != curBook.totalInSeries)
                 Log("An error occurred finding the next book in series, the book may not be part of a series, or it is the latest release.");
 
-            if (seriesInfo.TryGetValue("Previous", out title))
+            if (seriesInfo.TryGetValue("Previous", out book))
             {
                 if (curBook.previousInSeries == null)
                 {
-                    curBook.previousInSeries = authorProfile.otherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.title, "^" + title + @"(?: \(.*\))?$"));
+                    curBook.previousInSeries = authorProfile.otherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.title, "^" + book.title + @"(?: \(.*\))?$"));
                     if (curBook.previousInSeries == null)
                     {
                         // Attempt to search Amazon for the book instead
                         try
                         {
-                            curBook.previousInSeries = Amazon.SearchBook(title, curBook.author, TLD);
+                            curBook.previousInSeries = Amazon.SearchBook(book.title, book.author, TLD);
                         }
                         catch
                         {
-                            Log(String.Format("Failed to find {0} on Amazon." + TLD + ", trying again with Amazon.com.", title));
-                            TLD = "com";
-                            curBook.previousInSeries = Amazon.SearchBook(title, curBook.author, TLD);
+                            if (TLD != "com")
+                            {
+                                Log(String.Format("Failed to find {0} on Amazon." + TLD + ", trying again with Amazon.com.", book.title));
+                                TLD = "com";
+                                curBook.previousInSeries = Amazon.SearchBook(book.title, curBook.author, TLD);
+                            }
                         }
                         //fill in desc, imageurl, and ratings
                         if (curBook.previousInSeries != null)
@@ -155,11 +161,11 @@ namespace XRayBuilderGUI.DataSources
                     if (curBook.previousInSeries == null && settings.promptASIN)
                     {
                         //B000W94GH2
-                        Log(String.Format("ASIN prompt for {0}...", title));
-                        curBook.previousInSeries = new BookInfo(title, curBook.author, "");
+                        Log(String.Format("ASIN prompt for {0}...", book.title));
+                        curBook.previousInSeries = new BookInfo(book.title, curBook.author, "");
                         frmASIN frmAS = new frmASIN();
                         frmAS.Text = "Previous in Series";
-                        frmAS.lblTitle.Text = title;
+                        frmAS.lblTitle.Text = book.title;
                         frmAS.ShowDialog();
                         string Url = String.Format("http://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text.ToUpper());
                         curBook.previousInSeries.GetAmazonInfo(Url);
@@ -182,10 +188,10 @@ namespace XRayBuilderGUI.DataSources
         /// Search Goodread for possible series info, returning the next title in the series.
         /// Modifies curBook.
         /// </summary>
-        private Dictionary<string, string> GetNextInSeriesTitle(BookInfo curBook, Action<string> Log)
+        private Dictionary<string, BookInfo> GetNextInSeriesTitle(BookInfo curBook, Action<string> Log)
         {
             Match match;
-            Dictionary<string, string> results = new Dictionary<string, string>(2);
+            Dictionary<string, BookInfo> results = new Dictionary<string, BookInfo>(2);
             if (sourceHtmlDoc == null)
             {
                 sourceHtmlDoc = new HtmlDocument();
@@ -291,29 +297,36 @@ namespace XRayBuilderGUI.DataSources
                     String.Format(@"book {0}", positionInt) :
                     String.Format(@"book {0}", positionInt - 1);
                 string stringNextSearch = String.Format(@"book {0}", positionInt + 1);
-                string nextTitle, previousTitle;
                 if (bookNodes != null)
                 {
                     foreach (HtmlNode book in bookNodes)
                     {
-                        match = Regex.Match(book.InnerText, stringPrevSearch);
-                        if (match.Success)
+                        HtmlNode bookIndex = book.SelectSingleNode(".//em");
+                        if (bookIndex == null) continue;
+                        //match = Regex.Match(book.InnerText, stringPrevSearch);
+                        //if (match.Success)
+                        if (bookIndex.InnerText == stringPrevSearch)
                         {
+                            BookInfo prevBook = new BookInfo("", "", "");
                             HtmlNode title = book.SelectSingleNode(".//a[@class='bookTitle']");
-                            previousTitle = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", string.Empty);
-                            results["Previous"] = previousTitle;
-                            Log(String.Format("Preceded by: {0}", previousTitle));
+                            prevBook.title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", string.Empty);
+                            prevBook.author = book.SelectSingleNode(".//a[@class='authorName']").InnerText.Trim();
+                            results["Previous"] = prevBook;
+                            Log(String.Format("Preceded by: {0}", prevBook.title));
                             continue;
                         }
-                        match = Regex.Match(book.InnerText, stringNextSearch);
-                        if (match.Success)
+                        //match = Regex.Match(book.InnerText, stringNextSearch);
+                        //if (match.Success)
+                        if (bookIndex.InnerText == stringNextSearch)
                         {
+                            BookInfo nextBook = new BookInfo("", "", "");
                             HtmlNode title = book.SelectSingleNode(".//a[@class='bookTitle']");
-                            nextTitle = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", string.Empty);
-                            results["Next"] = nextTitle;
-                            Log(String.Format("Followed by: {0}", nextTitle));
+                            nextBook.title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", string.Empty);
+                            nextBook.author = book.SelectSingleNode(".//a[@class='authorName']").InnerText.Trim();
+                            results["Next"] = nextBook;
+                            Log(String.Format("Followed by: {0}", nextBook.title));
                         }
-                        if (results.Count == 2) break; // next and prev found
+                        if (results.Count == 2 || (results.Count == 1 & positionInt == totalInt)) break; // next and prev found or prev found and latest in series
                     }
                 }
             }

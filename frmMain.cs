@@ -37,6 +37,8 @@ namespace XRayBuilderGUI
         private frmPreviewXRN frmXRN = new frmPreviewXRN();
         private frmPreviewSA frmSA = new frmPreviewSA();
         private frmPreviewSAN frmStartAction = new frmPreviewSAN();
+        
+        ToolTip toolTip1 = new ToolTip();
 
         DataSource dataSource = null;
 
@@ -521,7 +523,7 @@ namespace XRayBuilderGUI
                 File.Copy(results[3], Path.Combine(Environment.CurrentDirectory + @"\dmp",
                     Path.GetFileName(results[3])), true);
             }
-
+            
             // Added author name to log output
             Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nASIN: {1}\r\nAuthor: {2}\r\nTitle: {3}\r\nUniqueID: {4}",
                 results[2], results[0], results[4], results[5], results[1]));
@@ -799,13 +801,12 @@ namespace XRayBuilderGUI
         private void Form1_Load(object sender, EventArgs e)
         {
             this.ActiveControl = lblGoodreads;
-            ToolTip toolTip1 = new ToolTip();
             toolTip1.SetToolTip(btnBrowseMobi, "Open a Kindle book.");
             toolTip1.SetToolTip(btnBrowseOutput, "Open the default output directory.");
             toolTip1.SetToolTip(btnOneClick, "One Click to try to build the Start\r\nAction, Author Profile, End Action\r\nand X-Ray files for this book.");
             toolTip1.SetToolTip(btnBrowseXML, "Open a supported XML or TXT file containing characters and topics.");
             toolTip1.SetToolTip(btnSearchGoodreads, "Try to search for this book on Goodreads.");
-            toolTip1.SetToolTip(btnSaveShelfari, "Save Shelfari info to an XML file.");
+            toolTip1.SetToolTip(btnSaveShelfari, "Save Goodreads info to an XML file.");
             toolTip1.SetToolTip(btnKindleExtras,
                 "Try to build the Start Action, Author Profile,\r\nand End Action files for this book.");
             toolTip1.SetToolTip(btnBuild,
@@ -857,6 +858,7 @@ namespace XRayBuilderGUI
                 rdoGoodreads.Text = "Goodreads";
                 lblGoodreads.Text = "Goodreads URL:";
                 lblGoodreads.Left = 134;
+                toolTip1.SetToolTip(btnSaveShelfari, "Save Shelfari info to an XML file.");
             }
             else
             {
@@ -864,6 +866,7 @@ namespace XRayBuilderGUI
                 rdoGoodreads.Text = "Shelfari";
                 lblGoodreads.Text = "Shelfari URL:";
                 lblGoodreads.Left = 150;
+                toolTip1.SetToolTip(btnSaveShelfari, "Save Goodreads info to an XML file.");
             }
         }
 

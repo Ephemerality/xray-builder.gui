@@ -539,38 +539,41 @@ namespace XRayBuilderGUI
                         //this section attempts to shorted the excerpt by locating the start of a sentence that is just far enough away from the highlight.
                         //The length is determined by the space the excerpt takes up rather than its actual length... so 135 is just a guess based on what I've seen.
                         int lengthLimit = 135;
-                        if (shortEx && locHighlight[0] + lenHighlight[0] > lengthLimit)
+                        for (int j = 0; j < locHighlight.Count; j++)
                         {
-                            int start = locHighlight[0];
-                            int at = 0;
-                            long newLoc = -1;
-                            int newLenQuote = 0;
-                            int newLocHighlight = 0;
-
-                            while ((start > -1) && (at > -1))
+                            if (shortEx && locHighlight[j] + lenHighlight[j] > lengthLimit)
                             {
-                                at = node.InnerHtml.LastIndexOfAny(new char[] { '.', '?', '!' }, start);
-                                if (at > -1)
-                                {
-                                    start = at - 1;
+                                int start = locHighlight[j];
+                                int at = 0;
+                                long newLoc = -1;
+                                int newLenQuote = 0;
+                                int newLocHighlight = 0;
 
-                                    if ((locHighlight[0] + lenHighlight[0] + 1 - at - 2) <= lengthLimit)
+                                while ((start > -1) && (at > -1))
+                                {
+                                    at = node.InnerHtml.LastIndexOfAny(new char[] { '.', '?', '!' }, start);
+                                    if (at > -1)
                                     {
-                                        newLoc = location + at + 2;
-                                        newLenQuote = lenQuote - at - 2;
-                                        newLocHighlight = locHighlight[0] - at - 2;
-                                        string newQuote = node.InnerHtml.Substring(at + 2);
+                                        start = at - 1;
+                                        if ((locHighlight[j] + lenHighlight[j] + 1 - at - 2) <= lengthLimit)
+                                        {
+                                            newLoc = location + at + 2;
+                                            newLenQuote = lenQuote - at - 2;
+                                            newLocHighlight = locHighlight[j] - at - 2;
+                                            //string newQuote = node.InnerHtml.Substring(at + 2);
+                                        }
+                                        else break;
                                     }
                                     else break;
                                 }
-                                else break;
-                            }
-                            //Only add new locs if shorter excerpt was found
-                            if (newLoc >= 0)
-                            {
-                                character.Locs.Add(String.Format("[{0},{1},{2},{3}]", newLoc + locOffset, newLenQuote,
-                                    newLocHighlight, lenHighlight));
-                                continue;
+                                //Only add new locs if shorter excerpt was found
+                                if (newLoc >= 0)
+                                {
+                                    character.Locs.Add(String.Format("[{0},{1},{2},{3}]", newLoc + locOffset, newLenQuote,
+                                        newLocHighlight, lenHighlight[j]));
+                                    locHighlight.RemoveAt(j);
+                                    lenHighlight.RemoveAt(j--);
+                                }
                             }
                         }
 

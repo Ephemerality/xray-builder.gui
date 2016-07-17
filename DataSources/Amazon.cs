@@ -23,7 +23,7 @@ namespace XRayBuilderGUI.DataSources
             string newAuthor = Functions.FixAuthor(curBook.author);
             string plusAuthorName = newAuthor.Replace(" ", "+");
             string amazonAuthorSearchUrl = String.Format(@"http://www.amazon.{0}/s/?url=search-alias%3Dstripbooks&field-keywords={1}", TLD, plusAuthorName);
-            Log(String.Format("Searching for author's page on Amazon.{0}...", Properties.Settings.Default.amazonTLD));
+            Log(String.Format("Searching for author's page on Amazon.{0}...", TLD));
 
             // Search Amazon for Author
             results.authorHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };

@@ -710,9 +710,12 @@ namespace XRayBuilderGUI
             //Try a broad search for chapterish names just for fun
             if (_chapters.Count == 0)
             {
-                string chapterPattern = @"((?:chapter|book|section|part)\s+.*)|((?:prolog|prologue|epilogue)(?:\s+|$).*)|((?:one|two|three|four|five|six|seven|eight|nine|ten)(?:\s+|$).*)";
+                string chapterPattern = @"((?:chapter|book|section|part|capitulo)\s+.*)|((?:prolog|prologue|epilogue)(?:\s+|$).*)|((?:one|two|three|four|five|six|seven|eight|nine|ten)(?:\s+|$).*)";
                 IEnumerable<HtmlAgilityPack.HtmlNode> chapterNodes = bookDoc.DocumentNode.SelectNodes("//a").
                     Where(div => div.GetAttributeValue("class", "") == "chapter" || Regex.IsMatch(div.InnerText, chapterPattern, RegexOptions.IgnoreCase));
+                if (chapterNodes.Count() == 0)
+                    chapterNodes = bookDoc.DocumentNode.SelectNodes("//h1").
+                        Where(div => Regex.IsMatch(div.InnerText, chapterPattern, RegexOptions.IgnoreCase));
                 foreach (HtmlAgilityPack.HtmlNode chap in chapterNodes)
                 {
                     int index = rawML.IndexOf(chap.InnerText);
@@ -764,7 +767,7 @@ namespace XRayBuilderGUI
                     String.Format(
                         "insert into entity_description (text, source_wildcard, source, entity) values (@text, @source_wildcard, {0}, {1});",
                         t.DescSrc == "shelfari" ? 2 : 4, t.Id);
-                command.Parameters.AddWithValue("text", t.Desc);
+                command.Parameters.AddWithValue("text", t.Desc == "" ? "No description available." : t.Desc);
                 command.Parameters.AddWithValue("source_wildcard", t.TermName);
                 command.ExecuteNonQuery();
                 command.Dispose();

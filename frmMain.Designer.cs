@@ -189,7 +189,6 @@
             // tmiAuthorProfile
             // 
             this.tmiAuthorProfile.AutoSize = false;
-            this.tmiAuthorProfile.Enabled = false;
             this.tmiAuthorProfile.Name = "tmiAuthorProfile";
             this.tmiAuthorProfile.Size = new System.Drawing.Size(114, 22);
             this.tmiAuthorProfile.Text = "Author Profile";
@@ -202,8 +201,8 @@
             this.cmsPreview.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tmiAuthorProfile,
             this.tmiEndAction,
-            this.tmiXray,
-            this.tmiStartAction});
+            this.tmiStartAction,
+            this.tmiXray});
             this.cmsPreview.Name = "cmsPreview";
             this.cmsPreview.ShowImageMargin = false;
             this.cmsPreview.Size = new System.Drawing.Size(115, 91);
@@ -211,7 +210,6 @@
             // tmiEndAction
             // 
             this.tmiEndAction.AutoSize = false;
-            this.tmiEndAction.Enabled = false;
             this.tmiEndAction.Name = "tmiEndAction";
             this.tmiEndAction.Size = new System.Drawing.Size(114, 22);
             this.tmiEndAction.Text = "End Actions";
@@ -220,7 +218,6 @@
             // tmiXray
             // 
             this.tmiXray.AutoSize = false;
-            this.tmiXray.Enabled = false;
             this.tmiXray.Name = "tmiXray";
             this.tmiXray.Size = new System.Drawing.Size(114, 22);
             this.tmiXray.Text = "X-Ray";
@@ -229,7 +226,6 @@
             // tmiStartAction
             // 
             this.tmiStartAction.AutoSize = false;
-            this.tmiStartAction.Enabled = false;
             this.tmiStartAction.Name = "tmiStartAction";
             this.tmiStartAction.Size = new System.Drawing.Size(114, 22);
             this.tmiStartAction.Text = "Start Actions";
@@ -246,7 +242,6 @@
             // 
             // btnPreview
             // 
-            this.btnPreview.Enabled = false;
             this.btnPreview.Image = ((System.Drawing.Image)(resources.GetObject("btnPreview.Image")));
             this.btnPreview.Location = new System.Drawing.Point(355, 11);
             this.btnPreview.Name = "btnPreview";

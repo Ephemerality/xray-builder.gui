@@ -304,8 +304,8 @@ namespace XRayBuilderGUI
                                           String.Format(@"{0}"",""d"":{1},""o"":[", curBook.asin, unixTimestamp) +
                                           string.Join(",", authorsOtherBookList.ToArray()) + "]}";
                 File.WriteAllText(ApPath, authorProfileOutput);
-                main.btnPreview.Enabled = true;
-                main.cmsPreview.Items[0].Enabled = true;
+                //main.btnPreview.Enabled = true;
+                //main.cmsPreview.Items[0].Enabled = true;
                 main.Log("Author Profile file created successfully!\r\nSaved to " + ApPath);
             }
             catch (Exception ex)

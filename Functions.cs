@@ -120,7 +120,7 @@ namespace XRayBuilderGUI
             }
         }
 
-        public static Image Base64ToImage(string base64String)
+        public static Bitmap Base64ToImage(string base64String)
         {
             // Convert Base64 String to byte[]
             byte[] imageBytes = Convert.FromBase64String(base64String);
@@ -130,7 +130,8 @@ namespace XRayBuilderGUI
             // Convert byte[] to Image , based on @Crulex comment, the below line has no need since MemoryStream already initialized
             ms.Write(imageBytes, 0, imageBytes.Length);
             Image image = Image.FromStream(ms, true);
-            return image;
+            Bitmap bitmap = new Bitmap(image);
+            return bitmap;
         }
 
         public static Bitmap MakeGrayscale3(Bitmap original)

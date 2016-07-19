@@ -95,7 +95,7 @@ namespace XRayBuilderGUI
                 rdoGoodreads.Checked = true;
             else
                 rdoShelfari.Checked = true;
-            chkPromptAsin.Checked = Properties.Settings.Default.promtASIN;
+            chkPromptAsin.Checked = Properties.Settings.Default.promptASIN;
 
             // Added \r\n to show smaller tooltips
             ToolTip toolTip1 = new ToolTip();
@@ -238,7 +238,7 @@ namespace XRayBuilderGUI
                 Properties.Settings.Default.dataSource = "Goodreads";
             else
                 Properties.Settings.Default.dataSource = "Shelfari";
-            Properties.Settings.Default.promtASIN = chkPromptAsin.Checked;
+            Properties.Settings.Default.promptASIN = chkPromptAsin.Checked;
             Properties.Settings.Default.Save();
             
             this.Close();

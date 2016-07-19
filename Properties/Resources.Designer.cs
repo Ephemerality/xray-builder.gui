@@ -83,6 +83,16 @@ namespace XRayBuilderGUI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap arrow_right {
+            get {
+                object obj = ResourceManager.GetObject("arrow_right", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap EA {
             get {
                 object obj = ResourceManager.GetObject("EA", resourceCulture);
@@ -106,6 +116,16 @@ namespace XRayBuilderGUI.Properties {
         internal static System.Drawing.Bitmap SA {
             get {
                 object obj = ResourceManager.GetObject("SA", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap seperator {
+            get {
+                object obj = ResourceManager.GetObject("seperator", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

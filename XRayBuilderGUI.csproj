@@ -109,11 +109,23 @@
     <Compile Include="frmPreviewAP.Designer.cs">
       <DependentUpon>frmPreviewAP.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmPreviewAPN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmPreviewAPN.Designer.cs">
+      <DependentUpon>frmPreviewAPN.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmPreviewEA.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="frmPreviewEA.Designer.cs">
       <DependentUpon>frmPreviewEA.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmPreviewEAN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmPreviewEAN.Designer.cs">
+      <DependentUpon>frmPreviewEAN.cs</DependentUpon>
     </Compile>
     <Compile Include="frmPreviewSA.cs">
       <SubType>Form</SubType>
@@ -176,6 +188,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Icon.ico" />
+    <None Include="Resources\arrow-right.png" />
+    <None Include="Resources\seperator.png" />
     <None Include="Resources\missing-image.png" />
     <None Include="Resources\SA.png" />
     <None Include="Resources\STAR5.png" />
@@ -204,8 +218,14 @@
     <EmbeddedResource Include="frmPreviewAP.resx">
       <DependentUpon>frmPreviewAP.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="frmPreviewAPN.resx">
+      <DependentUpon>frmPreviewAPN.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmPreviewEA.resx">
       <DependentUpon>frmPreviewEA.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmPreviewEAN.resx">
+      <DependentUpon>frmPreviewEAN.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmPreviewSA.resx">
       <DependentUpon>frmPreviewSA.cs</DependentUpon>

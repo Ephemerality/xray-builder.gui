@@ -28,43 +28,41 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmPreviewSAN));
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.dgvOtherBooks = new System.Windows.Forms.DataGridView();
-            this.Column1 = new System.Windows.Forms.DataGridViewImageColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.lblVotes = new System.Windows.Forms.Label();
             this.lblHighlights = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
+            this.lblAuthorMore = new System.Windows.Forms.Label();
             this.lblBiography = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
+            this.lblAboutAuthor = new System.Windows.Forms.Label();
             this.lblPreviousTitle = new System.Windows.Forms.Label();
             this.lblPreviousHeading = new System.Windows.Forms.Label();
             this.lblSeries = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
+            this.lblAboutSeries = new System.Windows.Forms.Label();
             this.lblReadingTime = new System.Windows.Forms.Label();
             this.lblDescription = new System.Windows.Forms.Label();
             this.lblAuthor = new System.Windows.Forms.Label();
             this.lblTitle = new System.Windows.Forms.Label();
             this.pbRating = new System.Windows.Forms.PictureBox();
-            this.pbSeperator4 = new System.Windows.Forms.PictureBox();
-            this.pbMoreAuthor = new System.Windows.Forms.PictureBox();
-            this.pbAuthorImage = new System.Windows.Forms.PictureBox();
             this.pbSeperator3 = new System.Windows.Forms.PictureBox();
+            this.pbAuthorImage = new System.Windows.Forms.PictureBox();
+            this.pbSeperator2 = new System.Windows.Forms.PictureBox();
             this.pbPreviousCover = new System.Windows.Forms.PictureBox();
             this.pbSeperator1 = new System.Windows.Forms.PictureBox();
-            this.pbMoreDescription = new System.Windows.Forms.PictureBox();
+            this.ilOtherBooks = new System.Windows.Forms.ImageList(this.components);
+            this.Column1 = new System.Windows.Forms.DataGridViewImageColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dgvOtherBooks)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbRating)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbSeperator4)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbMoreAuthor)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAuthorImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbSeperator3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbAuthorImage)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbSeperator2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbPreviousCover)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbSeperator1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbMoreDescription)).BeginInit();
             this.SuspendLayout();
             // 
             // dgvOtherBooks
@@ -73,7 +71,6 @@
             this.dgvOtherBooks.AllowUserToDeleteRows = false;
             this.dgvOtherBooks.AllowUserToResizeColumns = false;
             this.dgvOtherBooks.AllowUserToResizeRows = false;
-            this.dgvOtherBooks.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dgvOtherBooks.BackgroundColor = System.Drawing.SystemColors.Control;
             this.dgvOtherBooks.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dgvOtherBooks.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
@@ -82,62 +79,29 @@
             this.dgvOtherBooks.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column1,
             this.Column2});
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvOtherBooks.DefaultCellStyle = dataGridViewCellStyle6;
-            this.dgvOtherBooks.Location = new System.Drawing.Point(317, 32);
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvOtherBooks.DefaultCellStyle = dataGridViewCellStyle3;
+            this.dgvOtherBooks.Location = new System.Drawing.Point(334, 31);
             this.dgvOtherBooks.Name = "dgvOtherBooks";
             this.dgvOtherBooks.ReadOnly = true;
             this.dgvOtherBooks.RowHeadersVisible = false;
-            this.dgvOtherBooks.RowTemplate.Height = 74;
-            this.dgvOtherBooks.Size = new System.Drawing.Size(273, 381);
+            this.dgvOtherBooks.RowTemplate.Height = 97;
+            this.dgvOtherBooks.Size = new System.Drawing.Size(258, 385);
             this.dgvOtherBooks.TabIndex = 60;
-            // 
-            // Column1
-            // 
-            this.Column1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle4.NullValue = ((object)(resources.GetObject("dataGridViewCellStyle4.NullValue")));
-            dataGridViewCellStyle4.Padding = new System.Windows.Forms.Padding(0, 0, 0, 4);
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.ControlText;
-            this.Column1.DefaultCellStyle = dataGridViewCellStyle4;
-            this.Column1.HeaderText = "Column1";
-            this.Column1.Name = "Column1";
-            this.Column1.ReadOnly = true;
-            this.Column1.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.Column1.Width = 47;
-            // 
-            // Column2
-            // 
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle5.Padding = new System.Windows.Forms.Padding(4, 0, 0, 0);
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.Column2.DefaultCellStyle = dataGridViewCellStyle5;
-            this.Column2.HeaderText = "Column2";
-            this.Column2.Name = "Column2";
-            this.Column2.ReadOnly = true;
-            this.Column2.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.Column2.Width = 205;
             // 
             // lblVotes
             // 
             this.lblVotes.AutoEllipsis = true;
             this.lblVotes.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblVotes.Location = new System.Drawing.Point(62, 42);
+            this.lblVotes.Location = new System.Drawing.Point(60, 39);
             this.lblVotes.Name = "lblVotes";
-            this.lblVotes.Size = new System.Drawing.Size(64, 13);
+            this.lblVotes.Size = new System.Drawing.Size(264, 13);
             this.lblVotes.TabIndex = 59;
             this.lblVotes.Text = "(votes)";
             this.lblVotes.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -146,51 +110,51 @@
             // 
             this.lblHighlights.AutoEllipsis = true;
             this.lblHighlights.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblHighlights.Location = new System.Drawing.Point(13, 381);
+            this.lblHighlights.Location = new System.Drawing.Point(11, 389);
             this.lblHighlights.Name = "lblHighlights";
-            this.lblHighlights.Size = new System.Drawing.Size(295, 13);
+            this.lblHighlights.Size = new System.Drawing.Size(313, 13);
             this.lblHighlights.TabIndex = 57;
-            this.lblHighlights.Text = "888 passages have been highlighted 888 times";
+            this.lblHighlights.Text = "988 passages have been highlighted 888 times";
             // 
-            // label10
+            // lblAuthorMore
             // 
-            this.label10.AutoEllipsis = true;
-            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(314, 13);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(276, 13);
-            this.label10.TabIndex = 55;
-            this.label10.Text = "More by the author";
-            this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblAuthorMore.AutoEllipsis = true;
+            this.lblAuthorMore.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAuthorMore.Location = new System.Drawing.Point(331, 10);
+            this.lblAuthorMore.Name = "lblAuthorMore";
+            this.lblAuthorMore.Size = new System.Drawing.Size(259, 13);
+            this.lblAuthorMore.TabIndex = 55;
+            this.lblAuthorMore.Text = "More by the author";
+            this.lblAuthorMore.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblBiography
             // 
             this.lblBiography.AutoEllipsis = true;
             this.lblBiography.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBiography.Location = new System.Drawing.Point(80, 281);
+            this.lblBiography.Location = new System.Drawing.Point(80, 287);
             this.lblBiography.Name = "lblBiography";
-            this.lblBiography.Size = new System.Drawing.Size(212, 84);
+            this.lblBiography.Size = new System.Drawing.Size(244, 84);
             this.lblBiography.TabIndex = 53;
             this.lblBiography.Text = "Biography";
             // 
-            // label11
+            // lblAboutAuthor
             // 
-            this.label11.AutoEllipsis = true;
-            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.Location = new System.Drawing.Point(13, 256);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(327, 13);
-            this.label11.TabIndex = 51;
-            this.label11.Text = "About the author";
-            this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblAboutAuthor.AutoEllipsis = true;
+            this.lblAboutAuthor.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAboutAuthor.Location = new System.Drawing.Point(11, 258);
+            this.lblAboutAuthor.Name = "lblAboutAuthor";
+            this.lblAboutAuthor.Size = new System.Drawing.Size(313, 13);
+            this.lblAboutAuthor.TabIndex = 51;
+            this.lblAboutAuthor.Text = "About the author";
+            this.lblAboutAuthor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblPreviousTitle
             // 
             this.lblPreviousTitle.AutoEllipsis = true;
             this.lblPreviousTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblPreviousTitle.Location = new System.Drawing.Point(80, 188);
+            this.lblPreviousTitle.Location = new System.Drawing.Point(80, 190);
             this.lblPreviousTitle.Name = "lblPreviousTitle";
-            this.lblPreviousTitle.Size = new System.Drawing.Size(228, 13);
+            this.lblPreviousTitle.Size = new System.Drawing.Size(244, 13);
             this.lblPreviousTitle.TabIndex = 49;
             this.lblPreviousTitle.Text = "Previous Title";
             this.lblPreviousTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -199,9 +163,9 @@
             // 
             this.lblPreviousHeading.AutoEllipsis = true;
             this.lblPreviousHeading.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblPreviousHeading.Location = new System.Drawing.Point(80, 172);
+            this.lblPreviousHeading.Location = new System.Drawing.Point(80, 173);
             this.lblPreviousHeading.Name = "lblPreviousHeading";
-            this.lblPreviousHeading.Size = new System.Drawing.Size(228, 13);
+            this.lblPreviousHeading.Size = new System.Drawing.Size(244, 13);
             this.lblPreviousHeading.TabIndex = 48;
             this.lblPreviousHeading.Text = "Previous book in the series:";
             this.lblPreviousHeading.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -212,29 +176,29 @@
             this.lblSeries.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblSeries.Location = new System.Drawing.Point(80, 156);
             this.lblSeries.Name = "lblSeries";
-            this.lblSeries.Size = new System.Drawing.Size(228, 13);
+            this.lblSeries.Size = new System.Drawing.Size(244, 13);
             this.lblSeries.TabIndex = 46;
             this.lblSeries.Text = "This is book n of n in Series Name";
             this.lblSeries.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // label6
+            // lblAboutSeries
             // 
-            this.label6.AutoEllipsis = true;
-            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(13, 131);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(295, 13);
-            this.label6.TabIndex = 45;
-            this.label6.Text = "About the series";
-            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblAboutSeries.AutoEllipsis = true;
+            this.lblAboutSeries.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAboutSeries.Location = new System.Drawing.Point(11, 127);
+            this.lblAboutSeries.Name = "lblAboutSeries";
+            this.lblAboutSeries.Size = new System.Drawing.Size(313, 13);
+            this.lblAboutSeries.TabIndex = 45;
+            this.lblAboutSeries.Text = "About the series";
+            this.lblAboutSeries.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblReadingTime
             // 
             this.lblReadingTime.AutoEllipsis = true;
             this.lblReadingTime.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblReadingTime.Location = new System.Drawing.Point(13, 398);
+            this.lblReadingTime.Location = new System.Drawing.Point(11, 404);
             this.lblReadingTime.Name = "lblReadingTime";
-            this.lblReadingTime.Size = new System.Drawing.Size(295, 13);
+            this.lblReadingTime.Size = new System.Drawing.Size(313, 13);
             this.lblReadingTime.TabIndex = 44;
             this.lblReadingTime.Text = "888 hours and 888 minutes to read (888 pages)";
             this.lblReadingTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -243,9 +207,9 @@
             // 
             this.lblDescription.AutoEllipsis = true;
             this.lblDescription.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDescription.Location = new System.Drawing.Point(12, 57);
+            this.lblDescription.Location = new System.Drawing.Point(10, 54);
             this.lblDescription.Name = "lblDescription";
-            this.lblDescription.Size = new System.Drawing.Size(280, 60);
+            this.lblDescription.Size = new System.Drawing.Size(314, 56);
             this.lblDescription.TabIndex = 41;
             this.lblDescription.Text = "Description";
             // 
@@ -253,74 +217,65 @@
             // 
             this.lblAuthor.AutoEllipsis = true;
             this.lblAuthor.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAuthor.Location = new System.Drawing.Point(13, 28);
+            this.lblAuthor.Location = new System.Drawing.Point(11, 25);
             this.lblAuthor.Name = "lblAuthor";
-            this.lblAuthor.Size = new System.Drawing.Size(295, 13);
+            this.lblAuthor.Size = new System.Drawing.Size(313, 13);
             this.lblAuthor.TabIndex = 40;
             this.lblAuthor.Text = "Author";
             this.lblAuthor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblTitle
             // 
-            this.lblTitle.AutoEllipsis = true;
             this.lblTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTitle.Location = new System.Drawing.Point(12, 13);
+            this.lblTitle.Location = new System.Drawing.Point(10, 10);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(296, 13);
+            this.lblTitle.Size = new System.Drawing.Size(314, 13);
             this.lblTitle.TabIndex = 39;
             this.lblTitle.Text = "Title";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pbRating
             // 
-            this.pbRating.Location = new System.Drawing.Point(16, 45);
+            this.pbRating.Location = new System.Drawing.Point(14, 42);
             this.pbRating.Name = "pbRating";
             this.pbRating.Size = new System.Drawing.Size(44, 8);
             this.pbRating.TabIndex = 58;
             this.pbRating.TabStop = false;
             // 
-            // pbSeperator4
+            // pbSeperator3
             // 
-            this.pbSeperator4.Location = new System.Drawing.Point(16, 373);
-            this.pbSeperator4.Name = "pbSeperator4";
-            this.pbSeperator4.Size = new System.Drawing.Size(292, 2);
-            this.pbSeperator4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pbSeperator4.TabIndex = 56;
-            this.pbSeperator4.TabStop = false;
-            // 
-            // pbMoreAuthor
-            // 
-            this.pbMoreAuthor.Image = ((System.Drawing.Image)(resources.GetObject("pbMoreAuthor.Image")));
-            this.pbMoreAuthor.Location = new System.Drawing.Point(294, 315);
-            this.pbMoreAuthor.Name = "pbMoreAuthor";
-            this.pbMoreAuthor.Size = new System.Drawing.Size(10, 10);
-            this.pbMoreAuthor.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pbMoreAuthor.TabIndex = 54;
-            this.pbMoreAuthor.TabStop = false;
+            this.pbSeperator3.Image = global::XRayBuilderGUI.Properties.Resources.seperator;
+            this.pbSeperator3.Location = new System.Drawing.Point(14, 379);
+            this.pbSeperator3.Name = "pbSeperator3";
+            this.pbSeperator3.Size = new System.Drawing.Size(310, 2);
+            this.pbSeperator3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pbSeperator3.TabIndex = 56;
+            this.pbSeperator3.TabStop = false;
             // 
             // pbAuthorImage
             // 
             this.pbAuthorImage.Image = ((System.Drawing.Image)(resources.GetObject("pbAuthorImage.Image")));
-            this.pbAuthorImage.Location = new System.Drawing.Point(16, 275);
+            this.pbAuthorImage.Location = new System.Drawing.Point(14, 279);
             this.pbAuthorImage.Name = "pbAuthorImage";
             this.pbAuthorImage.Size = new System.Drawing.Size(60, 90);
             this.pbAuthorImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pbAuthorImage.TabIndex = 52;
             this.pbAuthorImage.TabStop = false;
             // 
-            // pbSeperator3
+            // pbSeperator2
             // 
-            this.pbSeperator3.Location = new System.Drawing.Point(16, 248);
-            this.pbSeperator3.Name = "pbSeperator3";
-            this.pbSeperator3.Size = new System.Drawing.Size(292, 2);
-            this.pbSeperator3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pbSeperator3.TabIndex = 50;
-            this.pbSeperator3.TabStop = false;
+            this.pbSeperator2.Image = global::XRayBuilderGUI.Properties.Resources.seperator;
+            this.pbSeperator2.Location = new System.Drawing.Point(14, 248);
+            this.pbSeperator2.Name = "pbSeperator2";
+            this.pbSeperator2.Size = new System.Drawing.Size(310, 2);
+            this.pbSeperator2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pbSeperator2.TabIndex = 50;
+            this.pbSeperator2.TabStop = false;
             // 
             // pbPreviousCover
             // 
             this.pbPreviousCover.Image = ((System.Drawing.Image)(resources.GetObject("pbPreviousCover.Image")));
-            this.pbPreviousCover.Location = new System.Drawing.Point(16, 150);
+            this.pbPreviousCover.Location = new System.Drawing.Point(14, 148);
             this.pbPreviousCover.Name = "pbPreviousCover";
             this.pbPreviousCover.Size = new System.Drawing.Size(60, 90);
             this.pbPreviousCover.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -329,22 +284,52 @@
             // 
             // pbSeperator1
             // 
-            this.pbSeperator1.Location = new System.Drawing.Point(16, 123);
+            this.pbSeperator1.Image = global::XRayBuilderGUI.Properties.Resources.seperator;
+            this.pbSeperator1.Location = new System.Drawing.Point(14, 116);
             this.pbSeperator1.Name = "pbSeperator1";
-            this.pbSeperator1.Size = new System.Drawing.Size(292, 2);
+            this.pbSeperator1.Size = new System.Drawing.Size(310, 2);
             this.pbSeperator1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pbSeperator1.TabIndex = 43;
             this.pbSeperator1.TabStop = false;
             // 
-            // pbMoreDescription
+            // ilOtherBooks
             // 
-            this.pbMoreDescription.Image = ((System.Drawing.Image)(resources.GetObject("pbMoreDescription.Image")));
-            this.pbMoreDescription.Location = new System.Drawing.Point(294, 78);
-            this.pbMoreDescription.Name = "pbMoreDescription";
-            this.pbMoreDescription.Size = new System.Drawing.Size(10, 10);
-            this.pbMoreDescription.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pbMoreDescription.TabIndex = 42;
-            this.pbMoreDescription.TabStop = false;
+            this.ilOtherBooks.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
+            this.ilOtherBooks.ImageSize = new System.Drawing.Size(60, 90);
+            this.ilOtherBooks.TransparentColor = System.Drawing.Color.Transparent;
+            // 
+            // Column1
+            // 
+            this.Column1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.NullValue = ((object)(resources.GetObject("dataGridViewCellStyle1.NullValue")));
+            dataGridViewCellStyle1.Padding = new System.Windows.Forms.Padding(0, 0, 0, 4);
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.ControlText;
+            this.Column1.DefaultCellStyle = dataGridViewCellStyle1;
+            this.Column1.HeaderText = "Column1";
+            this.Column1.Name = "Column1";
+            this.Column1.ReadOnly = true;
+            this.Column1.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Column1.Width = 60;
+            // 
+            // Column2
+            // 
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(4, 0, 0, 0);
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column2.DefaultCellStyle = dataGridViewCellStyle2;
+            this.Column2.HeaderText = "Column2";
+            this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
+            this.Column2.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Column2.Width = 180;
             // 
             // frmPreviewSAN
             // 
@@ -355,22 +340,20 @@
             this.Controls.Add(this.lblVotes);
             this.Controls.Add(this.pbRating);
             this.Controls.Add(this.lblHighlights);
-            this.Controls.Add(this.pbSeperator4);
-            this.Controls.Add(this.label10);
-            this.Controls.Add(this.lblBiography);
-            this.Controls.Add(this.pbMoreAuthor);
-            this.Controls.Add(this.pbAuthorImage);
-            this.Controls.Add(this.label11);
             this.Controls.Add(this.pbSeperator3);
+            this.Controls.Add(this.lblAuthorMore);
+            this.Controls.Add(this.lblBiography);
+            this.Controls.Add(this.pbAuthorImage);
+            this.Controls.Add(this.lblAboutAuthor);
+            this.Controls.Add(this.pbSeperator2);
             this.Controls.Add(this.lblPreviousTitle);
             this.Controls.Add(this.lblPreviousHeading);
             this.Controls.Add(this.pbPreviousCover);
             this.Controls.Add(this.lblSeries);
-            this.Controls.Add(this.label6);
+            this.Controls.Add(this.lblAboutSeries);
             this.Controls.Add(this.lblReadingTime);
             this.Controls.Add(this.lblDescription);
             this.Controls.Add(this.pbSeperator1);
-            this.Controls.Add(this.pbMoreDescription);
             this.Controls.Add(this.lblAuthor);
             this.Controls.Add(this.lblTitle);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -383,13 +366,11 @@
             this.Text = "About this Book";
             ((System.ComponentModel.ISupportInitialize)(this.dgvOtherBooks)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbRating)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbSeperator4)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbMoreAuthor)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAuthorImage)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbSeperator3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbAuthorImage)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbSeperator2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbPreviousCover)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbSeperator1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbMoreDescription)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -397,28 +378,27 @@
         #endregion
 
         private System.Windows.Forms.DataGridView dgvOtherBooks;
-        private System.Windows.Forms.DataGridViewImageColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.Label lblVotes;
         private System.Windows.Forms.PictureBox pbRating;
         private System.Windows.Forms.Label lblHighlights;
-        private System.Windows.Forms.PictureBox pbSeperator4;
-        private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Label lblBiography;
-        private System.Windows.Forms.PictureBox pbMoreAuthor;
-        private System.Windows.Forms.PictureBox pbAuthorImage;
-        private System.Windows.Forms.Label label11;
         private System.Windows.Forms.PictureBox pbSeperator3;
+        private System.Windows.Forms.Label lblAuthorMore;
+        private System.Windows.Forms.Label lblBiography;
+        private System.Windows.Forms.PictureBox pbAuthorImage;
+        private System.Windows.Forms.Label lblAboutAuthor;
+        private System.Windows.Forms.PictureBox pbSeperator2;
         private System.Windows.Forms.Label lblPreviousTitle;
         private System.Windows.Forms.Label lblPreviousHeading;
         private System.Windows.Forms.PictureBox pbPreviousCover;
         private System.Windows.Forms.Label lblSeries;
-        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label lblAboutSeries;
         private System.Windows.Forms.Label lblReadingTime;
         private System.Windows.Forms.Label lblDescription;
         private System.Windows.Forms.PictureBox pbSeperator1;
-        private System.Windows.Forms.PictureBox pbMoreDescription;
         private System.Windows.Forms.Label lblAuthor;
         private System.Windows.Forms.Label lblTitle;
+        private System.Windows.Forms.ImageList ilOtherBooks;
+        private System.Windows.Forms.DataGridViewImageColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
     }
 }

@@ -15,6 +15,8 @@ namespace XRayBuilderGUI.DataSources
         public override string Name { get { return "Goodreads"; } }
         private Properties.Settings settings = Properties.Settings.Default;
 
+        private frmASIN frmAS = new frmASIN();
+
         public override string SearchBook(string author, string title, Action<string> Log)
         {
             string goodreadsSearchUrlBase = @"http://www.goodreads.com/search?q={0}%20{1}";
@@ -96,6 +98,21 @@ namespace XRayBuilderGUI.DataSources
                     try
                     {
                         nextBook = Amazon.SearchBook(title, curBook.author, TLD);
+                        if (nextBook == null && settings.promptASIN)
+                        {
+                            //B002DW937Y
+                            Log(String.Format("ASIN prompt for {0}...", title));
+                            nextBook = new BookInfo(title, curBook.author, "");
+                            frmAS.Text = "Next in Series";
+                            frmAS.lblTitle.Text = title;
+                            frmAS.ShowDialog();
+                            Log(String.Format("ASIN supplied: {0}", frmAS.tbAsin.Text));
+                            string Url = String.Format("http://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text);
+                            nextBook.GetAmazonInfo(Url);
+                            nextBook.amazonUrl = Url;
+                            nextBook.asin = frmAS.tbAsin.Text;
+                            frmAS.Dispose();
+                        }
                     }
                     catch
                     {
@@ -106,21 +123,7 @@ namespace XRayBuilderGUI.DataSources
                     if (nextBook != null)
                         nextBook.GetAmazonInfo(nextBook.amazonUrl); //fill in desc, imageurl, and ratings
                 }
-                if (nextBook == null && settings.promtASIN)
-                {
-                    //B002DW937Y
-                    Log(String.Format("ASIN prompt for {0}...", title));
-                    nextBook = new BookInfo(title, curBook.author, "");
-                    frmASIN frmAS = new frmASIN();
-                    frmAS.Text = "Next in Series";
-                    frmAS.lblTitle.Text = title;
-                    frmAS.ShowDialog();
-                    string Url = String.Format("http://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text);
-                    nextBook.GetAmazonInfo(Url);
-                    nextBook.amazonUrl = Url;
-                    nextBook.asin = frmAS.tbAsin.Text;
-                    frmAS.Dispose();
-                }
+                
                 if (nextBook == null)
                 {
                     Log("Book was found to be part of a series, but an error occurred finding the next book.\r\n" +
@@ -139,15 +142,15 @@ namespace XRayBuilderGUI.DataSources
                     //fill in desc, imageurl, and ratings
                     if (curBook.previousInSeries != null)
                         curBook.previousInSeries.GetAmazonInfo(curBook.previousInSeries.amazonUrl);
-                    if (curBook.previousInSeries == null && settings.promtASIN)
+                    if (curBook.previousInSeries == null && settings.promptASIN)
                     {
                         //B000W94GH2
                         Log(String.Format("ASIN prompt for {0}...", title));
                         curBook.previousInSeries = new BookInfo(title, curBook.author, "");
-                        frmASIN frmAS = new frmASIN();
                         frmAS.Text = "Previous in Series";
                         frmAS.lblTitle.Text = title;
                         frmAS.ShowDialog();
+                        Log(String.Format("ASIN supplied: {0}", frmAS.tbAsin.Text));
                         string Url = String.Format("http://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text);
                         curBook.previousInSeries.GetAmazonInfo(Url);
                         curBook.previousInSeries.amazonUrl = Url;
@@ -284,7 +287,7 @@ namespace XRayBuilderGUI.DataSources
                     foreach (HtmlNode book in bookNodes)
                     {
                         match = Regex.Match(book.InnerText, stringPrevSearch);
-                        if (match.Success)
+                        if (match.Success && results.Count == 0)
                         {
                             HtmlNode title = book.SelectSingleNode(".//a[@class='bookTitle']");
                             previousTitle = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", string.Empty);
@@ -299,6 +302,7 @@ namespace XRayBuilderGUI.DataSources
                             results["Next"] = nextTitle;
                             Log(String.Format("Followed by: {0}", nextTitle));
                         }
+                        if (results.Count == 2) break; // next and prev found 
                     }
                 }
             }

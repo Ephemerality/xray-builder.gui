@@ -772,7 +772,8 @@ namespace XRayBuilderGUI
                 {
                     txtGoodreads.Text = bookUrl;
                     txtGoodreads.Refresh();
-                    Log(String.Format("Book found on {3}!\r\n{0} by {1}\r\n{3} URL: {2}\r\nYou may want to visit the URL to ensure it is correct.",
+                    if (dataSource.Name == "Shelfari")
+                        Log(String.Format("Book found on {3}!\r\n{0} by {1}\r\n{3} URL: {2}\r\nYou may want to visit the URL to ensure it is correct.",
                             results[5], results[4], bookUrl, dataSource.Name));
                 }
                 else

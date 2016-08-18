@@ -14,13 +14,14 @@ namespace XRayBuilderGUI.DataSources
         private Properties.Settings settings = Properties.Settings.Default;
 
         private frmASIN frmAS = new frmASIN();
+        private frmGR frmG = new frmGR();
 
         public override string SearchBook(string author, string title, Action<string> Log)
         {
             string goodreadsSearchUrlBase = @"http://www.goodreads.com/search?q={0}%20{1}";
             string goodreadsBookUrl = "";
-            // Goodreads expects %26 intead of &
-            title = title.Replace("&", "%26");
+            // Goodreads expects %26 and %27 intead of & and ’ or '
+            title = title.Replace("&", "%26").Replace("’", "%27").Replace("'", "%27");
             author = Functions.FixAuthor(author);
 
             HtmlDocument goodreadsHtmlDoc = new HtmlDocument();
@@ -33,7 +34,7 @@ namespace XRayBuilderGUI.DataSources
             if (!goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results"))
             {
                 // Revert back for searching title
-                goodreadsBookUrl = FindGoodreadsURL(goodreadsHtmlDoc, author, title.Replace("%26", "&amp;"));
+                goodreadsBookUrl = FindGoodreadsURL(goodreadsHtmlDoc, author, title.Replace("%26", "&amp;"), Log);
                 if (goodreadsBookUrl != "")
                 {
                     return goodreadsBookUrl;
@@ -42,25 +43,52 @@ namespace XRayBuilderGUI.DataSources
             return "";
         }
 
-        private string FindGoodreadsURL(HtmlDocument goodreadsHtmlDoc, string author, string title)
+        private string FindGoodreadsURL(HtmlDocument goodreadsHtmlDoc, string author, string title, Action<string> Log)
         {
             string goodreadsBookUrl = @"http://www.goodreads.com/book/show/{0}";
             //Check if results contain title and author
-            foreach (HtmlNode link in goodreadsHtmlDoc.DocumentNode.SelectNodes("//tr[@itemtype='http://schema.org/Book']"))
+            HtmlNodeCollection resultNodes =
+                goodreadsHtmlDoc.DocumentNode.SelectNodes("//tr[@itemtype='http://schema.org/Book']");
+            //Allow user to choose from a list of search results
+            if (resultNodes.Count > 0)
             {
-                HtmlNode titleNode = link.SelectSingleNode(".//a[@class='bookTitle']");
-                HtmlNode authorNode = link.SelectSingleNode(".//a[@class='authorName']");
+                frmG.cbResults.Items.Clear();
+                foreach (HtmlNode link in resultNodes)
+                {
+                    HtmlNode noPhoto = link.SelectSingleNode(".//img");
+                    //Skip book if it does not have a cover, books with a cover are more likely to be a correct match?
+                    if (noPhoto.GetAttributeValue("src", "").Contains("nophoto")) continue;
+                    HtmlNode titleText = link.SelectSingleNode(".//a[@class='bookTitle']");
+                    frmG.cbResults.Items.Add(titleText.InnerText.Trim());
+                }
+                frmG.cbResults.SelectedIndex = 0;
+                if (frmG.cbResults.Items.Count > 1)
+                {
+                    Log("Warning: Multiple results returned from Goodreads...");
+                    frmG.ShowDialog();
+                }
+
+                int i = frmG.cbResults.SelectedIndex;
+                string findNode = frmG.cbResults.Text;
+                HtmlNode chosenResult = resultNodes[i];
+                HtmlNode titleNode = chosenResult.SelectSingleNode(".//a[@class='bookTitle']");
+                HtmlNode authorNode = chosenResult.SelectSingleNode(".//a[@class='authorName']");
                 if (authorNode.InnerText.IndexOf(author, StringComparison.OrdinalIgnoreCase) < 0)
                     author = Functions.TrimAuthor(author);
-                if (titleNode.InnerText.IndexOf(title, StringComparison.OrdinalIgnoreCase) >= 0 &&
+                if (titleNode.InnerText.IndexOf(findNode, StringComparison.OrdinalIgnoreCase) >= 0 &&
                     (authorNode.InnerText.IndexOf(author, StringComparison.OrdinalIgnoreCase) >= 0))
                 {
-                    HtmlNode node = link.SelectSingleNode(".//a[@class='bookTitle']");
-                    //string searchResultTitle = node.InnerText.Trim();
                     //Parse goodreads ID
-                    Match match = Regex.Match(node.OuterHtml, @"./book/show/([0-9]*)");
+                    Match match = Regex.Match(titleNode.OuterHtml, @"./book/show/([0-9]*)");
                     if (match.Success)
+                    {
+                        //Return actual selected book title
+                        Log(String.Format("Book found on Goodreads!\r\n{0} by {1}\r\nGoodreads URL: {2}\r\n"+
+                            "You may want to visit the URL to ensure it is correct.",
+                            titleNode.InnerText.Trim(), authorNode.InnerText.Trim(),
+                            String.Format(goodreadsBookUrl, match.Groups[1].Value)));
                         return String.Format(goodreadsBookUrl, match.Groups[1].Value);
+                    }
                 }
             }
             return "";

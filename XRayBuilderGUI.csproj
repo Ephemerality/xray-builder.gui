@@ -103,6 +103,12 @@
     <Compile Include="frmASIN.Designer.cs">
       <DependentUpon>frmASIN.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmGR.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmGR.Designer.cs">
+      <DependentUpon>frmGR.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmPreviewAP.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -210,6 +216,9 @@
     <None Include="Resources\XR.png" />
     <EmbeddedResource Include="frmASIN.resx">
       <DependentUpon>frmASIN.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmGR.resx">
+      <DependentUpon>frmGR.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>

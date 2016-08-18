@@ -86,7 +86,7 @@ namespace XRayBuilderGUI
                 {
                     Match title = Regex.Match(split[2], @""":""(.*)""");
                     if (title.Success)
-                        lblNextTitle.Text = Regex.Replace(title.Groups[1].Value, @" \(.*\)", string.Empty);
+                        lblNextTitle.Text = Regex.Replace(title.Groups[1].Value, @" \(.*\)|:", string.Empty);
                     Match author = Regex.Match(split[3], @""":\[""(.*)""\]");
                     if (author.Success)
                         lblNextAuthor.Text = author.Groups[1].Value;
@@ -115,6 +115,8 @@ namespace XRayBuilderGUI
             }
             
             Match authorRecs = Regex.Match(input, @"""authorRecs"":{(.*)},""customersWhoBoughtRecs""");
+            if (!authorRecs.Success)
+                authorRecs = Regex.Match(input, @"""authorRecs"":{(.*)},""goodReadsReview""");
             currentLine = authorRecs.Value;
             split.Clear();
             split.AddRange(Regex.Split(authorRecs.Value, (@"},{")));

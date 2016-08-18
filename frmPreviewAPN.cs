@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -103,6 +99,10 @@ namespace XRayBuilderGUI
                         {
                             currentLine = bookInfo.Value;
                             string titleSpaced = " " + bookInfo.Groups[1].Value;
+                            if (titleSpaced.Length > 35)
+                            {
+                                titleSpaced = titleSpaced.Substring(0, 35) + "...";
+                            }
                             dgvOtherBooks.Rows.Add(titleSpaced, Resources.arrow_right);
                             i++;
                         }

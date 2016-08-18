@@ -170,7 +170,7 @@ namespace XRayBuilderGUI
                         if (bookInfo.Success)
                         {
                             currentLine = bookInfo.Value;
-                            //string cleanTitle = Regex.Replace(bookInfo.Groups[2].Value, @" \(.*\)", string.Empty);
+                            //string cleanTitle = Regex.Replace(bookInfo.Groups[2].Value, @" \(.*\)|:", string.Empty);
                             otherBooks.Add(new Tuple<string, string, string, string>(
                                 bookInfo.Groups[1].Value, bookInfo.Groups[2].Value,
                                 bookInfo.Groups[3].Value, bookInfo.Groups[4].Value));

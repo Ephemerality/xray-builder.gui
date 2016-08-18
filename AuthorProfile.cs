@@ -90,7 +90,7 @@ namespace XRayBuilderGUI
             {
                 if (searchResults == null)
                 {
-                    main.Log(String.Format("Failed to find {0} on Amazon." + TLD, curBook.title));
+                    main.Log(String.Format("Failed to find {0} on Amazon." + TLD, curBook.author));
                     if (TLD != "com")
                     {
                         main.Log("Trying again with Amazon.com.");

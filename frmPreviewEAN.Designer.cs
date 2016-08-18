@@ -162,7 +162,7 @@
             this.lblNotInSeries.Name = "lblNotInSeries";
             this.lblNotInSeries.Size = new System.Drawing.Size(289, 30);
             this.lblNotInSeries.TabIndex = 43;
-            this.lblNotInSeries.Text = "This book is not part of a series or\r\nit is the last book in a series";
+            this.lblNotInSeries.Text = "This book is not part of a series or\r\nit is the last book in a series...";
             this.lblNotInSeries.Visible = false;
             // 
             // frmPreviewEAN

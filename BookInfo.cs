@@ -73,6 +73,12 @@ namespace XRayBuilderGUI
             return Functions.ExpandUnicode(template);
         }
 
+
+        public override string ToString()
+        {
+            return title + " - " + author;
+        }
+
         /// <summary>
         /// Retrieves the book's description, image URL, and rating from the book's Amazon URL.
         /// </summary>

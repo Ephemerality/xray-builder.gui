@@ -98,7 +98,7 @@
             this.lblBiography1.Name = "lblBiography1";
             this.lblBiography1.Size = new System.Drawing.Size(240, 94);
             this.lblBiography1.TabIndex = 62;
-            this.lblBiography1.Text = resources.GetString("lblBiography1.Text");
+            this.lblBiography1.Text = "Biography part 1";
             // 
             // lblBiography2
             // 
@@ -108,7 +108,7 @@
             this.lblBiography2.Name = "lblBiography2";
             this.lblBiography2.Size = new System.Drawing.Size(310, 304);
             this.lblBiography2.TabIndex = 65;
-            this.lblBiography2.Text = resources.GetString("lblBiography2.Text");
+            this.lblBiography2.Text = "Biography part 2";
             // 
             // ilOtherBooks
             // 
@@ -140,7 +140,7 @@
             this.Column1.ReadOnly = true;
             this.Column1.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Column1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Column1.Width = 241;
+            this.Column1.Width = 220;
             // 
             // Column2
             // 

@@ -25,7 +25,6 @@ using System.Data.SQLite;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -267,7 +266,7 @@ namespace XRayBuilderGUI
                     if (!ex.Message.Contains("(404) Not Found"))
                         main.Log("No pre-made aliases available for this book.");
                     else
-                        main.Log("An error occurred downloading aliases: " + ex.Message);
+                        main.Log("An error occurred downloading aliases: " + ex.Message + "\r\n" + ex.StackTrace);
                 }
             }
 
@@ -715,7 +714,7 @@ namespace XRayBuilderGUI
                     Where(div => div.GetAttributeValue("class", "") == "chapter" || Regex.IsMatch(div.InnerText, chapterPattern, RegexOptions.IgnoreCase));
                 if (chapterNodes.Count() == 0)
                     chapterNodes = bookDoc.DocumentNode.SelectNodes("//h1").
-                        Where(div => Regex.IsMatch(div.InnerText, chapterPattern, RegexOptions.IgnoreCase));
+                    Where(div => Regex.IsMatch(div.InnerText, chapterPattern, RegexOptions.IgnoreCase));
                 foreach (HtmlAgilityPack.HtmlNode chap in chapterNodes)
                 {
                     int index = rawML.IndexOf(chap.InnerText);
@@ -890,7 +889,7 @@ namespace XRayBuilderGUI
                     }
                     catch (Exception ex)
                     {
-                        main.Log("An error occurred reading from txt file: " + ex.Message);
+                        main.Log("An error occurred reading from txt file: " + ex.Message + "\r\n" + ex.StackTrace);
                         return 1;
                     }
                 }
@@ -1156,7 +1155,7 @@ namespace XRayBuilderGUI
                     }
                         catch (Exception ex)
                         {
-                            main.Log("An error occurred while splitting the aliases.\r\n" + ex.Message);
+                            main.Log("An error occurred while splitting the aliases.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                         }
                     else
                         streamWriter.WriteLine(c.TermName + "|");

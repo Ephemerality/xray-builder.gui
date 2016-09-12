@@ -29,6 +29,8 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -76,8 +78,10 @@
       <HintPath>.\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.SQLite">
+    <Reference Include="System.Data.SQLite, Version=1.0.94.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>.\System.Data.SQLite.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
@@ -103,17 +107,35 @@
     <Compile Include="frmASIN.Designer.cs">
       <DependentUpon>frmASIN.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmGR.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmGR.Designer.cs">
+      <DependentUpon>frmGR.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmPreviewAP.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="frmPreviewAP.Designer.cs">
       <DependentUpon>frmPreviewAP.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmPreviewAPN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmPreviewAPN.Designer.cs">
+      <DependentUpon>frmPreviewAPN.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmPreviewEA.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="frmPreviewEA.Designer.cs">
       <DependentUpon>frmPreviewEA.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmPreviewEAN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmPreviewEAN.Designer.cs">
+      <DependentUpon>frmPreviewEAN.cs</DependentUpon>
     </Compile>
     <Compile Include="frmPreviewSA.cs">
       <SubType>Form</SubType>
@@ -176,6 +198,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Icon.ico" />
+    <None Include="Resources\arrow-right.png" />
+    <None Include="Resources\seperator.png" />
     <None Include="Resources\missing-image.png" />
     <None Include="Resources\SA.png" />
     <None Include="Resources\STAR5.png" />
@@ -197,6 +221,9 @@
     <EmbeddedResource Include="frmASIN.resx">
       <DependentUpon>frmASIN.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="frmGR.resx">
+      <DependentUpon>frmGR.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -204,8 +231,14 @@
     <EmbeddedResource Include="frmPreviewAP.resx">
       <DependentUpon>frmPreviewAP.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="frmPreviewAPN.resx">
+      <DependentUpon>frmPreviewAPN.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmPreviewEA.resx">
       <DependentUpon>frmPreviewEA.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmPreviewEAN.resx">
+      <DependentUpon>frmPreviewEAN.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmPreviewSA.resx">
       <DependentUpon>frmPreviewSA.cs</DependentUpon>

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using System.Xml;
 
 using HtmlAgilityPack;
@@ -87,16 +85,17 @@ namespace XRayBuilderGUI
             //Parse Recommended Author titles and ASINs
             try
             {
-                HtmlNodeCollection recList = bookHtmlDoc.DocumentNode.SelectNodes("//li[@class='a-carousel-card a-float-left']");
-                if (recList == null)
-                    main.Log(String.Format("An error occurred finding related book list page on Amazon.{0} (they might not list any).\r\nContinuing without them.", settings.amazonTLD));
+                string nodeTitleCheck = "", nodeUrl = "", cleanAuthor = "";
+                HtmlNodeCollection recList =
+                    bookHtmlDoc.DocumentNode.SelectNodes(
+                        "//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card a-float-left']");
                 if (recList != null)
+                {
                     foreach (HtmlNode item in recList.Where(item => item != null))
                     {
                         HtmlNode nodeTitle = item.SelectSingleNode(".//div/a");
-                        string nodeTitleCheck = nodeTitle.GetAttributeValue("title", "");
-                        string nodeUrl = nodeTitle.GetAttributeValue("href", "");
-                        string cleanAuthor = "";
+                        nodeTitleCheck = nodeTitle.GetAttributeValue("title", "");
+                        nodeUrl = nodeTitle.GetAttributeValue("href", "");
                         if (nodeUrl != "")
                             nodeUrl = "http://www.amazon." + settings.amazonTLD + nodeUrl;
                         if (nodeTitleCheck == "")
@@ -109,15 +108,12 @@ namespace XRayBuilderGUI
                         //Exclude the current book title from other books search
                         Match match = Regex.Match(nodeTitleCheck, curBook.title, RegexOptions.IgnoreCase);
                         if (match.Success)
-                        {
                             continue;
-                        }
-                        match = Regex.Match(nodeTitleCheck, @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase);
+                        match = Regex.Match(nodeTitleCheck,
+                            @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)",
+                            RegexOptions.IgnoreCase);
                         if (match.Success)
-                        {
-                            nodeTitleCheck = "";
                             continue;
-                        }
                         BookInfo newBook = new BookInfo(nodeTitleCheck, cleanAuthor,
                             item.SelectSingleNode(".//div").GetAttributeValue("data-asin", ""));
                         try
@@ -133,13 +129,65 @@ namespace XRayBuilderGUI
                             return;
                         }
                     }
+                }
+                //Add sponsored related, if they exist...
+                HtmlNode otherItems =
+                    bookHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='view_to_purchase-sims-feature']");
+                if (otherItems != null)
+                {
+                    recList = otherItems.SelectNodes(".//li[@class='a-spacing-medium p13n-sc-list-item']");
+                    if (recList != null)
+                    {
+                        string sponsTitle = "", sponsAuthor = "", sponsAsin = "", sponsUrl = "";
+                        foreach (HtmlNode result in recList.Where(result => result != null))
+                        {
+                            HtmlNode otherBook = result.SelectSingleNode(".//div[@class='a-fixed-left-grid-col a-col-left']/a");
+                            if (otherBook == null)
+                                continue;
+                            Match match = Regex.Match(otherBook.GetAttributeValue("href", ""),
+                                "dp/(B[A-Z0-9]{9})");
+                            if (match.Success)
+                            {
+                                sponsAsin = match.Groups[1].Value;
+                                sponsUrl = String.Format("http://www.amazon.{1}/dp/{0}", sponsAsin, settings.amazonTLD);
+                            }
+                            otherBook = otherBook.SelectSingleNode(".//img");
+                            match = Regex.Match(otherBook.GetAttributeValue("alt", ""),
+                                @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)",
+                                RegexOptions.IgnoreCase);
+                            if (match.Success)
+                                continue;
+                            sponsTitle = otherBook.GetAttributeValue("alt", "");
+                            //Check for duplicate by title
+                            BookInfo repeat = custAlsoBought.FirstOrDefault(check => check.title.Contains(sponsTitle));
+                            if (repeat != null)
+                                continue;
+                            otherBook =
+                                result.SelectSingleNode(
+                                    ".//div[@class='a-row a-size-small']");
+                            sponsAuthor = otherBook.InnerText.Trim();
+                            BookInfo newBook = new BookInfo(sponsTitle, sponsAuthor, sponsAsin);
+                            //Gather book desc, image url, etc, if using new format
+                            try
+                            {
+                                if (settings.useNewVersion)
+                                    newBook.GetAmazonInfo(sponsUrl);
+                                custAlsoBought.Add(newBook);
+                            }
+                            catch (Exception ex)
+                            {
+                                main.Log(String.Format("Error: {0}\r\n{1}", ex.Message, sponsUrl));
+                                return;
+                            }
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
-                main.Log("An error occurred parsing the book's amazon page: " + ex.Message);
+                main.Log("An error occurred parsing the book's amazon page: " + ex.Message + ex.StackTrace);
                 return;
             }
-
             SetPaths();
             complete = true;
         }
@@ -203,7 +251,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                main.Log("An error occurred while writing the End Action file: " + ex.Message);
+                main.Log("An error occurred while writing the End Action file: " + ex.Message + "\r\n" + ex.StackTrace);
                 return;
             }
         }
@@ -226,7 +274,7 @@ namespace XRayBuilderGUI
             string ratingText = Math.Floor(curBook.amazonRating).ToString();
 
             // Build data object
-            string dataTemplate = @"""data"":{{""nextBook"":{0},{1},{2},{3},{4},{5},{6},{7}}}";
+            string dataTemplate = "";
             string nextBook = "{}";
             string publicSharedRating = String.Format(@"""publicSharedRating"":{{""class"":""publicSharedRating"",""timestamp"":{0},""value"":{1}}}", dateMs, ratingText);
             string customerProfile = String.Format(@"""customerProfile"":{{""class"":""customerProfile"",""penName"":""{0}"",""realName"":""{1}""}}",
@@ -262,16 +310,33 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                main.Log("An error occurred while searching for or estimating the page count: " + ex.Message);
+                main.Log("An error occurred while searching for or estimating the page count: " + ex.Message + "\r\n" + ex.StackTrace);
             }
-            authorRecs = String.Format(authorRecs, String.Join(",", authorProfile.otherBooks.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
-            if (custAlsoBought.Count > 0)
-                custRecs = String.Format(custRecs, String.Join(",", custAlsoBought.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
+            if (authorProfile.otherBooks.Count > 0)
+                authorRecs = String.Format(authorRecs,
+                    String.Join(",",
+                        authorProfile.otherBooks.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
             else
-                custRecs = "";
-
-            dataTemplate = String.Format(dataTemplate, nextBook, publicSharedRating, customerProfile,
-                rating, authors, authorRecs, custRecs, goodReads);
+            {
+                dataTemplate = @"""data"":{{""nextBook"":{0},{1},{2},{3},{4},{5},{6}}}";
+                dataTemplate = String.Format(dataTemplate, nextBook, publicSharedRating, customerProfile,
+                rating, authors, custRecs, goodReads);
+            }
+            if (custAlsoBought.Count > 0)
+                custRecs = String.Format(custRecs,
+                    String.Join(",", custAlsoBought.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
+            else
+            {
+                dataTemplate = @"""data"":{{""nextBook"":{0},{1},{2},{3},{4},{5},{6}}}";
+                dataTemplate = String.Format(dataTemplate, nextBook, publicSharedRating, customerProfile,
+                rating, authors, authorRecs, goodReads);
+            }
+            if (dataTemplate == "")
+            {
+                dataTemplate = @"""data"":{{""nextBook"":{0},{1},{2},{3},{4},{5},{6},{7}}}";
+                dataTemplate = String.Format(dataTemplate, nextBook, publicSharedRating, customerProfile,
+                    rating, authors, authorRecs, custRecs, goodReads);
+            }
 
             finalOutput = String.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
 
@@ -307,7 +372,7 @@ namespace XRayBuilderGUI
 
             string popularHighlights = curBook.popularHighlights == "" ? "" :
                 String.Format(@"""popularHighlightsText"":{{""class"":""dynamicText"",""localizedText"":{{""de"":""{0} Passagen wurden {1} mal markiert"",""en-US"":""{0} passages have been highlighted {1} times"",""ru"":""1\u00A0095 \u043E\u0442\u0440\u044B\u0432\u043A\u043E\u0432 \u0431\u044B\u043B\u043E \u0432\u044B\u0434\u0435\u043B\u0435\u043D\u043E 12\u00A0326 \u0440\u0430\u0437"",""pt-BR"":""{0} trechos foram destacados {1} vezes"",""ja"":""{0}\u7B87\u6240\u304C{1}\u56DE\u30CF\u30A4\u30E9\u30A4\u30C8\u3055\u308C\u307E\u3057\u305F"",""en"":""{0} passages have been highlighted {1} times"",""it"":""{0} brani sono stati evidenziati {1} volte"",""fr"":""{0}\u00A0095 passages ont \u00E9t\u00E9 surlign\u00E9s {1}\u00A0326 fois"",""zh-CN"":""{0} \u4E2A\u6BB5\u843D\u88AB\u6807\u6CE8\u4E86 {1} \u6B21"",""es"":""Se han subrayado {0} pasajes {1} veces"",""nl"":""{0} fragmenten zijn {1} keer gemarkeerd""}}}}", curBook.popularPassages, curBook.popularHighlights);
-            string grokShelfInfo = String.Format(@"""grokShelfInfo"":{{""class"":""goodReadsShelfInfo"",""asin"":""{0}"",""shelves"":[""to-read""]}}", curBook.asin);
+            string grokShelfInfo = String.Format(@"""grokShelfInfo"":{{""class"":""goodReadsShelfInfo"",""asin"":""{0}"",""shelves"":[""none""],""is_sensitive"":false,""is_autoshelving_enabled"":true}}", curBook.asin);
             string currentBook = curBook.ToExtraJSON("featuredRecommendation");
             string authors = String.Format(@"""authorBios"":{{""class"":""authorBioList"",""authors"":[{0}]}}", authorProfile.ToJSON());
             string authorRecs = @"""authorRecs"":{{""class"":""recommendationList"",""recommendations"":[{0}]}}";

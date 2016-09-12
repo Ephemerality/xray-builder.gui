@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using System.Globalization;
-using System.Windows.Forms;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI.DataSources
@@ -15,13 +13,26 @@ namespace XRayBuilderGUI.DataSources
         public override string Name { get { return "Goodreads"; } }
         private Properties.Settings settings = Properties.Settings.Default;
 
+        private frmASIN frmAS = new frmASIN();
+        private frmGR frmG = new frmGR();
+
         public override string SearchBook(string author, string title, Action<string> Log)
         {
             string goodreadsSearchUrlBase = @"http://www.goodreads.com/search?q={0}%20{1}";
             string goodreadsBookUrl = "";
-            // Goodreads expects %26 intead of &
-            title = title.Replace("&", "%26");
+            // Goodreads expects %26 and %27 instead of & and ’ or ' and %20 instead of spaces
+            Dictionary<string, string> replacements = new Dictionary<string, string>()
+            {
+                {"&", "%26"},
+                {"’", "%27"},
+                {"'", "%27"},
+                {" ", "%20"}
+            };
+
+            Regex regex = new Regex(String.Join("|", replacements.Keys.Select(k => Regex.Escape(k))));
+            title = regex.Replace(title, m => replacements[m.Value]);
             author = Functions.FixAuthor(author);
+            author = regex.Replace(author, m => replacements[m.Value]);
 
             HtmlDocument goodreadsHtmlDoc = new HtmlDocument();
             goodreadsHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(String.Format(goodreadsSearchUrlBase, author, title)));
@@ -33,7 +44,8 @@ namespace XRayBuilderGUI.DataSources
             if (!goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results"))
             {
                 // Revert back for searching title
-                goodreadsBookUrl = FindGoodreadsURL(goodreadsHtmlDoc, author, title.Replace("%26", "&amp;"));
+                string revertTitle = title.Replace("%26", "&amp;").Replace("%27", "'").Replace("%20", " ");
+                goodreadsBookUrl = FindGoodreadsURL(goodreadsHtmlDoc, author, revertTitle, Log);
                 if (goodreadsBookUrl != "")
                 {
                     return goodreadsBookUrl;
@@ -42,25 +54,45 @@ namespace XRayBuilderGUI.DataSources
             return "";
         }
 
-        private string FindGoodreadsURL(HtmlDocument goodreadsHtmlDoc, string author, string title)
+        private string FindGoodreadsURL(HtmlDocument goodreadsHtmlDoc, string author, string title, Action<string> Log)
         {
             string goodreadsBookUrl = @"http://www.goodreads.com/book/show/{0}";
             //Check if results contain title and author
-            foreach (HtmlNode link in goodreadsHtmlDoc.DocumentNode.SelectNodes("//tr[@itemtype='http://schema.org/Book']"))
+            HtmlNodeCollection resultNodes =
+                goodreadsHtmlDoc.DocumentNode.SelectNodes("//tr[@itemtype='http://schema.org/Book']");
+            //Allow user to choose from a list of search results
+            if (resultNodes.Count > 0)
             {
-                HtmlNode titleNode = link.SelectSingleNode(".//a[@class='bookTitle']");
-                HtmlNode authorNode = link.SelectSingleNode(".//a[@class='authorName']");
-                if (authorNode.InnerText.IndexOf(author, StringComparison.OrdinalIgnoreCase) < 0)
-                    author = Functions.TrimAuthor(author);
-                if (titleNode.InnerText.IndexOf(title, StringComparison.OrdinalIgnoreCase) >= 0 &&
-                    (authorNode.InnerText.IndexOf(author, StringComparison.OrdinalIgnoreCase) >= 0))
+                frmG.cbResults.Items.Clear();
+                foreach (HtmlNode link in resultNodes)
                 {
-                    HtmlNode node = link.SelectSingleNode(".//a[@class='bookTitle']");
-                    //string searchResultTitle = node.InnerText.Trim();
-                    //Parse goodreads ID
-                    Match match = Regex.Match(node.OuterHtml, @"./book/show/([0-9]*)");
-                    if (match.Success)
-                        return String.Format(goodreadsBookUrl, match.Groups[1].Value);
+                    HtmlNode noPhoto = link.SelectSingleNode(".//img");
+                    //If more than one result found, skip book if it does not have a cover
+                    //Books with a cover are more likely to be a correct match?
+                    if (noPhoto.GetAttributeValue("src", "").Contains("nophoto") && (resultNodes.Count != 1)) continue;
+                    HtmlNode titleText = link.SelectSingleNode(".//a[@class='bookTitle']");
+                    frmG.cbResults.Items.Add(titleText.InnerText.Trim());
+                }
+                frmG.cbResults.SelectedIndex = 0;
+                if (frmG.cbResults.Items.Count > 1)
+                {
+                    Log("Warning: Multiple results returned from Goodreads...");
+                    frmG.ShowDialog();
+                }
+
+                int i = frmG.cbResults.SelectedIndex;
+                HtmlNode chosenResult = resultNodes[i];
+                HtmlNode titleNode = chosenResult.SelectSingleNode(".//a[@class='bookTitle']");
+                HtmlNode authorNode = chosenResult.SelectSingleNode(".//a[@class='authorName']");
+                Match match = Regex.Match(chosenResult.OuterHtml, @"./book/show/([0-9]*)");
+                if (match.Success)
+                {
+                    //Return actual selected book title
+                    Log(String.Format("Book found on Goodreads!\r\n{0} by {1}\r\nGoodreads URL: {2}\r\n" +
+                                      "You may want to visit the URL to ensure it is correct.",
+                        titleNode.InnerText.Trim(), authorNode.InnerText.Trim(),
+                        String.Format(goodreadsBookUrl, match.Groups[1].Value)));
+                    return String.Format(goodreadsBookUrl, match.Groups[1].Value);
                 }
             }
             return "";
@@ -96,41 +128,38 @@ namespace XRayBuilderGUI.DataSources
                     try
                     {
                         nextBook = Amazon.SearchBook(book.title, book.author, TLD);
+                        if (nextBook == null && settings.promptASIN)
+                        {
+                            Log(String.Format("ASIN prompt for {0}...", book.title));
+                            nextBook = new BookInfo(book.title, book.author, "");
+                            frmAS.Text = "Next in Series";
+                            frmAS.lblTitle.Text = book.title;
+                            frmAS.tbAsin.Text = "";
+                            frmAS.ShowDialog();
+                            Log(String.Format("ASIN supplied: {0}", frmAS.tbAsin.Text));
+                            string Url = String.Format("http://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text);
+                            nextBook.GetAmazonInfo(Url);
+                            nextBook.amazonUrl = Url;
+                            nextBook.asin = frmAS.tbAsin.Text;
+                        }
                     }
                     catch
                     {
-                        if (TLD != "com")
-                        {
-                            Log(String.Format("Failed to find {0} on Amazon." + TLD + ", trying again with Amazon.com.", book.title));
-                            TLD = "com";
-                            nextBook = Amazon.SearchBook(book.title, book.author, TLD);
-                        }
+                        Log(String.Format("Failed to find {0} on Amazon." + TLD + ", trying again with Amazon.com.", book.title));
+                        TLD = "com";
+                        nextBook = Amazon.SearchBook(book.title, book.author, TLD);
                     }
                     if (nextBook != null)
                         nextBook.GetAmazonInfo(nextBook.amazonUrl); //fill in desc, imageurl, and ratings
                 }
-                if (nextBook == null && settings.promptASIN)
-                {
-                    //B002DW937Y
-                    Log(String.Format("ASIN prompt for {0}...", book.title));
-                    nextBook = new BookInfo(book.title, curBook.author, "");
-                    frmASIN frmAS = new frmASIN();
-                    frmAS.Text = "Next in Series";
-                    frmAS.lblTitle.Text = book.title;
-                    frmAS.ShowDialog();
-                    string Url = String.Format("http://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text.ToUpper());
-                    nextBook.GetAmazonInfo(Url);
-                    nextBook.amazonUrl = Url;
-                    nextBook.asin = frmAS.tbAsin.Text.ToUpper();
-                    frmAS.Dispose();
-                }
+                
                 if (nextBook == null)
                 {
                     Log("Book was found to be part of a series, but an error occurred finding the next book.\r\n" +
                         "Please report this book and the Goodreads URL and output log to improve parsing.");
                 }
             }
-            else if (curBook.seriesPosition != curBook.totalInSeries)
+            else if (curBook.seriesPosition != curBook.totalInSeries && !curBook.seriesPosition.Contains("."))
                 Log("An error occurred finding the next book in series, the book may not be part of a series, or it is the latest release.");
 
             if (seriesInfo.TryGetValue("Previous", out book))
@@ -138,40 +167,21 @@ namespace XRayBuilderGUI.DataSources
                 if (curBook.previousInSeries == null)
                 {
                     curBook.previousInSeries = authorProfile.otherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.title, "^" + book.title + @"(?: \(.*\))?$"));
-                    if (curBook.previousInSeries == null)
-                    {
-                        // Attempt to search Amazon for the book instead
-                        try
-                        {
-                            curBook.previousInSeries = Amazon.SearchBook(book.title, book.author, TLD);
-                        }
-                        catch
-                        {
-                            if (TLD != "com")
-                            {
-                                Log(String.Format("Failed to find {0} on Amazon." + TLD + ", trying again with Amazon.com.", book.title));
-                                TLD = "com";
-                                curBook.previousInSeries = Amazon.SearchBook(book.title, curBook.author, TLD);
-                            }
-                        }
-                        //fill in desc, imageurl, and ratings
-                        if (curBook.previousInSeries != null)
-                            curBook.previousInSeries.GetAmazonInfo(curBook.previousInSeries.amazonUrl);
-                    }
+                    if (curBook.previousInSeries != null)
+                        curBook.previousInSeries.GetAmazonInfo(curBook.previousInSeries.amazonUrl);
                     if (curBook.previousInSeries == null && settings.promptASIN)
                     {
-                        //B000W94GH2
                         Log(String.Format("ASIN prompt for {0}...", book.title));
-                        curBook.previousInSeries = new BookInfo(book.title, curBook.author, "");
-                        frmASIN frmAS = new frmASIN();
+                        curBook.previousInSeries = new BookInfo(book.title, book.author, "");
                         frmAS.Text = "Previous in Series";
                         frmAS.lblTitle.Text = book.title;
+                        frmAS.tbAsin.Text = "";
                         frmAS.ShowDialog();
-                        string Url = String.Format("http://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text.ToUpper());
+                        Log(String.Format("ASIN supplied: {0}", frmAS.tbAsin.Text));
+                        string Url = String.Format("http://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text);
                         curBook.previousInSeries.GetAmazonInfo(Url);
                         curBook.previousInSeries.amazonUrl = Url;
-                        curBook.previousInSeries.asin = frmAS.tbAsin.Text.ToUpper();
-                        frmAS.Dispose();
+                        curBook.previousInSeries.asin = frmAS.tbAsin.Text;
                     }
                 }
                 if (curBook.previousInSeries == null)
@@ -191,7 +201,7 @@ namespace XRayBuilderGUI.DataSources
         private Dictionary<string, BookInfo> GetNextInSeriesTitle(BookInfo curBook, Action<string> Log)
         {
             Match match;
-            Dictionary<string, BookInfo> results = new Dictionary<string, BookInfo>(2);
+            Dictionary<string, BookInfo> results = new Dictionary<string, BookInfo>(2); 
             if (sourceHtmlDoc == null)
             {
                 sourceHtmlDoc = new HtmlDocument();
@@ -238,6 +248,22 @@ namespace XRayBuilderGUI.DataSources
                 Log("No highlighted passages have been found for this book");
                 curBook.popularPassages = "";
                 curBook.popularHighlights = "";
+            }
+
+            //Add rating and reviews count if missing from Amazon book ifo
+            if (curBook.amazonRating == 0)
+            {
+                HtmlNode goodreadsRating = metaNode.SelectSingleNode("//span[@class='value rating']");
+                if (goodreadsRating != null)
+                {
+                    curBook.amazonRating = float.Parse(goodreadsRating.InnerText);
+                }
+                HtmlNode passagesNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite votes' and @href='#other_reviews']");
+                match = Regex.Match(passagesNode.InnerText, @"(\d+,\d+)|(\d+)");
+                if (match.Success)
+                {
+                    curBook.numReviews = int.Parse(match.Value, NumberStyles.AllowThousands);
+                }
             }
 
             //Search Goodreads for series info
@@ -303,9 +329,7 @@ namespace XRayBuilderGUI.DataSources
                     {
                         HtmlNode bookIndex = book.SelectSingleNode(".//em");
                         if (bookIndex == null) continue;
-                        //match = Regex.Match(book.InnerText, stringPrevSearch);
-                        //if (match.Success)
-                        if (bookIndex.InnerText == stringPrevSearch)
+                        if (bookIndex.InnerText == stringPrevSearch && results.Count == 0)
                         {
                             BookInfo prevBook = new BookInfo("", "", "");
                             HtmlNode title = book.SelectSingleNode(".//a[@class='bookTitle']");
@@ -315,8 +339,6 @@ namespace XRayBuilderGUI.DataSources
                             Log(String.Format("Preceded by: {0}", prevBook.title));
                             continue;
                         }
-                        //match = Regex.Match(book.InnerText, stringNextSearch);
-                        //if (match.Success)
                         if (bookIndex.InnerText == stringNextSearch)
                         {
                             BookInfo nextBook = new BookInfo("", "", "");
@@ -372,7 +394,7 @@ namespace XRayBuilderGUI.DataSources
 			charNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/span[@class='toggleContent']/a");
 			if (charNodes != null)
 				allChars.AddRange(charNodes);
-            foreach (HtmlNode charNode in allChars)
+            foreach (HtmlNode charNode in charNodes)
             {
                 try
                 {
@@ -384,7 +406,7 @@ namespace XRayBuilderGUI.DataSources
                 {
                     if (ex.Message.Contains("(404)"))
                         Log("Error getting page for character. URL: " + "https://www.goodreads.com" + charNode.GetAttributeValue("href", "")
-                            + "\r\nMessage: " + ex.Message);
+                            + "\r\nMessage: " + ex.Message + "\r\n" + ex.StackTrace);
                 }
             }
             return terms;

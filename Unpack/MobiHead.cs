@@ -1,8 +1,6 @@
 ﻿// Credit for the majority of code in this file goes to Limey for the C# Metadata reader (http://www.mobileread.com/forums/showthread.php?t=185565)
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.IO;
 using System.Text;
 

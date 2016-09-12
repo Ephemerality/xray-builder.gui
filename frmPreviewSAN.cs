@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -26,10 +22,11 @@ namespace XRayBuilderGUI
         public string descriptionPopup = "";
         public string biographyPopup = "";
 
-        public ImageList ilOtherBooks = new ImageList();
+        //public ImageList ilOtherBooks = new ImageList();
         private List<string[]> otherBookList = new List<string[]>();
 
         private string currentLine;
+
         public string GetCurrentLine
         {
             get
@@ -48,6 +45,8 @@ namespace XRayBuilderGUI
 
             StreamReader streamReader = new StreamReader(inputFile, Encoding.UTF8);
             string input = streamReader.ReadToEnd();
+            ilOtherBooks.Images.Clear();
+            dgvOtherBooks.Rows.Clear();
             Match seriesPosition = Regex.Match(input, @"""seriesPosition"":{(.*)},""welcomeText""");
             if (seriesPosition.Success)
             {
@@ -55,8 +54,8 @@ namespace XRayBuilderGUI
                 string[] split = Regex.Split(seriesPosition.Value, (@","""));
                 if (split.Length == 5)
                 {
-                    Match position = Regex.Match(split[1], @"(\d+)");
-                    Match total = Regex.Match(split[2], @"(\d+)");
+                    Match position = Regex.Match(split[1], @"(\d+\.\d+)|(\d+)");
+                    Match total = Regex.Match(split[2], @"(\d+\.\d+)|(\d+)");
                     Match name = Regex.Match(split[3], @""":""(.*)""");
                     if (position.Value == "1")
                         lblSeries.Left = 12;
@@ -130,16 +129,23 @@ namespace XRayBuilderGUI
                 {
                     Match image = Regex.Match(split[5], @""":""(.*)""");
                     WebRequest request = WebRequest.Create(image.Groups[1].Value);
-
-                    using (WebResponse response = request.GetResponse())
-                    using (Stream stream = response.GetResponseStream())
+                    try
                     {
-                        if (stream != null)
+                        using (WebResponse response = request.GetResponse())
+                        using (Stream stream = response.GetResponseStream())
                         {
-                            Bitmap bitmap = new Bitmap(stream);
-                            pbAuthorImage.Image = MakeGrayscale3(bitmap);
+                            if (stream != null)
+                            {
+                                Bitmap bitmap = new Bitmap(stream);
+                                pbAuthorImage.Image = Functions.MakeGrayscale3(bitmap);
+                            }
                         }
                     }
+                    catch (Exception Ex)
+                    {
+                        MessageBox.Show(String.Format("Error: {0}", Ex.Message));
+                    }
+                    
                     Match find = Regex.Match(split[4], @""":""(.*)""");
                     lblBiography.Text = find.Groups[1].Value;
                     biographyPopup = find.Groups[1].Value;
@@ -153,7 +159,6 @@ namespace XRayBuilderGUI
             {
                 currentLine = authorRecs.Value;
                 var otherBooks = new List<Tuple<string, string, string, string>>();
-
                 string[] split = Regex.Split(authorRecs.Value, (@"},{"));
                 if (split.Length != 0)
                 {
@@ -165,6 +170,7 @@ namespace XRayBuilderGUI
                         if (bookInfo.Success)
                         {
                             currentLine = bookInfo.Value;
+                            //string cleanTitle = Regex.Replace(bookInfo.Groups[2].Value, @" \(.*\)|:", string.Empty);
                             otherBooks.Add(new Tuple<string, string, string, string>(
                                 bookInfo.Groups[1].Value, bookInfo.Groups[2].Value,
                                 bookInfo.Groups[3].Value, bookInfo.Groups[4].Value));
@@ -175,7 +181,7 @@ namespace XRayBuilderGUI
                                 if (stream != null)
                                 {
                                     Bitmap bitmap = new Bitmap(stream);
-                                    Image img = MakeGrayscale3(bitmap);
+                                    Image img = Functions.MakeGrayscale3(bitmap);
                                     ilOtherBooks.Images.Add(img);
                                 }
                             }
@@ -218,7 +224,7 @@ namespace XRayBuilderGUI
                         if (stream != null)
                         {
                             Bitmap bitmap = new Bitmap(stream);
-                            pbPreviousCover.Image = MakeGrayscale3(bitmap);
+                            pbPreviousCover.Image = Functions.MakeGrayscale3(bitmap);
                         }
                     }
                     Match find = Regex.Match(split[2], @""":""(.*)""");
@@ -240,88 +246,5 @@ namespace XRayBuilderGUI
             Cursor.Current = Cursors.Default;
             return true;
         }
-
-        public static Bitmap MakeGrayscale3(Bitmap original)
-        {
-            //create a blank bitmap the same size as original
-            Bitmap newBitmap = new Bitmap(original.Width, original.Height);
-
-            //get a graphics object from the new image
-            Graphics g = Graphics.FromImage(newBitmap);
-
-            //create the grayscale ColorMatrix
-            ColorMatrix colorMatrix = new ColorMatrix(
-                new float[][]
-                {
-                    new float[] {.3f, .3f, .3f, 0, 0},
-                    new float[] {.59f, .59f, .59f, 0, 0},
-                    new float[] {.11f, .11f, .11f, 0, 0},
-                    new float[] {0, 0, 0, 1, 0},
-                    new float[] {0, 0, 0, 0, 1}
-                });
-
-            //create some image attributes
-            ImageAttributes attributes = new ImageAttributes();
-
-            //set the color matrix attribute
-            attributes.SetColorMatrix(colorMatrix);
-
-            //draw the original image on the new image
-            //using the grayscale color matrix
-            g.DrawImage(original, new Rectangle(0, 0, original.Width, original.Height),
-                0, 0, original.Width, original.Height, GraphicsUnit.Pixel, attributes);
-
-            //dispose the Graphics object
-            g.Dispose();
-            return newBitmap;
-        }
-
-        //private void pbMoreDesc_Click(object sender, EventArgs e)
-        //{
-        //    if (descriptionPopup != "")
-        //    {
-        //        frmMessage = new frmPreviewPopup();
-        //        frmMessage.Location = new Point(this.Left, this.Top);
-        //        frmMessage.lblPopup.Text = descriptionPopup;
-        //        frmMessage.Text = "Book Description";
-        //        frmMessage.ShowDialog(this);
-        //    }
-        //}
-
-        //private void lblDescription_Click(object sender, EventArgs e)
-        //{
-        //    if (descriptionPopup != "")
-        //    {
-        //        frmMessage = new frmPreviewPopup();
-        //        frmMessage.Location = new Point(this.Left, this.Top);
-        //        frmMessage.Text = "Book Description";
-        //        frmMessage.lblPopup.Text = descriptionPopup;
-        //        frmMessage.ShowDialog(this);
-        //    }
-        //}
-
-        //private void pbMoreAuthor_Click(object sender, EventArgs e)
-        //{
-        //    if (biographyPopup != "")
-        //    {
-        //        frmMessage = new frmPreviewPopup();
-        //        frmMessage.Location = new Point(this.Left, this.Top);
-        //        frmMessage.lblPopup.Text = biographyPopup;
-        //        frmMessage.Text = titlePopup;
-        //        frmMessage.ShowDialog(this);
-        //    }
-        //}
-
-        //private void lblBiography_Click(object sender, EventArgs e)
-        //{
-        //    if (biographyPopup != "")
-        //    {
-        //        frmMessage = new frmPreviewPopup();
-        //        frmMessage.Location = new Point(this.Left, this.Top);
-        //        frmMessage.lblPopup.Text = biographyPopup;
-        //        frmMessage.Text = titlePopup;
-        //        frmMessage.ShowDialog(this);
-        //    }
-        //}
     }
 }

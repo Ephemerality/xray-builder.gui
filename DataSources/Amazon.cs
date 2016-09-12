@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using HtmlAgilityPack;
 using System.Text.RegularExpressions;
@@ -22,7 +20,8 @@ namespace XRayBuilderGUI.DataSources
             //Generate Author search URL from author's name
             string newAuthor = Functions.FixAuthor(curBook.author);
             string plusAuthorName = newAuthor.Replace(" ", "+");
-            string amazonAuthorSearchUrl = String.Format(@"http://www.amazon.{0}/s/?url=search-alias%3Dstripbooks&field-keywords={1}", TLD, plusAuthorName);
+            //Updated to match Search "all" Amazon
+            string amazonAuthorSearchUrl = String.Format(@"http://www.amazon.{0}/s/ref=nb_sb_noss_2?url=search-alias%3Dstripbooks&field-keywords={1}", TLD, plusAuthorName);
             Log(String.Format("Searching for author's page on Amazon.{0}...", TLD));
 
             // Search Amazon for Author
@@ -98,7 +97,6 @@ namespace XRayBuilderGUI.DataSources
             return results;
         }
 
-
         // Get biography from results page; TLD included in case different Amazon sites have different formatting
         public static HtmlNode GetBio(AuthorSearchResults searchResults, string TLD)
         {
@@ -124,7 +122,7 @@ namespace XRayBuilderGUI.DataSources
                 if (Regex.Match(otherBook.InnerText, curTitle, RegexOptions.IgnoreCase).Success
                     || Regex.Match(otherBook.InnerText, @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase).Success)
                     continue;
-                name = otherBook.InnerText;
+                name = Regex.Replace(otherBook.InnerText, @" \(.*\)|:", string.Empty);
                 otherBook = result.SelectSingleNode(".//*[@title='Kindle Edition']");
                 Match match = Regex.Match(otherBook.OuterHtml, "dp/(B[A-Z0-9]{9})/");
                 if (match.Success)
@@ -135,6 +133,33 @@ namespace XRayBuilderGUI.DataSources
                     BookInfo newBook = new BookInfo(name, curAuthor, asin);
                     newBook.amazonUrl = url;
                     bookList.Add(newBook);
+                }
+            }
+            // If no kindle books returned, try the top carousel
+            if (bookList.Count == 0)
+            {
+                resultsNodes = searchResults.authorHtmlDoc.DocumentNode.SelectNodes("//ol[@class='a-carousel' and @role ='list']/li");
+                if (resultsNodes == null) return null;
+                foreach (HtmlNode result in resultsNodes)
+                {
+                    string name = "", url = "", asin = "";
+                    HtmlNode otherBook = result.SelectSingleNode(".//a/img");
+                    name = Regex.Replace(otherBook.GetAttributeValue("alt", ""), @" \(.*\)|:", string.Empty);
+                    //Exclude the current book title from other books search
+                    if (Regex.Match(name, curTitle, RegexOptions.IgnoreCase).Success
+                        || Regex.Match(name, @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase).Success)
+                        continue;
+                    otherBook = result.SelectSingleNode(".//a");
+                    Match match = Regex.Match(otherBook.OuterHtml, "dp/(B[A-Z0-9]{9})/");
+                    if (match.Success)
+                        asin = match.Groups[1].Value;
+                    url = String.Format("http://www.amazon.{1}/dp/{0}", asin, TLD);
+                    if (name != "" && url != "" && asin != "")
+                    {
+                        BookInfo newBook = new BookInfo(name, curAuthor, asin);
+                        newBook.amazonUrl = url;
+                        bookList.Add(newBook);
+                    }
                 }
             }
             return bookList;

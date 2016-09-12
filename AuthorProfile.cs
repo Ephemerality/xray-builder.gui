@@ -84,7 +84,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                main.Log("Error searching Amazon." + TLD + ": " + ex.Message);
+                main.Log("Error searching Amazon." + TLD + ": " + ex.Message + "\r\n" + ex.StackTrace);
             }
             finally
             {
@@ -165,7 +165,7 @@ namespace XRayBuilderGUI
                     }
                     catch (Exception ex)
                     {
-                        main.Log("An error occurred while writing biography.\r\n" + ex.Message);
+                        main.Log("An error occurred while writing biography.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                         return;
                     }
                 }
@@ -304,13 +304,13 @@ namespace XRayBuilderGUI
                                           String.Format(@"{0}"",""d"":{1},""o"":[", curBook.asin, unixTimestamp) +
                                           string.Join(",", authorsOtherBookList.ToArray()) + "]}";
                 File.WriteAllText(ApPath, authorProfileOutput);
-                main.btnPreview.Enabled = true;
-                main.cmsPreview.Items[0].Enabled = true;
+                //main.btnPreview.Enabled = true;
+                //main.cmsPreview.Items[0].Enabled = true;
                 main.Log("Author Profile file created successfully!\r\nSaved to " + ApPath);
             }
             catch (Exception ex)
             {
-                main.Log("An error occurred while writing the Author Profile file: " + ex.Message);
+                main.Log("An error occurred while writing the Author Profile file: " + ex.Message + "\r\n" + ex.StackTrace);
                 return;
             }
 
@@ -343,7 +343,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                main.Log("An error occurred while opening " + bioFile + "\r\n" + ex.Message);
+                main.Log("An error occurred while opening " + bioFile + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                 return false;
             }
             return true;

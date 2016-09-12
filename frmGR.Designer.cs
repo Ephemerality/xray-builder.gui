@@ -41,7 +41,7 @@
             this.cbResults.IntegralHeight = false;
             this.cbResults.Location = new System.Drawing.Point(12, 12);
             this.cbResults.Name = "cbResults";
-            this.cbResults.Size = new System.Drawing.Size(188, 21);
+            this.cbResults.Size = new System.Drawing.Size(244, 21);
             this.cbResults.TabIndex = 3;
             // 
             // lblMessage
@@ -49,7 +49,7 @@
             this.lblMessage.AutoEllipsis = true;
             this.lblMessage.Location = new System.Drawing.Point(9, 38);
             this.lblMessage.Name = "lblMessage";
-            this.lblMessage.Size = new System.Drawing.Size(198, 45);
+            this.lblMessage.Size = new System.Drawing.Size(252, 45);
             this.lblMessage.TabIndex = 4;
             this.lblMessage.Text = "Multiple title matches were returned from Goodreads for this book...\r\nWhich book " +
     "would you like to use?";
@@ -58,7 +58,7 @@
             // 
             this.btnOK.Location = new System.Drawing.Point(11, 83);
             this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(190, 23);
+            this.btnOK.Size = new System.Drawing.Size(246, 23);
             this.btnOK.TabIndex = 5;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
@@ -68,7 +68,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(212, 117);
+            this.ClientSize = new System.Drawing.Size(268, 117);
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.lblMessage);
             this.Controls.Add(this.cbResults);

@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -164,6 +160,11 @@ namespace XRayBuilderGUI
                     if (bookInfo.Success)
                     {
                         currentLine = bookInfo.Value;
+                        if (bookInfo.Groups[1].Value == "")
+                        {
+                            MessageBox.Show(String.Format("Missing image in the following line:\r\n{0}", line));
+                            continue;
+                        }
                         WebRequest request = WebRequest.Create(bookInfo.Groups[1].Value);
                         using (WebResponse response = request.GetResponse())
                         using (Stream stream = response.GetResponseStream())

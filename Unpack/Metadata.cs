@@ -131,7 +131,7 @@ namespace XRayBuilderGUI.Unpack
                         }
                     } catch (Exception ex)
                     {
-                        throw new Exception("Error in HUFF/CDIC decompression: " + ex.Message);
+                        throw new Exception("Error in HUFF/CDIC decompression: " + ex.Message + "\r\n" + ex.StackTrace);
                     }
                     decomp = reader;
                     break;

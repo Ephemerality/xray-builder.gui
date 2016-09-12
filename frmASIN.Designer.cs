@@ -33,13 +33,14 @@
             this.tbAsin = new System.Windows.Forms.TextBox();
             this.lblTitle = new System.Windows.Forms.Label();
             this.lblTitleHead = new System.Windows.Forms.Label();
+            this.lblAsin = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnOK
             // 
             this.btnOK.Location = new System.Drawing.Point(11, 54);
             this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(146, 23);
+            this.btnOK.Size = new System.Drawing.Size(189, 23);
             this.btnOK.TabIndex = 0;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
@@ -47,17 +48,18 @@
             // 
             // tbAsin
             // 
-            this.tbAsin.Location = new System.Drawing.Point(12, 28);
+            this.tbAsin.Location = new System.Drawing.Point(54, 28);
             this.tbAsin.Name = "tbAsin";
-            this.tbAsin.Size = new System.Drawing.Size(144, 20);
+            this.tbAsin.Size = new System.Drawing.Size(145, 20);
             this.tbAsin.TabIndex = 2;
+            this.tbAsin.Text = "B00N7F55XC";
             // 
             // lblTitle
             // 
             this.lblTitle.AutoEllipsis = true;
-            this.lblTitle.Location = new System.Drawing.Point(41, 10);
+            this.lblTitle.Location = new System.Drawing.Point(51, 10);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(116, 13);
+            this.lblTitle.Size = new System.Drawing.Size(149, 13);
             this.lblTitle.TabIndex = 3;
             this.lblTitle.Text = "Title";
             // 
@@ -71,11 +73,22 @@
             this.lblTitleHead.TabIndex = 4;
             this.lblTitleHead.Text = "Title:";
             // 
+            // lblAsin
+            // 
+            this.lblAsin.AutoSize = true;
+            this.lblAsin.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAsin.Location = new System.Drawing.Point(8, 31);
+            this.lblAsin.Name = "lblAsin";
+            this.lblAsin.Size = new System.Drawing.Size(40, 13);
+            this.lblAsin.TabIndex = 5;
+            this.lblAsin.Text = "ASIN:";
+            // 
             // frmASIN
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(168, 88);
+            this.ClientSize = new System.Drawing.Size(212, 88);
+            this.Controls.Add(this.lblAsin);
             this.Controls.Add(this.lblTitleHead);
             this.Controls.Add(this.tbAsin);
             this.Controls.Add(this.btnOK);
@@ -100,5 +113,6 @@
         public System.Windows.Forms.TextBox tbAsin;
         public System.Windows.Forms.Label lblTitle;
         private System.Windows.Forms.Label lblTitleHead;
+        private System.Windows.Forms.Label lblAsin;
     }
 }

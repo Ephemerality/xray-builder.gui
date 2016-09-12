@@ -20,9 +20,19 @@ namespace XRayBuilderGUI.DataSources
         {
             string goodreadsSearchUrlBase = @"http://www.goodreads.com/search?q={0}%20{1}";
             string goodreadsBookUrl = "";
-            // Goodreads expects %26 and %27 intead of & and ’ or '
-            title = title.Replace("&", "%26").Replace("’", "%27").Replace("'", "%27");
+            // Goodreads expects %26 and %27 instead of & and ’ or ' and %20 instead of spaces
+            Dictionary<string, string> replacements = new Dictionary<string, string>()
+            {
+                {"&", "%26"},
+                {"’", "%27"},
+                {"'", "%27"},
+                {" ", "%20"}
+            };
+
+            Regex regex = new Regex(String.Join("|", replacements.Keys.Select(k => Regex.Escape(k))));
+            title = regex.Replace(title, m => replacements[m.Value]);
             author = Functions.FixAuthor(author);
+            author = regex.Replace(author, m => replacements[m.Value]);
 
             HtmlDocument goodreadsHtmlDoc = new HtmlDocument();
             goodreadsHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(String.Format(goodreadsSearchUrlBase, author, title)));
@@ -34,7 +44,8 @@ namespace XRayBuilderGUI.DataSources
             if (!goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results"))
             {
                 // Revert back for searching title
-                goodreadsBookUrl = FindGoodreadsURL(goodreadsHtmlDoc, author, title.Replace("%26", "&amp;"), Log);
+                string revertTitle = title.Replace("%26", "&amp;").Replace("%27", "'").Replace("%20", " ");
+                goodreadsBookUrl = FindGoodreadsURL(goodreadsHtmlDoc, author, revertTitle, Log);
                 if (goodreadsBookUrl != "")
                 {
                     return goodreadsBookUrl;
@@ -56,8 +67,9 @@ namespace XRayBuilderGUI.DataSources
                 foreach (HtmlNode link in resultNodes)
                 {
                     HtmlNode noPhoto = link.SelectSingleNode(".//img");
-                    //Skip book if it does not have a cover, books with a cover are more likely to be a correct match?
-                    if (noPhoto.GetAttributeValue("src", "").Contains("nophoto")) continue;
+                    //If more than one result found, skip book if it does not have a cover
+                    //Books with a cover are more likely to be a correct match?
+                    if (noPhoto.GetAttributeValue("src", "").Contains("nophoto") && (resultNodes.Count != 1)) continue;
                     HtmlNode titleText = link.SelectSingleNode(".//a[@class='bookTitle']");
                     frmG.cbResults.Items.Add(titleText.InnerText.Trim());
                 }
@@ -69,26 +81,18 @@ namespace XRayBuilderGUI.DataSources
                 }
 
                 int i = frmG.cbResults.SelectedIndex;
-                string findNode = frmG.cbResults.Text;
                 HtmlNode chosenResult = resultNodes[i];
                 HtmlNode titleNode = chosenResult.SelectSingleNode(".//a[@class='bookTitle']");
                 HtmlNode authorNode = chosenResult.SelectSingleNode(".//a[@class='authorName']");
-                if (authorNode.InnerText.IndexOf(author, StringComparison.OrdinalIgnoreCase) < 0)
-                    author = Functions.TrimAuthor(author);
-                if (titleNode.InnerText.IndexOf(findNode, StringComparison.OrdinalIgnoreCase) >= 0 &&
-                    (authorNode.InnerText.IndexOf(author, StringComparison.OrdinalIgnoreCase) >= 0))
+                Match match = Regex.Match(chosenResult.OuterHtml, @"./book/show/([0-9]*)");
+                if (match.Success)
                 {
-                    //Parse goodreads ID
-                    Match match = Regex.Match(titleNode.OuterHtml, @"./book/show/([0-9]*)");
-                    if (match.Success)
-                    {
-                        //Return actual selected book title
-                        Log(String.Format("Book found on Goodreads!\r\n{0} by {1}\r\nGoodreads URL: {2}\r\n"+
-                            "You may want to visit the URL to ensure it is correct.",
-                            titleNode.InnerText.Trim(), authorNode.InnerText.Trim(),
-                            String.Format(goodreadsBookUrl, match.Groups[1].Value)));
-                        return String.Format(goodreadsBookUrl, match.Groups[1].Value);
-                    }
+                    //Return actual selected book title
+                    Log(String.Format("Book found on Goodreads!\r\n{0} by {1}\r\nGoodreads URL: {2}\r\n" +
+                                      "You may want to visit the URL to ensure it is correct.",
+                        titleNode.InnerText.Trim(), authorNode.InnerText.Trim(),
+                        String.Format(goodreadsBookUrl, match.Groups[1].Value)));
+                    return String.Format(goodreadsBookUrl, match.Groups[1].Value);
                 }
             }
             return "";
@@ -246,6 +250,22 @@ namespace XRayBuilderGUI.DataSources
                 curBook.popularHighlights = "";
             }
 
+            //Add rating and reviews count if missing from Amazon book ifo
+            if (curBook.amazonRating == 0)
+            {
+                HtmlNode goodreadsRating = metaNode.SelectSingleNode("//span[@class='value rating']");
+                if (goodreadsRating != null)
+                {
+                    curBook.amazonRating = float.Parse(goodreadsRating.InnerText);
+                }
+                HtmlNode passagesNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite votes' and @href='#other_reviews']");
+                match = Regex.Match(passagesNode.InnerText, @"(\d+,\d+)|(\d+)");
+                if (match.Success)
+                {
+                    curBook.numReviews = int.Parse(match.Value, NumberStyles.AllowThousands);
+                }
+            }
+
             //Search Goodreads for series info
             string goodreadsSeriesUrl = @"http://www.goodreads.com/series/{0}";
             HtmlNode SeriesNode = metaNode.SelectSingleNode("//h1[@id='bookTitle']");
@@ -313,7 +333,7 @@ namespace XRayBuilderGUI.DataSources
                         {
                             BookInfo prevBook = new BookInfo("", "", "");
                             HtmlNode title = book.SelectSingleNode(".//a[@class='bookTitle']");
-                            prevBook.title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)|:", string.Empty);
+                            prevBook.title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", string.Empty);
                             prevBook.author = book.SelectSingleNode(".//a[@class='authorName']").InnerText.Trim();
                             results["Previous"] = prevBook;
                             Log(String.Format("Preceded by: {0}", prevBook.title));
@@ -323,8 +343,7 @@ namespace XRayBuilderGUI.DataSources
                         {
                             BookInfo nextBook = new BookInfo("", "", "");
                             HtmlNode title = book.SelectSingleNode(".//a[@class='bookTitle']");
-                            nextBook.title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)|:", string.Empty);
-                            nextBook.title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)|:", string.Empty);
+                            nextBook.title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", string.Empty);
                             nextBook.author = book.SelectSingleNode(".//a[@class='authorName']").InnerText.Trim();
                             results["Next"] = nextBook;
                             Log(String.Format("Followed by: {0}", nextBook.title));
@@ -387,7 +406,7 @@ namespace XRayBuilderGUI.DataSources
                 {
                     if (ex.Message.Contains("(404)"))
                         Log("Error getting page for character. URL: " + "https://www.goodreads.com" + charNode.GetAttributeValue("href", "")
-                            + "\r\nMessage: " + ex.Message);
+                            + "\r\nMessage: " + ex.Message + "\r\n" + ex.StackTrace);
                 }
             }
             return terms;

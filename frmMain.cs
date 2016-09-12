@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using XRayBuilderGUI.DataSources;
 
@@ -202,7 +201,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Log("An error occurred extracting metadata: " + ex.Message);
+                    Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
                     return;
                 }
             }
@@ -290,7 +289,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n" + ex.Message);
+                    Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                     return;
                 }
                 using (SQLiteConnection m_dbConnection = new SQLiteConnection(("Data Source=" + _newPath + ";Version=3;")))
@@ -307,7 +306,7 @@ namespace XRayBuilderGUI
                     catch (Exception ex)
                     {
                         Log("An error occurred while opening the BaseDB.sql file. Ensure you extracted it to the same directory as the program.\n"
-                            + ex.Message);
+                            + ex.Message + "\r\n" + ex.StackTrace);
                         m_dbConnection.Dispose();
                         return;
                     }
@@ -325,7 +324,7 @@ namespace XRayBuilderGUI
                     }
                     catch (Exception ex)
                     {
-                        Log("An error occurred while populating the X-Ray database.\r\n" + ex.Message);
+                        Log("An error occurred while populating the X-Ray database.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                         command.Dispose();
                         m_dbConnection.Close();
                         return;
@@ -380,7 +379,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Log("An error occurred populating the X-Ray preview windows: " + ex.Message);
+                Log("An error occurred populating the X-Ray preview windows: " + ex.Message + "\r\n" + ex.StackTrace);
             }
 
             try
@@ -528,7 +527,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Log("An error occurred extracting metadata: " + ex.Message);
+                    Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
                     return;
                 }
             }
@@ -589,12 +588,12 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Log("An error occurred populating extras preview windows: " + ex.Message);
+                    Log("An error occurred populating extras preview windows: " + ex.Message + "\r\n" + ex.StackTrace);
                 }
             }
             catch (Exception ex)
             {
-                Log("An error occurred while creating the new Author Profile, Start Actions, and/or End Actions files: " + ex.Message);
+                Log("An error occurred while creating the new Author Profile, Start Actions, and/or End Actions files: " + ex.Message + "\r\n" + ex.StackTrace);
             }
 
         }
@@ -752,7 +751,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Log("An error occurred metadata: " + ex.Message);
+                    Log("An error occurred metadata: " + ex.Message + "\r\n" + ex.StackTrace);
                     return;
                 }
             }
@@ -781,7 +780,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Log("An error occurred while searching: " + ex.Message);
+                Log("An error occurred while searching: " + ex.Message + "\r\n" + ex.StackTrace);
             }
 
             try
@@ -967,7 +966,7 @@ namespace XRayBuilderGUI
                     OpenFileDialog openFile = new OpenFileDialog();
                     openFile.Title = "Open a Kindle AuthorProfile file...";
                     openFile.Filter = "ASC files|*.asc";
-                    openFile.RestoreDirectory = true;
+                    openFile.InitialDirectory = settings.outDir;
                     if (openFile.ShowDialog() == DialogResult.OK)
                     {
                         try
@@ -983,7 +982,7 @@ namespace XRayBuilderGUI
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show("Error: Current line being parsed:\r\n" + frmAuthorProfile.GetCurrentLine + "\r\n" + ex.Message);
+                            MessageBox.Show("Error: Current line being parsed:\r\n" + frmAuthorProfile.GetCurrentLine + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                         }
                     }
                 }
@@ -1007,7 +1006,7 @@ namespace XRayBuilderGUI
                     OpenFileDialog openFile = new OpenFileDialog();
                     openFile.Title = "Open a Kindle EndAction file...";
                     openFile.Filter = "ASC files|*.asc";
-                    openFile.RestoreDirectory = true;
+                    openFile.InitialDirectory = settings.outDir;
                     if (openFile.ShowDialog() == DialogResult.OK)
                     {
                         try
@@ -1023,7 +1022,7 @@ namespace XRayBuilderGUI
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show("Error: Current line being parsed:\r\n" + frmEndAction.GetCurrentLine + "\r\n" + ex.Message);
+                            MessageBox.Show("Error: Current line being parsed:\r\n" + frmEndAction.GetCurrentLine + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                         }
                     }
                 }
@@ -1056,7 +1055,7 @@ namespace XRayBuilderGUI
                     OpenFileDialog openFile = new OpenFileDialog();
                     openFile.Title = "Open a Kindle StartAction file...";
                     openFile.Filter = "ASC files|*.asc";
-                    openFile.RestoreDirectory = true;
+                    openFile.InitialDirectory = settings.outDir;
                     if (openFile.ShowDialog() == DialogResult.OK)
                     {
                         try
@@ -1072,7 +1071,7 @@ namespace XRayBuilderGUI
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show("Error: Current line being parsed:\r\n" + frmEndAction.GetCurrentLine + "\r\n" + ex.Message);
+                            MessageBox.Show("Error: Current line being parsed:\r\n" + frmEndAction.GetCurrentLine + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                         }
                     }
                 }
@@ -1142,7 +1141,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Log("An error occurred extracting rawML: " + ex.Message);
+                    Log("An error occurred extracting rawML: " + ex.Message + "\r\n" + ex.StackTrace);
                     return;
                 }
             }

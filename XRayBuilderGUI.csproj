@@ -94,97 +94,97 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataSources\Amazon.cs" />
-    <Compile Include="AuthorProfile.cs" />
-    <Compile Include="BookInfo.cs" />
-    <Compile Include="DataSources\DataSource.cs" />
-    <Compile Include="DataSources\Goodreads.cs" />
-    <Compile Include="DataSources\Shelfari.cs" />
-    <Compile Include="EndActions.cs" />
-    <Compile Include="frmASIN.cs">
+    <Compile Include="src\DataSources\Amazon.cs" />
+    <Compile Include="src\AuthorProfile.cs" />
+    <Compile Include="src\BookInfo.cs" />
+    <Compile Include="src\DataSources\DataSource.cs" />
+    <Compile Include="src\DataSources\Goodreads.cs" />
+    <Compile Include="src\DataSources\Shelfari.cs" />
+    <Compile Include="src\EndActions.cs" />
+    <Compile Include="src\frmASIN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmASIN.Designer.cs">
+    <Compile Include="src\frmASIN.Designer.cs">
       <DependentUpon>frmASIN.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmGR.cs">
+    <Compile Include="src\frmGR.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmGR.Designer.cs">
+    <Compile Include="src\frmGR.Designer.cs">
       <DependentUpon>frmGR.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmPreviewAP.cs">
+    <Compile Include="src\frmPreviewAP.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmPreviewAP.Designer.cs">
+    <Compile Include="src\frmPreviewAP.Designer.cs">
       <DependentUpon>frmPreviewAP.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmPreviewAPN.cs">
+    <Compile Include="src\frmPreviewAPN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmPreviewAPN.Designer.cs">
+    <Compile Include="src\frmPreviewAPN.Designer.cs">
       <DependentUpon>frmPreviewAPN.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmPreviewEA.cs">
+    <Compile Include="src\frmPreviewEA.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmPreviewEA.Designer.cs">
+    <Compile Include="src\frmPreviewEA.Designer.cs">
       <DependentUpon>frmPreviewEA.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmPreviewEAN.cs">
+    <Compile Include="src\frmPreviewEAN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmPreviewEAN.Designer.cs">
+    <Compile Include="src\frmPreviewEAN.Designer.cs">
       <DependentUpon>frmPreviewEAN.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmPreviewSA.cs">
+    <Compile Include="src\frmPreviewSA.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmPreviewSA.Designer.cs">
+    <Compile Include="src\frmPreviewSA.Designer.cs">
       <DependentUpon>frmPreviewSA.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmPreviewSAN.cs">
+    <Compile Include="src\frmPreviewSAN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmPreviewSAN.Designer.cs">
+    <Compile Include="src\frmPreviewSAN.Designer.cs">
       <DependentUpon>frmPreviewSAN.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmPreviewXR.cs">
+    <Compile Include="src\frmPreviewXR.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmPreviewXR.Designer.cs">
+    <Compile Include="src\frmPreviewXR.Designer.cs">
       <DependentUpon>frmPreviewXR.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmPreviewXRN.cs">
+    <Compile Include="src\frmPreviewXRN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmPreviewXRN.Designer.cs">
+    <Compile Include="src\frmPreviewXRN.Designer.cs">
       <DependentUpon>frmPreviewXRN.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmSettings.cs">
+    <Compile Include="src\frmSettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmSettings.Designer.cs">
+    <Compile Include="src\frmSettings.Designer.cs">
       <DependentUpon>frmSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="Functions.cs" />
-    <Compile Include="frmMain.cs">
+    <Compile Include="src\Functions.cs" />
+    <Compile Include="src\frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmMain.Designer.cs">
+    <Compile Include="src\frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="HTTPDownloader.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="src\HTTPDownloader.cs" />
+    <Compile Include="src\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Unpack\EXTH.cs" />
-    <Compile Include="Unpack\MobiHead.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="Unpack\Metadata.cs" />
-    <Compile Include="Unpack\PalmDocHeader.cs" />
-    <Compile Include="Unpack\PDBHeader.cs" />
-    <Compile Include="Unpack\Uncompress.cs" />
-    <Compile Include="XRay.cs" />
+    <Compile Include="src\Unpack\EXTH.cs" />
+    <Compile Include="src\Unpack\MobiHead.cs" />
+    <Compile Include="src\Settings.cs" />
+    <Compile Include="src\Unpack\Metadata.cs" />
+    <Compile Include="src\Unpack\PalmDocHeader.cs" />
+    <Compile Include="src\Unpack\PDBHeader.cs" />
+    <Compile Include="src\Unpack\Uncompress.cs" />
+    <Compile Include="src\XRay.cs" />
     <Content Include="BaseEndActions.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -218,41 +218,41 @@
     <None Include="Resources\XR2.png" />
     <None Include="Resources\XR1.png" />
     <None Include="Resources\XR.png" />
-    <EmbeddedResource Include="frmASIN.resx">
+    <EmbeddedResource Include="src\frmASIN.resx">
       <DependentUpon>frmASIN.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmGR.resx">
+    <EmbeddedResource Include="src\frmGR.resx">
       <DependentUpon>frmGR.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmMain.resx">
+    <EmbeddedResource Include="src\frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmPreviewAP.resx">
+    <EmbeddedResource Include="src\frmPreviewAP.resx">
       <DependentUpon>frmPreviewAP.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmPreviewAPN.resx">
+    <EmbeddedResource Include="src\frmPreviewAPN.resx">
       <DependentUpon>frmPreviewAPN.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmPreviewEA.resx">
+    <EmbeddedResource Include="src\frmPreviewEA.resx">
       <DependentUpon>frmPreviewEA.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmPreviewEAN.resx">
+    <EmbeddedResource Include="src\frmPreviewEAN.resx">
       <DependentUpon>frmPreviewEAN.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmPreviewSA.resx">
+    <EmbeddedResource Include="src\frmPreviewSA.resx">
       <DependentUpon>frmPreviewSA.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmPreviewSAN.resx">
+    <EmbeddedResource Include="src\frmPreviewSAN.resx">
       <DependentUpon>frmPreviewSAN.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmPreviewXR.resx">
+    <EmbeddedResource Include="src\frmPreviewXR.resx">
       <DependentUpon>frmPreviewXR.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmPreviewXRN.resx">
+    <EmbeddedResource Include="src\frmPreviewXRN.resx">
       <DependentUpon>frmPreviewXRN.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmSettings.resx">
+    <EmbeddedResource Include="src\frmSettings.resx">
       <DependentUpon>frmSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

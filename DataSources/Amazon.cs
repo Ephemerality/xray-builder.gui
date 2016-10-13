@@ -122,7 +122,8 @@ namespace XRayBuilderGUI.DataSources
                 if (Regex.Match(otherBook.InnerText, curTitle, RegexOptions.IgnoreCase).Success
                     || Regex.Match(otherBook.InnerText, @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase).Success)
                     continue;
-                name = Regex.Replace(otherBook.InnerText, @" \(.*\)|:", string.Empty);
+                //name = Regex.Replace(otherBook.InnerText, @" \(.*\)|:", string.Empty);
+                name = otherBook.InnerText.Trim();
                 otherBook = result.SelectSingleNode(".//*[@title='Kindle Edition']");
                 Match match = Regex.Match(otherBook.OuterHtml, "dp/(B[A-Z0-9]{9})/");
                 if (match.Success)
@@ -144,7 +145,8 @@ namespace XRayBuilderGUI.DataSources
                 {
                     string name = "", url = "", asin = "";
                     HtmlNode otherBook = result.SelectSingleNode(".//a/img");
-                    name = Regex.Replace(otherBook.GetAttributeValue("alt", ""), @" \(.*\)|:", string.Empty);
+                    //name = Regex.Replace(otherBook.GetAttributeValue("alt", ""), @" \(.*\)|:", string.Empty);
+                    name = otherBook.GetAttributeValue("alt", "");
                     //Exclude the current book title from other books search
                     if (Regex.Match(name, curTitle, RegexOptions.IgnoreCase).Success
                         || Regex.Match(name, @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase).Success)

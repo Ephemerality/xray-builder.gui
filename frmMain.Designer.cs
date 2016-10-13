@@ -41,28 +41,36 @@
             this.lblXMLFile = new System.Windows.Forms.Label();
             this.txtGoodreads = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.pbFileXR = new System.Windows.Forms.PictureBox();
+            this.pbFileAP = new System.Windows.Forms.PictureBox();
+            this.pbFileSA = new System.Windows.Forms.PictureBox();
+            this.pbFileEA = new System.Windows.Forms.PictureBox();
             this.lblSeperator3 = new System.Windows.Forms.Label();
             this.tmiAuthorProfile = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsPreview = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tmiEndAction = new System.Windows.Forms.ToolStripMenuItem();
-            this.tmiXray = new System.Windows.Forms.ToolStripMenuItem();
             this.tmiStartAction = new System.Windows.Forms.ToolStripMenuItem();
+            this.tmiXray = new System.Windows.Forms.ToolStripMenuItem();
             this.prgBar = new System.Windows.Forms.ProgressBar();
-            this.btnPreview = new System.Windows.Forms.Button();
+            this.txtOutput = new System.Windows.Forms.RichTextBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.btnOneClick = new System.Windows.Forms.Button();
+            this.btnPreview = new System.Windows.Forms.Button();
+            this.btnUnpack = new System.Windows.Forms.Button();
             this.btnSettings = new System.Windows.Forms.Button();
-            this.btnBrowseXML = new System.Windows.Forms.Button();
             this.btnBrowseOutput = new System.Windows.Forms.Button();
             this.btnBrowseMobi = new System.Windows.Forms.Button();
             this.btnKindleExtras = new System.Windows.Forms.Button();
             this.btnSearchGoodreads = new System.Windows.Forms.Button();
             this.btnSaveShelfari = new System.Windows.Forms.Button();
             this.btnBuild = new System.Windows.Forms.Button();
-            this.btnUnpack = new System.Windows.Forms.Button();
-            this.txtOutput = new System.Windows.Forms.RichTextBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btnBrowseXML = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFileXR)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFileAP)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFileSA)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFileEA)).BeginInit();
             this.cmsPreview.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -170,13 +178,57 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.pbFileXR);
+            this.groupBox3.Controls.Add(this.pbFileAP);
+            this.groupBox3.Controls.Add(this.pbFileSA);
+            this.groupBox3.Controls.Add(this.pbFileEA);
             this.groupBox3.Controls.Add(this.txtMobi);
             this.groupBox3.Location = new System.Drawing.Point(12, 64);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(578, 53);
             this.groupBox3.TabIndex = 38;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Book";
+            this.groupBox3.Text = "Book             ";
+            // 
+            // pbFileXR
+            // 
+            this.pbFileXR.BackColor = System.Drawing.SystemColors.Control;
+            this.pbFileXR.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
+            this.pbFileXR.Location = new System.Drawing.Point(66, 5);
+            this.pbFileXR.Name = "pbFileXR";
+            this.pbFileXR.Size = new System.Drawing.Size(6, 6);
+            this.pbFileXR.TabIndex = 66;
+            this.pbFileXR.TabStop = false;
+            // 
+            // pbFileAP
+            // 
+            this.pbFileAP.BackColor = System.Drawing.SystemColors.Control;
+            this.pbFileAP.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
+            this.pbFileAP.Location = new System.Drawing.Point(36, 5);
+            this.pbFileAP.Name = "pbFileAP";
+            this.pbFileAP.Size = new System.Drawing.Size(6, 6);
+            this.pbFileAP.TabIndex = 63;
+            this.pbFileAP.TabStop = false;
+            // 
+            // pbFileSA
+            // 
+            this.pbFileSA.BackColor = System.Drawing.SystemColors.Control;
+            this.pbFileSA.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
+            this.pbFileSA.Location = new System.Drawing.Point(56, 5);
+            this.pbFileSA.Name = "pbFileSA";
+            this.pbFileSA.Size = new System.Drawing.Size(6, 6);
+            this.pbFileSA.TabIndex = 65;
+            this.pbFileSA.TabStop = false;
+            // 
+            // pbFileEA
+            // 
+            this.pbFileEA.BackColor = System.Drawing.SystemColors.Control;
+            this.pbFileEA.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
+            this.pbFileEA.Location = new System.Drawing.Point(46, 5);
+            this.pbFileEA.Name = "pbFileEA";
+            this.pbFileEA.Size = new System.Drawing.Size(6, 6);
+            this.pbFileEA.TabIndex = 64;
+            this.pbFileEA.TabStop = false;
             // 
             // lblSeperator3
             // 
@@ -215,14 +267,6 @@
             this.tmiEndAction.Text = "End Actions";
             this.tmiEndAction.Click += new System.EventHandler(this.tmiEndAction_Click);
             // 
-            // tmiXray
-            // 
-            this.tmiXray.AutoSize = false;
-            this.tmiXray.Name = "tmiXray";
-            this.tmiXray.Size = new System.Drawing.Size(114, 22);
-            this.tmiXray.Text = "X-Ray";
-            this.tmiXray.Click += new System.EventHandler(this.tmiXray_Click);
-            // 
             // tmiStartAction
             // 
             this.tmiStartAction.AutoSize = false;
@@ -230,6 +274,14 @@
             this.tmiStartAction.Size = new System.Drawing.Size(114, 22);
             this.tmiStartAction.Text = "Start Actions";
             this.tmiStartAction.Click += new System.EventHandler(this.tmiStartAction_Click);
+            // 
+            // tmiXray
+            // 
+            this.tmiXray.AutoSize = false;
+            this.tmiXray.Name = "tmiXray";
+            this.tmiXray.Size = new System.Drawing.Size(114, 22);
+            this.tmiXray.Text = "X-Ray";
+            this.tmiXray.Click += new System.EventHandler(this.tmiXray_Click);
             // 
             // prgBar
             // 
@@ -240,15 +292,28 @@
             this.prgBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.prgBar.TabIndex = 18;
             // 
-            // btnPreview
+            // txtOutput
             // 
-            this.btnPreview.Image = ((System.Drawing.Image)(resources.GetObject("btnPreview.Image")));
-            this.btnPreview.Location = new System.Drawing.Point(355, 11);
-            this.btnPreview.Name = "btnPreview";
-            this.btnPreview.Size = new System.Drawing.Size(64, 48);
-            this.btnPreview.TabIndex = 12;
-            this.btnPreview.UseVisualStyleBackColor = true;
-            this.btnPreview.Click += new System.EventHandler(this.btnPreview_Click);
+            this.txtOutput.BackColor = System.Drawing.SystemColors.Control;
+            this.txtOutput.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtOutput.HideSelection = false;
+            this.txtOutput.Location = new System.Drawing.Point(4, 11);
+            this.txtOutput.Name = "txtOutput";
+            this.txtOutput.ReadOnly = true;
+            this.txtOutput.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.txtOutput.Size = new System.Drawing.Size(572, 194);
+            this.txtOutput.TabIndex = 61;
+            this.txtOutput.Text = "";
+            this.txtOutput.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.txtOutput_LinkClicked);
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.txtOutput);
+            this.groupBox2.Location = new System.Drawing.Point(12, 180);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(578, 210);
+            this.groupBox2.TabIndex = 62;
+            this.groupBox2.TabStop = false;
             // 
             // btnOneClick
             // 
@@ -260,6 +325,26 @@
             this.btnOneClick.UseVisualStyleBackColor = true;
             this.btnOneClick.Click += new System.EventHandler(this.btnOneClick_Click);
             // 
+            // btnPreview
+            // 
+            this.btnPreview.Image = ((System.Drawing.Image)(resources.GetObject("btnPreview.Image")));
+            this.btnPreview.Location = new System.Drawing.Point(355, 11);
+            this.btnPreview.Name = "btnPreview";
+            this.btnPreview.Size = new System.Drawing.Size(64, 48);
+            this.btnPreview.TabIndex = 12;
+            this.btnPreview.UseVisualStyleBackColor = true;
+            this.btnPreview.Click += new System.EventHandler(this.btnPreview_Click);
+            // 
+            // btnUnpack
+            // 
+            this.btnUnpack.Image = ((System.Drawing.Image)(resources.GetObject("btnUnpack.Image")));
+            this.btnUnpack.Location = new System.Drawing.Point(425, 11);
+            this.btnUnpack.Name = "btnUnpack";
+            this.btnUnpack.Size = new System.Drawing.Size(48, 48);
+            this.btnUnpack.TabIndex = 60;
+            this.btnUnpack.UseVisualStyleBackColor = true;
+            this.btnUnpack.Click += new System.EventHandler(this.btnUnpack_Click);
+            // 
             // btnSettings
             // 
             this.btnSettings.Image = ((System.Drawing.Image)(resources.GetObject("btnSettings.Image")));
@@ -269,17 +354,6 @@
             this.btnSettings.TabIndex = 16;
             this.btnSettings.UseVisualStyleBackColor = true;
             this.btnSettings.Click += new System.EventHandler(this.btnSettings_Click);
-            // 
-            // btnBrowseXML
-            // 
-            this.btnBrowseXML.Image = ((System.Drawing.Image)(resources.GetObject("btnBrowseXML.Image")));
-            this.btnBrowseXML.Location = new System.Drawing.Point(65, 11);
-            this.btnBrowseXML.Name = "btnBrowseXML";
-            this.btnBrowseXML.Size = new System.Drawing.Size(48, 48);
-            this.btnBrowseXML.TabIndex = 23;
-            this.btnBrowseXML.UseVisualStyleBackColor = true;
-            this.btnBrowseXML.Visible = false;
-            this.btnBrowseXML.Click += new System.EventHandler(this.btnBrowseXML_Click);
             // 
             // btnBrowseOutput
             // 
@@ -341,38 +415,16 @@
             this.btnBuild.UseVisualStyleBackColor = true;
             this.btnBuild.Click += new System.EventHandler(this.btnBuild_Click);
             // 
-            // btnUnpack
+            // btnBrowseXML
             // 
-            this.btnUnpack.Image = ((System.Drawing.Image)(resources.GetObject("btnUnpack.Image")));
-            this.btnUnpack.Location = new System.Drawing.Point(425, 11);
-            this.btnUnpack.Name = "btnUnpack";
-            this.btnUnpack.Size = new System.Drawing.Size(48, 48);
-            this.btnUnpack.TabIndex = 60;
-            this.btnUnpack.UseVisualStyleBackColor = true;
-            this.btnUnpack.Click += new System.EventHandler(this.btnUnpack_Click);
-            // 
-            // txtOutput
-            // 
-            this.txtOutput.BackColor = System.Drawing.SystemColors.Control;
-            this.txtOutput.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtOutput.HideSelection = false;
-            this.txtOutput.Location = new System.Drawing.Point(4, 11);
-            this.txtOutput.Name = "txtOutput";
-            this.txtOutput.ReadOnly = true;
-            this.txtOutput.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.txtOutput.Size = new System.Drawing.Size(572, 194);
-            this.txtOutput.TabIndex = 61;
-            this.txtOutput.Text = "";
-            this.txtOutput.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.txtOutput_LinkClicked);
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.txtOutput);
-            this.groupBox2.Location = new System.Drawing.Point(12, 180);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(578, 211);
-            this.groupBox2.TabIndex = 62;
-            this.groupBox2.TabStop = false;
+            this.btnBrowseXML.Image = ((System.Drawing.Image)(resources.GetObject("btnBrowseXML.Image")));
+            this.btnBrowseXML.Location = new System.Drawing.Point(65, 11);
+            this.btnBrowseXML.Name = "btnBrowseXML";
+            this.btnBrowseXML.Size = new System.Drawing.Size(48, 48);
+            this.btnBrowseXML.TabIndex = 23;
+            this.btnBrowseXML.UseVisualStyleBackColor = true;
+            this.btnBrowseXML.Visible = false;
+            this.btnBrowseXML.Click += new System.EventHandler(this.btnBrowseXML_Click);
             // 
             // frmMain
             // 
@@ -412,6 +464,10 @@
             this.groupBox1.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFileXR)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFileAP)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFileSA)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFileEA)).EndInit();
             this.cmsPreview.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -451,6 +507,10 @@
         private System.Windows.Forms.RichTextBox txtOutput;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TextBox txtGoodreads;
+        public System.Windows.Forms.PictureBox pbFileXR;
+        public System.Windows.Forms.PictureBox pbFileAP;
+        public System.Windows.Forms.PictureBox pbFileSA;
+        public System.Windows.Forms.PictureBox pbFileEA;
     }
 }
 

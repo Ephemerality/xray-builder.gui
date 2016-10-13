@@ -29,14 +29,12 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmPreviewAPN));
             this.dgvOtherBooks = new System.Windows.Forms.DataGridView();
             this.lblAuthorMore = new System.Windows.Forms.Label();
-            this.lblBiography1 = new System.Windows.Forms.Label();
-            this.lblBiography2 = new System.Windows.Forms.Label();
+            this.lblBiography = new System.Windows.Forms.Label();
             this.ilOtherBooks = new System.Windows.Forms.ImageList(this.components);
             this.pbAuthorImage = new System.Windows.Forms.PictureBox();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -59,22 +57,15 @@
             this.dgvOtherBooks.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column1,
             this.Column2});
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvOtherBooks.DefaultCellStyle = dataGridViewCellStyle3;
-            this.dgvOtherBooks.Location = new System.Drawing.Point(333, 32);
+            this.dgvOtherBooks.Location = new System.Drawing.Point(14, 138);
             this.dgvOtherBooks.Name = "dgvOtherBooks";
             this.dgvOtherBooks.ReadOnly = true;
             this.dgvOtherBooks.RowHeadersVisible = false;
             this.dgvOtherBooks.RowTemplate.DefaultCellStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dgvOtherBooks.RowTemplate.DividerHeight = 1;
             this.dgvOtherBooks.RowTemplate.Height = 32;
-            this.dgvOtherBooks.Size = new System.Drawing.Size(259, 385);
+            this.dgvOtherBooks.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.dgvOtherBooks.Size = new System.Drawing.Size(575, 274);
             this.dgvOtherBooks.TabIndex = 64;
             // 
             // lblAuthorMore
@@ -83,32 +74,22 @@
             this.lblAuthorMore.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
             this.lblAuthorMore.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAuthorMore.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
-            this.lblAuthorMore.Location = new System.Drawing.Point(333, 10);
+            this.lblAuthorMore.Location = new System.Drawing.Point(14, 113);
             this.lblAuthorMore.Name = "lblAuthorMore";
-            this.lblAuthorMore.Size = new System.Drawing.Size(259, 20);
+            this.lblAuthorMore.Size = new System.Drawing.Size(574, 20);
             this.lblAuthorMore.TabIndex = 63;
             this.lblAuthorMore.Text = " Kindle Books By [author]";
             this.lblAuthorMore.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // lblBiography1
+            // lblBiography
             // 
-            this.lblBiography1.AutoEllipsis = true;
-            this.lblBiography1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBiography1.Location = new System.Drawing.Point(81, 21);
-            this.lblBiography1.Name = "lblBiography1";
-            this.lblBiography1.Size = new System.Drawing.Size(240, 94);
-            this.lblBiography1.TabIndex = 62;
-            this.lblBiography1.Text = "Biography part 1";
-            // 
-            // lblBiography2
-            // 
-            this.lblBiography2.AutoEllipsis = true;
-            this.lblBiography2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBiography2.Location = new System.Drawing.Point(11, 112);
-            this.lblBiography2.Name = "lblBiography2";
-            this.lblBiography2.Size = new System.Drawing.Size(310, 304);
-            this.lblBiography2.TabIndex = 65;
-            this.lblBiography2.Text = "Biography part 2";
+            this.lblBiography.AutoEllipsis = true;
+            this.lblBiography.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblBiography.Location = new System.Drawing.Point(81, 21);
+            this.lblBiography.Name = "lblBiography";
+            this.lblBiography.Size = new System.Drawing.Size(507, 83);
+            this.lblBiography.TabIndex = 62;
+            this.lblBiography.Text = "Biography part 1";
             // 
             // ilOtherBooks
             // 
@@ -134,13 +115,15 @@
             dataGridViewCellStyle1.Padding = new System.Windows.Forms.Padding(0, 0, 0, 4);
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.Column1.DefaultCellStyle = dataGridViewCellStyle1;
             this.Column1.HeaderText = "Column1";
+            this.Column1.MaxInputLength = 32;
             this.Column1.Name = "Column1";
             this.Column1.ReadOnly = true;
             this.Column1.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Column1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Column1.Width = 220;
+            this.Column1.Width = 528;
             // 
             // Column2
             // 
@@ -158,7 +141,7 @@
             this.Column2.ReadOnly = true;
             this.Column2.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Column2.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.Column2.Width = 18;
+            this.Column2.Width = 20;
             // 
             // frmPreviewAPN
             // 
@@ -168,8 +151,7 @@
             this.Controls.Add(this.dgvOtherBooks);
             this.Controls.Add(this.lblAuthorMore);
             this.Controls.Add(this.pbAuthorImage);
-            this.Controls.Add(this.lblBiography2);
-            this.Controls.Add(this.lblBiography1);
+            this.Controls.Add(this.lblBiography);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -188,9 +170,8 @@
 
         private System.Windows.Forms.DataGridView dgvOtherBooks;
         private System.Windows.Forms.Label lblAuthorMore;
-        private System.Windows.Forms.Label lblBiography1;
+        private System.Windows.Forms.Label lblBiography;
         private System.Windows.Forms.PictureBox pbAuthorImage;
-        private System.Windows.Forms.Label lblBiography2;
         private System.Windows.Forms.ImageList ilOtherBooks;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewImageColumn Column2;

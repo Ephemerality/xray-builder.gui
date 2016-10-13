@@ -20,7 +20,7 @@ namespace XRayBuilderGUI
         private bool xrayComplete = false;
 
         private string currentLog = Environment.CurrentDirectory + @"\log\" +
-                                    String.Format("{0:dd.MM.yyyy.H.mm.ss}.txt", DateTime.Now);
+                                    String.Format("{0:hh.mm.ss.dd.MM.yyyy}.txt", DateTime.Now);
 
         private string EaPath = "";
         private string SaPath = "";
@@ -91,6 +91,15 @@ namespace XRayBuilderGUI
             {
                 return false;
             }
+        }
+
+        public bool ClearCheck()
+        {
+            pbFileAP.Image = Properties.Resources.file_off;
+            pbFileEA.Image = Properties.Resources.file_off;
+            pbFileSA.Image = Properties.Resources.file_off;
+            pbFileXR.Image = Properties.Resources.file_off;
+            return true;
         }
 
         private bool ClearPreviews()
@@ -175,6 +184,8 @@ namespace XRayBuilderGUI
                     @"Amazon Customer Details Not found");
                 return;
             }
+            ClearCheck();
+
             //Create temp dir and ensure it exists
             string randomFile = Functions.GetTempDirectory();
             if (!Directory.Exists(randomFile))
@@ -364,6 +375,7 @@ namespace XRayBuilderGUI
             }
             xrayComplete = true;
             Log("X-Ray file created successfully!\r\nSaved to " + _newPath);
+            pbFileXR.Image = Properties.Resources.file_on;
 
             if (Properties.Settings.Default.playSound)
             {
@@ -374,8 +386,6 @@ namespace XRayBuilderGUI
             try
             {
                 PopulateXRayPreviews(results[5], xray);
-                //btnPreview.Enabled = true;
-                //cmsPreview.Items[2].Enabled = true;
             }
             catch (Exception ex)
             {
@@ -492,6 +502,7 @@ namespace XRayBuilderGUI
                     "Amazon Customer Details Not found");
                 return;
             }
+            ClearCheck();
 
             //Create temp dir and ensure it exists
             string randomFile = Functions.GetTempDirectory();
@@ -838,6 +849,13 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(btnSettings, "Configure X-Ray Builder GUI.");
             toolTip1.SetToolTip(btnPreview, "View a preview of the generated files.");
             toolTip1.SetToolTip(btnUnpack, "Save the rawML (raw markup) of the book\r\nin the output directory so you can review it.");
+            toolTip1.SetToolTip(pbFileAP, "Green when an Author\r\nprofile file exists in the\r\noutput directory.");
+            toolTip1.SetToolTip(pbFileEA, "Green when an EndAction\r\nfile exists in the output\r\ndirectory.");
+            toolTip1.SetToolTip(pbFileSA, "Green when an StartAction\r\nfile exists in the output\r\ndirectory.");
+            toolTip1.SetToolTip(pbFileXR, "Green when an X-Ray\r\nfile exists in the\r\noutput directory.");
+
+
+
             this.DragEnter += frmMain_DragEnter;
             this.DragDrop += frmMain_DragDrop;
 
@@ -945,8 +963,48 @@ namespace XRayBuilderGUI
         private void txtMobi_TextChanged(object sender, EventArgs e)
         {
             txtGoodreads.Text = "";
-            //btnPreview.Enabled = false;
             prgBar.Value = 0;
+            ClearCheck();
+            if (!File.Exists(txtMobi.Text))
+                return;
+
+            string randomFile = Functions.GetTempDirectory();
+            if (!Directory.Exists(randomFile))
+            {
+                MessageBox.Show("Temporary path not accessible for some reason.", "Temporary Directory Error");
+                return;
+            }
+            List<string> results;
+            try
+            {
+                results = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, false).getResults();
+            }
+            catch (Exception ex)
+            {
+                Log("An error occurred metadata: " + ex.Message + "\r\n" + ex.StackTrace);
+                return;
+            }
+            try
+            {
+                Directory.Delete(randomFile, true);
+            }
+            catch (Exception ex)
+            {
+                Log(
+                    String.Format(
+                        "An error occurred while trying to delete temporary files: {0}\r\n" +
+                        "Try deleting these files manually.",
+                        ex.Message));
+            }
+            string outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectoryOnly(results[4], results[5]) : settings.outDir;
+            if (File.Exists(outputDir + @"\AuthorProfile.profile." + results[0] + ".asc"))
+                pbFileAP.Image = Properties.Resources.file_on;
+            if (File.Exists(outputDir + @"\EndActions.data." + results[0] + ".asc"))
+                pbFileEA.Image = Properties.Resources.file_on;
+            if (File.Exists(outputDir + @"\StartActions.data." + results[0] + ".asc"))
+                pbFileSA.Image = Properties.Resources.file_on;
+            if (File.Exists(outputDir + @"\XRAY.entities." + results[0] + ".asc"))
+                pbFileXR.Image = Properties.Resources.file_on;
         }
 
         private void btnPreview_Click(object sender, EventArgs e)
@@ -1162,6 +1220,7 @@ namespace XRayBuilderGUI
 
         private void btnOneClick_Click(object sender, EventArgs e)
         {
+            ClearCheck();
             btnKindleExtras_Click(sender, e);
             btnBuild_Click(sender, e);
         }

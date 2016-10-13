@@ -17,12 +17,10 @@ namespace XRayBuilderGUI
             InitializeComponent();
         }
 
-        //private frmPreviewPopup frmMessage;
         public string titlePopup = "";
         public string descriptionPopup = "";
         public string biographyPopup = "";
 
-        //public ImageList ilOtherBooks = new ImageList();
         private List<string[]> otherBookList = new List<string[]>();
 
         private string currentLine;
@@ -58,12 +56,16 @@ namespace XRayBuilderGUI
                     Match total = Regex.Match(split[2], @"(\d+\.\d+)|(\d+)");
                     Match name = Regex.Match(split[3], @""":""(.*)""");
                     if (position.Value == "1")
+                    {
                         lblSeries.Left = 12;
+                        lblSeries.Width = 312;
+                    }
                     lblSeries.Text = String.Format("This is book {0} of {1} in {2}",
                         position.Value, total.Value, name.Groups[1].Value);
                     if (position.Value != "1")
                     {
                         lblSeries.Left = 80;
+                        lblSeries.Width = 244;
                         pbPreviousCover.Visible = true;
                         lblPreviousHeading.Visible = true;
                         lblPreviousTitle.Visible = true;
@@ -92,8 +94,10 @@ namespace XRayBuilderGUI
                 lblHighlights.Text = popularHighlightsText.Groups[1].Value;
             }
             else
+            {
+                lblHighlights.Text = "No popular highlight information available";
                 MessageBox.Show("This Start Action does not contain any popular highlight information.");
-
+            }
             Match bookDescription = Regex.Match(input, @"""bookDescription"":{(.*)},""authorBios""");
             if (bookDescription.Success)
             {
@@ -206,7 +210,10 @@ namespace XRayBuilderGUI
                     readingTime.Groups[1].Value, readingTime.Groups[2].Value);
             }
             else
+            {
+                lblHighlights.Text = "No typical reading time information available";
                 MessageBox.Show("This Start Action does not contain any typical reading time information.");
+            }
 
             Match previousBookInTheSeries = Regex.Match(input, @"""previousBookInTheSeries"":{(.*)}}");
             if (previousBookInTheSeries.Success)

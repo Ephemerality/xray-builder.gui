@@ -15,7 +15,6 @@ namespace XRayBuilderGUI
     {
         private Properties.Settings settings = Properties.Settings.Default;
         private frmMain main;
-        //private frmASIN frmAS = new frmASIN();
 
         private string EaPath = "";
         private string SaPath = "";
@@ -146,6 +145,9 @@ namespace XRayBuilderGUI
                                 continue;
                             Match match = Regex.Match(otherBook.GetAttributeValue("href", ""),
                                 "dp/(B[A-Z0-9]{9})");
+                            if (!match.Success)
+                                match = Regex.Match(otherBook.GetAttributeValue("href", ""),
+                                "gp/product/(B[A-Z0-9]{9})");
                             if (match.Success)
                             {
                                 sponsAsin = match.Groups[1].Value;
@@ -247,6 +249,7 @@ namespace XRayBuilderGUI
                 writer.Flush();
                 writer.Close();
                 main.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
+                main.pbFileEA.Image = Properties.Resources.file_on;
                 main.cmsPreview.Items[1].Enabled = true;
             }
             catch (Exception ex)
@@ -347,6 +350,7 @@ namespace XRayBuilderGUI
                 streamWriter.Flush();
             }
             main.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
+            main.pbFileEA.Image = Properties.Resources.file_on;
             main.cmsPreview.Items[1].Enabled = true;
         }
 
@@ -398,6 +402,7 @@ namespace XRayBuilderGUI
                 streamWriter.Flush();
             }
             main.Log("StartActions file created successfully!\r\nSaved to " + SaPath);
+            main.pbFileSA.Image = Properties.Resources.file_on;
             main.cmsPreview.Items[3].Enabled = true;
         }
 

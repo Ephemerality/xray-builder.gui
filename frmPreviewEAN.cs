@@ -82,7 +82,8 @@ namespace XRayBuilderGUI
                 {
                     Match title = Regex.Match(split[2], @""":""(.*)""");
                     if (title.Success)
-                        lblNextTitle.Text = Regex.Replace(title.Groups[1].Value, @" \(.*\)|:", string.Empty);
+                        //lblNextTitle.Text = Regex.Replace(title.Groups[1].Value, @" \(.*\)|:", string.Empty);
+                        lblNextTitle.Text = title.Groups[1].Value;
                     Match author = Regex.Match(split[3], @""":\[""(.*)""\]");
                     if (author.Success)
                         lblNextAuthor.Text = author.Groups[1].Value;

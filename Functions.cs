@@ -181,6 +181,19 @@ namespace XRayBuilderGUI
             return path;
         }
 
+        public static string GetBookOutputDirectoryOnly(string author, string title)
+        {
+            string path, newAuthor, newTitle;
+            newAuthor = RemoveInvalidFileChars(author);
+            newTitle = RemoveInvalidFileChars(title);
+            path = Path.Combine(Properties.Settings.Default.outDir,
+                String.Format(@"{0}\{1}", newAuthor, newTitle));
+            if (!author.Equals(newAuthor) || !title.Equals(newTitle))
+                MessageBox.Show("The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.", "Invalid Characters");
+            //Directory.CreateDirectory(path);
+            return path;
+        }
+
         public static string RemoveInvalidFileChars(string filename)
         {
             char[] fileChars = Path.GetInvalidFileNameChars();
@@ -217,7 +230,7 @@ namespace XRayBuilderGUI
         public static string TimeStamp()
         {
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            var time = String.Format("{0:H:mm:ss}", DateTime.Now);
+            var time = String.Format("{0:hh:mm:ss}", DateTime.Now);
             var date = String.Format("{0:dd/MM/yyyy}", DateTime.Now);
             return String.Format("Running X-Ray Builder GUI v{0}. Log started on {1} at {2}.\r\n",
                 version, date, time);

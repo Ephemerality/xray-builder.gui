@@ -35,6 +35,7 @@ namespace XRayBuilderGUI
         public bool populateAuthorProfile(string inputFile)
         {
             Cursor.Current = Cursors.WaitCursor;
+            dgvOtherBooks.Rows.Clear();
 
             StreamReader streamReader = new StreamReader(inputFile, Encoding.UTF8);
             string input = streamReader.ReadToEnd();
@@ -55,23 +56,7 @@ namespace XRayBuilderGUI
 
                     Match find = Regex.Match(split[2], @""":""(.*)""");
                     string bio = find.Groups[1].Value;
-
-                    var g = Graphics.FromHwnd(lblBiography1.Handle);
-                    int charFitted, linesFitted;
-                    g.MeasureString(bio, lblBiography1.Font, lblBiography1.Size,
-                        StringFormat.GenericTypographic, out charFitted, out linesFitted);
-
-                    if (find.Groups[1].Value != "")
-                    {
-                        if (find.Groups[1].Value.Length > charFitted)
-                        {
-                            string bioTrim = bio.Substring(0, Math.Min(bio.Length, charFitted - 10));
-                            lblBiography1.Text = bioTrim.Substring(0, bioTrim.LastIndexOf(" "));
-                            lblBiography2.Text = bio.Substring(bioTrim.LastIndexOf(" ") + 1);
-                        }
-                        else
-                            lblBiography1.Text = bio;
-                    }
+                    lblBiography.Text = bio;
 
                     Match image = Regex.Match(split[3], @""":""(.*)""");
                     if (image.Success)
@@ -99,10 +84,6 @@ namespace XRayBuilderGUI
                         {
                             currentLine = bookInfo.Value;
                             string titleSpaced = " " + bookInfo.Groups[1].Value;
-                            if (titleSpaced.Length > 35)
-                            {
-                                titleSpaced = titleSpaced.Substring(0, 35) + "...";
-                            }
                             dgvOtherBooks.Rows.Add(titleSpaced, Resources.arrow_right);
                             i++;
                         }

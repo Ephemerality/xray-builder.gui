@@ -96,6 +96,7 @@
             this.lblName = new System.Windows.Forms.Label();
             this.rtbAbout = new System.Windows.Forms.RichTextBox();
             this.listSettings = new System.Windows.Forms.ListBox();
+            this.chkGoodreadsID = new System.Windows.Forms.CheckBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.gbProcess.SuspendLayout();
@@ -414,6 +415,7 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.chkGoodreadsID);
             this.groupBox4.Controls.Add(this.txtAZWOffset);
             this.groupBox4.Controls.Add(this.chkOverrideOffset);
             this.groupBox4.Controls.Add(this.chkSpoilers);
@@ -422,7 +424,7 @@
             this.groupBox4.Controls.Add(this.txtOffset);
             this.groupBox4.Location = new System.Drawing.Point(6, 146);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(378, 74);
+            this.groupBox4.Size = new System.Drawing.Size(378, 100);
             this.groupBox4.TabIndex = 28;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Preferences";
@@ -840,6 +842,16 @@
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
             // 
+            // chkGoodreadsID
+            // 
+            this.chkGoodreadsID.AutoSize = true;
+            this.chkGoodreadsID.Location = new System.Drawing.Point(14, 71);
+            this.chkGoodreadsID.Name = "chkGoodreadsID";
+            this.chkGoodreadsID.Size = new System.Drawing.Size(181, 17);
+            this.chkGoodreadsID.TabIndex = 25;
+            this.chkGoodreadsID.Text = "Show Goodreads ID in results list";
+            this.chkGoodreadsID.UseVisualStyleBackColor = true;
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -969,5 +981,6 @@
         private System.Windows.Forms.ComboBox cmbRegion;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox chkPromptAsin;
+        private System.Windows.Forms.CheckBox chkGoodreadsID;
     }
 }

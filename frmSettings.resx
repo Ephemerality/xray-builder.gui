@@ -121,59 +121,31 @@
     <value>Requirements:
 • .Net Framework 4.0+
 
-Books should be DRM-free. If you create an X-Ray file for a book, but still use the DRM copy on your Kindle, you will run into issues where the excerpts do not line up do where they are in the DRM-free version. In this case, you have 2 options. Either use the DRM-free version on your Kindle, or as an alternative you can determine the offset required to fix the excerpt locs and specify it with the 'offset' setting.
+Books should be DRM-free.
+Chapter detection on DRM books is not supported.
+
+If you create an X-Ray file for a book, but still use the DRM copy on your Kindle, you will run into issues where the excerpts do not line up do where they are in the DRM-free version. In this case, you have 2 options. Either use the DRM-free version on your Kindle, or as an alternative you can determine the offset required to fix the excerpt locs and specify it with the 'offset' setting.
+
 As an example:
-My excerpt: "The quick brown fox jumps over the lazy dog."
+
+Excerpt: "The quick brown fox jumps over the lazy dog."
 On my DRM copy, X-Ray is showing: "x jumps over the lazy dog."
 I open the rawML (I use Notepad++), find that excerpt in the book and determine the difference between the original and the DRM version
 In this case the DRM version is 18 characters ahead of the original, so I must specify an offset of 18 in Settings.
 From all the books I have tested with this, the offset was always the same. If for some reason the offset is variable throughout the book, this will obviously fail.
-Note that the offset will also be applied to chapter locs.
-Chapter detection on DRM books is not supported.
 
-Alias Files:
+Note that the offset will also be applied to chapter locations.
 
-Special options:
-• Automatically split aliases - This will match first and last names as well as common titles like "Captain" and "Mr." Use this feature carefully as it can cause incorrect matches in some cases.
-• Download aliases - This will attempt to download a pre-built alias file from the internet, if one exists. If overwriting aliases is enabled, downloaded aliases will overwrite ones you have made yourself.
-
-After downloading the terms from Shelfari, they will be exported to a .aliases file in the ext folder, named after the book's ASIN.
-Characters do not usually show up by their full name throughout the text. The alias file allows you to define aliases for characters/topics manually to maximize the number of excerpts found within the book.
-
+After downloading the terms from Shelfari, they will be exported to a .aliases file in ./ext, named after the book's ASIN. The alias file allows you to define aliases for characters/topics manually to maximize the number of excerpts found within the book.
+Initially terms would automatically search by a character's first name as well (Catelyn Stark would also search for Catelyn) but issues arose for things like "General John Smith" so it is left as a manual feature for now.
 Aliases follow the format:
 Character Name|Alias1,Alias2,Etc
-John Smith|Mr. Smith,Johnny,John
 
-Ensure that any aliases that are very basic, eg John, are at the end. Otherwise, if you have a setup like "John Smith|John,Johnny", "John" will always match before "Johnny" does and it will look weird when you're viewing the X-Ray.
-
-X-Ray Builder will tell you if no excerpts were found when processing. If you have never read the book before, you can ignore this if you wish; the X-Ray will not be ideal but it will work. For characters with a first and last name, you can usually assume that their first name will be used and can add an alias for it (John Smith|John).
-
-There are a number of switches that can be used to change the matching behavior for that character only:•/c - Searches will be case-sensitive
-• /d - Delete this character (not all terms on Shelfari may be desired)
-• /n - Will not match any excerpts but will leave character in X-Ray
-• /r - Aliases will be processed as regular expressions (case-sensitive unless specified).
-ONLY the aliases will be used in this case; the character's original name (to the left of the | symbol) WILL NOT BE USED.
-
-Only one switch can be used per character and should be used like this:
-Character Name|/c,Alias1,Alias2
-
-For regular expressions, only the first captured group is used. If using capturing groups within an expression, the entire expression should be turned into a capturing group.
-IE: (Find (some|every)thing)
-
-For more information on regular expressions for .NET check out this page: 
-https://msdn.microsoft.com/en-us/library/az24scfc(v=vs.110).aspx
-For creating and testing expressions, RegExr is a great resource.
-http://regexr.com/
-
-Chapters:
-
-In many cases, chapters are automatically detected. If chapters were found, they are exported to a .chapters file in the ext folder.
-You will be prompted to edit the chapters in Notepad. This allows you to remove any random chapters you may not want included, like copyright pages, acknowledgements, etc. You can also set up 'parts' in case the book is divided into parts/sections that include multiple chapters.
-
+Similarly, chapters are automatically detected as well if the table of contents is labelled properly, then exported to a .chapters file in ./ext. This allows any random chapters you may not want included, like copyright pages, acknowledgements, etc. Also allows you to setup parts in case the book is divided into parts that include multiple chapters.
 Chapter format:
 Name|start|end
 
-If chapters are not detected, you can build them yourself. You need to open the raw markup and use a text editor that allows you to see the file locations, such as Notepad++.</value>
+Any file that mobi_unpack can process should work (mobi, azw, azw3, etc).</value>
   </data>
   <data name="rtbAbout.Text" xml:space="preserve">
     <value>For those who don't already know, X-Ray is a reference feature available on any Kindle product with a touch screen (Touch, PW, PW2, etc), provided the book has X-Ray available for it.

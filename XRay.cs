@@ -710,14 +710,16 @@ namespace XRayBuilderGUI
             if (_chapters.Count == 0)
             {
                 string chapterPattern = @"((?:chapter|book|section|part|capitulo)\s+.*)|((?:prolog|prologue|epilogue)(?:\s+|$).*)|((?:one|two|three|four|five|six|seven|eight|nine|ten)(?:\s+|$).*)";
-                IEnumerable<HtmlAgilityPack.HtmlNode> chapterNodes = bookDoc.DocumentNode.SelectNodes("//a").
+                string xpath = "//*[self::h1 or self::h2 or self::h3 or self::h4 or self::h5]";
+                IEnumerable<HtmlNode> chapterNodes = bookDoc.DocumentNode.SelectNodes("//a").
                     Where(div => div.GetAttributeValue("class", "") == "chapter" || Regex.IsMatch(div.InnerText, chapterPattern, RegexOptions.IgnoreCase));
-                if (chapterNodes.Count() == 0)
-                    chapterNodes = bookDoc.DocumentNode.SelectNodes("//h1").
-                    Where(div => Regex.IsMatch(div.InnerText, chapterPattern, RegexOptions.IgnoreCase));
-                foreach (HtmlAgilityPack.HtmlNode chap in chapterNodes)
+                IEnumerable<HtmlNode> headingNodes = bookDoc.DocumentNode.SelectNodes(xpath);
+                if (headingNodes.Count() > chapterNodes.Count())
+                    chapterNodes = headingNodes;
+                foreach (HtmlNode chap in chapterNodes)
                 {
-                    int index = rawML.IndexOf(chap.InnerText);
+                    if (chap.InnerText.ContainsIgnorecase("Table of Contents")) continue;
+                    int index = rawML.IndexOf(chap.InnerHtml) + chap.InnerHtml.IndexOf(chap.InnerText);
                     if (index > -1)
                     {
                         if (_chapters.Count > 0)

@@ -71,7 +71,18 @@ namespace XRayBuilderGUI.DataSources
                     //Books with a cover are more likely to be a correct match?
                     if (noPhoto.GetAttributeValue("src", "").Contains("nophoto") && (resultNodes.Count != 1)) continue;
                     HtmlNode titleText = link.SelectSingleNode(".//a[@class='bookTitle']");
-                    frmG.cbResults.Items.Add(titleText.InnerText.Trim());
+                    if (Properties.Settings.Default.showGoodreadsID)
+                    {
+                        Match matchID = Regex.Match(link.OuterHtml, @"./book/show/([0-9]*)");
+                        if (matchID.Success)
+                        {
+                            frmG.cbResults.Items.Add(String.Format(@"({0}) {1}", matchID.Groups[1].Value, titleText.InnerText.Trim()));
+                        }
+                        else
+                            frmG.cbResults.Items.Add(titleText.InnerText.Trim());
+                    }
+                    else
+                        frmG.cbResults.Items.Add(titleText.InnerText.Trim());
                 }
                 frmG.cbResults.SelectedIndex = 0;
                 if (frmG.cbResults.Items.Count > 1)

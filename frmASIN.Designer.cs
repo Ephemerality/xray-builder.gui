@@ -52,7 +52,6 @@
             this.tbAsin.Name = "tbAsin";
             this.tbAsin.Size = new System.Drawing.Size(145, 20);
             this.tbAsin.TabIndex = 2;
-            this.tbAsin.Text = "B00N7F55XC";
             // 
             // lblTitle
             // 

@@ -20,7 +20,7 @@ namespace XRayBuilderGUI
         private bool xrayComplete = false;
 
         private string currentLog = Environment.CurrentDirectory + @"\log\" +
-                                    String.Format("{0:hh.mm.ss.dd.MM.yyyy}.txt", DateTime.Now);
+                                    String.Format("{0:HH.mm.ss.dd.MM.yyyy}.txt", DateTime.Now);
 
         private string EaPath = "";
         private string SaPath = "";

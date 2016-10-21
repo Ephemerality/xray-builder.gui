@@ -430,5 +430,17 @@ namespace XRayBuilderGUI.Properties {
                 this["promptASIN"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool showGoodreadsID {
+            get {
+                return ((bool)(this["showGoodreadsID"]));
+            }
+            set {
+                this["showGoodreadsID"] = value;
+            }
+        }
     }
 }

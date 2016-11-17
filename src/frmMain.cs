@@ -850,7 +850,7 @@ namespace XRayBuilderGUI
                 if (!File.Exists(ApPath))
                 {
                     OpenFileDialog openFile = new OpenFileDialog();
-                    openFile.Title = "Open a Kindle AuthorProfile file...";
+                    openFile.Title = "Open an existing Kindle AuthorProfile file...";
                     openFile.Filter = "ASC files|*.asc";
                     openFile.InitialDirectory = settings.outDir;
                     if (openFile.ShowDialog() == DialogResult.OK)
@@ -864,7 +864,7 @@ namespace XRayBuilderGUI
                                 frmAuthorProfile.ShowDialog();
                             }
                             else
-                                MessageBox.Show(@"Whoops! That filename doesn not contain ""AuthorProfile""!");
+                                MessageBox.Show(@"Whoops! That filename does not contain ""AuthorProfile""!");
                         }
                         catch (Exception ex)
                         {
@@ -888,7 +888,7 @@ namespace XRayBuilderGUI
                 if (!File.Exists(EaPath))
                 {
                     OpenFileDialog openFile = new OpenFileDialog();
-                    openFile.Title = "Open a Kindle EndAction file...";
+                    openFile.Title = "Open an existing Kindle EndActions file...";
                     openFile.Filter = "ASC files|*.asc";
                     openFile.InitialDirectory = settings.outDir;
                     if (openFile.ShowDialog() == DialogResult.OK)
@@ -902,7 +902,7 @@ namespace XRayBuilderGUI
                                 frmEndAction.ShowDialog();
                             }
                             else
-                                MessageBox.Show(@"Whoops! That filename doesn not contain ""EndActions""!");
+                                MessageBox.Show(@"Whoops! That filename does not contain ""EndActions""!");
                         }
                         catch (Exception ex)
                         {
@@ -1009,7 +1009,7 @@ namespace XRayBuilderGUI
                 if (!File.Exists(SaPath))
                 {
                     OpenFileDialog openFile = new OpenFileDialog();
-                    openFile.Title = "Open a Kindle StartAction file...";
+                    openFile.Title = "Open an existing Kindle StartActions file...";
                     openFile.Filter = "ASC files|*.asc";
                     openFile.InitialDirectory = settings.outDir;
                     if (openFile.ShowDialog() == DialogResult.OK)
@@ -1023,7 +1023,7 @@ namespace XRayBuilderGUI
                                 frmStartAction.ShowDialog();
                             }
                             else
-                                MessageBox.Show(@"Whoops! That filename doesn not contain ""StartActions""!");
+                                MessageBox.Show(@"Whoops! That filename does not contain ""StartActions""!");
                         }
                         catch (Exception ex)
                         {

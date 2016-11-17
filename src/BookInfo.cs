@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 using HtmlAgilityPack;
@@ -74,7 +75,6 @@ namespace XRayBuilderGUI
                 nClass, asin, title, desc, author, bookImageUrl, amazonRating, numReviews);
             return Functions.ExpandUnicode(template);
         }
-
 
         public override string ToString()
         {
@@ -181,7 +181,7 @@ namespace XRayBuilderGUI
                 catch (Exception ex)
                 {
                     throw new HtmlWebException("Error finding book ratings. If you want, you can report the book's Amazon URL to help with parsing.\r\n" +
-                        "Error: " + ex.Message + "\r\n" + ex.StackTrace);
+                        "Error: " + ex.Message);
                 }
             }
         }

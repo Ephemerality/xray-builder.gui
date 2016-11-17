@@ -667,7 +667,7 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(btnPreview, "View a preview of the generated files.");
             toolTip1.SetToolTip(btnUnpack, "Save the rawML (raw markup) of the book\r\nin the output directory so you can review it.");
             toolTip1.SetToolTip(btnSaveTerms,
-                "Extract and existing X-Ray file info to an XML file.\r\nThis can be useful if you have characters and\r\nterms you want to reuse");
+                "Extract an existing X-Ray file's info to an XML file.\r\nThis can be useful if you have characters and\r\nterms you want to reuse.");
 
             this.DragEnter += frmMain_DragEnter;
             this.DragDrop += frmMain_DragDrop;
@@ -706,12 +706,6 @@ namespace XRayBuilderGUI
             else
                 rdoFile.Checked = true;
             SetDatasourceLabels();
-
-            //if (!checkInternet())
-            //{
-            //    Log("");
-            //    Log("Warning: There appears to be no internet connection...");
-            //}
         }
 
         private void SetDatasourceLabels()
@@ -1144,10 +1138,8 @@ namespace XRayBuilderGUI
                             {
                                 string xrayDB = "Data Source=" + openFile.FileName + ";Version=3;";
                                 List<XRay.Term> Terms = new List<XRay.Term>(100);
-                                Terms.Clear();
 
-                                SQLiteConnection m_dbConnection;
-                                m_dbConnection = new SQLiteConnection(xrayDB);
+                                SQLiteConnection m_dbConnection = new SQLiteConnection(xrayDB);
                                 m_dbConnection.Open();
 
                                 string sql = "SELECT * FROM entity WHERE has_info_card = '1'";
@@ -1175,6 +1167,8 @@ namespace XRayBuilderGUI
                                     Terms.Add(newTerm);
                                 }
 
+                                command.Dispose();
+
                                 for (int i = 1; i < Terms.Count + 1; i++)
                                 {
                                     sql = String.Format("SELECT * FROM entity_description WHERE entity = '{0}'", i);
@@ -1185,6 +1179,7 @@ namespace XRayBuilderGUI
                                     {
                                         Terms[i - 1].Desc = reader.GetString(0);
                                     }
+                                    command.Dispose();
                                 }
                                 m_dbConnection.Close();
                                 if (!Directory.Exists(Environment.CurrentDirectory + @"\xml\"))
@@ -1194,7 +1189,7 @@ namespace XRayBuilderGUI
                                 Log("Character data has been saved to: " + outfile);
                             }
                             else
-                                MessageBox.Show(@"Whoops! That filename doesn not contain ""XRAY Entities""!");
+                                MessageBox.Show(@"Whoops! That filename does not contain ""XRAY Entities""!");
                         }
                         catch (Exception ex)
                         {

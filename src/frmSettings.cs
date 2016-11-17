@@ -96,6 +96,9 @@ namespace XRayBuilderGUI
             else
                 rdoShelfari.Checked = true;
             chkPromptAsin.Checked = Properties.Settings.Default.promptASIN;
+            chkGoodreadsID.Checked = Properties.Settings.Default.showGoodreadsID;
+            txtTemp.Text = Properties.Settings.Default.tmpDir;
+            chkDeleteTemp.Checked = Properties.Settings.Default.deleteTemp;
 
             // Added \r\n to show smaller tooltips
             ToolTip toolTip1 = new ToolTip();
@@ -169,8 +172,12 @@ namespace XRayBuilderGUI
                                                "in a series cannot automatically be found.\r\n" +
                                                "This is useful if you have the metadata available\r\n" +
                                                "in Calibre, and may help file creation.");
+            toolTip1.SetToolTip(chkGoodreadsID, "If multiple results are found during a Goodreads\r\n" +
+                                               "book search, the ID will be displayed in brackets\r\n" +
+                                               "in the results list. This is useful if you have metadata\r\n" +
+                                               "available in Calibre, and may help book identification");
 
-            IList<AmazonRegion> regions = new List<AmazonRegion>(regionTLDs.Count);
+            IList <AmazonRegion> regions = new List<AmazonRegion>(regionTLDs.Count);
             foreach (KeyValuePair<string, string> r in regionTLDs)
                 regions.Add(new AmazonRegion(r.Key, r.Value));
             cmbRegion.DataSource = regions;
@@ -239,6 +246,9 @@ namespace XRayBuilderGUI
             else
                 Properties.Settings.Default.dataSource = "Shelfari";
             Properties.Settings.Default.promptASIN = chkPromptAsin.Checked;
+            Properties.Settings.Default.showGoodreadsID = chkGoodreadsID.Checked;
+            Properties.Settings.Default.tmpDir = txtTemp.Text;
+            Properties.Settings.Default.deleteTemp = chkDeleteTemp.Checked;
             Properties.Settings.Default.Save();
             
             this.Close();
@@ -361,6 +371,11 @@ namespace XRayBuilderGUI
         private void chkOverrideOffset_CheckedChanged(object sender, EventArgs e)
         {
             txtAZWOffset.Enabled = chkOverrideOffset.Checked;
+        }
+
+        private void btnBrowseTemp_Click(object sender, EventArgs e)
+        {
+            txtOut.Text = Functions.GetDir(txtTemp.Text);
         }
     }
 }

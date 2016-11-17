@@ -15,6 +15,8 @@
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -29,8 +31,6 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -119,23 +119,11 @@
     <Compile Include="src\frmPreviewAP.Designer.cs">
       <DependentUpon>frmPreviewAP.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\frmPreviewAPN.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="src\frmPreviewAPN.Designer.cs">
-      <DependentUpon>frmPreviewAPN.cs</DependentUpon>
-    </Compile>
     <Compile Include="src\frmPreviewEA.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="src\frmPreviewEA.Designer.cs">
       <DependentUpon>frmPreviewEA.cs</DependentUpon>
-    </Compile>
-    <Compile Include="src\frmPreviewEAN.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="src\frmPreviewEAN.Designer.cs">
-      <DependentUpon>frmPreviewEAN.cs</DependentUpon>
     </Compile>
     <Compile Include="src\frmPreviewSA.cs">
       <SubType>Form</SubType>
@@ -143,23 +131,11 @@
     <Compile Include="src\frmPreviewSA.Designer.cs">
       <DependentUpon>frmPreviewSA.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\frmPreviewSAN.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="src\frmPreviewSAN.Designer.cs">
-      <DependentUpon>frmPreviewSAN.cs</DependentUpon>
-    </Compile>
     <Compile Include="src\frmPreviewXR.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="src\frmPreviewXR.Designer.cs">
       <DependentUpon>frmPreviewXR.cs</DependentUpon>
-    </Compile>
-    <Compile Include="src\frmPreviewXRN.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="src\frmPreviewXRN.Designer.cs">
-      <DependentUpon>frmPreviewXRN.cs</DependentUpon>
     </Compile>
     <Compile Include="src\frmSettings.cs">
       <SubType>Form</SubType>
@@ -185,6 +161,12 @@
     <Compile Include="src\Unpack\PDBHeader.cs" />
     <Compile Include="src\Unpack\Uncompress.cs" />
     <Compile Include="src\XRay.cs" />
+    <Compile Include="XRayPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="XRayPanel.Designer.cs">
+      <DependentUpon>XRayPanel.cs</DependentUpon>
+    </Compile>
     <Content Include="BaseEndActions.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -198,26 +180,19 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Icon.ico" />
+    <None Include="Resources\file-off.png" />
+    <None Include="Resources\terms.png" />
+    <None Include="Resources\people.png" />
+    <None Include="Resources\file-on.png" />
     <None Include="Resources\arrow-right.png" />
     <None Include="Resources\seperator.png" />
     <None Include="Resources\missing-image.png" />
-    <None Include="Resources\SA.png" />
     <None Include="Resources\STAR5.png" />
     <None Include="Resources\STAR4.png" />
     <None Include="Resources\STAR3.png" />
     <None Include="Resources\STAR2.png" />
     <None Include="Resources\STAR1.png" />
     <None Include="Resources\STAR0.png" />
-    <None Include="Resources\XRN.png" />
-    <None Include="Resources\XR8.png" />
-    <None Include="Resources\XR7.png" />
-    <None Include="Resources\XR6.png" />
-    <None Include="Resources\XR5.png" />
-    <None Include="Resources\XR4.png" />
-    <None Include="Resources\XR3.png" />
-    <None Include="Resources\XR2.png" />
-    <None Include="Resources\XR1.png" />
-    <None Include="Resources\XR.png" />
     <EmbeddedResource Include="src\frmASIN.resx">
       <DependentUpon>frmASIN.cs</DependentUpon>
     </EmbeddedResource>
@@ -231,26 +206,14 @@
     <EmbeddedResource Include="src\frmPreviewAP.resx">
       <DependentUpon>frmPreviewAP.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\frmPreviewAPN.resx">
-      <DependentUpon>frmPreviewAPN.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="src\frmPreviewEA.resx">
       <DependentUpon>frmPreviewEA.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="src\frmPreviewEAN.resx">
-      <DependentUpon>frmPreviewEAN.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\frmPreviewSA.resx">
       <DependentUpon>frmPreviewSA.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\frmPreviewSAN.resx">
-      <DependentUpon>frmPreviewSAN.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="src\frmPreviewXR.resx">
       <DependentUpon>frmPreviewXR.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="src\frmPreviewXRN.resx">
-      <DependentUpon>frmPreviewXRN.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\frmSettings.resx">
       <DependentUpon>frmSettings.cs</DependentUpon>
@@ -344,8 +307,6 @@
     <Content Include="doc\XML Documentation.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Resources\AP.png" />
-    <None Include="Resources\EA.png" />
     <None Include="Resources\AI.png" />
   </ItemGroup>
   <ItemGroup />

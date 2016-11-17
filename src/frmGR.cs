@@ -10,6 +10,16 @@ namespace XRayBuilderGUI
             InitializeComponent();
         }
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Enter)
+            {
+                this.Close();
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
         private void btnOK_Click(object sender, EventArgs e)
         {
             this.Close();

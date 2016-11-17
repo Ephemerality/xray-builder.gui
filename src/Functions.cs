@@ -87,34 +87,37 @@ namespace XRayBuilderGUI
                     sb.Append(s[i]);
             }
             string cleanedString = sb.ToString();
-            //cleanedString = Regex.Replace(cleanedString, @"([\u0000-\u007F])", string.Empty);
-            cleanedString = Regex.Replace(cleanedString, @"(“)|(”)", "'");
+            cleanedString = Regex.Replace(cleanedString, @"“|”", "'");
             cleanedString = cleanedString.Replace("\"", "'")
                 .Replace("<br>", string.Empty)
                 .Replace("&#133;", "…")
                 .Replace("&amp;#133;", "…")
                 .Replace("&#169;", string.Empty)
+                .Replace(" . . .", "…")
                 .Replace("&amp;#169;", string.Empty)
                 .Replace("&#174;", string.Empty)
-                .Replace("&amp;#174;", string.Empty);
+                .Replace("&amp;#174;", string.Empty)
+                .Replace(" - ", "—");
+            cleanedString = Regex.Replace(cleanedString, @"</?[a-z]>", string.Empty, RegexOptions.Multiline);
             cleanedString = Regex.Replace(cleanedString, @"\t|\n|\r|•", " ", RegexOptions.Multiline);
             cleanedString = Regex.Replace(cleanedString, @"\s+", " ", RegexOptions.Multiline);
             cleanedString = Regex.Replace(cleanedString, @"^ | $", string.Empty, RegexOptions.Multiline);
+            cleanedString = Regex.Replace(cleanedString, @"\. …$", ".", RegexOptions.Multiline);
             return cleanedString.Trim();
         }
 
         public static string ImageToBase64(Image image, ImageFormat format)
         {
-            using (var ms = new MemoryStream())
+            using (MemoryStream ms = new MemoryStream())
             {
                 // Convert Image to byte[]
                 image.Save(ms, format);
-                var imageBytes = ms.ToArray();
+                byte[] imageBytes = ms.ToArray();
                 image.Dispose();
 
                 // Convert byte[] to Base64 String
-                var base64String = Convert.ToBase64String(imageBytes);
-                ms.Flush();
+                string base64String = Convert.ToBase64String(imageBytes);
+                ms.Dispose();
                 return base64String;
             }
         }
@@ -130,6 +133,7 @@ namespace XRayBuilderGUI
             ms.Write(imageBytes, 0, imageBytes.Length);
             Image image = Image.FromStream(ms, true);
             Bitmap bitmap = new Bitmap(image);
+            ms.Dispose();
             return bitmap;
         }
 
@@ -181,6 +185,19 @@ namespace XRayBuilderGUI
             return path;
         }
 
+        public static string GetBookOutputDirectoryOnly(string author, string title)
+        {
+            string path, newAuthor, newTitle;
+            newAuthor = RemoveInvalidFileChars(author);
+            newTitle = RemoveInvalidFileChars(title);
+            path = Path.Combine(Properties.Settings.Default.outDir,
+                String.Format(@"{0}\{1}", newAuthor, newTitle));
+            if (!author.Equals(newAuthor) || !title.Equals(newTitle))
+                MessageBox.Show("The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.", "Invalid Characters");
+            //Directory.CreateDirectory(path);
+            return path;
+        }
+
         public static string RemoveInvalidFileChars(string filename)
         {
             char[] fileChars = Path.GetInvalidFileNameChars();
@@ -207,7 +224,7 @@ namespace XRayBuilderGUI
             string path;
             do
             {
-                path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+                path = Path.Combine(Properties.Settings.Default.tmpDir, Path.GetRandomFileName());
             }
             while (Directory.Exists(path));
             Directory.CreateDirectory(path);
@@ -217,7 +234,7 @@ namespace XRayBuilderGUI
         public static string TimeStamp()
         {
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            var time = String.Format("{0:H:mm:ss}", DateTime.Now);
+            var time = String.Format("{0:HH:mm:ss}", DateTime.Now);
             var date = String.Format("{0:dd/MM/yyyy}", DateTime.Now);
             return String.Format("Running X-Ray Builder GUI v{0}. Log started on {1} at {2}.\r\n",
                 version, date, time);
@@ -398,6 +415,21 @@ namespace XRayBuilderGUI
             string incorrectAsin = "";
             string author = "";
             string title = "";
+            string image = "";
+
+            DirectoryInfo d = new DirectoryInfo(randomFile + @"/mobi7/Images");
+            if (d != null)
+            {
+                FileInfo[] Files = d.GetFiles("*.jpeg");
+                foreach (FileInfo file in Files)
+                {
+                    if (file.Name.Contains("cover"))
+                    {
+                        image = file.FullName;
+                        continue;
+                    }
+                }
+            }
 
             Match match = Regex.Match(unpackInfo, @"ASIN\s*(.*)");
             if (match.Success && match.Groups.Count > 1)
@@ -442,7 +474,7 @@ namespace XRayBuilderGUI
                 author = match.Groups[1].Value.Replace("\r", "");
 
             // Find book title in Kindleunpack output
-            match = Regex.Match(unpackInfo, @"Title in header at offset.*'(.*)'");
+            match = Regex.Match(unpackInfo, @"Title in header at offset.*: '(.*)'");
             if (!match.Success || match.Groups.Count <= 1)
                 match = Regex.Match(unpackInfo, @" Updated_Title\s*(.*)");
             if (match.Success && match.Groups.Count > 1)
@@ -493,6 +525,7 @@ namespace XRayBuilderGUI
             output.Add(rawMl);
             output.Add(author);
             output.Add(title);
+            output.Add(image);
 
             return output;
         }
@@ -631,6 +664,28 @@ namespace XRayBuilderGUI
             if (BitConverter.IsLittleEndian)
                 Array.Reverse(buffer);
             return buffer;
+        }
+
+        public static bool CleanUp(string folderPath)
+        {
+            if (!Directory.Exists(folderPath))
+                return false;
+
+            string[] files = Directory.GetFiles(folderPath, "*", SearchOption.AllDirectories);
+            string[] dirs = Directory.GetDirectories(folderPath, "*", SearchOption.AllDirectories);
+
+            foreach (string file in files)
+            {
+                File.SetAttributes(file, FileAttributes.Normal);
+                File.Delete(file);
+            }
+
+            foreach (string dir in dirs)
+            {
+                CleanUp(dir);
+            }
+            Directory.Delete(folderPath, false);
+            return true;
         }
     }
 }

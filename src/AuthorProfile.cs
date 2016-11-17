@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -18,6 +17,10 @@ namespace XRayBuilderGUI
 
         private string ApPath = "";
         private BookInfo curBook = null;
+
+        private int authorImageHeight;
+        private string base64ImageString = "";
+        private Bitmap bitmap = null;
 
         public string ApTitle = null;
         public Image ApAuthorImage = null;
@@ -178,84 +181,30 @@ namespace XRayBuilderGUI
             }
             // Try to download Author image
             HtmlNode imageXpath = DataSources.Amazon.GetAuthorImage(searchResults, TLD);
-            authorImageUrl = imageXpath.GetAttributeValue("src", "");
-            string downloadedAuthorImage = curBook.path + @"\DownloadedAuthorImage.jpg";
+            authorImageUrl = Regex.Replace(imageXpath.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
+
+            if (authorImageUrl.Contains(@"https://images-na.ssl-images-amazon.com/"))
+                authorImageUrl = authorImageUrl.Replace(@"https://images-na.ssl-images-amazon.com/", @"http://ecx.images-amazon.com/");
+
+            curBook.authorImageUrl = authorImageUrl;
+
             try
             {
-                using (WebClient webClient = new WebClient())
-                {
-                    webClient.DownloadFile(new Uri(authorImageUrl), downloadedAuthorImage);
-                    main.Log("Downloading author image...");
-                }
+                main.Log("Downloading author image...");
+                WebRequest request = WebRequest.Create(authorImageUrl);
+                WebResponse response = request.GetResponse();
+                Stream stream = response.GetResponseStream();
+                bitmap = new Bitmap(stream);
+                authorImageHeight = bitmap.Height;
+                base64ImageString = Functions.ImageToBase64(bitmap, ImageFormat.Jpeg);
+                main.Log("Grayscale Base-64 encoded author image created!");
+                stream.Dispose();
             }
             catch (Exception ex)
             {
                 main.Log(String.Format("An error occurred downloading the author image: {0}", ex.Message));
                 return;
             }
-
-            main.Log("Resizing and cropping Author image...");
-            //Resize and Crop Author image
-            Bitmap o = (Bitmap) Image.FromFile(downloadedAuthorImage);
-            Bitmap nb = new Bitmap(o, o.Width, o.Height);
-
-            int sourceWidth = o.Width;
-            int sourceHeight = o.Height;
-            float nPercent;
-            float nPercentW = (185/(float) sourceWidth);
-            float nPercentH = (278/(float) sourceHeight);
-
-            nPercent = nPercentH > nPercentW ? nPercentH : nPercentW;
-
-            int destWidth = (int) (sourceWidth*nPercent);
-            int destHeight = (int) (sourceHeight*nPercent);
-            Bitmap b = new Bitmap(destWidth, destHeight);
-            Graphics g = Graphics.FromImage(b);
-            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            g.SmoothingMode = SmoothingMode.HighQuality;
-            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-            g.CompositingQuality = CompositingQuality.HighQuality;
-            g.CompositingMode = CompositingMode.SourceOver;
-
-            ImageAttributes ia = new ImageAttributes();
-            ia.SetWrapMode(WrapMode.TileFlipXY);
-
-            g.DrawImage(nb, 0, 0, destWidth, destHeight);
-            b.Save(curBook.path + @"\ResizedAuthorImage.jpg");
-            b.Dispose();
-            g.Dispose();
-            o.Dispose();
-            nb.Dispose();
-
-            Bitmap target = new Bitmap(185, destHeight);
-            Rectangle cropRect = new Rectangle(((destWidth - 185)/2), 0, 185, destHeight);
-            using (g = Graphics.FromImage(target))
-            {
-                g.DrawImage(Image.FromFile(curBook.path + @"\ResizedAuthorImage.jpg"),
-                    new Rectangle(0, 0, target.Width, target.Height),
-                    cropRect, GraphicsUnit.Pixel);
-            }
-            target.Save(curBook.path + @"\CroppedAuthorImage.jpg");
-            target.Dispose();
-            Bitmap bc = new Bitmap(curBook.path + @"\CroppedAuthorImage.jpg");
-
-            //Convert Author image to Grayscale and save as jpeg
-            Bitmap bgs = Functions.MakeGrayscale3(bc);
-
-            ImageCodecInfo[] availableCodecs = ImageCodecInfo.GetImageEncoders();
-            ImageCodecInfo jpgCodec = availableCodecs.FirstOrDefault(codec => codec.MimeType == "image/jpeg");
-            if (jpgCodec == null)
-                throw new NotSupportedException("Encoder for JPEG not found.");
-            EncoderParameters encoderParams = new EncoderParameters(1);
-            encoderParams.Param[0] = new EncoderParameter(Encoder.ColorDepth, 8L);
-            bgs.Save(curBook.path + @"\FinalImage.jpg", jpgCodec, encoderParams);
-            int authorImageHeight = bgs.Height;
-            bc.Dispose();
-
-            //Convert final grayscale Author image to Base64 Format String
-            string base64ImageString = Functions.ImageToBase64(bgs, ImageFormat.Jpeg);
-            main.Log("Grayscale Base-64 encoded author image created!");
-            bgs.Dispose();
 
             main.Log("Gathering author's other books...");
             List<BookInfo> bookList = DataSources.Amazon.GetAuthorBooks(searchResults, curBook.title, curBook.author, TLD);
@@ -304,8 +253,6 @@ namespace XRayBuilderGUI
                                           String.Format(@"{0}"",""d"":{1},""o"":[", curBook.asin, unixTimestamp) +
                                           string.Join(",", authorsOtherBookList.ToArray()) + "]}";
                 File.WriteAllText(ApPath, authorProfileOutput);
-                //main.btnPreview.Enabled = true;
-                //main.cmsPreview.Items[0].Enabled = true;
                 main.Log("Author Profile file created successfully!\r\nSaved to " + ApPath);
             }
             catch (Exception ex)
@@ -316,7 +263,7 @@ namespace XRayBuilderGUI
 
             ApTitle = "About " + curBook.author;
             ApSubTitle = "Kindle Books By " + curBook.author;
-            ApAuthorImage = Image.FromFile(curBook.path + @"\FinalImage.jpg");
+            ApAuthorImage = bitmap;
             EaSubTitle = "More Books By " + curBook.author;
 
             complete = true;

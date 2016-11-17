@@ -42,7 +42,7 @@ namespace XRayBuilderGUI
             string ebookLocation = String.Format(@"http://www.amazon.{0}/dp/{1}", settings.amazonTLD, book.asin);
 
             // Search Amazon for book
-            main.Log(String.Format("Book's Amazon page URL: {0}", ebookLocation));
+            //main.Log(String.Format("Book's Amazon page URL: {0}", ebookLocation));
             
             HtmlDocument bookHtmlDoc = new HtmlDocument {OptionAutoCloseOnEnd = true};
             try
@@ -249,7 +249,6 @@ namespace XRayBuilderGUI
                 writer.Flush();
                 writer.Close();
                 main.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
-                main.pbFileEA.Image = Properties.Resources.file_on;
                 main.cmsPreview.Items[1].Enabled = true;
             }
             catch (Exception ex)
@@ -272,13 +271,17 @@ namespace XRayBuilderGUI
             
             // Build bookInfo object
             TimeSpan timestamp = DateTime.Now - new DateTime(1970, 1, 1);
-            bookInfoTemplate = String.Format(bookInfoTemplate, curBook.asin, Math.Round(timestamp.TotalMilliseconds), curBook.bookImageUrl, curBook.databasename, curBook.guid, _erl);
+            bookInfoTemplate = String.Format(bookInfoTemplate, curBook.asin, Math.Round(timestamp.TotalMilliseconds), curBook.bookImageUrl, curBook.databasename,_erl);
             double dateMs = Math.Round(timestamp.TotalMilliseconds);
             string ratingText = Math.Floor(curBook.amazonRating).ToString();
 
             // Build data object
             string dataTemplate = "";
             string nextBook = "{}";
+
+            string followSubscriptions = String.Format(@"""followSubscriptions"":{{""class"":""authorSubscriptionInfoList"",""subscriptions"":[{{""class"":""authorSubscriptionInfo"",""asin"":""{0}"",""name"":""{1}"",""subscribed"":false,""imageUrl"":""{2}""}}]}}", curBook.authorAsin, curBook.author, curBook.authorImageUrl);
+            string authorSubscriptions = String.Format(@"""authorSubscriptions"":{{""class"":""authorSubscriptionInfoList"",""subscriptions"":[{{""class"":""authorSubscriptionInfo"",""asin"":""{0}"",""name"":""{1}"",""subscribed"":false,""imageUrl"":""{2}""}}]}}", curBook.authorAsin, curBook.author, curBook.authorImageUrl);
+
             string publicSharedRating = String.Format(@"""publicSharedRating"":{{""class"":""publicSharedRating"",""timestamp"":{0},""value"":{1}}}", dateMs, ratingText);
             string customerProfile = String.Format(@"""customerProfile"":{{""class"":""customerProfile"",""penName"":""{0}"",""realName"":""{1}""}}",
                 settings.penName, settings.realName);
@@ -315,30 +318,29 @@ namespace XRayBuilderGUI
             {
                 main.Log("An error occurred while searching for or estimating the page count: " + ex.Message + "\r\n" + ex.StackTrace);
             }
+            // followSubscriptions  authorSubscriptions
+            // nextBook, publicSharedRating, followSubscriptions, customerProfile, rating, authorBios, authorRecs, customersWhoBoughtRecs, authorSubscriptions, goodReadsReview
             if (authorProfile.otherBooks.Count > 0)
                 authorRecs = String.Format(authorRecs,
                     String.Join(",",
                         authorProfile.otherBooks.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
             else
             {
-                dataTemplate = @"""data"":{{""nextBook"":{0},{1},{2},{3},{4},{5},{6}}}";
-                dataTemplate = String.Format(dataTemplate, nextBook, publicSharedRating, customerProfile,
-                rating, authors, custRecs, goodReads);
+                dataTemplate = @"""data"":{{""nextBook"":{0},{1},{2},{3},{4},{5},{6},{7},{8}}}";
+                dataTemplate = String.Format(dataTemplate, nextBook, publicSharedRating, followSubscriptions, customerProfile, rating, authors, custRecs, authorSubscriptions, goodReads);
             }
             if (custAlsoBought.Count > 0)
                 custRecs = String.Format(custRecs,
                     String.Join(",", custAlsoBought.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
             else
             {
-                dataTemplate = @"""data"":{{""nextBook"":{0},{1},{2},{3},{4},{5},{6}}}";
-                dataTemplate = String.Format(dataTemplate, nextBook, publicSharedRating, customerProfile,
-                rating, authors, authorRecs, goodReads);
+                dataTemplate = @"""data"":{{""nextBook"":{0},{1},{2},{3},{4},{5},{6},{7},{8}}}";
+                dataTemplate = String.Format(dataTemplate, nextBook, publicSharedRating, followSubscriptions, customerProfile, rating, authors, authorRecs, authorSubscriptions, goodReads);
             }
             if (dataTemplate == "")
             {
-                dataTemplate = @"""data"":{{""nextBook"":{0},{1},{2},{3},{4},{5},{6},{7}}}";
-                dataTemplate = String.Format(dataTemplate, nextBook, publicSharedRating, customerProfile,
-                    rating, authors, authorRecs, custRecs, goodReads);
+                dataTemplate = @"""data"":{{""nextBook"":{0},{1},{2},{3},{4},{5},{6},{7},{8},{9}}}";
+                dataTemplate = String.Format(dataTemplate, nextBook, publicSharedRating, followSubscriptions, customerProfile, rating, authors, authorRecs, custRecs, authorSubscriptions, goodReads);
             }
 
             finalOutput = String.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
@@ -350,7 +352,6 @@ namespace XRayBuilderGUI
                 streamWriter.Flush();
             }
             main.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
-            main.pbFileEA.Image = Properties.Resources.file_on;
             main.cmsPreview.Items[1].Enabled = true;
         }
 
@@ -363,13 +364,19 @@ namespace XRayBuilderGUI
             string widgetsTemplate = templates[1];
             string layoutsTemplate = templates[2];
             string welcomeTextTemplate = templates[3];
-            string dataTemplate = "";
 
             string finalOutput = "{{{0},{1},{2},{3}}}"; //bookInfo, widgets, layouts, welcometext, data
 
             // Build bookInfo object
             TimeSpan timestamp = DateTime.Now - new DateTime(1970, 1, 1);
             bookInfoTemplate = String.Format(bookInfoTemplate, curBook.asin, Math.Round(timestamp.TotalMilliseconds), curBook.bookImageUrl);
+
+            // Build data object
+            string dataTemplate = "";
+
+            string followSubscriptions = String.Format(@"""followSubscriptions"":{{""class"":""authorSubscriptionInfoList"",""subscriptions"":[{{""class"":""authorSubscriptionInfo"",""asin"":""{0}"",""name"":""{1}"",""subscribed"":false,""imageUrl"":""{2}""}}]}}", curBook.authorAsin, curBook.author, curBook.authorImageUrl);
+            string authorSubscriptions = String.Format(@"""authorSubscriptions"":{{""class"":""authorSubscriptionInfoList"",""subscriptions"":[{{""class"":""authorSubscriptionInfo"",""asin"":""{0}"",""name"":""{1}"",""subscribed"":false,""imageUrl"":""{2}""}}]}}", curBook.authorAsin, curBook.author, curBook.authorImageUrl);
+
             string seriesPosition = curBook.seriesPosition == "" ? "" :
                 String.Format(@"""seriesPosition"":{{""class"":""seriesPosition"",""positionInSeries"":{0},""totalInSeries"":{1},""seriesName"":""{2}""}},",
                     curBook.seriesPosition, curBook.totalInSeries, curBook.seriesName);
@@ -386,14 +393,23 @@ namespace XRayBuilderGUI
                     curBook.readingHours, curBook.readingMinutes);
             string readingPages = String.Format(@"""readingPages"":{{""class"":""pages"",""pagesInBook"":{0}}}", curBook.pagesInBook);
 
-            // Add previous book in the series if it exists
             string previousBookInSeries = curBook.previousInSeries == null ? "" : 
                 String.Format(@"""previousBookInTheSeries"":{0},", curBook.previousInSeries.ToExtraJSON("featuredRecommendation"));
-            dataTemplate = @"""data"":{{{0}{1},{2},{3},""bookDescription"":{4},{5},{6},""currentBook"":{7},{8},{9}{10}}}";
-            dataTemplate = string.Format(dataTemplate, seriesPosition, welcomeTextTemplate, popularHighlights,
-            grokShelfInfo, currentBook, authors, authorRecs, currentBook, readingTime, previousBookInSeries, readingPages);
 
-            finalOutput = String.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
+            dataTemplate = @"""data"":{{{0},{1},{2},{3},""bookDescription"":{4},{5},{6},""currentBook"":{7},{8},{9}{10},{11}}}";
+
+            try
+            {
+                dataTemplate = string.Format(dataTemplate, followSubscriptions, welcomeTextTemplate, popularHighlights,
+            grokShelfInfo, currentBook, authors, authorRecs, currentBook, readingTime,
+            previousBookInSeries, authorSubscriptions, readingPages);
+
+                finalOutput = String.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
+            }
+            catch (Exception ex)
+            {
+                main.Log("An error occurred creating the StartAction data: " + ex.Message + "\r\n" + ex.StackTrace);
+            }
 
             main.Log("Writing StartActions to file...");
             using (StreamWriter streamWriter = new StreamWriter(SaPath, false))//, Encoding.UTF8))
@@ -402,7 +418,6 @@ namespace XRayBuilderGUI
                 streamWriter.Flush();
             }
             main.Log("StartActions file created successfully!\r\nSaved to " + SaPath);
-            main.pbFileSA.Image = Properties.Resources.file_on;
             main.cmsPreview.Items[3].Enabled = true;
         }
 

@@ -78,6 +78,7 @@ namespace XRayBuilderGUI.DataSources
                                               results.authorAsin +
                                               "%2Cp_n_feature_browse-bin%3A618073011&bbn=283155&ie=UTF8&qid=1432378570&rnid=618072011";
 
+            curBook.authorAsin = results.authorAsin;
             Log("Author page found on Amazon!");
             Log(String.Format("Author's Amazon Page URL: {0}", authorAmazonWebsiteLocationLog));
 

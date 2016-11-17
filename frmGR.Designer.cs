@@ -42,7 +42,7 @@
             this.cbResults.IntegralHeight = false;
             this.cbResults.Location = new System.Drawing.Point(12, 12);
             this.cbResults.Name = "cbResults";
-            this.cbResults.Size = new System.Drawing.Size(310, 21);
+            this.cbResults.Size = new System.Drawing.Size(360, 21);
             this.cbResults.TabIndex = 3;
             // 
             // lblMessage1
@@ -57,7 +57,7 @@
             // 
             // btnOK
             // 
-            this.btnOK.Location = new System.Drawing.Point(248, 58);
+            this.btnOK.Location = new System.Drawing.Point(298, 58);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 5;
@@ -79,7 +79,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(334, 92);
+            this.ClientSize = new System.Drawing.Size(384, 92);
             this.Controls.Add(this.lblMessage2);
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.lblMessage1);

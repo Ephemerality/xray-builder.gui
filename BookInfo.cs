@@ -23,6 +23,9 @@ namespace XRayBuilderGUI
         public string amazonUrl = "";
         public string rawmlPath = "";
 
+        public string authorAsin = "";
+        public string authorImageUrl = "";
+
         // Added StartAction info
         public string seriesName = "";
         public string seriesPosition = "";
@@ -118,6 +121,10 @@ namespace XRayBuilderGUI
                             bookImageUrl = Regex.Replace(bookImageUrl, @"_.*?_\.", string.Empty);
                     }
                 }
+
+                if (bookImageUrl.Contains(@"https://images-na.ssl-images-amazon.com/"))
+                    bookImageUrl = bookImageUrl.Replace(@"https://images-na.ssl-images-amazon.com/", @"http://ecx.images-amazon.com/");
+                
                 // Use no image URL
                 if (bookImageUrl == "")
                     bookImageUrl = "https://images-na.ssl-images-amazon.com/images/G/01/x-site/icons/no-img-sm.gif";

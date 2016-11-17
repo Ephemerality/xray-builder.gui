@@ -442,5 +442,29 @@ namespace XRayBuilderGUI.Properties {
                 this["showGoodreadsID"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string tmpDir {
+            get {
+                return ((string)(this["tmpDir"]));
+            }
+            set {
+                this["tmpDir"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool deleteTemp {
+            get {
+                return ((bool)(this["deleteTemp"]));
+            }
+            set {
+                this["deleteTemp"] = value;
+            }
+        }
     }
 }

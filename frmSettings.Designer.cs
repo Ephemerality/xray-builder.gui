@@ -57,6 +57,7 @@
             this.rdoShelfari = new System.Windows.Forms.RadioButton();
             this.rdoGoodreads = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.chkGoodreadsID = new System.Windows.Forms.CheckBox();
             this.txtAZWOffset = new System.Windows.Forms.TextBox();
             this.chkOverrideOffset = new System.Windows.Forms.CheckBox();
             this.chkSpoilers = new System.Windows.Forms.CheckBox();
@@ -96,7 +97,10 @@
             this.lblName = new System.Windows.Forms.Label();
             this.rtbAbout = new System.Windows.Forms.RichTextBox();
             this.listSettings = new System.Windows.Forms.ListBox();
-            this.chkGoodreadsID = new System.Windows.Forms.CheckBox();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.chkDeleteTemp = new System.Windows.Forms.CheckBox();
+            this.txtTemp = new System.Windows.Forms.TextBox();
+            this.btnBrowseTemp = new System.Windows.Forms.Button();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.gbProcess.SuspendLayout();
@@ -118,6 +122,7 @@
             this.gbDetails.SuspendLayout();
             this.tabPgHelp.SuspendLayout();
             this.tabPgAbout.SuspendLayout();
+            this.groupBox7.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSupport
@@ -285,6 +290,7 @@
             // 
             // tabPgDirectories
             // 
+            this.tabPgDirectories.Controls.Add(this.groupBox7);
             this.tabPgDirectories.Controls.Add(this.gbDirectories);
             this.tabPgDirectories.Controls.Add(this.groupBox1);
             this.tabPgDirectories.Location = new System.Drawing.Point(4, 5);
@@ -428,6 +434,16 @@
             this.groupBox4.TabIndex = 28;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Preferences";
+            // 
+            // chkGoodreadsID
+            // 
+            this.chkGoodreadsID.AutoSize = true;
+            this.chkGoodreadsID.Location = new System.Drawing.Point(14, 71);
+            this.chkGoodreadsID.Name = "chkGoodreadsID";
+            this.chkGoodreadsID.Size = new System.Drawing.Size(181, 17);
+            this.chkGoodreadsID.TabIndex = 25;
+            this.chkGoodreadsID.Text = "Show Goodreads ID in results list";
+            this.chkGoodreadsID.UseVisualStyleBackColor = true;
             // 
             // txtAZWOffset
             // 
@@ -842,15 +858,44 @@
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
             // 
-            // chkGoodreadsID
+            // groupBox7
             // 
-            this.chkGoodreadsID.AutoSize = true;
-            this.chkGoodreadsID.Location = new System.Drawing.Point(14, 71);
-            this.chkGoodreadsID.Name = "chkGoodreadsID";
-            this.chkGoodreadsID.Size = new System.Drawing.Size(181, 17);
-            this.chkGoodreadsID.TabIndex = 25;
-            this.chkGoodreadsID.Text = "Show Goodreads ID in results list";
-            this.chkGoodreadsID.UseVisualStyleBackColor = true;
+            this.groupBox7.Controls.Add(this.chkDeleteTemp);
+            this.groupBox7.Controls.Add(this.txtTemp);
+            this.groupBox7.Controls.Add(this.btnBrowseTemp);
+            this.groupBox7.Location = new System.Drawing.Point(6, 160);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(378, 81);
+            this.groupBox7.TabIndex = 40;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Temporary Directory";
+            // 
+            // chkDeleteTemp
+            // 
+            this.chkDeleteTemp.AutoSize = true;
+            this.chkDeleteTemp.Location = new System.Drawing.Point(14, 52);
+            this.chkDeleteTemp.Name = "chkDeleteTemp";
+            this.chkDeleteTemp.Size = new System.Drawing.Size(127, 17);
+            this.chkDeleteTemp.TabIndex = 26;
+            this.chkDeleteTemp.Text = "Delete temporary files";
+            this.chkDeleteTemp.UseVisualStyleBackColor = true;
+            // 
+            // txtTemp
+            // 
+            this.txtTemp.Location = new System.Drawing.Point(14, 20);
+            this.txtTemp.Name = "txtTemp";
+            this.txtTemp.Size = new System.Drawing.Size(308, 20);
+            this.txtTemp.TabIndex = 12;
+            // 
+            // btnBrowseTemp
+            // 
+            this.btnBrowseTemp.Location = new System.Drawing.Point(331, 19);
+            this.btnBrowseTemp.Name = "btnBrowseTemp";
+            this.btnBrowseTemp.Size = new System.Drawing.Size(34, 22);
+            this.btnBrowseTemp.TabIndex = 13;
+            this.btnBrowseTemp.Text = "...";
+            this.btnBrowseTemp.UseVisualStyleBackColor = true;
+            this.btnBrowseTemp.Click += new System.EventHandler(this.btnBrowseTemp_Click);
             // 
             // frmSettings
             // 
@@ -909,6 +954,8 @@
             this.tabPgHelp.ResumeLayout(false);
             this.tabPgAbout.ResumeLayout(false);
             this.tabPgAbout.PerformLayout();
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -982,5 +1029,9 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox chkPromptAsin;
         private System.Windows.Forms.CheckBox chkGoodreadsID;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.CheckBox chkDeleteTemp;
+        private System.Windows.Forms.TextBox txtTemp;
+        private System.Windows.Forms.Button btnBrowseTemp;
     }
 }

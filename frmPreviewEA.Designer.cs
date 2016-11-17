@@ -1,6 +1,6 @@
 ﻿namespace XRayBuilderGUI
 {
-    partial class FrmPreviewEa
+    partial class frmPreviewEA
     {
         /// <summary>
         /// Required designer variable.
@@ -28,260 +28,185 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.lblAuthor2 = new System.Windows.Forms.Label();
-            this.lblBook7 = new System.Windows.Forms.Label();
-            this.lblAuthor1 = new System.Windows.Forms.Label();
-            this.lblBook6 = new System.Windows.Forms.Label();
-            this.lblBook5 = new System.Windows.Forms.Label();
-            this.lblBook4 = new System.Windows.Forms.Label();
-            this.lblBook3 = new System.Windows.Forms.Label();
-            this.lblBook2 = new System.Windows.Forms.Label();
-            this.lblBook1 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.lblMoreBooks = new System.Windows.Forms.Label();
-            this.lblPost = new System.Windows.Forms.Label();
-            this.lblRate = new System.Windows.Forms.Label();
-            this.lblTitle = new System.Windows.Forms.Label();
-            this.pbBackground = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.pbBackground)).BeginInit();
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmPreviewEA));
+            this.lvCustomersWhoBoughtRecs = new System.Windows.Forms.ListView();
+            this.ilcustomersWhoBoughtRecs = new System.Windows.Forms.ImageList(this.components);
+            this.lblCustomersWhoBoughtRecs = new System.Windows.Forms.Label();
+            this.lblAuthorRecs = new System.Windows.Forms.Label();
+            this.lblNextAuthor = new System.Windows.Forms.Label();
+            this.lblNextTitle = new System.Windows.Forms.Label();
+            this.lblNextInSeries = new System.Windows.Forms.Label();
+            this.pbSeperator = new System.Windows.Forms.PictureBox();
+            this.pbNextCover = new System.Windows.Forms.PictureBox();
+            this.ilauthorRecs = new System.Windows.Forms.ImageList(this.components);
+            this.lvAuthorRecs = new System.Windows.Forms.ListView();
+            this.lblNotInSeries = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.pbSeperator)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbNextCover)).BeginInit();
             this.SuspendLayout();
             // 
-            // lblAuthor2
+            // lvCustomersWhoBoughtRecs
             // 
-            this.lblAuthor2.AutoSize = true;
-            this.lblAuthor2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(242)))), ((int)(((byte)(242)))));
-            this.lblAuthor2.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAuthor2.Location = new System.Drawing.Point(24, 385);
-            this.lblAuthor2.Name = "lblAuthor2";
-            this.lblAuthor2.Size = new System.Drawing.Size(33, 12);
-            this.lblAuthor2.TabIndex = 98;
-            this.lblAuthor2.Text = "Author";
-            this.lblAuthor2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblAuthor2.UseMnemonic = false;
+            this.lvCustomersWhoBoughtRecs.BackColor = System.Drawing.SystemColors.Control;
+            this.lvCustomersWhoBoughtRecs.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.lvCustomersWhoBoughtRecs.LargeImageList = this.ilcustomersWhoBoughtRecs;
+            this.lvCustomersWhoBoughtRecs.Location = new System.Drawing.Point(8, 161);
+            this.lvCustomersWhoBoughtRecs.Name = "lvCustomersWhoBoughtRecs";
+            this.lvCustomersWhoBoughtRecs.Size = new System.Drawing.Size(291, 258);
+            this.lvCustomersWhoBoughtRecs.TabIndex = 41;
+            this.lvCustomersWhoBoughtRecs.UseCompatibleStateImageBehavior = false;
+            this.lvCustomersWhoBoughtRecs.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.lvcustomersWhoBoughtRecs_ItemSelectionChanged);
             // 
-            // lblBook7
+            // ilcustomersWhoBoughtRecs
             // 
-            this.lblBook7.AutoEllipsis = true;
-            this.lblBook7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(242)))), ((int)(((byte)(242)))));
-            this.lblBook7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBook7.Location = new System.Drawing.Point(22, 369);
-            this.lblBook7.Name = "lblBook7";
-            this.lblBook7.Size = new System.Drawing.Size(245, 15);
-            this.lblBook7.TabIndex = 97;
-            this.lblBook7.Text = "Book 2 ...Waiting...";
-            this.lblBook7.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblBook7.UseMnemonic = false;
+            this.ilcustomersWhoBoughtRecs.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
+            this.ilcustomersWhoBoughtRecs.ImageSize = new System.Drawing.Size(60, 90);
+            this.ilcustomersWhoBoughtRecs.TransparentColor = System.Drawing.Color.Transparent;
             // 
-            // lblAuthor1
+            // lblCustomersWhoBoughtRecs
             // 
-            this.lblAuthor1.AutoSize = true;
-            this.lblAuthor1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(242)))), ((int)(((byte)(242)))));
-            this.lblAuthor1.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAuthor1.Location = new System.Drawing.Point(23, 348);
-            this.lblAuthor1.Name = "lblAuthor1";
-            this.lblAuthor1.Size = new System.Drawing.Size(33, 12);
-            this.lblAuthor1.TabIndex = 96;
-            this.lblAuthor1.Text = "Author";
-            this.lblAuthor1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblAuthor1.UseMnemonic = false;
+            this.lblCustomersWhoBoughtRecs.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblCustomersWhoBoughtRecs.Location = new System.Drawing.Point(11, 140);
+            this.lblCustomersWhoBoughtRecs.Name = "lblCustomersWhoBoughtRecs";
+            this.lblCustomersWhoBoughtRecs.Size = new System.Drawing.Size(286, 13);
+            this.lblCustomersWhoBoughtRecs.TabIndex = 40;
+            this.lblCustomersWhoBoughtRecs.Text = "Customers who bought this book also bought";
+            this.lblCustomersWhoBoughtRecs.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // lblBook6
+            // lblAuthorRecs
             // 
-            this.lblBook6.AutoEllipsis = true;
-            this.lblBook6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(242)))), ((int)(((byte)(242)))));
-            this.lblBook6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBook6.Location = new System.Drawing.Point(21, 332);
-            this.lblBook6.Name = "lblBook6";
-            this.lblBook6.Size = new System.Drawing.Size(245, 15);
-            this.lblBook6.TabIndex = 95;
-            this.lblBook6.Text = "Book 1 ...Waiting...";
-            this.lblBook6.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblBook6.UseMnemonic = false;
+            this.lblAuthorRecs.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAuthorRecs.Location = new System.Drawing.Point(306, 10);
+            this.lblAuthorRecs.Name = "lblAuthorRecs";
+            this.lblAuthorRecs.Size = new System.Drawing.Size(289, 13);
+            this.lblAuthorRecs.TabIndex = 38;
+            this.lblAuthorRecs.Text = "More by the author";
+            this.lblAuthorRecs.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // lblBook5
+            // lblNextAuthor
             // 
-            this.lblBook5.AutoEllipsis = true;
-            this.lblBook5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(242)))), ((int)(((byte)(242)))));
-            this.lblBook5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBook5.Location = new System.Drawing.Point(21, 282);
-            this.lblBook5.Name = "lblBook5";
-            this.lblBook5.Size = new System.Drawing.Size(245, 15);
-            this.lblBook5.TabIndex = 94;
-            this.lblBook5.Text = "Book 5 ...Waiting...";
-            this.lblBook5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblBook5.UseMnemonic = false;
+            this.lblNextAuthor.AutoEllipsis = true;
+            this.lblNextAuthor.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblNextAuthor.Location = new System.Drawing.Point(80, 66);
+            this.lblNextAuthor.Name = "lblNextAuthor";
+            this.lblNextAuthor.Size = new System.Drawing.Size(219, 13);
+            this.lblNextAuthor.TabIndex = 36;
+            this.lblNextAuthor.Text = "NextAuthor";
+            this.lblNextAuthor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // lblBook4
+            // lblNextTitle
             // 
-            this.lblBook4.AutoEllipsis = true;
-            this.lblBook4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(242)))), ((int)(((byte)(242)))));
-            this.lblBook4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBook4.Location = new System.Drawing.Point(21, 244);
-            this.lblBook4.Name = "lblBook4";
-            this.lblBook4.Size = new System.Drawing.Size(245, 15);
-            this.lblBook4.TabIndex = 93;
-            this.lblBook4.Text = "Book 4 ...Waiting...";
-            this.lblBook4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblBook4.UseMnemonic = false;
+            this.lblNextTitle.AutoEllipsis = true;
+            this.lblNextTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblNextTitle.Location = new System.Drawing.Point(80, 49);
+            this.lblNextTitle.Name = "lblNextTitle";
+            this.lblNextTitle.Size = new System.Drawing.Size(219, 13);
+            this.lblNextTitle.TabIndex = 34;
+            this.lblNextTitle.Text = "Next Title";
+            this.lblNextTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // lblBook3
+            // lblNextInSeries
             // 
-            this.lblBook3.AutoEllipsis = true;
-            this.lblBook3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(242)))), ((int)(((byte)(242)))));
-            this.lblBook3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBook3.Location = new System.Drawing.Point(21, 207);
-            this.lblBook3.Name = "lblBook3";
-            this.lblBook3.Size = new System.Drawing.Size(245, 15);
-            this.lblBook3.TabIndex = 92;
-            this.lblBook3.Text = "Book 3 ...Waiting...";
-            this.lblBook3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblBook3.UseMnemonic = false;
+            this.lblNextInSeries.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblNextInSeries.Location = new System.Drawing.Point(10, 10);
+            this.lblNextInSeries.Name = "lblNextInSeries";
+            this.lblNextInSeries.Size = new System.Drawing.Size(289, 13);
+            this.lblNextInSeries.TabIndex = 33;
+            this.lblNextInSeries.Text = "Next in series";
+            this.lblNextInSeries.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // lblBook2
+            // pbSeperator
             // 
-            this.lblBook2.AutoEllipsis = true;
-            this.lblBook2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(242)))), ((int)(((byte)(242)))));
-            this.lblBook2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBook2.Location = new System.Drawing.Point(21, 170);
-            this.lblBook2.Name = "lblBook2";
-            this.lblBook2.Size = new System.Drawing.Size(245, 15);
-            this.lblBook2.TabIndex = 91;
-            this.lblBook2.Text = "Book 2 ...Waiting...";
-            this.lblBook2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblBook2.UseMnemonic = false;
+            this.pbSeperator.Image = global::XRayBuilderGUI.Properties.Resources.seperator;
+            this.pbSeperator.Location = new System.Drawing.Point(14, 131);
+            this.pbSeperator.Name = "pbSeperator";
+            this.pbSeperator.Size = new System.Drawing.Size(285, 2);
+            this.pbSeperator.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pbSeperator.TabIndex = 37;
+            this.pbSeperator.TabStop = false;
             // 
-            // lblBook1
+            // pbNextCover
             // 
-            this.lblBook1.AutoEllipsis = true;
-            this.lblBook1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(242)))), ((int)(((byte)(242)))));
-            this.lblBook1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBook1.Location = new System.Drawing.Point(21, 133);
-            this.lblBook1.Name = "lblBook1";
-            this.lblBook1.Size = new System.Drawing.Size(245, 15);
-            this.lblBook1.TabIndex = 90;
-            this.lblBook1.Text = "Book 1 ...Waiting...";
-            this.lblBook1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblBook1.UseMnemonic = false;
+            this.pbNextCover.Image = ((System.Drawing.Image)(resources.GetObject("pbNextCover.Image")));
+            this.pbNextCover.Location = new System.Drawing.Point(14, 31);
+            this.pbNextCover.Name = "pbNextCover";
+            this.pbNextCover.Size = new System.Drawing.Size(60, 90);
+            this.pbNextCover.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pbNextCover.TabIndex = 35;
+            this.pbNextCover.TabStop = false;
             // 
-            // label5
+            // ilauthorRecs
             // 
-            this.label5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
-            this.label5.Location = new System.Drawing.Point(22, 308);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(250, 20);
-            this.label5.TabIndex = 89;
-            this.label5.Text = "Customers who bought this book also bought";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.ilauthorRecs.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
+            this.ilauthorRecs.ImageSize = new System.Drawing.Size(60, 90);
+            this.ilauthorRecs.TransparentColor = System.Drawing.Color.Transparent;
             // 
-            // lblMoreBooks
+            // lvAuthorRecs
             // 
-            this.lblMoreBooks.AutoEllipsis = true;
-            this.lblMoreBooks.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
-            this.lblMoreBooks.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMoreBooks.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
-            this.lblMoreBooks.Location = new System.Drawing.Point(22, 103);
-            this.lblMoreBooks.Name = "lblMoreBooks";
-            this.lblMoreBooks.Size = new System.Drawing.Size(250, 20);
-            this.lblMoreBooks.TabIndex = 88;
-            this.lblMoreBooks.Text = "More books by Author";
-            this.lblMoreBooks.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lvAuthorRecs.BackColor = System.Drawing.SystemColors.Control;
+            this.lvAuthorRecs.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.lvAuthorRecs.LargeImageList = this.ilauthorRecs;
+            this.lvAuthorRecs.Location = new System.Drawing.Point(304, 31);
+            this.lvAuthorRecs.Name = "lvAuthorRecs";
+            this.lvAuthorRecs.Size = new System.Drawing.Size(291, 388);
+            this.lvAuthorRecs.TabIndex = 42;
+            this.lvAuthorRecs.UseCompatibleStateImageBehavior = false;
+            this.lvAuthorRecs.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.lvauthorRecs_ItemSelectionChanged);
             // 
-            // lblPost
+            // lblNotInSeries
             // 
-            this.lblPost.AutoEllipsis = true;
-            this.lblPost.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(242)))), ((int)(((byte)(242)))));
-            this.lblPost.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblPost.Location = new System.Drawing.Point(22, 77);
-            this.lblPost.Name = "lblPost";
-            this.lblPost.Size = new System.Drawing.Size(255, 12);
-            this.lblPost.TabIndex = 87;
-            this.lblPost.Text = "Post on Amazon (as Real Name) and Goodreads";
-            this.lblPost.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblNotInSeries.AutoEllipsis = true;
+            this.lblNotInSeries.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblNotInSeries.Location = new System.Drawing.Point(11, 29);
+            this.lblNotInSeries.Name = "lblNotInSeries";
+            this.lblNotInSeries.Size = new System.Drawing.Size(289, 30);
+            this.lblNotInSeries.TabIndex = 43;
+            this.lblNotInSeries.Text = "This book is not part of a series or\r\nit is the last book in a series...";
+            this.lblNotInSeries.Visible = false;
             // 
-            // lblRate
-            // 
-            this.lblRate.AutoSize = true;
-            this.lblRate.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(242)))), ((int)(((byte)(242)))));
-            this.lblRate.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblRate.Location = new System.Drawing.Point(22, 57);
-            this.lblRate.Name = "lblRate";
-            this.lblRate.Size = new System.Drawing.Size(78, 12);
-            this.lblRate.TabIndex = 86;
-            this.lblRate.Text = "Rate this book";
-            this.lblRate.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // lblTitle
-            // 
-            this.lblTitle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(242)))), ((int)(((byte)(242)))));
-            this.lblTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold);
-            this.lblTitle.Location = new System.Drawing.Point(21, 17);
-            this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(260, 20);
-            this.lblTitle.TabIndex = 85;
-            this.lblTitle.Text = "Before You Go...";
-            this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // pbBackground
-            // 
-            this.pbBackground.Image = global::XRayBuilderGUI.Properties.Resources.EA;
-            this.pbBackground.Location = new System.Drawing.Point(13, 13);
-            this.pbBackground.Name = "pbBackground";
-            this.pbBackground.Size = new System.Drawing.Size(280, 400);
-            this.pbBackground.TabIndex = 84;
-            this.pbBackground.TabStop = false;
-            // 
-            // FrmPreviewEa
+            // frmPreviewEA
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(306, 426);
-            this.Controls.Add(this.lblAuthor2);
-            this.Controls.Add(this.lblBook7);
-            this.Controls.Add(this.lblAuthor1);
-            this.Controls.Add(this.lblBook6);
-            this.Controls.Add(this.lblBook5);
-            this.Controls.Add(this.lblBook4);
-            this.Controls.Add(this.lblBook3);
-            this.Controls.Add(this.lblBook2);
-            this.Controls.Add(this.lblBook1);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.lblMoreBooks);
-            this.Controls.Add(this.lblPost);
-            this.Controls.Add(this.lblRate);
-            this.Controls.Add(this.lblTitle);
-            this.Controls.Add(this.pbBackground);
+            this.ClientSize = new System.Drawing.Size(602, 426);
+            this.Controls.Add(this.lvAuthorRecs);
+            this.Controls.Add(this.lvCustomersWhoBoughtRecs);
+            this.Controls.Add(this.lblCustomersWhoBoughtRecs);
+            this.Controls.Add(this.lblAuthorRecs);
+            this.Controls.Add(this.pbSeperator);
+            this.Controls.Add(this.lblNextAuthor);
+            this.Controls.Add(this.pbNextCover);
+            this.Controls.Add(this.lblNextTitle);
+            this.Controls.Add(this.lblNextInSeries);
+            this.Controls.Add(this.lblNotInSeries);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "FrmPreviewEa";
+            this.Name = "frmPreviewEA";
             this.ShowIcon = false;
-            this.ShowInTaskbar = false;
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "End Actions Preview";
-            ((System.ComponentModel.ISupportInitialize)(this.pbBackground)).EndInit();
+            this.Text = "Before You Go...";
+            ((System.ComponentModel.ISupportInitialize)(this.pbSeperator)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbNextCover)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        public System.Windows.Forms.Label lblAuthor2;
-        public System.Windows.Forms.Label lblBook7;
-        public System.Windows.Forms.Label lblAuthor1;
-        public System.Windows.Forms.Label lblBook6;
-        public System.Windows.Forms.Label lblBook5;
-        public System.Windows.Forms.Label lblBook4;
-        public System.Windows.Forms.Label lblBook3;
-        public System.Windows.Forms.Label lblBook2;
-        public System.Windows.Forms.Label lblBook1;
-        public System.Windows.Forms.Label label5;
-        public System.Windows.Forms.Label lblMoreBooks;
-        public System.Windows.Forms.Label lblPost;
-        public System.Windows.Forms.Label lblRate;
-        public System.Windows.Forms.Label lblTitle;
-        public System.Windows.Forms.PictureBox pbBackground;
+        private System.Windows.Forms.ListView lvCustomersWhoBoughtRecs;
+        private System.Windows.Forms.Label lblCustomersWhoBoughtRecs;
+        private System.Windows.Forms.Label lblAuthorRecs;
+        private System.Windows.Forms.PictureBox pbSeperator;
+        private System.Windows.Forms.Label lblNextAuthor;
+        private System.Windows.Forms.PictureBox pbNextCover;
+        private System.Windows.Forms.Label lblNextTitle;
+        private System.Windows.Forms.Label lblNextInSeries;
+        private System.Windows.Forms.ImageList ilauthorRecs;
+        private System.Windows.Forms.ImageList ilcustomersWhoBoughtRecs;
+        private System.Windows.Forms.ListView lvAuthorRecs;
+        private System.Windows.Forms.Label lblNotInSeries;
     }
 }

@@ -95,6 +95,7 @@ namespace XRayBuilderGUI.DataSources
                 HtmlNode chosenResult = resultNodes[i];
                 HtmlNode titleNode = chosenResult.SelectSingleNode(".//a[@class='bookTitle']");
                 HtmlNode authorNode = chosenResult.SelectSingleNode(".//a[@class='authorName']");
+                HtmlNode audiobookNode = chosenResult.SelectSingleNode(".//span[@class='authorName greyText smallText role']");
                 Match match = Regex.Match(chosenResult.OuterHtml, @"./book/show/([0-9]*)");
                 if (match.Success)
                 {
@@ -103,6 +104,11 @@ namespace XRayBuilderGUI.DataSources
                                       "You may want to visit the URL to ensure it is correct.",
                         titleNode.InnerText.Trim(), authorNode.InnerText.Trim(),
                         String.Format(goodreadsBookUrl, match.Groups[1].Value)));
+                    if (audiobookNode != null)
+                    {
+                        if (audiobookNode.InnerText.Contains("Narrator"))
+                            Log("Warning: This book is an audiobook. You may want to visit the URL to select a different edition.");
+                    }
                     return String.Format(goodreadsBookUrl, match.Groups[1].Value);
                 }
             }

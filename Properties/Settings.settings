@@ -74,9 +74,6 @@
     <Setting Name="useKindleUnpack" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="newMessage" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
     <Setting Name="downloadAliases" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>

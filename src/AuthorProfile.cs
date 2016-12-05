@@ -102,8 +102,7 @@ namespace XRayBuilderGUI
                     }
                 }
             }
-            if (searchResults == null)
-                return; // Already logged error in search function
+            if (searchResults == null) return; // Already logged error in search function
             authorAsin = searchResults.authorAsin;
 
             if (Properties.Settings.Default.saveHtml)
@@ -183,8 +182,9 @@ namespace XRayBuilderGUI
             HtmlNode imageXpath = DataSources.Amazon.GetAuthorImage(searchResults, TLD);
             authorImageUrl = Regex.Replace(imageXpath.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
 
-            if (authorImageUrl.Contains(@"https://images-na.ssl-images-amazon.com/"))
-                authorImageUrl = authorImageUrl.Replace(@"https://images-na.ssl-images-amazon.com/", @"http://ecx.images-amazon.com/");
+            // cleanup to match retail file image links
+            if (authorImageUrl.Contains(@"https://images-na.ssl-images-amazon"))
+                authorImageUrl = authorImageUrl.Replace(@"https://images-na.ssl-images-amazon", @"http://ecx.images-amazon");
 
             curBook.authorImageUrl = authorImageUrl;
 

@@ -477,14 +477,19 @@ namespace XRayBuilderGUI.DataSources
                 sourceHtmlDoc = new HtmlDocument();
                 sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(dataUrl));
             }
-			List<HtmlNode> allChars; 
+            Log("Gathering term information from Goodreads...");
+			List<HtmlNode> allChars;
+            List<HtmlNode> moreChars = null;
             HtmlNodeCollection charNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/a");
             if (charNodes == null) return terms;
 			allChars = charNodes.ToList();
-			charNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/span[@class='toggleContent']/a");
-			if (charNodes != null)
-				allChars.AddRange(charNodes);
-            foreach (HtmlNode charNode in charNodes)
+            // Check if ...more link exists on Goodreads page
+            HtmlNodeCollection moreCharNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/span[@class='toggleContent']/a");
+            if (moreCharNodes != null)
+                moreChars = moreCharNodes.ToList();
+            if (moreChars != null)
+                allChars.AddRange(moreChars);
+            foreach (HtmlNode charNode in allChars)
             {
                 try
                 {

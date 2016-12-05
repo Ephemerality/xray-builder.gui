@@ -141,7 +141,7 @@ namespace XRayBuilderGUI
             Terms = dataSource.GetTerms(useSpoilers, dataUrl, main.Log);
             if (Terms.Count == 0)
                 return 1;
-
+            main.Log(@"Exporting terms...");
             Functions.Save<List<Term>>(Terms, outfile);
             return 0;
         }
@@ -277,9 +277,9 @@ namespace XRayBuilderGUI
             }
 
             if (skipShelfari)
-                main.Log(String.Format("{0} Terms found in file:", Terms.Count));
+                main.Log(String.Format("{0} {1} found in file:", Terms.Count, Terms.Count > 1 ? "Terms" : "Term"));
             else
-                main.Log(String.Format("{0} Terms found on {1}:", Terms.Count, dataSource.Name));
+                main.Log(String.Format("{0} {1} found on {2}:", Terms.Count, Terms.Count > 1 ? "Terms" : "Term", dataSource.Name));
             string tmp = "";
             int termId = 1;
             foreach (Term t in Terms)
@@ -1054,7 +1054,7 @@ namespace XRayBuilderGUI
             string[] CustomSplitIgnore = null;
             try
             {
-                using (StreamReader streamReader = new StreamReader("BaseSplitIgnore.txt", Encoding.UTF8))
+                using (StreamReader streamReader = new StreamReader(Environment.CurrentDirectory + @"\dist\BaseSplitIgnore.txt", Encoding.UTF8))
                 {
                     CustomSplitIgnore = streamReader.ReadToEnd().Split(new string[] { "\r\n" }, StringSplitOptions.None);
                     CustomSplitIgnore = CustomSplitIgnore.Where(r => !r.StartsWith("//")).ToArray(); //Remove commented lines

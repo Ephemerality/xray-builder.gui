@@ -45,7 +45,7 @@ namespace XRayBuilderGUI
             string input = streamReader.ReadToEnd();
             ilOtherBooks.Images.Clear();
             dgvOtherBooks.Rows.Clear();
-            Match seriesPosition = Regex.Match(input, @"""seriesPosition"":{(.*)},""welcomeText""");
+            Match seriesPosition = Regex.Match(input, @"""seriesPosition"":{(.*)},""followSubscriptions""");
             if (seriesPosition.Success)
             {
                 currentLine = seriesPosition.Value;

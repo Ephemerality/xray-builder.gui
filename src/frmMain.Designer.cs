@@ -70,6 +70,10 @@
             this.lblTitle = new System.Windows.Forms.Label();
             this.pbCover = new System.Windows.Forms.PictureBox();
             this.btnSaveTerms = new System.Windows.Forms.Button();
+            this.btnHelp = new System.Windows.Forms.Button();
+            this.btnAbout = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.btnCreate = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.cmsPreview.SuspendLayout();
@@ -81,7 +85,7 @@
             // 
             this.lblGoodreads.AutoSize = true;
             this.lblGoodreads.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblGoodreads.Location = new System.Drawing.Point(134, 22);
+            this.lblGoodreads.Location = new System.Drawing.Point(134, 23);
             this.lblGoodreads.Name = "lblGoodreads";
             this.lblGoodreads.Size = new System.Drawing.Size(87, 13);
             this.lblGoodreads.TabIndex = 8;
@@ -108,9 +112,9 @@
             // 
             this.txtMobi.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtMobi.Location = new System.Drawing.Point(14, 19);
+            this.txtMobi.Location = new System.Drawing.Point(14, 20);
             this.txtMobi.Name = "txtMobi";
-            this.txtMobi.Size = new System.Drawing.Size(733, 20);
+            this.txtMobi.Size = new System.Drawing.Size(776, 20);
             this.txtMobi.TabIndex = 1;
             this.txtMobi.TextChanged += new System.EventHandler(this.txtMobi_TextChanged);
             // 
@@ -118,9 +122,9 @@
             // 
             this.txtXMLFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtXMLFile.Location = new System.Drawing.Point(169, 19);
+            this.txtXMLFile.Location = new System.Drawing.Point(169, 20);
             this.txtXMLFile.Name = "txtXMLFile";
-            this.txtXMLFile.Size = new System.Drawing.Size(577, 20);
+            this.txtXMLFile.Size = new System.Drawing.Size(621, 20);
             this.txtXMLFile.TabIndex = 22;
             this.txtXMLFile.Visible = false;
             // 
@@ -128,7 +132,7 @@
             // 
             this.rdoGoodreads.AutoSize = true;
             this.rdoGoodreads.Checked = true;
-            this.rdoGoodreads.Location = new System.Drawing.Point(12, 20);
+            this.rdoGoodreads.Location = new System.Drawing.Point(12, 21);
             this.rdoGoodreads.Name = "rdoGoodreads";
             this.rdoGoodreads.Size = new System.Drawing.Size(77, 17);
             this.rdoGoodreads.TabIndex = 0;
@@ -140,7 +144,7 @@
             // rdoFile
             // 
             this.rdoFile.AutoSize = true;
-            this.rdoFile.Location = new System.Drawing.Point(92, 20);
+            this.rdoFile.Location = new System.Drawing.Point(92, 21);
             this.rdoFile.Name = "rdoFile";
             this.rdoFile.Size = new System.Drawing.Size(41, 17);
             this.rdoFile.TabIndex = 1;
@@ -158,9 +162,9 @@
             this.groupBox1.Controls.Add(this.rdoGoodreads);
             this.groupBox1.Controls.Add(this.lblGoodreads);
             this.groupBox1.Controls.Add(this.txtGoodreads);
-            this.groupBox1.Location = new System.Drawing.Point(12, 123);
+            this.groupBox1.Location = new System.Drawing.Point(12, 124);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(760, 53);
+            this.groupBox1.Size = new System.Drawing.Size(804, 53);
             this.groupBox1.TabIndex = 29;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Source";
@@ -169,7 +173,7 @@
             // 
             this.lblXMLFile.AutoSize = true;
             this.lblXMLFile.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblXMLFile.Location = new System.Drawing.Point(138, 22);
+            this.lblXMLFile.Location = new System.Drawing.Point(138, 23);
             this.lblXMLFile.Name = "lblXMLFile";
             this.lblXMLFile.Size = new System.Drawing.Size(26, 13);
             this.lblXMLFile.TabIndex = 26;
@@ -181,9 +185,9 @@
             // 
             this.txtGoodreads.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtGoodreads.Location = new System.Drawing.Point(225, 19);
+            this.txtGoodreads.Location = new System.Drawing.Point(225, 20);
             this.txtGoodreads.Name = "txtGoodreads";
-            this.txtGoodreads.Size = new System.Drawing.Size(521, 20);
+            this.txtGoodreads.Size = new System.Drawing.Size(565, 20);
             this.txtGoodreads.TabIndex = 27;
             // 
             // groupBox3
@@ -193,7 +197,7 @@
             this.groupBox3.Controls.Add(this.txtMobi);
             this.groupBox3.Location = new System.Drawing.Point(12, 64);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(760, 53);
+            this.groupBox3.Size = new System.Drawing.Size(804, 54);
             this.groupBox3.TabIndex = 38;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Book";
@@ -255,9 +259,9 @@
             // 
             this.prgBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.prgBar.Location = new System.Drawing.Point(12, 521);
+            this.prgBar.Location = new System.Drawing.Point(12, 523);
             this.prgBar.Name = "prgBar";
-            this.prgBar.Size = new System.Drawing.Size(760, 12);
+            this.prgBar.Size = new System.Drawing.Size(804, 12);
             this.prgBar.Step = 1;
             this.prgBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.prgBar.TabIndex = 18;
@@ -270,11 +274,11 @@
             this.txtOutput.BackColor = System.Drawing.SystemColors.Window;
             this.txtOutput.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtOutput.HideSelection = false;
-            this.txtOutput.Location = new System.Drawing.Point(13, 189);
+            this.txtOutput.Location = new System.Drawing.Point(13, 190);
             this.txtOutput.Name = "txtOutput";
             this.txtOutput.ReadOnly = true;
             this.txtOutput.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.txtOutput.Size = new System.Drawing.Size(552, 320);
+            this.txtOutput.Size = new System.Drawing.Size(596, 320);
             this.txtOutput.TabIndex = 61;
             this.txtOutput.Text = "";
             this.txtOutput.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.txtOutput_LinkClicked);
@@ -292,7 +296,7 @@
             // btnPreview
             // 
             this.btnPreview.Image = ((System.Drawing.Image)(resources.GetObject("btnPreview.Image")));
-            this.btnPreview.Location = new System.Drawing.Point(355, 11);
+            this.btnPreview.Location = new System.Drawing.Point(301, 11);
             this.btnPreview.Name = "btnPreview";
             this.btnPreview.Size = new System.Drawing.Size(64, 48);
             this.btnPreview.TabIndex = 12;
@@ -302,7 +306,7 @@
             // btnUnpack
             // 
             this.btnUnpack.Image = ((System.Drawing.Image)(resources.GetObject("btnUnpack.Image")));
-            this.btnUnpack.Location = new System.Drawing.Point(425, 11);
+            this.btnUnpack.Location = new System.Drawing.Point(479, 11);
             this.btnUnpack.Name = "btnUnpack";
             this.btnUnpack.Size = new System.Drawing.Size(48, 48);
             this.btnUnpack.TabIndex = 60;
@@ -312,7 +316,7 @@
             // btnSettings
             // 
             this.btnSettings.Image = ((System.Drawing.Image)(resources.GetObject("btnSettings.Image")));
-            this.btnSettings.Location = new System.Drawing.Point(597, 11);
+            this.btnSettings.Location = new System.Drawing.Point(651, 11);
             this.btnSettings.Name = "btnSettings";
             this.btnSettings.Size = new System.Drawing.Size(48, 48);
             this.btnSettings.TabIndex = 16;
@@ -322,7 +326,7 @@
             // btnBrowseOutput
             // 
             this.btnBrowseOutput.Image = ((System.Drawing.Image)(resources.GetObject("btnBrowseOutput.Image")));
-            this.btnBrowseOutput.Location = new System.Drawing.Point(533, 11);
+            this.btnBrowseOutput.Location = new System.Drawing.Point(597, 11);
             this.btnBrowseOutput.Name = "btnBrowseOutput";
             this.btnBrowseOutput.Size = new System.Drawing.Size(48, 48);
             this.btnBrowseOutput.TabIndex = 11;
@@ -362,7 +366,7 @@
             // btnSaveShelfari
             // 
             this.btnSaveShelfari.Image = ((System.Drawing.Image)(resources.GetObject("btnSaveShelfari.Image")));
-            this.btnSaveShelfari.Location = new System.Drawing.Point(301, 11);
+            this.btnSaveShelfari.Location = new System.Drawing.Point(425, 11);
             this.btnSaveShelfari.Name = "btnSaveShelfari";
             this.btnSaveShelfari.Size = new System.Drawing.Size(48, 48);
             this.btnSaveShelfari.TabIndex = 19;
@@ -395,16 +399,15 @@
             this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox1.Location = new System.Drawing.Point(12, 188);
+            this.textBox1.Location = new System.Drawing.Point(12, 189);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(554, 322);
+            this.textBox1.Size = new System.Drawing.Size(598, 322);
             this.textBox1.TabIndex = 62;
             // 
             // groupBox2
             // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.txtAsin);
             this.groupBox2.Controls.Add(this.txtAuthor);
             this.groupBox2.Controls.Add(this.txtTitle);
@@ -412,7 +415,7 @@
             this.groupBox2.Controls.Add(this.lblAuthor);
             this.groupBox2.Controls.Add(this.lblTitle);
             this.groupBox2.Controls.Add(this.pbCover);
-            this.groupBox2.Location = new System.Drawing.Point(578, 181);
+            this.groupBox2.Location = new System.Drawing.Point(622, 183);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(194, 328);
             this.groupBox2.TabIndex = 63;
@@ -432,6 +435,7 @@
             this.txtAsin.TabIndex = 68;
             this.txtAsin.TabStop = true;
             this.txtAsin.Text = "ASIN";
+            this.txtAsin.Visible = false;
             this.txtAsin.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.txtAsin_LinkClicked);
             // 
             // txtAuthor
@@ -444,6 +448,7 @@
             this.txtAuthor.TabIndex = 5;
             this.txtAuthor.Text = "Author";
             this.txtAuthor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.txtAuthor.Visible = false;
             // 
             // txtTitle
             // 
@@ -455,6 +460,7 @@
             this.txtTitle.TabIndex = 4;
             this.txtTitle.Text = "Title";
             this.txtTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.txtTitle.Visible = false;
             // 
             // lblAsin
             // 
@@ -466,6 +472,7 @@
             this.lblAsin.TabIndex = 3;
             this.lblAsin.Text = "ASIN:";
             this.lblAsin.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblAsin.Visible = false;
             // 
             // lblAuthor
             // 
@@ -477,6 +484,7 @@
             this.lblAuthor.TabIndex = 2;
             this.lblAuthor.Text = "Author:";
             this.lblAuthor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblAuthor.Visible = false;
             // 
             // lblTitle
             // 
@@ -488,6 +496,7 @@
             this.lblTitle.TabIndex = 1;
             this.lblTitle.Text = "Title:";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblTitle.Visible = false;
             // 
             // pbCover
             // 
@@ -501,29 +510,71 @@
             // btnSaveTerms
             // 
             this.btnSaveTerms.Image = ((System.Drawing.Image)(resources.GetObject("btnSaveTerms.Image")));
-            this.btnSaveTerms.Location = new System.Drawing.Point(479, 11);
+            this.btnSaveTerms.Location = new System.Drawing.Point(533, 11);
             this.btnSaveTerms.Name = "btnSaveTerms";
             this.btnSaveTerms.Size = new System.Drawing.Size(48, 48);
             this.btnSaveTerms.TabIndex = 64;
             this.btnSaveTerms.UseVisualStyleBackColor = true;
             this.btnSaveTerms.Click += new System.EventHandler(this.btnSaveTerms_Click);
             // 
+            // btnHelp
+            // 
+            this.btnHelp.Image = ((System.Drawing.Image)(resources.GetObject("btnHelp.Image")));
+            this.btnHelp.Location = new System.Drawing.Point(715, 11);
+            this.btnHelp.Name = "btnHelp";
+            this.btnHelp.Size = new System.Drawing.Size(48, 48);
+            this.btnHelp.TabIndex = 65;
+            this.btnHelp.UseVisualStyleBackColor = true;
+            this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
+            // 
+            // btnAbout
+            // 
+            this.btnAbout.Image = ((System.Drawing.Image)(resources.GetObject("btnAbout.Image")));
+            this.btnAbout.Location = new System.Drawing.Point(769, 11);
+            this.btnAbout.Name = "btnAbout";
+            this.btnAbout.Size = new System.Drawing.Size(48, 48);
+            this.btnAbout.TabIndex = 66;
+            this.btnAbout.UseVisualStyleBackColor = true;
+            this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
+            // 
+            // label1
+            // 
+            this.label1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label1.Location = new System.Drawing.Point(706, 12);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(2, 47);
+            this.label1.TabIndex = 67;
+            // 
+            // btnCreate
+            // 
+            this.btnCreate.Image = ((System.Drawing.Image)(resources.GetObject("btnCreate.Image")));
+            this.btnCreate.Location = new System.Drawing.Point(371, 11);
+            this.btnCreate.Name = "btnCreate";
+            this.btnCreate.Size = new System.Drawing.Size(48, 48);
+            this.btnCreate.TabIndex = 68;
+            this.btnCreate.UseVisualStyleBackColor = true;
+            this.btnCreate.Click += new System.EventHandler(this.btnCreate_Click);
+            // 
             // frmMain
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 545);
+            this.ClientSize = new System.Drawing.Size(828, 547);
+            this.Controls.Add(this.btnCreate);
+            this.Controls.Add(this.btnPreview);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.btnAbout);
+            this.Controls.Add(this.btnHelp);
             this.Controls.Add(this.btnSaveTerms);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.txtOutput);
+            this.Controls.Add(this.btnBrowseOutput);
             this.Controls.Add(this.btnOneClick);
-            this.Controls.Add(this.btnPreview);
             this.Controls.Add(this.btnUnpack);
             this.Controls.Add(this.btnSettings);
             this.Controls.Add(this.lblSeperator3);
             this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.btnBrowseOutput);
             this.Controls.Add(this.lblSeperator2);
             this.Controls.Add(this.lblSeperator1);
             this.Controls.Add(this.groupBox1);
@@ -537,14 +588,12 @@
             this.Controls.Add(this.textBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
             this.Name = "frmMain";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "X-Ray Builder GUI";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
-            this.Shown += new System.EventHandler(this.frmMain_Shown);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox3.ResumeLayout(false);
@@ -600,6 +649,10 @@
         private System.Windows.Forms.Label txtTitle;
         private System.Windows.Forms.LinkLabel txtAsin;
         private System.Windows.Forms.Button btnSaveTerms;
+        private System.Windows.Forms.Button btnHelp;
+        private System.Windows.Forms.Button btnAbout;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button btnCreate;
     }
 }
 

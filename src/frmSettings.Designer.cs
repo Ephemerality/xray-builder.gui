@@ -45,6 +45,10 @@
             this.gbGeneral = new System.Windows.Forms.GroupBox();
             this.chkSound = new System.Windows.Forms.CheckBox();
             this.tabPgDirectories = new System.Windows.Forms.TabPage();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.chkDeleteTemp = new System.Windows.Forms.CheckBox();
+            this.txtTemp = new System.Windows.Forms.TextBox();
+            this.btnBrowseTemp = new System.Windows.Forms.Button();
             this.gbDirectories = new System.Windows.Forms.GroupBox();
             this.chkSubDirectories = new System.Windows.Forms.CheckBox();
             this.txtOut = new System.Windows.Forms.TextBox();
@@ -89,24 +93,16 @@
             this.txtReal = new System.Windows.Forms.TextBox();
             this.txtPen = new System.Windows.Forms.TextBox();
             this.lblPen = new System.Windows.Forms.Label();
-            this.tabPgHelp = new System.Windows.Forms.TabPage();
-            this.rtbHelp = new System.Windows.Forms.RichTextBox();
-            this.tabPgAbout = new System.Windows.Forms.TabPage();
-            this.lblBuilt = new System.Windows.Forms.Label();
-            this.lblVersion = new System.Windows.Forms.Label();
-            this.lblName = new System.Windows.Forms.Label();
-            this.rtbAbout = new System.Windows.Forms.RichTextBox();
             this.listSettings = new System.Windows.Forms.ListBox();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.chkDeleteTemp = new System.Windows.Forms.CheckBox();
-            this.txtTemp = new System.Windows.Forms.TextBox();
-            this.btnBrowseTemp = new System.Windows.Forms.Button();
+            this.lblNote = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.gbProcess.SuspendLayout();
             this.gbUnpack.SuspendLayout();
             this.gbGeneral.SuspendLayout();
             this.tabPgDirectories.SuspendLayout();
+            this.groupBox7.SuspendLayout();
             this.gbDirectories.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabPgXray.SuspendLayout();
@@ -120,9 +116,7 @@
             this.tabPgAmazon.SuspendLayout();
             this.gbAmazonPrefs.SuspendLayout();
             this.gbDetails.SuspendLayout();
-            this.tabPgHelp.SuspendLayout();
-            this.tabPgAbout.SuspendLayout();
-            this.groupBox7.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // btnSupport
@@ -182,8 +176,6 @@
             this.tabSettings.Controls.Add(this.tabPgXray);
             this.tabSettings.Controls.Add(this.tabPgAliasChapter);
             this.tabSettings.Controls.Add(this.tabPgAmazon);
-            this.tabSettings.Controls.Add(this.tabPgHelp);
-            this.tabSettings.Controls.Add(this.tabPgAbout);
             this.tabSettings.ItemSize = new System.Drawing.Size(0, 1);
             this.tabSettings.Location = new System.Drawing.Point(144, 1);
             this.tabSettings.Name = "tabSettings";
@@ -208,7 +200,7 @@
             // gbProcess
             // 
             this.gbProcess.Controls.Add(this.chkPageCount);
-            this.gbProcess.Location = new System.Drawing.Point(6, 120);
+            this.gbProcess.Location = new System.Drawing.Point(6, 181);
             this.gbProcess.Name = "gbProcess";
             this.gbProcess.Size = new System.Drawing.Size(378, 48);
             this.gbProcess.TabIndex = 38;
@@ -227,12 +219,14 @@
             // 
             // gbUnpack
             // 
+            this.gbUnpack.Controls.Add(this.pictureBox1);
+            this.gbUnpack.Controls.Add(this.lblNote);
             this.gbUnpack.Controls.Add(this.chkSaveHtml);
             this.gbUnpack.Controls.Add(this.chkRaw);
             this.gbUnpack.Controls.Add(this.chkKindleUnpack);
             this.gbUnpack.Location = new System.Drawing.Point(6, 66);
             this.gbUnpack.Name = "gbUnpack";
-            this.gbUnpack.Size = new System.Drawing.Size(378, 48);
+            this.gbUnpack.Size = new System.Drawing.Size(378, 109);
             this.gbUnpack.TabIndex = 37;
             this.gbUnpack.TabStop = false;
             this.gbUnpack.Text = "eBook Unpacking";
@@ -300,6 +294,45 @@
             this.tabPgDirectories.TabIndex = 1;
             this.tabPgDirectories.Text = "tabPage2";
             this.tabPgDirectories.UseVisualStyleBackColor = true;
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.chkDeleteTemp);
+            this.groupBox7.Controls.Add(this.txtTemp);
+            this.groupBox7.Controls.Add(this.btnBrowseTemp);
+            this.groupBox7.Location = new System.Drawing.Point(6, 160);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(378, 81);
+            this.groupBox7.TabIndex = 40;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Temporary Directory";
+            // 
+            // chkDeleteTemp
+            // 
+            this.chkDeleteTemp.AutoSize = true;
+            this.chkDeleteTemp.Location = new System.Drawing.Point(14, 52);
+            this.chkDeleteTemp.Name = "chkDeleteTemp";
+            this.chkDeleteTemp.Size = new System.Drawing.Size(127, 17);
+            this.chkDeleteTemp.TabIndex = 26;
+            this.chkDeleteTemp.Text = "Delete temporary files";
+            this.chkDeleteTemp.UseVisualStyleBackColor = true;
+            // 
+            // txtTemp
+            // 
+            this.txtTemp.Location = new System.Drawing.Point(14, 20);
+            this.txtTemp.Name = "txtTemp";
+            this.txtTemp.Size = new System.Drawing.Size(308, 20);
+            this.txtTemp.TabIndex = 12;
+            // 
+            // btnBrowseTemp
+            // 
+            this.btnBrowseTemp.Location = new System.Drawing.Point(331, 19);
+            this.btnBrowseTemp.Name = "btnBrowseTemp";
+            this.btnBrowseTemp.Size = new System.Drawing.Size(34, 22);
+            this.btnBrowseTemp.TabIndex = 13;
+            this.btnBrowseTemp.Text = "...";
+            this.btnBrowseTemp.UseVisualStyleBackColor = true;
+            this.btnBrowseTemp.Click += new System.EventHandler(this.btnBrowseTemp_Click);
             // 
             // gbDirectories
             // 
@@ -761,81 +794,6 @@
             this.lblPen.TabIndex = 19;
             this.lblPen.Text = "Pen Name:";
             // 
-            // tabPgHelp
-            // 
-            this.tabPgHelp.Controls.Add(this.rtbHelp);
-            this.tabPgHelp.Location = new System.Drawing.Point(4, 5);
-            this.tabPgHelp.Name = "tabPgHelp";
-            this.tabPgHelp.Size = new System.Drawing.Size(390, 259);
-            this.tabPgHelp.TabIndex = 5;
-            this.tabPgHelp.Text = "tabPage5";
-            this.tabPgHelp.UseVisualStyleBackColor = true;
-            // 
-            // rtbHelp
-            // 
-            this.rtbHelp.BackColor = System.Drawing.SystemColors.Control;
-            this.rtbHelp.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.rtbHelp.Location = new System.Drawing.Point(12, 15);
-            this.rtbHelp.Name = "rtbHelp";
-            this.rtbHelp.ReadOnly = true;
-            this.rtbHelp.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.rtbHelp.Size = new System.Drawing.Size(373, 235);
-            this.rtbHelp.TabIndex = 0;
-            this.rtbHelp.Text = resources.GetString("rtbHelp.Text");
-            // 
-            // tabPgAbout
-            // 
-            this.tabPgAbout.Controls.Add(this.lblBuilt);
-            this.tabPgAbout.Controls.Add(this.lblVersion);
-            this.tabPgAbout.Controls.Add(this.lblName);
-            this.tabPgAbout.Controls.Add(this.rtbAbout);
-            this.tabPgAbout.Location = new System.Drawing.Point(4, 5);
-            this.tabPgAbout.Name = "tabPgAbout";
-            this.tabPgAbout.Size = new System.Drawing.Size(390, 259);
-            this.tabPgAbout.TabIndex = 6;
-            this.tabPgAbout.Text = "tabPgAb";
-            this.tabPgAbout.UseVisualStyleBackColor = true;
-            // 
-            // lblBuilt
-            // 
-            this.lblBuilt.AutoSize = true;
-            this.lblBuilt.Location = new System.Drawing.Point(12, 51);
-            this.lblBuilt.Name = "lblBuilt";
-            this.lblBuilt.Size = new System.Drawing.Size(33, 13);
-            this.lblBuilt.TabIndex = 4;
-            this.lblBuilt.Text = "Built: ";
-            // 
-            // lblVersion
-            // 
-            this.lblVersion.AutoSize = true;
-            this.lblVersion.Location = new System.Drawing.Point(12, 34);
-            this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(48, 13);
-            this.lblVersion.TabIndex = 3;
-            this.lblVersion.Text = "Version: ";
-            // 
-            // lblName
-            // 
-            this.lblName.AutoSize = true;
-            this.lblName.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblName.Location = new System.Drawing.Point(12, 15);
-            this.lblName.Name = "lblName";
-            this.lblName.Size = new System.Drawing.Size(133, 16);
-            this.lblName.TabIndex = 2;
-            this.lblName.Text = "X-Ray Builder GUI";
-            // 
-            // rtbAbout
-            // 
-            this.rtbAbout.BackColor = System.Drawing.SystemColors.Control;
-            this.rtbAbout.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.rtbAbout.Location = new System.Drawing.Point(15, 72);
-            this.rtbAbout.Name = "rtbAbout";
-            this.rtbAbout.ReadOnly = true;
-            this.rtbAbout.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
-            this.rtbAbout.Size = new System.Drawing.Size(360, 173);
-            this.rtbAbout.TabIndex = 1;
-            this.rtbAbout.Text = resources.GetString("rtbAbout.Text");
-            // 
             // listSettings
             // 
             this.listSettings.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
@@ -847,9 +805,7 @@
             "Directories",
             "X-Ray",
             "Aliases and Chapters",
-            "Amazon",
-            "Help and Hints",
-            "About"});
+            "Amazon"});
             this.listSettings.Location = new System.Drawing.Point(12, 12);
             this.listSettings.Name = "listSettings";
             this.listSettings.Size = new System.Drawing.Size(130, 253);
@@ -858,44 +814,23 @@
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
             // 
-            // groupBox7
+            // lblNote
             // 
-            this.groupBox7.Controls.Add(this.chkDeleteTemp);
-            this.groupBox7.Controls.Add(this.txtTemp);
-            this.groupBox7.Controls.Add(this.btnBrowseTemp);
-            this.groupBox7.Location = new System.Drawing.Point(6, 160);
-            this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(378, 81);
-            this.groupBox7.TabIndex = 40;
-            this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "Temporary Directory";
+            this.lblNote.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.lblNote.Location = new System.Drawing.Point(31, 43);
+            this.lblNote.Name = "lblNote";
+            this.lblNote.Size = new System.Drawing.Size(325, 60);
+            this.lblNote.TabIndex = 34;
+            this.lblNote.Text = resources.GetString("lblNote.Text");
             // 
-            // chkDeleteTemp
+            // pictureBox1
             // 
-            this.chkDeleteTemp.AutoSize = true;
-            this.chkDeleteTemp.Location = new System.Drawing.Point(14, 52);
-            this.chkDeleteTemp.Name = "chkDeleteTemp";
-            this.chkDeleteTemp.Size = new System.Drawing.Size(127, 17);
-            this.chkDeleteTemp.TabIndex = 26;
-            this.chkDeleteTemp.Text = "Delete temporary files";
-            this.chkDeleteTemp.UseVisualStyleBackColor = true;
-            // 
-            // txtTemp
-            // 
-            this.txtTemp.Location = new System.Drawing.Point(14, 20);
-            this.txtTemp.Name = "txtTemp";
-            this.txtTemp.Size = new System.Drawing.Size(308, 20);
-            this.txtTemp.TabIndex = 12;
-            // 
-            // btnBrowseTemp
-            // 
-            this.btnBrowseTemp.Location = new System.Drawing.Point(331, 19);
-            this.btnBrowseTemp.Name = "btnBrowseTemp";
-            this.btnBrowseTemp.Size = new System.Drawing.Size(34, 22);
-            this.btnBrowseTemp.TabIndex = 13;
-            this.btnBrowseTemp.Text = "...";
-            this.btnBrowseTemp.UseVisualStyleBackColor = true;
-            this.btnBrowseTemp.Click += new System.EventHandler(this.btnBrowseTemp_Click);
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Location = new System.Drawing.Point(14, 45);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(16, 16);
+            this.pictureBox1.TabIndex = 35;
+            this.pictureBox1.TabStop = false;
             // 
             // frmSettings
             // 
@@ -910,10 +845,10 @@
             this.Controls.Add(this.btnLogs);
             this.Controls.Add(this.btnSave);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "frmSettings";
-            this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -928,6 +863,8 @@
             this.gbGeneral.ResumeLayout(false);
             this.gbGeneral.PerformLayout();
             this.tabPgDirectories.ResumeLayout(false);
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
             this.gbDirectories.ResumeLayout(false);
             this.gbDirectories.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -951,11 +888,7 @@
             this.gbAmazonPrefs.PerformLayout();
             this.gbDetails.ResumeLayout(false);
             this.gbDetails.PerformLayout();
-            this.tabPgHelp.ResumeLayout(false);
-            this.tabPgAbout.ResumeLayout(false);
-            this.tabPgAbout.PerformLayout();
-            this.groupBox7.ResumeLayout(false);
-            this.groupBox7.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -998,13 +931,6 @@
         private System.Windows.Forms.TextBox txtPen;
         private System.Windows.Forms.Label lblPen;
         private System.Windows.Forms.ListBox listSettings;
-        private System.Windows.Forms.TabPage tabPgHelp;
-        private System.Windows.Forms.RichTextBox rtbHelp;
-        private System.Windows.Forms.TabPage tabPgAbout;
-        private System.Windows.Forms.Label lblName;
-        private System.Windows.Forms.RichTextBox rtbAbout;
-        private System.Windows.Forms.Label lblVersion;
-        private System.Windows.Forms.Label lblBuilt;
         private System.Windows.Forms.CheckBox chkPageCount;
         private System.Windows.Forms.TabPage tabPgXray;
         private System.Windows.Forms.GroupBox groupBox4;
@@ -1033,5 +959,7 @@
         private System.Windows.Forms.CheckBox chkDeleteTemp;
         private System.Windows.Forms.TextBox txtTemp;
         private System.Windows.Forms.Button btnBrowseTemp;
+        private System.Windows.Forms.Label lblNote;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }

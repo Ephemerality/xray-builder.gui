@@ -73,7 +73,7 @@ namespace XRayBuilderGUI
             lvCustomersWhoBoughtRecs.Items.Clear();
 
             Match nextinSeries = Regex.Match(input,
-                @"""nextBook"":{(.*)},""publicSharedRating""");
+                @"""nextBook"":{(.*)},""customerProfile""");
             if (nextinSeries.Success)
             {
                 currentLine = nextinSeries.Value;
@@ -149,7 +149,7 @@ namespace XRayBuilderGUI
             else
                 MessageBox.Show("This EndAction does not contain any of this author's other books.");
 
-            Match customersWhoBoughtRecs = Regex.Match(input, @"""customersWhoBoughtRecs"":{(.*)},""goodReadsReview""");
+            Match customersWhoBoughtRecs = Regex.Match(input, @"""customersWhoBoughtRecs"":{(.*)},""authorSubscriptions""");
             currentLine = customersWhoBoughtRecs.Value;
             split.Clear();
             split.AddRange(Regex.Split(customersWhoBoughtRecs.Value, (@"},{")));

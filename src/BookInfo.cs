@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 using HtmlAgilityPack;
@@ -76,6 +75,7 @@ namespace XRayBuilderGUI
             return Functions.ExpandUnicode(template);
         }
 
+
         public override string ToString()
         {
             return title + " - " + author;
@@ -107,7 +107,7 @@ namespace XRayBuilderGUI
                     ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='series-detail-product-image']")
                     ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='ebooksImgBlkFront']"); //co.uk seems to use this id sometimes
                 if (bookImageLoc == null)
-                    throw new HtmlWebException("Error finding book image. If you want, you can report the book's Amazon URL to help with parsing.");
+                    throw new HtmlWebException(String.Format(@"Error finding book image. If you want, you can report the book's Amazon URL to help with parsing.\r\n{0}", amazonUrl));
                 else
                     bookImageUrl = Regex.Replace(bookImageLoc.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
                 if (bookImageUrl.Contains("base64"))
@@ -122,12 +122,13 @@ namespace XRayBuilderGUI
                     }
                 }
 
-                if (bookImageUrl.Contains(@"https://images-na.ssl-images-amazon.com/"))
-                    bookImageUrl = bookImageUrl.Replace(@"https://images-na.ssl-images-amazon.com/", @"http://ecx.images-amazon.com/");
+                // cleanup to match retail file image links
+                if (bookImageUrl.Contains(@"https://images-na.ssl-images-amazon"))
+                    bookImageUrl = bookImageUrl.Replace(@"https://images-na.ssl-images-amazon", @"http://ecx.images-amazon");
                 
                 // Use no image URL
                 if (bookImageUrl == "")
-                    bookImageUrl = "https://images-na.ssl-images-amazon.com/images/G/01/x-site/icons/no-img-sm.gif";
+                    bookImageUrl = "http://ecx.images-amazon.com/images/G/01/x-site/icons/no-img-sm.gif";
             }
             if (desc == "")
             {
@@ -181,7 +182,7 @@ namespace XRayBuilderGUI
                 catch (Exception ex)
                 {
                     throw new HtmlWebException("Error finding book ratings. If you want, you can report the book's Amazon URL to help with parsing.\r\n" +
-                        "Error: " + ex.Message);
+                        "Error: " + ex.Message + "\r\n" + ex.StackTrace);
                 }
             }
         }

@@ -80,8 +80,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.SQLite, Version=1.0.94.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="System.Data.SQLite">
       <HintPath>.\System.Data.SQLite.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
@@ -101,11 +100,23 @@
     <Compile Include="src\DataSources\Goodreads.cs" />
     <Compile Include="src\DataSources\Shelfari.cs" />
     <Compile Include="src\EndActions.cs" />
+    <Compile Include="src\frmAbout.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\frmAbout.designer.cs">
+      <DependentUpon>frmAbout.cs</DependentUpon>
+    </Compile>
     <Compile Include="src\frmASIN.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="src\frmASIN.Designer.cs">
       <DependentUpon>frmASIN.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\frmCreateXR.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\frmCreateXR.designer.cs">
+      <DependentUpon>frmCreateXR.cs</DependentUpon>
     </Compile>
     <Compile Include="src\frmGR.cs">
       <SubType>Form</SubType>
@@ -161,29 +172,32 @@
     <Compile Include="src\Unpack\PDBHeader.cs" />
     <Compile Include="src\Unpack\Uncompress.cs" />
     <Compile Include="src\XRay.cs" />
-    <Compile Include="XRayPanel.cs">
+    <Compile Include="src\XRayPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="XRayPanel.Designer.cs">
+    <Compile Include="src\XRayPanel.Designer.cs">
       <DependentUpon>XRayPanel.cs</DependentUpon>
     </Compile>
-    <Content Include="BaseEndActions.txt">
+    <Content Include="dist\BaseEndActions.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="BaseSplitIgnore.txt">
+    <Content Include="dist\BaseSplitIgnore.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="BaseStartActions.txt">
+    <Content Include="dist\BaseStartActions.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="done.wav">
+    <Content Include="dist\done.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Icon.ico" />
-    <None Include="Resources\file-off.png" />
+    <None Include="doc\Help.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\setting.png" />
+    <None Include="Resources\character.png" />
     <None Include="Resources\terms.png" />
     <None Include="Resources\people.png" />
-    <None Include="Resources\file-on.png" />
     <None Include="Resources\arrow-right.png" />
     <None Include="Resources\seperator.png" />
     <None Include="Resources\missing-image.png" />
@@ -193,8 +207,14 @@
     <None Include="Resources\STAR2.png" />
     <None Include="Resources\STAR1.png" />
     <None Include="Resources\STAR0.png" />
+    <EmbeddedResource Include="src\frmAbout.resx">
+      <DependentUpon>frmAbout.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="src\frmASIN.resx">
       <DependentUpon>frmASIN.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\frmCreateXR.resx">
+      <DependentUpon>frmCreateXR.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\frmGR.resx">
       <DependentUpon>frmGR.cs</DependentUpon>
@@ -229,7 +249,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
-    <Content Include="BaseDB.sql">
+    <Content Include="dist\BaseDB.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="dist\bz2.pyd">

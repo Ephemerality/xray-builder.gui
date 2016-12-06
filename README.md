@@ -14,4 +14,5 @@ Thanks to darrenmcg, Author Profile and End Actions files can also be built.
 * You will need to install the [Microsoft Visual C++ 2010 x86 Redistributable](https://www.microsoft.com/en-ca/download/details.aspx?id=5555) if you have firmware version 5.6 or higher on your Kindle.  
   
 ## Instructions and Binary Downloads
-Furthur instructions and binaries are located in the thread on Mobile Read: http://www.mobileread.com/forums/showthread.php?t=245754
+Furthur instructions are available within the appplication's help button.
+Instructions, support, and binaries are available in the thread on MobileRead: http://www.mobileread.com/forums/showthread.php?t=245754

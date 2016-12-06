@@ -46,11 +46,6 @@ namespace XRayBuilderGUI
 
         private void frmSettingsNew_Load(object sender, EventArgs e)
         {
-            string version = Assembly.GetEntryAssembly().GetName().Version.ToString();
-            lblVersion.Text = String.Format("Version: {0}", version);
-            DateTime buildDate = new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime;
-            lblBuilt.Text = String.Format("Built: {0}", buildDate);
-
             listSettings.SelectedIndex = 0;
 
             if (Directory.Exists(Environment.CurrentDirectory + @"\log"))

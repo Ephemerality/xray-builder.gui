@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
@@ -97,7 +98,8 @@ namespace XRayBuilderGUI
                 .Replace("&amp;#169;", string.Empty)
                 .Replace("&#174;", string.Empty)
                 .Replace("&amp;#174;", string.Empty)
-                .Replace(" - ", "—");
+                .Replace(" - ", "—")
+                .Replace("--", "—");
             cleanedString = Regex.Replace(cleanedString, @"</?[a-z]>", string.Empty, RegexOptions.Multiline);
             cleanedString = Regex.Replace(cleanedString, @"\t|\n|\r|•", " ", RegexOptions.Multiline);
             cleanedString = Regex.Replace(cleanedString, @"\s+", " ", RegexOptions.Multiline);
@@ -543,9 +545,9 @@ namespace XRayBuilderGUI
                     process.WaitForExit();
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                MessageBox.Show("Error trying to launch notepad: " + e.Message);
+                MessageBox.Show("Error trying to launch notepad: " + ex.Message + "\r\n" + ex.StackTrace);
             }
         }
 
@@ -684,6 +686,7 @@ namespace XRayBuilderGUI
             {
                 CleanUp(dir);
             }
+            Thread.Sleep(1);
             Directory.Delete(folderPath, false);
             return true;
         }

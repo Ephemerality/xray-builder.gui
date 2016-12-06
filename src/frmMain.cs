@@ -39,6 +39,9 @@ namespace XRayBuilderGUI
         private frmPreviewAP frmAuthorProfile = new frmPreviewAP();
         private frmPreviewXR frmXraPreview = new frmPreviewXR();
 
+        private frmAbout frmInfo = new frmAbout();
+        private frmCreateXR frmCreator = new frmCreateXR();
+
         ToolTip toolTip1 = new ToolTip();
 
         DataSource dataSource = null;
@@ -190,7 +193,7 @@ namespace XRayBuilderGUI
             // Added author name to log output
             Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nUniqueID: {1}",
                 results[2], results[1]));
-
+            Log(String.Format("Book's {0} URL: {1}", dataSource.Name, txtGoodreads.Text));
             Log(String.Format("Attempting to build X-Ray...\r\nSpoilers: {0}", settings.spoilers ? "Enabled" : "Disabled"));
 
             //If AZW3 file use AZW3 offset, if checked. Checked by default.
@@ -246,7 +249,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Log("Failed to create output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
+                Log("Failed to create output directory: " + ex.Message + "\r\n" + ex.StackTrace + "\r\nFiles will be placed in the default output directory.");
                 outFolder = settings.outDir;
             }
             _newPath = outFolder + "\\" + xray.GetXRayName(settings.android);
@@ -268,7 +271,7 @@ namespace XRayBuilderGUI
                     string sql;
                     try
                     {
-                        using (StreamReader streamReader = new StreamReader("BaseDB.sql", Encoding.UTF8))
+                        using (StreamReader streamReader = new StreamReader(Environment.CurrentDirectory + @"\dist\BaseDB.sql", Encoding.UTF8))
                         {
                             sql = streamReader.ReadToEnd();
                         }
@@ -323,7 +326,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Log(String.Format("An error occurred saving the previewData file: {0}", ex.Message));
+                    Log(String.Format("An error occurred saving the previewData file: {0}\r\n{1}", ex.Message, ex.StackTrace));
                 }
             }
             else
@@ -349,7 +352,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Log(String.Format("An error occurred while trying to delete temporary files: {0}\r\nTry deleting these files manually.", ex.Message));
+                Log(String.Format("An error occurred while trying to delete temporary files: {0}\r\n{1}\r\nTry deleting these files manually.", ex.Message, ex.StackTrace));
             }
         }
 
@@ -422,7 +425,6 @@ namespace XRayBuilderGUI
                     //Same results with addition of rawML filename
                     results = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, true, randomFile).getResults();
                     rawMLSize = new FileInfo(results[3]).Length;
-
                 }
                 catch (Exception ex)
                 {
@@ -447,7 +449,7 @@ namespace XRayBuilderGUI
             Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nUniqueID: {1}",
                 results[2], results[1]));
             SetDatasourceLabels(); // Reset the dataSource for the new build process
-
+            Log(String.Format("Book's {0} URL: {1}", dataSource.Name, txtGoodreads.Text));
             try
             {
                 BookInfo bookInfo = new BookInfo(results[5], results[4], results[0], results[1], results[2],
@@ -466,7 +468,7 @@ namespace XRayBuilderGUI
 
                 if (settings.useNewVersion)
                 {
-                    ea.GenerateNew();
+                    ea.GenerateEndActions();
                     ea.GenerateStartActions();
                     EaPath = outputDir + @"\EndActions.data." + bookInfo.asin + ".asc";
                     extrasComplete = true;
@@ -510,7 +512,7 @@ namespace XRayBuilderGUI
                 XRay xray = new XRay(txtGoodreads.Text, this, dataSource, settings.spoilers);
                 if (xray.SaveXml(path) > 0)
                 {
-                    Log("An error occurred while processing.");
+                    Log("Warning: Unable to download character data as no character data found on Goodreads.");
                     return;
                 }
                 Log("Character data has been saved to: " + path);
@@ -577,7 +579,6 @@ namespace XRayBuilderGUI
 
             Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nUniqueID: {1}",
                 results[2], results[1]));
-
             try
             {
                 string bookUrl = dataSource.SearchBook(results[4], results[5], Log);
@@ -606,8 +607,8 @@ namespace XRayBuilderGUI
             {
                 Log(
                     String.Format(
-                        "An error occurred while trying to delete temporary files: {0}\r\nTry deleting these files manually.",
-                        ex.Message));
+                        "An error occurred while trying to delete temporary files: {0}\r\n{1}\r\nTry deleting these files manually.",
+                        ex.Message, ex.StackTrace));
             }
         }
 
@@ -643,8 +644,8 @@ namespace XRayBuilderGUI
                 {
                     Log(
                     String.Format(
-                        "An error occurred while trying to delete temporary files: {0}\r\nTry deleting these files manually.",
-                        ex.Message));
+                        "An error occurred while trying to delete temporary files: {0}\r\n{1}\r\nTry deleting these files manually.",
+                        ex.Message, ex.StackTrace));
                 }
             }
             Exiting = true;
@@ -653,6 +654,7 @@ namespace XRayBuilderGUI
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            //this.WindowState = FormWindowState.Maximized;
             this.ActiveControl = lblGoodreads;
             toolTip1.SetToolTip(btnBrowseMobi, "Open a Kindle book.");
             toolTip1.SetToolTip(btnBrowseOutput, "Open the default output directory.");
@@ -667,7 +669,8 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(btnPreview, "View a preview of the generated files.");
             toolTip1.SetToolTip(btnUnpack, "Save the rawML (raw markup) of the book\r\nin the output directory so you can review it.");
             toolTip1.SetToolTip(btnSaveTerms,
-                "Extract an existing X-Ray file's info to an XML file.\r\nThis can be useful if you have characters and\r\nterms you want to reuse.");
+                "Extract an existing X-Ray file to an XML file.\r\nThis can be useful if you have characters and\r\nterms you want to reuse.");
+            toolTip1.SetToolTip(btnCreate, "Create an XML file containing characters\r\nand settings, or edit an existing XML file.");
 
             this.DragEnter += frmMain_DragEnter;
             this.DragDrop += frmMain_DragDrop;
@@ -775,8 +778,7 @@ namespace XRayBuilderGUI
             this.Cursor = Cursors.WaitCursor;
             txtGoodreads.Text = "";
             prgBar.Value = 0;
-            if (!File.Exists(txtMobi.Text))
-                return;
+            if (!File.Exists(txtMobi.Text)) return;
 
             string randomFile = Functions.GetTempDirectory();
             if (!Directory.Exists(randomFile))
@@ -809,6 +811,14 @@ namespace XRayBuilderGUI
                 pbCover.Image = bitmap;
                 stream.Dispose();
             }
+
+            lblTitle.Visible = true;
+            lblAuthor.Visible = true;
+            lblAsin.Visible = true;
+            txtTitle.Visible = true;
+            txtAuthor.Visible = true;
+            txtAsin.Visible = true;
+
             txtAuthor.Text = results[4];
             txtTitle.Text = results[5];
             txtAsin.Text = results[0];
@@ -823,9 +833,9 @@ namespace XRayBuilderGUI
             {
                 Log(
                     String.Format(
-                        "An error occurred while trying to delete temporary files: {0}\r\n" +
+                        "An error occurred while trying to delete temporary files: {0}\r\n{1}\r\n" +
                         "Try deleting these files manually.",
-                        ex.Message));
+                        ex.Message, ex.StackTrace));
             }
         }
 
@@ -844,7 +854,7 @@ namespace XRayBuilderGUI
                 if (!File.Exists(ApPath))
                 {
                     OpenFileDialog openFile = new OpenFileDialog();
-                    openFile.Title = "Open an existing Kindle AuthorProfile file...";
+                    openFile.Title = "Open a Kindle AuthorProfile file...";
                     openFile.Filter = "ASC files|*.asc";
                     openFile.InitialDirectory = settings.outDir;
                     if (openFile.ShowDialog() == DialogResult.OK)
@@ -882,7 +892,7 @@ namespace XRayBuilderGUI
                 if (!File.Exists(EaPath))
                 {
                     OpenFileDialog openFile = new OpenFileDialog();
-                    openFile.Title = "Open an existing Kindle EndActions file...";
+                    openFile.Title = "Open a Kindle EndAction file...";
                     openFile.Filter = "ASC files|*.asc";
                     openFile.InitialDirectory = settings.outDir;
                     if (openFile.ShowDialog() == DialogResult.OK)
@@ -930,11 +940,9 @@ namespace XRayBuilderGUI
                             if (openFile.FileName.Contains("XRAY.entities"))
                             {
                                 string xrayDB = "Data Source=" + openFile.FileName + ";Version=3;";
-                                List<XRay.Term> Terms = new List<XRay.Term>(100);                                
-                                Terms.Clear();
+                                List<XRay.Term> Terms = new List<XRay.Term>(100);
 
-                                SQLiteConnection m_dbConnection;
-                                m_dbConnection = new SQLiteConnection(xrayDB);
+                                SQLiteConnection m_dbConnection = new SQLiteConnection(xrayDB);
                                 m_dbConnection.Open();
 
                                 string sql = "SELECT * FROM entity WHERE has_info_card = '1'";
@@ -951,6 +959,7 @@ namespace XRayBuilderGUI
                                     newTerm.DescSrc = Convert.ToString(reader.GetInt32(4));
                                     Terms.Add(newTerm);
                                 }
+                                command.Dispose();
 
                                 for (int i = 1; i < Terms.Count + 1; i++)
                                 {
@@ -970,7 +979,6 @@ namespace XRayBuilderGUI
 
                                 foreach (XRay.Term t in Terms)
                                 {
-                                    //if (t.DescSrc == "0") continue;
                                     XRayPanel p = new XRayPanel(t.Type, t.TermName, t.DescSrc, t.Desc);
                                     if (t.Type == "character")
                                         frmXraPreview.flpPeople.Controls.Add(p);
@@ -982,7 +990,7 @@ namespace XRayBuilderGUI
 
                             }
                             else
-                                MessageBox.Show(@"Whoops! That filename doesn not contain ""XRAY Entities""!");
+                                MessageBox.Show(@"Whoops! That filename does not contain ""XRAY Entities""!");
                         }
                         catch (Exception ex)
                         {
@@ -1003,7 +1011,7 @@ namespace XRayBuilderGUI
                 if (!File.Exists(SaPath))
                 {
                     OpenFileDialog openFile = new OpenFileDialog();
-                    openFile.Title = "Open an existing Kindle StartActions file...";
+                    openFile.Title = "Open a Kindle StartAction file...";
                     openFile.Filter = "ASC files|*.asc";
                     openFile.InitialDirectory = settings.outDir;
                     if (openFile.ShowDialog() == DialogResult.OK)
@@ -1031,21 +1039,6 @@ namespace XRayBuilderGUI
                     frmStartAction.Location = new Point(this.Left, this.Top);
                     frmStartAction.ShowDialog();
                 }
-            }
-        }
-
-        private void frmMain_Shown(object sender, EventArgs e)
-        {
-            if (!settings.newMessage)
-            {
-                MessageBox.Show("Metadata is now gathered internally rather than with KindleUnpack. " +
-                    "If you run into any metadata extraction errors, there is a setting to turn KindleUnpack back on. " +
-                    "Please report any such errors on the MobileRead thread to help improve the program.\r\n\r\n" +
-                    "There is also a new feature that allows you to download pre-made aliases if they exist on our server. " +
-                    "If the setting is checked, aliases will be downloaded automatically during the build process.\r\n\r\n" +
-                    "- Thanks for using X-Ray Builder GUI!\r\n- Ephemerality and darrenmcg", "New in X-Ray Builder GUI v2.0.10.0");
-                settings.newMessage = true;
-                settings.Save();
             }
         }
 
@@ -1198,6 +1191,29 @@ namespace XRayBuilderGUI
                     }
                 }
             }
+        }
+
+        private void btnHelp_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(Environment.CurrentDirectory + @"\doc\help.pdf");
+            }
+            catch
+            {
+                MessageBox.Show(@"Unable to open the supplied help document.", @"Help Document Not found");
+            }
+
+        }
+
+        private void btnAbout_Click(object sender, EventArgs e)
+        {
+            frmInfo.ShowDialog();
+        }
+
+        private void btnCreate_Click(object sender, EventArgs e)
+        {
+            frmCreator.ShowDialog();
         }
     }
 }

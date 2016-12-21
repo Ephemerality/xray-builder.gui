@@ -796,7 +796,19 @@ namespace XRayBuilderGUI
                 Log("An error occurred metadata: " + ex.Message + "\r\n" + ex.StackTrace);
                 return;
             }
-            
+
+            if (results.Count == 1)
+            {
+                this.Cursor = Cursors.Default;
+                pbCover.Image = null;
+                lblTitle.Visible = false;
+                lblAuthor.Visible = false;
+                lblAsin.Visible = false;
+                txtTitle.Visible = false;
+                txtAuthor.Visible = false;
+                txtAsin.Visible = false;
+                return;
+            }
             string outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectoryOnly(results[4], results[5]) : settings.outDir;
             
             //Open file in read only mode
@@ -1109,6 +1121,7 @@ namespace XRayBuilderGUI
 
         private void txtAsin_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
+            if (txtAsin.Text.Contains("-")) return;
             string link = String.Format(@"http://www.amazon.{0}/dp/{1}", settings.amazonTLD, txtAsin.Text);
             Process.Start(link);
         }

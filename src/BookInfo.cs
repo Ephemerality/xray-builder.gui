@@ -166,17 +166,14 @@ namespace XRayBuilderGUI
                     {
                         string aRating = ratingNode.GetAttributeValue("title", "0");
                         amazonRating = float.Parse(ratingNode.GetAttributeValue("title", "0").Substring(0, aRating.IndexOf(' ')));
-                        HtmlNode reviewsNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='acrCustomerReviewText']");
-                        if (reviewsNode == null)
-                            reviewsNode = bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-link-normal']");
+                        HtmlNode reviewsNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='acrCustomerReviewText']")
+                            ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-link-normal']");
                         if (reviewsNode != null)
                         {
-                            Match match = Regex.Match(reviewsNode.InnerText, @"(\d+,\d+)|(\d+)");
+                            Match match = Regex.Match(reviewsNode.InnerText, @"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)");
                             if (match.Success)
-                                numReviews = int.Parse(match.Value, NumberStyles.AllowThousands);
-                            return;
+                                numReviews = int.Parse(match.Value.Replace(".", "").Replace(",", ""));
                         }
-                        numReviews = int.Parse(reviewsNode.InnerText.Substring(0, reviewsNode.InnerText.IndexOf(' ')).Replace(",", ""));
                     }
                 }
                 catch (Exception ex)

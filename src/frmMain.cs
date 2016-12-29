@@ -444,8 +444,7 @@ namespace XRayBuilderGUI
                 File.Copy(results[3], Path.Combine(Environment.CurrentDirectory + @"\dmp",
                     Path.GetFileName(results[3])), true);
             }
-
-            // Added author name to log output
+            
             Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nUniqueID: {1}",
                 results[2], results[1]));
             SetDatasourceLabels(); // Reset the dataSource for the new build process

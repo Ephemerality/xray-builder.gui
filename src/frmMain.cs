@@ -669,7 +669,7 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(btnPreview, "View a preview of the generated files.");
             toolTip1.SetToolTip(btnUnpack, "Save the rawML (raw markup) of the book\r\nin the output directory so you can review it.");
             toolTip1.SetToolTip(btnSaveTerms,
-                "Extract an existing X-Ray file info to an XML file.\r\nThis can be useful if you have characters and\r\nterms you want to reuse.");
+                "Extract an existing X-Ray file to an XML file.\r\nThis can be useful if you have characters and\r\nterms you want to reuse.");
             toolTip1.SetToolTip(btnCreate, "Create an XML file containing characters\r\nand settings, or edit an existing XML file.");
 
             this.DragEnter += frmMain_DragEnter;
@@ -1144,10 +1144,8 @@ namespace XRayBuilderGUI
                             {
                                 string xrayDB = "Data Source=" + openFile.FileName + ";Version=3;";
                                 List<XRay.Term> Terms = new List<XRay.Term>(100);
-                                Terms.Clear();
 
-                                SQLiteConnection m_dbConnection;
-                                m_dbConnection = new SQLiteConnection(xrayDB);
+                                SQLiteConnection m_dbConnection = new SQLiteConnection(xrayDB);
                                 m_dbConnection.Open();
 
                                 string sql = "SELECT * FROM entity WHERE has_info_card = '1'";
@@ -1175,6 +1173,8 @@ namespace XRayBuilderGUI
                                     Terms.Add(newTerm);
                                 }
 
+                                command.Dispose();
+
                                 for (int i = 1; i < Terms.Count + 1; i++)
                                 {
                                     sql = String.Format("SELECT * FROM entity_description WHERE entity = '{0}'", i);
@@ -1185,6 +1185,7 @@ namespace XRayBuilderGUI
                                     {
                                         Terms[i - 1].Desc = reader.GetString(0);
                                     }
+                                    command.Dispose();
                                 }
                                 m_dbConnection.Close();
                                 if (!Directory.Exists(Environment.CurrentDirectory + @"\xml\"))

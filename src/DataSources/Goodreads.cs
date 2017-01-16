@@ -247,10 +247,11 @@ namespace XRayBuilderGUI.DataSources
             if (metaNode != null)
             {
                 HtmlNode passagesNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite votes' and @href='#other_reviews']");
-                match = Regex.Match(passagesNode.InnerText, @"(\d+,\d+)|(\d+)");
+                match = Regex.Match(passagesNode.InnerText, @"(\d+,\d+,\d+)|(\d+,\d+)|(\d+)");
                 if (match.Success)
                 {
-                    passages = int.Parse(match.Value, NumberStyles.AllowThousands);                    
+                    string tempStrg = match.Value.Replace(",", ""); //Remove all commas from value
+                    passages = int.Parse(tempStrg, NumberStyles.AllowThousands);                    
                 }
                 if (passages == 0 || passages < 10)
                 {
@@ -263,10 +264,11 @@ namespace XRayBuilderGUI.DataSources
                 curBook.popularPassages = passages.ToString();
 
                 HtmlNode highlightsNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite' and @href='#other_reviews']");
-                match = Regex.Match(highlightsNode.InnerText, @"(\d+,\d+)|(\d+)");
+                match = Regex.Match(highlightsNode.InnerText, @"(\d+,\d+,\d+)|(\d+,\d+)|(\d+)");
                 if (match.Success)
                 {
-                    highlights = int.Parse(match.Value, NumberStyles.AllowThousands);                    
+                    string tempStrg = match.Value.Replace(",", ""); //Remove all commas from value
+                    highlights = int.Parse(tempStrg, NumberStyles.AllowThousands);                    
                 }
                 if (highlights == 0 || highlights < 10)
                 {
@@ -303,10 +305,11 @@ namespace XRayBuilderGUI.DataSources
                     curBook.amazonRating = float.Parse(goodreadsRating.InnerText);
                 }
                 HtmlNode passagesNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite votes' and @href='#other_reviews']");
-                match = Regex.Match(passagesNode.InnerText, @"(\d+,\d+)|(\d+)");
+                match = Regex.Match(passagesNode.InnerText, @"(\d+,\d+,\d+)|(\d+,\d+)|(\d+)");
                 if (match.Success)
                 {
-                    curBook.numReviews = int.Parse(match.Value, NumberStyles.AllowThousands);
+                    string tempStrg = match.Value.Replace(",", ""); //Remove all commas from value
+                    curBook.numReviews = int.Parse(tempStrg, NumberStyles.AllowThousands);
                 }
             }
 

@@ -173,7 +173,7 @@ namespace XRayBuilderGUI
                         {
                             Match match = Regex.Match(reviewsNode.InnerText, @"(\d+,\d+)|(\d+)");
                             if (match.Success)
-                                numReviews = int.Parse(match.Value, NumberStyles.AllowThousands);
+                                numReviews = int.Parse(match.Value.Substring(0, reviewsNode.InnerText.IndexOf(' ')).Replace(",", ""), NumberStyles.AllowThousands);
                             return;
                         }
                         numReviews = int.Parse(reviewsNode.InnerText.Substring(0, reviewsNode.InnerText.IndexOf(' ')).Replace(",", ""));

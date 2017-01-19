@@ -21,6 +21,8 @@ namespace XRayBuilderGUI
         private List<XRay.Term> Terms = new List<XRay.Term>(100);
         private Settings settings = Settings.Default;
 
+        private bool aliasesExist = false;
+
         private void btnAddTerm_Click(object sender, EventArgs e)
         {
             if (txtName.Text == "") return;
@@ -130,6 +132,7 @@ namespace XRayBuilderGUI
                             false,
                             t.RegEx);
                     }
+                    Terms.Clear();
                 }
                 catch (Exception ex)
                 {
@@ -206,20 +209,25 @@ namespace XRayBuilderGUI
               MessageBoxIcon.Warning);
                 return;
             }
-            if (CreateTerms() > 0)
+            try
+            {
+                if (CreateTerms() == 0 && aliasesExist)
+                {
+                    if (CreateAliases() == 0)
+                        MessageBox.Show("X-Ray entities and Alias files created sucessfully!");
+                }
+                else if (CreateTerms() == 0)
+                    MessageBox.Show("X-Ray entities file created sucessfully!");
+            }
+            catch (Exception ex)
+            {
                 MessageBox.Show(
-              String.Format("An error occured creating the XML file."),
-              "Something went wrong!",
-              MessageBoxButtons.OK,
-              MessageBoxIcon.Warning);
-            if (CreateAliases() > 0)
-                MessageBox.Show(
-              String.Format("An error occured creating the aliases file."),
-              "Something went wrong!",
-              MessageBoxButtons.OK,
-              MessageBoxIcon.Warning);
-            if (CreateTerms() == 0 && CreateAliases() == 0)
-                MessageBox.Show("XML and Aiases files created sucessfully!");
+                    String.Format("An error occurred saving the files: " + ex.Message + "\r\n" + ex.StackTrace),
+                    "Missing Information",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
         }
 
         private void dgvTerms_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -246,9 +254,9 @@ namespace XRayBuilderGUI
             txtAliases.Text = "";
             txtDescription.Text = "";
             txtLink.Text = "";
-            txtAuthor.Text = "";
-            txtTitle.Text = "";
-            txtAsin.Text = "";
+            //txtAuthor.Text = "";
+            //txtTitle.Text = "";
+            //txtAsin.Text = "";
             dgvTerms.Columns[5].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dgvTerms.Columns[6].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dgvTerms.Columns[7].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -258,6 +266,7 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(btnLink, "Open this link in your\r\ndefault browser.");
             toolTip1.SetToolTip(btnEditTerm, "Edit the selected term. It will be\r\nremoved from the list and used to fill\r\nin the information above. Don't\r\nforget to add to the list when done.");
             toolTip1.SetToolTip(btnRemoveTerm, "Remove the selected term from the\r\nterm list. This action is irreversible.");
+            toolTip1.SetToolTip(btnClear, "Clear the term list.");
             toolTip1.SetToolTip(btnOpenXml, "Open an existing term XML of TXT file.\r\nIf an alias file with a matching ASIN\r\nis found, aliases wil automatically be\r\npopulated.");
             toolTip1.SetToolTip(btnSaveXML, "Save the term list to an XML file. Any\r\nassociated aliases will be saved to an\r\nASIN.aliases file in the /ext folder.");
         }
@@ -297,8 +306,6 @@ namespace XRayBuilderGUI
                             else
                                 streamWriter.WriteLine(Terms[i].TermName + "|");
                         }
-                        else
-                            streamWriter.WriteLine(Terms[i].TermName + "|");
             }
             catch
             {
@@ -313,7 +320,8 @@ namespace XRayBuilderGUI
             {
                 if (!Directory.Exists(Environment.CurrentDirectory + @"\xml\"))
                     Directory.CreateDirectory(Environment.CurrentDirectory + @"\xml\");
-                string outfile = Environment.CurrentDirectory + String.Format(@"\xml\{0} - {1}.xml", txtAuthor.Text, txtTitle.Text);
+                string outfile = Environment.CurrentDirectory + String.Format(@"\xml\{0}.entities.xml", txtAsin.Text);
+                Terms.Clear();
                 foreach (DataGridViewRow row in dgvTerms.Rows)
                 {
                     int termId = 1;
@@ -323,17 +331,21 @@ namespace XRayBuilderGUI
                         newTerm.Id = termId;
                         newTerm.Type = CompareImages((Bitmap)row.Cells[0].Value, Resources.character) == true ? "character" : "topic";
                         newTerm.TermName = row.Cells[1].Value.ToString();
-                        string[] aliasList = row.Cells[2].Value.ToString().Split(',');
-                        foreach (string alias in aliasList)
+                        if (row.Cells[2].Value.ToString() != "")
                         {
-                            if (newTerm.Aliases.Contains(alias))
+                            aliasesExist = true;
+                            string[] aliasList = row.Cells[2].Value.ToString().Split(',');
+                            foreach (string alias in aliasList)
                             {
-                                newTerm.Aliases.Remove(alias);
-                                newTerm.Aliases.Add(alias);
-                            }
-                            else
-                            {
-                                newTerm.Aliases.Add(alias);
+                                if (newTerm.Aliases.Contains(alias))
+                                {
+                                    newTerm.Aliases.Remove(alias);
+                                    newTerm.Aliases.Add(alias);
+                                }
+                                else
+                                {
+                                    newTerm.Aliases.Add(alias);
+                                }
                             }
                         }
                         newTerm.Desc = row.Cells[3].Value.ToString();
@@ -416,6 +428,34 @@ namespace XRayBuilderGUI
                 }
             }
             return itemList;
+        }
+
+        private void frmCreateXR_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            txtAuthor.Text = "";
+            txtTitle.Text = "";
+            txtAsin.Text = "";
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            if (dgvTerms.Rows.Count > 0)
+            {
+                if (DialogResult.Yes == MessageBox.Show(
+                    String.Format("Clearing the term list is irreversible!"),
+                    "Are you sure?",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning))
+                {
+                    dgvTerms.Rows.Clear();
+                    txtName.Text = "";
+                    txtAliases.Text = "";
+                    txtDescription.Text = "";
+                    txtLink.Text = "";
+                    Terms.Clear();
+                }
+                return;
+            }
         }
     }
 }

@@ -99,7 +99,8 @@ namespace XRayBuilderGUI
                 .Replace("&#174;", string.Empty)
                 .Replace("&amp;#174;", string.Empty)
                 .Replace(" - ", "—")
-                .Replace("--", "—");
+                .Replace("--", "—")
+                .Replace("&mdash;", string.Empty);
             cleanedString = Regex.Replace(cleanedString, @"</?[a-z]>", string.Empty, RegexOptions.Multiline);
             cleanedString = Regex.Replace(cleanedString, @"\t|\n|\r|•", " ", RegexOptions.Multiline);
             cleanedString = Regex.Replace(cleanedString, @"\s+", " ", RegexOptions.Multiline);

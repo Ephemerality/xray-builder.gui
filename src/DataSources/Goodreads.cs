@@ -16,6 +16,8 @@ namespace XRayBuilderGUI.DataSources
         private frmASIN frmAS = new frmASIN();
         private frmGR frmG = new frmGR();
 
+        private List<BookInfo> goodreadsBookList = new List<BookInfo>();
+
         public override string SearchBook(string author, string title, Action<string> Log)
         {
             string goodreadsSearchUrlBase = @"http://www.goodreads.com/search?q={0}%20{1}";
@@ -56,64 +58,61 @@ namespace XRayBuilderGUI.DataSources
 
         private string FindGoodreadsURL(HtmlDocument goodreadsHtmlDoc, string author, string title, Action<string> Log)
         {
-            string goodreadsBookUrl = @"http://www.goodreads.com/book/show/{0}";
-            //Check if results contain title and author
+            goodreadsBookList.Clear();
+            string goodreadsBookUrl = @"http://www.goodreads.com/book/show/{0}", ratingText = "";
             HtmlNodeCollection resultNodes =
                 goodreadsHtmlDoc.DocumentNode.SelectNodes("//tr[@itemtype='http://schema.org/Book']");
             //Allow user to choose from a list of search results
-            if (resultNodes.Count > 0)
+            foreach (HtmlNode link in resultNodes)
             {
-                frmG.cbResults.Items.Clear();
-                foreach (HtmlNode link in resultNodes)
-                {
-                    HtmlNode noPhoto = link.SelectSingleNode(".//img");
-                    //If more than one result found, skip book if it does not have a cover
-                    //Books with a cover are more likely to be a correct match?
-                    if (noPhoto.GetAttributeValue("src", "").Contains("nophoto") && (resultNodes.Count != 1)) continue;
-                    HtmlNode titleText = link.SelectSingleNode(".//a[@class='bookTitle']");
-                    if (Properties.Settings.Default.showGoodreadsID)
-                    {
-                        Match matchID = Regex.Match(link.OuterHtml, @"./book/show/([0-9]*)");
-                        if (matchID.Success)
-                        {
-                            frmG.cbResults.Items.Add(String.Format(@"({0}) {1}", matchID.Groups[1].Value, titleText.InnerText.Trim()));
-                        }
-                        else
-                            frmG.cbResults.Items.Add(titleText.InnerText.Trim());
-                    }
-                    else
-                        frmG.cbResults.Items.Add(titleText.InnerText.Trim());
-                }
-                frmG.cbResults.SelectedIndex = 0;
-                if (frmG.cbResults.Items.Count > 1)
-                {
-                    Log("Warning: Multiple results returned from Goodreads...");
-                    frmG.ShowDialog();
+                HtmlNode coverNode = link.SelectSingleNode(".//img");
+                //If more than one result found, skip book if it does not have a cover
+                //Books with a cover are more likely to be a correct match?
+                if (coverNode.GetAttributeValue("src", "").Contains("nophoto") && (resultNodes.Count != 1)) continue;
+                //Skip audiobook results
+                HtmlNode audiobookNode = link.SelectSingleNode(".//span[@class='authorName greyText smallText role']");
+                if (audiobookNode != null) continue;
+
+                HtmlNode titleNode = link.SelectSingleNode(".//a[@class='bookTitle']");
+                HtmlNode authorNode = link.SelectSingleNode(".//a[@class='authorName']");
+
+                BookInfo newBook = new BookInfo(titleNode.InnerText.Trim(), authorNode.InnerText.Trim(), null);
+
+                Match matchID = Regex.Match(link.OuterHtml, @"./book/show/([0-9]*)");
+                if (matchID.Success)
+                    newBook.goodreadsID = matchID.Groups[1].Value;
+                newBook.bookImageUrl = coverNode.GetAttributeValue("src", "");
+                newBook.dataUrl = String.Format(goodreadsBookUrl, matchID.Groups[1].Value);
+
+                HtmlNode ratingNode = link.SelectSingleNode(".//span[@class='greyText smallText uitext']");
+                ratingText = Functions.CleanString(ratingNode.InnerText.Trim());
+                    matchID = Regex.Match(ratingText, @"(\d+[\.,]?\d*) avg rating");
+                    if (matchID.Success)
+                        newBook.amazonRating = float.Parse(matchID.Groups[1].Value);
+                    matchID = Regex.Match(ratingText, @"(\d+) ratings");
+                    if (matchID.Success)
+                        newBook.numReviews = int.Parse(matchID.Groups[1].Value);
+                    matchID = Regex.Match(ratingText, @"(\d+) edition|editions");
+                    if (matchID.Success)
+                        newBook.editions = matchID.Groups[1].Value;
+                    goodreadsBookList.Add(newBook);
                 }
 
-                int i = frmG.cbResults.SelectedIndex;
-                HtmlNode chosenResult = resultNodes[i];
-                HtmlNode titleNode = chosenResult.SelectSingleNode(".//a[@class='bookTitle']");
-                HtmlNode authorNode = chosenResult.SelectSingleNode(".//a[@class='authorName']");
-                HtmlNode audiobookNode = chosenResult.SelectSingleNode(".//span[@class='authorName greyText smallText role']");
-                Match match = Regex.Match(chosenResult.OuterHtml, @"./book/show/([0-9]*)");
-                if (match.Success)
-                {
-                    //Return actual selected book title
-                    Log(String.Format("Book found on Goodreads!\r\n{0} by {1}\r\nGoodreads URL: {2}\r\n" +
-                                      "You may want to visit the URL to ensure it is correct.",
-                        titleNode.InnerText.Trim(), authorNode.InnerText.Trim(),
-                        String.Format(goodreadsBookUrl, match.Groups[1].Value)));
-                    if (audiobookNode != null)
-                    {
-                        if (audiobookNode.InnerText.Contains("Narrator"))
-                            Log("Warning: This book is an audiobook. You may want to visit the URL to select a different edition.");
-                    }
-                    return String.Format(goodreadsBookUrl, match.Groups[1].Value);
-                }
+            int i = 0;
+            if (goodreadsBookList.Count > 1)
+            {
+                Log("Warning: Multiple results returned from Goodreads...");
+                frmG.BookList = goodreadsBookList;
+                frmG.ShowDialog();
+                i = frmG.cbResults.SelectedIndex;
             }
-            return "";
-        }
+
+            Log(String.Format("Book found on Goodreads!\r\n{0} by {1}\r\nGoodreads URL: {2}\r\n" +
+                "You may want to visit the URL to ensure it is correct.",
+                goodreadsBookList[i].title, goodreadsBookList[i].author,
+                String.Format(goodreadsBookUrl, goodreadsBookList[i].goodreadsID)));
+            return goodreadsBookList[i].dataUrl;
+           }
 
         /// <summary>
         /// Searches for the next and previous books in a series, if it is part of one.
@@ -247,10 +246,10 @@ namespace XRayBuilderGUI.DataSources
             if (metaNode != null)
             {
                 HtmlNode passagesNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite votes' and @href='#other_reviews']");
-                match = Regex.Match(passagesNode.InnerText, @"(\d+,\d+)|(\d+)");
+                match = Regex.Match(passagesNode.InnerText, @"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)");
                 if (match.Success)
                 {
-                    passages = int.Parse(match.Value, NumberStyles.AllowThousands);                    
+                    passages = int.Parse(match.Value.Replace(",", "").Replace(".", ""));                    
                 }
                 if (passages == 0 || passages < 10)
                 {
@@ -263,10 +262,10 @@ namespace XRayBuilderGUI.DataSources
                 curBook.popularPassages = passages.ToString();
 
                 HtmlNode highlightsNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite' and @href='#other_reviews']");
-                match = Regex.Match(highlightsNode.InnerText, @"(\d+,\d+)|(\d+)");
+                match = Regex.Match(highlightsNode.InnerText, @"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)");
                 if (match.Success)
                 {
-                    highlights = int.Parse(match.Value, NumberStyles.AllowThousands);                    
+                    highlights = int.Parse(match.Value.Replace(",", "").Replace(".", ""));                    
                 }
                 if (highlights == 0 || highlights < 10)
                 {
@@ -303,10 +302,13 @@ namespace XRayBuilderGUI.DataSources
                     curBook.amazonRating = float.Parse(goodreadsRating.InnerText);
                 }
                 HtmlNode passagesNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite votes' and @href='#other_reviews']");
-                match = Regex.Match(passagesNode.InnerText, @"(\d+,\d+)|(\d+)");
-                if (match.Success)
+                if (passagesNode != null)
                 {
-                    curBook.numReviews = int.Parse(match.Value, NumberStyles.AllowThousands);
+                    match = Regex.Match(passagesNode.InnerText, @"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)");
+                    if (match.Success)
+                    {
+                        curBook.numReviews = int.Parse(match.Value.Replace(",", "").Replace(".", ""));
+                    }
                 }
             }
 

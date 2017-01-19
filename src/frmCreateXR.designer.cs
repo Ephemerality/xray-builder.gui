@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmCreateXR));
             this.lblName = new System.Windows.Forms.Label();
             this.lblAliases = new System.Windows.Forms.Label();
@@ -78,6 +78,7 @@
             this.cmsTerms = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tsmEdit = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmDelete = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnClear = new System.Windows.Forms.Button();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -302,6 +303,7 @@
             this.dgvTerms.AllowUserToAddRows = false;
             this.dgvTerms.AllowUserToDeleteRows = false;
             this.dgvTerms.AllowUserToResizeRows = false;
+            this.dgvTerms.BackgroundColor = System.Drawing.SystemColors.Window;
             this.dgvTerms.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dgvTerms.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvTerms.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -361,8 +363,8 @@
             // 
             // Column10
             // 
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Column10.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Column10.DefaultCellStyle = dataGridViewCellStyle2;
             this.Column10.HeaderText = "Source";
             this.Column10.Name = "Column10";
             this.Column10.ReadOnly = true;
@@ -477,7 +479,7 @@
             // btnOpenXml
             // 
             this.btnOpenXml.Image = ((System.Drawing.Image)(resources.GetObject("btnOpenXml.Image")));
-            this.btnOpenXml.Location = new System.Drawing.Point(559, 383);
+            this.btnOpenXml.Location = new System.Drawing.Point(559, 398);
             this.btnOpenXml.Name = "btnOpenXml";
             this.btnOpenXml.Size = new System.Drawing.Size(32, 32);
             this.btnOpenXml.TabIndex = 47;
@@ -497,7 +499,7 @@
             // btnSaveXML
             // 
             this.btnSaveXML.Image = ((System.Drawing.Image)(resources.GetObject("btnSaveXML.Image")));
-            this.btnSaveXML.Location = new System.Drawing.Point(559, 425);
+            this.btnSaveXML.Location = new System.Drawing.Point(559, 440);
             this.btnSaveXML.Name = "btnSaveXML";
             this.btnSaveXML.Size = new System.Drawing.Size(32, 32);
             this.btnSaveXML.TabIndex = 43;
@@ -553,11 +555,22 @@
             this.tsmDelete.Text = "Delete";
             this.tsmDelete.Click += new System.EventHandler(this.tsmDelete_Click);
             // 
+            // btnClear
+            // 
+            this.btnClear.Image = ((System.Drawing.Image)(resources.GetObject("btnClear.Image")));
+            this.btnClear.Location = new System.Drawing.Point(559, 344);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new System.Drawing.Size(32, 32);
+            this.btnClear.TabIndex = 49;
+            this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
+            // 
             // frmCreateXR
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(604, 489);
+            this.ClientSize = new System.Drawing.Size(602, 483);
+            this.Controls.Add(this.btnClear);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.btnOpenXml);
             this.Controls.Add(this.groupBox4);
@@ -576,6 +589,7 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "X-Ray Terms Creator";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmCreateXR_FormClosing);
             this.Load += new System.EventHandler(this.frmCreateXR_Load);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
@@ -620,11 +634,8 @@
         private System.Windows.Forms.RadioButton rdoCharacter;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.TextBox txtTitle;
         private System.Windows.Forms.Label lblTitle;
-        private System.Windows.Forms.TextBox txtAuthor;
         private System.Windows.Forms.Label lblAuthor;
-        private System.Windows.Forms.TextBox txtAsin;
         private System.Windows.Forms.Label lblAsin;
         private System.Windows.Forms.Button btnLink;
         private System.Windows.Forms.DataGridViewImageColumn Column1;
@@ -640,5 +651,9 @@
         private System.Windows.Forms.ContextMenuStrip cmsTerms;
         private System.Windows.Forms.ToolStripMenuItem tsmEdit;
         private System.Windows.Forms.ToolStripMenuItem tsmDelete;
+        public System.Windows.Forms.TextBox txtTitle;
+        public System.Windows.Forms.TextBox txtAuthor;
+        public System.Windows.Forms.TextBox txtAsin;
+        private System.Windows.Forms.Button btnClear;
     }
 }

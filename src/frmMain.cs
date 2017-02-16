@@ -42,6 +42,8 @@ namespace XRayBuilderGUI
         private frmAbout frmInfo = new frmAbout();
         private frmCreateXR frmCreator = new frmCreateXR();
 
+        public List<string> openBook = new List<string>();
+
         ToolTip toolTip1 = new ToolTip();
 
         DataSource dataSource = null;
@@ -774,10 +776,10 @@ namespace XRayBuilderGUI
 
         private void txtMobi_TextChanged(object sender, EventArgs e)
         {
-            this.Cursor = Cursors.WaitCursor;
             txtGoodreads.Text = "";
             prgBar.Value = 0;
             if (!File.Exists(txtMobi.Text)) return;
+            this.Cursor = Cursors.WaitCursor;
 
             string randomFile = Functions.GetTempDirectory();
             if (!Directory.Exists(randomFile))
@@ -795,19 +797,7 @@ namespace XRayBuilderGUI
                 Log("An error occurred metadata: " + ex.Message + "\r\n" + ex.StackTrace);
                 return;
             }
-
-            if (results.Count == 1)
-            {
-                this.Cursor = Cursors.Default;
-                pbCover.Image = null;
-                lblTitle.Visible = false;
-                lblAuthor.Visible = false;
-                lblAsin.Visible = false;
-                txtTitle.Visible = false;
-                txtAuthor.Visible = false;
-                txtAsin.Visible = false;
-                return;
-            }
+            
             string outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectoryOnly(results[4], results[5]) : settings.outDir;
             
             //Open file in read only mode
@@ -834,6 +824,12 @@ namespace XRayBuilderGUI
             txtTitle.Text = results[5];
             txtAsin.Text = results[0];
             toolTip1.SetToolTip(txtAsin, String.Format(@"http://www.amazon.{0}/dp/{1}", settings.amazonTLD, txtAsin.Text));
+
+            openBook.Clear();
+            openBook.Add(results[4]);
+            openBook.Add(results[5]);
+            openBook.Add(results[0]);
+
             this.Cursor = Cursors.Default;
 
             try
@@ -1120,7 +1116,6 @@ namespace XRayBuilderGUI
 
         private void txtAsin_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            if (txtAsin.Text.Contains("-")) return;
             string link = String.Format(@"http://www.amazon.{0}/dp/{1}", settings.amazonTLD, txtAsin.Text);
             Process.Start(link);
         }
@@ -1225,7 +1220,15 @@ namespace XRayBuilderGUI
 
         private void btnCreate_Click(object sender, EventArgs e)
         {
-            frmCreator.ShowDialog();
+            if (openBook.Count == 3)
+            {
+                frmCreator.txtAuthor.Text = openBook[0];
+                frmCreator.txtTitle.Text = openBook[1];
+                frmCreator.txtAsin.Text = openBook[2];
+                frmCreator.ShowDialog();
+            }
+            else
+                frmCreator.ShowDialog();
         }
     }
 }

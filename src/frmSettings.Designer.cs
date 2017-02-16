@@ -39,6 +39,8 @@
             this.gbProcess = new System.Windows.Forms.GroupBox();
             this.chkPageCount = new System.Windows.Forms.CheckBox();
             this.gbUnpack = new System.Windows.Forms.GroupBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.lblNote = new System.Windows.Forms.Label();
             this.chkSaveHtml = new System.Windows.Forms.CheckBox();
             this.chkRaw = new System.Windows.Forms.CheckBox();
             this.chkKindleUnpack = new System.Windows.Forms.CheckBox();
@@ -61,7 +63,6 @@
             this.rdoShelfari = new System.Windows.Forms.RadioButton();
             this.rdoGoodreads = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.chkGoodreadsID = new System.Windows.Forms.CheckBox();
             this.txtAZWOffset = new System.Windows.Forms.TextBox();
             this.chkOverrideOffset = new System.Windows.Forms.CheckBox();
             this.chkSpoilers = new System.Windows.Forms.CheckBox();
@@ -94,12 +95,11 @@
             this.txtPen = new System.Windows.Forms.TextBox();
             this.lblPen = new System.Windows.Forms.Label();
             this.listSettings = new System.Windows.Forms.ListBox();
-            this.lblNote = new System.Windows.Forms.Label();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.gbProcess.SuspendLayout();
             this.gbUnpack.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.gbGeneral.SuspendLayout();
             this.tabPgDirectories.SuspendLayout();
             this.groupBox7.SuspendLayout();
@@ -116,7 +116,6 @@
             this.tabPgAmazon.SuspendLayout();
             this.gbAmazonPrefs.SuspendLayout();
             this.gbDetails.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // btnSupport
@@ -230,6 +229,25 @@
             this.gbUnpack.TabIndex = 37;
             this.gbUnpack.TabStop = false;
             this.gbUnpack.Text = "eBook Unpacking";
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Location = new System.Drawing.Point(14, 45);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(14, 14);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 35;
+            this.pictureBox1.TabStop = false;
+            // 
+            // lblNote
+            // 
+            this.lblNote.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.lblNote.Location = new System.Drawing.Point(31, 43);
+            this.lblNote.Name = "lblNote";
+            this.lblNote.Size = new System.Drawing.Size(325, 60);
+            this.lblNote.TabIndex = 34;
+            this.lblNote.Text = resources.GetString("lblNote.Text");
             // 
             // chkSaveHtml
             // 
@@ -454,7 +472,6 @@
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.chkGoodreadsID);
             this.groupBox4.Controls.Add(this.txtAZWOffset);
             this.groupBox4.Controls.Add(this.chkOverrideOffset);
             this.groupBox4.Controls.Add(this.chkSpoilers);
@@ -463,20 +480,10 @@
             this.groupBox4.Controls.Add(this.txtOffset);
             this.groupBox4.Location = new System.Drawing.Point(6, 146);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(378, 100);
+            this.groupBox4.Size = new System.Drawing.Size(378, 74);
             this.groupBox4.TabIndex = 28;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Preferences";
-            // 
-            // chkGoodreadsID
-            // 
-            this.chkGoodreadsID.AutoSize = true;
-            this.chkGoodreadsID.Location = new System.Drawing.Point(14, 71);
-            this.chkGoodreadsID.Name = "chkGoodreadsID";
-            this.chkGoodreadsID.Size = new System.Drawing.Size(181, 17);
-            this.chkGoodreadsID.TabIndex = 25;
-            this.chkGoodreadsID.Text = "Show Goodreads ID in results list";
-            this.chkGoodreadsID.UseVisualStyleBackColor = true;
             // 
             // txtAZWOffset
             // 
@@ -814,24 +821,6 @@
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
             // 
-            // lblNote
-            // 
-            this.lblNote.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lblNote.Location = new System.Drawing.Point(31, 43);
-            this.lblNote.Name = "lblNote";
-            this.lblNote.Size = new System.Drawing.Size(325, 60);
-            this.lblNote.TabIndex = 34;
-            this.lblNote.Text = resources.GetString("lblNote.Text");
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(14, 45);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(16, 16);
-            this.pictureBox1.TabIndex = 35;
-            this.pictureBox1.TabStop = false;
-            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -860,6 +849,7 @@
             this.gbProcess.PerformLayout();
             this.gbUnpack.ResumeLayout(false);
             this.gbUnpack.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.gbGeneral.ResumeLayout(false);
             this.gbGeneral.PerformLayout();
             this.tabPgDirectories.ResumeLayout(false);
@@ -888,7 +878,6 @@
             this.gbAmazonPrefs.PerformLayout();
             this.gbDetails.ResumeLayout(false);
             this.gbDetails.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -954,7 +943,6 @@
         private System.Windows.Forms.ComboBox cmbRegion;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox chkPromptAsin;
-        private System.Windows.Forms.CheckBox chkGoodreadsID;
         private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.CheckBox chkDeleteTemp;
         private System.Windows.Forms.TextBox txtTemp;

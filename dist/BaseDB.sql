@@ -1,6 +1,6 @@
 CREATE TABLE type(id INTEGER, label INTEGER, singular_label INTEGER, icon INTEGER, top_mentioned_entities TEXT, PRIMARY KEY(id));
-INSERT INTO `type` VALUES ('1','7','8','1', '');
-INSERT INTO `type` VALUES ('2','9','10','2', '');
+INSERT INTO `type` VALUES ('1','9','10','1', '');
+INSERT INTO `type` VALUES ('2','11','12','2', '');
 CREATE TABLE string(id INTEGER, language TEXT, text TEXT);
 INSERT INTO `string` VALUES ('0','de','Alle');
 INSERT INTO `string` VALUES ('0','en','All');

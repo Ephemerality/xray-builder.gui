@@ -794,10 +794,17 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Log("An error occurred metadata: " + ex.Message + "\r\n" + ex.StackTrace);
+                Log("An error occurred metadata: " + ex.Message);
                 return;
             }
-            
+
+            if (results.Count != 7)
+            {
+                this.Cursor = Cursors.Default;
+                txtMobi.Text = "";
+                return;
+            }
+               
             string outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectoryOnly(results[4], results[5]) : settings.outDir;
             
             //Open file in read only mode

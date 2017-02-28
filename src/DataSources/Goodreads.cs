@@ -519,7 +519,8 @@ namespace XRayBuilderGUI.DataSources
             result.DescUrl = tempUri.ToString();
             HtmlDocument charDoc = new HtmlDocument();
             charDoc.LoadHtml(HttpDownloader.GetPageHtml(tempUri.ToString()));
-            HtmlNode mainNode = charDoc.DocumentNode.SelectSingleNode("//div[@class='mainContentFloat']");
+            HtmlNode mainNode = charDoc.DocumentNode.SelectSingleNode("//div[@class='mainContentFloat']")
+                ?? charDoc.DocumentNode.SelectSingleNode("//div[@class='mainContentFloat ']");
             result.TermName = mainNode.SelectSingleNode("./h1").InnerText;
             mainNode = mainNode.SelectSingleNode("//div[@class='grey500BoxContent']");
             HtmlNodeCollection tempNodes = mainNode.SelectNodes("//div[@class='floatingBox']");

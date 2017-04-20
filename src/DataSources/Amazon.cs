@@ -168,7 +168,7 @@ namespace XRayBuilderGUI.DataSources
             }
             return bookList;
         }
-        
+
         public static BookInfo SearchBook(string title, string author, string TLD)
         {
             BookInfo result = null;

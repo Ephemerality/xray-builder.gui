@@ -9,6 +9,7 @@ using System.Net;
 using System.Text;
 using System.Windows.Forms;
 using XRayBuilderGUI.DataSources;
+using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI
 {
@@ -312,7 +313,7 @@ namespace XRayBuilderGUI
                     command.ExecuteNonQuery();
                     command.Dispose();
                     m_dbConnection.Close();
-                    XrPath = outFolder + @"\XRAY.entities." + results[0] + ".previewData";
+                    XrPath = outFolder + @"\XRAY.entities." + results[0];
                 }
 
                 //Save the new XRAY.ASIN.previewData file
@@ -340,6 +341,8 @@ namespace XRayBuilderGUI
             }
             xrayComplete = true;
             Log("X-Ray file created successfully!\r\nSaved to " + _newPath);
+
+            checkFiles(results[4], results[5], results[0]);
 
             if (Properties.Settings.Default.playSound)
             {
@@ -477,6 +480,7 @@ namespace XRayBuilderGUI
                 else
                     ea.GenerateOld();
 
+                checkFiles(bookInfo.author, bookInfo.title, bookInfo.asin);
                 if (Properties.Settings.Default.playSound)
                 {
                     System.Media.SoundPlayer player =
@@ -673,6 +677,11 @@ namespace XRayBuilderGUI
                 "Extract an existing X-Ray file to an XML file.\r\nThis can be useful if you have characters and\r\nterms you want to reuse.");
             toolTip1.SetToolTip(btnCreate, "Create an XML file containing characters\r\nand settings, or edit an existing XML file.");
 
+            toolTip1.SetToolTip(pbFile1, "Start Actions");
+            toolTip1.SetToolTip(pbFile2, "Author Profile");
+            toolTip1.SetToolTip(pbFile3, "End Actions");
+            toolTip1.SetToolTip(pbFile4, "X-Ray");
+
             this.DragEnter += frmMain_DragEnter;
             this.DragDrop += frmMain_DragDrop;
 
@@ -836,6 +845,8 @@ namespace XRayBuilderGUI
             openBook.Add(results[4]);
             openBook.Add(results[5]);
             openBook.Add(results[0]);
+
+            checkFiles(results[4], results[5], results[0]);
 
             this.Cursor = Cursors.Default;
 
@@ -1236,6 +1247,29 @@ namespace XRayBuilderGUI
             }
             else
                 frmCreator.ShowDialog();
+        }
+
+        private bool checkFiles(string author, string title, string asin)
+        {
+            string bookOutputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectoryOnly(author, Functions.RemoveInvalidFileChars(title)) : settings.outDir;
+
+            if (File.Exists(bookOutputDir + @"\StartActions.data." + asin + ".asc"))
+                pbFile1.Image = Resources.file_on;
+            else
+                pbFile1.Image = Resources.file_off;
+            if (File.Exists(bookOutputDir + @"\AuthorProfile.profile." + asin + ".asc"))
+                pbFile2.Image = Resources.file_on;
+            else
+                pbFile2.Image = Resources.file_off;
+            if (File.Exists(bookOutputDir + @"\EndActions.data." + asin + ".asc"))
+                pbFile3.Image = Resources.file_on;
+            else
+                pbFile3.Image = Resources.file_off;
+            if (File.Exists(XrPath = bookOutputDir + @"\XRAY.entities." + asin))
+                pbFile4.Image = Resources.file_on;
+            else
+                pbFile4.Image = Resources.file_off;
+            return true;
         }
     }
 }

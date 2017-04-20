@@ -148,6 +148,7 @@
             this.lblTitle.TabIndex = 3;
             this.lblTitle.Text = "Title";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblTitle.UseMnemonic = false;
             // 
             // lblAuthor
             // 

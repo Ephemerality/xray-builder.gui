@@ -147,6 +147,19 @@ namespace XRayBuilderGUI
                     BioTrimmed = Functions.CleanString(BioTrimmed);
                     main.Log("Author biography found on Amazon!");
                 }
+            }
+            else
+            {
+                File.WriteAllText(bioFile, String.Empty);
+                if (System.Windows.Forms.DialogResult.Yes ==
+                    System.Windows.Forms.MessageBox.Show(
+                        "No author biography found on Amazon!\r\nWould you like to create a biography?", "Biography",
+                        System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question,
+                        System.Windows.Forms.MessageBoxDefaultButton.Button2))
+                {
+                    Functions.RunNotepad(bioFile);
+                    if (!readBio(bioFile)) return;
+                }
                 else
                 {
                     BioTrimmed = "No author biography found on Amazon!";

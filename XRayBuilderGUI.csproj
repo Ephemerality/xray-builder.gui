@@ -191,6 +191,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Icon.ico" />
+    <None Include="Resources\file-on.png" />
+    <None Include="Resources\file-off.png" />
     <None Include="doc\Help.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

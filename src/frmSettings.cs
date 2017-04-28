@@ -91,7 +91,10 @@ namespace XRayBuilderGUI
             else
                 rdoShelfari.Checked = true;
             chkPromptAsin.Checked = Properties.Settings.Default.promptASIN;
-            txtTemp.Text = Properties.Settings.Default.tmpDir;
+            if (txtTemp.Text == "")
+                txtTemp.Text = Path.GetTempPath();
+            else
+                txtTemp.Text = Properties.Settings.Default.tmpDir;
             chkDeleteTemp.Checked = Properties.Settings.Default.deleteTemp;
 
             // Added \r\n to show smaller tooltips

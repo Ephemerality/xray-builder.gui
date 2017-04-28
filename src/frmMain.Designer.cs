@@ -49,17 +49,6 @@
             this.tmiXray = new System.Windows.Forms.ToolStripMenuItem();
             this.prgBar = new System.Windows.Forms.ProgressBar();
             this.txtOutput = new System.Windows.Forms.RichTextBox();
-            this.btnOneClick = new System.Windows.Forms.Button();
-            this.btnPreview = new System.Windows.Forms.Button();
-            this.btnUnpack = new System.Windows.Forms.Button();
-            this.btnSettings = new System.Windows.Forms.Button();
-            this.btnBrowseOutput = new System.Windows.Forms.Button();
-            this.btnBrowseMobi = new System.Windows.Forms.Button();
-            this.btnKindleExtras = new System.Windows.Forms.Button();
-            this.btnSearchGoodreads = new System.Windows.Forms.Button();
-            this.btnSaveShelfari = new System.Windows.Forms.Button();
-            this.btnBuild = new System.Windows.Forms.Button();
-            this.btnBrowseXML = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.txtAsin = new System.Windows.Forms.LinkLabel();
@@ -68,17 +57,37 @@
             this.lblAsin = new System.Windows.Forms.Label();
             this.lblAuthor = new System.Windows.Forms.Label();
             this.lblTitle = new System.Windows.Forms.Label();
-            this.pbCover = new System.Windows.Forms.PictureBox();
-            this.btnSaveTerms = new System.Windows.Forms.Button();
-            this.btnHelp = new System.Windows.Forms.Button();
-            this.btnAbout = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.lblFiles = new System.Windows.Forms.Label();
             this.btnCreate = new System.Windows.Forms.Button();
+            this.btnPreview = new System.Windows.Forms.Button();
+            this.btnAbout = new System.Windows.Forms.Button();
+            this.btnHelp = new System.Windows.Forms.Button();
+            this.btnSaveTerms = new System.Windows.Forms.Button();
+            this.pbFile1 = new System.Windows.Forms.PictureBox();
+            this.pbCover = new System.Windows.Forms.PictureBox();
+            this.btnBrowseOutput = new System.Windows.Forms.Button();
+            this.btnOneClick = new System.Windows.Forms.Button();
+            this.btnUnpack = new System.Windows.Forms.Button();
+            this.btnSettings = new System.Windows.Forms.Button();
+            this.btnBrowseMobi = new System.Windows.Forms.Button();
+            this.btnKindleExtras = new System.Windows.Forms.Button();
+            this.btnSearchGoodreads = new System.Windows.Forms.Button();
+            this.btnSaveShelfari = new System.Windows.Forms.Button();
+            this.btnBuild = new System.Windows.Forms.Button();
+            this.btnBrowseXML = new System.Windows.Forms.Button();
+            this.pbFile2 = new System.Windows.Forms.PictureBox();
+            this.pbFile4 = new System.Windows.Forms.PictureBox();
+            this.pbFile3 = new System.Windows.Forms.PictureBox();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.cmsPreview.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFile1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbCover)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFile2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFile4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFile3)).BeginInit();
             this.SuspendLayout();
             // 
             // lblGoodreads
@@ -259,7 +268,7 @@
             // 
             this.prgBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.prgBar.Location = new System.Drawing.Point(12, 523);
+            this.prgBar.Location = new System.Drawing.Point(12, 540);
             this.prgBar.Name = "prgBar";
             this.prgBar.Size = new System.Drawing.Size(804, 12);
             this.prgBar.Step = 1;
@@ -278,121 +287,10 @@
             this.txtOutput.Name = "txtOutput";
             this.txtOutput.ReadOnly = true;
             this.txtOutput.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.txtOutput.Size = new System.Drawing.Size(596, 320);
+            this.txtOutput.Size = new System.Drawing.Size(596, 335);
             this.txtOutput.TabIndex = 61;
             this.txtOutput.Text = "";
             this.txtOutput.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.txtOutput_LinkClicked);
-            // 
-            // btnOneClick
-            // 
-            this.btnOneClick.Image = ((System.Drawing.Image)(resources.GetObject("btnOneClick.Image")));
-            this.btnOneClick.Location = new System.Drawing.Point(237, 11);
-            this.btnOneClick.Name = "btnOneClick";
-            this.btnOneClick.Size = new System.Drawing.Size(48, 48);
-            this.btnOneClick.TabIndex = 28;
-            this.btnOneClick.UseVisualStyleBackColor = true;
-            this.btnOneClick.Click += new System.EventHandler(this.btnOneClick_Click);
-            // 
-            // btnPreview
-            // 
-            this.btnPreview.Image = ((System.Drawing.Image)(resources.GetObject("btnPreview.Image")));
-            this.btnPreview.Location = new System.Drawing.Point(301, 11);
-            this.btnPreview.Name = "btnPreview";
-            this.btnPreview.Size = new System.Drawing.Size(64, 48);
-            this.btnPreview.TabIndex = 12;
-            this.btnPreview.UseVisualStyleBackColor = true;
-            this.btnPreview.Click += new System.EventHandler(this.btnPreview_Click);
-            // 
-            // btnUnpack
-            // 
-            this.btnUnpack.Image = ((System.Drawing.Image)(resources.GetObject("btnUnpack.Image")));
-            this.btnUnpack.Location = new System.Drawing.Point(479, 11);
-            this.btnUnpack.Name = "btnUnpack";
-            this.btnUnpack.Size = new System.Drawing.Size(48, 48);
-            this.btnUnpack.TabIndex = 60;
-            this.btnUnpack.UseVisualStyleBackColor = true;
-            this.btnUnpack.Click += new System.EventHandler(this.btnUnpack_Click);
-            // 
-            // btnSettings
-            // 
-            this.btnSettings.Image = ((System.Drawing.Image)(resources.GetObject("btnSettings.Image")));
-            this.btnSettings.Location = new System.Drawing.Point(651, 11);
-            this.btnSettings.Name = "btnSettings";
-            this.btnSettings.Size = new System.Drawing.Size(48, 48);
-            this.btnSettings.TabIndex = 16;
-            this.btnSettings.UseVisualStyleBackColor = true;
-            this.btnSettings.Click += new System.EventHandler(this.btnSettings_Click);
-            // 
-            // btnBrowseOutput
-            // 
-            this.btnBrowseOutput.Image = ((System.Drawing.Image)(resources.GetObject("btnBrowseOutput.Image")));
-            this.btnBrowseOutput.Location = new System.Drawing.Point(597, 11);
-            this.btnBrowseOutput.Name = "btnBrowseOutput";
-            this.btnBrowseOutput.Size = new System.Drawing.Size(48, 48);
-            this.btnBrowseOutput.TabIndex = 11;
-            this.btnBrowseOutput.UseVisualStyleBackColor = true;
-            this.btnBrowseOutput.Click += new System.EventHandler(this.btnBrowseOutput_Click);
-            // 
-            // btnBrowseMobi
-            // 
-            this.btnBrowseMobi.Image = ((System.Drawing.Image)(resources.GetObject("btnBrowseMobi.Image")));
-            this.btnBrowseMobi.Location = new System.Drawing.Point(11, 11);
-            this.btnBrowseMobi.Name = "btnBrowseMobi";
-            this.btnBrowseMobi.Size = new System.Drawing.Size(48, 48);
-            this.btnBrowseMobi.TabIndex = 10;
-            this.btnBrowseMobi.UseVisualStyleBackColor = true;
-            this.btnBrowseMobi.Click += new System.EventHandler(this.btnBrowseMobi_Click);
-            // 
-            // btnKindleExtras
-            // 
-            this.btnKindleExtras.Image = ((System.Drawing.Image)(resources.GetObject("btnKindleExtras.Image")));
-            this.btnKindleExtras.Location = new System.Drawing.Point(129, 11);
-            this.btnKindleExtras.Name = "btnKindleExtras";
-            this.btnKindleExtras.Size = new System.Drawing.Size(48, 48);
-            this.btnKindleExtras.TabIndex = 27;
-            this.btnKindleExtras.UseVisualStyleBackColor = true;
-            this.btnKindleExtras.Click += new System.EventHandler(this.btnKindleExtras_Click);
-            // 
-            // btnSearchGoodreads
-            // 
-            this.btnSearchGoodreads.Image = ((System.Drawing.Image)(resources.GetObject("btnSearchGoodreads.Image")));
-            this.btnSearchGoodreads.Location = new System.Drawing.Point(65, 11);
-            this.btnSearchGoodreads.Name = "btnSearchGoodreads";
-            this.btnSearchGoodreads.Size = new System.Drawing.Size(48, 48);
-            this.btnSearchGoodreads.TabIndex = 26;
-            this.btnSearchGoodreads.UseVisualStyleBackColor = true;
-            this.btnSearchGoodreads.Click += new System.EventHandler(this.btnSearchGoodreads_Click);
-            // 
-            // btnSaveShelfari
-            // 
-            this.btnSaveShelfari.Image = ((System.Drawing.Image)(resources.GetObject("btnSaveShelfari.Image")));
-            this.btnSaveShelfari.Location = new System.Drawing.Point(425, 11);
-            this.btnSaveShelfari.Name = "btnSaveShelfari";
-            this.btnSaveShelfari.Size = new System.Drawing.Size(48, 48);
-            this.btnSaveShelfari.TabIndex = 19;
-            this.btnSaveShelfari.UseVisualStyleBackColor = true;
-            this.btnSaveShelfari.Click += new System.EventHandler(this.btnSaveShelfari_Click);
-            // 
-            // btnBuild
-            // 
-            this.btnBuild.Image = ((System.Drawing.Image)(resources.GetObject("btnBuild.Image")));
-            this.btnBuild.Location = new System.Drawing.Point(183, 11);
-            this.btnBuild.Name = "btnBuild";
-            this.btnBuild.Size = new System.Drawing.Size(48, 48);
-            this.btnBuild.TabIndex = 14;
-            this.btnBuild.UseVisualStyleBackColor = true;
-            this.btnBuild.Click += new System.EventHandler(this.btnBuild_Click);
-            // 
-            // btnBrowseXML
-            // 
-            this.btnBrowseXML.Image = ((System.Drawing.Image)(resources.GetObject("btnBrowseXML.Image")));
-            this.btnBrowseXML.Location = new System.Drawing.Point(65, 11);
-            this.btnBrowseXML.Name = "btnBrowseXML";
-            this.btnBrowseXML.Size = new System.Drawing.Size(48, 48);
-            this.btnBrowseXML.TabIndex = 23;
-            this.btnBrowseXML.UseVisualStyleBackColor = true;
-            this.btnBrowseXML.Visible = false;
-            this.btnBrowseXML.Click += new System.EventHandler(this.btnBrowseXML_Click);
             // 
             // textBox1
             // 
@@ -402,12 +300,17 @@
             this.textBox1.Location = new System.Drawing.Point(12, 189);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(598, 322);
+            this.textBox1.Size = new System.Drawing.Size(598, 339);
             this.textBox1.TabIndex = 62;
             // 
             // groupBox2
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.pbFile4);
+            this.groupBox2.Controls.Add(this.pbFile3);
+            this.groupBox2.Controls.Add(this.pbFile2);
+            this.groupBox2.Controls.Add(this.pbFile1);
+            this.groupBox2.Controls.Add(this.lblFiles);
             this.groupBox2.Controls.Add(this.txtAsin);
             this.groupBox2.Controls.Add(this.txtAuthor);
             this.groupBox2.Controls.Add(this.txtTitle);
@@ -417,7 +320,7 @@
             this.groupBox2.Controls.Add(this.pbCover);
             this.groupBox2.Location = new System.Drawing.Point(622, 183);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(194, 328);
+            this.groupBox2.Size = new System.Drawing.Size(194, 345);
             this.groupBox2.TabIndex = 63;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Book Details";
@@ -498,45 +401,6 @@
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.lblTitle.Visible = false;
             // 
-            // pbCover
-            // 
-            this.pbCover.Location = new System.Drawing.Point(14, 20);
-            this.pbCover.Name = "pbCover";
-            this.pbCover.Size = new System.Drawing.Size(166, 249);
-            this.pbCover.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pbCover.TabIndex = 0;
-            this.pbCover.TabStop = false;
-            // 
-            // btnSaveTerms
-            // 
-            this.btnSaveTerms.Image = ((System.Drawing.Image)(resources.GetObject("btnSaveTerms.Image")));
-            this.btnSaveTerms.Location = new System.Drawing.Point(533, 11);
-            this.btnSaveTerms.Name = "btnSaveTerms";
-            this.btnSaveTerms.Size = new System.Drawing.Size(48, 48);
-            this.btnSaveTerms.TabIndex = 64;
-            this.btnSaveTerms.UseVisualStyleBackColor = true;
-            this.btnSaveTerms.Click += new System.EventHandler(this.btnSaveTerms_Click);
-            // 
-            // btnHelp
-            // 
-            this.btnHelp.Image = ((System.Drawing.Image)(resources.GetObject("btnHelp.Image")));
-            this.btnHelp.Location = new System.Drawing.Point(715, 11);
-            this.btnHelp.Name = "btnHelp";
-            this.btnHelp.Size = new System.Drawing.Size(48, 48);
-            this.btnHelp.TabIndex = 65;
-            this.btnHelp.UseVisualStyleBackColor = true;
-            this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
-            // 
-            // btnAbout
-            // 
-            this.btnAbout.Image = ((System.Drawing.Image)(resources.GetObject("btnAbout.Image")));
-            this.btnAbout.Location = new System.Drawing.Point(769, 11);
-            this.btnAbout.Name = "btnAbout";
-            this.btnAbout.Size = new System.Drawing.Size(48, 48);
-            this.btnAbout.TabIndex = 66;
-            this.btnAbout.UseVisualStyleBackColor = true;
-            this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
-            // 
             // label1
             // 
             this.label1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
@@ -544,6 +408,17 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(2, 47);
             this.label1.TabIndex = 67;
+            // 
+            // lblFiles
+            // 
+            this.lblFiles.AutoSize = true;
+            this.lblFiles.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblFiles.Location = new System.Drawing.Point(12, 321);
+            this.lblFiles.Name = "lblFiles";
+            this.lblFiles.Size = new System.Drawing.Size(28, 12);
+            this.lblFiles.TabIndex = 69;
+            this.lblFiles.Text = "Files:";
+            this.lblFiles.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // btnCreate
             // 
@@ -555,12 +430,198 @@
             this.btnCreate.UseVisualStyleBackColor = true;
             this.btnCreate.Click += new System.EventHandler(this.btnCreate_Click);
             // 
+            // btnPreview
+            // 
+            this.btnPreview.Image = ((System.Drawing.Image)(resources.GetObject("btnPreview.Image")));
+            this.btnPreview.Location = new System.Drawing.Point(301, 11);
+            this.btnPreview.Name = "btnPreview";
+            this.btnPreview.Size = new System.Drawing.Size(64, 48);
+            this.btnPreview.TabIndex = 12;
+            this.btnPreview.UseVisualStyleBackColor = true;
+            this.btnPreview.Click += new System.EventHandler(this.btnPreview_Click);
+            // 
+            // btnAbout
+            // 
+            this.btnAbout.Image = ((System.Drawing.Image)(resources.GetObject("btnAbout.Image")));
+            this.btnAbout.Location = new System.Drawing.Point(769, 11);
+            this.btnAbout.Name = "btnAbout";
+            this.btnAbout.Size = new System.Drawing.Size(48, 48);
+            this.btnAbout.TabIndex = 66;
+            this.btnAbout.UseVisualStyleBackColor = true;
+            this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
+            // 
+            // btnHelp
+            // 
+            this.btnHelp.Image = ((System.Drawing.Image)(resources.GetObject("btnHelp.Image")));
+            this.btnHelp.Location = new System.Drawing.Point(715, 11);
+            this.btnHelp.Name = "btnHelp";
+            this.btnHelp.Size = new System.Drawing.Size(48, 48);
+            this.btnHelp.TabIndex = 65;
+            this.btnHelp.UseVisualStyleBackColor = true;
+            this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
+            // 
+            // btnSaveTerms
+            // 
+            this.btnSaveTerms.Image = ((System.Drawing.Image)(resources.GetObject("btnSaveTerms.Image")));
+            this.btnSaveTerms.Location = new System.Drawing.Point(533, 11);
+            this.btnSaveTerms.Name = "btnSaveTerms";
+            this.btnSaveTerms.Size = new System.Drawing.Size(48, 48);
+            this.btnSaveTerms.TabIndex = 64;
+            this.btnSaveTerms.UseVisualStyleBackColor = true;
+            this.btnSaveTerms.Click += new System.EventHandler(this.btnSaveTerms_Click);
+            // 
+            // pbFile1
+            // 
+            this.pbFile1.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
+            this.pbFile1.Location = new System.Drawing.Point(56, 323);
+            this.pbFile1.Name = "pbFile1";
+            this.pbFile1.Size = new System.Drawing.Size(9, 9);
+            this.pbFile1.TabIndex = 70;
+            this.pbFile1.TabStop = false;
+            // 
+            // pbCover
+            // 
+            this.pbCover.Location = new System.Drawing.Point(14, 20);
+            this.pbCover.Name = "pbCover";
+            this.pbCover.Size = new System.Drawing.Size(166, 249);
+            this.pbCover.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pbCover.TabIndex = 0;
+            this.pbCover.TabStop = false;
+            // 
+            // btnBrowseOutput
+            // 
+            this.btnBrowseOutput.Image = ((System.Drawing.Image)(resources.GetObject("btnBrowseOutput.Image")));
+            this.btnBrowseOutput.Location = new System.Drawing.Point(597, 11);
+            this.btnBrowseOutput.Name = "btnBrowseOutput";
+            this.btnBrowseOutput.Size = new System.Drawing.Size(48, 48);
+            this.btnBrowseOutput.TabIndex = 11;
+            this.btnBrowseOutput.UseVisualStyleBackColor = true;
+            this.btnBrowseOutput.Click += new System.EventHandler(this.btnBrowseOutput_Click);
+            // 
+            // btnOneClick
+            // 
+            this.btnOneClick.Image = ((System.Drawing.Image)(resources.GetObject("btnOneClick.Image")));
+            this.btnOneClick.Location = new System.Drawing.Point(237, 11);
+            this.btnOneClick.Name = "btnOneClick";
+            this.btnOneClick.Size = new System.Drawing.Size(48, 48);
+            this.btnOneClick.TabIndex = 28;
+            this.btnOneClick.UseVisualStyleBackColor = true;
+            this.btnOneClick.Click += new System.EventHandler(this.btnOneClick_Click);
+            // 
+            // btnUnpack
+            // 
+            this.btnUnpack.Image = ((System.Drawing.Image)(resources.GetObject("btnUnpack.Image")));
+            this.btnUnpack.Location = new System.Drawing.Point(479, 11);
+            this.btnUnpack.Name = "btnUnpack";
+            this.btnUnpack.Size = new System.Drawing.Size(48, 48);
+            this.btnUnpack.TabIndex = 60;
+            this.btnUnpack.UseVisualStyleBackColor = true;
+            this.btnUnpack.Click += new System.EventHandler(this.btnUnpack_Click);
+            // 
+            // btnSettings
+            // 
+            this.btnSettings.Image = ((System.Drawing.Image)(resources.GetObject("btnSettings.Image")));
+            this.btnSettings.Location = new System.Drawing.Point(651, 11);
+            this.btnSettings.Name = "btnSettings";
+            this.btnSettings.Size = new System.Drawing.Size(48, 48);
+            this.btnSettings.TabIndex = 16;
+            this.btnSettings.UseVisualStyleBackColor = true;
+            this.btnSettings.Click += new System.EventHandler(this.btnSettings_Click);
+            // 
+            // btnBrowseMobi
+            // 
+            this.btnBrowseMobi.Image = ((System.Drawing.Image)(resources.GetObject("btnBrowseMobi.Image")));
+            this.btnBrowseMobi.Location = new System.Drawing.Point(11, 11);
+            this.btnBrowseMobi.Name = "btnBrowseMobi";
+            this.btnBrowseMobi.Size = new System.Drawing.Size(48, 48);
+            this.btnBrowseMobi.TabIndex = 10;
+            this.btnBrowseMobi.UseVisualStyleBackColor = true;
+            this.btnBrowseMobi.Click += new System.EventHandler(this.btnBrowseMobi_Click);
+            // 
+            // btnKindleExtras
+            // 
+            this.btnKindleExtras.Image = ((System.Drawing.Image)(resources.GetObject("btnKindleExtras.Image")));
+            this.btnKindleExtras.Location = new System.Drawing.Point(129, 11);
+            this.btnKindleExtras.Name = "btnKindleExtras";
+            this.btnKindleExtras.Size = new System.Drawing.Size(48, 48);
+            this.btnKindleExtras.TabIndex = 27;
+            this.btnKindleExtras.UseVisualStyleBackColor = true;
+            this.btnKindleExtras.Click += new System.EventHandler(this.btnKindleExtras_Click);
+            // 
+            // btnSearchGoodreads
+            // 
+            this.btnSearchGoodreads.Image = ((System.Drawing.Image)(resources.GetObject("btnSearchGoodreads.Image")));
+            this.btnSearchGoodreads.Location = new System.Drawing.Point(65, 11);
+            this.btnSearchGoodreads.Name = "btnSearchGoodreads";
+            this.btnSearchGoodreads.Size = new System.Drawing.Size(48, 48);
+            this.btnSearchGoodreads.TabIndex = 26;
+            this.btnSearchGoodreads.UseVisualStyleBackColor = true;
+            this.btnSearchGoodreads.Click += new System.EventHandler(this.btnSearchGoodreads_Click);
+            // 
+            // btnSaveShelfari
+            // 
+            this.btnSaveShelfari.Image = ((System.Drawing.Image)(resources.GetObject("btnSaveShelfari.Image")));
+            this.btnSaveShelfari.Location = new System.Drawing.Point(425, 11);
+            this.btnSaveShelfari.Name = "btnSaveShelfari";
+            this.btnSaveShelfari.Size = new System.Drawing.Size(48, 48);
+            this.btnSaveShelfari.TabIndex = 19;
+            this.btnSaveShelfari.UseVisualStyleBackColor = true;
+            this.btnSaveShelfari.Click += new System.EventHandler(this.btnSaveShelfari_Click);
+            // 
+            // btnBuild
+            // 
+            this.btnBuild.Image = ((System.Drawing.Image)(resources.GetObject("btnBuild.Image")));
+            this.btnBuild.Location = new System.Drawing.Point(183, 11);
+            this.btnBuild.Name = "btnBuild";
+            this.btnBuild.Size = new System.Drawing.Size(48, 48);
+            this.btnBuild.TabIndex = 14;
+            this.btnBuild.UseVisualStyleBackColor = true;
+            this.btnBuild.Click += new System.EventHandler(this.btnBuild_Click);
+            // 
+            // btnBrowseXML
+            // 
+            this.btnBrowseXML.Image = ((System.Drawing.Image)(resources.GetObject("btnBrowseXML.Image")));
+            this.btnBrowseXML.Location = new System.Drawing.Point(65, 11);
+            this.btnBrowseXML.Name = "btnBrowseXML";
+            this.btnBrowseXML.Size = new System.Drawing.Size(48, 48);
+            this.btnBrowseXML.TabIndex = 23;
+            this.btnBrowseXML.UseVisualStyleBackColor = true;
+            this.btnBrowseXML.Visible = false;
+            this.btnBrowseXML.Click += new System.EventHandler(this.btnBrowseXML_Click);
+            // 
+            // pbFile2
+            // 
+            this.pbFile2.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
+            this.pbFile2.Location = new System.Drawing.Point(73, 323);
+            this.pbFile2.Name = "pbFile2";
+            this.pbFile2.Size = new System.Drawing.Size(9, 9);
+            this.pbFile2.TabIndex = 71;
+            this.pbFile2.TabStop = false;
+            // 
+            // pbFile4
+            // 
+            this.pbFile4.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
+            this.pbFile4.Location = new System.Drawing.Point(107, 323);
+            this.pbFile4.Name = "pbFile4";
+            this.pbFile4.Size = new System.Drawing.Size(9, 9);
+            this.pbFile4.TabIndex = 73;
+            this.pbFile4.TabStop = false;
+            // 
+            // pbFile3
+            // 
+            this.pbFile3.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
+            this.pbFile3.Location = new System.Drawing.Point(90, 323);
+            this.pbFile3.Name = "pbFile3";
+            this.pbFile3.Size = new System.Drawing.Size(9, 9);
+            this.pbFile3.TabIndex = 72;
+            this.pbFile3.TabStop = false;
+            // 
             // frmMain
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(828, 547);
+            this.ClientSize = new System.Drawing.Size(828, 564);
             this.Controls.Add(this.btnCreate);
             this.Controls.Add(this.btnPreview);
             this.Controls.Add(this.label1);
@@ -601,7 +662,11 @@
             this.cmsPreview.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFile1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbCover)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFile2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFile4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFile3)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -653,6 +718,11 @@
         private System.Windows.Forms.Button btnAbout;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnCreate;
+        private System.Windows.Forms.PictureBox pbFile1;
+        private System.Windows.Forms.Label lblFiles;
+        private System.Windows.Forms.PictureBox pbFile4;
+        private System.Windows.Forms.PictureBox pbFile3;
+        private System.Windows.Forms.PictureBox pbFile2;
     }
 }
 

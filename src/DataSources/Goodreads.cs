@@ -18,12 +18,8 @@ namespace XRayBuilderGUI.DataSources
 
         private List<BookInfo> goodreadsBookList = new List<BookInfo>();
 
-        public override string SearchBook(string author, string title, Action<string> Log)
-        {
-            string goodreadsSearchUrlBase = @"http://www.goodreads.com/search?q={0}%20{1}";
-            string goodreadsBookUrl = "";
-            // Goodreads expects %26 and %27 instead of & and ’ or ' and %20 instead of spaces
-            Dictionary<string, string> replacements = new Dictionary<string, string>()
+        // Goodreads expects %26 and %27 instead of & and ’ or ' and %20 instead of spaces
+        Dictionary<string, string> replacements = new Dictionary<string, string>()
             {
                 {"&", "%26"},
                 {"’", "%27"},
@@ -31,6 +27,11 @@ namespace XRayBuilderGUI.DataSources
                 {" ", "%20"}
             };
 
+        public override string SearchBook(string author, string title, Action<string> Log)
+        {
+            string goodreadsSearchUrlBase = @"http://www.goodreads.com/search?q={0}%20{1}";
+            string goodreadsBookUrl = "";
+           
             Regex regex = new Regex(String.Join("|", replacements.Keys.Select(k => Regex.Escape(k))));
             title = regex.Replace(title, m => replacements[m.Value]);
             author = Functions.FixAuthor(author);
@@ -68,15 +69,16 @@ namespace XRayBuilderGUI.DataSources
                 HtmlNode coverNode = link.SelectSingleNode(".//img");
                 //If more than one result found, skip book if it does not have a cover
                 //Books with a cover are more likely to be a correct match?
-                if (coverNode.GetAttributeValue("src", "").Contains("nophoto") && (resultNodes.Count != 1)) continue;
+                //if (coverNode.GetAttributeValue("src", "").Contains("nophoto") && (resultNodes.Count != 1)) continue;
                 //Skip audiobook results
                 HtmlNode audiobookNode = link.SelectSingleNode(".//span[@class='authorName greyText smallText role']");
-                if (audiobookNode != null) continue;
-
+                if (audiobookNode != null && audiobookNode.InnerText.Contains("Audiobook")) continue;
                 HtmlNode titleNode = link.SelectSingleNode(".//a[@class='bookTitle']");
                 HtmlNode authorNode = link.SelectSingleNode(".//a[@class='authorName']");
 
-                BookInfo newBook = new BookInfo(titleNode.InnerText.Trim(), authorNode.InnerText.Trim(), null);
+                string cleanTitle = titleNode.InnerText.Trim().Replace("&amp;", "&").Replace("%27", "'").Replace("%20", " ");
+
+                BookInfo newBook = new BookInfo(cleanTitle, authorNode.InnerText.Trim(), null);
 
                 Match matchID = Regex.Match(link.OuterHtml, @"./book/show/([0-9]*)");
                 if (matchID.Success)

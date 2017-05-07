@@ -64,10 +64,18 @@ namespace XRayBuilderGUI.DataSources
                 results.authorAsin = results.authorAsin.Substring(index1 + 11, 10);
 
             node = node.SelectSingleNode("//*[@id='result_1']/div/div/div/div/a");
-            string properAuthor = node.GetAttributeValue("href", "not found");
-            if (properAuthor == "not found" || properAuthor.IndexOf('/', 1) < 3)
+            string properAuthor;
+            try
             {
-                Log("An error occurred parsing author's page URL properly. Report this URL on the MobileRead thread: " + amazonAuthorSearchUrl);
+                properAuthor = node.GetAttributeValue("href", "");
+            }
+            catch (Exception ex)
+            {
+                properAuthor = "";
+            }
+            if (properAuthor == "" || properAuthor.IndexOf('/', 1) < 3)
+            {
+                Log("Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: " + amazonAuthorSearchUrl);
                 return null;
             }
             properAuthor = properAuthor.Substring(1, properAuthor.IndexOf('/', 1) - 1);

@@ -51,21 +51,24 @@
             this.txtOutput = new System.Windows.Forms.RichTextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.pbFile4 = new System.Windows.Forms.PictureBox();
+            this.pbFile3 = new System.Windows.Forms.PictureBox();
+            this.pbFile2 = new System.Windows.Forms.PictureBox();
+            this.pbFile1 = new System.Windows.Forms.PictureBox();
+            this.lblFiles = new System.Windows.Forms.Label();
             this.txtAsin = new System.Windows.Forms.LinkLabel();
             this.txtAuthor = new System.Windows.Forms.Label();
             this.txtTitle = new System.Windows.Forms.Label();
             this.lblAsin = new System.Windows.Forms.Label();
             this.lblAuthor = new System.Windows.Forms.Label();
             this.lblTitle = new System.Windows.Forms.Label();
+            this.pbCover = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.lblFiles = new System.Windows.Forms.Label();
             this.btnCreate = new System.Windows.Forms.Button();
             this.btnPreview = new System.Windows.Forms.Button();
             this.btnAbout = new System.Windows.Forms.Button();
             this.btnHelp = new System.Windows.Forms.Button();
-            this.btnSaveTerms = new System.Windows.Forms.Button();
-            this.pbFile1 = new System.Windows.Forms.PictureBox();
-            this.pbCover = new System.Windows.Forms.PictureBox();
+            this.btnExtractTerms = new System.Windows.Forms.Button();
             this.btnBrowseOutput = new System.Windows.Forms.Button();
             this.btnOneClick = new System.Windows.Forms.Button();
             this.btnUnpack = new System.Windows.Forms.Button();
@@ -73,21 +76,18 @@
             this.btnBrowseMobi = new System.Windows.Forms.Button();
             this.btnKindleExtras = new System.Windows.Forms.Button();
             this.btnSearchGoodreads = new System.Windows.Forms.Button();
-            this.btnSaveShelfari = new System.Windows.Forms.Button();
+            this.btnDownloadTerms = new System.Windows.Forms.Button();
             this.btnBuild = new System.Windows.Forms.Button();
             this.btnBrowseXML = new System.Windows.Forms.Button();
-            this.pbFile2 = new System.Windows.Forms.PictureBox();
-            this.pbFile4 = new System.Windows.Forms.PictureBox();
-            this.pbFile3 = new System.Windows.Forms.PictureBox();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.cmsPreview.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbFile1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbCover)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbFile2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbFile4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbFile3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFile2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFile1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbCover)).BeginInit();
             this.SuspendLayout();
             // 
             // lblGoodreads
@@ -325,6 +325,53 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Book Details";
             // 
+            // pbFile4
+            // 
+            this.pbFile4.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
+            this.pbFile4.Location = new System.Drawing.Point(107, 323);
+            this.pbFile4.Name = "pbFile4";
+            this.pbFile4.Size = new System.Drawing.Size(9, 9);
+            this.pbFile4.TabIndex = 73;
+            this.pbFile4.TabStop = false;
+            // 
+            // pbFile3
+            // 
+            this.pbFile3.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
+            this.pbFile3.Location = new System.Drawing.Point(90, 323);
+            this.pbFile3.Name = "pbFile3";
+            this.pbFile3.Size = new System.Drawing.Size(9, 9);
+            this.pbFile3.TabIndex = 72;
+            this.pbFile3.TabStop = false;
+            // 
+            // pbFile2
+            // 
+            this.pbFile2.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
+            this.pbFile2.Location = new System.Drawing.Point(73, 323);
+            this.pbFile2.Name = "pbFile2";
+            this.pbFile2.Size = new System.Drawing.Size(9, 9);
+            this.pbFile2.TabIndex = 71;
+            this.pbFile2.TabStop = false;
+            // 
+            // pbFile1
+            // 
+            this.pbFile1.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
+            this.pbFile1.Location = new System.Drawing.Point(56, 323);
+            this.pbFile1.Name = "pbFile1";
+            this.pbFile1.Size = new System.Drawing.Size(9, 9);
+            this.pbFile1.TabIndex = 70;
+            this.pbFile1.TabStop = false;
+            // 
+            // lblFiles
+            // 
+            this.lblFiles.AutoSize = true;
+            this.lblFiles.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblFiles.Location = new System.Drawing.Point(12, 321);
+            this.lblFiles.Name = "lblFiles";
+            this.lblFiles.Size = new System.Drawing.Size(28, 12);
+            this.lblFiles.TabIndex = 69;
+            this.lblFiles.Text = "Files:";
+            this.lblFiles.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // txtAsin
             // 
             this.txtAsin.ActiveLinkColor = System.Drawing.Color.MediumBlue;
@@ -401,6 +448,15 @@
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.lblTitle.Visible = false;
             // 
+            // pbCover
+            // 
+            this.pbCover.Location = new System.Drawing.Point(14, 20);
+            this.pbCover.Name = "pbCover";
+            this.pbCover.Size = new System.Drawing.Size(166, 249);
+            this.pbCover.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pbCover.TabIndex = 0;
+            this.pbCover.TabStop = false;
+            // 
             // label1
             // 
             this.label1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
@@ -408,17 +464,6 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(2, 47);
             this.label1.TabIndex = 67;
-            // 
-            // lblFiles
-            // 
-            this.lblFiles.AutoSize = true;
-            this.lblFiles.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFiles.Location = new System.Drawing.Point(12, 321);
-            this.lblFiles.Name = "lblFiles";
-            this.lblFiles.Size = new System.Drawing.Size(28, 12);
-            this.lblFiles.TabIndex = 69;
-            this.lblFiles.Text = "Files:";
-            this.lblFiles.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // btnCreate
             // 
@@ -460,33 +505,15 @@
             this.btnHelp.UseVisualStyleBackColor = true;
             this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
             // 
-            // btnSaveTerms
+            // btnExtractTerms
             // 
-            this.btnSaveTerms.Image = ((System.Drawing.Image)(resources.GetObject("btnSaveTerms.Image")));
-            this.btnSaveTerms.Location = new System.Drawing.Point(533, 11);
-            this.btnSaveTerms.Name = "btnSaveTerms";
-            this.btnSaveTerms.Size = new System.Drawing.Size(48, 48);
-            this.btnSaveTerms.TabIndex = 64;
-            this.btnSaveTerms.UseVisualStyleBackColor = true;
-            this.btnSaveTerms.Click += new System.EventHandler(this.btnSaveTerms_Click);
-            // 
-            // pbFile1
-            // 
-            this.pbFile1.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
-            this.pbFile1.Location = new System.Drawing.Point(56, 323);
-            this.pbFile1.Name = "pbFile1";
-            this.pbFile1.Size = new System.Drawing.Size(9, 9);
-            this.pbFile1.TabIndex = 70;
-            this.pbFile1.TabStop = false;
-            // 
-            // pbCover
-            // 
-            this.pbCover.Location = new System.Drawing.Point(14, 20);
-            this.pbCover.Name = "pbCover";
-            this.pbCover.Size = new System.Drawing.Size(166, 249);
-            this.pbCover.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pbCover.TabIndex = 0;
-            this.pbCover.TabStop = false;
+            this.btnExtractTerms.Image = ((System.Drawing.Image)(resources.GetObject("btnExtractTerms.Image")));
+            this.btnExtractTerms.Location = new System.Drawing.Point(533, 11);
+            this.btnExtractTerms.Name = "btnExtractTerms";
+            this.btnExtractTerms.Size = new System.Drawing.Size(48, 48);
+            this.btnExtractTerms.TabIndex = 64;
+            this.btnExtractTerms.UseVisualStyleBackColor = true;
+            this.btnExtractTerms.Click += new System.EventHandler(this.btnSaveTerms_Click);
             // 
             // btnBrowseOutput
             // 
@@ -558,15 +585,15 @@
             this.btnSearchGoodreads.UseVisualStyleBackColor = true;
             this.btnSearchGoodreads.Click += new System.EventHandler(this.btnSearchGoodreads_Click);
             // 
-            // btnSaveShelfari
+            // btnDownloadTerms
             // 
-            this.btnSaveShelfari.Image = ((System.Drawing.Image)(resources.GetObject("btnSaveShelfari.Image")));
-            this.btnSaveShelfari.Location = new System.Drawing.Point(425, 11);
-            this.btnSaveShelfari.Name = "btnSaveShelfari";
-            this.btnSaveShelfari.Size = new System.Drawing.Size(48, 48);
-            this.btnSaveShelfari.TabIndex = 19;
-            this.btnSaveShelfari.UseVisualStyleBackColor = true;
-            this.btnSaveShelfari.Click += new System.EventHandler(this.btnSaveShelfari_Click);
+            this.btnDownloadTerms.Image = ((System.Drawing.Image)(resources.GetObject("btnDownloadTerms.Image")));
+            this.btnDownloadTerms.Location = new System.Drawing.Point(425, 11);
+            this.btnDownloadTerms.Name = "btnDownloadTerms";
+            this.btnDownloadTerms.Size = new System.Drawing.Size(48, 48);
+            this.btnDownloadTerms.TabIndex = 19;
+            this.btnDownloadTerms.UseVisualStyleBackColor = true;
+            this.btnDownloadTerms.Click += new System.EventHandler(this.btnSaveShelfari_Click);
             // 
             // btnBuild
             // 
@@ -589,33 +616,6 @@
             this.btnBrowseXML.Visible = false;
             this.btnBrowseXML.Click += new System.EventHandler(this.btnBrowseXML_Click);
             // 
-            // pbFile2
-            // 
-            this.pbFile2.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
-            this.pbFile2.Location = new System.Drawing.Point(73, 323);
-            this.pbFile2.Name = "pbFile2";
-            this.pbFile2.Size = new System.Drawing.Size(9, 9);
-            this.pbFile2.TabIndex = 71;
-            this.pbFile2.TabStop = false;
-            // 
-            // pbFile4
-            // 
-            this.pbFile4.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
-            this.pbFile4.Location = new System.Drawing.Point(107, 323);
-            this.pbFile4.Name = "pbFile4";
-            this.pbFile4.Size = new System.Drawing.Size(9, 9);
-            this.pbFile4.TabIndex = 73;
-            this.pbFile4.TabStop = false;
-            // 
-            // pbFile3
-            // 
-            this.pbFile3.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
-            this.pbFile3.Location = new System.Drawing.Point(90, 323);
-            this.pbFile3.Name = "pbFile3";
-            this.pbFile3.Size = new System.Drawing.Size(9, 9);
-            this.pbFile3.TabIndex = 72;
-            this.pbFile3.TabStop = false;
-            // 
             // frmMain
             // 
             this.AllowDrop = true;
@@ -627,7 +627,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnAbout);
             this.Controls.Add(this.btnHelp);
-            this.Controls.Add(this.btnSaveTerms);
+            this.Controls.Add(this.btnExtractTerms);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.txtOutput);
             this.Controls.Add(this.btnBrowseOutput);
@@ -642,7 +642,7 @@
             this.Controls.Add(this.btnBrowseMobi);
             this.Controls.Add(this.btnKindleExtras);
             this.Controls.Add(this.btnSearchGoodreads);
-            this.Controls.Add(this.btnSaveShelfari);
+            this.Controls.Add(this.btnDownloadTerms);
             this.Controls.Add(this.prgBar);
             this.Controls.Add(this.btnBuild);
             this.Controls.Add(this.btnBrowseXML);
@@ -662,11 +662,11 @@
             this.cmsPreview.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbFile1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbCover)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbFile2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbFile4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbFile3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFile2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbFile1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbCover)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -676,7 +676,7 @@
 
         private System.Windows.Forms.Button btnBuild;
         private System.Windows.Forms.Button btnSettings;
-        private System.Windows.Forms.Button btnSaveShelfari;
+        private System.Windows.Forms.Button btnDownloadTerms;
         private System.Windows.Forms.Button btnSearchGoodreads;
         private System.Windows.Forms.Label lblGoodreads;
         private System.Windows.Forms.Button btnKindleExtras;
@@ -713,7 +713,7 @@
         private System.Windows.Forms.Label txtAuthor;
         private System.Windows.Forms.Label txtTitle;
         private System.Windows.Forms.LinkLabel txtAsin;
-        private System.Windows.Forms.Button btnSaveTerms;
+        private System.Windows.Forms.Button btnExtractTerms;
         private System.Windows.Forms.Button btnHelp;
         private System.Windows.Forms.Button btnAbout;
         private System.Windows.Forms.Label label1;

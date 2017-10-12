@@ -672,7 +672,7 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(btnSettings, "Configure X-Ray Builder GUI.");
             toolTip1.SetToolTip(btnPreview, "View a preview of the generated files.");
             toolTip1.SetToolTip(btnUnpack, "Save the rawML (raw markup) of the book\r\nin the output directory so you can review it.");
-            toolTip1.SetToolTip(btnSaveTerms,
+            toolTip1.SetToolTip(btnExtractTerms,
                 "Extract an existing X-Ray file to an XML file.\r\nThis can be useful if you have characters and\r\nterms you want to reuse.");
             toolTip1.SetToolTip(btnCreate, "Create an XML file containing characters\r\nand settings, or edit an existing XML file.");
 
@@ -728,7 +728,7 @@ namespace XRayBuilderGUI
                 rdoGoodreads.Text = "Goodreads";
                 lblGoodreads.Text = "Goodreads URL:";
                 lblGoodreads.Left = 134;
-                toolTip1.SetToolTip(btnSaveShelfari, "Save Goodreads info to an XML file.");
+                toolTip1.SetToolTip(btnDownloadTerms, "Save Goodreads info to an XML file.");
             }
         }
 

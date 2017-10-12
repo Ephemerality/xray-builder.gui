@@ -513,7 +513,7 @@
             this.btnExtractTerms.Size = new System.Drawing.Size(48, 48);
             this.btnExtractTerms.TabIndex = 64;
             this.btnExtractTerms.UseVisualStyleBackColor = true;
-            this.btnExtractTerms.Click += new System.EventHandler(this.btnSaveTerms_Click);
+            this.btnExtractTerms.Click += new System.EventHandler(this.btnExtractTerms_Click);
             // 
             // btnBrowseOutput
             // 
@@ -593,7 +593,7 @@
             this.btnDownloadTerms.Size = new System.Drawing.Size(48, 48);
             this.btnDownloadTerms.TabIndex = 19;
             this.btnDownloadTerms.UseVisualStyleBackColor = true;
-            this.btnDownloadTerms.Click += new System.EventHandler(this.btnSaveShelfari_Click);
+            this.btnDownloadTerms.Click += new System.EventHandler(this.btnDownloadTerms_Click);
             // 
             // btnBuild
             // 

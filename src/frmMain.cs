@@ -495,7 +495,7 @@ namespace XRayBuilderGUI
 
         }
 
-        private void btnSaveShelfari_Click(object sender, EventArgs e)
+        private void btnDownloadTerms_Click(object sender, EventArgs e)
         {
             if (txtGoodreads.Text == "")
             {
@@ -1125,7 +1125,7 @@ namespace XRayBuilderGUI
             Process.Start(link);
         }
 
-        private void btnSaveTerms_Click(object sender, EventArgs e)
+        private void btnExtractTerms_Click(object sender, EventArgs e)
         {
             if (settings.useNewVersion)
             {

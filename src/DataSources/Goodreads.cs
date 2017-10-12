@@ -482,18 +482,22 @@ namespace XRayBuilderGUI.DataSources
                 sourceHtmlDoc = new HtmlDocument();
                 sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(dataUrl));
             }
-            Log("Gathering term information from Goodreads...");
 			List<HtmlNode> allChars;
-            List<HtmlNode> moreChars = null;
             HtmlNodeCollection charNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/a");
             if (charNodes == null) return terms;
 			allChars = charNodes.ToList();
             // Check if ...more link exists on Goodreads page
             HtmlNodeCollection moreCharNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/span[@class='toggleContent']/a");
             if (moreCharNodes != null)
-                moreChars = moreCharNodes.ToList();
-            if (moreChars != null)
-                allChars.AddRange(moreChars);
+            {
+                List<HtmlNode> moreChars = moreCharNodes.ToList();
+                if (moreChars != null)
+                    allChars.AddRange(moreChars);
+            }
+            Log("Gathering term information from Goodreads... (" + allChars.Count + ")");
+            if (allChars.Count > 20)
+                Log("More than 20 characters found. Consider using the 'download to XML' option if you need to build repeatedly.");
+            // TODO: Multi-threaded download & show progress
             foreach (HtmlNode charNode in allChars)
             {
                 try

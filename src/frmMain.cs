@@ -1252,7 +1252,7 @@ namespace XRayBuilderGUI
                 pbFile3.Image = Resources.file_on;
             else
                 pbFile3.Image = Resources.file_off;
-            if (File.Exists(XrPath = bookOutputDir + @"\XRAY.entities." + asin))
+            if (File.Exists(XrPath = bookOutputDir + @"\XRAY.entities." + asin + ".asc"))
                 pbFile4.Image = Resources.file_on;
             else
                 pbFile4.Image = Resources.file_off;

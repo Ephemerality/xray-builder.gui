@@ -303,7 +303,8 @@ namespace XRayBuilderGUI.DataSources
                 {
                     curBook.amazonRating = float.Parse(goodreadsRating.InnerText);
                 }
-                HtmlNode passagesNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite votes' and @href='#other_reviews']");
+                HtmlNode passagesNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite votes' and @href='#other_reviews']")
+                    ?? metaNode.SelectSingleNode(".//span[@class='count value-title']");
                 if (passagesNode != null)
                 {
                     match = Regex.Match(passagesNode.InnerText, @"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)");

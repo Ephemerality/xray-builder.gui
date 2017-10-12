@@ -62,7 +62,6 @@ namespace XRayBuilderGUI
             }
             txtOut.Text = Properties.Settings.Default.outDir;
             txtUnpack.Text = Properties.Settings.Default.mobi_unpack;
-            chkSpoilers.Checked = Properties.Settings.Default.spoilers;
             chkRaw.Checked = Properties.Settings.Default.saverawml;
             chkSoftHyphen.Checked = Properties.Settings.Default.ignoresofthyphen;
             chkUseNew.Checked = Properties.Settings.Default.useNewVersion;
@@ -88,8 +87,6 @@ namespace XRayBuilderGUI
             chkSaveBio.Checked = Properties.Settings.Default.saveBio;
             if (Properties.Settings.Default.dataSource == "Goodreads")
                 rdoGoodreads.Checked = true;
-            else
-                rdoShelfari.Checked = true;
             chkPromptAsin.Checked = Properties.Settings.Default.promptASIN;
             if (txtTemp.Text == "")
                 txtTemp.Text = Path.GetTempPath();
@@ -101,7 +98,6 @@ namespace XRayBuilderGUI
             ToolTip toolTip1 = new ToolTip();
             toolTip1.SetToolTip(chkRaw,
                 "Save the rawML (raw markup) of the book\r\nin the output directory so you can review it.");
-            toolTip1.SetToolTip(chkSpoilers, "Use Shelfari descriptions that\r\ncontain spoilers when they exist. (Shelfari only)");
             toolTip1.SetToolTip(txtOffset,
                 "This offset will be applied to every\r\nbook location (usually a negative\r\nnumber). Must be an integer.");
             toolTip1.SetToolTip(chkSoftHyphen,
@@ -210,7 +206,6 @@ namespace XRayBuilderGUI
 
             Properties.Settings.Default.outDir = txtOut.Text;
             Properties.Settings.Default.mobi_unpack = txtUnpack.Text;
-            Properties.Settings.Default.spoilers = chkSpoilers.Checked;
             Properties.Settings.Default.saverawml = chkRaw.Checked;
             Properties.Settings.Default.ignoresofthyphen = chkSoftHyphen.Checked;
             Properties.Settings.Default.useNewVersion = chkUseNew.Checked;
@@ -236,8 +231,6 @@ namespace XRayBuilderGUI
             Properties.Settings.Default.amazonTLD = cmbRegion.SelectedValue.ToString();
             if (rdoGoodreads.Checked)
                 Properties.Settings.Default.dataSource = "Goodreads";
-            else
-                Properties.Settings.Default.dataSource = "Shelfari";
             Properties.Settings.Default.promptASIN = chkPromptAsin.Checked;
             Properties.Settings.Default.tmpDir = txtTemp.Text;
             Properties.Settings.Default.deleteTemp = chkDeleteTemp.Checked;

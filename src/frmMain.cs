@@ -197,7 +197,7 @@ namespace XRayBuilderGUI
             Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nUniqueID: {1}",
                 results[2], results[1]));
             Log(String.Format("Book's {0} URL: {1}", dataSource.Name, txtGoodreads.Text));
-            Log(String.Format("Attempting to build X-Ray...\r\nSpoilers: {0}", settings.spoilers ? "Enabled" : "Disabled"));
+            Log("Attempting to build X-Ray...");
 
             //If AZW3 file use AZW3 offset, if checked. Checked by default.
             bool AZW3 = Path.GetExtension(txtMobi.Text) == ".azw3" && settings.overrideOffset;
@@ -209,10 +209,10 @@ namespace XRayBuilderGUI
             try
             {
                 if (rdoGoodreads.Checked)
-                    xray = new XRay(txtGoodreads.Text, results[2], results[1], results[0], this, dataSource, settings.spoilers,
+                    xray = new XRay(txtGoodreads.Text, results[2], results[1], results[0], this, dataSource,
                         (AZW3 ? settings.offsetAZW3 : settings.offset), "", false);
                 else
-                    xray = new XRay(txtXMLFile.Text, results[2], results[1], results[0], this, dataSource, settings.spoilers,
+                    xray = new XRay(txtXMLFile.Text, results[2], results[1], results[0], this, dataSource,
                         (AZW3 ? settings.offsetAZW3 : settings.offset), "");
                 if (xray.CreateXray() > 0)
                 {
@@ -514,7 +514,7 @@ namespace XRayBuilderGUI
             {
                 txtXMLFile.Text = path;
 
-                XRay xray = new XRay(txtGoodreads.Text, this, dataSource, settings.spoilers);
+                XRay xray = new XRay(txtGoodreads.Text, this, dataSource);
                 if (xray.SaveXml(path) > 0)
                 {
                     Log("Warning: Unable to download character data as no character data found on Goodreads.");
@@ -591,9 +591,8 @@ namespace XRayBuilderGUI
                 {
                     txtGoodreads.Text = bookUrl;
                     txtGoodreads.Refresh();
-                    if (dataSource.Name == "Shelfari")
-                        Log(String.Format("Book found on {3}!\r\n{0} by {1}\r\n{3} URL: {2}\r\nYou may want to visit the URL to ensure it is correct.",
-                            results[5], results[4], bookUrl, dataSource.Name));
+                    Log(String.Format("Book found on {3}!\r\n{0} by {1}\r\n{3} URL: {2}\r\nYou may want to visit the URL to ensure it is correct.",
+                        results[5], results[4], bookUrl, dataSource.Name));
                 }
                 else
                     Log("Unable to find this book on " + dataSource.Name + "!");
@@ -731,14 +730,6 @@ namespace XRayBuilderGUI
                 lblGoodreads.Left = 134;
                 toolTip1.SetToolTip(btnSaveShelfari, "Save Goodreads info to an XML file.");
             }
-            else
-            {
-                dataSource = new Shelfari();
-                rdoGoodreads.Text = "Shelfari";
-                lblGoodreads.Text = "Shelfari URL:";
-                lblGoodreads.Left = 150;
-                toolTip1.SetToolTip(btnSaveShelfari, "Save Shelfari info to an XML file.");
-            }
         }
 
         private void frmMain_DragDrop(object sender, DragEventArgs e)
@@ -777,10 +768,6 @@ namespace XRayBuilderGUI
                 btnBrowseXML.Visible = !btnBrowseXML.Visible;
                 btnSearchGoodreads.Visible = !btnSearchGoodreads.Visible;
             }
-            if (((RadioButton)sender).Text == "Shelfari")
-                lblGoodreads.Left = 150;
-            else if (((RadioButton)sender).Text == "Goodreads")
-                lblGoodreads.Left = 134;
         }
 
         private void txtMobi_TextChanged(object sender, EventArgs e)

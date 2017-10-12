@@ -98,7 +98,6 @@
     <Compile Include="src\BookInfo.cs" />
     <Compile Include="src\DataSources\DataSource.cs" />
     <Compile Include="src\DataSources\Goodreads.cs" />
-    <Compile Include="src\DataSources\Shelfari.cs" />
     <Compile Include="src\EndActions.cs" />
     <Compile Include="src\frmAbout.cs">
       <SubType>Form</SubType>

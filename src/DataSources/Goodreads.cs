@@ -473,7 +473,7 @@ namespace XRayBuilderGUI.DataSources
             return false;
         }
 
-        public override List<XRay.Term> GetTerms(bool useSpoilers, string dataUrl, Action<string> Log)
+        public override List<XRay.Term> GetTerms(string dataUrl, Action<string> Log)
         {
             List<XRay.Term> terms = new List<XRay.Term>();
             if (sourceHtmlDoc == null)

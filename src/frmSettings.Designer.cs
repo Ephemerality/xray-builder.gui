@@ -65,7 +65,6 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.txtAZWOffset = new System.Windows.Forms.TextBox();
             this.chkOverrideOffset = new System.Windows.Forms.CheckBox();
-            this.chkSpoilers = new System.Windows.Forms.CheckBox();
             this.chkSoftHyphen = new System.Windows.Forms.CheckBox();
             this.lblOffset = new System.Windows.Forms.Label();
             this.txtOffset = new System.Windows.Forms.TextBox();
@@ -450,6 +449,7 @@
             // rdoShelfari
             // 
             this.rdoShelfari.AutoSize = true;
+            this.rdoShelfari.Enabled = false;
             this.rdoShelfari.Location = new System.Drawing.Point(17, 45);
             this.rdoShelfari.Name = "rdoShelfari";
             this.rdoShelfari.Size = new System.Drawing.Size(60, 17);
@@ -474,7 +474,6 @@
             // 
             this.groupBox4.Controls.Add(this.txtAZWOffset);
             this.groupBox4.Controls.Add(this.chkOverrideOffset);
-            this.groupBox4.Controls.Add(this.chkSpoilers);
             this.groupBox4.Controls.Add(this.chkSoftHyphen);
             this.groupBox4.Controls.Add(this.lblOffset);
             this.groupBox4.Controls.Add(this.txtOffset);
@@ -502,16 +501,6 @@
             this.chkOverrideOffset.Text = "AWZ3 Offset:";
             this.chkOverrideOffset.UseVisualStyleBackColor = true;
             this.chkOverrideOffset.CheckedChanged += new System.EventHandler(this.chkOverrideOffset_CheckedChanged);
-            // 
-            // chkSpoilers
-            // 
-            this.chkSpoilers.AutoSize = true;
-            this.chkSpoilers.Location = new System.Drawing.Point(14, 45);
-            this.chkSpoilers.Name = "chkSpoilers";
-            this.chkSpoilers.Size = new System.Drawing.Size(101, 17);
-            this.chkSpoilers.TabIndex = 22;
-            this.chkSpoilers.Text = "Include Spoilers";
-            this.chkSpoilers.UseVisualStyleBackColor = true;
             // 
             // chkSoftHyphen
             // 
@@ -925,7 +914,6 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.TextBox txtAZWOffset;
         private System.Windows.Forms.CheckBox chkOverrideOffset;
-        private System.Windows.Forms.CheckBox chkSpoilers;
         private System.Windows.Forms.CheckBox chkSoftHyphen;
         private System.Windows.Forms.Label lblOffset;
         private System.Windows.Forms.TextBox txtOffset;

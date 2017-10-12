@@ -48,7 +48,6 @@ namespace XRayBuilderGUI
         private long _srl;
         private long _erl;
         private bool _shortEx = true;
-        private bool useSpoilers;
         private bool unattended;
         private bool skipShelfari;
         private int locOffset;
@@ -88,18 +87,17 @@ namespace XRayBuilderGUI
         {
         }
 
-        public XRay(string shelfari, frmMain frm, DataSources.DataSource dataSource, bool useSpoilers = false)
+        public XRay(string shelfari, frmMain frm, DataSources.DataSource dataSource)
         {
             if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
                 shelfari = "http://" + shelfari;
             this.dataUrl = shelfari;
-            this.useSpoilers = useSpoilers;
             this.main = frm;
             this.dataSource = dataSource;
         }
 
         public XRay(string shelfari, string db, string guid, string asin, frmMain frm, DataSources.DataSource dataSource,
-            bool useSpoilers = false, int locOffset = 0, string aliaspath = "", bool unattended = false)
+            int locOffset = 0, string aliaspath = "", bool unattended = false)
         {
             if (shelfari == "" || db == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
@@ -110,7 +108,6 @@ namespace XRayBuilderGUI
             this.databaseName = db;
             this._guid = guid;
             this.asin = asin;
-            this.useSpoilers = useSpoilers;
             this.locOffset = locOffset;
             this.aliaspath = aliaspath;
             this.unattended = unattended;
@@ -118,7 +115,7 @@ namespace XRayBuilderGUI
             this.dataSource = dataSource;
         }
 
-        public XRay(string xml, string db, string guid, string asin, frmMain frm, DataSources.DataSource dataSource, bool useSpoilers = false,
+        public XRay(string xml, string db, string guid, string asin, frmMain frm, DataSources.DataSource dataSource,
             int locOffset = 0, string aliaspath = "")
         {
             if (xml == "" || db == "" || guid == "" || asin == "")
@@ -127,7 +124,6 @@ namespace XRayBuilderGUI
             this.databaseName = db;
             this._guid = guid;
             this.asin = asin;
-            this.useSpoilers = useSpoilers;
             this.locOffset = locOffset;
             this.aliaspath = aliaspath;
             this.unattended = false;
@@ -138,7 +134,7 @@ namespace XRayBuilderGUI
 
         public int SaveXml(string outfile)
         {
-            Terms = dataSource.GetTerms(useSpoilers, dataUrl, main.Log);
+            Terms = dataSource.GetTerms(dataUrl, main.Log);
             if (Terms.Count == 0)
                 return 1;
             main.Log(@"Exporting terms...");
@@ -232,7 +228,7 @@ namespace XRayBuilderGUI
             }
             else
             {
-                Terms = dataSource.GetTerms(useSpoilers, dataUrl, main.Log);
+                Terms = dataSource.GetTerms(dataUrl, main.Log);
                 if (Terms.Count == 0)
                 {
                     main.Log("Error: No terms found on " + dataSource.Name + ".");

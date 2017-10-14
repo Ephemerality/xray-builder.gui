@@ -17,6 +17,7 @@ namespace XRayBuilderGUI.DataSources
         private frmGR frmG = new frmGR();
 
         private List<BookInfo> goodreadsBookList = new List<BookInfo>();
+        private List<string[]> notableClips = null;
 
         // Goodreads expects %26 and %27 instead of & and ’ or ' and %20 instead of spaces
         Dictionary<string, string> replacements = new Dictionary<string, string>()
@@ -239,84 +240,10 @@ namespace XRayBuilderGUI.DataSources
                 sourceHtmlDoc = new HtmlDocument();
                 sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.dataUrl));
             }
-            //Use Goodreads reviews and ratings to generate popular passages dummy
-            int highlights = 0;
-            int passages = 0;
-            Random randomNumber = new Random();
-
-            HtmlNode metaNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
-            if (metaNode != null)
-            {
-                HtmlNode passagesNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite votes' and @href='#other_reviews']");
-                match = Regex.Match(passagesNode.InnerText, @"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)");
-                if (match.Success)
-                {
-                    passages = int.Parse(match.Value.Replace(",", "").Replace(".", ""));                    
-                }
-                if (passages == 0 || passages < 10)
-                {
-                    passages = randomNumber.Next(1, 51);
-                }
-                if (passages > 10000)
-                    passages = passages / 100;
-                if (passages > 200)
-                    passages = passages / 10;
-                curBook.popularPassages = passages.ToString();
-
-                HtmlNode highlightsNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite' and @href='#other_reviews']");
-                match = Regex.Match(highlightsNode.InnerText, @"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)");
-                if (match.Success)
-                {
-                    highlights = int.Parse(match.Value.Replace(",", "").Replace(".", ""));                    
-                }
-                if (highlights == 0 || highlights < 10)
-                {
-                    highlights = randomNumber.Next(50, 101);
-                }
-                if (highlights > 10000)
-                    highlights = highlights / 100;
-                if (highlights > 200)
-                    highlights = highlights / 10;
-                curBook.popularHighlights = highlights.ToString();
-
-                string textPassages = curBook.popularPassages == "1"
-                    ? String.Format("{0} passage has", curBook.popularPassages)
-                    : String.Format("{0} passages have", curBook.popularPassages);
-                string textHighlights = curBook.popularHighlights == "1"
-                    ? String.Format("{0} time", curBook.popularHighlights)
-                    : String.Format("{0} times", curBook.popularHighlights);
-
-                Log(String.Format("{0} been highlighted {1}", textPassages, textHighlights));
-            }
-            if (highlights == 0 && passages == 0)
-            {
-                Log("No highlighted passages have been found for this book");
-                curBook.popularPassages = "";
-                curBook.popularHighlights = "";
-            }
-
-            //Add rating and reviews count if missing from Amazon book ifo
-            if (curBook.amazonRating == 0)
-            {
-                HtmlNode goodreadsRating = metaNode.SelectSingleNode("//span[@class='value rating']");
-                if (goodreadsRating != null)
-                {
-                    curBook.amazonRating = float.Parse(goodreadsRating.InnerText);
-                }
-                HtmlNode passagesNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite votes' and @href='#other_reviews']")
-                    ?? metaNode.SelectSingleNode(".//span[@class='count value-title']");
-                if (passagesNode != null)
-                {
-                    match = Regex.Match(passagesNode.InnerText, @"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)");
-                    if (match.Success)
-                    {
-                        curBook.numReviews = int.Parse(match.Value.Replace(",", "").Replace(".", ""));
-                    }
-                }
-            }
 
             //Search Goodreads for series info
             string goodreadsSeriesUrl = @"http://www.goodreads.com/series/{0}";
+            HtmlNode metaNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
             HtmlNode SeriesNode = metaNode.SelectSingleNode("//h1[@id='bookTitle']");
             if (SeriesNode == null)
                 return results;
@@ -550,6 +477,68 @@ namespace XRayBuilderGUI.DataSources
                 }
             }
             return result;
+        }
+
+        /// <summary>
+        /// Scrape any notable quotes from Goodreads and grab ratings if missing from book info
+        /// Modifies curBook.
+        /// </summary>
+        /// <param name="curBook"></param>
+        public override void GetExtras(BookInfo curBook, Action<string> Log, IProgress<Tuple<int, int>> progress = null)
+        {
+            if (sourceHtmlDoc == null)
+            {
+                sourceHtmlDoc = new HtmlDocument();
+                sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.dataUrl));
+            }
+            
+            // Gather the list of quotes & number of times they've been liked -- close enough to "x paragraphs have been highlighted y times" from Amazon
+            HtmlNode quoteNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@class='h2Container gradientHeaderContainer']/h2/a[starts-with(.,'Quotes from')]");
+            if (quoteNode != null && curBook.notableClips == null)
+            {
+                string quoteURL = String.Format("http://www.goodreads.com{0}?page={{0}}", quoteNode.GetAttributeValue("href", ""));
+                int maxPages = 1;
+                if (progress != null) progress.Report(new Tuple<int, int>(0, 1));
+                for (int i = 1; i <= maxPages; i++)
+                {
+                    HtmlDocument quoteDoc = new HtmlDocument();
+                    quoteDoc.LoadHtml(HttpDownloader.GetPageHtml(String.Format(quoteURL, i)));
+                    // first time through, check how many pages there are (find previous page button, get parent div, take all children of that, 2nd last one should be the max page count
+                    if (maxPages == 1)
+                    {
+                        HtmlNode tempNode = quoteDoc.DocumentNode.SelectSingleNode("//span[contains(@class,'previous_page')]/parent::div/*[last()-1]");
+                        if (!int.TryParse(tempNode.InnerHtml, out maxPages)) maxPages = 1;
+                        curBook.notableClips = new List<Tuple<string, int>>(maxPages * 30);
+                    }
+                    HtmlNodeCollection tempNodes = quoteDoc.DocumentNode.SelectNodes("//div[@class='quotes']/div[@class='quote']");
+                    foreach (HtmlNode quote in tempNodes)
+                    {
+                        int start = quote.InnerText.IndexOf("&ldquo;") + 7;
+                        int end = quote.InnerText.IndexOf("&rdquo;");
+                        int likes;
+                        int.TryParse(quote.SelectSingleNode(".//div[@class='right']/a").InnerText.Replace(" likes", ""), out likes);
+                        curBook.notableClips.Add(new Tuple<string, int>(quote.InnerText.Substring(start, end - start), likes));
+                    }
+                    if (progress != null) progress.Report(new Tuple<int, int>(i, maxPages));
+                }
+            }
+            
+            //Add rating and reviews count if missing from Amazon book info
+            HtmlNode metaNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
+            if (curBook.amazonRating == 0)
+            {
+                HtmlNode goodreadsRating = metaNode.SelectSingleNode("//span[@class='value rating']");
+                if (goodreadsRating != null)
+                    curBook.amazonRating = float.Parse(goodreadsRating.InnerText);
+                HtmlNode passagesNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite votes' and @href='#other_reviews']")
+                    ?? metaNode.SelectSingleNode(".//span[@class='count value-title']");
+                if (passagesNode != null)
+                {
+                    Match match = Regex.Match(passagesNode.InnerText, @"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)");
+                    if (match.Success)
+                        curBook.numReviews = int.Parse(match.Value.Replace(",", "").Replace(".", ""));
+                }
+            }
         }
     }
 }

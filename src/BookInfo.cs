@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 
 using HtmlAgilityPack;
+using System.Collections.Generic;
 
 namespace XRayBuilderGUI
 {
@@ -35,10 +36,11 @@ namespace XRayBuilderGUI
         public string readingHours = "";
         public string readingMinutes = "";
         public string pagesInBook = "";
-        public string popularHighlights = "";
-        public string popularPassages = "";
         public BookInfo nextInSeries = null;
         public BookInfo previousInSeries = null;
+
+        // List of clips and their highlight/like count
+        public List<Tuple<string, int>> notableClips = null;
 
         public BookInfo(string title, string author, string asin, string guid, string databasename, string path, string sidecarName, string dataUrl, string rawmlPath)
         {

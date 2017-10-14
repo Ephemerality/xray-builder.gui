@@ -11,7 +11,7 @@ namespace XRayBuilderGUI.DataSources
         public abstract string SearchBook(string author, string title, Action<string> Log);
         public abstract BookInfo GetNextInSeries(BookInfo curBook, AuthorProfile authorProfile, string TLD, Action<string> Log);
         public virtual bool GetPageCount(BookInfo curBook, Action<string> Log) { return false; }
-        public virtual List<string[]> GetNotableQuotes(string dataUrl) { return new List<string[]>(); }
+        public virtual void GetExtras(BookInfo curBook, Action<string> Log, IProgress<Tuple<int, int>> progress = null) { }
         public virtual List<XRay.Term> GetTerms(string dataUrl, Action<string> Log, IProgress<Tuple<int, int>> progress = null) { return new List<XRay.Term>(); }
     }
 }

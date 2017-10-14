@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
+using XRayBuilderGUI.Unpack;
 
 namespace XRayBuilderGUI
 {
@@ -244,74 +245,80 @@ namespace XRayBuilderGUI
                 version, date, time);
         }
 
-        public static async Task<Unpack.Metadata> GetMetaDataInternalAsync(string mobiFile, string outDir, bool saveRawML, string randomFile = "")
+        public static async Task<Metadata> GetMetaDataInternalAsync(string mobiFile, string outDir, bool saveRawML, string randomFile = "")
         {
             return await Task.Run(() => GetMetaDataInternal(mobiFile, outDir, saveRawML, randomFile));
         }
 
         //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
-        public static Unpack.Metadata GetMetaDataInternal(string mobiFile, string outDir, bool saveRawML, string randomFile = "")
+        public static Metadata GetMetaDataInternal(string mobiFile, string outDir, bool saveRawML, string randomFile = "")
         {
-            List<string> output = new List<string>();
             FileStream fs = new FileStream(mobiFile, FileMode.Open, FileAccess.Read);
             if (fs == null)
                 throw new Exception("Unable to open mobi file.");
-            Unpack.Metadata md = new Unpack.Metadata(fs);
-
-            if (md.mobiHeader.exthHeader == null)
-                throw new Exception("No EXT Header found. Ensure this book was processed with Calibre then try again.");
-
-            if (md.mobiHeader.exthHeader.CDEType != "EBOK")
-                if (md.mobiHeader.exthHeader.CDEType.Length == 4 &&
-                    DialogResult.Yes == MessageBox.Show("The document type is not set to EBOK. Would you like this to be updated?\r\n" +
-                        "Caution: This feature is experimental and could potentially ruin your book file.", "Incorrect Content Type", MessageBoxButtons.YesNo))
-                {
-                    fs.Close();
-                    fs = new FileStream(mobiFile, FileMode.Open, FileAccess.ReadWrite);
-                    if (fs == null)
-                        throw new Exception("Unable to re-open mobi file for writing.");
-                    md.mobiHeader.exthHeader.UpdateCDEContentType(fs);
-                }
-                else
-                {
-                    fs.Close();
-                    throw new Exception("The document type is not set to EBOK; Kindle will not display an X-Ray for this book.\r\n" +
-                        "You must either use Calibre's convert feature (Personal Doc tag under MOBI Output) or a MOBI editor (exth 501) to change this.");
-                }
-
-            string ASIN = md.ASIN;
-            Match match = Regex.Match(ASIN, "(^B[A-Z0-9]{9})");
-            if (!match.Success && DialogResult.No == MessageBox.Show(String.Format("Incorrect ASIN detected: {0}!\n" +
-                                      "Kindle may not display an X-Ray for this book.\n" +
-                                      "Do you wish to continue?", ASIN), "Incorrect ASIN", MessageBoxButtons.YesNo))
+            Metadata md = new Metadata(fs);
+            try
             {
-                fs.Close();
-                throw new Exception(String.Format("Incorrect ASIN detected: {0}!\r\n" +
-                                  "Kindle may not display an X-Ray for this book.\r\n" +
-                                  "You must either use Calibre's Quality Check plugin (Fix ASIN for Kindle Fire) " +
-                                  "or a MOBI editor (exth 113 and optionally 504) to change this.", ASIN));
-            }
+                if (md.mobiHeader.exthHeader == null)
+                    throw new Exception("No EXT Header found. Ensure this book was processed with Calibre then try again.");
 
-            if (!Properties.Settings.Default.useNewVersion && md.DBName.Length == 31)
-            {
-                MessageBox.Show(String.Format(
-                    "WARNING: Database Name is the maximum length. If \"{0}\" is the full book title, this should not be an issue.\r\n" +
-                    "If the title is supposed to be longer than that, you may get an error on your Kindle (WG on firmware < 5.6).\r\n" +
-                    "This can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n",
-                    md.DBName));
-            }
-            
-            if (saveRawML)
-            {
-                // Everything else checked out, grab rawml and write to the temp file
-                md.rawMLPath = randomFile + "\\" + Path.GetFileNameWithoutExtension(mobiFile) + ".rawml";
-                byte[] rawML = md.getRawML(fs);
-                using (FileStream rawMLFile = new FileStream(md.rawMLPath, FileMode.Create, FileAccess.Write))
+                if (md.mobiHeader.exthHeader.CDEType != "EBOK")
+                    if (md.mobiHeader.exthHeader.CDEType.Length == 4 &&
+                        DialogResult.Yes == MessageBox.Show("The document type is not set to EBOK. Would you like this to be updated?\r\n" +
+                            "Caution: This feature is experimental and could potentially ruin your book file.", "Incorrect Content Type", MessageBoxButtons.YesNo))
+                    {
+                        fs.Dispose();
+                        fs = new FileStream(mobiFile, FileMode.Open, FileAccess.ReadWrite);
+                        if (fs == null)
+                            throw new Exception("Unable to re-open mobi file for writing.");
+                        md.mobiHeader.exthHeader.UpdateCDEContentType(fs);
+                    }
+                    else
+                    {
+                        throw new Exception("The document type is not set to EBOK; Kindle will not display an X-Ray for this book.\r\n" +
+                            "You must either use Calibre's convert feature (Personal Doc tag under MOBI Output) or a MOBI editor (exth 501) to change this.");
+                    }
+
+                string ASIN = md.ASIN;
+                Match match = Regex.Match(ASIN, "(^B[A-Z0-9]{9})");
+                if (!match.Success && DialogResult.No == MessageBox.Show(String.Format("Incorrect ASIN detected: {0}!\n" +
+                                          "Kindle may not display an X-Ray for this book.\n" +
+                                          "Do you wish to continue?", ASIN), "Incorrect ASIN", MessageBoxButtons.YesNo))
                 {
-                    rawMLFile.Write(rawML, 0, rawML.Length);
+                    throw new Exception(String.Format("Incorrect ASIN detected: {0}!\r\n" +
+                                      "Kindle may not display an X-Ray for this book.\r\n" +
+                                      "You must either use Calibre's Quality Check plugin (Fix ASIN for Kindle Fire) " +
+                                      "or a MOBI editor (exth 113 and optionally 504) to change this.", ASIN));
+                }
+
+                if (!Properties.Settings.Default.useNewVersion && md.DBName.Length == 31)
+                {
+                    MessageBox.Show(String.Format(
+                        "WARNING: Database Name is the maximum length. If \"{0}\" is the full book title, this should not be an issue.\r\n" +
+                        "If the title is supposed to be longer than that, you may get an error on your Kindle (WG on firmware < 5.6).\r\n" +
+                        "This can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n",
+                        md.DBName));
+                }
+
+                if (saveRawML)
+                {
+                    // Everything else checked out, grab rawml and write to the temp file
+                    md.rawMLPath = randomFile + "\\" + Path.GetFileNameWithoutExtension(mobiFile) + ".rawml";
+                    byte[] rawML = md.getRawML(fs);
+                    using (FileStream rawMLFile = new FileStream(md.rawMLPath, FileMode.Create, FileAccess.Write))
+                    {
+                        rawMLFile.Write(rawML, 0, rawML.Length);
+                    }
                 }
             }
-            fs.Close();
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                fs.Dispose();
+            }
             return md;
         }
 

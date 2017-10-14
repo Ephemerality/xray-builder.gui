@@ -6,7 +6,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
 using System.Text;
 
@@ -147,7 +146,10 @@ namespace XRayBuilderGUI.Unpack
                 fs.Read(buffer, 0, buffer.Length);
                 buffer = trimTrailingDataEntries(buffer);
                 byte[] result = decomp.unpack(buffer, PDB.MobiHeaderSize);
-                rawML = rawML.Concat(result).ToArray();
+                buffer = new byte[rawML.Length + result.Length];
+                Buffer.BlockCopy(rawML, 0, buffer, 0, rawML.Length);
+                Buffer.BlockCopy(result, 0, buffer, rawML.Length, result.Length);
+                rawML = buffer;
             }
             return rawML;
         }

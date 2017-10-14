@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilderGUI.DataSources;
@@ -49,6 +50,8 @@ namespace XRayBuilderGUI
         ToolTip toolTip1 = new ToolTip();
 
         DataSource dataSource = null;
+
+        CancellationTokenSource cancelTokens = new CancellationTokenSource();
 
         public void UpdateProgressBar(Tuple<int, int> vals)
         {
@@ -104,6 +107,7 @@ namespace XRayBuilderGUI
             txtGoodreads.Enabled = enabled;
             rdoFile.Enabled = enabled;
             rdoGoodreads.Enabled = enabled;
+            btnCancel.Enabled = !enabled;
         }
 
         public static bool checkInternet()
@@ -1285,6 +1289,15 @@ namespace XRayBuilderGUI
             else
                 pbFile4.Image = Resources.file_off;
             return true;
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            if (!cancelTokens.IsCancellationRequested)
+            {
+                Log("Canceling...");
+                cancelTokens.Cancel();
+            }
         }
     }
 }

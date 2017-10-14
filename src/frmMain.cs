@@ -49,6 +49,12 @@ namespace XRayBuilderGUI
 
         DataSource dataSource = null;
 
+        public void UpdateProgressBar(Tuple<int, int> vals)
+        {
+            Functions.SetPropertyThreadSafe(prgBar, "Maximum", vals.Item2);
+            Functions.SetPropertyThreadSafe(prgBar, "Value", vals.Item1);
+        }
+
         public void Log(string message)
         {
             if (Exiting) return;

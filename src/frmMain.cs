@@ -119,6 +119,8 @@ namespace XRayBuilderGUI
                 cancelTokens.Dispose();
                 cancelTokens = new CancellationTokenSource();
             }
+            else if (enabled == true)
+                UpdateProgressBar(new Tuple<int, int>(0, 0));
         }
 
         public static bool checkInternet()

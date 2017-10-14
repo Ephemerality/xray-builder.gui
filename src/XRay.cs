@@ -30,6 +30,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 using HtmlAgilityPack;
+using System.Threading.Tasks;
 
 namespace XRayBuilderGUI
 {
@@ -132,9 +133,14 @@ namespace XRayBuilderGUI
             this.skipShelfari = true;
         }
 
-        public int SaveXml(string outfile)
+        public async Task<int> SaveXmlAsync(string outfile, IProgress<Tuple<int, int>> progress)
         {
-            Terms = dataSource.GetTerms(dataUrl, main.Log);
+            return await Task.Run(() => SaveXml(outfile, progress));
+        }
+
+        public int SaveXml(string outfile, IProgress<Tuple<int, int>> progress)
+        {
+            Terms = dataSource.GetTerms(dataUrl, main.Log, progress);
             if (Terms.Count == 0)
                 return 1;
             main.Log(@"Exporting terms...");
@@ -310,7 +316,12 @@ namespace XRayBuilderGUI
             return 0;
         }
 
-        public int ExpandFromRawMl(string rawMl, bool ignoreSoftHypen = false, bool shortEx = true)
+        public async Task<int> ExpandFromRawMlAsync(string rawMl, IProgress<Tuple<int, int>> progress, bool ignoreSoftHypen = false, bool shortEx = true)
+        {
+            return await Task.Run(() => ExpandFromRawMl(rawMl, progress, ignoreSoftHypen, shortEx));
+        }
+
+        public int ExpandFromRawMl(string rawMl, IProgress<Tuple<int, int>> progress, bool ignoreSoftHypen = false, bool shortEx = true)
         {
             // If there is an apostrophe, attempt to match 's at the end of the term
             // Match end of word, then search for any lingering punctuation
@@ -414,12 +425,11 @@ namespace XRayBuilderGUI
             if (nodes == null)
                 throw new Exception("Could not locate any paragraphs in this book.\r\n" +
                     "Report this error along with a copy of the book to improve parsing.");
-            main.prgBar.Maximum = nodes.Count;
+            progress.Report(new Tuple<int, int>(0, nodes.Count));
             for (int i = 0; i < nodes.Count; i++)
             {
                 if (main.Exiting) return 1;
-                main.prgBar.Value = (i + 1);
-                if (((i + 1)%5) == 0) Application.DoEvents();
+                progress.Report(new Tuple<int, int>(i + 1, nodes.Count));
 
                 HtmlNode node = nodes[i];
                 if (node.FirstChild == null) continue; //If the inner HTML is just empty, skip the paragraph!

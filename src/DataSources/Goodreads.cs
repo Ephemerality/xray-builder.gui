@@ -474,11 +474,12 @@ namespace XRayBuilderGUI.DataSources
             return false;
         }
 
-        public override List<XRay.Term> GetTerms(string dataUrl, Action<string> Log)
+        public override List<XRay.Term> GetTerms(string dataUrl, Action<string> Log, IProgress<Tuple<int, int>> progress = null)
         {
             List<XRay.Term> terms = new List<XRay.Term>();
             if (sourceHtmlDoc == null)
             {
+                Log("Downloading Goodreads page...");
                 sourceHtmlDoc = new HtmlDocument();
                 sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(dataUrl));
             }
@@ -497,7 +498,8 @@ namespace XRayBuilderGUI.DataSources
             Log("Gathering term information from Goodreads... (" + allChars.Count + ")");
             if (allChars.Count > 20)
                 Log("More than 20 characters found. Consider using the 'download to XML' option if you need to build repeatedly.");
-            // TODO: Multi-threaded download & show progress
+            int count = 1;
+            if (progress != null) progress.Report(new Tuple<int, int>(1, allChars.Count));
             foreach (HtmlNode charNode in allChars)
             {
                 try
@@ -505,6 +507,7 @@ namespace XRayBuilderGUI.DataSources
                     XRay.Term tempTerm = GetTerm(dataUrl, charNode.GetAttributeValue("href", ""));
                     if (tempTerm != null)
                         terms.Add(tempTerm);
+                    if (progress != null) progress.Report(new Tuple<int, int>(count++, allChars.Count));
                 }
                 catch (Exception ex)
                 {

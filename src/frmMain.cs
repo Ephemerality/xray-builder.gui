@@ -91,6 +91,19 @@ namespace XRayBuilderGUI
                 txtOutput.Refresh();
             }
         }
+
+        private void ToggleInterface(bool enabled)
+        {
+            foreach (Control c in Controls)
+            {
+                if (c is Button)
+                    c.Enabled = enabled;
+            }
+            txtMobi.Enabled = enabled;
+            txtXMLFile.Enabled = enabled;
+            txtGoodreads.Enabled = enabled;
+            rdoFile.Enabled = enabled;
+            rdoGoodreads.Enabled = enabled;
         }
 
         public static bool checkInternet()

@@ -691,5 +691,13 @@ namespace XRayBuilderGUI
             Directory.Delete(folderPath, false);
             return true;
         }
+
+        public static void SetPropertyThreadSafe(this Control ctrl, string name, object value)
+        {
+            if (ctrl.InvokeRequired)
+                ctrl.BeginInvoke(new Action(() => SetPropertyThreadSafe(ctrl, name, value)));
+            else
+                ctrl.GetType().InvokeMember(name, System.Reflection.BindingFlags.SetProperty, null, ctrl, new object[] { value });
+        }
     }
 }

@@ -234,7 +234,8 @@ namespace XRayBuilderGUI
                 }
                 Log("Initial X-Ray built, adding locations and chapters...");
                 //Expand the X-Ray file from the unpacked mobi
-                if (xray.ExpandFromRawMl(results[3], settings.ignoresofthyphen, !settings.useNewVersion) > 0)
+                Progress<Tuple<int, int>> progress = new Progress<Tuple<int, int>>(UpdateProgressBar);
+                if (xray.ExpandFromRawMl(results[3], progress, settings.ignoresofthyphen, !settings.useNewVersion) > 0)
                 {
                     Log("An error occurred while processing locations and chapters.");
                     return;
@@ -508,7 +509,7 @@ namespace XRayBuilderGUI
 
         }
 
-        private void btnDownloadTerms_Click(object sender, EventArgs e)
+        private async void btnDownloadTerms_Click(object sender, EventArgs e)
         {
             if (txtGoodreads.Text == "")
             {
@@ -528,17 +529,18 @@ namespace XRayBuilderGUI
                 txtXMLFile.Text = path;
 
                 XRay xray = new XRay(txtGoodreads.Text, this, dataSource);
-                if (xray.SaveXml(path) > 0)
-                {
+                if ((await xray.SaveXmlAsync(path, new Progress<Tuple<int, int>>(UpdateProgressBar))) > 0)
                     Log("Warning: Unable to download character data as no character data found on Goodreads.");
-                    return;
-                }
-                Log("Character data has been saved to: " + path);
+                else
+                    Log("Character data has been successfully saved to: " + path);
             }
             catch (Exception)
             {
                 Log("An error occurred while saving character data to XML. Path was: " + path);
-                return;
+            }
+            finally
+            {
+                ToggleInterface(true);
             }
         }
 

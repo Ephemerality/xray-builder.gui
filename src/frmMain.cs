@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilderGUI.DataSources;
 using XRayBuilderGUI.Properties;
@@ -129,7 +130,7 @@ namespace XRayBuilderGUI
             txtXMLFile.Text = Functions.GetFile(txtXMLFile.Text, "XML files (*.xml)|*.xml|TXT files (*.txt)|*.txt");
         }
 
-        private void btnBuild_Click(object sender, EventArgs e)
+        private async void btnBuild_Click(object sender, EventArgs e)
         {
             //Check current settings
             if (!File.Exists(txtMobi.Text))
@@ -178,14 +179,14 @@ namespace XRayBuilderGUI
             if (settings.useKindleUnpack)
             {
                 Log("Running Kindleunpack to get metadata...");
-                results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                results = await Functions.GetMetaDataAsync(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
             }
             else
             {
                 Log("Extracting metadata...");
                 try
                 {
-                    results = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, true, randomFile).getResults();
+                    results = (await Functions.GetMetaDataInternalAsync(txtMobi.Text, settings.outDir, true, randomFile)).getResults();
                 }
                 catch (Exception ex)
                 {

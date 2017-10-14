@@ -1178,10 +1178,12 @@ namespace XRayBuilderGUI
             Process.Start(e.LinkText);
         }
 
-        private void btnOneClick_Click(object sender, EventArgs e)
+        private async void btnOneClick_Click(object sender, EventArgs e)
         {
-            btnKindleExtras_Click(sender, e);
-            btnBuild_Click(sender, e);
+            ToggleInterface(false);
+            await btnKindleExtras_Run();
+            await btnBuild_Run();
+            ToggleInterface(true);
         }
 
         private void txtAsin_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

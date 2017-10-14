@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using HtmlAgilityPack;
 using System.Globalization;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
@@ -401,7 +402,7 @@ namespace XRayBuilderGUI.DataSources
             return false;
         }
 
-        public override List<XRay.Term> GetTerms(string dataUrl, Action<string> Log, IProgress<Tuple<int, int>> progress = null)
+        public override List<XRay.Term> GetTerms(string dataUrl, Action<string> Log, IProgress<Tuple<int, int>> progress, CancellationToken token)
         {
             List<XRay.Term> terms = new List<XRay.Term>();
             if (sourceHtmlDoc == null)
@@ -429,6 +430,7 @@ namespace XRayBuilderGUI.DataSources
             if (progress != null) progress.Report(new Tuple<int, int>(1, allChars.Count));
             foreach (HtmlNode charNode in allChars)
             {
+                token.ThrowIfCancellationRequested();
                 try
                 {
                     XRay.Term tempTerm = GetTerm(dataUrl, charNode.GetAttributeValue("href", ""));

@@ -108,6 +108,12 @@ namespace XRayBuilderGUI
             rdoFile.Enabled = enabled;
             rdoGoodreads.Enabled = enabled;
             btnCancel.Enabled = !enabled;
+            // If process was canceled and we're disabling the interface for another time, reset token source
+            if (enabled == false && cancelTokens.IsCancellationRequested)
+            {
+                cancelTokens.Dispose();
+                cancelTokens = new CancellationTokenSource();
+            }
         }
 
         public static bool checkInternet()
@@ -148,6 +154,13 @@ namespace XRayBuilderGUI
         }
 
         private async void btnBuild_Click(object sender, EventArgs e)
+        {
+            ToggleInterface(false);
+            await btnBuild_Run();
+            ToggleInterface(true);
+        }
+
+        private async Task btnBuild_Run()
         {
             //Check current settings
             if (!File.Exists(txtMobi.Text))
@@ -227,6 +240,7 @@ namespace XRayBuilderGUI
             Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nUniqueID: {1}",
                 results[2], results[1]));
             Log(String.Format("Book's {0} URL: {1}", dataSource.Name, txtGoodreads.Text));
+            if (cancelTokens.IsCancellationRequested) return;
             Log("Attempting to build X-Ray...");
 
             //If AZW3 file use AZW3 offset, if checked. Checked by default.
@@ -244,17 +258,18 @@ namespace XRayBuilderGUI
                 else
                     xray = new XRay(txtXMLFile.Text, results[2], results[1], results[0], this, dataSource,
                         (AZW3 ? settings.offsetAZW3 : settings.offset), "");
-                if (xray.CreateXray() > 0)
+                Progress<Tuple<int, int>> progress = new Progress<Tuple<int, int>>(UpdateProgressBar);
+                
+                if ((await Task.Run(() => xray.CreateXray(progress, cancelTokens.Token))) > 0)
                 {
-                    Log("Error while processing.");
+                    Log("Build canceled or error while processing.");
                     return;
                 }
                 Log("Initial X-Ray built, adding locations and chapters...");
                 //Expand the X-Ray file from the unpacked mobi
-                Progress<Tuple<int, int>> progress = new Progress<Tuple<int, int>>(UpdateProgressBar);
-                if (xray.ExpandFromRawMl(results[3], progress, settings.ignoresofthyphen, !settings.useNewVersion) > 0)
+                if ((await Task.Run(() => xray.ExpandFromRawMl(results[3], progress, cancelTokens.Token, settings.ignoresofthyphen, !settings.useNewVersion))) > 0)
                 {
-                    Log("An error occurred while processing locations and chapters.");
+                    Log("Build canceled or error occurred while processing locations and chapters.");
                     return;
                 }
             }
@@ -392,7 +407,14 @@ namespace XRayBuilderGUI
             }
         }
 
-        private void btnKindleExtras_Click(object sender, EventArgs e)
+        private async Task btnKindleExtras_Click(object sender, EventArgs e)
+        {
+            ToggleInterface(false);
+            await btnKindleExtras_Run();
+            ToggleInterface(true);
+        }
+
+        private async Task btnKindleExtras_Run()
         {
             //Check current settings
             if (!File.Exists(txtMobi.Text))
@@ -445,7 +467,7 @@ namespace XRayBuilderGUI
             if (settings.useKindleUnpack)
             {
                 Log("Running Kindleunpack to get metadata...");
-                results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                results = await Functions.GetMetaDataAsync(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
                 if (!File.Exists(results[3]))
                 {
                     Log("Error: RawML could not be found, aborting.\r\nPath: " + results[3]);
@@ -459,7 +481,7 @@ namespace XRayBuilderGUI
                 try
                 {
                     //Same results with addition of rawML filename
-                    results = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, true, randomFile).getResults();
+                    results = await Functions.GetMetaDataInternalAsync(txtMobi.Text, settings.outDir, true, randomFile).getResults();
                     rawMLSize = new FileInfo(results[3]).Length;
                 }
                 catch (Exception ex)
@@ -538,6 +560,7 @@ namespace XRayBuilderGUI
                 MessageBox.Show("Specified book was not found.", "Book Not Found");
                 return;
             }
+            ToggleInterface(false);
             if (!Directory.Exists(Environment.CurrentDirectory + @"\xml\"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\xml\");
             string path = Environment.CurrentDirectory + @"\xml\" + Path.GetFileNameWithoutExtension(txtMobi.Text) + ".xml";
@@ -546,14 +569,17 @@ namespace XRayBuilderGUI
                 txtXMLFile.Text = path;
 
                 XRay xray = new XRay(txtGoodreads.Text, this, dataSource);
-                if ((await xray.SaveXmlAsync(path, new Progress<Tuple<int, int>>(UpdateProgressBar))) > 0)
+                int result = await Task.Run(() => xray.SaveXml(path, new Progress<Tuple<int, int>>(UpdateProgressBar), cancelTokens.Token));
+                if (result == 1)
                     Log("Warning: Unable to download character data as no character data found on Goodreads.");
+                else if (result == 2)
+                    Log("Download cancelled.");
                 else
                     Log("Character data has been successfully saved to: " + path);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                Log("An error occurred while saving character data to XML. Path was: " + path);
+                Log(String.Format("An error occurred while saving character data to XML: {0}\r\nPath was: {1}", ex.Message, path));
             }
             finally
             {

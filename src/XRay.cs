@@ -27,10 +27,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 using HtmlAgilityPack;
-using System.Threading.Tasks;
 
 namespace XRayBuilderGUI
 {
@@ -133,14 +134,16 @@ namespace XRayBuilderGUI
             this.skipShelfari = true;
         }
 
-        public async Task<int> SaveXmlAsync(string outfile, IProgress<Tuple<int, int>> progress)
+        public int SaveXml(string outfile, IProgress<Tuple<int, int>> progress, CancellationToken token)
         {
-            return await Task.Run(() => SaveXml(outfile, progress));
-        }
-
-        public int SaveXml(string outfile, IProgress<Tuple<int, int>> progress)
-        {
-            Terms = dataSource.GetTerms(dataUrl, main.Log, progress);
+            try
+            {
+                Terms = dataSource.GetTerms(dataUrl, main.Log, progress, token);
+            }
+            catch (OperationCanceledException)
+            {
+                return 2;
+            }
             if (Terms.Count == 0)
                 return 1;
             main.Log(@"Exporting terms...");
@@ -188,7 +191,7 @@ namespace XRayBuilderGUI
                 return "XRAY.entities." + asin + ".asc";
         }
 
-        public int CreateXray()
+        public int CreateXray(IProgress<Tuple<int, int>> progress, CancellationToken token)
         {
             //Process GUID. If in decimal form, convert to hex.
             if (Regex.IsMatch(_guid, "/[a-zA-Z]/"))
@@ -234,7 +237,14 @@ namespace XRayBuilderGUI
             }
             else
             {
-                Terms = dataSource.GetTerms(dataUrl, main.Log);
+                try
+                {
+                    Terms = dataSource.GetTerms(dataUrl, main.Log, progress, token);
+                }
+                catch (OperationCanceledException)
+                {
+                    return 2;
+                }
                 if (Terms.Count == 0)
                 {
                     main.Log("Error: No terms found on " + dataSource.Name + ".");
@@ -316,12 +326,7 @@ namespace XRayBuilderGUI
             return 0;
         }
 
-        public async Task<int> ExpandFromRawMlAsync(string rawMl, IProgress<Tuple<int, int>> progress, bool ignoreSoftHypen = false, bool shortEx = true)
-        {
-            return await Task.Run(() => ExpandFromRawMl(rawMl, progress, ignoreSoftHypen, shortEx));
-        }
-
-        public int ExpandFromRawMl(string rawMl, IProgress<Tuple<int, int>> progress, bool ignoreSoftHypen = false, bool shortEx = true)
+        public int ExpandFromRawMl(string rawMl, IProgress<Tuple<int, int>> progress, CancellationToken token, bool ignoreSoftHypen = false, bool shortEx = true)
         {
             // If there is an apostrophe, attempt to match 's at the end of the term
             // Match end of word, then search for any lingering punctuation
@@ -428,7 +433,7 @@ namespace XRayBuilderGUI
             progress.Report(new Tuple<int, int>(0, nodes.Count));
             for (int i = 0; i < nodes.Count; i++)
             {
-                if (main.Exiting) return 1;
+                if (main.Exiting || token.IsCancellationRequested) return 1;
                 progress.Report(new Tuple<int, int>(i + 1, nodes.Count));
 
                 HtmlNode node = nodes[i];

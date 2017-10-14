@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
@@ -243,6 +244,11 @@ namespace XRayBuilderGUI
                 version, date, time);
         }
 
+        public static async Task<Unpack.Metadata> GetMetaDataInternalAsync(string mobiFile, string outDir, bool saveRawML, string randomFile = "")
+        {
+            return await Task.Run(() => GetMetaDataInternal(mobiFile, outDir, saveRawML, randomFile));
+        }
+
         //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
         public static Unpack.Metadata GetMetaDataInternal(string mobiFile, string outDir, bool saveRawML, string randomFile = "")
         {
@@ -354,6 +360,11 @@ namespace XRayBuilderGUI
             output = (String.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)"
                 , span.Hours, span.Minutes, bookInfo.pagesInBook));
             return output;
+        }
+
+        public static async Task<List<string>> GetMetaDataAsync(string mobiFile, string outDir, string randomFile, string mobiUnpack)
+        {
+            return await Task.Run(() => GetMetaData(mobiFile, outDir, randomFile, mobiUnpack));
         }
 
         public static List<string> GetMetaData(string mobiFile, string outDir, string randomFile, string mobiUnpack)

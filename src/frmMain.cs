@@ -407,7 +407,7 @@ namespace XRayBuilderGUI
             }
         }
 
-        private async Task btnKindleExtras_Click(object sender, EventArgs e)
+        private async void btnKindleExtras_Click(object sender, EventArgs e)
         {
             ToggleInterface(false);
             await btnKindleExtras_Run();
@@ -481,7 +481,7 @@ namespace XRayBuilderGUI
                 try
                 {
                     //Same results with addition of rawML filename
-                    results = await Functions.GetMetaDataInternalAsync(txtMobi.Text, settings.outDir, true, randomFile).getResults();
+                    results = (await Functions.GetMetaDataInternalAsync(txtMobi.Text, settings.outDir, true, randomFile)).getResults();
                     rawMLSize = new FileInfo(results[3]).Length;
                 }
                 catch (Exception ex)

@@ -49,7 +49,6 @@
             this.tmiXray = new System.Windows.Forms.ToolStripMenuItem();
             this.prgBar = new System.Windows.Forms.ProgressBar();
             this.txtOutput = new System.Windows.Forms.RichTextBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.pbFile4 = new System.Windows.Forms.PictureBox();
             this.pbFile3 = new System.Windows.Forms.PictureBox();
@@ -291,17 +290,6 @@
             this.txtOutput.TabIndex = 61;
             this.txtOutput.Text = "";
             this.txtOutput.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.txtOutput_LinkClicked);
-            // 
-            // textBox1
-            // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox1.Location = new System.Drawing.Point(12, 189);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(598, 339);
-            this.textBox1.TabIndex = 62;
             // 
             // groupBox2
             // 
@@ -646,7 +634,6 @@
             this.Controls.Add(this.prgBar);
             this.Controls.Add(this.btnBuild);
             this.Controls.Add(this.btnBrowseXML);
-            this.Controls.Add(this.textBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmMain";
@@ -668,7 +655,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.pbFile1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbCover)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -704,7 +690,6 @@
         private System.Windows.Forms.Button btnUnpack;
         private System.Windows.Forms.RichTextBox txtOutput;
         private System.Windows.Forms.TextBox txtGoodreads;
-        private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.PictureBox pbCover;
         private System.Windows.Forms.Label lblAsin;

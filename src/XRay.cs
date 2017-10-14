@@ -53,7 +53,7 @@ namespace XRayBuilderGUI
         private bool unattended;
         private bool skipShelfari;
         private int locOffset;
-        private List<string[]> notableShelfariQuotes = new List<string[]>();
+        private List<Tuple<string, int>> notableClips = null;
         private int foundNotables = 0;
 
         private bool enableEdit = Properties.Settings.Default.enableEdit;
@@ -239,6 +239,7 @@ namespace XRayBuilderGUI
             {
                 try
                 {
+                    notableClips = dataSource.GetNotableClips(dataUrl, null, progress);
                     Terms = dataSource.GetTerms(dataUrl, main.Log, progress, token);
                 }
                 catch (OperationCanceledException)
@@ -612,7 +613,7 @@ namespace XRayBuilderGUI
             // Attempt to match any quotes from Shelfari for Notable Clips, not worried if no matches occur as they will be added later anyway
             if (Properties.Settings.Default.useNewVersion)
             {
-                foreach (string[] quote in notableShelfariQuotes)
+                foreach (string[] quote in notableClips)
                 {
                     int index = readContents.IndexOf(quote[0]);
                     if (index > -1)

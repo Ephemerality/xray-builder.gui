@@ -482,11 +482,52 @@ namespace XRayBuilderGUI.DataSources
         }
 
         /// <summary>
+        /// Gather the list of quotes & number of times they've been liked -- close enough to "x paragraphs have been highlighted y times" from Amazon
+        /// </summary>
+        public override List<Tuple<string, int>> GetNotableClips(string url, HtmlDocument srcDoc = null, IProgress<Tuple<int, int>> progress = null)
+        {
+            if (srcDoc == null)
+            {
+                srcDoc = new HtmlDocument();
+                srcDoc.LoadHtml(HttpDownloader.GetPageHtml(url));
+            }
+            List<Tuple<string, int>> result = null;
+            HtmlNode quoteNode = srcDoc.DocumentNode.SelectSingleNode("//div[@class='h2Container gradientHeaderContainer']/h2/a[starts-with(.,'Quotes from')]");
+            if (quoteNode == null) return null;
+            string quoteURL = String.Format("http://www.goodreads.com{0}?page={{0}}", quoteNode.GetAttributeValue("href", ""));
+            int maxPages = 1;
+            if (progress != null) progress.Report(new Tuple<int, int>(0, 1));
+            for (int i = 1; i <= maxPages; i++)
+            {
+                HtmlDocument quoteDoc = new HtmlDocument();
+                quoteDoc.LoadHtml(HttpDownloader.GetPageHtml(String.Format(quoteURL, i)));
+                // first time through, check how many pages there are (find previous page button, get parent div, take all children of that, 2nd last one should be the max page count
+                if (maxPages == 1)
+                {
+                    HtmlNode tempNode = quoteDoc.DocumentNode.SelectSingleNode("//span[contains(@class,'previous_page')]/parent::div/*[last()-1]");
+                    if (!int.TryParse(tempNode.InnerHtml, out maxPages)) maxPages = 1;
+                    result = new List<Tuple<string, int>>(maxPages * 30);
+                }
+                HtmlNodeCollection tempNodes = quoteDoc.DocumentNode.SelectNodes("//div[@class='quotes']/div[@class='quote']");
+                foreach (HtmlNode quote in tempNodes)
+                {
+                    int start = quote.InnerText.IndexOf("&ldquo;") + 7;
+                    int end = quote.InnerText.IndexOf("&rdquo;");
+                    int likes;
+                    int.TryParse(quote.SelectSingleNode(".//div[@class='right']/a").InnerText.Replace(" likes", ""), out likes);
+                    result.Add(new Tuple<string, int>(quote.InnerText.Substring(start, end - start), likes));
+                }
+                if (progress != null) progress.Report(new Tuple<int, int>(i, maxPages));
+            }
+            return result;
+        }
+
+        /// <summary>
         /// Scrape any notable quotes from Goodreads and grab ratings if missing from book info
         /// Modifies curBook.
         /// </summary>
         /// <param name="curBook"></param>
-        public override void GetExtras(BookInfo curBook, Action<string> Log, IProgress<Tuple<int, int>> progress = null)
+        public override void GetExtras(BookInfo curBook, IProgress<Tuple<int, int>> progress = null)
         {
             if (sourceHtmlDoc == null)
             {
@@ -494,35 +535,9 @@ namespace XRayBuilderGUI.DataSources
                 sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.dataUrl));
             }
             
-            // Gather the list of quotes & number of times they've been liked -- close enough to "x paragraphs have been highlighted y times" from Amazon
-            HtmlNode quoteNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@class='h2Container gradientHeaderContainer']/h2/a[starts-with(.,'Quotes from')]");
-            if (quoteNode != null && curBook.notableClips == null)
+            if (curBook.notableClips == null)
             {
-                string quoteURL = String.Format("http://www.goodreads.com{0}?page={{0}}", quoteNode.GetAttributeValue("href", ""));
-                int maxPages = 1;
-                if (progress != null) progress.Report(new Tuple<int, int>(0, 1));
-                for (int i = 1; i <= maxPages; i++)
-                {
-                    HtmlDocument quoteDoc = new HtmlDocument();
-                    quoteDoc.LoadHtml(HttpDownloader.GetPageHtml(String.Format(quoteURL, i)));
-                    // first time through, check how many pages there are (find previous page button, get parent div, take all children of that, 2nd last one should be the max page count
-                    if (maxPages == 1)
-                    {
-                        HtmlNode tempNode = quoteDoc.DocumentNode.SelectSingleNode("//span[contains(@class,'previous_page')]/parent::div/*[last()-1]");
-                        if (!int.TryParse(tempNode.InnerHtml, out maxPages)) maxPages = 1;
-                        curBook.notableClips = new List<Tuple<string, int>>(maxPages * 30);
-                    }
-                    HtmlNodeCollection tempNodes = quoteDoc.DocumentNode.SelectNodes("//div[@class='quotes']/div[@class='quote']");
-                    foreach (HtmlNode quote in tempNodes)
-                    {
-                        int start = quote.InnerText.IndexOf("&ldquo;") + 7;
-                        int end = quote.InnerText.IndexOf("&rdquo;");
-                        int likes;
-                        int.TryParse(quote.SelectSingleNode(".//div[@class='right']/a").InnerText.Replace(" likes", ""), out likes);
-                        curBook.notableClips.Add(new Tuple<string, int>(quote.InnerText.Substring(start, end - start), likes));
-                    }
-                    if (progress != null) progress.Report(new Tuple<int, int>(i, maxPages));
-                }
+                curBook.notableClips = GetNotableClips("", sourceHtmlDoc, progress);
             }
             
             //Add rating and reviews count if missing from Amazon book info

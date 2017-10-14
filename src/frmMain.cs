@@ -58,32 +58,38 @@ namespace XRayBuilderGUI
         public void Log(string message)
         {
             if (Exiting) return;
-            CheckTimestamp = txtOutput.Text.StartsWith("Running X-Ray Builder GUI");
-            if (!CheckTimestamp)
-            {
-                txtOutput.AppendText(Functions.TimeStamp());
-                CheckTimestamp = true;
-                txtOutput.AppendText(message + "\r\n");
-            }
+            if (txtOutput.InvokeRequired)
+                txtOutput.BeginInvoke(new Action(() => Log(message)));
             else
             {
-                if (message.ContainsIgnorecase("successfully"))
+                CheckTimestamp = txtOutput.Text.StartsWith("Running X-Ray Builder GUI");
+                if (!CheckTimestamp)
                 {
-                    txtOutput.SelectionStart = txtOutput.TextLength;
-                    txtOutput.SelectionLength = 0;
-                    txtOutput.SelectionColor = Color.Green;
+                    txtOutput.AppendText(Functions.TimeStamp());
+                    CheckTimestamp = true;
+                    txtOutput.AppendText(message + "\r\n");
                 }
-                List<string> redFlags = new List<string>() { "error", "failed", "problem", "skipping", "warning", "unable" };
-                if (redFlags.Any(s => message.ContainsIgnorecase(s)))
+                else
                 {
-                    txtOutput.SelectionStart = txtOutput.TextLength;
-                    txtOutput.SelectionLength = 0;
-                    txtOutput.SelectionColor = Color.Red;
+                    if (message.ContainsIgnorecase("successfully"))
+                    {
+                        txtOutput.SelectionStart = txtOutput.TextLength;
+                        txtOutput.SelectionLength = 0;
+                        txtOutput.SelectionColor = Color.Green;
+                    }
+                    List<string> redFlags = new List<string>() { "error", "failed", "problem", "skipping", "warning", "unable" };
+                    if (redFlags.Any(s => message.ContainsIgnorecase(s)))
+                    {
+                        txtOutput.SelectionStart = txtOutput.TextLength;
+                        txtOutput.SelectionLength = 0;
+                        txtOutput.SelectionColor = Color.Red;
+                    }
+                    txtOutput.AppendText(message + "\r\n");
+                    txtOutput.SelectionColor = txtOutput.ForeColor;
                 }
-                txtOutput.AppendText(message + "\r\n");
-                txtOutput.SelectionColor = txtOutput.ForeColor;
+                txtOutput.Refresh();
             }
-            txtOutput.Refresh();
+        }
         }
 
         public static bool checkInternet()

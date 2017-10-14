@@ -532,7 +532,7 @@ namespace XRayBuilderGUI
 
                 if (settings.useNewVersion)
                 {
-                    ea.GenerateEndActions();
+                    ea.GenerateEndActions(cancelTokens.Token);
                     ea.GenerateStartActions();
                     EaPath = outputDir + @"\EndActions.data." + bookInfo.asin + ".asc";
                     extrasComplete = true;

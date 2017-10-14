@@ -484,7 +484,7 @@ namespace XRayBuilderGUI.DataSources
         /// <summary>
         /// Gather the list of quotes & number of times they've been liked -- close enough to "x paragraphs have been highlighted y times" from Amazon
         /// </summary>
-        public override List<Tuple<string, int>> GetNotableClips(string url, HtmlDocument srcDoc = null, IProgress<Tuple<int, int>> progress = null)
+        public override List<Tuple<string, int>> GetNotableClips(string url, CancellationToken token, HtmlDocument srcDoc = null, IProgress<Tuple<int, int>> progress = null)
         {
             if (srcDoc == null)
             {
@@ -499,6 +499,7 @@ namespace XRayBuilderGUI.DataSources
             if (progress != null) progress.Report(new Tuple<int, int>(0, 1));
             for (int i = 1; i <= maxPages; i++)
             {
+                token.ThrowIfCancellationRequested();
                 HtmlDocument quoteDoc = new HtmlDocument();
                 quoteDoc.LoadHtml(HttpDownloader.GetPageHtml(String.Format(quoteURL, i)));
                 // first time through, check how many pages there are (find previous page button, get parent div, take all children of that, 2nd last one should be the max page count
@@ -527,7 +528,7 @@ namespace XRayBuilderGUI.DataSources
         /// Modifies curBook.
         /// </summary>
         /// <param name="curBook"></param>
-        public override void GetExtras(BookInfo curBook, IProgress<Tuple<int, int>> progress = null)
+        public override void GetExtras(BookInfo curBook, CancellationToken token, IProgress<Tuple<int, int>> progress = null)
         {
             if (sourceHtmlDoc == null)
             {
@@ -537,7 +538,7 @@ namespace XRayBuilderGUI.DataSources
             
             if (curBook.notableClips == null)
             {
-                curBook.notableClips = GetNotableClips("", sourceHtmlDoc, progress);
+                curBook.notableClips = GetNotableClips("", token, sourceHtmlDoc, progress);
             }
             
             //Add rating and reviews count if missing from Amazon book info

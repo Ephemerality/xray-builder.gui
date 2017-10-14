@@ -239,8 +239,9 @@ namespace XRayBuilderGUI
             {
                 try
                 {
-                    notableClips = dataSource.GetNotableClips(dataUrl, null, progress);
                     Terms = dataSource.GetTerms(dataUrl, main.Log, progress, token);
+                    main.Log("Downloading notable clips...");
+                    notableClips = dataSource.GetNotableClips(dataUrl, token, null, progress);
                 }
                 catch (OperationCanceledException)
                 {

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Xml;
 
 using HtmlAgilityPack;
@@ -258,7 +259,7 @@ namespace XRayBuilderGUI
             }
         }
 
-        public void GenerateEndActions()
+        public void GenerateEndActions(CancellationToken token)
         {
             string[] templates = GetBaseTemplates(Environment.CurrentDirectory + @"\dist\BaseEndActions.txt", 3);
             if (templates == null) return;
@@ -292,7 +293,7 @@ namespace XRayBuilderGUI
             try
             {
                 Progress<Tuple<int, int>> progress = new Progress<Tuple<int, int>>(main.UpdateProgressBar);
-                dataSource.GetExtras(curBook, main.Log, progress);
+                dataSource.GetExtras(curBook, token, progress);
                 curBook.nextInSeries = dataSource.GetNextInSeries(curBook, authorProfile, settings.amazonTLD, main.Log);
                 nextBook = curBook.nextInSeries != null ? curBook.nextInSeries.ToJSON("recommendation", false) : "";
             }

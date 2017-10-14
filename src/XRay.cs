@@ -304,7 +304,7 @@ namespace XRayBuilderGUI
             if (!unattended && enableEdit)
             {
                 if (DialogResult.Yes ==
-                    MessageBox.Show(main,
+                    main.SafeShow(
                         "Terms have been exported to an alias file or already exist in that file. Would you like to open the file in notepad for editing?\r\n"
                         + "See the MobileRead forum thread (link in Settings) for more information on building aliases.",
                         "Aliases",
@@ -378,7 +378,7 @@ namespace XRayBuilderGUI
 
             if (enableEdit)
                 if (DialogResult.Yes ==
-                    MessageBox.Show("Would you like to open the chapters file in notepad for editing?", "Chapters",
+                    main.SafeShow("Would you like to open the chapters file in notepad for editing?", "Chapters",
                         MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
                 {
                     Functions.RunNotepad(chapterFile);

@@ -59,6 +59,11 @@ namespace XRayBuilderGUI
             Functions.SetPropertyThreadSafe(prgBar, "Value", vals.Item1);
         }
 
+        public DialogResult SafeShow(string msg, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton def)
+        {
+            return (DialogResult)this.Invoke(new Func<DialogResult>(() => { return MessageBox.Show(this, msg, caption, buttons, icon, def); }));
+        }
+
         public void Log(string message)
         {
             if (Exiting) return;

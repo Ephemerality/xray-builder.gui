@@ -817,18 +817,23 @@ namespace XRayBuilderGUI
                 progress.Report(new Tuple<int, int>(excerpt++, excerpts.Count));
             }
             command.Dispose();
-            // Populate some more Notable Clips if not enough were found from Shelfari
-            // TODO: Add a config value in settings for this
-            if (foundNotables + excerpts.Count <= 20)
-                excerpts.ForEach(ex => sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", 0, ex.id));
+            // Populate some more notable clips if not enough were found, 
+            // TODO: Add a config value in settings for this amount
+            if (foundNotables <= 20 && foundNotables + excerpts.Count <= 20)
+                excerpts.ForEach(ex =>
+                    {
+                        if (!ex.related_entities.Contains(0))
+                            sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", 0, ex.id);
+                    });
             else
             {
                 Random rand = new Random();
-                while (foundNotables <= 20)
+                List<Excerpt> eligible = excerpts.Where(ex => !ex.related_entities.Contains(0)).ToList();
+                while (foundNotables <= 20 && eligible.Count > 0)
                 {
-                    Excerpt randEx = excerpts.ElementAt(rand.Next(excerpts.Count));
+                    Excerpt randEx = eligible.ElementAt(rand.Next(eligible.Count));
                     sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", 0, randEx.id);
-                    excerpts.Remove(randEx);
+                    eligible.Remove(randEx);
                     foundNotables++;
                 }
             }

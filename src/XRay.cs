@@ -741,7 +741,7 @@ namespace XRayBuilderGUI
             }
         }
 
-        public int PopulateDb(SQLiteConnection db)
+        public int PopulateDb(SQLiteConnection db, IProgress<Tuple<int, int>> progress, CancellationToken token)
         {
             string sql = "";
             int entity = 1;
@@ -755,14 +755,13 @@ namespace XRayBuilderGUI
             command.ExecuteNonQuery();
             command.Dispose();
             main.Log("Updating database with terms, descriptions, and excerpts...");
-            main.prgBar.Maximum = Terms.Count;
             //Write all entities and occurrences
             main.Log(String.Format("Writing {0} terms...", Terms.Count));
+            progress.Report(new Tuple<int, int>(0, Terms.Count));
             foreach (Term t in Terms)
             {
                 if (main.Exiting) return 1;
-                main.prgBar.Value = entity++;
-                Application.DoEvents();
+                token.ThrowIfCancellationRequested();
                 command = new SQLiteCommand(db);
                 if (t.Type == "character") personCount++;
                 else if (t.Type == "topic") termCount++;
@@ -791,20 +790,20 @@ namespace XRayBuilderGUI
                 command = new SQLiteCommand(sql, db);
                 command.ExecuteNonQuery();
                 command.Dispose();
+                progress.Report(new Tuple<int, int>(entity++, Terms.Count));
             }
             //Write excerpts and entity_excerpt table
-            main.prgBar.Maximum = excerpts.Count;
             main.Log(String.Format("Writing {0} excerpts...", excerpts.Count));
             sql = "";
             command = new SQLiteCommand(db);
             command.CommandText =
                 String.Format(
                     "insert into excerpt (id, start, length, image, related_entities, goto) values (@id, @start, @length, @image, @rel_ent, null);");
+            progress.Report(new Tuple<int, int>(0, excerpts.Count));
             foreach (Excerpt e in excerpts)
             {
                 if (main.Exiting) return 1;
-                main.prgBar.Value = excerpt++;
-                Application.DoEvents();
+                token.ThrowIfCancellationRequested();
                 command.Parameters.AddWithValue("id", e.id);
                 command.Parameters.AddWithValue("start", e.start);
                 command.Parameters.AddWithValue("length", e.length);
@@ -815,6 +814,7 @@ namespace XRayBuilderGUI
                 {
                     sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", ent, e.id);
                 }
+                progress.Report(new Tuple<int, int>(excerpt++, excerpts.Count));
             }
             command.Dispose();
             // Populate some more Notable Clips if not enough were found from Shelfari
@@ -832,12 +832,12 @@ namespace XRayBuilderGUI
                     foundNotables++;
                 }
             }
+            token.ThrowIfCancellationRequested();
             main.Log("Writing entity excerpt table...");
             command = new SQLiteCommand(sql, db);
             command.ExecuteNonQuery();
             command.Dispose();
-            main.prgBar.Value = main.prgBar.Maximum;
-            Application.DoEvents();
+            token.ThrowIfCancellationRequested();
             main.Log("Writing top mentions...");
             List<int> sorted =
                 Terms.Where<Term>(t => t.Type.Equals("character"))
@@ -857,6 +857,7 @@ namespace XRayBuilderGUI
             command.ExecuteNonQuery();
             command.Dispose();
 
+            token.ThrowIfCancellationRequested();
             main.Log("Writing metadata...");
             
             sql =

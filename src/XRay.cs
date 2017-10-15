@@ -609,30 +609,28 @@ namespace XRayBuilderGUI
                         }
                     }
                 }
-            }
 
-            // Attempt to match any quotes from Shelfari for Notable Clips, not worried if no matches occur as they will be added later anyway
-            if (Properties.Settings.Default.useNewVersion)
-            {
-                foreach (string[] quote in notableClips)
+                // Attempt to match downloaded notable clips, not worried if no matches occur as some will be added later anyway
+                if (Properties.Settings.Default.useNewVersion && notableClips != null)
                 {
-                    int index = readContents.IndexOf(quote[0]);
-                    if (index > -1)
+                    foreach (Tuple<string, int> quote in notableClips)
                     {
-                        Excerpt excerpt = excerpts.FirstOrDefault(e => e.start == index);
-                        if (excerpt == null)
+                        int index = node.InnerText.IndexOf(quote.Item1);
+                        if (index > -1)
                         {
-                            excerpt = new Excerpt(excerptId++, index, quote[0].Length);
-                            if (quote[1] != "")
+                            // See if an excerpt already exists at this location
+                            Excerpt excerpt = excerpts.FirstOrDefault(e => e.start == index);
+                            if (excerpt == null)
                             {
-                                Term foundterm = Terms.FirstOrDefault(t => t.TermName == quote[1]);
-                                if (foundterm != null)
-                                    excerpt.related_entities.Add(foundterm.Id);
+                                excerpt = new Excerpt(excerptId++, index, quote.Item1.Length);
+                                excerpt.related_entities.Add(0); // Mark the excerpt as notable
+                                                                 // TODO: also add other related entities
+                                excerpts.Add(excerpt);
                             }
-                            excerpts.Add(excerpt);
+                            else
+                                excerpt.related_entities.Add(0);
+                            foundNotables++;
                         }
-                        foundNotables++;
-                        excerpt.related_entities.Add(0);
                     }
                 }
             }

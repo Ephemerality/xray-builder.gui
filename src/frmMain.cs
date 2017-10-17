@@ -347,15 +347,22 @@ namespace XRayBuilderGUI
                     command.ExecuteNonQuery();
                     command.Dispose();
                     Log("Done building initial database. Populating with info from source X-Ray...");
+                    CancellationToken token = cancelTokens.Token;
                     try
                     {
-                        xray.PopulateDb(m_dbConnection);
+                        await Task.Run(() =>
+                        {
+                            xray.PopulateDb(m_dbConnection, new Progress<Tuple<int, int>>(UpdateProgressBar), token);
+                        }, token);
                     }
                     catch (Exception ex)
                     {
-                        Log("An error occurred while populating the X-Ray database.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                         command.Dispose();
                         m_dbConnection.Close();
+                        if (ex is OperationCanceledException)
+                            Log("Building canceled.");
+                        else
+                            Log("An error occurred while populating the X-Ray database.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                         return;
                     }
                     Log("Updating indices...");

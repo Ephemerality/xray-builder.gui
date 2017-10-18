@@ -14,7 +14,7 @@ namespace XRayBuilderGUI.DataSources
 
     public static class Amazon
     {
-        public static AuthorSearchResults SearchAuthor(BookInfo curBook, string TLD, Action<string> Log)
+        public static AuthorSearchResults SearchAuthor(BookInfo curBook, string TLD)
         {
             AuthorSearchResults results = new AuthorSearchResults();
             //Generate Author search URL from author's name
@@ -22,7 +22,7 @@ namespace XRayBuilderGUI.DataSources
             string plusAuthorName = newAuthor.Replace(" ", "+");
             //Updated to match Search "all" Amazon
             string amazonAuthorSearchUrl = String.Format(@"http://www.amazon.{0}/s/ref=nb_sb_noss_2?url=search-alias%3Dstripbooks&field-keywords={1}", TLD, plusAuthorName);
-            Log(String.Format("Searching for author's page on Amazon.{0}...", TLD));
+            Logger.Log(String.Format("Searching for author's page on Amazon.{0}...", TLD));
 
             // Search Amazon for Author
             results.authorHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
@@ -32,26 +32,26 @@ namespace XRayBuilderGUI.DataSources
             {
                 try
                 {
-                    Log("Saving Amazon's author search webpage...");
+                    Logger.Log("Saving Amazon's author search webpage...");
                     File.WriteAllText(Environment.CurrentDirectory + String.Format(@"\dmp\{0}.authorsearchHtml.txt", curBook.asin),
                         results.authorHtmlDoc.DocumentNode.InnerHtml);
                 }
                 catch (Exception ex)
                 {
-                    Log(String.Format("An error ocurred saving authorsearchHtml.txt: {0}", ex.Message));
+                    Logger.Log(String.Format("An error ocurred saving authorsearchHtml.txt: {0}", ex.Message));
                 }
             }
 
             // Check for captcha
             if (results.authorHtmlDoc.DocumentNode.InnerText.Contains("Robot Check"))
             {
-                Log(String.Format("Warning: Amazon.{0} is requesting a captcha. Please try another region, or try again later.", TLD));
+                Logger.Log(String.Format("Warning: Amazon.{0} is requesting a captcha. Please try another region, or try again later.", TLD));
             }
             // Try to find Author's page from Amazon search
             HtmlNode node = results.authorHtmlDoc.DocumentNode.SelectSingleNode("//*[@id='result_1']");
             if (node == null || !node.OuterHtml.Contains("/e/B"))
             {
-                Log(String.Format("An error occurred finding author's page on Amazon.{0}." +
+                Logger.Log(String.Format("An error occurred finding author's page on Amazon.{0}." +
                                   "\r\nUnable to create Author Profile." +
                                   "\r\nEnsure the author metadata field matches the author's name exactly." +
                                   "\r\nSearch results can be viewed at {1}"
@@ -75,7 +75,7 @@ namespace XRayBuilderGUI.DataSources
             }
             if (properAuthor == "" || properAuthor.IndexOf('/', 1) < 3)
             {
-                Log("Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: " + amazonAuthorSearchUrl);
+                Logger.Log("Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: " + amazonAuthorSearchUrl);
                 return null;
             }
             properAuthor = properAuthor.Substring(1, properAuthor.IndexOf('/', 1) - 1);
@@ -87,8 +87,8 @@ namespace XRayBuilderGUI.DataSources
                                               "%2Cp_n_feature_browse-bin%3A618073011&bbn=283155&ie=UTF8&qid=1432378570&rnid=618072011";
 
             curBook.authorAsin = results.authorAsin;
-            Log("Author page found on Amazon!");
-            Log(String.Format("Author's Amazon Page URL: {0}", authorAmazonWebsiteLocationLog));
+            Logger.Log("Author page found on Amazon!");
+            Logger.Log(String.Format("Author's Amazon Page URL: {0}", authorAmazonWebsiteLocationLog));
 
             // Load Author's Amazon page
             string authorpageHtml = "";

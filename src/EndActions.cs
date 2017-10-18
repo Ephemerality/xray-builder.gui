@@ -38,12 +38,12 @@ namespace XRayBuilderGUI
             this.dataSource = dataSource;
             main = frm;
 
-            main.Log("Attempting to find book on Amazon...");
+            Logger.Log("Attempting to find book on Amazon...");
             //Generate Book search URL from book's ASIN
             string ebookLocation = String.Format(@"http://www.amazon.{0}/dp/{1}", settings.amazonTLD, book.asin);
 
             // Search Amazon for book
-            //main.Log(String.Format("Book's Amazon page URL: {0}", ebookLocation));
+            //Logger.Log(String.Format("Book's Amazon page URL: {0}", ebookLocation));
             
             HtmlDocument bookHtmlDoc = new HtmlDocument {OptionAutoCloseOnEnd = true};
             try
@@ -52,22 +52,22 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                main.Log(String.Format("An error ocurred while downloading book's Amazon page: {0}\r\nYour ASIN may not be correct.", ex.Message));
+                Logger.Log(String.Format("An error ocurred while downloading book's Amazon page: {0}\r\nYour ASIN may not be correct.", ex.Message));
                 return;
             }
-            main.Log("Book found on Amazon!");
+            Logger.Log("Book found on Amazon!");
             if (Properties.Settings.Default.saveHtml)
             {
                 try
                 {
-                    main.Log("Saving book's Amazon webpage...");
+                    Logger.Log("Saving book's Amazon webpage...");
                     File.WriteAllText(Environment.CurrentDirectory +
                                       String.Format(@"\dmp\{0}.bookpageHtml.txt", curBook.asin),
                         bookHtmlDoc.DocumentNode.InnerHtml);
                 }
                 catch (Exception ex)
                 {
-                    main.Log(String.Format("An error ocurred saving bookpageHtml.txt: {0}", ex.Message));
+                    Logger.Log(String.Format("An error ocurred saving bookpageHtml.txt: {0}", ex.Message));
                 }
             }
 
@@ -77,11 +77,11 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                main.Log(String.Format("An error ocurred parsing Amazon info: {0}", ex.Message));
+                Logger.Log(String.Format("An error ocurred parsing Amazon info: {0}", ex.Message));
                 return;
             }
 
-            main.Log("Gathering recommended book metadata...");
+            Logger.Log("Gathering recommended book metadata...");
             //Parse Recommended Author titles and ASINs
             try
             {
@@ -125,7 +125,7 @@ namespace XRayBuilderGUI
                         }
                         catch (Exception ex)
                         {
-                            main.Log(String.Format("Error: {0}\r\n{1}", ex.Message, nodeUrl));
+                            Logger.Log(String.Format("Error: {0}\r\n{1}", ex.Message, nodeUrl));
                             return;
                         }
                     }
@@ -179,7 +179,7 @@ namespace XRayBuilderGUI
                             }
                             catch (Exception ex)
                             {
-                                main.Log(String.Format("Error: {0}\r\n{1}", ex.Message, sponsUrl));
+                                Logger.Log(String.Format("Error: {0}\r\n{1}", ex.Message, sponsUrl));
                                 return;
                             }
                         }
@@ -188,7 +188,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                main.Log("An error occurred parsing the book's amazon page: " + ex.Message + ex.StackTrace);
+                Logger.Log("An error occurred parsing the book's amazon page: " + ex.Message + ex.StackTrace);
                 return;
             }
             SetPaths();
@@ -203,7 +203,7 @@ namespace XRayBuilderGUI
             XmlTextWriter writer = new XmlTextWriter(EaPath, Encoding.UTF8);
             try
             {
-                main.Log("Writing EndActions to file...");
+                Logger.Log("Writing EndActions to file...");
                 writer.WriteProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"");
                 writer.WriteStartElement("endaction");
                 writer.WriteAttributeString("version", "0");
@@ -249,12 +249,12 @@ namespace XRayBuilderGUI
                 writer.WriteEndElement();
                 writer.Flush();
                 writer.Close();
-                main.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
+                Logger.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
                 main.cmsPreview.Items[1].Enabled = true;
             }
             catch (Exception ex)
             {
-                main.Log("An error occurred while writing the End Action file: " + ex.Message + "\r\n" + ex.StackTrace);
+                Logger.Log("An error occurred while writing the End Action file: " + ex.Message + "\r\n" + ex.StackTrace);
                 return;
             }
         }
@@ -264,7 +264,7 @@ namespace XRayBuilderGUI
             string[] templates = GetBaseTemplates(Environment.CurrentDirectory + @"\dist\BaseEndActions.txt", 3);
             if (templates == null) return;
 
-            main.Log(String.Format("Gathering additional metadata for {0}...", curBook.title));
+            Logger.Log(String.Format("Gathering additional metadata for {0}...", curBook.title));
             string bookInfoTemplate = templates[0];
             string widgetsTemplate = templates[1];
             string layoutsTemplate = templates[2];
@@ -294,31 +294,31 @@ namespace XRayBuilderGUI
             {
                 Progress<Tuple<int, int>> progress = new Progress<Tuple<int, int>>(main.UpdateProgressBar);
                 dataSource.GetExtras(curBook, token, progress);
-                curBook.nextInSeries = dataSource.GetNextInSeries(curBook, authorProfile, settings.amazonTLD, main.Log);
+                curBook.nextInSeries = dataSource.GetNextInSeries(curBook, authorProfile, settings.amazonTLD);
                 nextBook = curBook.nextInSeries != null ? curBook.nextInSeries.ToJSON("recommendation", false) : "";
             }
             catch (Exception ex)
             {
                 if (ex.Message.Contains("(404)"))
-                    main.Log("An error occurred finding next book in series: Goodreads URL not found.\r\n" +
+                    Logger.Log("An error occurred finding next book in series: Goodreads URL not found.\r\n" +
                         "If reading from a file, you can switch the source to Goodreads to specify a URL, then switch back to File.");
                 else
-                    main.Log("An error occurred finding next book in series: " + ex.Message + "\r\n" + ex.StackTrace);
+                    Logger.Log("An error occurred finding next book in series: " + ex.Message + "\r\n" + ex.StackTrace);
             }
 
             try
             {
-                if (!dataSource.GetPageCount(curBook, main.Log))
+                if (!dataSource.GetPageCount(curBook))
                 {
                     if (!Properties.Settings.Default.pageCount)
-                        main.Log("No page count found on Goodreads");
-                    main.Log("Attempting to estimate page count...");
-                    main.Log(Functions.GetPageCount(curBook.rawmlPath, curBook));
+                        Logger.Log("No page count found on Goodreads");
+                    Logger.Log("Attempting to estimate page count...");
+                    Logger.Log(Functions.GetPageCount(curBook.rawmlPath, curBook));
                 }
             }
             catch (Exception ex)
             {
-                main.Log("An error occurred while searching for or estimating the page count: " + ex.Message + "\r\n" + ex.StackTrace);
+                Logger.Log("An error occurred while searching for or estimating the page count: " + ex.Message + "\r\n" + ex.StackTrace);
             }
 
             if (authorProfile.otherBooks.Count > 0)
@@ -362,18 +362,18 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                main.Log("An error occurred creating the EndAction data template: " + ex.Message + "\r\n" + ex.StackTrace);
+                Logger.Log("An error occurred creating the EndAction data template: " + ex.Message + "\r\n" + ex.StackTrace);
             }
 
             finalOutput = String.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
 
-            main.Log("Writing EndActions to file...");
+            Logger.Log("Writing EndActions to file...");
             using (StreamWriter streamWriter = new StreamWriter(EaPath, false))
             {
                 streamWriter.Write(finalOutput);
                 streamWriter.Flush();
             }
-            main.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
+            Logger.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
             main.cmsPreview.Items[1].Enabled = true;
         }
 
@@ -434,16 +434,16 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                main.Log("An error occurred creating the StartAction data template: " + ex.Message + "\r\n" + ex.StackTrace);
+                Logger.Log("An error occurred creating the StartAction data template: " + ex.Message + "\r\n" + ex.StackTrace);
             }
 
-            main.Log("Writing StartActions to file...");
+            Logger.Log("Writing StartActions to file...");
             using (StreamWriter streamWriter = new StreamWriter(SaPath, false))
             {
                 streamWriter.Write(finalOutput);
                 streamWriter.Flush();
             }
-            main.Log("StartActions file created successfully!\r\nSaved to " + SaPath);
+            Logger.Log("StartActions file created successfully!\r\nSaved to " + SaPath);
             main.cmsPreview.Items[3].Enabled = true;
         }
 
@@ -462,7 +462,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                main.Log("An error occurred creating the output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
+                Logger.Log("An error occurred creating the output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
                 outputDir = settings.outDir;
             }
             EaPath = outputDir + @"\EndActions.data." + curBook.asin + ".asc";
@@ -470,7 +470,7 @@ namespace XRayBuilderGUI
 
             if (!Properties.Settings.Default.overwrite && File.Exists(EaPath))
             {
-                main.Log("Error: EndActions file already exists... Skipping!\r\n" +
+                Logger.Log("Error: EndActions file already exists... Skipping!\r\n" +
                          "Please review the settings page if you want to overwite any existing files.");
                 return;
             }
@@ -491,14 +491,14 @@ namespace XRayBuilderGUI
                     templates = templates.Where(r => !r.StartsWith("//")).ToArray(); //Remove commented lines
                     if (templates == null || templates.Length != templateCount || !templates[0].StartsWith(@"""bookInfo"""))
                     {
-                        main.Log("An error occurred parsing " + baseFile + ". If you modified it, ensure you followed the specified format.");
+                        Logger.Log("An error occurred parsing " + baseFile + ". If you modified it, ensure you followed the specified format.");
                         return null;
                     }
                 }
             }
             catch (Exception ex)
             {
-                main.Log("An error occurred while opening the " + baseFile + " file.\r\n" +
+                Logger.Log("An error occurred while opening the " + baseFile + " file.\r\n" +
                     "Ensure you extracted it to the same directory as the program.\r\n" +
                     ex.Message);
             }

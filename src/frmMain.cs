@@ -64,42 +64,6 @@ namespace XRayBuilderGUI
             return (DialogResult)this.Invoke(new Func<DialogResult>(() => { return MessageBox.Show(this, msg, caption, buttons, icon, def); }));
         }
 
-        public void Log(string message)
-        {
-            if (Exiting) return;
-            if (txtOutput.InvokeRequired)
-                txtOutput.BeginInvoke(new Action(() => Log(message)));
-            else
-            {
-                CheckTimestamp = txtOutput.Text.StartsWith("Running X-Ray Builder GUI");
-                if (!CheckTimestamp)
-                {
-                    txtOutput.AppendText(Functions.TimeStamp());
-                    CheckTimestamp = true;
-                    txtOutput.AppendText(message + "\r\n");
-                }
-                else
-                {
-                    if (message.ContainsIgnorecase("successfully"))
-                    {
-                        txtOutput.SelectionStart = txtOutput.TextLength;
-                        txtOutput.SelectionLength = 0;
-                        txtOutput.SelectionColor = Color.Green;
-                    }
-                    List<string> redFlags = new List<string>() { "error", "failed", "problem", "skipping", "warning", "unable" };
-                    if (redFlags.Any(s => message.ContainsIgnorecase(s)))
-                    {
-                        txtOutput.SelectionStart = txtOutput.TextLength;
-                        txtOutput.SelectionLength = 0;
-                        txtOutput.SelectionColor = Color.Red;
-                    }
-                    txtOutput.AppendText(message + "\r\n");
-                    txtOutput.SelectionColor = txtOutput.ForeColor;
-                }
-                txtOutput.Refresh();
-            }
-        }
-
         private void ToggleInterface(bool enabled)
         {
             foreach (Control c in Controls)
@@ -215,44 +179,44 @@ namespace XRayBuilderGUI
             List<string> results;
             if (settings.useKindleUnpack)
             {
-                Log("Running Kindleunpack to get metadata...");
+                Logger.Log("Running Kindleunpack to get metadata...");
                 results = await Functions.GetMetaDataAsync(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
             }
             else
             {
-                Log("Extracting metadata...");
+                Logger.Log("Extracting metadata...");
                 try
                 {
                     results = (await Functions.GetMetaDataInternalAsync(txtMobi.Text, settings.outDir, true, randomFile)).getResults();
                 }
                 catch (Exception ex)
                 {
-                    Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
+                    Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
                     return;
                 }
             }
             if (results.Count != 6)
             {
-                Log(results[0]);
+                Logger.Log(results[0]);
                 return;
             }
 
             if (settings.saverawml)
             {
-                Log("Saving rawML to dmp directory...");
+                Logger.Log("Saving rawML to dmp directory...");
                 File.Copy(results[3], Path.Combine(Environment.CurrentDirectory + @"\dmp", Path.GetFileName(results[3])), true);
             }
 
             // Added author name to log output
-            Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nUniqueID: {1}",
-                results[2], results[1]));
-            Log(String.Format("Book's {0} URL: {1}", dataSource.Name, txtGoodreads.Text));
+            Logger.Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nUniqueID: {1}",
+                 results[2], results[1]));
+            Logger.Log(String.Format("Book's {0} URL: {1}", dataSource.Name, txtGoodreads.Text));
             if (cancelTokens.IsCancellationRequested) return;
-            Log("Attempting to build X-Ray...");
+            Logger.Log("Attempting to build X-Ray...");
 
             //If AZW3 file use AZW3 offset, if checked. Checked by default.
             bool AZW3 = Path.GetExtension(txtMobi.Text) == ".azw3" && settings.overrideOffset;
-            Log("Offset: " + (AZW3 ? settings.offsetAZW3.ToString() + " (AZW3)" : settings.offset.ToString()));
+            Logger.Log("Offset: " + (AZW3 ? settings.offsetAZW3.ToString() + " (AZW3)" : settings.offset.ToString()));
 
             //Create X-Ray and attempt to create the base file (essentially the same as the site)
             XRay xray;
@@ -269,24 +233,24 @@ namespace XRayBuilderGUI
                 
                 if ((await Task.Run(() => xray.CreateXray(progress, cancelTokens.Token))) > 0)
                 {
-                    Log("Build canceled or error while processing.");
+                    Logger.Log("Build canceled or error while processing.");
                     return;
                 }
-                Log("Initial X-Ray built, adding locations and chapters...");
+                Logger.Log("Initial X-Ray built, adding locations and chapters...");
                 //Expand the X-Ray file from the unpacked mobi
                 if ((await Task.Run(() => xray.ExpandFromRawMl(results[3], progress, cancelTokens.Token, settings.ignoresofthyphen, !settings.useNewVersion))) > 0)
                 {
-                    Log("Build canceled or error occurred while processing locations and chapters.");
+                    Logger.Log("Build canceled or error occurred while processing locations and chapters.");
                     return;
                 }
             }
             catch (Exception ex)
             {
-                Log("An error occurred while building the X-Ray:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                Logger.Log("An error occurred while building the X-Ray:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                 return;
             }
 
-            Log("Saving X-Ray to file...");
+            Logger.Log("Saving X-Ray to file...");
             string outFolder = "";
             string _newPath = "";
             try
@@ -305,7 +269,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Log("Failed to create output directory: " + ex.Message + "\r\n" + ex.StackTrace + "\r\nFiles will be placed in the default output directory.");
+                Logger.Log("Failed to create output directory: " + ex.Message + "\r\n" + ex.StackTrace + "\r\nFiles will be placed in the default output directory.");
                 outFolder = settings.outDir;
             }
             _newPath = outFolder + "\\" + xray.GetXRayName(settings.android);
@@ -318,7 +282,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                    Logger.Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                     return;
                 }
                 using (SQLiteConnection m_dbConnection = new SQLiteConnection(("Data Source=" + _newPath + ";Version=3;")))
@@ -334,19 +298,19 @@ namespace XRayBuilderGUI
                     }
                     catch (Exception ex)
                     {
-                        Log("An error occurred while opening the BaseDB.sql file. Ensure you extracted it to the same directory as the program.\n"
-                            + ex.Message + "\r\n" + ex.StackTrace);
+                        Logger.Log("An error occurred while opening the BaseDB.sql file. Ensure you extracted it to the same directory as the program.\n"
+                             + ex.Message + "\r\n" + ex.StackTrace);
                         m_dbConnection.Dispose();
                         return;
                     }
                     SQLiteCommand command = new SQLiteCommand("BEGIN; " + sql + " COMMIT;", m_dbConnection);
-                    Log("Building new X-Ray database. May take a few minutes...");
+                    Logger.Log("Building new X-Ray database. May take a few minutes...");
                     command.ExecuteNonQuery();
                     command.Dispose();
                     command = new SQLiteCommand("PRAGMA user_version = 1; PRAGMA encoding = utf8; BEGIN;", m_dbConnection);
                     command.ExecuteNonQuery();
                     command.Dispose();
-                    Log("Done building initial database. Populating with info from source X-Ray...");
+                    Logger.Log("Done building initial database. Populating with info from source X-Ray...");
                     CancellationToken token = cancelTokens.Token;
                     try
                     {
@@ -360,12 +324,12 @@ namespace XRayBuilderGUI
                         command.Dispose();
                         m_dbConnection.Close();
                         if (ex is OperationCanceledException)
-                            Log("Building canceled.");
+                            Logger.Log("Building canceled.");
                         else
-                            Log("An error occurred while populating the X-Ray database.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                            Logger.Log("An error occurred while populating the X-Ray database.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                         return;
                     }
-                    Log("Updating indices...");
+                    Logger.Log("Updating indices...");
                     sql = "CREATE INDEX idx_occurrence_start ON occurrence(start ASC);\n"
                           + "CREATE INDEX idx_entity_type ON entity(type ASC);\n"
                           + "CREATE INDEX idx_entity_excerpt ON entity_excerpt(entity ASC); COMMIT;";
@@ -385,11 +349,11 @@ namespace XRayBuilderGUI
                     {
                         streamWriter.Write(xray.getPreviewData());
                     }
-                    Log("X-Ray previewData file created successfully!\r\nSaved to " + PdPath);
+                    Logger.Log("X-Ray previewData file created successfully!\r\nSaved to " + PdPath);
                 }
                 catch (Exception ex)
                 {
-                    Log(String.Format("An error occurred saving the previewData file: {0}\r\n{1}", ex.Message, ex.StackTrace));
+                    Logger.Log(String.Format("An error occurred saving the previewData file: {0}\r\n{1}", ex.Message, ex.StackTrace));
                 }
             }
             else
@@ -400,7 +364,7 @@ namespace XRayBuilderGUI
                 }
             }
             xrayComplete = true;
-            Log("X-Ray file created successfully!\r\nSaved to " + _newPath);
+            Logger.Log("X-Ray file created successfully!\r\nSaved to " + _newPath);
 
             checkFiles(results[4], results[5], results[0]);
 
@@ -417,7 +381,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Log(String.Format("An error occurred while trying to delete temporary files: {0}\r\n{1}\r\nTry deleting these files manually.", ex.Message, ex.StackTrace));
+                Logger.Log(String.Format("An error occurred while trying to delete temporary files: {0}\r\n{1}\r\nTry deleting these files manually.", ex.Message, ex.StackTrace));
             }
         }
 
@@ -480,18 +444,18 @@ namespace XRayBuilderGUI
             long rawMLSize = 0;
             if (settings.useKindleUnpack)
             {
-                Log("Running Kindleunpack to get metadata...");
+                Logger.Log("Running Kindleunpack to get metadata...");
                 results = await Functions.GetMetaDataAsync(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
                 if (!File.Exists(results[3]))
                 {
-                    Log("Error: RawML could not be found, aborting.\r\nPath: " + results[3]);
+                    Logger.Log("Error: RawML could not be found, aborting.\r\nPath: " + results[3]);
                     return;
                 }
                 rawMLSize = new FileInfo(results[3]).Length;
             }
             else
             {
-                Log("Extracting metadata...");
+                Logger.Log("Extracting metadata...");
                 try
                 {
                     //Same results with addition of rawML filename
@@ -500,40 +464,40 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
+                    Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
                     return;
                 }
             }
             if (results.Count != 6)
             {
-                Log(results[0]);
+                Logger.Log(results[0]);
                 return;
             }
 
             if (settings.saverawml && settings.useKindleUnpack)
             {
-                Log("Saving rawML to dmp directory...");
+                Logger.Log("Saving rawML to dmp directory...");
                 File.Copy(results[3], Path.Combine(Environment.CurrentDirectory + @"\dmp",
                     Path.GetFileName(results[3])), true);
             }
-            
-            Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nUniqueID: {1}",
-                results[2], results[1]));
+
+            Logger.Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nUniqueID: {1}",
+                 results[2], results[1]));
             SetDatasourceLabels(); // Reset the dataSource for the new build process
-            Log(String.Format("Book's {0} URL: {1}", dataSource.Name, txtGoodreads.Text));
+            Logger.Log(String.Format("Book's {0} URL: {1}", dataSource.Name, txtGoodreads.Text));
             try
             {
                 BookInfo bookInfo = new BookInfo(results[5], results[4], results[0], results[1], results[2],
                                                 randomFile, Functions.RemoveInvalidFileChars(results[5]), txtGoodreads.Text, results[3]);
 
                 string outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectory(bookInfo.author, bookInfo.sidecarName) : settings.outDir;
-                
-                Log("Attempting to build Author Profile...");
+
+                Logger.Log("Attempting to build Author Profile...");
                 AuthorProfile ap = new AuthorProfile(bookInfo, settings.amazonTLD, this);
                 if (!ap.complete) return;
                 SaPath = outputDir + @"\StartActions.data." + bookInfo.asin + ".asc";
                 ApPath = outputDir + @"\AuthorProfile.profile." + bookInfo.asin + ".asc";
-                Log("Attempting to build Start Actions and End Actions...");
+                Logger.Log("Attempting to build Start Actions and End Actions...");
                 EndActions ea = new EndActions(ap, bookInfo, rawMLSize, dataSource, this);
                 if (!ea.complete) return;
 
@@ -557,7 +521,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Log("An error occurred while creating the new Author Profile, Start Actions, and/or End Actions files: " + ex.Message + "\r\n" + ex.StackTrace);
+                Logger.Log("An error occurred while creating the new Author Profile, Start Actions, and/or End Actions files: " + ex.Message + "\r\n" + ex.StackTrace);
             }
 
         }
@@ -585,15 +549,15 @@ namespace XRayBuilderGUI
                 XRay xray = new XRay(txtGoodreads.Text, this, dataSource);
                 int result = await Task.Run(() => xray.SaveXml(path, new Progress<Tuple<int, int>>(UpdateProgressBar), cancelTokens.Token));
                 if (result == 1)
-                    Log("Warning: Unable to download character data as no character data found on Goodreads.");
+                    Logger.Log("Warning: Unable to download character data as no character data found on Goodreads.");
                 else if (result == 2)
-                    Log("Download cancelled.");
+                    Logger.Log("Download cancelled.");
                 else
-                    Log("Character data has been successfully saved to: " + path);
+                    Logger.Log("Character data has been successfully saved to: " + path);
             }
             catch (Exception ex)
             {
-                Log(String.Format("An error occurred while saving character data to XML: {0}\r\nPath was: {1}", ex.Message, path));
+                Logger.Log(String.Format("An error occurred while saving character data to XML: {0}\r\nPath was: {1}", ex.Message, path));
             }
             finally
             {
@@ -632,46 +596,46 @@ namespace XRayBuilderGUI
             List<string> results;
             if (settings.useKindleUnpack)
             {
-                Log("Running Kindleunpack to get metadata...");
+                Logger.Log("Running Kindleunpack to get metadata...");
                 results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
             }
             else
             {
-                Log("Extracting metadata...");
+                Logger.Log("Extracting metadata...");
                 try
                 {
                     results = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, false).getResults();
                 }
                 catch (Exception ex)
                 {
-                    Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
+                    Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
                     return;
                 }
             }
             if (results.Count != 6)
             {
-                Log(results[0]);
+                Logger.Log(results[0]);
                 return;
             }
 
-            Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nUniqueID: {1}",
-                results[2], results[1]));
+            Logger.Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nUniqueID: {1}",
+                 results[2], results[1]));
             try
             {
-                string bookUrl = dataSource.SearchBook(results[4], results[5], Log);
+                string bookUrl = dataSource.SearchBook(results[4], results[5]);
                 if (bookUrl != "")
                 {
                     txtGoodreads.Text = bookUrl;
                     txtGoodreads.Refresh();
-                    Log(String.Format("Book found on {3}!\r\n{0} by {1}\r\n{3} URL: {2}\r\nYou may want to visit the URL to ensure it is correct.",
-                        results[5], results[4], bookUrl, dataSource.Name));
+                    Logger.Log(String.Format("Book found on {3}!\r\n{0} by {1}\r\n{3} URL: {2}\r\nYou may want to visit the URL to ensure it is correct.",
+                         results[5], results[4], bookUrl, dataSource.Name));
                 }
                 else
-                    Log("Unable to find this book on " + dataSource.Name + "!");
+                    Logger.Log("Unable to find this book on " + dataSource.Name + "!");
             }
             catch (Exception ex)
             {
-                Log("An error occurred while searching: " + ex.Message + "\r\n" + ex.StackTrace);
+                Logger.Log("An error occurred while searching: " + ex.Message + "\r\n" + ex.StackTrace);
             }
 
             try
@@ -681,10 +645,10 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Log(
-                    String.Format(
-                        "An error occurred while trying to delete temporary files: {0}\r\n{1}\r\nTry deleting these files manually.",
-                        ex.Message, ex.StackTrace));
+                Logger.Log(
+                     String.Format(
+                         "An error occurred while trying to delete temporary files: {0}\r\n{1}\r\nTry deleting these files manually.",
+                         ex.Message, ex.StackTrace));
             }
         }
 
@@ -718,10 +682,10 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Log(
-                    String.Format(
-                        "An error occurred while trying to delete temporary files: {0}\r\n{1}\r\nTry deleting these files manually.",
-                        ex.Message, ex.StackTrace));
+                    Logger.Log(
+                     String.Format(
+                         "An error occurred while trying to delete temporary files: {0}\r\n{1}\r\nTry deleting these files manually.",
+                         ex.Message, ex.StackTrace));
                 }
             }
             Exiting = true;
@@ -731,6 +695,7 @@ namespace XRayBuilderGUI
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            Logger.ctrl = txtOutput;
             //this.WindowState = FormWindowState.Maximized;
             this.ActiveControl = lblGoodreads;
             toolTip1.SetToolTip(btnBrowseMobi, "Open a Kindle book.");
@@ -784,7 +749,7 @@ namespace XRayBuilderGUI
                 Properties.Settings.Default.tmpDir = Environment.CurrentDirectory + @"\tmp";
             if (Properties.Settings.Default.mobi_unpack == "")
                 Properties.Settings.Default.mobi_unpack = Environment.CurrentDirectory + @"\dist\kindleunpack.exe";
-            
+
             txtGoodreads.Text = Properties.Settings.Default.Goodreads;
             if (Properties.Settings.Default.buildSource == "Goodreads")
                 rdoGoodreads.Checked = true;
@@ -863,7 +828,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Log("An error occurred metadata: " + ex.Message);
+                Logger.Log("An error occurred getting metadata: " + ex.Message);
                 return;
             }
 
@@ -871,11 +836,12 @@ namespace XRayBuilderGUI
             {
                 this.Cursor = Cursors.Default;
                 txtMobi.Text = "";
+                if (results.Count == 1) Logger.Log("An error occurred getting metadata: " + results[0]);
                 return;
             }
-               
+
             string outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectoryOnly(results[4], results[5]) : settings.outDir;
-            
+
             //Open file in read only mode
             using (FileStream stream = new FileStream(results[6], FileMode.Open, FileAccess.Read))
             //Get a binary reader for the file stream
@@ -912,15 +878,15 @@ namespace XRayBuilderGUI
 
             try
             {
-               // Directory.Delete(randomFile, true);
+                // Directory.Delete(randomFile, true);
             }
             catch (Exception ex)
             {
-                Log(
-                    String.Format(
-                        "An error occurred while trying to delete temporary files: {0}\r\n{1}\r\n" +
-                        "Try deleting these files manually.",
-                        ex.Message, ex.StackTrace));
+                Logger.Log(
+                     String.Format(
+                         "An error occurred while trying to delete temporary files: {0}\r\n{1}\r\n" +
+                         "Try deleting these files manually.",
+                         ex.Message, ex.StackTrace));
             }
         }
 
@@ -1155,30 +1121,30 @@ namespace XRayBuilderGUI
             List<string> results;
             if (settings.useKindleUnpack)
             {
-                Log("Running Kindleunpack to extract rawML...");
+                Logger.Log("Running Kindleunpack to extract rawML...");
                 results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
             }
             else
             {
-                Log("Extracting rawML...");
+                Logger.Log("Extracting rawML...");
                 try
                 {
                     results = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, true, randomFile).getResults();
                 }
                 catch (Exception ex)
                 {
-                    Log("An error occurred extracting rawML: " + ex.Message + "\r\n" + ex.StackTrace);
+                    Logger.Log("An error occurred extracting rawML: " + ex.Message + "\r\n" + ex.StackTrace);
                     return;
                 }
             }
             if (results.Count != 6)
             {
-                Log(results[0]);
+                Logger.Log(results[0]);
                 return;
             }
             string rawmlPath = Path.Combine(Environment.CurrentDirectory + @"\dmp", Path.GetFileName(results[3]));
             File.Copy(results[3], rawmlPath, true);
-            Log("Extracted rawml successfully!\r\nSaved to " + rawmlPath);
+            Logger.Log("Extracted rawml successfully!\r\nSaved to " + rawmlPath);
         }
 
         private void txtOutput_LinkClicked(object sender, LinkClickedEventArgs e)
@@ -1241,8 +1207,8 @@ namespace XRayBuilderGUI
                                     //}
                                     //else
                                     //{
-                                        newTerm.DescSrc = "Wikipedia";
-                                        newTerm.DescUrl = String.Format(@"http://en.wikipedia.org/wiki/{0}", newTerm.TermName.Replace(" ", "_"));
+                                    newTerm.DescSrc = "Wikipedia";
+                                    newTerm.DescUrl = String.Format(@"http://en.wikipedia.org/wiki/{0}", newTerm.TermName.Replace(" ", "_"));
                                     //}
                                     Terms.Add(newTerm);
                                 }
@@ -1266,7 +1232,7 @@ namespace XRayBuilderGUI
                                     Directory.CreateDirectory(Environment.CurrentDirectory + @"\xml\");
                                 string outfile = Environment.CurrentDirectory + @"\xml\" + Path.GetFileNameWithoutExtension(openFile.FileName) + ".xml";
                                 Functions.Save<List<XRay.Term>>(Terms, outfile);
-                                Log("Character data has been saved to: " + outfile);
+                                Logger.Log("Character data has been saved to: " + outfile);
                             }
                             else
                                 MessageBox.Show(@"Whoops! That filename does not contain ""XRAY Entities""!");
@@ -1338,7 +1304,7 @@ namespace XRayBuilderGUI
         {
             if (!cancelTokens.IsCancellationRequested)
             {
-                Log("Canceling...");
+                Logger.Log("Canceling...");
                 cancelTokens.Cancel();
             }
         }

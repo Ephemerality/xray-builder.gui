@@ -108,12 +108,12 @@ namespace XRayBuilderGUI.DataSources
         }
 
         // Get biography from results page; TLD included in case different Amazon sites have different formatting
-        public static HtmlNode GetBio(AuthorSearchResults searchResults, string TLD)
+        public static HtmlNode GetBioNode(AuthorSearchResults searchResults, string TLD)
         {
             return searchResults.authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-bio' and @class='a-row']/div/div/span");
         }
 
-        public static HtmlNode GetAuthorImage(AuthorSearchResults searchResults, string TLD)
+        public static HtmlNode GetAuthorImageNode(AuthorSearchResults searchResults, string TLD)
         {
             return searchResults.authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-image']/img");
         }

@@ -44,6 +44,7 @@ namespace XRayBuilderGUI
                 }
                 rtfBox.AppendText(message);
                 rtfBox.SelectionColor = rtfBox.ForeColor;
+                rtfBox.Refresh();
             }
         }
 

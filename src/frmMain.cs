@@ -493,17 +493,17 @@ namespace XRayBuilderGUI
                 string outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectory(bookInfo.author, bookInfo.sidecarName) : settings.outDir;
 
                 Logger.Log("Attempting to build Author Profile...");
-                AuthorProfile ap = new AuthorProfile(bookInfo, settings.amazonTLD, this);
-                if (!ap.complete) return;
+                AuthorProfile ap = new AuthorProfile(bookInfo, settings.amazonTLD);
+                if (!(await ap.Generate())) return;
                 SaPath = outputDir + @"\StartActions.data." + bookInfo.asin + ".asc";
                 ApPath = outputDir + @"\AuthorProfile.profile." + bookInfo.asin + ".asc";
                 Logger.Log("Attempting to build Start Actions and End Actions...");
                 EndActions ea = new EndActions(ap, bookInfo, rawMLSize, dataSource, this);
-                if (!ea.complete) return;
+                if (!(await ea.Generate())) return;
 
                 if (settings.useNewVersion)
                 {
-                    ea.GenerateEndActions(cancelTokens.Token);
+                    await ea.GenerateEndActions(cancelTokens.Token);
                     ea.GenerateStartActions();
                     EaPath = outputDir + @"\EndActions.data." + bookInfo.asin + ".asc";
                     extrasComplete = true;

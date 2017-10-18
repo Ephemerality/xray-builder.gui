@@ -6,17 +6,18 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using HtmlAgilityPack;
 
 namespace XRayBuilderGUI
 {
     public class AuthorProfile
     {
-        private Properties.Settings settings = Properties.Settings.Default;
-        private frmMain main;
+        private static Properties.Settings settings = Properties.Settings.Default;
 
         private string ApPath = "";
-        private BookInfo curBook = null;
+        private BookInfo curBook;
+        private string TLD;
 
         private int authorImageHeight;
         private string base64ImageString = "";
@@ -32,12 +33,15 @@ namespace XRayBuilderGUI
 
         public string EaSubTitle = null;
 
-        public bool complete = false; //Set if constructor succeeded in generating profile
-
-        public AuthorProfile(BookInfo nBook, string TLD, frmMain frm)
+        public AuthorProfile(BookInfo nBook, string TLD)
         {
-            this.curBook = nBook;
-            this.main = frm;
+            curBook = nBook;
+            this.TLD = TLD;
+        }
+
+        // TODO: Review this...
+        public async Task<bool> Generate()
+        {
             string outputDir;
             try
             {
@@ -60,7 +64,7 @@ namespace XRayBuilderGUI
             {
                 Logger.Log("AuthorProfile file already exists... Skipping!\r\n" +
                          "Please review the settings page if you want to overwite any existing files.");
-                return;
+                return false;
             }
             
             //Process GUID. If in decimal form, convert to hex.
@@ -75,7 +79,7 @@ namespace XRayBuilderGUI
             if (curBook.guid == "0")
             {
                 Logger.Log("An error occurred while converting the GUID.");
-                return;
+                return false;
             }
 
             DataSources.AuthorSearchResults searchResults = null;
@@ -83,7 +87,7 @@ namespace XRayBuilderGUI
             // If the .com search crashes, it will crash back to the caller in frmMain
             try
             {
-                searchResults = DataSources.Amazon.SearchAuthor(curBook, TLD);
+                searchResults = await DataSources.Amazon.SearchAuthor(curBook, TLD);
             }
             catch (Exception ex)
             {
@@ -98,11 +102,11 @@ namespace XRayBuilderGUI
                     {
                         Logger.Log("Trying again with Amazon.com.");
                         TLD = "com";
-                        searchResults = DataSources.Amazon.SearchAuthor(curBook, TLD);
+                        searchResults = await DataSources.Amazon.SearchAuthor(curBook, TLD);
                     }
                 }
             }
-            if (searchResults == null) return; // Already logged error in search function
+            if (searchResults == null) return false; // Already logged error in search function
             authorAsin = searchResults.authorAsin;
 
             if (Properties.Settings.Default.saveHtml)
@@ -123,7 +127,7 @@ namespace XRayBuilderGUI
             string bioFile = Environment.CurrentDirectory + @"\ext\" + authorAsin + ".bio";
             if (settings.saveBio && File.Exists(bioFile))
             {
-                if (!readBio(bioFile)) return;
+                if (!readBio(bioFile)) return false;
             }
             if (BioTrimmed == "")
             {
@@ -158,7 +162,7 @@ namespace XRayBuilderGUI
                         System.Windows.Forms.MessageBoxDefaultButton.Button2))
                 {
                     Functions.RunNotepad(bioFile);
-                    if (!readBio(bioFile)) return;
+                    if (!readBio(bioFile)) return false;
                 }
                 else
                 {
@@ -181,14 +185,14 @@ namespace XRayBuilderGUI
                     catch (Exception ex)
                     {
                         Logger.Log("An error occurred while writing biography.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                        return;
+                        return false;
                     }
                 }
                 if (System.Windows.Forms.DialogResult.Yes == System.Windows.Forms.MessageBox.Show("Would you like to open the biography file in notepad for editing?", "Biography",
                    System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question, System.Windows.Forms.MessageBoxDefaultButton.Button2))
                 {
                     Functions.RunNotepad(bioFile);
-                    if (!readBio(bioFile)) return;
+                    if (!readBio(bioFile)) return false;
                 }
             }
             // Try to download Author image
@@ -216,7 +220,7 @@ namespace XRayBuilderGUI
             catch (Exception ex)
             {
                 Logger.Log(String.Format("An error occurred downloading the author image: {0}", ex.Message));
-                return;
+                return false;
             }
 
             Logger.Log("Gathering author's other books...");
@@ -230,13 +234,13 @@ namespace XRayBuilderGUI
                     {
                         //Gather book desc, image url, etc, if using new format
                         if (settings.useNewVersion)
-                            book.GetAmazonInfo(book.amazonUrl);
+                            await book.GetAmazonInfo(book.amazonUrl);
                         otherBooks.Add(book);
                     }
                     catch (Exception ex)
                     {
                         Logger.Log(String.Format("An error occurred gathering metadata for other books: {0}\r\nURL: {1}\r\nBook: {2}", ex.Message, book.amazonUrl, book.title));
-                        return;
+                        return false;
                     }
                 }
             }
@@ -271,15 +275,14 @@ namespace XRayBuilderGUI
             catch (Exception ex)
             {
                 Logger.Log("An error occurred while writing the Author Profile file: " + ex.Message + "\r\n" + ex.StackTrace);
-                return;
+                return false;
             }
 
             ApTitle = "About " + curBook.author;
             ApSubTitle = "Kindle Books By " + curBook.author;
             ApAuthorImage = bitmap;
             EaSubTitle = "More Books By " + curBook.author;
-
-            complete = true;
+            return true;
         }
 
         public string ToJSON()

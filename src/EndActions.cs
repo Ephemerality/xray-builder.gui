@@ -28,8 +28,6 @@ namespace XRayBuilderGUI
         public BookInfo curBook = null;
         DataSources.DataSource dataSource = null;
 
-        public bool complete = false; //Set if constructor succeeds in gathering data
-        
         //Requires an already-built AuthorProfile and the BaseEndActions.txt file
         public EndActions(AuthorProfile ap, BookInfo book, long erl, DataSources.DataSource dataSource, frmMain frm)
         {
@@ -38,10 +36,13 @@ namespace XRayBuilderGUI
             _erl = erl;
             this.dataSource = dataSource;
             main = frm;
+        }
 
+        public async Task<bool> Generate()
+        {
             Logger.Log("Attempting to find book on Amazon...");
             //Generate Book search URL from book's ASIN
-            string ebookLocation = String.Format(@"http://www.amazon.{0}/dp/{1}", settings.amazonTLD, book.asin);
+            string ebookLocation = String.Format(@"http://www.amazon.{0}/dp/{1}", settings.amazonTLD, curBook.asin);
 
             // Search Amazon for book
             //Logger.Log(String.Format("Book's Amazon page URL: {0}", ebookLocation));
@@ -49,12 +50,12 @@ namespace XRayBuilderGUI
             HtmlDocument bookHtmlDoc = new HtmlDocument {OptionAutoCloseOnEnd = true};
             try
             {
-                bookHtmlDoc.LoadHtml(HttpDownloader.GetPageHtmlAsync(ebookLocation).Result);
+                bookHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(ebookLocation));
             }
             catch (Exception ex)
             {
                 Logger.Log(String.Format("An error ocurred while downloading book's Amazon page: {0}\r\nYour ASIN may not be correct.", ex.Message));
-                return;
+                return false;
             }
             Logger.Log("Book found on Amazon!");
             if (Properties.Settings.Default.saveHtml)
@@ -79,7 +80,7 @@ namespace XRayBuilderGUI
             catch (Exception ex)
             {
                 Logger.Log(String.Format("An error ocurred parsing Amazon info: {0}", ex.Message));
-                return;
+                return false;
             }
 
             Logger.Log("Gathering recommended book metadata...");
@@ -121,13 +122,13 @@ namespace XRayBuilderGUI
                         {
                             //Gather book desc, image url, etc, if using new format
                             if (settings.useNewVersion)
-                                newBook.GetAmazonInfo(nodeUrl);
+                                await newBook.GetAmazonInfo(nodeUrl);
                             custAlsoBought.Add(newBook);
                         }
                         catch (Exception ex)
                         {
                             Logger.Log(String.Format("Error: {0}\r\n{1}", ex.Message, nodeUrl));
-                            return;
+                            return false;
                         }
                     }
                 }
@@ -175,13 +176,13 @@ namespace XRayBuilderGUI
                             try
                             {
                                 if (settings.useNewVersion)
-                                    newBook.GetAmazonInfo(sponsUrl);
+                                    await newBook.GetAmazonInfo(sponsUrl);
                                 custAlsoBought.Add(newBook);
                             }
                             catch (Exception ex)
                             {
                                 Logger.Log(String.Format("Error: {0}\r\n{1}", ex.Message, sponsUrl));
-                                return;
+                                return false;
                             }
                         }
                     }
@@ -190,10 +191,10 @@ namespace XRayBuilderGUI
             catch (Exception ex)
             {
                 Logger.Log("An error occurred parsing the book's amazon page: " + ex.Message + ex.StackTrace);
-                return;
+                return false;
             }
             SetPaths();
-            complete = true;
+            return true;
         }
 
         public void GenerateOld()
@@ -294,7 +295,7 @@ namespace XRayBuilderGUI
             try
             {
                 Progress<Tuple<int, int>> progress = new Progress<Tuple<int, int>>(main.UpdateProgressBar);
-                dataSource.GetExtras(curBook, token, progress);
+                await dataSource.GetExtras(curBook, token, progress);
                 curBook.nextInSeries = await dataSource.GetNextInSeries(curBook, authorProfile, settings.amazonTLD);
                 nextBook = curBook.nextInSeries != null ? curBook.nextInSeries.ToJSON("recommendation", false) : "";
             }

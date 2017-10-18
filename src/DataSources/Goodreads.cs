@@ -19,7 +19,6 @@ namespace XRayBuilderGUI.DataSources
         private frmGR frmG = new frmGR();
 
         private List<BookInfo> goodreadsBookList = new List<BookInfo>();
-        private List<string[]> notableClips = null;
 
         // Goodreads expects %26 and %27 instead of & and ’ or ' and %20 instead of spaces
         Dictionary<string, string> replacements = new Dictionary<string, string>()

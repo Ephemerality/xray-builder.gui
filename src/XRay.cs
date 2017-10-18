@@ -625,6 +625,8 @@ namespace XRayBuilderGUI
                                 excerpt = new Excerpt(excerptId++, index, quote.Item1.Length);
                                 excerpt.related_entities.Add(0); // Mark the excerpt as notable
                                                                  // TODO: also add other related entities
+                                excerpt.notable = true;
+                                excerpt.highlights = quote.Item2;
                                 excerpts.Add(excerpt);
                             }
                             else
@@ -808,27 +810,32 @@ namespace XRayBuilderGUI
                 command.Parameters.AddWithValue("start", e.start);
                 command.Parameters.AddWithValue("length", e.length);
                 command.Parameters.AddWithValue("image", e.image);
-                command.Parameters.AddWithValue("rel_ent", String.Join(",", e.related_entities.Where(en => en != 0).ToArray())); // don't write 0 (notable)
+                command.Parameters.AddWithValue("rel_ent", String.Join(",", e.related_entities.Where(en => en != 0).ToArray())); // don't write 0 (notable flag)
                 command.ExecuteNonQuery();
                 foreach (int ent in e.related_entities)
                 {
-                    sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", ent, e.id);
+                    if (ent != 0) // skip notable flag
+                        sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", ent, e.id);
                 }
                 progress.Report(new Tuple<int, int>(excerpt++, excerpts.Count));
             }
             command.Dispose();
+            // create links to notable clips in order of popularity
+            var notablesOnly = excerpts.Where(ex => ex.notable).OrderByDescending(ex => ex.highlights);
+            foreach (Excerpt notable in notablesOnly)
+                sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", 0, notable.id);
             // Populate some more notable clips if not enough were found, 
             // TODO: Add a config value in settings for this amount
             if (foundNotables <= 20 && foundNotables + excerpts.Count <= 20)
                 excerpts.ForEach(ex =>
                     {
-                        if (!ex.related_entities.Contains(0))
+                        if (!ex.notable)
                             sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", 0, ex.id);
                     });
             else
             {
                 Random rand = new Random();
-                List<Excerpt> eligible = excerpts.Where(ex => !ex.related_entities.Contains(0)).ToList();
+                List<Excerpt> eligible = excerpts.Where(ex => !ex.notable).ToList();
                 while (foundNotables <= 20 && eligible.Count > 0)
                 {
                     Excerpt randEx = eligible.ElementAt(rand.Next(eligible.Count));
@@ -924,6 +931,8 @@ namespace XRayBuilderGUI
             public string image = "";
             public List<int> related_entities = new List<int>();
             public int go_to = -1;
+            public int highlights = 0;
+            public bool notable = false;
 
             public Excerpt(int id, int start, int length)
             {

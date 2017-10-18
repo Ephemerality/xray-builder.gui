@@ -25,6 +25,7 @@ namespace XRayBuilderGUI
         {
             HttpDownloader http = new HttpDownloader(url);
             return http.GetPage();
+        }
 
         public static async Task<string> GetPageHtmlAsync(string url)
         {

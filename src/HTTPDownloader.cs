@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
@@ -31,6 +32,17 @@ namespace XRayBuilderGUI
         {
             HttpDownloader http = new HttpDownloader(url);
             return await Task.Run(() => http.GetPage());
+        }
+
+        public static async Task<Bitmap> GetImage(string url)
+        {
+            Bitmap result = null;
+            WebRequest request = WebRequest.Create(url);
+            using (WebResponse response = await request.GetResponseAsync())
+            {
+                result = new Bitmap(response.GetResponseStream());
+            }
+            return result;
         }
 
         public HttpDownloader(string url) : this(url, null, null, "Mozilla/5.0(Windows NT 6.1; WOW64; Trident/7.0; AS; rv:11.0) like Gecko") { }

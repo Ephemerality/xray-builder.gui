@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Globalization;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 using HtmlAgilityPack;
-using System.Collections.Generic;
 
 namespace XRayBuilderGUI
 {
@@ -89,11 +89,11 @@ namespace XRayBuilderGUI
         /// Retrieves the book's description, image URL, and rating from the book's Amazon URL.
         /// </summary>
         /// <param name="amazonUrl">Book's Amazon URL</param>
-        public void GetAmazonInfo(string amazonUrl)
+        public async Task GetAmazonInfo(string amazonUrl)
         {
             if (amazonUrl == "") return;
             HtmlDocument bookDoc = new HtmlDocument() { OptionAutoCloseOnEnd = true };
-            bookDoc.LoadHtml(HttpDownloader.GetPageHtml(amazonUrl));
+            bookDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(amazonUrl));
             GetAmazonInfo(bookDoc);
         }
 

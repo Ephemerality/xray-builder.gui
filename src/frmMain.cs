@@ -565,7 +565,14 @@ namespace XRayBuilderGUI
             }
         }
 
-        private void btnSearchGoodreads_Click(object sender, EventArgs e)
+        private async void btnSearchGoodreads_Click(object sender, EventArgs e)
+        {
+            ToggleInterface(false);
+            await btnSearchGoodreads_Run();
+            ToggleInterface(true);
+        }
+
+        private async Task btnSearchGoodreads_Run()
         {
             if (!File.Exists(txtMobi.Text))
             {
@@ -622,7 +629,7 @@ namespace XRayBuilderGUI
                  results[2], results[1]));
             try
             {
-                string bookUrl = dataSource.SearchBook(results[4], results[5]);
+                string bookUrl = await dataSource.SearchBook(results[4], results[5]);
                 if (bookUrl != "")
                 {
                     txtGoodreads.Text = bookUrl;

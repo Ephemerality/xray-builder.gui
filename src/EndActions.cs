@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 
 using HtmlAgilityPack;
@@ -48,7 +49,7 @@ namespace XRayBuilderGUI
             HtmlDocument bookHtmlDoc = new HtmlDocument {OptionAutoCloseOnEnd = true};
             try
             {
-                bookHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(ebookLocation));
+                bookHtmlDoc.LoadHtml(HttpDownloader.GetPageHtmlAsync(ebookLocation).Result);
             }
             catch (Exception ex)
             {
@@ -259,7 +260,7 @@ namespace XRayBuilderGUI
             }
         }
 
-        public void GenerateEndActions(CancellationToken token)
+        public async Task GenerateEndActions(CancellationToken token)
         {
             string[] templates = GetBaseTemplates(Environment.CurrentDirectory + @"\dist\BaseEndActions.txt", 3);
             if (templates == null) return;
@@ -294,7 +295,7 @@ namespace XRayBuilderGUI
             {
                 Progress<Tuple<int, int>> progress = new Progress<Tuple<int, int>>(main.UpdateProgressBar);
                 dataSource.GetExtras(curBook, token, progress);
-                curBook.nextInSeries = dataSource.GetNextInSeries(curBook, authorProfile, settings.amazonTLD);
+                curBook.nextInSeries = await dataSource.GetNextInSeries(curBook, authorProfile, settings.amazonTLD);
                 nextBook = curBook.nextInSeries != null ? curBook.nextInSeries.ToJSON("recommendation", false) : "";
             }
             catch (Exception ex)
@@ -308,7 +309,7 @@ namespace XRayBuilderGUI
 
             try
             {
-                if (!dataSource.GetPageCount(curBook))
+                if (!(await dataSource.GetPageCount(curBook)))
                 {
                     if (!Properties.Settings.Default.pageCount)
                         Logger.Log("No page count found on Goodreads");

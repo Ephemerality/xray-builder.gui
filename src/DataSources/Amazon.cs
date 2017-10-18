@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using HtmlAgilityPack;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using HtmlAgilityPack;
 
 namespace XRayBuilderGUI.DataSources
 {
@@ -14,7 +15,7 @@ namespace XRayBuilderGUI.DataSources
 
     public static class Amazon
     {
-        public static AuthorSearchResults SearchAuthor(BookInfo curBook, string TLD)
+        public static async Task<AuthorSearchResults> SearchAuthor(BookInfo curBook, string TLD)
         {
             AuthorSearchResults results = new AuthorSearchResults();
             //Generate Author search URL from author's name
@@ -26,7 +27,7 @@ namespace XRayBuilderGUI.DataSources
 
             // Search Amazon for Author
             results.authorHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
-            results.authorHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(amazonAuthorSearchUrl));
+            results.authorHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(amazonAuthorSearchUrl));
 
             if (Properties.Settings.Default.saveHtml)
             {
@@ -94,13 +95,13 @@ namespace XRayBuilderGUI.DataSources
             string authorpageHtml = "";
             try
             {
-                authorpageHtml = HttpDownloader.GetPageHtml(authorAmazonWebsiteLocation);
+                authorpageHtml = await HttpDownloader.GetPageHtmlAsync(authorAmazonWebsiteLocation);
             }
             catch
             {
                 // If page not found (on co.uk at least, the long form does not seem to work) fallback to short form
                 // and pray the formatting/item display suits our needs. If short form not found, crash back to AuthorProfile.
-                authorpageHtml = HttpDownloader.GetPageHtml(authorAmazonWebsiteLocationLog);
+                authorpageHtml = await HttpDownloader.GetPageHtmlAsync(authorAmazonWebsiteLocationLog);
             }
             results.authorHtmlDoc.LoadHtml(authorpageHtml);
             return results;
@@ -177,7 +178,7 @@ namespace XRayBuilderGUI.DataSources
             return bookList;
         }
 
-        public static BookInfo SearchBook(string title, string author, string TLD)
+        public static async Task<BookInfo> SearchBook(string title, string author, string TLD)
         {
             BookInfo result = null;
 
@@ -193,7 +194,7 @@ namespace XRayBuilderGUI.DataSources
             string searchUrl = String.Format(@"http://www.amazon.{0}/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords={1}",
                 TLD, Uri.EscapeDataString(title + " " + author));
             HtmlDocument searchDoc = new HtmlDocument();
-            searchDoc.LoadHtml(HttpDownloader.GetPageHtml(searchUrl));
+            searchDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(searchUrl));
             HtmlNode node = searchDoc.DocumentNode.SelectSingleNode("//li[@id='result_0']");
             HtmlNode nodeASIN = node.SelectSingleNode(".//a[@title='Kindle Edition']");
             if (nodeASIN == null)

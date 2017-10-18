@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using HtmlAgilityPack;
 using System.Globalization;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
@@ -29,7 +30,7 @@ namespace XRayBuilderGUI.DataSources
                 {" ", "%20"}
             };
 
-        public override string SearchBook(string author, string title)
+        public override async Task<string> SearchBook(string author, string title)
         {
             string goodreadsSearchUrlBase = @"http://www.goodreads.com/search?q={0}%20{1}";
             string goodreadsBookUrl = "";
@@ -40,11 +41,11 @@ namespace XRayBuilderGUI.DataSources
             author = regex.Replace(author, m => replacements[m.Value]);
 
             HtmlDocument goodreadsHtmlDoc = new HtmlDocument();
-            goodreadsHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(String.Format(goodreadsSearchUrlBase, author, title)));
+            goodreadsHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(String.Format(goodreadsSearchUrlBase, author, title)));
             if (goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results"))
             {
                 author = Functions.TrimAuthor(author);
-                goodreadsHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(String.Format(goodreadsSearchUrlBase, author, title)));
+                goodreadsHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(String.Format(goodreadsSearchUrlBase, author, title)));
             }
             if (!goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results"))
             {
@@ -118,7 +119,7 @@ namespace XRayBuilderGUI.DataSources
         /// Modifies curBook.previousInSeries to contain the found book info.
         /// </summary>
         /// <returns>Next book in series</returns>
-        public override BookInfo GetNextInSeries(BookInfo curBook, AuthorProfile authorProfile, string TLD)
+        public override async Task<BookInfo> GetNextInSeries(BookInfo curBook, AuthorProfile authorProfile, string TLD)
         {
             BookInfo nextBook = null;
             BookInfo prevBook = null;
@@ -127,11 +128,11 @@ namespace XRayBuilderGUI.DataSources
             if (sourceHtmlDoc == null)
             {
                 sourceHtmlDoc = new HtmlDocument();
-                sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.dataUrl));
+                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl));
             }
 
             // Get title of next book
-            Dictionary<string, BookInfo> seriesInfo = GetNextInSeriesTitle(curBook);
+            Dictionary<string, BookInfo> seriesInfo = await GetNextInSeriesTitle(curBook);
             BookInfo book;
             if (seriesInfo.TryGetValue("Next", out book))
             {
@@ -147,10 +148,10 @@ namespace XRayBuilderGUI.DataSources
                         {
                             nextBook = book;
                             string Url = String.Format("http://www.amazon.{0}/dp/{1}", TLD, book.asin);
-                            nextBook.GetAmazonInfo(Url);
+                            await nextBook.GetAmazonInfo(Url);
                         }
                         else
-                            nextBook = Amazon.SearchBook(book.title, book.author, TLD);
+                            nextBook = await Amazon.SearchBook(book.title, book.author, TLD);
                         if (nextBook == null && settings.promptASIN)
                         {
                             Logger.Log(String.Format("ASIN prompt for {0}...", book.title));
@@ -161,7 +162,7 @@ namespace XRayBuilderGUI.DataSources
                             frmAS.ShowDialog();
                             Logger.Log(String.Format("ASIN supplied: {0}", frmAS.tbAsin.Text));
                             string Url = String.Format("http://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text);
-                            nextBook.GetAmazonInfo(Url);
+                            await nextBook.GetAmazonInfo(Url);
                             nextBook.amazonUrl = Url;
                             nextBook.asin = frmAS.tbAsin.Text;
                         }
@@ -170,10 +171,10 @@ namespace XRayBuilderGUI.DataSources
                     {
                         Logger.Log(String.Format("Failed to find {0} on Amazon." + TLD + ", trying again with Amazon.com.", book.title));
                         TLD = "com";
-                        nextBook = Amazon.SearchBook(book.title, book.author, TLD);
+                        nextBook = await Amazon.SearchBook(book.title, book.author, TLD);
                     }
                     if (nextBook != null)
-                        nextBook.GetAmazonInfo(nextBook.amazonUrl); //fill in desc, imageurl, and ratings
+                        await nextBook.GetAmazonInfo(nextBook.amazonUrl); //fill in desc, imageurl, and ratings
                 }
                 
                 if (nextBook == null)
@@ -194,10 +195,10 @@ namespace XRayBuilderGUI.DataSources
                     {
                         prevBook = book;
                         string Url = String.Format("http://www.amazon.{0}/dp/{1}", TLD, book.asin);
-                        prevBook.GetAmazonInfo(Url);
+                        await prevBook.GetAmazonInfo(Url);
                     }
                     else if(prevBook != null)
-                        prevBook.GetAmazonInfo(prevBook.amazonUrl);
+                        await prevBook.GetAmazonInfo(prevBook.amazonUrl);
                     if (prevBook == null && settings.promptASIN)
                     {
                         Logger.Log(String.Format("ASIN prompt for {0}...", book.title));
@@ -208,7 +209,7 @@ namespace XRayBuilderGUI.DataSources
                         frmAS.ShowDialog();
                         Logger.Log(String.Format("ASIN supplied: {0}", frmAS.tbAsin.Text));
                         string Url = String.Format("http://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text);
-                        prevBook.GetAmazonInfo(Url);
+                        await prevBook.GetAmazonInfo(Url);
                         prevBook.amazonUrl = Url;
                         prevBook.asin = frmAS.tbAsin.Text;
                     }
@@ -227,14 +228,14 @@ namespace XRayBuilderGUI.DataSources
         /// Search Goodread for possible series info, returning the next title in the series.
         /// Modifies curBook.
         /// </summary>
-        private Dictionary<string, BookInfo> GetNextInSeriesTitle(BookInfo curBook)
+        private async Task<Dictionary<string, BookInfo>> GetNextInSeriesTitle(BookInfo curBook)
         {
             Match match;
             Dictionary<string, BookInfo> results = new Dictionary<string, BookInfo>(2); 
             if (sourceHtmlDoc == null)
             {
                 sourceHtmlDoc = new HtmlDocument();
-                sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.dataUrl));
+                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl));
             }
 
             //Search Goodreads for series info
@@ -258,7 +259,7 @@ namespace XRayBuilderGUI.DataSources
                 return results;
 
             HtmlDocument seriesHtmlDoc = new HtmlDocument() { OptionAutoCloseOnEnd = true };
-            seriesHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(goodreadsSeriesUrl));
+            seriesHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(goodreadsSeriesUrl));
             
             if (seriesHtmlDoc != null)
             {
@@ -308,7 +309,7 @@ namespace XRayBuilderGUI.DataSources
                             prevBook.title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", string.Empty);
                             match = Regex.Match(title.GetAttributeValue("href", ""), @"show/([0-9]*)");
                             if (match.Success)
-                                prevBook.asin = SearchBookASIN(match.Groups[1].Value, prevBook.title);
+                                prevBook.asin = await SearchBookASIN(match.Groups[1].Value, prevBook.title);
                             prevBook.author = book.SelectSingleNode(".//a[@class='authorName']").InnerText.Trim();                            
                             results["Previous"] = prevBook;
                             curBook.previousInSeries = prevBook;
@@ -322,7 +323,7 @@ namespace XRayBuilderGUI.DataSources
                             nextBook.title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", string.Empty);
                             match = Regex.Match(title.GetAttributeValue("href", ""), @"show/([0-9]*)");
                             if (match.Success)
-                                nextBook.asin = SearchBookASIN(match.Groups[1].Value, nextBook.title);                            
+                                nextBook.asin = await SearchBookASIN(match.Groups[1].Value, nextBook.title);                            
                             nextBook.author = book.SelectSingleNode(".//a[@class='authorName']").InnerText.Trim();
                             results["Next"] = nextBook;
                             curBook.nextInSeries = nextBook;
@@ -336,13 +337,13 @@ namespace XRayBuilderGUI.DataSources
         }
 
         // Search Goodread for possible kindle edition of book and return ASIN.
-        private string SearchBookASIN(string id, string title)
+        private async Task<string> SearchBookASIN(string id, string title)
         {
             string goodreadsBookUrl = String.Format("http://www.goodreads.com/book/show/{0}", id);
             try
             {
                 HtmlDocument bookHtmlDoc = new HtmlDocument() { OptionAutoCloseOnEnd = true };
-                bookHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(goodreadsBookUrl));
+                bookHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(goodreadsBookUrl));
                 if (bookHtmlDoc != null)
                 {
                     HtmlNode link = bookHtmlDoc.DocumentNode.SelectSingleNode("//div[@class='otherEditionsActions']/a");
@@ -350,7 +351,7 @@ namespace XRayBuilderGUI.DataSources
                     if (match.Success)
                     {
                         string kindleEditionsUrl = String.Format("http://www.goodreads.com/work/editions/{0}?utf8=%E2%9C%93&sort=num_ratings&filter_by_format=Kindle+Edition", match.Groups[1].Value);
-                        bookHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(kindleEditionsUrl));
+                        bookHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(kindleEditionsUrl));
                         HtmlNodeCollection bookNodes = bookHtmlDoc.DocumentNode.SelectNodes("//div[@class='elementList clearFix']");
                         if (bookNodes != null)
                         {
@@ -373,12 +374,12 @@ namespace XRayBuilderGUI.DataSources
             }
         }
 
-        public override bool GetPageCount(BookInfo curBook)
+        public override async Task<bool> GetPageCount(BookInfo curBook)
         {
             if (sourceHtmlDoc == null)
             {
                 sourceHtmlDoc = new HtmlDocument();
-                sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.dataUrl));
+                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl));
             }
             HtmlNode pagesNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='details']");
             if (pagesNode == null)
@@ -397,14 +398,14 @@ namespace XRayBuilderGUI.DataSources
             return false;
         }
 
-        public override List<XRay.Term> GetTerms(string dataUrl, IProgress<Tuple<int, int>> progress, CancellationToken token)
+        public override async Task<List<XRay.Term>> GetTerms(string dataUrl, IProgress<Tuple<int, int>> progress, CancellationToken token)
         {
             List<XRay.Term> terms = new List<XRay.Term>();
             if (sourceHtmlDoc == null)
             {
                 Logger.Log("Downloading Goodreads page...");
                 sourceHtmlDoc = new HtmlDocument();
-                sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(dataUrl));
+                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(dataUrl));
             }
 			List<HtmlNode> allChars;
             HtmlNodeCollection charNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/a");
@@ -428,7 +429,7 @@ namespace XRayBuilderGUI.DataSources
                 token.ThrowIfCancellationRequested();
                 try
                 {
-                    XRay.Term tempTerm = GetTerm(dataUrl, charNode.GetAttributeValue("href", ""));
+                    XRay.Term tempTerm = await GetTerm(dataUrl, charNode.GetAttributeValue("href", ""));
                     if (tempTerm != null)
                         terms.Add(tempTerm);
                     if (progress != null) progress.Report(new Tuple<int, int>(count++, allChars.Count));
@@ -444,7 +445,7 @@ namespace XRayBuilderGUI.DataSources
         }
 
         // Are there actually any goodreads pages that aren't at goodreads.com for other languages??
-        private XRay.Term GetTerm(string baseUrl, string relativeUrl)
+        private async Task<XRay.Term> GetTerm(string baseUrl, string relativeUrl)
         {
             XRay.Term result = new XRay.Term("character");
             Uri tempUri = new Uri(baseUrl);
@@ -452,7 +453,7 @@ namespace XRayBuilderGUI.DataSources
             result.DescSrc = "Goodreads";
             result.DescUrl = tempUri.ToString();
             HtmlDocument charDoc = new HtmlDocument();
-            charDoc.LoadHtml(HttpDownloader.GetPageHtml(tempUri.ToString()));
+            charDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(tempUri.ToString()));
             HtmlNode mainNode = charDoc.DocumentNode.SelectSingleNode("//div[@class='mainContentFloat']")
                 ?? charDoc.DocumentNode.SelectSingleNode("//div[@class='mainContentFloat ']");
             result.TermName = mainNode.SelectSingleNode("./h1").InnerText;
@@ -479,12 +480,12 @@ namespace XRayBuilderGUI.DataSources
         /// <summary>
         /// Gather the list of quotes & number of times they've been liked -- close enough to "x paragraphs have been highlighted y times" from Amazon
         /// </summary>
-        public override List<Tuple<string, int>> GetNotableClips(string url, CancellationToken token, HtmlDocument srcDoc = null, IProgress<Tuple<int, int>> progress = null)
+        public override async Task<List<Tuple<string, int>>> GetNotableClips(string url, CancellationToken token, HtmlDocument srcDoc = null, IProgress<Tuple<int, int>> progress = null)
         {
             if (srcDoc == null)
             {
                 srcDoc = new HtmlDocument();
-                srcDoc.LoadHtml(HttpDownloader.GetPageHtml(url));
+                srcDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(url));
             }
             List<Tuple<string, int>> result = null;
             HtmlNode quoteNode = srcDoc.DocumentNode.SelectSingleNode("//div[@class='h2Container gradientHeaderContainer']/h2/a[starts-with(.,'Quotes from')]");
@@ -496,7 +497,7 @@ namespace XRayBuilderGUI.DataSources
             {
                 token.ThrowIfCancellationRequested();
                 HtmlDocument quoteDoc = new HtmlDocument();
-                quoteDoc.LoadHtml(HttpDownloader.GetPageHtml(String.Format(quoteURL, i)));
+                quoteDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(String.Format(quoteURL, i)));
                 // first time through, check how many pages there are (find previous page button, get parent div, take all children of that, 2nd last one should be the max page count
                 if (maxPages == 1)
                 {
@@ -523,17 +524,17 @@ namespace XRayBuilderGUI.DataSources
         /// Modifies curBook.
         /// </summary>
         /// <param name="curBook"></param>
-        public override void GetExtras(BookInfo curBook, CancellationToken token, IProgress<Tuple<int, int>> progress = null)
+        public override async Task GetExtras(BookInfo curBook, CancellationToken token, IProgress<Tuple<int, int>> progress = null)
         {
             if (sourceHtmlDoc == null)
             {
                 sourceHtmlDoc = new HtmlDocument();
-                sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.dataUrl));
+                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl));
             }
             
             if (curBook.notableClips == null)
             {
-                curBook.notableClips = GetNotableClips("", token, sourceHtmlDoc, progress);
+                curBook.notableClips = await GetNotableClips("", token, sourceHtmlDoc, progress);
             }
             
             //Add rating and reviews count if missing from Amazon book info

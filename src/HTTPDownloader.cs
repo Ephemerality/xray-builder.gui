@@ -4,6 +4,7 @@ using System.IO.Compression;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace XRayBuilderGUI
 {
@@ -24,6 +25,11 @@ namespace XRayBuilderGUI
         {
             HttpDownloader http = new HttpDownloader(url);
             return http.GetPage();
+
+        public static async Task<string> GetPageHtmlAsync(string url)
+        {
+            HttpDownloader http = new HttpDownloader(url);
+            return await Task.Run(() => http.GetPage());
         }
 
         public HttpDownloader(string url) : this(url, null, null, "Mozilla/5.0(Windows NT 6.1; WOW64; Trident/7.0; AS; rv:11.0) like Gecko") { }
@@ -48,7 +54,7 @@ namespace XRayBuilderGUI
             request.CookieContainer = _cookiejar;
             request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
 
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponseAsync().Result)
             {
                 Headers = response.Headers;
                 Url = response.ResponseUri;

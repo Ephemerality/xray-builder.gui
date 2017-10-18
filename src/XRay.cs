@@ -134,11 +134,11 @@ namespace XRayBuilderGUI
             this.skipShelfari = true;
         }
 
-        public int SaveXml(string outfile, IProgress<Tuple<int, int>> progress, CancellationToken token)
+        public async Task<int> SaveXml(string outfile, IProgress<Tuple<int, int>> progress, CancellationToken token)
         {
             try
             {
-                Terms = dataSource.GetTerms(dataUrl, progress, token);
+                Terms = await dataSource.GetTerms(dataUrl, progress, token);
             }
             catch (OperationCanceledException)
             {
@@ -191,7 +191,7 @@ namespace XRayBuilderGUI
                 return "XRAY.entities." + asin + ".asc";
         }
 
-        public int CreateXray(IProgress<Tuple<int, int>> progress, CancellationToken token)
+        public async Task<int> CreateXray(IProgress<Tuple<int, int>> progress, CancellationToken token)
         {
             //Process GUID. If in decimal form, convert to hex.
             if (Regex.IsMatch(_guid, "/[a-zA-Z]/"))
@@ -239,9 +239,9 @@ namespace XRayBuilderGUI
             {
                 try
                 {
-                    Terms = dataSource.GetTerms(dataUrl, progress, token);
+                    Terms = await dataSource.GetTerms(dataUrl, progress, token);
                     Logger.Log("Downloading notable clips...");
-                    notableClips = dataSource.GetNotableClips(dataUrl, token, null, progress);
+                    notableClips = await dataSource.GetNotableClips(dataUrl, token, null, progress);
                 }
                 catch (OperationCanceledException)
                 {
@@ -268,7 +268,7 @@ namespace XRayBuilderGUI
             {
                 try
                 {
-                    string aliases = HttpDownloader.GetPageHtml("https://www.revensoftware.com/xray/aliases/" + asin);
+                    string aliases = await HttpDownloader.GetPageHtmlAsync("https://www.revensoftware.com/xray/aliases/" + asin);
                     StreamWriter fs = new StreamWriter(aliasFile, false, Encoding.UTF8);
                     fs.Write(aliases);
                     fs.Close();

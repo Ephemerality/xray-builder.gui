@@ -18,13 +18,10 @@ namespace XRayBuilderGUI
         private string ApPath = "";
         private BookInfo curBook;
         private string TLD;
-
-        private int authorImageHeight;
-        private string base64ImageString = "";
-        private Bitmap bitmap = null;
+        
+        private Bitmap ApAuthorImage = null;
 
         public string ApTitle = null;
-        public Image ApAuthorImage = null;
         public string ApSubTitle = null;
         public string BioTrimmed = "";
         public List<BookInfo> otherBooks = new List<BookInfo>();
@@ -208,14 +205,8 @@ namespace XRayBuilderGUI
             try
             {
                 Logger.Log("Downloading author image...");
-                WebRequest request = WebRequest.Create(authorImageUrl);
-                WebResponse response = request.GetResponse();
-                Stream stream = response.GetResponseStream();
-                bitmap = new Bitmap(stream);
-                authorImageHeight = bitmap.Height;
-                base64ImageString = Functions.ImageToBase64(bitmap, ImageFormat.Jpeg);
-                Logger.Log("Grayscale Base-64 encoded author image created!");
-                stream.Dispose();
+                ApAuthorImage = await HttpDownloader.GetImage(authorImageUrl);
+                Logger.Log("Grayscale base64-encoded author image created!");
             }
             catch (Exception ex)
             {
@@ -263,10 +254,11 @@ namespace XRayBuilderGUI
             int unixTimestamp = (Int32) (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             try
             {
-                string authorProfileOutput = @"{""u"":[{""y"":" + authorImageHeight + @",""l"":[""" +
+                string base64Image = Functions.ImageToBase64(ApAuthorImage, ImageFormat.Jpeg);
+                string authorProfileOutput = @"{""u"":[{""y"":" + ApAuthorImage.Height + @",""l"":[""" +
                                           string.Join(@""",""", otherBooks.Select(book => book.asin).ToArray()) + @"""],""n"":""" +
                                           curBook.author + @""",""a"":""" + authorAsin + @""",""b"":""" + BioTrimmed +
-                                          @""",""i"":""" + base64ImageString + @"""}],""a"":""" +
+                                          @""",""i"":""" + base64Image + @"""}],""a"":""" +
                                           String.Format(@"{0}"",""d"":{1},""o"":[", curBook.asin, unixTimestamp) +
                                           string.Join(",", authorsOtherBookList.ToArray()) + "]}";
                 File.WriteAllText(ApPath, authorProfileOutput);
@@ -280,7 +272,6 @@ namespace XRayBuilderGUI
 
             ApTitle = "About " + curBook.author;
             ApSubTitle = "Kindle Books By " + curBook.author;
-            ApAuthorImage = bitmap;
             EaSubTitle = "More Books By " + curBook.author;
             return true;
         }

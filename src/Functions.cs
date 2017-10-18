@@ -115,31 +115,16 @@ namespace XRayBuilderGUI
         {
             using (MemoryStream ms = new MemoryStream())
             {
-                // Convert Image to byte[]
                 image.Save(ms, format);
-                byte[] imageBytes = ms.ToArray();
-                image.Dispose();
-
-                // Convert byte[] to Base64 String
-                string base64String = Convert.ToBase64String(imageBytes);
-                ms.Dispose();
-                return base64String;
+                return Convert.ToBase64String(ms.ToArray());
             }
         }
 
         public static Bitmap Base64ToImage(string base64String)
         {
-            // Convert Base64 String to byte[]
             byte[] imageBytes = Convert.FromBase64String(base64String);
-            MemoryStream ms = new MemoryStream(imageBytes, 0,
-                imageBytes.Length);
-
-            // Convert byte[] to Image , based on @Crulex comment, the below line has no need since MemoryStream already initialized
-            ms.Write(imageBytes, 0, imageBytes.Length);
-            Image image = Image.FromStream(ms, true);
-            Bitmap bitmap = new Bitmap(image);
-            ms.Dispose();
-            return bitmap;
+            using (MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
+                return new Bitmap(ms);
         }
 
         public static Bitmap MakeGrayscale3(Bitmap original)

@@ -65,16 +65,8 @@ namespace XRayBuilderGUI.DataSources
                 results.authorAsin = results.authorAsin.Substring(index1 + 11, 10);
 
             node = node.SelectSingleNode("//*[@id='result_1']/div/div/div/div/a");
-            string properAuthor;
-            try
-            {
-                properAuthor = node.GetAttributeValue("href", "");
-            }
-            catch (Exception ex)
-            {
-                properAuthor = "";
-            }
-            if (properAuthor == "" || properAuthor.IndexOf('/', 1) < 3)
+            string properAuthor = node?.GetAttributeValue("href", "");
+            if (properAuthor == "" || properAuthor == null || properAuthor.IndexOf('/', 1) < 3)
             {
                 Logger.Log("Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: " + amazonAuthorSearchUrl);
                 return null;
@@ -100,7 +92,7 @@ namespace XRayBuilderGUI.DataSources
             catch
             {
                 // If page not found (on co.uk at least, the long form does not seem to work) fallback to short form
-                // and pray the formatting/item display suits our needs. If short form not found, crash back to AuthorProfile.
+                // and pray the formatting/item display suits our needs. If short form not found, crash back to caller.
                 authorpageHtml = await HttpDownloader.GetPageHtmlAsync(authorAmazonWebsiteLocationLog);
             }
             results.authorHtmlDoc.LoadHtml(authorpageHtml);
@@ -196,11 +188,11 @@ namespace XRayBuilderGUI.DataSources
             HtmlDocument searchDoc = new HtmlDocument();
             searchDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(searchUrl));
             HtmlNode node = searchDoc.DocumentNode.SelectSingleNode("//li[@id='result_0']");
-            HtmlNode nodeASIN = node.SelectSingleNode(".//a[@title='Kindle Edition']");
+            HtmlNode nodeASIN = node?.SelectSingleNode(".//a[@title='Kindle Edition']");
             if (nodeASIN == null)
             {
                 node = searchDoc.DocumentNode.SelectSingleNode("//li[@id='result_1']");
-                nodeASIN = node.SelectSingleNode(".//a[@title='Kindle Edition']");
+                nodeASIN = node?.SelectSingleNode(".//a[@title='Kindle Edition']");
             }
             //At least attempt to verify it might be the same book?
             if (node != null && nodeASIN != null && node.InnerText.IndexOf(title, StringComparison.OrdinalIgnoreCase) >= 0)

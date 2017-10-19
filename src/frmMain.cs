@@ -1284,7 +1284,7 @@ namespace XRayBuilderGUI
                 frmCreator.ShowDialog();
         }
 
-        private bool checkFiles(string author, string title, string asin)
+        private void checkFiles(string author, string title, string asin)
         {
             string bookOutputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectoryOnly(author, Functions.RemoveInvalidFileChars(title)) : settings.outDir;
 
@@ -1304,7 +1304,6 @@ namespace XRayBuilderGUI
                 pbFile4.Image = Resources.file_on;
             else
                 pbFile4.Image = Resources.file_off;
-            return true;
         }
 
         private void btnCancel_Click(object sender, EventArgs e)

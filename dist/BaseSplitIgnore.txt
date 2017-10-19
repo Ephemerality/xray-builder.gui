@@ -1,0 +1,204 @@
+// Used as a template when splitting alias names automatically, add your custom terms here
+A V M
+Admiraal
+Admiral
+Air Cdre
+Air Commodore
+Air Marshal
+Air Vice Marshal
+Alderman
+Alhaji
+Ambassador
+Baron
+Barones
+Brig
+Brig Gen
+Brig General
+Brigadier
+Brigadier General
+Brother
+Canon
+Capt
+Captain
+Cardinal
+Cdr
+Chief
+Cik
+Cmdr
+Col
+Colonel
+Commandant
+Commander
+Commissioner
+Commodore
+Comte
+Comtessa
+Congressman
+Conseiller
+Consul
+Conte
+Contessa
+Corporal
+Councillor
+Count
+Countess
+Crown Prince
+Crown Princess
+Dame
+Datin
+Dato
+Datuk
+Datuk Seri
+Deacon
+Deaconess
+Dean
+Detective
+Dhr
+Dipl Ing
+Doctor
+Dott
+Dott Sa
+Dr
+Dr
+Dr Ing
+Dra
+Drs
+Embajador
+Embajadora
+En
+Encik
+Eng
+Eur Ing
+Exma Sra
+Exmo Sr
+Father
+First Lieutient
+First Officer
+Flt Lieut
+Flying Officer
+Fr
+Frau
+Frau
+Fraulein
+Fru
+Gen
+Generaal
+General
+Governor
+Graaf
+Gravin
+Group Captain
+Grp Capt
+H E Dr
+H H
+H M
+H R H
+Hajah
+Haji
+Hajim
+Her Highness
+Her Majesty
+Herr
+Herr
+High Chief
+His Highness
+His Holiness
+His Majesty
+Hon
+Hr
+Hr
+Hra
+Ing
+Ir
+Jonkheer
+Jr
+Judge
+Justice
+Khun Ying
+Kolonel
+Lady
+Lcda
+Lic
+Lieut
+Lieut Cdr
+Lieut Col
+Lieut Gen
+Lieutenant
+Lord
+Lt
+Madame
+Mademoiselle
+Maj Gen
+Major
+Master
+Mc
+Mevrouw
+Miss
+Miss
+Mlle
+Mme
+Monsieur
+Monsieur
+Monsignor
+Mr
+Mrs
+Ms
+Mstr
+Nti
+Pastor
+President
+Prince
+Princess
+Princesse
+Prinses
+Prof
+Prof Dr
+Prof Sir
+Professor
+Puan
+Puan Sri
+Rabbi
+Rear Admiral
+Rev
+Rev Canon
+Rev Dr
+Rev Mother
+Reverend
+Rva
+Senator
+Sergeant
+Sheikh
+Sheikha
+Sheriff
+Sig
+Sig Na
+Sig Ra
+Sir
+Sister
+Special Agent
+Sqn Ldr
+Sr
+Sr D
+Sra
+Srta
+St
+Sultan
+Tan Sri
+Tan Sri Dato
+Tengku
+Teuku
+Than Puying
+The Hon Dr
+The Hon Justice
+The Hon Miss
+The Hon Mr
+The Hon Mrs
+The Hon Ms
+The Hon Sir
+The Very Rev
+Toh Puan
+Tun
+Vice Admiral
+Viscount
+Viscountess
+Wg Cdr

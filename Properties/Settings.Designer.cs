@@ -50,12 +50,12 @@ namespace XRayBuilderGUI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string shelfari {
+        public string Goodreads {
             get {
-                return ((string)(this["shelfari"]));
+                return ((string)(this["Goodreads"]));
             }
             set {
-                this["shelfari"] = value;
+                this["Goodreads"] = value;
             }
         }
         
@@ -80,18 +80,6 @@ namespace XRayBuilderGUI.Properties {
             }
             set {
                 this["saverawml"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool spoilers {
-            get {
-                return ((bool)(this["spoilers"]));
-            }
-            set {
-                this["spoilers"] = value;
             }
         }
         
@@ -145,7 +133,7 @@ namespace XRayBuilderGUI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Shelfari")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Goodreads")]
         public string buildSource {
             get {
                 return ((string)(this["buildSource"]));
@@ -188,18 +176,6 @@ namespace XRayBuilderGUI.Properties {
             }
             set {
                 this["realName"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool amazonUk {
-            get {
-                return ((bool)(this["amazonUk"]));
-            }
-            set {
-                this["amazonUk"] = value;
             }
         }
         
@@ -326,18 +302,6 @@ namespace XRayBuilderGUI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool newMessage {
-            get {
-                return ((bool)(this["newMessage"]));
-            }
-            set {
-                this["newMessage"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool downloadAliases {
             get {
                 return ((bool)(this["downloadAliases"]));
@@ -356,6 +320,114 @@ namespace XRayBuilderGUI.Properties {
             }
             set {
                 this["overwriteChapters"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool overrideOffset {
+            get {
+                return ((bool)(this["overrideOffset"]));
+            }
+            set {
+                this["overrideOffset"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-16")]
+        public int offsetAZW3 {
+            get {
+                return ((int)(this["offsetAZW3"]));
+            }
+            set {
+                this["offsetAZW3"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool pageCount {
+            get {
+                return ((bool)(this["pageCount"]));
+            }
+            set {
+                this["pageCount"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Goodreads")]
+        public string dataSource {
+            get {
+                return ((string)(this["dataSource"]));
+            }
+            set {
+                this["dataSource"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool saveBio {
+            get {
+                return ((bool)(this["saveBio"]));
+            }
+            set {
+                this["saveBio"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("com")]
+        public string amazonTLD {
+            get {
+                return ((string)(this["amazonTLD"]));
+            }
+            set {
+                this["amazonTLD"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool promptASIN {
+            get {
+                return ((bool)(this["promptASIN"]));
+            }
+            set {
+                this["promptASIN"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string tmpDir {
+            get {
+                return ((string)(this["tmpDir"]));
+            }
+            set {
+                this["tmpDir"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool deleteTemp {
+            get {
+                return ((bool)(this["deleteTemp"]));
+            }
+            set {
+                this["deleteTemp"] = value;
             }
         }
     }

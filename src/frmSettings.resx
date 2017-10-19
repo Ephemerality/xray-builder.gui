@@ -117,56 +117,51 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="STAR2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\STAR2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="pictureBox1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAFzUkdCAK7O
+        HOkAAAAEZ0FNQQAAsY8L/GEFAAAACXBIWXMAAA3VAAAN1QE91ljxAAAAGXRFWHRTb2Z0d2FyZQB3d3cu
+        aW5rc2NhcGUub3Jnm+48GgAAAuNJREFUOE9lk/lL03Ecxod/SdkkKlNoqWhKgRrkgeExz5Rys7zCdEvy
+        ZHOzckpe6ZTwaod5l8488MotPH6wllb+ohJBZGU2N4+cPH3eX1Ba/fDi897zfp6H7758vjwADghET/nn
+        xRqld6re5HlTayG80/RGD7FGQbt//X8HnTxTtFLfjPatvKaZg/qB9+id+YQ+htrwAUyzX0jX2zxSNBLy
+        OhSQ4HVLZ4wpGbLqplbRNLaCyoFlPOpf5s4qRvP4KnRTKxDKBm3kPSzhClirNEo2aNVMrkHRtYR7mrco
+        6VjE7u8DDkXnEvK0ZpR2L0Hzag2RxQZ6EilXIEhu4/uk6rbqDB9RqDMju3kBOYwivfmooKj9HSQtTGcU
+        s7lucBksY6Us79yNVqWofMyu7DAjtW4Waeo5ZDQwGueR27qA3LY3yGQzkdEwj3S2L+1cRErFuJ2yrKDF
+        lK024rZ6Btcrp5FcZYSo2gRx9WuIaxwhnfZZjbOQqE2gLM898Yklv3kWiaoJxD0cR3zZBBLKJrG+uYON
+        rT182djGNdUkRwKD9kkVkyhomQNleWfjGy3Z9dMQlowgXDaMCPkIItkcpRjFT1awad3jZoJ02scoR0FP
+        TVmea5zaGCc3IEo2hOC8fgTnDyCkwIBQxg/LDivZ5WaC9BC2F8qHEV9iAGV5p4S1isAs/X60bBD+OT0I
+        yOlFgKQXgdJefGN/gwoCpX3cb9KJGPlLXGYZyvJORlTxT0fV2MILnsP/Thd8M57BN7MDXzds+P5rh72L
+        bXxe34If00gPyO5CROELUIay3EVyCa+UuMfXW69Iu+GTpgf7FsAuyn/QLuhuD8hLmaObyA8rd3K5WmF0
+        ja6xXkrXwjdVCy9RGwTJLRxe4jb4pWlxMV2DM8xDXsocFRDOoWVOzqEqKT9MZXWLrbULkhrhLWrioNkt
+        9vH+iTCVjfkk5D3MHRUccizoPp+hPB78wMROC8FmIzsVtHP0g/cHK/OJfyPUakoAAAAASUVORK5CYII=
+</value>
   </data>
-  <data name="AI" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\AI.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="lblNote.Text" xml:space="preserve">
+    <value>Metadata is now gathered internally rather than with KindleUnpack. If you run into any metadata extraction errors, there is a setting to turn KindleUnpack back on. Please report any such errors on the MobileRead thread to help improve the program.</value>
   </data>
-  <data name="STAR0" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\STAR0.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="file_on" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\file-on.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="setting" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\setting.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="STAR3" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\STAR3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="STAR1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\STAR1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="missing_image" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\missing-image.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="STAR5" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\STAR5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="character" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\character.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="STAR4" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\STAR4.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="file_off" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\file-off.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="people" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\people.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="terms" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\terms.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="seperator" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\seperator.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="arrow_right" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\arrow-right.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="cancel" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cancel.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAQAQAAAAAAAAAAAAAAAAAAAAA
+        AAAAqqoDAIGeagF8mN0Acop9AFWqAwAAAAAAAAAAAAAAAAAAAAAAAAAAVVVVPF9jX9NfYGDJUlZWPgAA
+        AAAAAAAAApa3ayijvfY/zeH/HJmw9AB0itAAbYojAAAAAAAAAAAAAAAAVFlUP19mZPLHysn/fX9/+F9k
+        YqMAAAAAAAAAAAijxd6U5fL/Jd3z/yfb8P8xusz9AnSL5gBxjQkAAAAAAAAAAGJnZ8rJy8v/lpmY82Jj
+        Y7ZVVVUMZGdlqFRZWTkCosV3VcXZ94Tu/P8i3fP/J9vw/yanuvcAcoyPAAAAAAAAAABlZ2bl09XV/19m
+        ZO1cXFwLZ2loxoiLivpnamfAAP//AQKixsGa3uv9iPD8/yXe8/9Y3u//DoKb9gBxiDZfX18IaGxo2cnM
+        y/+CiITwYmdl86+xsPfR0tH/am5qyQAAAAAAncIVB6PG1GfJ4fiz8Pn/VOX2/3DX5v4PhZz3JHSD6aSo
+        p/fz9PT/19jX/+np6f/R0tH/b3Bw7l5kZCsAAAAAAAAAAAD//wECocZoEqXJ867l7/1r6Pf/leTv/wt+
+        l//p7u//rq+v925zbtludHPibnJyxGRpaTMAAAAAAAAAAAAAAAAAAAAAAAAAAACfvxgNpsfy1PP5/zmp
+        wP9bi5L/foB//HJ5dsZfX18IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/f38IRI2c3BKf
+        v/9XhY3/zNPQ/3+FgvxeY2GaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeH14M36Df8R9f3/ie4B82a2v
+        r/fz9PT/i46M+nB1c/vM09D/g4iG8V1iYJkAAAAAAAAAAAAAAAAAAAAAfHx8K4GIg+7Y2tr/8vPz/+fo
+        6P/09fX/tLe293+DgsZdYV9zcHRy7szT0P+DiIbxXGFgmgAAAAAAAAAAAAAAAIaLisnN0M//wMLB95GV
+        k/Tc3d367+/v/4KIg9l/f38IAAAAAF1fXW1wdHHuy9PP/4iMivFhZGSbAAAAAAAAAACKj4vAnqKh+YeM
+        i8KEhIQbj5SS9vr6+v+FjIrlAAAAAAAAAAAAAAAAXGBebHJ5dO719vb/mJqZ8WJlY5wAAAAAhoqGOYyR
+        j6d/f38Mi5CMu8PIx/bp6+r/jJGNygAAAAAAAAAAAAAAAAAAAABfZGFrfH597s7Pzv5eY1/gAAAAAAAA
+        AAAAAAAAjpGRpayvrffX2dj/jZSS8YWJhT8AAAAAAAAAAAAAAAAAAAAAAAAAAF5jYWleZF/YVVVVGAAA
+        AAAAAAAAAAAAAIaJhkqMkYzhjZOQtoSJiTQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAB8MAAAODAAABgAAAAYAAAAAAAACAAAAAwAEAAPAPAADwHwAAgA8AAAAHAAAAgwAAAcEAAAHh
+        AADB8QAAw/8AAA==
+</value>
   </data>
 </root>

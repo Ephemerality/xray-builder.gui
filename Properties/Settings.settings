@@ -8,16 +8,13 @@
     <Setting Name="mobi_unpack" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="shelfari" Type="System.String" Scope="User">
+    <Setting Name="Goodreads" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="mobiFile" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="saverawml" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="spoilers" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="offset" Type="System.Int32" Scope="User">
@@ -33,7 +30,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="buildSource" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Shelfari</Value>
+      <Value Profile="(Default)">Goodreads</Value>
     </Setting>
     <Setting Name="android" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -43,9 +40,6 @@
     </Setting>
     <Setting Name="realName" Type="System.String" Scope="User">
       <Value Profile="(Default)">Anonymous</Value>
-    </Setting>
-    <Setting Name="amazonUk" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="enableEdit" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -77,13 +71,37 @@
     <Setting Name="useKindleUnpack" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="newMessage" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
     <Setting Name="downloadAliases" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="overwriteChapters" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="overrideOffset" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="offsetAZW3" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">-16</Value>
+    </Setting>
+    <Setting Name="pageCount" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="dataSource" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Goodreads</Value>
+    </Setting>
+    <Setting Name="saveBio" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="amazonTLD" Type="System.String" Scope="User">
+      <Value Profile="(Default)">com</Value>
+    </Setting>
+    <Setting Name="promptASIN" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="tmpDir" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="deleteTemp" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>

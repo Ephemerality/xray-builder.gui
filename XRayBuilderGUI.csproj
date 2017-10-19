@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -10,11 +10,13 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>XRayBuilderGUI</RootNamespace>
     <AssemblyName>X-Ray Builder GUI</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -31,7 +33,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -40,6 +42,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -49,6 +52,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
@@ -61,6 +65,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
@@ -70,12 +75,14 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="HtmlAgilityPack">
       <HintPath>.\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.SQLite">
       <HintPath>.\System.Data.SQLite.dll</HintPath>
@@ -90,130 +97,153 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AuthorProfile.cs" />
-    <Compile Include="BookInfo.cs" />
-    <Compile Include="EndActions.cs" />
-    <Compile Include="frmPreviewAP.cs">
+    <Compile Include="src\DataSources\Amazon.cs" />
+    <Compile Include="src\AuthorProfile.cs" />
+    <Compile Include="src\BookInfo.cs" />
+    <Compile Include="src\DataSources\DataSource.cs" />
+    <Compile Include="src\DataSources\Goodreads.cs" />
+    <Compile Include="src\EndActions.cs" />
+    <Compile Include="src\frmAbout.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmPreviewAP.Designer.cs">
+    <Compile Include="src\frmAbout.designer.cs">
+      <DependentUpon>frmAbout.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\frmASIN.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\frmASIN.Designer.cs">
+      <DependentUpon>frmASIN.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\frmCreateXR.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\frmCreateXR.designer.cs">
+      <DependentUpon>frmCreateXR.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\frmGR.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\frmGR.Designer.cs">
+      <DependentUpon>frmGR.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\frmPreviewAP.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\frmPreviewAP.Designer.cs">
       <DependentUpon>frmPreviewAP.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmPreviewEA.cs">
+    <Compile Include="src\frmPreviewEA.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmPreviewEA.Designer.cs">
+    <Compile Include="src\frmPreviewEA.Designer.cs">
       <DependentUpon>frmPreviewEA.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmPreviewSA.cs">
+    <Compile Include="src\frmPreviewSA.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmPreviewSA.Designer.cs">
+    <Compile Include="src\frmPreviewSA.Designer.cs">
       <DependentUpon>frmPreviewSA.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmPreviewXR.cs">
+    <Compile Include="src\frmPreviewXR.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmPreviewXR.Designer.cs">
+    <Compile Include="src\frmPreviewXR.Designer.cs">
       <DependentUpon>frmPreviewXR.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmPreviewXRN.cs">
+    <Compile Include="src\frmSettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmPreviewXRN.Designer.cs">
-      <DependentUpon>frmPreviewXRN.cs</DependentUpon>
-    </Compile>
-    <Compile Include="frmSeries.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmSeries.Designer.cs">
-      <DependentUpon>frmSeries.cs</DependentUpon>
-    </Compile>
-    <Compile Include="frmSettingsNew.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmSettingsNew.Designer.cs">
-      <DependentUpon>frmSettingsNew.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Functions.cs" />
-    <Compile Include="frmMain.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmMain.Designer.cs">
-      <DependentUpon>frmMain.cs</DependentUpon>
-    </Compile>
-    <Compile Include="frmSettings.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmSettings.Designer.cs">
+    <Compile Include="src\frmSettings.Designer.cs">
       <DependentUpon>frmSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="HTTPDownloader.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="src\Functions.cs" />
+    <Compile Include="src\frmMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\frmMain.Designer.cs">
+      <DependentUpon>frmMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\HTTPDownloader.cs" />
+    <Compile Include="src\Logger.cs" />
+    <Compile Include="src\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Unpack\EXTH.cs" />
-    <Compile Include="Unpack\MobiHead.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="Unpack\Metadata.cs" />
-    <Compile Include="Unpack\PalmDocHeader.cs" />
-    <Compile Include="Unpack\PDBHeader.cs" />
-    <Compile Include="Unpack\Uncompress.cs" />
-    <Compile Include="XRay.cs" />
-    <Content Include="BaseEndActions.txt">
+    <Compile Include="src\Unpack\EXTH.cs" />
+    <Compile Include="src\Unpack\MobiHead.cs" />
+    <Compile Include="src\Settings.cs" />
+    <Compile Include="src\Unpack\Metadata.cs" />
+    <Compile Include="src\Unpack\PalmDocHeader.cs" />
+    <Compile Include="src\Unpack\PDBHeader.cs" />
+    <Compile Include="src\Unpack\Uncompress.cs" />
+    <Compile Include="src\XRay.cs" />
+    <Compile Include="src\XRayPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="src\XRayPanel.Designer.cs">
+      <DependentUpon>XRayPanel.cs</DependentUpon>
+    </Compile>
+    <Content Include="dist\BaseEndActions.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="BaseStartActions.txt">
+    <Content Include="dist\BaseSplitIgnore.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="done.wav">
+    <Content Include="dist\BaseStartActions.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dist\done.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Icon.ico" />
-    <None Include="Resources\SA.png" />
+    <None Include="Resources\cancel.png" />
+    <None Include="Resources\file-on.png" />
+    <None Include="Resources\file-off.png" />
+    <None Include="doc\Help.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\setting.png" />
+    <None Include="Resources\character.png" />
+    <None Include="Resources\terms.png" />
+    <None Include="Resources\people.png" />
+    <None Include="Resources\arrow-right.png" />
+    <None Include="Resources\seperator.png" />
+    <None Include="Resources\missing-image.png" />
     <None Include="Resources\STAR5.png" />
     <None Include="Resources\STAR4.png" />
     <None Include="Resources\STAR3.png" />
     <None Include="Resources\STAR2.png" />
     <None Include="Resources\STAR1.png" />
     <None Include="Resources\STAR0.png" />
-    <None Include="Resources\XRN.png" />
-    <None Include="Resources\XR8.png" />
-    <None Include="Resources\XR7.png" />
-    <None Include="Resources\XR6.png" />
-    <None Include="Resources\XR5.png" />
-    <None Include="Resources\XR4.png" />
-    <None Include="Resources\XR3.png" />
-    <None Include="Resources\XR2.png" />
-    <None Include="Resources\XR1.png" />
-    <None Include="Resources\XR.png" />
-    <EmbeddedResource Include="frmMain.resx">
+    <EmbeddedResource Include="src\frmAbout.resx">
+      <DependentUpon>frmAbout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\frmASIN.resx">
+      <DependentUpon>frmASIN.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\frmCreateXR.resx">
+      <DependentUpon>frmCreateXR.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\frmGR.resx">
+      <DependentUpon>frmGR.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmPreviewAP.resx">
+    <EmbeddedResource Include="src\frmPreviewAP.resx">
       <DependentUpon>frmPreviewAP.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmPreviewEA.resx">
+    <EmbeddedResource Include="src\frmPreviewEA.resx">
       <DependentUpon>frmPreviewEA.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmPreviewSA.resx">
+    <EmbeddedResource Include="src\frmPreviewSA.resx">
       <DependentUpon>frmPreviewSA.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmPreviewXR.resx">
+    <EmbeddedResource Include="src\frmPreviewXR.resx">
       <DependentUpon>frmPreviewXR.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmPreviewXRN.resx">
-      <DependentUpon>frmPreviewXRN.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frmSeries.resx">
-      <DependentUpon>frmSeries.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frmSettings.resx">
+    <EmbeddedResource Include="src\frmSettings.resx">
       <DependentUpon>frmSettings.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frmSettingsNew.resx">
-      <DependentUpon>frmSettingsNew.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -226,7 +256,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
-    <Content Include="BaseDB.sql">
+    <Content Include="dist\BaseDB.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="dist\bz2.pyd">
@@ -304,8 +334,6 @@
     <Content Include="doc\XML Documentation.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Resources\AP.png" />
-    <None Include="Resources\EA.png" />
     <None Include="Resources\AI.png" />
   </ItemGroup>
   <ItemGroup />

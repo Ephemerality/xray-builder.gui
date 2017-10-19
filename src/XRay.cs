@@ -832,7 +832,7 @@ namespace XRayBuilderGUI
                         if (!ex.notable)
                             sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", 0, ex.id);
                     });
-            else
+            else if (foundNotables <= 20)
             {
                 Random rand = new Random();
                 List<Excerpt> eligible = excerpts.Where(ex => !ex.notable).ToList();

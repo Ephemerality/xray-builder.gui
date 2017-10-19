@@ -198,7 +198,7 @@ namespace XRayBuilderGUI
 
             // cleanup to match retail file image links
             if (authorImageUrl.Contains(@"https://images-na.ssl-images-amazon"))
-                authorImageUrl = authorImageUrl.Replace(@"https://images-na.ssl-images-amazon", @"http://ecx.images-amazon");
+                authorImageUrl = authorImageUrl.Replace(@"https://images-na.ssl-images-amazon", @"https://ecx.images-amazon");
 
             curBook.authorImageUrl = authorImageUrl;
 

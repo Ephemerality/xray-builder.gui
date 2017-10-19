@@ -93,7 +93,7 @@ namespace XRayBuilderGUI
             {
                 using (WebClient client = new WebClient())
                 {
-                    using (Stream stream = client.OpenRead("http://www.google.com"))
+                    using (Stream stream = client.OpenRead("https://www.google.com"))
                         return true;
                 }
             }
@@ -872,7 +872,7 @@ namespace XRayBuilderGUI
             txtAuthor.Text = results[4];
             txtTitle.Text = results[5];
             txtAsin.Text = results[0];
-            toolTip1.SetToolTip(txtAsin, String.Format(@"http://www.amazon.{0}/dp/{1}", settings.amazonTLD, txtAsin.Text));
+            toolTip1.SetToolTip(txtAsin, String.Format(@"https://www.amazon.{0}/dp/{1}", settings.amazonTLD, txtAsin.Text));
 
             openBook.Clear();
             openBook.Add(results[4]);
@@ -1169,7 +1169,7 @@ namespace XRayBuilderGUI
 
         private void txtAsin_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            string link = String.Format(@"http://www.amazon.{0}/dp/{1}", settings.amazonTLD, txtAsin.Text);
+            string link = String.Format(@"https://www.amazon.{0}/dp/{1}", settings.amazonTLD, txtAsin.Text);
             Process.Start(link);
         }
 

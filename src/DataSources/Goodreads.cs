@@ -31,7 +31,7 @@ namespace XRayBuilderGUI.DataSources
 
         public override async Task<string> SearchBook(string author, string title)
         {
-            string goodreadsSearchUrlBase = @"http://www.goodreads.com/search?q={0}%20{1}";
+            string goodreadsSearchUrlBase = @"https://www.goodreads.com/search?q={0}%20{1}";
             string goodreadsBookUrl = "";
            
             Regex regex = new Regex(String.Join("|", replacements.Keys.Select(k => Regex.Escape(k))));
@@ -62,7 +62,7 @@ namespace XRayBuilderGUI.DataSources
         private string FindGoodreadsURL(HtmlDocument goodreadsHtmlDoc, string author, string title)
         {
             goodreadsBookList.Clear();
-            string goodreadsBookUrl = @"http://www.goodreads.com/book/show/{0}", ratingText = "";
+            string goodreadsBookUrl = @"https://www.goodreads.com/book/show/{0}", ratingText = "";
             HtmlNodeCollection resultNodes =
                 goodreadsHtmlDoc.DocumentNode.SelectNodes("//tr[@itemtype='http://schema.org/Book']");
             //Allow user to choose from a list of search results
@@ -146,7 +146,7 @@ namespace XRayBuilderGUI.DataSources
                         if (book.asin != null)
                         {
                             nextBook = book;
-                            string Url = String.Format("http://www.amazon.{0}/dp/{1}", TLD, book.asin);
+                            string Url = String.Format("https://www.amazon.{0}/dp/{1}", TLD, book.asin);
                             await nextBook.GetAmazonInfo(Url);
                         }
                         else
@@ -160,7 +160,7 @@ namespace XRayBuilderGUI.DataSources
                             frmAS.tbAsin.Text = "";
                             frmAS.ShowDialog();
                             Logger.Log(String.Format("ASIN supplied: {0}", frmAS.tbAsin.Text));
-                            string Url = String.Format("http://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text);
+                            string Url = String.Format("https://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text);
                             await nextBook.GetAmazonInfo(Url);
                             nextBook.amazonUrl = Url;
                             nextBook.asin = frmAS.tbAsin.Text;
@@ -193,7 +193,7 @@ namespace XRayBuilderGUI.DataSources
                     if (book.asin != null)
                     {
                         prevBook = book;
-                        string Url = String.Format("http://www.amazon.{0}/dp/{1}", TLD, book.asin);
+                        string Url = String.Format("https://www.amazon.{0}/dp/{1}", TLD, book.asin);
                         await prevBook.GetAmazonInfo(Url);
                     }
                     else if(prevBook != null)
@@ -207,7 +207,7 @@ namespace XRayBuilderGUI.DataSources
                         frmAS.tbAsin.Text = "";
                         frmAS.ShowDialog();
                         Logger.Log(String.Format("ASIN supplied: {0}", frmAS.tbAsin.Text));
-                        string Url = String.Format("http://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text);
+                        string Url = String.Format("https://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text);
                         await prevBook.GetAmazonInfo(Url);
                         prevBook.amazonUrl = Url;
                         prevBook.asin = frmAS.tbAsin.Text;
@@ -238,7 +238,7 @@ namespace XRayBuilderGUI.DataSources
             }
 
             //Search Goodreads for series info
-            string goodreadsSeriesUrl = @"http://www.goodreads.com/series/{0}";
+            string goodreadsSeriesUrl = @"https://www.goodreads.com/series/{0}";
             HtmlNode metaNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
             HtmlNode SeriesNode = metaNode.SelectSingleNode("//h1[@id='bookTitle']");
             if (SeriesNode == null)
@@ -338,7 +338,7 @@ namespace XRayBuilderGUI.DataSources
         // Search Goodread for possible kindle edition of book and return ASIN.
         private async Task<string> SearchBookASIN(string id, string title)
         {
-            string goodreadsBookUrl = String.Format("http://www.goodreads.com/book/show/{0}", id);
+            string goodreadsBookUrl = String.Format("https://www.goodreads.com/book/show/{0}", id);
             try
             {
                 HtmlDocument bookHtmlDoc = new HtmlDocument() { OptionAutoCloseOnEnd = true };
@@ -349,7 +349,7 @@ namespace XRayBuilderGUI.DataSources
                     Match match = Regex.Match(link.GetAttributeValue("href", ""), @"editions/([0-9]*)-");
                     if (match.Success)
                     {
-                        string kindleEditionsUrl = String.Format("http://www.goodreads.com/work/editions/{0}?utf8=%E2%9C%93&sort=num_ratings&filter_by_format=Kindle+Edition", match.Groups[1].Value);
+                        string kindleEditionsUrl = String.Format("https://www.goodreads.com/work/editions/{0}?utf8=%E2%9C%93&sort=num_ratings&filter_by_format=Kindle+Edition", match.Groups[1].Value);
                         bookHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(kindleEditionsUrl));
                         HtmlNodeCollection bookNodes = bookHtmlDoc.DocumentNode.SelectNodes("//div[@class='elementList clearFix']");
                         if (bookNodes != null)
@@ -489,7 +489,7 @@ namespace XRayBuilderGUI.DataSources
             List<Tuple<string, int>> result = null;
             HtmlNode quoteNode = srcDoc.DocumentNode.SelectSingleNode("//div[@class='h2Container gradientHeaderContainer']/h2/a[starts-with(.,'Quotes from')]");
             if (quoteNode == null) return null;
-            string quoteURL = String.Format("http://www.goodreads.com{0}?page={{0}}", quoteNode.GetAttributeValue("href", ""));
+            string quoteURL = String.Format("https://www.goodreads.com{0}?page={{0}}", quoteNode.GetAttributeValue("href", ""));
             int maxPages = 1;
             if (progress != null) progress.Report(new Tuple<int, int>(0, 1));
             for (int i = 1; i <= maxPages; i++)

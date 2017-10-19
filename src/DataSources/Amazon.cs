@@ -22,7 +22,7 @@ namespace XRayBuilderGUI.DataSources
             string newAuthor = Functions.FixAuthor(curBook.author);
             string plusAuthorName = newAuthor.Replace(" ", "+");
             //Updated to match Search "all" Amazon
-            string amazonAuthorSearchUrl = String.Format(@"http://www.amazon.{0}/s/ref=nb_sb_noss_2?url=search-alias%3Dstripbooks&field-keywords={1}", TLD, plusAuthorName);
+            string amazonAuthorSearchUrl = String.Format(@"https://www.amazon.{0}/s/ref=nb_sb_noss_2?url=search-alias%3Dstripbooks&field-keywords={1}", TLD, plusAuthorName);
             Logger.Log(String.Format("Searching for author's page on Amazon.{0}...", TLD));
 
             // Search Amazon for Author
@@ -72,8 +72,8 @@ namespace XRayBuilderGUI.DataSources
                 return null;
             }
             properAuthor = properAuthor.Substring(1, properAuthor.IndexOf('/', 1) - 1);
-            string authorAmazonWebsiteLocationLog = @"http://www.amazon." + TLD + "/" + properAuthor + "/e/" + results.authorAsin;
-            string authorAmazonWebsiteLocation = @"http://www.amazon." + TLD + "/" + properAuthor + "/e/" + results.authorAsin +
+            string authorAmazonWebsiteLocationLog = @"https://www.amazon." + TLD + "/" + properAuthor + "/e/" + results.authorAsin;
+            string authorAmazonWebsiteLocation = @"https://www.amazon." + TLD + "/" + properAuthor + "/e/" + results.authorAsin +
                                               "/ref=la_" + results.authorAsin +
                                               "_rf_p_n_feature_browse-b_2?fst=as%3Aoff&rh=n%3A283155%2Cp_82%3A" +
                                               results.authorAsin +
@@ -130,7 +130,7 @@ namespace XRayBuilderGUI.DataSources
                 Match match = Regex.Match(otherBook.OuterHtml, "dp/(B[A-Z0-9]{9})/");
                 if (match.Success)
                     asin = match.Groups[1].Value;
-                url = String.Format("http://www.amazon.{1}/dp/{0}", asin, TLD);
+                url = String.Format("https://www.amazon.{1}/dp/{0}", asin, TLD);
                 if (name != "" && url != "" && asin != "")
                 {
                     BookInfo newBook = new BookInfo(name, curAuthor, asin);
@@ -158,7 +158,7 @@ namespace XRayBuilderGUI.DataSources
                     Match match = Regex.Match(otherBook.OuterHtml, "dp/(B[A-Z0-9]{9})/");
                     if (match.Success)
                         asin = match.Groups[1].Value;
-                    url = String.Format("http://www.amazon.{1}/dp/{0}", asin, TLD);
+                    url = String.Format("https://www.amazon.{1}/dp/{0}", asin, TLD);
                     if (name != "" && url != "" && asin != "")
                     {
                         BookInfo newBook = new BookInfo(name, curAuthor, asin);
@@ -183,7 +183,7 @@ namespace XRayBuilderGUI.DataSources
             //Uri.EscapeDataString(title + " " + author);
 
             //Search "all" Amazon
-            string searchUrl = String.Format(@"http://www.amazon.{0}/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords={1}",
+            string searchUrl = String.Format(@"https://www.amazon.{0}/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords={1}",
                 TLD, Uri.EscapeDataString(title + " " + author));
             HtmlDocument searchDoc = new HtmlDocument();
             searchDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(searchUrl));

@@ -42,7 +42,7 @@ namespace XRayBuilderGUI
         {
             Logger.Log("Attempting to find book on Amazon...");
             //Generate Book search URL from book's ASIN
-            string ebookLocation = String.Format(@"http://www.amazon.{0}/dp/{1}", settings.amazonTLD, curBook.asin);
+            string ebookLocation = String.Format(@"https://www.amazon.{0}/dp/{1}", settings.amazonTLD, curBook.asin);
 
             // Search Amazon for book
             //Logger.Log(String.Format("Book's Amazon page URL: {0}", ebookLocation));
@@ -99,7 +99,7 @@ namespace XRayBuilderGUI
                         nodeTitleCheck = nodeTitle.GetAttributeValue("title", "");
                         nodeUrl = nodeTitle.GetAttributeValue("href", "");
                         if (nodeUrl != "")
-                            nodeUrl = "http://www.amazon." + settings.amazonTLD + nodeUrl;
+                            nodeUrl = "https://www.amazon." + settings.amazonTLD + nodeUrl;
                         if (nodeTitleCheck == "")
                         {
                             nodeTitle = item.SelectSingleNode(".//div/a");
@@ -154,7 +154,7 @@ namespace XRayBuilderGUI
                             if (match.Success)
                             {
                                 sponsAsin = match.Groups[1].Value;
-                                sponsUrl = String.Format("http://www.amazon.{1}/dp/{0}", sponsAsin, settings.amazonTLD);
+                                sponsUrl = String.Format("https://www.amazon.{1}/dp/{0}", sponsAsin, settings.amazonTLD);
                             }
                             otherBook = otherBook.SelectSingleNode(".//img");
                             match = Regex.Match(otherBook.GetAttributeValue("alt", ""),

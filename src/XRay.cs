@@ -92,7 +92,7 @@ namespace XRayBuilderGUI
         public XRay(string shelfari, frmMain frm, DataSources.DataSource dataSource)
         {
             if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
-                shelfari = "http://" + shelfari;
+                shelfari = "https://" + shelfari;
             this.dataUrl = shelfari;
             this.main = frm;
             this.dataSource = dataSource;
@@ -105,7 +105,7 @@ namespace XRayBuilderGUI
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
 
             if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
-                shelfari = "http://" + shelfari;
+                shelfari = "https://" + shelfari;
             this.dataUrl = shelfari;
             this.databaseName = db;
             this._guid = guid;

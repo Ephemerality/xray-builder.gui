@@ -105,6 +105,7 @@ namespace XRayBuilderGUI
 
         private void btnBrowseMobi_Click(object sender, EventArgs e)
         {
+            txtMobi.Text = "";
             txtMobi.Text = Functions.GetBook(txtMobi.Text);
         }
 
@@ -826,10 +827,9 @@ namespace XRayBuilderGUI
 
         private void txtMobi_TextChanged(object sender, EventArgs e)
         {
+            if (txtMobi.Text == "" || !File.Exists(txtMobi.Text)) return;
             txtGoodreads.Text = "";
             prgBar.Value = 0;
-            if (!File.Exists(txtMobi.Text)) return;
-            this.Cursor = Cursors.WaitCursor;
 
             string randomFile = Functions.GetTempDirectory();
             if (!Directory.Exists(randomFile))
@@ -893,8 +893,6 @@ namespace XRayBuilderGUI
             openBook.Add(results[0]);
 
             checkFiles(results[4], results[5], results[0]);
-
-            this.Cursor = Cursors.Default;
 
             try
             {

@@ -18,9 +18,6 @@ namespace XRayBuilderGUI
     public partial class frmMain : Form
     {
         public bool Exiting = false;
-        public bool CheckTimestamp = false;
-        private bool extrasComplete = false;
-        private bool xrayComplete = false;
 
         private string currentLog = Environment.CurrentDirectory + @"\log\" +
                                     String.Format("{0:HH.mm.ss.dd.MM.yyyy}.txt", DateTime.Now);
@@ -30,7 +27,7 @@ namespace XRayBuilderGUI
         private string ApPath = "";
         private string XrPath = "";
 
-        private Properties.Settings settings = Properties.Settings.Default;
+        private Settings settings = Settings.Default;
 
         public frmMain()
         {
@@ -155,8 +152,8 @@ namespace XRayBuilderGUI
                 MessageBox.Show(@"Specified output directory does not exist.\r\nPlease review the settings page.", @"Output Directory Not found");
                 return;
             }
-            if (Properties.Settings.Default.realName.Trim().Length == 0
-                || Properties.Settings.Default.penName.Trim().Length == 0)
+            if (settings.realName.Trim().Length == 0
+                || settings.penName.Trim().Length == 0)
             {
                 MessageBox.Show(
                     @"Both Real and Pen names are required for End Action\r\n" +
@@ -367,12 +364,11 @@ namespace XRayBuilderGUI
                     streamWriter.Write(xray.ToString());
                 }
             }
-            xrayComplete = true;
             Logger.Log("X-Ray file created successfully!\r\nSaved to " + _newPath);
 
             checkFiles(results[4], results[5], results[0]);
 
-            if (Properties.Settings.Default.playSound)
+            if (settings.playSound)
             {
                 System.Media.SoundPlayer player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
                 player.Play();
@@ -424,8 +420,8 @@ namespace XRayBuilderGUI
                 MessageBox.Show("Kindleunpack was not found. Please review the settings page.", "Kindleunpack Not Found");
                 return;
             }
-            if (Properties.Settings.Default.realName.Trim().Length == 0 |
-                Properties.Settings.Default.penName.Trim().Length == 0)
+            if (settings.realName.Trim().Length == 0 |
+                settings.penName.Trim().Length == 0)
             {
                 MessageBox.Show(
                     "Both Real and Pen names are required for End Action\r\n" +
@@ -513,13 +509,12 @@ namespace XRayBuilderGUI
                     await ea.GenerateEndActions(cancelTokens.Token);
                     ea.GenerateStartActions();
                     EaPath = outputDir + @"\EndActions.data." + bookInfo.asin + ".asc";
-                    extrasComplete = true;
                 }
                 else
                     ea.GenerateOld();
 
                 checkFiles(bookInfo.author, bookInfo.title, bookInfo.asin);
-                if (Properties.Settings.Default.playSound)
+                if (settings.playSound)
                 {
                     System.Media.SoundPlayer player =
                         new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
@@ -675,20 +670,20 @@ namespace XRayBuilderGUI
             frmSet.ShowDialog();
             SetDatasourceLabels();
 
-            if (!txtGoodreads.Text.ToLower().Contains(Properties.Settings.Default.dataSource.ToLower()))
+            if (!txtGoodreads.Text.ToLower().Contains(settings.dataSource.ToLower()))
                 txtGoodreads.Text = "";
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Properties.Settings.Default.mobiFile = txtMobi.Text;
-            Properties.Settings.Default.xmlFile = txtXMLFile.Text;
-            Properties.Settings.Default.Goodreads = txtGoodreads.Text;
+            settings.mobiFile = txtMobi.Text;
+            settings.xmlFile = txtXMLFile.Text;
+            settings.Goodreads = txtGoodreads.Text;
             if (rdoGoodreads.Checked)
-                Properties.Settings.Default.buildSource = "Goodreads";
+                settings.buildSource = "Goodreads";
             else
-                Properties.Settings.Default.buildSource = "XML";
-            Properties.Settings.Default.Save();
+                settings.buildSource = "XML";
+            settings.Save();
             if (txtOutput.Text.Trim().Length != 0)
                 File.WriteAllText(currentLog, txtOutput.Text.ToString());
             if (settings.deleteTemp)
@@ -749,26 +744,26 @@ namespace XRayBuilderGUI
                 }
             }
 
-            if (txtMobi.Text == "") txtMobi.Text = Properties.Settings.Default.mobiFile;
+            if (txtMobi.Text == "") txtMobi.Text = settings.mobiFile;
 
-            if (txtXMLFile.Text == "") txtXMLFile.Text = Properties.Settings.Default.xmlFile;
+            if (txtXMLFile.Text == "") txtXMLFile.Text = settings.xmlFile;
             if (!Directory.Exists(Environment.CurrentDirectory + @"\out"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\out");
-            if (Properties.Settings.Default.outDir == "")
-                Properties.Settings.Default.outDir = Environment.CurrentDirectory + @"\out";
+            if (settings.outDir == "")
+                settings.outDir = Environment.CurrentDirectory + @"\out";
             if (!Directory.Exists(Environment.CurrentDirectory + @"\log"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\log");
             if (!Directory.Exists(Environment.CurrentDirectory + @"\dmp"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\dmp");
             if (!Directory.Exists(Environment.CurrentDirectory + @"\tmp"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\tmp");
-            if (Properties.Settings.Default.tmpDir == "")
-                Properties.Settings.Default.tmpDir = Environment.CurrentDirectory + @"\tmp";
-            if (Properties.Settings.Default.mobi_unpack == "")
-                Properties.Settings.Default.mobi_unpack = Environment.CurrentDirectory + @"\dist\kindleunpack.exe";
+            if (settings.tmpDir == "")
+                settings.tmpDir = Environment.CurrentDirectory + @"\tmp";
+            if (settings.mobi_unpack == "")
+                settings.mobi_unpack = Environment.CurrentDirectory + @"\dist\kindleunpack.exe";
 
-            txtGoodreads.Text = Properties.Settings.Default.Goodreads;
-            if (Properties.Settings.Default.buildSource == "Goodreads")
+            txtGoodreads.Text = settings.Goodreads;
+            if (settings.buildSource == "Goodreads")
                 rdoGoodreads.Checked = true;
             else
                 rdoFile.Checked = true;
@@ -777,7 +772,7 @@ namespace XRayBuilderGUI
 
         private void SetDatasourceLabels()
         {
-            if (Properties.Settings.Default.dataSource == "Goodreads")
+            if (settings.dataSource == "Goodreads")
             {
                 dataSource = new Goodreads();
                 rdoGoodreads.Text = "Goodreads";

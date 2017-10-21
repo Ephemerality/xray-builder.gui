@@ -54,7 +54,6 @@ namespace XRayBuilderGUI
 
         public async Task populateEndActions(string inputFile)
         {
-            List<string> split = new List<string>();
             string input;
             using (StreamReader streamReader = new StreamReader(inputFile, Encoding.UTF8))
                 input = streamReader.ReadToEnd();
@@ -71,9 +70,7 @@ namespace XRayBuilderGUI
                 lblNextAuthor.Text = tempData["authors"][0].ToString();
                 string imageUrl = tempData["imageUrl"]?.ToString();
                 if (imageUrl != "" && imageUrl != null)
-                {
                     pbNextCover.Image = Functions.MakeGrayscale3(await HttpDownloader.GetImage(imageUrl));
-                }
             }
             else
             {
@@ -91,7 +88,6 @@ namespace XRayBuilderGUI
                     string imageUrl = rec["imageUrl"]?.ToString();
                     if (imageUrl != "" && imageUrl != null)
                         ilauthorRecs.Images.Add(Functions.MakeGrayscale3(await HttpDownloader.GetImage(imageUrl)));
-
                 }
                 ListViewItem_SetSpacing(this.lvAuthorRecs, 60 + 7, 90 + 7);
                 for (int i = 0; i < ilauthorRecs.Images.Count; i++)

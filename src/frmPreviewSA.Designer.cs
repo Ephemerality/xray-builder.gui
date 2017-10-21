@@ -147,7 +147,7 @@
             this.lblHighlights.Name = "lblHighlights";
             this.lblHighlights.Size = new System.Drawing.Size(313, 13);
             this.lblHighlights.TabIndex = 57;
-            this.lblHighlights.Text = "988 passages have been highlighted 888 times";
+            this.lblHighlights.Text = "No popular highlight information available";
             // 
             // lblAuthorMore
             // 
@@ -233,7 +233,7 @@
             this.lblReadingTime.Name = "lblReadingTime";
             this.lblReadingTime.Size = new System.Drawing.Size(313, 13);
             this.lblReadingTime.TabIndex = 44;
-            this.lblReadingTime.Text = "888 hours and 888 minutes to read (888 pages)";
+            this.lblReadingTime.Text = "No typical reading time information available";
             this.lblReadingTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblDescription

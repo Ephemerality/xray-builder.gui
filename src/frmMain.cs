@@ -36,8 +36,6 @@ namespace XRayBuilderGUI
             InitializeComponent();
         }
         
-        private frmPreviewSA frmStartAction = new frmPreviewSA();
-        private frmPreviewEA frmEndAction = new frmPreviewEA();
         private frmPreviewAP frmAuthorProfile = new frmPreviewAP();
         private frmPreviewXR frmXraPreview = new frmPreviewXR();
 
@@ -951,6 +949,44 @@ namespace XRayBuilderGUI
             }
         }
 
+        private async void tmiStartAction_Click(object sender, EventArgs e)
+        {
+            string selPath = "";
+            if (File.Exists(SaPath))
+                selPath = SaPath;
+            else
+            {
+                OpenFileDialog openFile = new OpenFileDialog();
+                openFile.Title = "Open a Kindle StartActions file...";
+                openFile.Filter = "ASC files|*.asc";
+                openFile.InitialDirectory = settings.outDir;
+                if (openFile.ShowDialog() == DialogResult.OK)
+                {
+                    if (openFile.FileName.Contains("StartActions"))
+                        selPath = openFile.FileName;
+                    else
+                    {
+                        Logger.Log("Invalid Start Actions file.");
+                        return;
+                    }
+                }
+            }
+            if (selPath != "")
+            {
+                try
+                {
+                    frmPreviewSA frmStartAction = new frmPreviewSA();
+                    await frmStartAction.populateStartActions(selPath);
+                    frmStartAction.Location = new Point(this.Left, this.Top);
+                    frmStartAction.ShowDialog();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                }
+            }
+        }
+
         private async void tmiEndAction_Click(object sender, EventArgs e)
         {
             string selPath = "";
@@ -959,7 +995,7 @@ namespace XRayBuilderGUI
             else
             {
                 OpenFileDialog openFile = new OpenFileDialog();
-                openFile.Title = "Open a Kindle EndAction file...";
+                openFile.Title = "Open a Kindle EndActions file...";
                 openFile.Filter = "ASC files|*.asc";
                 openFile.InitialDirectory = settings.outDir;
                 if (openFile.ShowDialog() == DialogResult.OK)
@@ -977,6 +1013,7 @@ namespace XRayBuilderGUI
             {
                 try
                 {
+                    frmPreviewEA frmEndAction = new frmPreviewEA();
                     await frmEndAction.populateEndActions(selPath);
                     frmEndAction.ShowDialog();
                 }
@@ -1064,44 +1101,6 @@ namespace XRayBuilderGUI
                 }
                 else
                 {
-                }
-            }
-        }
-
-        private void tmiStartAction_Click(object sender, EventArgs e)
-        {
-            if (settings.useNewVersion)
-            {
-                if (!File.Exists(SaPath))
-                {
-                    OpenFileDialog openFile = new OpenFileDialog();
-                    openFile.Title = "Open a Kindle StartAction file...";
-                    openFile.Filter = "ASC files|*.asc";
-                    openFile.InitialDirectory = settings.outDir;
-                    if (openFile.ShowDialog() == DialogResult.OK)
-                    {
-                        try
-                        {
-                            if (openFile.FileName.Contains("StartActions"))
-                            {
-                                frmStartAction.populateStartActions(openFile.FileName);
-                                frmStartAction.Location = new Point(this.Left, this.Top);
-                                frmStartAction.ShowDialog();
-                            }
-                            else
-                                MessageBox.Show(@"Whoops! That filename does not contain ""StartActions""!");
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show("Error: Current line being parsed:\r\n" + frmEndAction.GetCurrentLine + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                        }
-                    }
-                }
-                else
-                {
-                    frmStartAction.populateStartActions(SaPath);
-                    frmStartAction.Location = new Point(this.Left, this.Top);
-                    frmStartAction.ShowDialog();
                 }
             }
         }

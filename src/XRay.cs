@@ -32,6 +32,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 using HtmlAgilityPack;
+using Newtonsoft.Json;
 
 namespace XRayBuilderGUI
 {
@@ -956,7 +957,7 @@ namespace XRayBuilderGUI
             }
         }
 
-        private class Chapter
+        public class Chapter
         {
             public string name;
             public long start;
@@ -996,9 +997,10 @@ namespace XRayBuilderGUI
             [XmlElement("url")] public string DescUrl = "";
 
             [XmlIgnore] public List<string> Aliases = new List<string>();
-
+            
+            [JsonIgnore]
             [XmlIgnore] public List<string> Locs = new List<string>(1000);
-
+            
             [XmlIgnore] public List<string> Assets = new List<string> {""};
 
             [XmlIgnore] public int Id = -1;
@@ -1265,6 +1267,20 @@ namespace XRayBuilderGUI
                 }
             }
         }
+    }
+
+    public class XRayJsonDef
+    {
+        public string asin;
+        public string guid;
+        public string version;
+        public string xrayversion;
+        public string created;
+        public List<XRay.Term> terms;
+        public IList<XRay.Chapter> chapters;
+        public string assets;
+        public int srl;
+        public int erl;
     }
 
     public static class ExtensionMethods

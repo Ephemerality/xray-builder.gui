@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilderGUI.DataSources;
 using XRayBuilderGUI.Properties;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace XRayBuilderGUI
 {
@@ -1184,82 +1186,110 @@ namespace XRayBuilderGUI
 
         private void btnExtractTerms_Click(object sender, EventArgs e)
         {
-            if (settings.useNewVersion)
+            string selPath = "";
+            OpenFileDialog openFile = new OpenFileDialog();
+            openFile.Title = "Open a Kindle X-Ray file...";
+            openFile.Filter = "ASC files|*.asc";
+            openFile.InitialDirectory = settings.outDir;
+            if (openFile.ShowDialog() == DialogResult.OK)
+                selPath = openFile.FileName;
+            if (selPath == "" | !selPath.Contains("XRAY.entities"))
             {
-                if (!File.Exists(XrPath))
+                Logger.Log("Invalid or no file selected.");
+                return;
+            }
+            bool newVer = false;
+            using (FileStream fs = new FileStream(selPath, FileMode.Open, FileAccess.Read))
+            {
+                int c = fs.ReadByte();
+                if (c == 'S')
+                    newVer = true;
+                else if (c != '{')
                 {
-                    OpenFileDialog openFile = new OpenFileDialog();
-                    openFile.Title = "Open a Kindle X-Ray file...";
-                    openFile.Filter = "ASC files|*.asc";
-                    openFile.InitialDirectory = settings.outDir;
-                    if (openFile.ShowDialog() == DialogResult.OK)
-                    {
-                        try
-                        {
-                            if (openFile.FileName.Contains("XRAY.entities"))
-                            {
-                                string xrayDB = "Data Source=" + openFile.FileName + ";Version=3;";
-                                List<XRay.Term> Terms = new List<XRay.Term>(100);
-
-                                SQLiteConnection m_dbConnection = new SQLiteConnection(xrayDB);
-                                m_dbConnection.Open();
-
-                                string sql = "SELECT * FROM entity WHERE has_info_card = '1'";
-                                SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
-                                SQLiteDataReader reader = command.ExecuteReader();
-
-                                while (reader.Read())
-                                {
-                                    XRay.Term newTerm = new XRay.Term();
-                                    newTerm.Id = reader.GetInt32(0);
-                                    newTerm.TermName = reader.GetString(1);
-                                    int i = reader.GetInt32(3);
-                                    newTerm.Type = i == 1 ? "character" : "topic";
-                                    //if (newTerm.Type == "character")
-                                    //{
-                                    //    newTerm.DescSrc = "Kindle Store";
-                                    //    newTerm.DescUrl = String.Format(@"http://www.amazon.{0}/s/ref=nb_sb_ss_i_5_4?url=search-alias%3Ddigital-text&field-keywords={1}",
-                                    //        settings.amazonTLD, newTerm.TermName.Replace(" ", "+"));
-                                    //}
-                                    //else
-                                    //{
-                                    newTerm.DescSrc = "Wikipedia";
-                                    newTerm.DescUrl = String.Format(@"http://en.wikipedia.org/wiki/{0}", newTerm.TermName.Replace(" ", "_"));
-                                    //}
-                                    Terms.Add(newTerm);
-                                }
-
-                                command.Dispose();
-
-                                for (int i = 1; i < Terms.Count + 1; i++)
-                                {
-                                    sql = String.Format("SELECT * FROM entity_description WHERE entity = '{0}'", i);
-
-                                    command = new SQLiteCommand(sql, m_dbConnection);
-                                    reader = command.ExecuteReader();
-                                    while (reader.Read())
-                                    {
-                                        Terms[i - 1].Desc = reader.GetString(0);
-                                    }
-                                    command.Dispose();
-                                }
-                                m_dbConnection.Close();
-                                if (!Directory.Exists(Environment.CurrentDirectory + @"\xml\"))
-                                    Directory.CreateDirectory(Environment.CurrentDirectory + @"\xml\");
-                                string outfile = Environment.CurrentDirectory + @"\xml\" + Path.GetFileNameWithoutExtension(openFile.FileName) + ".xml";
-                                Functions.Save<List<XRay.Term>>(Terms, outfile);
-                                Logger.Log("Character data has been saved to: " + outfile);
-                            }
-                            else
-                                MessageBox.Show(@"Whoops! That filename does not contain ""XRAY Entities""!");
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                        }
-                    }
+                    Logger.Log("Invalid X-Ray file.");
+                    return;
                 }
             }
+            try
+            {
+                List<XRay.Term> terms;
+                if (newVer)
+                    terms = ExtractTermsNew(selPath);
+                else
+                    terms = ExtractTermsOld(selPath);
+                if (!Directory.Exists(Environment.CurrentDirectory + @"\xml\"))
+                    Directory.CreateDirectory(Environment.CurrentDirectory + @"\xml\");
+                string outfile = Environment.CurrentDirectory + @"\xml\" + Path.GetFileNameWithoutExtension(selPath) + ".xml";
+                Functions.Save<List<XRay.Term>>(terms, outfile);
+                Logger.Log("Character data has been saved to: " + outfile);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+            }
+        }
+
+        private List<XRay.Term> ExtractTermsNew(string path)
+        {
+            List<XRay.Term> terms = new List<XRay.Term>(100);
+
+            string xrayDB = "Data Source=" + path + ";Version=3;";
+            SQLiteConnection m_dbConnection = new SQLiteConnection(xrayDB);
+            m_dbConnection.Open();
+
+            string sql = "SELECT * FROM entity WHERE has_info_card = '1'";
+            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+            SQLiteDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                XRay.Term newTerm = new XRay.Term();
+                newTerm.Id = reader.GetInt32(0);
+                newTerm.TermName = reader.GetString(1);
+                newTerm.Type = reader.GetInt32(3) == 1 ? "character" : "topic";
+                //if (newTerm.Type == "character")
+                //{
+                //    newTerm.DescSrc = "Kindle Store";
+                //    newTerm.DescUrl = String.Format(@"http://www.amazon.{0}/s/ref=nb_sb_ss_i_5_4?url=search-alias%3Ddigital-text&field-keywords={1}",
+                //        settings.amazonTLD, newTerm.TermName.Replace(" ", "+"));
+                //}
+                //else
+                //{
+                newTerm.DescSrc = "Wikipedia";
+                newTerm.DescUrl = String.Format(@"http://en.wikipedia.org/wiki/{0}", newTerm.TermName.Replace(" ", "_"));
+                //}
+                terms.Add(newTerm);
+            }
+
+            command.Dispose();
+
+            for (int i = 1; i < terms.Count + 1; i++)
+            {
+                sql = String.Format("SELECT * FROM entity_description WHERE entity = '{0}'", i);
+
+                command = new SQLiteCommand(sql, m_dbConnection);
+                reader = command.ExecuteReader();
+                while (reader.Read())
+                    terms[i - 1].Desc = reader.GetString(0);
+                command.Dispose();
+            }
+            m_dbConnection.Close();
+            return terms;
+        }
+
+        private List<XRay.Term> ExtractTermsOld(string path)
+        {
+            List<XRay.Term> terms;
+            string readContents;
+            using (StreamReader streamReader = new StreamReader(path, Encoding.UTF8))
+                readContents = streamReader.ReadToEnd();
+
+            JObject xray = JObject.Parse(readContents);
+            var termsjson = xray["terms"].Children().ToList();
+            terms = new List<XRay.Term>(termsjson.Count);
+            foreach (var term in termsjson)
+                terms.Add(term.ToObject<XRay.Term>());
+            return terms;
         }
 
         private void btnHelp_Click(object sender, EventArgs e)

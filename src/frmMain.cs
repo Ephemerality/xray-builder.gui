@@ -951,40 +951,38 @@ namespace XRayBuilderGUI
             }
         }
 
-        private void tmiEndAction_Click(object sender, EventArgs e)
+        private async void tmiEndAction_Click(object sender, EventArgs e)
         {
-            if (settings.useNewVersion)
+            string selPath = "";
+            if (File.Exists(EaPath))
+                selPath = EaPath;
+            else
             {
-                if (!File.Exists(EaPath))
+                OpenFileDialog openFile = new OpenFileDialog();
+                openFile.Title = "Open a Kindle EndAction file...";
+                openFile.Filter = "ASC files|*.asc";
+                openFile.InitialDirectory = settings.outDir;
+                if (openFile.ShowDialog() == DialogResult.OK)
                 {
-                    OpenFileDialog openFile = new OpenFileDialog();
-                    openFile.Title = "Open a Kindle EndAction file...";
-                    openFile.Filter = "ASC files|*.asc";
-                    openFile.InitialDirectory = settings.outDir;
-                    if (openFile.ShowDialog() == DialogResult.OK)
+                    if (openFile.FileName.Contains("EndActions"))
+                        selPath = openFile.FileName;
+                    else
                     {
-                        try
-                        {
-                            if (openFile.FileName.Contains("EndActions"))
-                            {
-                                frmEndAction.populateEndActions(openFile.FileName);
-                                //frmEndAction.Location = new Point(this.Left, this.Top);
-                                frmEndAction.ShowDialog();
-                            }
-                            else
-                                MessageBox.Show(@"Whoops! That filename does not contain ""EndActions""!");
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show("Error: Current line being parsed:\r\n" + frmEndAction.GetCurrentLine + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                        }
+                        Logger.Log("Invalid End Actions file.");
+                        return;
                     }
                 }
-                else
+            }
+            if (selPath != "")
+            {
+                try
                 {
-                    frmEndAction.populateEndActions(EaPath);
-                    //frmEndAction.Location = new Point(this.Left, this.Top);
+                    await frmEndAction.populateEndActions(selPath);
                     frmEndAction.ShowDialog();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                 }
             }
         }

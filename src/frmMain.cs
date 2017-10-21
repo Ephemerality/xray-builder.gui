@@ -180,7 +180,15 @@ namespace XRayBuilderGUI
             if (settings.useKindleUnpack)
             {
                 Logger.Log("Running Kindleunpack to get metadata...");
-                results = await Functions.GetMetaDataAsync(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                try
+                {
+                    results = await Functions.GetMetaDataAsync(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
+                    return;
+                }
             }
             else
             {
@@ -194,11 +202,6 @@ namespace XRayBuilderGUI
                     Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
                     return;
                 }
-            }
-            if (results.Count != 6)
-            {
-                Logger.Log(results[0]);
-                return;
             }
 
             if (settings.saverawml)
@@ -445,13 +448,21 @@ namespace XRayBuilderGUI
             if (settings.useKindleUnpack)
             {
                 Logger.Log("Running Kindleunpack to get metadata...");
-                results = await Functions.GetMetaDataAsync(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
-                if (!File.Exists(results[3]))
+                try
                 {
-                    Logger.Log("Error: RawML could not be found, aborting.\r\nPath: " + results[3]);
+                    results = await Functions.GetMetaDataAsync(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                    if (!File.Exists(results[3]))
+                    {
+                        Logger.Log("Error: RawML could not be found, aborting.\r\nPath: " + results[3]);
+                        return;
+                    }
+                    rawMLSize = new FileInfo(results[3]).Length;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
                     return;
                 }
-                rawMLSize = new FileInfo(results[3]).Length;
             }
             else
             {
@@ -467,11 +478,6 @@ namespace XRayBuilderGUI
                     Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
                     return;
                 }
-            }
-            if (results.Count != 6)
-            {
-                Logger.Log(results[0]);
-                return;
             }
 
             if (settings.saverawml && settings.useKindleUnpack)
@@ -604,7 +610,15 @@ namespace XRayBuilderGUI
             if (settings.useKindleUnpack)
             {
                 Logger.Log("Running Kindleunpack to get metadata...");
-                results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                try
+                {
+                    results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
+                    return;
+                }
             }
             else
             {
@@ -618,11 +632,6 @@ namespace XRayBuilderGUI
                     Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
                     return;
                 }
-            }
-            if (results.Count != 6)
-            {
-                Logger.Log(results[0]);
-                return;
             }
 
             Logger.Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nUniqueID: {1}",
@@ -829,39 +838,43 @@ namespace XRayBuilderGUI
                 return;
             }
             List<string> results;
-            try
+            if (settings.useKindleUnpack)
             {
-                results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                Logger.Log("Running Kindleunpack to get metadata...");
+                try
+                {
+                    results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                    if (results.Count == 7)
+                        pbCover.Image = new Bitmap(results[6]);
+                    else
+                        pbCover.Image = null;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
+                    txtMobi.Text = "";
+                    return;
+                }
             }
-            catch (Exception ex)
+            else
             {
-                Logger.Log("An error occurred getting metadata: " + ex.Message);
-                return;
-            }
-
-            if (results.Count != 7)
-            {
-                this.Cursor = Cursors.Default;
-                txtMobi.Text = "";
-                if (results.Count == 1) Logger.Log("An error occurred getting metadata: " + results[0]);
-                return;
+                Logger.Log("Extracting metadata...");
+                try
+                {
+                    Unpack.Metadata md = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, false);
+                    results = md.getResults();
+                    pbCover.Image = md.coverImage;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
+                    txtMobi.Text = "";
+                    return;
+                }
             }
 
             string outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectoryOnly(results[4], results[5]) : settings.outDir;
-
-            //Open file in read only mode
-            using (FileStream stream = new FileStream(results[6], FileMode.Open, FileAccess.Read))
-            //Get a binary reader for the file stream
-            using (BinaryReader reader = new BinaryReader(stream))
-            {
-                //copy the content of the file into a memory stream
-                MemoryStream memoryStream = new MemoryStream(reader.ReadBytes((int)stream.Length));
-                //make a new Bitmap object the owner of the MemoryStream
-                Bitmap bitmap = new Bitmap(memoryStream);
-                pbCover.Image = bitmap;
-                stream.Dispose();
-            }
-
+            
             lblTitle.Visible = true;
             lblAuthor.Visible = true;
             lblAsin.Visible = true;
@@ -1129,7 +1142,15 @@ namespace XRayBuilderGUI
             if (settings.useKindleUnpack)
             {
                 Logger.Log("Running Kindleunpack to extract rawML...");
-                results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                try
+                {
+                    results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("An error occurred extracting rawML: " + ex.Message + "\r\n" + ex.StackTrace);
+                    return;
+                }
             }
             else
             {
@@ -1143,11 +1164,6 @@ namespace XRayBuilderGUI
                     Logger.Log("An error occurred extracting rawML: " + ex.Message + "\r\n" + ex.StackTrace);
                     return;
                 }
-            }
-            if (results.Count != 6)
-            {
-                Logger.Log(results[0]);
-                return;
             }
             string rawmlPath = Path.Combine(Environment.CurrentDirectory + @"\dmp", Path.GetFileName(results[3]));
             File.Copy(results[3], rawmlPath, true);

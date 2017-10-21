@@ -36,7 +36,6 @@ namespace XRayBuilderGUI
             InitializeComponent();
         }
         
-        private frmPreviewAP frmAuthorProfile = new frmPreviewAP();
         private frmPreviewXR frmXraPreview = new frmPreviewXR();
 
         private frmAbout frmInfo = new frmAbout();
@@ -913,38 +912,38 @@ namespace XRayBuilderGUI
 
         private void tmiAuthorProfile_Click(object sender, EventArgs e)
         {
-            if (settings.useNewVersion)
+            string selPath = "";
+            if (File.Exists(ApPath))
+                selPath = ApPath;
+            else
             {
-                if (!File.Exists(ApPath))
+                OpenFileDialog openFile = new OpenFileDialog();
+                openFile.Title = "Open a Kindle AuthorProfile file...";
+                openFile.Filter = "ASC files|*.asc";
+                openFile.InitialDirectory = settings.outDir;
+                if (openFile.ShowDialog() == DialogResult.OK)
                 {
-                    OpenFileDialog openFile = new OpenFileDialog();
-                    openFile.Title = "Open a Kindle AuthorProfile file...";
-                    openFile.Filter = "ASC files|*.asc";
-                    openFile.InitialDirectory = settings.outDir;
-                    if (openFile.ShowDialog() == DialogResult.OK)
+                    if (openFile.FileName.Contains("AuthorProfile"))
+                        selPath = openFile.FileName;
+                    else
                     {
-                        try
-                        {
-                            if (openFile.FileName.Contains("AuthorProfile"))
-                            {
-                                frmAuthorProfile.populateAuthorProfile(openFile.FileName);
-                                frmAuthorProfile.Location = new Point(this.Left, this.Top);
-                                frmAuthorProfile.ShowDialog();
-                            }
-                            else
-                                MessageBox.Show(@"Whoops! That filename does not contain ""AuthorProfile""!");
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show("Error: Current line being parsed:\r\n" + frmAuthorProfile.GetCurrentLine + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                        }
+                        Logger.Log("Invalid Author Profile file.");
+                        return;
                     }
                 }
-                else
+            }
+            if (selPath != "")
+            {
+                try
                 {
-                    frmAuthorProfile.populateAuthorProfile(ApPath);
-                    //frmAuthorProfile.Location = new Point(this.Left, this.Top);
+                    frmPreviewAP frmAuthorProfile = new frmPreviewAP();
+                    frmAuthorProfile.populateAuthorProfile(selPath);
+                    frmAuthorProfile.Location = new Point(this.Left, this.Top);
                     frmAuthorProfile.ShowDialog();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                 }
             }
         }
@@ -1015,6 +1014,7 @@ namespace XRayBuilderGUI
                 {
                     frmPreviewEA frmEndAction = new frmPreviewEA();
                     await frmEndAction.populateEndActions(selPath);
+                    frmEndAction.Location = new Point(this.Left, this.Top);
                     frmEndAction.ShowDialog();
                 }
                 catch (Exception ex)

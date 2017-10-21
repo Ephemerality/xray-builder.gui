@@ -392,17 +392,13 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                output.Add(String.Format("An error occurred while running Kindleunpack: {0}\r\n", ex.Message));
-                MessageBox.Show("Error while running Kindleunpack. See the output log for details.");
-                return output;
+                throw new Exception(String.Format("An error occurred while running Kindleunpack: {0}\r\n", ex.Message));
             }
             rawMl = Path.GetFileNameWithoutExtension(mobiFile) + ".rawml";
             //Was the unpack successful?
             if (!unpackInfo.Contains("Write opf\r\n") && !unpackInfo.Contains("\r\nCompleted"))
             {
-                output.Add("Kindleunpack returned: " + unpackInfo +
-                           "\r\nAn error occurred during unpack. See above info for details.\r\n");
-                return output;
+                throw new Exception("Kindleunpack returned: " + unpackInfo + "\r\nAn error occurred during unpack. See above info for details.\r\n");
             }
             //Attempt to find the .rawml unpacked from the mobi
             rawMl = randomFile + @"/mobi8/" + rawMl;
@@ -410,9 +406,7 @@ namespace XRayBuilderGUI
                 rawMl = randomFile + @"/mobi7/" + Path.GetFileNameWithoutExtension(mobiFile) + ".rawml";
             if (!File.Exists(rawMl))
             {
-                output.Add("Error finding .rawml file. Path: " + rawMl);
-                MessageBox.Show("Error finding .rawml.", "RAWML Error");
-                return output;
+                throw new Exception("Error finding .rawml file. Path: " + rawMl);
             }
 
             string databaseName = "";
@@ -432,7 +426,7 @@ namespace XRayBuilderGUI
                     if (file.Name.Contains("cover"))
                     {
                         image = file.FullName;
-                        continue;
+                        break;
                     }
                 }
             }
@@ -449,12 +443,10 @@ namespace XRayBuilderGUI
                                       "Kindle may not display an X-Ray for this book.\n" +
                                       "Do you wish to continue?", incorrectAsin), "Incorrect ASIN", MessageBoxButtons.YesNo))
                     {
-                        output.Add(
-                            String.Format("Incorrect ASIN detected: {0}!\r\n" +
+                        throw new Exception(String.Format("Incorrect ASIN detected: {0}!\r\n" +
                                           "Kindle may not display an X-Ray for this book.\r\n" +
                                           "You must either use Calibre's Quality Check plugin (Fix ASIN for Kindle Fire) " +
                                           "or a Mobi editor (exth 113 and 504) to change this.", incorrectAsin));
-                        return output;
                     }
                 }
                 asin = incorrectAsin;
@@ -467,11 +459,8 @@ namespace XRayBuilderGUI
             {
                 if (match.Groups[1].Value != "EBOK")
                 {
-                    output.Add(
-                        "The document type is not set to EBOK; Kindle will not display an X-Ray for this book.\r\nYou must either use Calibre's convert feature (Personal Doc tag under MOBI Output) or a Mobi editor (exth 501) to change this.");
-                    MessageBox.Show(
-                        "The document type is not set to EBOK; Kindle will not display an X-Ray for this book.\r\nYou must either use Calibre's convert feature (Personal Doc tag under MOBI Output) or a Mobi editor (exth 501) to change this.");
-                    return output;
+                    throw new Exception("The document type is not set to EBOK; Kindle will not display an X-Ray for this book.\r\n"
+                        + "You must either use Calibre's convert feature (Personal Doc tag under MOBI Output) or a Mobi editor (exth 501) to change this.");
                 }
             }
             // Find author name in Kindleunpack output
@@ -493,27 +482,21 @@ namespace XRayBuilderGUI
             {
                 if (stream == null)
                 {
-                    output.Add("Error opening mobi file (stream error).");
-                    MessageBox.Show("Error opening mobi file (stream error).");
-                    return output;
+                    throw new Exception("Error opening mobi file (stream error).");
                 }
                 int bytesRead = stream.Read(dbinput, 0, 32);
                 if (bytesRead != 32)
                 {
-                    output.Add("Error reading from mobi file.");
-                    MessageBox.Show("Error reading from mobi file.");
-                    return output;
+                    throw new Exception("Error reading from mobi file.");
                 }
                 databaseName = Encoding.Default.GetString(dbinput).Trim('\0');
             }
 
             if (databaseName == "" || uniqid == "" || asin == "")
             {
-                output.Add(String.Format(
+                throw new Exception(String.Format(
                     "Error: Missing metadata.\r\nDatabase Name: {0}\r\nASIN: {1}\r\nUniqueID: {2}", databaseName, asin,
                     uniqid));
-                MessageBox.Show("Missing metadata. See output log for details.", "Metadata Error");
-                return output;
             }
             else if (!Properties.Settings.Default.useNewVersion && databaseName.Length == 31)
             {
@@ -532,7 +515,6 @@ namespace XRayBuilderGUI
             output.Add(author);
             output.Add(title);
             output.Add(image);
-
             return output;
         }
 

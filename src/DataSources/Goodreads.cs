@@ -501,7 +501,8 @@ namespace XRayBuilderGUI.DataSources
                 if (maxPages == 1)
                 {
                     HtmlNode tempNode = quoteDoc.DocumentNode.SelectSingleNode("//span[contains(@class,'previous_page')]/parent::div/*[last()-1]");
-                    if (!int.TryParse(tempNode.InnerHtml, out maxPages)) maxPages = 1;
+                    if (tempNode == null || !int.TryParse(tempNode.InnerHtml, out maxPages))
+                        maxPages = 1;
                     result = new List<Tuple<string, int>>(maxPages * 30);
                 }
                 HtmlNodeCollection tempNodes = quoteDoc.DocumentNode.SelectNodes("//div[@class='quotes']/div[@class='quote']");

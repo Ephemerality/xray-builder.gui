@@ -1220,6 +1220,10 @@ namespace XRayBuilderGUI
                 //}
                 //else
                 //{
+                // Actual location aren't needed for extracting terms for preview or XML saving, but need count
+                int i = reader.GetInt32(4);
+                for (; i > 0; i--)
+                    newTerm.Locs.Add(null);
                 newTerm.DescSrc = "Wikipedia";
                 newTerm.DescUrl = String.Format(@"http://en.wikipedia.org/wiki/{0}", newTerm.TermName.Replace(" ", "_"));
                 //newTerm.DescSrc = Convert.ToString(reader.GetInt32(4));

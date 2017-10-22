@@ -180,12 +180,7 @@
     <Compile Include="src\Unpack\PDBHeader.cs" />
     <Compile Include="src\Unpack\Uncompress.cs" />
     <Compile Include="src\XRay.cs" />
-    <Compile Include="src\XRayPanel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="src\XRayPanel.Designer.cs">
-      <DependentUpon>XRayPanel.cs</DependentUpon>
-    </Compile>
+    <Compile Include="src\XRayPanel.cs" />
     <Content Include="dist\BaseEndActions.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

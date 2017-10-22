@@ -1058,18 +1058,7 @@ namespace XRayBuilderGUI
                     List<XRay.Term> terms = ver == 2 ? ExtractTermsNew(selPath) : ExtractTermsOld(selPath);
                     
                     frmPreviewXR frmXraPreview = new frmPreviewXR();
-                    frmXraPreview.flpPeople.Controls.Clear();
-                    frmXraPreview.flpTerms.Controls.Clear();
-
-                    foreach (XRay.Term t in terms)
-                    {
-                        XRayPanel p = new XRayPanel(t.Type, t.TermName, t.DescSrc, t.Desc);
-                        if (t.Type == "character")
-                            frmXraPreview.flpPeople.Controls.Add(p);
-                        if (t.Type == "topic")
-                            frmXraPreview.flpTerms.Controls.Add(p);
-                    }
-                    frmXraPreview.tcXray.SelectedIndex = 0;
+                    frmXraPreview.PopulateXRay(terms);
                     frmXraPreview.ShowDialog();
 
                 }

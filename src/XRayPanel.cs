@@ -4,22 +4,16 @@ using System.Windows.Forms;
 
 namespace XRayBuilderGUI
 {
+    [System.ComponentModel.DesignerCategory("Code")]
     public partial class XRayPanel : Panel
     {
-        private PictureBox pbType = null;
-        private Label lblName = null;
-        private Label lblMentions = null;
-        private Label lblDescription = null;
-        private PictureBox pbSeperator = null;
+        private PictureBox pbType;
+        private Label lblName;
+        private Label lblMentions;
+        private Label lblDescription;
+        private PictureBox pbSeperator;
 
-        public XRayPanel()
-            : base()
-        {
-            InitializeComponent();
-        }
-
-        public XRayPanel(String type, String name, String mentions, String description)
-            : base()
+        public XRayPanel(string type, string name, string mentions, string description) : base()
         {
             this.BorderStyle = BorderStyle.None;
             this.Name = "XRayPanel";
@@ -67,8 +61,6 @@ namespace XRayBuilderGUI
             this.Controls.Add(this.lblDescription);
             this.Controls.Add(this.pbType);
             this.Controls.Add(this.pbSeperator);
-
-            InitializeComponent();
         }
     }
 }

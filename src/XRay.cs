@@ -999,7 +999,7 @@ namespace XRayBuilderGUI
             [XmlIgnore] public List<string> Aliases = new List<string>();
             
             [JsonIgnore]
-            [XmlIgnore] public List<string> Locs = new List<string>(1000);
+            [XmlIgnore] public List<string> Locs = new List<string>();
             
             [XmlIgnore] public List<string> Assets = new List<string> {""};
 

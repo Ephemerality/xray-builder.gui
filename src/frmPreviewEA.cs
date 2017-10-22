@@ -12,18 +12,18 @@ namespace XRayBuilderGUI
     public partial class frmPreviewEA : Form
     {
 
-        #region SET LISTWIEW ICON SPACING
+        #region SET LISTVIEW ICON SPACING
 
         // http://qdevblog.blogspot.ch/2011/11/c-listview-item-spacing.html
         [DllImport("user32.dll")]
-        public static extern int SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+        private static extern int SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
 
-        public int MakeLong(short lowPart, short highPart)
+        private int MakeLong(short lowPart, short highPart)
         {
             return (int) (((ushort) lowPart) | (uint) (highPart << 16));
         }
 
-        public void ListViewItem_SetSpacing(ListView listview, short leftPadding, short topPadding)
+        private void ListViewItem_SetSpacing(ListView listview, short leftPadding, short topPadding)
         {
             const int LVM_FIRST = 0x1000;
             const int LVM_SETICONSPACING = LVM_FIRST + 53;
@@ -37,10 +37,9 @@ namespace XRayBuilderGUI
             InitializeComponent();
         }
 
-        #region PREVENT LISTWIEW ICON SELECTION
+        #region PREVENT LISTVIEW ICON SELECTION
 
-        private void lvcustomersWhoBoughtRecs_ItemSelectionChanged(object sender,
-            ListViewItemSelectionChangedEventArgs e)
+        private void lvcustomersWhoBoughtRecs_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
         {
             if (e.IsSelected) e.Item.Selected = false;
         }

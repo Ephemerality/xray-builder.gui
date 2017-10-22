@@ -38,6 +38,7 @@ namespace XRayBuilderGUI
         {
             Bitmap result = null;
             WebRequest request = WebRequest.Create(url);
+            request.Timeout = 2000;
             using (WebResponse response = await request.GetResponseAsync())
             {
                 result = new Bitmap(response.GetResponseStream());

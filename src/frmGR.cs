@@ -45,30 +45,18 @@ namespace XRayBuilderGUI
             linkID.Text = "";
 
             int i = cbResults.SelectedIndex == -1 ? 0 : cbResults.SelectedIndex;
-            WebRequest request = WebRequest.Create(BookList[i].bookImageUrl);
-            using (WebResponse response = request.GetResponse())
-            using (Stream stream = response.GetResponseStream())
-            {
-                if (stream != null)
-                {
-                    Bitmap bitmap = new Bitmap(stream);
-                    pbCover.Image = bitmap;
-                }
-            }
+            pbCover.Image = BookList[i].CoverImage();
             lblTitle.Text = BookList[i].title;
-            lblAuthor.Text = String.Format("by {0}", BookList[i].author);
+            lblAuthor.Text = "by " + BookList[i].author;
             lblRating.Text = String.Format("{0} average rating ({1} ratings)", BookList[i].amazonRating, BookList[i].numReviews);
-            lblEditions.Text = BookList[i].editions == "1" ?
-                String.Format("{0} edition", BookList[i].editions) :
-                String.Format("{0} editions", BookList[i].editions);
+            lblEditions.Text = String.Format(BookList[i].editions == "1" ? "{0} edition" : "{0} editions", BookList[i].editions);
             linkID.Text = BookList[i].goodreadsID;
-            toolTip1.SetToolTip(linkID, String.Format(@"http://www.goodreads.com/book/show/{0}", linkID.Text));
+            toolTip1.SetToolTip(linkID, @"http://www.goodreads.com/book/show/" + linkID.Text);
         }
 
         private void linkID_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            string link = String.Format(@"http://www.goodreads.com/book/show/{0}", linkID.Text);
-            Process.Start(link);
+            Process.Start(@"http://www.goodreads.com/book/show/" + linkID.Text);
         }
 
         private void frmGR_Load(object sender, EventArgs e)

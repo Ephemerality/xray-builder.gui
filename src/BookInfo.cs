@@ -18,6 +18,7 @@ namespace XRayBuilderGUI
         public string sidecarName;
         public string desc = "";
         public string bookImageUrl = "";
+        private System.Drawing.Bitmap _bookImage = null;
         public float amazonRating = 0.0F;
         public int numReviews = 0;
         public string dataUrl = "";
@@ -186,6 +187,17 @@ namespace XRayBuilderGUI
                         "Error: " + ex.Message + "\r\n" + ex.StackTrace);
                 }
             }
+        }
+
+        public System.Drawing.Bitmap CoverImage()
+        {
+            if (bookImageUrl == "") return null;
+            try
+            {
+                _bookImage = Task.Run(() => HttpDownloader.GetImage(bookImageUrl)).Result;
+            }
+            catch (Exception) { }
+            return _bookImage;
         }
     }
 }

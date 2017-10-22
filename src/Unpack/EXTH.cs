@@ -109,7 +109,27 @@ namespace XRayBuilderGUI.Unpack
         {
             get { return GetRecordByType(504); }
         }
-        
+
+        public int CoverOffset
+        {
+            get { return BitConverter.ToInt32(Functions.CheckBytes(GetRecordBytesByType(201)), 0); }
+        }
+
+        private byte[] GetRecordBytesByType(int recType)
+        {
+            byte[] record = null;
+            foreach (EXTHRecord rec in recordList)
+            {
+                if (rec.RecordType == recType)
+                {
+                    record = new byte[rec.RecordData.Length];
+                    Buffer.BlockCopy(rec.RecordData, 0, record, 0, rec.RecordData.Length);
+                    break;
+                }
+            }
+            return record;
+        }
+
         private string GetRecordByType(int recType)
         {
             string record = String.Empty;

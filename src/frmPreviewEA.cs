@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json.Linq;
 
 namespace XRayBuilderGUI
 {
@@ -38,14 +37,6 @@ namespace XRayBuilderGUI
             InitializeComponent();
         }
 
-        private string currentLine;
-
-        public string GetCurrentLine
-        {
-            get { return this.currentLine; }
-            set { this.currentLine = value; }
-        }
-
         #region PREVENT LISTWIEW ICON SELECTION
 
         private void lvcustomersWhoBoughtRecs_ItemSelectionChanged(object sender,
@@ -61,82 +52,42 @@ namespace XRayBuilderGUI
 
         #endregion
 
-        public bool populateEndActions(string inputFile)
+        public async Task populateEndActions(string inputFile)
         {
-            Cursor.Current = Cursors.WaitCursor;
-            List<string> split = new List<string>();
-            StreamReader streamReader = new StreamReader(inputFile, Encoding.UTF8);
-            string input = streamReader.ReadToEnd();
+            string input;
+            using (StreamReader streamReader = new StreamReader(inputFile, Encoding.UTF8))
+                input = streamReader.ReadToEnd();
             ilauthorRecs.Images.Clear();
             lvAuthorRecs.Items.Clear();
             ilcustomersWhoBoughtRecs.Images.Clear();
             lvCustomersWhoBoughtRecs.Items.Clear();
 
-            Match nextinSeries = Regex.Match(input,
-                @"""nextBook"":{(.*)},""customerProfile""");
-            if (nextinSeries.Success)
+            JObject ea = JObject.Parse(input);
+            var tempData = ea["data"]["nextBook"];
+            if (tempData != null)
             {
-                currentLine = nextinSeries.Value;
-                split.AddRange(Regex.Split(nextinSeries.Value, (@",""")));
-                if (split.Count == 7)
-                {
-                    Match title = Regex.Match(split[2], @""":""(.*)""");
-                    if (title.Success)
-                        //lblNextTitle.Text = Regex.Replace(title.Groups[1].Value, @" \(.*\)|:", string.Empty);
-                        lblNextTitle.Text = title.Groups[1].Value;
-                    Match author = Regex.Match(split[3], @""":\[""(.*)""\]");
-                    if (author.Success)
-                        lblNextAuthor.Text = author.Groups[1].Value;
-                    Match image = Regex.Match(split[4], @""":""(.*)""");
-                    if (image.Success)
-                    {
-                        WebRequest request = WebRequest.Create(image.Groups[1].Value);
-                        using (WebResponse response = request.GetResponse())
-                        using (Stream stream = response.GetResponseStream())
-                        {
-                            if (stream != null)
-                            {
-                                Bitmap bitmap = new Bitmap(stream);
-                                pbNextCover.Image = Functions.MakeGrayscale3(bitmap);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    pbNextCover.Visible = false;
-                    lblNextTitle.Visible = false;
-                    lblNextAuthor.Visible = false;
-                    lblNotInSeries.Visible = true;
-                }
+                lblNextTitle.Text = tempData["title"].ToString();
+                lblNextAuthor.Text = tempData["authors"][0].ToString();
+                string imageUrl = tempData["imageUrl"]?.ToString();
+                if (imageUrl != "" && imageUrl != null)
+                    pbNextCover.Image = Functions.MakeGrayscale3(await HttpDownloader.GetImage(imageUrl));
             }
-            
-            Match authorRecs = Regex.Match(input, @"""authorRecs"":{(.*)},""customersWhoBoughtRecs""");
-            if (!authorRecs.Success)
-                authorRecs = Regex.Match(input, @"""authorRecs"":{(.*)},""goodReadsReview""");
-            currentLine = authorRecs.Value;
-            split.Clear();
-            split.AddRange(Regex.Split(authorRecs.Value, (@"},{")));
-            if (split.Count != 0)
+            else
             {
-                foreach (string line in split)
+                pbNextCover.Visible = false;
+                lblNextTitle.Visible = false;
+                lblNextAuthor.Visible = false;
+                lblNotInSeries.Visible = true;
+            }
+
+            tempData = ea["data"]["authorRecs"]["recommendations"];
+            if (tempData != null)
+            {
+                foreach (var rec in tempData)
                 {
-                    Match bookInfo = Regex.Match(line, @"""imageUrl"":""(.*)"",""hasSample""");
-                    if (bookInfo.Success)
-                    {
-                        currentLine = bookInfo.Value;
-                        WebRequest request = WebRequest.Create(bookInfo.Groups[1].Value);
-                        using (WebResponse response = request.GetResponse())
-                        using (Stream stream = response.GetResponseStream())
-                        {
-                            if (stream != null)
-                            {
-                                Bitmap bitmap = new Bitmap(stream);
-                                Image img = Functions.MakeGrayscale3(bitmap);
-                                ilauthorRecs.Images.Add(img);
-                            }
-                        }
-                    }
+                    string imageUrl = rec["imageUrl"]?.ToString();
+                    if (imageUrl != "" && imageUrl != null)
+                        ilauthorRecs.Images.Add(Functions.MakeGrayscale3(await HttpDownloader.GetImage(imageUrl)));
                 }
                 ListViewItem_SetSpacing(this.lvAuthorRecs, 60 + 7, 90 + 7);
                 for (int i = 0; i < ilauthorRecs.Images.Count; i++)
@@ -146,38 +97,15 @@ namespace XRayBuilderGUI
                     lvAuthorRecs.Items.Add(item);
                 }
             }
-            else
-                MessageBox.Show("This EndAction does not contain any of this author's other books.");
 
-            Match customersWhoBoughtRecs = Regex.Match(input, @"""customersWhoBoughtRecs"":{(.*)},""authorSubscriptions""");
-            currentLine = customersWhoBoughtRecs.Value;
-            split.Clear();
-            split.AddRange(Regex.Split(customersWhoBoughtRecs.Value, (@"},{")));
-            if (split.Count != 0)
+            tempData = ea["data"]["customersWhoBoughtRecs"]["recommendations"];
+            if (tempData != null)
             {
-                foreach (string line in split)
+                foreach (var rec in tempData)
                 {
-                    Match bookInfo = Regex.Match(line, @"""imageUrl"":""(.*)"",""hasSample""");
-                    if (bookInfo.Success)
-                    {
-                        currentLine = bookInfo.Value;
-                        if (bookInfo.Groups[1].Value == "")
-                        {
-                            MessageBox.Show(String.Format("Missing image in the following line:\r\n{0}", line));
-                            continue;
-                        }
-                        WebRequest request = WebRequest.Create(bookInfo.Groups[1].Value);
-                        using (WebResponse response = request.GetResponse())
-                        using (Stream stream = response.GetResponseStream())
-                        {
-                            if (stream != null)
-                            {
-                                Bitmap bitmap = new Bitmap(stream);
-                                Image img = Functions.MakeGrayscale3(bitmap);
-                                ilcustomersWhoBoughtRecs.Images.Add(img);
-                            }
-                        }
-                    }
+                    string imageUrl = rec["imageUrl"]?.ToString();
+                    if (imageUrl != "" && imageUrl != null)
+                        ilcustomersWhoBoughtRecs.Images.Add(Functions.MakeGrayscale3(await HttpDownloader.GetImage(imageUrl)));
                 }
                 ListViewItem_SetSpacing(this.lvCustomersWhoBoughtRecs, 60 + 7, 90 + 7);
                 for (int i = 0; i < ilcustomersWhoBoughtRecs.Images.Count; i++)
@@ -187,9 +115,6 @@ namespace XRayBuilderGUI
                     lvCustomersWhoBoughtRecs.Items.Add(item);
                 }
             }
-            else
-                MessageBox.Show("This EndAction does not contain any of this other customer books.");
-            return true;
         }
     }
 }

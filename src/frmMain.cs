@@ -12,15 +12,14 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilderGUI.DataSources;
 using XRayBuilderGUI.Properties;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace XRayBuilderGUI
 {
     public partial class frmMain : Form
     {
         public bool Exiting = false;
-        public bool CheckTimestamp = false;
-        private bool extrasComplete = false;
-        private bool xrayComplete = false;
 
         private string currentLog = Environment.CurrentDirectory + @"\log\" +
                                     String.Format("{0:HH.mm.ss.dd.MM.yyyy}.txt", DateTime.Now);
@@ -30,17 +29,12 @@ namespace XRayBuilderGUI
         private string ApPath = "";
         private string XrPath = "";
 
-        private Properties.Settings settings = Properties.Settings.Default;
+        private Settings settings = Settings.Default;
 
         public frmMain()
         {
             InitializeComponent();
         }
-        
-        private frmPreviewSA frmStartAction = new frmPreviewSA();
-        private frmPreviewEA frmEndAction = new frmPreviewEA();
-        private frmPreviewAP frmAuthorProfile = new frmPreviewAP();
-        private frmPreviewXR frmXraPreview = new frmPreviewXR();
 
         private frmAbout frmInfo = new frmAbout();
         private frmCreateXR frmCreator = new frmCreateXR();
@@ -105,6 +99,7 @@ namespace XRayBuilderGUI
 
         private void btnBrowseMobi_Click(object sender, EventArgs e)
         {
+            txtMobi.Text = "";
             txtMobi.Text = Functions.GetBook(txtMobi.Text);
         }
 
@@ -154,8 +149,8 @@ namespace XRayBuilderGUI
                 MessageBox.Show(@"Specified output directory does not exist.\r\nPlease review the settings page.", @"Output Directory Not found");
                 return;
             }
-            if (Properties.Settings.Default.realName.Trim().Length == 0
-                || Properties.Settings.Default.penName.Trim().Length == 0)
+            if (settings.realName.Trim().Length == 0
+                || settings.penName.Trim().Length == 0)
             {
                 MessageBox.Show(
                     @"Both Real and Pen names are required for End Action\r\n" +
@@ -180,7 +175,15 @@ namespace XRayBuilderGUI
             if (settings.useKindleUnpack)
             {
                 Logger.Log("Running Kindleunpack to get metadata...");
-                results = await Functions.GetMetaDataAsync(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                try
+                {
+                    results = await Functions.GetMetaDataAsync(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
+                    return;
+                }
             }
             else
             {
@@ -194,11 +197,6 @@ namespace XRayBuilderGUI
                     Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
                     return;
                 }
-            }
-            if (results.Count != 6)
-            {
-                Logger.Log(results[0]);
-                return;
             }
 
             if (settings.saverawml)
@@ -230,7 +228,7 @@ namespace XRayBuilderGUI
                     xray = new XRay(txtXMLFile.Text, results[2], results[1], results[0], this, dataSource,
                         (AZW3 ? settings.offsetAZW3 : settings.offset), "");
                 Progress<Tuple<int, int>> progress = new Progress<Tuple<int, int>>(UpdateProgressBar);
-                
+
                 if ((await Task.Run(() => xray.CreateXray(progress, cancelTokens.Token))) > 0)
                 {
                     Logger.Log("Build canceled or error while processing.");
@@ -363,12 +361,11 @@ namespace XRayBuilderGUI
                     streamWriter.Write(xray.ToString());
                 }
             }
-            xrayComplete = true;
             Logger.Log("X-Ray file created successfully!\r\nSaved to " + _newPath);
 
             checkFiles(results[4], results[5], results[0]);
 
-            if (Properties.Settings.Default.playSound)
+            if (settings.playSound)
             {
                 System.Media.SoundPlayer player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
                 player.Play();
@@ -420,8 +417,8 @@ namespace XRayBuilderGUI
                 MessageBox.Show("Kindleunpack was not found. Please review the settings page.", "Kindleunpack Not Found");
                 return;
             }
-            if (Properties.Settings.Default.realName.Trim().Length == 0 |
-                Properties.Settings.Default.penName.Trim().Length == 0)
+            if (settings.realName.Trim().Length == 0 |
+                settings.penName.Trim().Length == 0)
             {
                 MessageBox.Show(
                     "Both Real and Pen names are required for End Action\r\n" +
@@ -445,13 +442,21 @@ namespace XRayBuilderGUI
             if (settings.useKindleUnpack)
             {
                 Logger.Log("Running Kindleunpack to get metadata...");
-                results = await Functions.GetMetaDataAsync(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
-                if (!File.Exists(results[3]))
+                try
                 {
-                    Logger.Log("Error: RawML could not be found, aborting.\r\nPath: " + results[3]);
+                    results = await Functions.GetMetaDataAsync(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                    if (!File.Exists(results[3]))
+                    {
+                        Logger.Log("Error: RawML could not be found, aborting.\r\nPath: " + results[3]);
+                        return;
+                    }
+                    rawMLSize = new FileInfo(results[3]).Length;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
                     return;
                 }
-                rawMLSize = new FileInfo(results[3]).Length;
             }
             else
             {
@@ -467,11 +472,6 @@ namespace XRayBuilderGUI
                     Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
                     return;
                 }
-            }
-            if (results.Count != 6)
-            {
-                Logger.Log(results[0]);
-                return;
             }
 
             if (settings.saverawml && settings.useKindleUnpack)
@@ -506,13 +506,12 @@ namespace XRayBuilderGUI
                     await ea.GenerateEndActions(cancelTokens.Token);
                     ea.GenerateStartActions();
                     EaPath = outputDir + @"\EndActions.data." + bookInfo.asin + ".asc";
-                    extrasComplete = true;
                 }
                 else
                     ea.GenerateOld();
 
                 checkFiles(bookInfo.author, bookInfo.title, bookInfo.asin);
-                if (Properties.Settings.Default.playSound)
+                if (settings.playSound)
                 {
                     System.Media.SoundPlayer player =
                         new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
@@ -604,7 +603,15 @@ namespace XRayBuilderGUI
             if (settings.useKindleUnpack)
             {
                 Logger.Log("Running Kindleunpack to get metadata...");
-                results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                try
+                {
+                    results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
+                    return;
+                }
             }
             else
             {
@@ -618,11 +625,6 @@ namespace XRayBuilderGUI
                     Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
                     return;
                 }
-            }
-            if (results.Count != 6)
-            {
-                Logger.Log(results[0]);
-                return;
             }
 
             Logger.Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nUniqueID: {1}",
@@ -665,20 +667,20 @@ namespace XRayBuilderGUI
             frmSet.ShowDialog();
             SetDatasourceLabels();
 
-            if (!txtGoodreads.Text.ToLower().Contains(Properties.Settings.Default.dataSource.ToLower()))
+            if (!txtGoodreads.Text.ToLower().Contains(settings.dataSource.ToLower()))
                 txtGoodreads.Text = "";
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Properties.Settings.Default.mobiFile = txtMobi.Text;
-            Properties.Settings.Default.xmlFile = txtXMLFile.Text;
-            Properties.Settings.Default.Goodreads = txtGoodreads.Text;
+            settings.mobiFile = txtMobi.Text;
+            settings.xmlFile = txtXMLFile.Text;
+            settings.Goodreads = txtGoodreads.Text;
             if (rdoGoodreads.Checked)
-                Properties.Settings.Default.buildSource = "Goodreads";
+                settings.buildSource = "Goodreads";
             else
-                Properties.Settings.Default.buildSource = "XML";
-            Properties.Settings.Default.Save();
+                settings.buildSource = "XML";
+            settings.Save();
             if (txtOutput.Text.Trim().Length != 0)
                 File.WriteAllText(currentLog, txtOutput.Text.ToString());
             if (settings.deleteTemp)
@@ -739,26 +741,26 @@ namespace XRayBuilderGUI
                 }
             }
 
-            if (txtMobi.Text == "") txtMobi.Text = Properties.Settings.Default.mobiFile;
+            if (txtMobi.Text == "") txtMobi.Text = settings.mobiFile;
 
-            if (txtXMLFile.Text == "") txtXMLFile.Text = Properties.Settings.Default.xmlFile;
+            if (txtXMLFile.Text == "") txtXMLFile.Text = settings.xmlFile;
             if (!Directory.Exists(Environment.CurrentDirectory + @"\out"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\out");
-            if (Properties.Settings.Default.outDir == "")
-                Properties.Settings.Default.outDir = Environment.CurrentDirectory + @"\out";
+            if (settings.outDir == "")
+                settings.outDir = Environment.CurrentDirectory + @"\out";
             if (!Directory.Exists(Environment.CurrentDirectory + @"\log"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\log");
             if (!Directory.Exists(Environment.CurrentDirectory + @"\dmp"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\dmp");
             if (!Directory.Exists(Environment.CurrentDirectory + @"\tmp"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\tmp");
-            if (Properties.Settings.Default.tmpDir == "")
-                Properties.Settings.Default.tmpDir = Environment.CurrentDirectory + @"\tmp";
-            if (Properties.Settings.Default.mobi_unpack == "")
-                Properties.Settings.Default.mobi_unpack = Environment.CurrentDirectory + @"\dist\kindleunpack.exe";
+            if (settings.tmpDir == "")
+                settings.tmpDir = Environment.CurrentDirectory + @"\tmp";
+            if (settings.mobi_unpack == "")
+                settings.mobi_unpack = Environment.CurrentDirectory + @"\dist\kindleunpack.exe";
 
-            txtGoodreads.Text = Properties.Settings.Default.Goodreads;
-            if (Properties.Settings.Default.buildSource == "Goodreads")
+            txtGoodreads.Text = settings.Goodreads;
+            if (settings.buildSource == "Goodreads")
                 rdoGoodreads.Checked = true;
             else
                 rdoFile.Checked = true;
@@ -767,7 +769,7 @@ namespace XRayBuilderGUI
 
         private void SetDatasourceLabels()
         {
-            if (Properties.Settings.Default.dataSource == "Goodreads")
+            if (settings.dataSource == "Goodreads")
             {
                 dataSource = new Goodreads();
                 rdoGoodreads.Text = "Goodreads";
@@ -817,10 +819,9 @@ namespace XRayBuilderGUI
 
         private void txtMobi_TextChanged(object sender, EventArgs e)
         {
+            if (txtMobi.Text == "" || !File.Exists(txtMobi.Text)) return;
             txtGoodreads.Text = "";
             prgBar.Value = 0;
-            if (!File.Exists(txtMobi.Text)) return;
-            this.Cursor = Cursors.WaitCursor;
 
             string randomFile = Functions.GetTempDirectory();
             if (!Directory.Exists(randomFile))
@@ -829,38 +830,42 @@ namespace XRayBuilderGUI
                 return;
             }
             List<string> results;
-            try
+            if (settings.useKindleUnpack)
             {
-                results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                Logger.Log("Running Kindleunpack to get metadata...");
+                try
+                {
+                    results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                    if (results.Count == 7)
+                        pbCover.Image = new Bitmap(results[6]);
+                    else
+                        pbCover.Image = null;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
+                    txtMobi.Text = "";
+                    return;
+                }
             }
-            catch (Exception ex)
+            else
             {
-                Logger.Log("An error occurred getting metadata: " + ex.Message);
-                return;
-            }
-
-            if (results.Count != 7)
-            {
-                this.Cursor = Cursors.Default;
-                txtMobi.Text = "";
-                if (results.Count == 1) Logger.Log("An error occurred getting metadata: " + results[0]);
-                return;
+                Logger.Log("Extracting metadata...");
+                try
+                {
+                    Unpack.Metadata md = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, false);
+                    results = md.getResults();
+                    pbCover.Image = md.coverImage;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
+                    txtMobi.Text = "";
+                    return;
+                }
             }
 
             string outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectoryOnly(results[4], results[5]) : settings.outDir;
-
-            //Open file in read only mode
-            using (FileStream stream = new FileStream(results[6], FileMode.Open, FileAccess.Read))
-            //Get a binary reader for the file stream
-            using (BinaryReader reader = new BinaryReader(stream))
-            {
-                //copy the content of the file into a memory stream
-                MemoryStream memoryStream = new MemoryStream(reader.ReadBytes((int)stream.Length));
-                //make a new Bitmap object the owner of the MemoryStream
-                Bitmap bitmap = new Bitmap(memoryStream);
-                pbCover.Image = bitmap;
-                stream.Dispose();
-            }
 
             lblTitle.Visible = true;
             lblAuthor.Visible = true;
@@ -880,8 +885,6 @@ namespace XRayBuilderGUI
             openBook.Add(results[0]);
 
             checkFiles(results[4], results[5], results[0]);
-
-            this.Cursor = Cursors.Default;
 
             try
             {
@@ -907,195 +910,172 @@ namespace XRayBuilderGUI
 
         private void tmiAuthorProfile_Click(object sender, EventArgs e)
         {
-            if (settings.useNewVersion)
+            string selPath = "";
+            if (File.Exists(ApPath))
+                selPath = ApPath;
+            else
             {
-                if (!File.Exists(ApPath))
+                OpenFileDialog openFile = new OpenFileDialog();
+                openFile.Title = "Open a Kindle AuthorProfile file...";
+                openFile.Filter = "ASC files|*.asc";
+                openFile.InitialDirectory = settings.outDir;
+                if (openFile.ShowDialog() == DialogResult.OK)
                 {
-                    OpenFileDialog openFile = new OpenFileDialog();
-                    openFile.Title = "Open a Kindle AuthorProfile file...";
-                    openFile.Filter = "ASC files|*.asc";
-                    openFile.InitialDirectory = settings.outDir;
-                    if (openFile.ShowDialog() == DialogResult.OK)
+                    if (openFile.FileName.Contains("AuthorProfile"))
+                        selPath = openFile.FileName;
+                    else
                     {
-                        try
-                        {
-                            if (openFile.FileName.Contains("AuthorProfile"))
-                            {
-                                frmAuthorProfile.populateAuthorProfile(openFile.FileName);
-                                frmAuthorProfile.Location = new Point(this.Left, this.Top);
-                                frmAuthorProfile.ShowDialog();
-                            }
-                            else
-                                MessageBox.Show(@"Whoops! That filename does not contain ""AuthorProfile""!");
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show("Error: Current line being parsed:\r\n" + frmAuthorProfile.GetCurrentLine + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                        }
+                        Logger.Log("Invalid Author Profile file.");
+                        return;
                     }
                 }
-                else
+            }
+            if (selPath != "")
+            {
+                try
                 {
-                    frmAuthorProfile.populateAuthorProfile(ApPath);
-                    //frmAuthorProfile.Location = new Point(this.Left, this.Top);
+                    frmPreviewAP frmAuthorProfile = new frmPreviewAP();
+                    frmAuthorProfile.populateAuthorProfile(selPath);
+                    frmAuthorProfile.Location = new Point(this.Left, this.Top);
                     frmAuthorProfile.ShowDialog();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                 }
             }
         }
 
-        private void tmiEndAction_Click(object sender, EventArgs e)
+        private async void tmiStartAction_Click(object sender, EventArgs e)
         {
-            if (settings.useNewVersion)
+            string selPath = "";
+            if (File.Exists(SaPath))
+                selPath = SaPath;
+            else
             {
-                if (!File.Exists(EaPath))
+                OpenFileDialog openFile = new OpenFileDialog();
+                openFile.Title = "Open a Kindle StartActions file...";
+                openFile.Filter = "ASC files|*.asc";
+                openFile.InitialDirectory = settings.outDir;
+                if (openFile.ShowDialog() == DialogResult.OK)
                 {
-                    OpenFileDialog openFile = new OpenFileDialog();
-                    openFile.Title = "Open a Kindle EndAction file...";
-                    openFile.Filter = "ASC files|*.asc";
-                    openFile.InitialDirectory = settings.outDir;
-                    if (openFile.ShowDialog() == DialogResult.OK)
+                    if (openFile.FileName.Contains("StartActions"))
+                        selPath = openFile.FileName;
+                    else
                     {
-                        try
-                        {
-                            if (openFile.FileName.Contains("EndActions"))
-                            {
-                                frmEndAction.populateEndActions(openFile.FileName);
-                                //frmEndAction.Location = new Point(this.Left, this.Top);
-                                frmEndAction.ShowDialog();
-                            }
-                            else
-                                MessageBox.Show(@"Whoops! That filename does not contain ""EndActions""!");
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show("Error: Current line being parsed:\r\n" + frmEndAction.GetCurrentLine + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                        }
+                        Logger.Log("Invalid Start Actions file.");
+                        return;
                     }
                 }
-                else
+            }
+            if (selPath != "")
+            {
+                try
                 {
-                    frmEndAction.populateEndActions(EaPath);
-                    //frmEndAction.Location = new Point(this.Left, this.Top);
+                    frmPreviewSA frmStartAction = new frmPreviewSA();
+                    await frmStartAction.populateStartActions(selPath);
+                    frmStartAction.Location = new Point(this.Left, this.Top);
+                    frmStartAction.ShowDialog();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                }
+            }
+        }
+
+        private async void tmiEndAction_Click(object sender, EventArgs e)
+        {
+            string selPath = "";
+            if (File.Exists(EaPath))
+                selPath = EaPath;
+            else
+            {
+                OpenFileDialog openFile = new OpenFileDialog();
+                openFile.Title = "Open a Kindle EndActions file...";
+                openFile.Filter = "ASC files|*.asc";
+                openFile.InitialDirectory = settings.outDir;
+                if (openFile.ShowDialog() == DialogResult.OK)
+                {
+                    if (openFile.FileName.Contains("EndActions"))
+                        selPath = openFile.FileName;
+                    else
+                    {
+                        Logger.Log("Invalid End Actions file.");
+                        return;
+                    }
+                }
+            }
+            if (selPath != "")
+            {
+                try
+                {
+                    frmPreviewEA frmEndAction = new frmPreviewEA();
+                    await frmEndAction.populateEndActions(selPath);
+                    frmEndAction.Location = new Point(this.Left, this.Top);
                     frmEndAction.ShowDialog();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                 }
             }
         }
 
         private void tmiXray_Click(object sender, EventArgs e)
         {
-            if (settings.useNewVersion)
+            string selPath = "";
+            if (File.Exists(XrPath))
+                selPath = XrPath;
+            else
             {
-                if (!File.Exists(XrPath))
+                OpenFileDialog openFile = new OpenFileDialog();
+                openFile.Title = "Open a Kindle X-Ray file...";
+                openFile.Filter = "ASC files|*.asc";
+                openFile.InitialDirectory = settings.outDir;
+                if (openFile.ShowDialog() == DialogResult.OK)
                 {
-                    OpenFileDialog openFile = new OpenFileDialog();
-                    openFile.Title = "Open a Kindle X-Ray file...";
-                    openFile.Filter = "ASC files|*.asc";
-                    openFile.InitialDirectory = settings.outDir;
-                    if (openFile.ShowDialog() == DialogResult.OK)
+                    if (openFile.FileName.Contains("XRAY.entities"))
+                        selPath = openFile.FileName;
+                    else
                     {
-                        try
-                        {
-                            if (openFile.FileName.Contains("XRAY.entities"))
-                            {
-                                string xrayDB = "Data Source=" + openFile.FileName + ";Version=3;";
-                                List<XRay.Term> Terms = new List<XRay.Term>(100);
-
-                                SQLiteConnection m_dbConnection = new SQLiteConnection(xrayDB);
-                                m_dbConnection.Open();
-
-                                string sql = "SELECT * FROM entity WHERE has_info_card = '1'";
-                                SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
-                                SQLiteDataReader reader = command.ExecuteReader();
-
-                                while (reader.Read())
-                                {
-                                    XRay.Term newTerm = new XRay.Term();
-                                    newTerm.Id = reader.GetInt32(0);
-                                    newTerm.TermName = reader.GetString(1);
-                                    int i = reader.GetInt32(3);
-                                    newTerm.Type = reader.GetInt32(3) == 1 ? "character" : "topic";
-                                    newTerm.DescSrc = Convert.ToString(reader.GetInt32(4));
-                                    Terms.Add(newTerm);
-                                }
-                                command.Dispose();
-
-                                for (int i = 1; i < Terms.Count + 1; i++)
-                                {
-                                    sql = String.Format("SELECT * FROM entity_description WHERE entity = '{0}'", i);
-
-                                    command = new SQLiteCommand(sql, m_dbConnection);
-                                    reader = command.ExecuteReader();
-                                    while (reader.Read())
-                                    {
-                                        Terms[i - 1].Desc = reader.GetString(0);
-                                    }
-                                }
-                                m_dbConnection.Close();
-
-                                frmXraPreview.flpPeople.Controls.Clear();
-                                frmXraPreview.flpTerms.Controls.Clear();
-
-                                foreach (XRay.Term t in Terms)
-                                {
-                                    XRayPanel p = new XRayPanel(t.Type, t.TermName, t.DescSrc, t.Desc);
-                                    if (t.Type == "character")
-                                        frmXraPreview.flpPeople.Controls.Add(p);
-                                    if (t.Type == "topic")
-                                        frmXraPreview.flpTerms.Controls.Add(p);
-                                }
-                                frmXraPreview.tcXray.SelectedIndex = 0;
-                                frmXraPreview.ShowDialog();
-
-                            }
-                            else
-                                MessageBox.Show(@"Whoops! That filename does not contain ""XRAY Entities""!");
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                        }
+                        Logger.Log("Invalid X-Ray file.");
+                        return;
                     }
-                }
-                else
-                {
                 }
             }
-        }
-
-        private void tmiStartAction_Click(object sender, EventArgs e)
-        {
-            if (settings.useNewVersion)
+            if (selPath != "")
             {
-                if (!File.Exists(SaPath))
+
+                try
                 {
-                    OpenFileDialog openFile = new OpenFileDialog();
-                    openFile.Title = "Open a Kindle StartAction file...";
-                    openFile.Filter = "ASC files|*.asc";
-                    openFile.InitialDirectory = settings.outDir;
-                    if (openFile.ShowDialog() == DialogResult.OK)
+                    int ver = CheckXRayVersion(selPath);
+                    if (ver == 0)
                     {
-                        try
-                        {
-                            if (openFile.FileName.Contains("StartActions"))
-                            {
-                                frmStartAction.populateStartActions(openFile.FileName);
-                                frmStartAction.Location = new Point(this.Left, this.Top);
-                                frmStartAction.ShowDialog();
-                            }
-                            else
-                                MessageBox.Show(@"Whoops! That filename does not contain ""StartActions""!");
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show("Error: Current line being parsed:\r\n" + frmEndAction.GetCurrentLine + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                        }
+                        Logger.Log("Invalid X-Ray file.");
+                        return;
                     }
+                    List<XRay.Term> terms = ver == 2 ? ExtractTermsNew(selPath) : ExtractTermsOld(selPath);
+                    
+                    frmPreviewXR frmXraPreview = new frmPreviewXR();
+                    frmXraPreview.flpPeople.Controls.Clear();
+                    frmXraPreview.flpTerms.Controls.Clear();
+
+                    foreach (XRay.Term t in terms)
+                    {
+                        XRayPanel p = new XRayPanel(t.Type, t.TermName, t.DescSrc, t.Desc);
+                        if (t.Type == "character")
+                            frmXraPreview.flpPeople.Controls.Add(p);
+                        if (t.Type == "topic")
+                            frmXraPreview.flpTerms.Controls.Add(p);
+                    }
+                    frmXraPreview.tcXray.SelectedIndex = 0;
+                    frmXraPreview.ShowDialog();
+
                 }
-                else
+                catch (Exception ex)
                 {
-                    frmStartAction.populateStartActions(SaPath);
-                    frmStartAction.Location = new Point(this.Left, this.Top);
-                    frmStartAction.ShowDialog();
+                    MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                 }
             }
         }
@@ -1129,7 +1109,15 @@ namespace XRayBuilderGUI
             if (settings.useKindleUnpack)
             {
                 Logger.Log("Running Kindleunpack to extract rawML...");
-                results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                try
+                {
+                    results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("An error occurred extracting rawML: " + ex.Message + "\r\n" + ex.StackTrace);
+                    return;
+                }
             }
             else
             {
@@ -1143,11 +1131,6 @@ namespace XRayBuilderGUI
                     Logger.Log("An error occurred extracting rawML: " + ex.Message + "\r\n" + ex.StackTrace);
                     return;
                 }
-            }
-            if (results.Count != 6)
-            {
-                Logger.Log(results[0]);
-                return;
             }
             string rawmlPath = Path.Combine(Environment.CurrentDirectory + @"\dmp", Path.GetFileName(results[3]));
             File.Copy(results[3], rawmlPath, true);
@@ -1175,82 +1158,115 @@ namespace XRayBuilderGUI
 
         private void btnExtractTerms_Click(object sender, EventArgs e)
         {
-            if (settings.useNewVersion)
+            string selPath = "";
+            OpenFileDialog openFile = new OpenFileDialog();
+            openFile.Title = "Open a Kindle X-Ray file...";
+            openFile.Filter = "ASC files|*.asc";
+            openFile.InitialDirectory = settings.outDir;
+            if (openFile.ShowDialog() == DialogResult.OK)
+                selPath = openFile.FileName;
+            if (selPath == "" | !selPath.Contains("XRAY.entities"))
             {
-                if (!File.Exists(XrPath))
-                {
-                    OpenFileDialog openFile = new OpenFileDialog();
-                    openFile.Title = "Open a Kindle X-Ray file...";
-                    openFile.Filter = "ASC files|*.asc";
-                    openFile.InitialDirectory = settings.outDir;
-                    if (openFile.ShowDialog() == DialogResult.OK)
-                    {
-                        try
-                        {
-                            if (openFile.FileName.Contains("XRAY.entities"))
-                            {
-                                string xrayDB = "Data Source=" + openFile.FileName + ";Version=3;";
-                                List<XRay.Term> Terms = new List<XRay.Term>(100);
-
-                                SQLiteConnection m_dbConnection = new SQLiteConnection(xrayDB);
-                                m_dbConnection.Open();
-
-                                string sql = "SELECT * FROM entity WHERE has_info_card = '1'";
-                                SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
-                                SQLiteDataReader reader = command.ExecuteReader();
-
-                                while (reader.Read())
-                                {
-                                    XRay.Term newTerm = new XRay.Term();
-                                    newTerm.Id = reader.GetInt32(0);
-                                    newTerm.TermName = reader.GetString(1);
-                                    int i = reader.GetInt32(3);
-                                    newTerm.Type = i == 1 ? "character" : "topic";
-                                    //if (newTerm.Type == "character")
-                                    //{
-                                    //    newTerm.DescSrc = "Kindle Store";
-                                    //    newTerm.DescUrl = String.Format(@"http://www.amazon.{0}/s/ref=nb_sb_ss_i_5_4?url=search-alias%3Ddigital-text&field-keywords={1}",
-                                    //        settings.amazonTLD, newTerm.TermName.Replace(" ", "+"));
-                                    //}
-                                    //else
-                                    //{
-                                    newTerm.DescSrc = "Wikipedia";
-                                    newTerm.DescUrl = String.Format(@"http://en.wikipedia.org/wiki/{0}", newTerm.TermName.Replace(" ", "_"));
-                                    //}
-                                    Terms.Add(newTerm);
-                                }
-
-                                command.Dispose();
-
-                                for (int i = 1; i < Terms.Count + 1; i++)
-                                {
-                                    sql = String.Format("SELECT * FROM entity_description WHERE entity = '{0}'", i);
-
-                                    command = new SQLiteCommand(sql, m_dbConnection);
-                                    reader = command.ExecuteReader();
-                                    while (reader.Read())
-                                    {
-                                        Terms[i - 1].Desc = reader.GetString(0);
-                                    }
-                                    command.Dispose();
-                                }
-                                m_dbConnection.Close();
-                                if (!Directory.Exists(Environment.CurrentDirectory + @"\xml\"))
-                                    Directory.CreateDirectory(Environment.CurrentDirectory + @"\xml\");
-                                string outfile = Environment.CurrentDirectory + @"\xml\" + Path.GetFileNameWithoutExtension(openFile.FileName) + ".xml";
-                                Functions.Save<List<XRay.Term>>(Terms, outfile);
-                                Logger.Log("Character data has been saved to: " + outfile);
-                            }
-                            else
-                                MessageBox.Show(@"Whoops! That filename does not contain ""XRAY Entities""!");
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                        }
-                    }
-                }
+                Logger.Log("Invalid or no file selected.");
+                return;
             }
+            int newVer = CheckXRayVersion(selPath);
+            if (newVer == 0)
+            {
+                Logger.Log("Invalid X-Ray file.");
+                return;
+            }
+            try
+            {
+                List<XRay.Term> terms = newVer == 2 ? ExtractTermsNew(selPath) : ExtractTermsOld(selPath);
+                if (!Directory.Exists(Environment.CurrentDirectory + @"\xml\"))
+                    Directory.CreateDirectory(Environment.CurrentDirectory + @"\xml\");
+                string outfile = Environment.CurrentDirectory + @"\xml\" + Path.GetFileNameWithoutExtension(selPath) + ".xml";
+                Functions.Save<List<XRay.Term>>(terms, outfile);
+                Logger.Log("Character data has been saved to: " + outfile);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+            }
+        }
+
+        // 0 = invalid, 1 = old, 2 = new
+        public int CheckXRayVersion(string path)
+        {
+            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                int c = fs.ReadByte();
+                if (c == 'S')
+                    return 2;
+                else if (c == '{')
+                    return 1;
+                return 0;
+            }
+        }
+
+        private List<XRay.Term> ExtractTermsNew(string path)
+        {
+            List<XRay.Term> terms = new List<XRay.Term>(100);
+
+            string xrayDB = "Data Source=" + path + ";Version=3;";
+            SQLiteConnection m_dbConnection = new SQLiteConnection(xrayDB);
+            m_dbConnection.Open();
+
+            string sql = "SELECT * FROM entity WHERE has_info_card = '1'";
+            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
+            SQLiteDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                XRay.Term newTerm = new XRay.Term();
+                newTerm.Id = reader.GetInt32(0);
+                newTerm.TermName = reader.GetString(1);
+                newTerm.Type = reader.GetInt32(3) == 1 ? "character" : "topic";
+                //if (newTerm.Type == "character")
+                //{
+                //    newTerm.DescSrc = "Kindle Store";
+                //    newTerm.DescUrl = String.Format(@"http://www.amazon.{0}/s/ref=nb_sb_ss_i_5_4?url=search-alias%3Ddigital-text&field-keywords={1}",
+                //        settings.amazonTLD, newTerm.TermName.Replace(" ", "+"));
+                //}
+                //else
+                //{
+                newTerm.DescSrc = "Wikipedia";
+                newTerm.DescUrl = String.Format(@"http://en.wikipedia.org/wiki/{0}", newTerm.TermName.Replace(" ", "_"));
+                //newTerm.DescSrc = Convert.ToString(reader.GetInt32(4));
+                //}
+                terms.Add(newTerm);
+            }
+
+            command.Dispose();
+
+            for (int i = 1; i < terms.Count + 1; i++)
+            {
+                sql = String.Format("SELECT * FROM entity_description WHERE entity = '{0}'", i);
+
+                command = new SQLiteCommand(sql, m_dbConnection);
+                reader = command.ExecuteReader();
+                while (reader.Read())
+                    terms[i - 1].Desc = reader.GetString(0);
+                command.Dispose();
+            }
+            m_dbConnection.Close();
+            return terms;
+        }
+
+        private List<XRay.Term> ExtractTermsOld(string path)
+        {
+            List<XRay.Term> terms;
+            string readContents;
+            using (StreamReader streamReader = new StreamReader(path, Encoding.UTF8))
+                readContents = streamReader.ReadToEnd();
+
+            JObject xray = JObject.Parse(readContents);
+            var termsjson = xray["terms"].Children().ToList();
+            terms = new List<XRay.Term>(termsjson.Count);
+            foreach (var term in termsjson)
+                terms.Add(term.ToObject<XRay.Term>());
+            return terms;
         }
 
         private void btnHelp_Click(object sender, EventArgs e)

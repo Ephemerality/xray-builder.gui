@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Text;
 
@@ -16,6 +17,7 @@ namespace XRayBuilderGUI.Unpack
         public PDBHeader PDB;
         public PalmDOCHeader PDH;
         public MobiHead mobiHeader;
+        public Bitmap coverImage = null;
         private int _startRecord = 1;
         public string rawMLPath = "";
         private string _ASIN = "";
@@ -28,7 +30,8 @@ namespace XRayBuilderGUI.Unpack
             mobiHeader = new MobiHead(fs, PDB.MobiHeaderSize);
             // Use ASIN of the first book in the mobi
             _ASIN = mobiHeader.exthHeader.ASIN != "" ? mobiHeader.exthHeader.ASIN : mobiHeader.exthHeader.ASIN2;
-
+            int coverOffset = mobiHeader.exthHeader.CoverOffset;
+            int firstImage = -1;
             // Start at end of first book records, search for a second (KF8) and use it instead (for combo books)
             for (int i = PDH.RecordCount; i < PDB.NumRecords - 1; i++)
             {
@@ -37,7 +40,17 @@ namespace XRayBuilderGUI.Unpack
                 byte[] buffer = new byte[recSize];
                 fs.Seek(PDB._recInfo[i].RecordDataOffset, SeekOrigin.Begin);
                 fs.Read(buffer, 0, buffer.Length);
-                if (Encoding.ASCII.GetString(buffer, 0, 8) == "BOUNDARY")
+                string imgtype = coverOffset == -1 ? "" : get_image_type(buffer);
+                if (imgtype != "")
+                {
+                    if (firstImage == -1) firstImage = i;
+                    if (i == firstImage + coverOffset)
+                    {
+                        using (MemoryStream ms = new MemoryStream(buffer))
+                            coverImage = new Bitmap(ms);
+                    }
+                }
+                else if (Encoding.ASCII.GetString(buffer, 0, 8) == "BOUNDARY")
                 {
                     _startRecord = i + 2;
                     PDH = new PalmDOCHeader(fs);
@@ -45,6 +58,15 @@ namespace XRayBuilderGUI.Unpack
                     break;
                 }
             }
+        }
+
+        private string get_image_type(byte[] data)
+        {
+            if ((data[6] == 'J' && data[7] == 'F' && data[8] == 'I' && data[9] == 'F')
+                || (data[6] == 'E' && data[7] == 'x' && data[8] == 'i' && data[9] == 'f')
+                || (data[0] == 0xFF && data[1] == 0xD8 && data[data.Length - 2] == 0xFF && data[data.Length - 1] == 0xD9))
+                return "jpeg";
+            return "";
         }
 
         // Temporary function to mimic old GetMetaData functionality until it can be removed

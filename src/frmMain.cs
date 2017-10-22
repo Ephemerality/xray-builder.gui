@@ -35,8 +35,6 @@ namespace XRayBuilderGUI
         {
             InitializeComponent();
         }
-        
-        private frmPreviewXR frmXraPreview = new frmPreviewXR();
 
         private frmAbout frmInfo = new frmAbout();
         private frmCreateXR frmCreator = new frmCreateXR();
@@ -230,7 +228,7 @@ namespace XRayBuilderGUI
                     xray = new XRay(txtXMLFile.Text, results[2], results[1], results[0], this, dataSource,
                         (AZW3 ? settings.offsetAZW3 : settings.offset), "");
                 Progress<Tuple<int, int>> progress = new Progress<Tuple<int, int>>(UpdateProgressBar);
-                
+
                 if ((await Task.Run(() => xray.CreateXray(progress, cancelTokens.Token))) > 0)
                 {
                     Logger.Log("Build canceled or error while processing.");
@@ -868,7 +866,7 @@ namespace XRayBuilderGUI
             }
 
             string outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectoryOnly(results[4], results[5]) : settings.outDir;
-            
+
             lblTitle.Visible = true;
             lblAuthor.Visible = true;
             lblAsin.Visible = true;
@@ -1026,81 +1024,58 @@ namespace XRayBuilderGUI
 
         private void tmiXray_Click(object sender, EventArgs e)
         {
-            if (settings.useNewVersion)
+            string selPath = "";
+            if (File.Exists(XrPath))
+                selPath = XrPath;
+            else
             {
-                if (!File.Exists(XrPath))
+                OpenFileDialog openFile = new OpenFileDialog();
+                openFile.Title = "Open a Kindle X-Ray file...";
+                openFile.Filter = "ASC files|*.asc";
+                openFile.InitialDirectory = settings.outDir;
+                if (openFile.ShowDialog() == DialogResult.OK)
                 {
-                    OpenFileDialog openFile = new OpenFileDialog();
-                    openFile.Title = "Open a Kindle X-Ray file...";
-                    openFile.Filter = "ASC files|*.asc";
-                    openFile.InitialDirectory = settings.outDir;
-                    if (openFile.ShowDialog() == DialogResult.OK)
+                    if (openFile.FileName.Contains("XRAY.entities"))
+                        selPath = openFile.FileName;
+                    else
                     {
-                        try
-                        {
-                            if (openFile.FileName.Contains("XRAY.entities"))
-                            {
-                                string xrayDB = "Data Source=" + openFile.FileName + ";Version=3;";
-                                List<XRay.Term> Terms = new List<XRay.Term>(100);
-
-                                SQLiteConnection m_dbConnection = new SQLiteConnection(xrayDB);
-                                m_dbConnection.Open();
-
-                                string sql = "SELECT * FROM entity WHERE has_info_card = '1'";
-                                SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
-                                SQLiteDataReader reader = command.ExecuteReader();
-
-                                while (reader.Read())
-                                {
-                                    XRay.Term newTerm = new XRay.Term();
-                                    newTerm.Id = reader.GetInt32(0);
-                                    newTerm.TermName = reader.GetString(1);
-                                    int i = reader.GetInt32(3);
-                                    newTerm.Type = reader.GetInt32(3) == 1 ? "character" : "topic";
-                                    newTerm.DescSrc = Convert.ToString(reader.GetInt32(4));
-                                    Terms.Add(newTerm);
-                                }
-                                command.Dispose();
-
-                                for (int i = 1; i < Terms.Count + 1; i++)
-                                {
-                                    sql = String.Format("SELECT * FROM entity_description WHERE entity = '{0}'", i);
-
-                                    command = new SQLiteCommand(sql, m_dbConnection);
-                                    reader = command.ExecuteReader();
-                                    while (reader.Read())
-                                    {
-                                        Terms[i - 1].Desc = reader.GetString(0);
-                                    }
-                                }
-                                m_dbConnection.Close();
-
-                                frmXraPreview.flpPeople.Controls.Clear();
-                                frmXraPreview.flpTerms.Controls.Clear();
-
-                                foreach (XRay.Term t in Terms)
-                                {
-                                    XRayPanel p = new XRayPanel(t.Type, t.TermName, t.DescSrc, t.Desc);
-                                    if (t.Type == "character")
-                                        frmXraPreview.flpPeople.Controls.Add(p);
-                                    if (t.Type == "topic")
-                                        frmXraPreview.flpTerms.Controls.Add(p);
-                                }
-                                frmXraPreview.tcXray.SelectedIndex = 0;
-                                frmXraPreview.ShowDialog();
-
-                            }
-                            else
-                                MessageBox.Show(@"Whoops! That filename does not contain ""XRAY Entities""!");
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                        }
+                        Logger.Log("Invalid X-Ray file.");
+                        return;
                     }
                 }
-                else
+            }
+            if (selPath != "")
+            {
+
+                try
                 {
+                    int ver = CheckXRayVersion(selPath);
+                    if (ver == 0)
+                    {
+                        Logger.Log("Invalid X-Ray file.");
+                        return;
+                    }
+                    List<XRay.Term> terms = ver == 2 ? ExtractTermsNew(selPath) : ExtractTermsOld(selPath);
+                    
+                    frmPreviewXR frmXraPreview = new frmPreviewXR();
+                    frmXraPreview.flpPeople.Controls.Clear();
+                    frmXraPreview.flpTerms.Controls.Clear();
+
+                    foreach (XRay.Term t in terms)
+                    {
+                        XRayPanel p = new XRayPanel(t.Type, t.TermName, t.DescSrc, t.Desc);
+                        if (t.Type == "character")
+                            frmXraPreview.flpPeople.Controls.Add(p);
+                        if (t.Type == "topic")
+                            frmXraPreview.flpTerms.Controls.Add(p);
+                    }
+                    frmXraPreview.tcXray.SelectedIndex = 0;
+                    frmXraPreview.ShowDialog();
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                 }
             }
         }
@@ -1195,25 +1170,15 @@ namespace XRayBuilderGUI
                 Logger.Log("Invalid or no file selected.");
                 return;
             }
-            bool newVer = false;
-            using (FileStream fs = new FileStream(selPath, FileMode.Open, FileAccess.Read))
+            int newVer = CheckXRayVersion(selPath);
+            if (newVer == 0)
             {
-                int c = fs.ReadByte();
-                if (c == 'S')
-                    newVer = true;
-                else if (c != '{')
-                {
-                    Logger.Log("Invalid X-Ray file.");
-                    return;
-                }
+                Logger.Log("Invalid X-Ray file.");
+                return;
             }
             try
             {
-                List<XRay.Term> terms;
-                if (newVer)
-                    terms = ExtractTermsNew(selPath);
-                else
-                    terms = ExtractTermsOld(selPath);
+                List<XRay.Term> terms = newVer == 2 ? ExtractTermsNew(selPath) : ExtractTermsOld(selPath);
                 if (!Directory.Exists(Environment.CurrentDirectory + @"\xml\"))
                     Directory.CreateDirectory(Environment.CurrentDirectory + @"\xml\");
                 string outfile = Environment.CurrentDirectory + @"\xml\" + Path.GetFileNameWithoutExtension(selPath) + ".xml";
@@ -1223,6 +1188,20 @@ namespace XRayBuilderGUI
             catch (Exception ex)
             {
                 Logger.Log("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+            }
+        }
+
+        // 0 = invalid, 1 = old, 2 = new
+        public int CheckXRayVersion(string path)
+        {
+            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                int c = fs.ReadByte();
+                if (c == 'S')
+                    return 2;
+                else if (c == '{')
+                    return 1;
+                return 0;
             }
         }
 
@@ -1254,6 +1233,7 @@ namespace XRayBuilderGUI
                 //{
                 newTerm.DescSrc = "Wikipedia";
                 newTerm.DescUrl = String.Format(@"http://en.wikipedia.org/wiki/{0}", newTerm.TermName.Replace(" ", "_"));
+                //newTerm.DescSrc = Convert.ToString(reader.GetInt32(4));
                 //}
                 terms.Add(newTerm);
             }

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using HtmlAgilityPack;
-using System.Globalization;
+using System.Threading.Tasks;
 
 namespace XRayBuilderGUI.DataSources
 {
@@ -11,44 +13,9 @@ namespace XRayBuilderGUI.DataSources
     {
         public override string Name { get { return "Shelfari"; } }
 
-        public override string SearchBook(string author, string title, Action<string> Log)
+        public override Task<string> SearchBook(string author, string title)
         {
-            //Get Shelfari Search URL
-            Log("Searching for book on Shelfari...");
-            string shelfariSearchUrlBase = @"http://www.shelfari.com/search/books?Author={0}&Title={1}&Binding={2}";
-            string[] bindingTypes = { "Hardcover", "Kindle", "Paperback" };
-
-            // Search book on Shelfari
-            bool bookFound = false;
-            string shelfariBookUrl = "";
-            author = Functions.FixAuthor(author);
-
-            HtmlDocument shelfariHtmlDoc = new HtmlDocument();
-            for (int i = 0; i < bindingTypes.Length; i++)
-            {
-                Log("Searching for " + bindingTypes[i] + " edition...");
-                // Insert parameters (mainly for searching with removed diacritics).
-                // Seems to work fine without replacing spaces?
-                shelfariHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(String.Format(shelfariSearchUrlBase, author, title, bindingTypes[i])));
-                if (!shelfariHtmlDoc.DocumentNode.InnerText.Contains("Your search did not return any results"))
-                {
-                    shelfariBookUrl = FindShelfariURL(shelfariHtmlDoc, author, title);
-                    if (shelfariBookUrl != "")
-                        return shelfariBookUrl;
-                }
-                Log("Unable to find a " + bindingTypes[i] + " edition of this book on Shelfari!");
-                if (bookFound) break;
-                // Attempt to remove diacritics (accented characters) from author & title for searching
-                string newAuthor = author.RemoveDiacritics();
-                string newTitle = title.RemoveDiacritics();
-                if (!author.Equals(newAuthor) || !title.Equals(newTitle))
-                {
-                    author = newAuthor;
-                    title = newTitle;
-                    Log("Accented characters detected. Attempting to search without them.");
-                }
-            }
-            return "";
+            return Task.FromResult("");
         }
 
         private string FindShelfariURL(HtmlDocument shelfariHtmlDoc, string author, string title)
@@ -99,7 +66,7 @@ namespace XRayBuilderGUI.DataSources
             return "";
         }
 
-        public override BookInfo GetNextInSeries(BookInfo curBook, AuthorProfile authorProfile, string TLD, Action<string> Log)
+        public override async Task<BookInfo> GetNextInSeries(BookInfo curBook, AuthorProfile authorProfile, string TLD)
         {
             BookInfo nextBook = null;
 
@@ -111,7 +78,7 @@ namespace XRayBuilderGUI.DataSources
             }
 
             // Get title of next book
-            Dictionary<string, string> seriesInfo = GetNextInSeriesTitle(curBook, Log);
+            Dictionary<string, string> seriesInfo = await GetNextInSeriesTitle(curBook);
             string title;
             if (seriesInfo.TryGetValue("Next", out title))
             {
@@ -121,9 +88,9 @@ namespace XRayBuilderGUI.DataSources
                 if (nextBook == null)
                 {
                     // Attempt to search Amazon for the book instead
-                    nextBook = Amazon.SearchBook(title, curBook.author, TLD);
+                    nextBook = await Amazon.SearchBook(title, curBook.author, TLD);
                     if (nextBook != null)
-                        nextBook.GetAmazonInfo(nextBook.amazonUrl); //fill in desc, imageurl, and ratings
+                        await nextBook.GetAmazonInfo(nextBook.amazonUrl); //fill in desc, imageurl, and ratings
                 }
                 // Try to fill in desc, imageurl, and ratings using Shelfari Kindle edition link instead
                 if (nextBook == null)
@@ -135,25 +102,25 @@ namespace XRayBuilderGUI.DataSources
                     {
                         string cleanASIN = match.Value.Replace("'", String.Empty);
                         nextBook = new BookInfo(title, curBook.author, cleanASIN);
-                        nextBook.GetAmazonInfo("http://www.amazon.com/dp/" + cleanASIN);
+                        await nextBook.GetAmazonInfo("http://www.amazon.com/dp/" + cleanASIN);
                     }
                 }
                 if (nextBook == null)
-                    Log("Book was found to be part of a series, but an error occured finding the next book.\r\n" +
+                    Logger.Log("Book was found to be part of a series, but an error occured finding the next book.\r\n" +
                         "Please report this book and the Shelfari URL and output log to improve parsing.");
 
             }
             else if (curBook.seriesPosition != curBook.totalInSeries)
-                Log("An error occured finding the next book in series, the book may not be part of a series, or it is the latest release.");
+                Logger.Log("An error occured finding the next book in series, the book may not be part of a series, or it is the latest release.");
 
             if (seriesInfo.TryGetValue("Previous", out title))
             {
                 if (curBook.previousInSeries == null)
                 {
                     // Attempt to search Amazon for the book
-                    curBook.previousInSeries = Amazon.SearchBook(title, curBook.author, TLD);
+                    curBook.previousInSeries = await Amazon.SearchBook(title, curBook.author, TLD);
                     if (curBook.previousInSeries != null)
-                        curBook.previousInSeries.GetAmazonInfo(curBook.previousInSeries.amazonUrl); //fill in desc, imageurl, and ratings
+                        await curBook.previousInSeries.GetAmazonInfo(curBook.previousInSeries.amazonUrl); //fill in desc, imageurl, and ratings
 
                     // Try to fill in desc, imageurl, and ratings using Shelfari Kindle edition link instead
                     if (curBook.previousInSeries == null)
@@ -165,12 +132,12 @@ namespace XRayBuilderGUI.DataSources
                         {
                             string cleanASIN = match.Value.Replace("'", String.Empty);
                             curBook.previousInSeries = new BookInfo(title, curBook.author, cleanASIN);
-                            curBook.previousInSeries.GetAmazonInfo("http://www.amazon.com/dp/" + cleanASIN);
+                            await curBook.previousInSeries.GetAmazonInfo("http://www.amazon.com/dp/" + cleanASIN);
                         }
                     }
                 }
                 else
-                    Log("Book was found to be part of a series, but an error occured finding the next book.\r\n" +
+                    Logger.Log("Book was found to be part of a series, but an error occured finding the next book.\r\n" +
                         "Please report this book and the Shelfari URL and output log to improve parsing.");
             }
 
@@ -180,12 +147,13 @@ namespace XRayBuilderGUI.DataSources
         /// <summary>
         /// Search Shelfari page for possible series info, returning the next title in the series without downloading any other pages.
         /// </summary>
-        private Dictionary<string, string> GetNextInSeriesTitle(BookInfo curBook, Action<string> Log)
+        private async Task<Dictionary<string, string>> GetNextInSeriesTitle(BookInfo curBook)
         {
+            if (curBook.dataUrl == "") return null;
             if (sourceHtmlDoc == null)
             {
                 sourceHtmlDoc = new HtmlDocument();
-                sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.dataUrl));
+                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl));
             }
             Dictionary<string, string> results = new Dictionary<string, string>(2);
             //Added estimated reading time and page count from Shelfari, for now...
@@ -195,39 +163,6 @@ namespace XRayBuilderGUI.DataSources
             HtmlNode node1 = pageNode.SelectSingleNode(".//div/div");
             if (node1 == null)
                 return results;
-
-            //Added highlighted passage from Shelfari, dummy info for now...
-            HtmlNode members = sourceHtmlDoc.DocumentNode.SelectSingleNode("//ul[@class='tabs_n tn1']");
-            int highlights = 0;
-            if (members != null)
-            {
-                Match match3 = Regex.Match(members.InnerText, @"Reviews \(((\d+)|(\d+,\d+))\)");
-                if (match3.Success)
-                    curBook.popularPassages = match3.Groups[1].Value.ToString();
-                match3 = Regex.Match(members.InnerText, @"Readers \(((\d+)|(\d+,\d+))\)");
-                if (match3.Success)
-                {
-                    curBook.popularHighlights = match3.Groups[1].Value.ToString();
-                    highlights = int.Parse(match3.Groups[1].Value, NumberStyles.AllowThousands);
-                }
-                string textPassages = curBook.popularPassages == "1"
-                    ? String.Format("{0} passage has ", curBook.popularPassages)
-                    : String.Format("{0} passages have ", curBook.popularPassages);
-                string textHighlights = curBook.popularHighlights == "1"
-                    ? String.Format("{0} time", curBook.popularHighlights)
-                    : String.Format("{0} times", curBook.popularHighlights);
-
-                Log(String.Format("Popular Highlights: {0} been highlighted {1}"
-                            , textPassages, textHighlights));
-            }
-
-            //If no "highlighted passages" found from Shelfari, add to log
-            if (highlights == 0)
-            {
-                Log("Popular Highlights: No highlighted passages have been found for this book");
-                curBook.popularPassages = "";
-                curBook.popularHighlights = "";
-            }
 
             //Check if book series is available and displayed in Series & Lists on Shelfari page.
             HtmlNode seriesNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_Series']/div");
@@ -242,7 +177,7 @@ namespace XRayBuilderGUI.DataSources
                         if (!match.Success || match.Groups.Count != 4)
                             continue;
 
-                        Log("About the series: " + seriesType.InnerText.Replace(". (standard series)", ""));
+                        Logger.Log("About the series: " + seriesType.InnerText.Replace(". (standard series)", ""));
                         curBook.seriesPosition = match.Groups[1].Value;
                         curBook.totalInSeries = match.Groups[2].Value;
                         curBook.seriesName = match.Groups[3].Value;
@@ -263,7 +198,7 @@ namespace XRayBuilderGUI.DataSources
                                     results["Previous"] = match.Groups[1].Value;
                                 }
                             }
-                            Log("Preceded by: " + match.Groups[1].Value);
+                            Logger.Log("Preceded by: " + match.Groups[1].Value);
                             //Grab Shelfari Kindle edition link for this book
                             results["PreviousURL"] = seriesInfo.ChildNodes["a"].GetAttributeValue("href", "") + "/editions?binding=Kindle";
                         }
@@ -276,7 +211,7 @@ namespace XRayBuilderGUI.DataSources
                                 match = Regex.Match(seriesInfo.InnerText, @"followed by (.*)\.", RegexOptions.IgnoreCase);
                                 if (match.Success && match.Groups.Count == 2)
                                 {
-                                    Log("Followed by: " + match.Groups[1].Value);
+                                    Logger.Log("Followed by: " + match.Groups[1].Value);
                                     //Grab Shelfari Kindle edition link for this book
                                     results["NextURL"] = seriesInfo.ChildNodes["a"].GetAttributeValue("href", "") + "/editions?binding=Kindle";
                                     results["Next"] = match.Groups[1].Value;
@@ -291,12 +226,12 @@ namespace XRayBuilderGUI.DataSources
             return results;
         }
 
-        public override bool GetPageCount(BookInfo curBook, Action<string> Log)
+        public override async Task<bool> GetPageCount(BookInfo curBook)
         {
             if (sourceHtmlDoc == null)
             {
                 sourceHtmlDoc = new HtmlDocument();
-                sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.dataUrl));
+                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl));
             }
             HtmlNode pageNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_FirstEdition']");
             if (pageNode == null)
@@ -310,7 +245,7 @@ namespace XRayBuilderGUI.DataSources
             {
                 double minutes = int.Parse(match1.Groups[1].Value, NumberStyles.AllowThousands) * 1.2890625;
                 TimeSpan span = TimeSpan.FromMinutes(minutes);
-                Log(String.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)", span.Hours, span.Minutes, match1.Groups[1].Value));
+                Logger.Log(String.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)", span.Hours, span.Minutes, match1.Groups[1].Value));
                 curBook.pagesInBook = match1.Groups[1].Value;
                 curBook.readingHours = span.Hours.ToString();
                 curBook.readingMinutes = span.Minutes.ToString();
@@ -319,54 +254,15 @@ namespace XRayBuilderGUI.DataSources
             return false;
         }
         
-        public override List<XRay.Term> GetTerms(bool useSpoilers, string dataUrl, Action<string> Log)
+        public override async Task<List<XRay.Term>> GetTerms(string dataUrl, IProgress<Tuple<int, int>> progress, CancellationToken token)
         {
+            Logger.Log("Downloading Shelfari page...");
             List<XRay.Term> terms = new List<XRay.Term>();
-            //Download HTML of Shelfari URL, try 3 times just in case it fails the first time
-            Log(String.Format("Downloading Shelfari page... {0}", useSpoilers ? "SHOWING SPOILERS!" : ""));
-            Log(String.Format("Shelfari URL: {0}", dataUrl));
-            HtmlDocument shelfariDoc = new HtmlDocument();
-
-            if (useSpoilers || sourceHtmlDoc == null)
+            
+            if (sourceHtmlDoc == null)
             {
-                var tries = 3;
-                do
-                {
-                    try
-                    {
-                        //Enable cookies
-                        var jar = new System.Net.CookieContainer();
-                        var client = new HttpDownloader(dataUrl, jar, "", "");
-
-                        if (useSpoilers)
-                        {
-                            //Grab book ID from url (search for 5 digits between slashes) and create spoiler cookie
-                            var bookId = Regex.Match(dataUrl, @"\/\d{5}").Value.Substring(1, 5);
-                            var spoilers = new System.Net.Cookie("ShelfariBookWikiSession", "", "/", "www.shelfari.com")
-                            {
-                                Value = "{\"SpoilerShowAll\":true%2C\"SpoilerShowCharacters\":true%2C\"SpoilerBookId\":" +
-                                        bookId +
-                                        "%2C\"SpoilerShowPSS\":true%2C\"SpoilerShowQuotations\":true%2C\"SpoilerShowParents\":true%2C\"SpoilerShowThemes\":true}"
-                            };
-                            jar.Add(spoilers);
-                        }
-                        shelfariDoc.LoadHtml(client.GetPage());
-                        break;
-                    }
-                    catch
-                    {
-                        if (tries <= 0)
-                        {
-                            Log("An error occurred connecting to Shelfari.");
-                            return terms;
-                        }
-                    }
-                }
-                while (tries-- > 0);
-            }
-            else
-            {
-                shelfariDoc = sourceHtmlDoc;
+                sourceHtmlDoc = new HtmlDocument();
+                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(dataUrl));
             }
 
             //Constants for wiki processing
@@ -376,17 +272,14 @@ namespace XRayBuilderGUI.DataSources
                 {"WikiModule_Organizations", "topic"},
                 {"WikiModule_Settings", "topic"},
                 {"WikiModule_Glossary", "topic"}
-            }; //, {"WikiModule_Themes", "topic"} };
+            };
             string[] patterns = { @"""" };
-            //, @"\[\d\]", @"\s*?\(.*\)\s*?" }; //Escape quotes, numbers in brackets, and anything within brackets at all
             string[] replacements = { @"\""" };
-
-            //Parse elements from various headers listed in sections
+            
             foreach (string header in sections.Keys)
             {
-                //Select <li> nodes on page from within the <div id=header> tag, under <ul class=li_6>
                 HtmlNodeCollection characterNodes =
-                    shelfariDoc.DocumentNode.SelectNodes("//div[@id='" + header + "']//ul[@class='li_6']/li");
+                    sourceHtmlDoc.DocumentNode.SelectNodes("//div[@id='" + header + "']//ul[@class='li_6']/li");
                 if (characterNodes == null) continue; //Skip section if not found on page
                 foreach (HtmlNode li in characterNodes)
                 {
@@ -398,14 +291,9 @@ namespace XRayBuilderGUI.DataSources
                         newTerm.Desc = tmpString.Substring(tmpString.IndexOf(":") + 1).Replace("&amp;", "&").Trim();
                     }
                     else
-                    {
                         newTerm.TermName = tmpString;
-                    }
-                    //newTerm.TermName = newTerm.TermName.PregReplace(patterns, replacements);
-                    //newTerm.Desc = newTerm.Desc.PregReplace(patterns, replacements);
                     newTerm.DescSrc = "shelfari";
                     //Use either the associated shelfari URL of the term or if none exists, use the book's url
-                    //Could use a wikipedia page instead as the xray plugin/site does but I decided not to
                     newTerm.DescUrl = (li.InnerHtml.IndexOf("<a href") == 0
                         ? li.InnerHtml.Substring(9, li.InnerHtml.IndexOf("\"", 9) - 9)
                         : dataUrl);
@@ -413,7 +301,7 @@ namespace XRayBuilderGUI.DataSources
                         newTerm.MatchCase = false;
                     //Default glossary terms to be case insensitive when searching through book
                     if (terms.Select<XRay.Term, string>(t => t.TermName).Contains<string>(newTerm.TermName))
-                        Log("Duplicate term \"" + newTerm.TermName + "\" found. Ignoring this duplicate.");
+                        Logger.Log("Duplicate term \"" + newTerm.TermName + "\" found. Ignoring this duplicate.");
                     else
                         terms.Add(newTerm);
                 }
@@ -421,37 +309,29 @@ namespace XRayBuilderGUI.DataSources
             return terms;
         }
 
-        public override List<string[]> GetNotableQuotes(string dataUrl)
+        public override async Task<List<Tuple<string, int>>> GetNotableClips(string url, CancellationToken token, HtmlDocument srcDoc = null, IProgress<Tuple<int, int>> progress = null)
         {
-            List<string[]> quotes = new List<string[]>();
-            if (sourceHtmlDoc == null)
+            if (srcDoc == null)
             {
-                sourceHtmlDoc = new HtmlDocument();
-                sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(dataUrl));
+                srcDoc = new HtmlDocument();
+                srcDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(url));
             }
-            // Scrape quotes to attempt matching in ExpandRawML
-            if (Properties.Settings.Default.useNewVersion)
+            List<Tuple<string, int>> result = new List<Tuple<string, int>>();
+            HtmlNodeCollection quoteNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@id='WikiModule_Quotations']/div/ul[@class='li_6']/li");
+            if (quoteNodes != null)
             {
-                HtmlNodeCollection quoteNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@id='WikiModule_Quotations']/div/ul[@class='li_6']/li");
-                if (quoteNodes != null)
+                foreach (HtmlNode quoteNode in quoteNodes)
                 {
-                    foreach (HtmlNode quoteNode in quoteNodes)
-                    {
-                        HtmlNode node = quoteNode.SelectSingleNode(".//blockquote");
-                        if (node == null) continue;
-                        string quote = node.InnerText;
-                        string character = "";
-                        node = quoteNode.SelectSingleNode(".//cite");
-                        if (node != null)
-                            character = node.InnerText;
-                        // Remove quotes (sometimes people put unnecessary quotes in the quote as well)
-                        quote = Regex.Replace(quote, "^(&ldquo;){1,2}", "");
-                        quote = Regex.Replace(quote, "(&rdquo;){1,2}$", "");
-                        quotes.Add(new string[] { quote, character });
-                    }
+                    HtmlNode node = quoteNode.SelectSingleNode(".//blockquote");
+                    if (node == null) continue;
+                    string quote = node.InnerText;
+                    // Remove quotes (sometimes people put unnecessary quotes in the quote as well)
+                    quote = Regex.Replace(quote, "^(&ldquo;){1,2}", "");
+                    quote = Regex.Replace(quote, "(&rdquo;){1,2}$", "");
+                    result.Add(new Tuple<string, int>(quote, 0));
                 }
             }
-            return quotes;
+            return result;
         }
     }
 }

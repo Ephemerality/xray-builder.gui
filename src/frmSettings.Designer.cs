@@ -449,13 +449,12 @@
             // rdoShelfari
             // 
             this.rdoShelfari.AutoSize = true;
-            this.rdoShelfari.Enabled = false;
             this.rdoShelfari.Location = new System.Drawing.Point(17, 45);
             this.rdoShelfari.Name = "rdoShelfari";
-            this.rdoShelfari.Size = new System.Drawing.Size(60, 17);
+            this.rdoShelfari.Size = new System.Drawing.Size(139, 17);
             this.rdoShelfari.TabIndex = 1;
             this.rdoShelfari.TabStop = true;
-            this.rdoShelfari.Text = "Shelfari";
+            this.rdoShelfari.Text = "Shelfari (via archive.org)";
             this.rdoShelfari.UseVisualStyleBackColor = true;
             // 
             // rdoGoodreads

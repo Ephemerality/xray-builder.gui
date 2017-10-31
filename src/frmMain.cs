@@ -711,7 +711,6 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(btnBrowseOutput, "Open the default output directory.");
             toolTip1.SetToolTip(btnOneClick, "One Click to try to build the Start\r\nAction, Author Profile, End Action\r\nand X-Ray files for this book.");
             toolTip1.SetToolTip(btnBrowseXML, "Open a supported XML or TXT file containing characters and topics.");
-            toolTip1.SetToolTip(btnSearchGoodreads, "Try to search for this book on Goodreads.");
             toolTip1.SetToolTip(btnKindleExtras,
                 "Try to build the Start Action, Author Profile,\r\nand End Action files for this book.");
             toolTip1.SetToolTip(btnBuild,
@@ -771,11 +770,23 @@ namespace XRayBuilderGUI
         {
             if (settings.dataSource == "Goodreads")
             {
+                btnSearchGoodreads.Enabled = true;
                 dataSource = new Goodreads();
                 rdoGoodreads.Text = "Goodreads";
                 lblGoodreads.Text = "Goodreads URL:";
                 lblGoodreads.Left = 134;
                 toolTip1.SetToolTip(btnDownloadTerms, "Save Goodreads info to an XML file.");
+                toolTip1.SetToolTip(btnSearchGoodreads, "Try to search for this book on Goodreads.");
+            }
+            else
+            {
+                btnSearchGoodreads.Enabled = false;
+                dataSource = new Shelfari();
+                rdoGoodreads.Text = "Shelfari";
+                lblGoodreads.Text = "Shelfari URL:";
+                lblGoodreads.Left = 150;
+                toolTip1.SetToolTip(btnDownloadTerms, "Save Shelfari info to an XML file.");
+                toolTip1.SetToolTip(btnSearchGoodreads, "Search is disabled when Shelfari is selected as a data source.");
             }
         }
 
@@ -815,6 +826,10 @@ namespace XRayBuilderGUI
                 btnBrowseXML.Visible = !btnBrowseXML.Visible;
                 btnSearchGoodreads.Visible = !btnSearchGoodreads.Visible;
             }
+            if (((RadioButton)sender).Text == "Shelfari")
+                lblGoodreads.Left = 150;
+            else if (((RadioButton)sender).Text == "Goodreads")
+                lblGoodreads.Left = 134;
         }
 
         private void txtMobi_TextChanged(object sender, EventArgs e)

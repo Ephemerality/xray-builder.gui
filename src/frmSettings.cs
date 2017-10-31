@@ -87,6 +87,8 @@ namespace XRayBuilderGUI
             chkSaveBio.Checked = Properties.Settings.Default.saveBio;
             if (Properties.Settings.Default.dataSource == "Goodreads")
                 rdoGoodreads.Checked = true;
+            else
+                rdoShelfari.Checked = true;
             chkPromptAsin.Checked = Properties.Settings.Default.promptASIN;
             if (txtTemp.Text == "")
                 txtTemp.Text = Path.GetTempPath();
@@ -231,6 +233,8 @@ namespace XRayBuilderGUI
             Properties.Settings.Default.amazonTLD = cmbRegion.SelectedValue.ToString();
             if (rdoGoodreads.Checked)
                 Properties.Settings.Default.dataSource = "Goodreads";
+            else
+                Properties.Settings.Default.dataSource = "Shelfari";
             Properties.Settings.Default.promptASIN = chkPromptAsin.Checked;
             Properties.Settings.Default.tmpDir = txtTemp.Text;
             Properties.Settings.Default.deleteTemp = chkDeleteTemp.Checked;

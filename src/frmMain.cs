@@ -865,7 +865,6 @@ namespace XRayBuilderGUI
             }
             else
             {
-                //Logger.Log("Extracting metadata...");
                 try
                 {
                     Unpack.Metadata md = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, false);

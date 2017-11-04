@@ -50,6 +50,10 @@
             this.prgBar = new System.Windows.Forms.ProgressBar();
             this.txtOutput = new System.Windows.Forms.RichTextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.pbFile4 = new System.Windows.Forms.PictureBox();
+            this.pbFile3 = new System.Windows.Forms.PictureBox();
+            this.pbFile2 = new System.Windows.Forms.PictureBox();
+            this.pbFile1 = new System.Windows.Forms.PictureBox();
             this.lblFiles = new System.Windows.Forms.Label();
             this.txtAsin = new System.Windows.Forms.LinkLabel();
             this.txtAuthor = new System.Windows.Forms.Label();
@@ -57,6 +61,7 @@
             this.lblAsin = new System.Windows.Forms.Label();
             this.lblAuthor = new System.Windows.Forms.Label();
             this.lblTitle = new System.Windows.Forms.Label();
+            this.pbCover = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnCreate = new System.Windows.Forms.Button();
@@ -64,11 +69,6 @@
             this.btnAbout = new System.Windows.Forms.Button();
             this.btnHelp = new System.Windows.Forms.Button();
             this.btnExtractTerms = new System.Windows.Forms.Button();
-            this.pbFile4 = new System.Windows.Forms.PictureBox();
-            this.pbFile3 = new System.Windows.Forms.PictureBox();
-            this.pbFile2 = new System.Windows.Forms.PictureBox();
-            this.pbFile1 = new System.Windows.Forms.PictureBox();
-            this.pbCover = new System.Windows.Forms.PictureBox();
             this.btnBrowseOutput = new System.Windows.Forms.Button();
             this.btnOneClick = new System.Windows.Forms.Button();
             this.btnUnpack = new System.Windows.Forms.Button();
@@ -268,9 +268,9 @@
             // 
             this.prgBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.prgBar.Location = new System.Drawing.Point(12, 540);
+            this.prgBar.Location = new System.Drawing.Point(12, 543);
             this.prgBar.Name = "prgBar";
-            this.prgBar.Size = new System.Drawing.Size(780, 12);
+            this.prgBar.Size = new System.Drawing.Size(772, 14);
             this.prgBar.Step = 1;
             this.prgBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.prgBar.TabIndex = 18;
@@ -287,7 +287,7 @@
             this.txtOutput.Name = "txtOutput";
             this.txtOutput.ReadOnly = true;
             this.txtOutput.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.txtOutput.Size = new System.Drawing.Size(596, 335);
+            this.txtOutput.Size = new System.Drawing.Size(596, 338);
             this.txtOutput.TabIndex = 61;
             this.txtOutput.Text = "";
             this.txtOutput.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.txtOutput_LinkClicked);
@@ -313,6 +313,42 @@
             this.groupBox2.TabIndex = 63;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Book Details";
+            // 
+            // pbFile4
+            // 
+            this.pbFile4.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
+            this.pbFile4.Location = new System.Drawing.Point(107, 323);
+            this.pbFile4.Name = "pbFile4";
+            this.pbFile4.Size = new System.Drawing.Size(9, 9);
+            this.pbFile4.TabIndex = 73;
+            this.pbFile4.TabStop = false;
+            // 
+            // pbFile3
+            // 
+            this.pbFile3.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
+            this.pbFile3.Location = new System.Drawing.Point(90, 323);
+            this.pbFile3.Name = "pbFile3";
+            this.pbFile3.Size = new System.Drawing.Size(9, 9);
+            this.pbFile3.TabIndex = 72;
+            this.pbFile3.TabStop = false;
+            // 
+            // pbFile2
+            // 
+            this.pbFile2.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
+            this.pbFile2.Location = new System.Drawing.Point(73, 323);
+            this.pbFile2.Name = "pbFile2";
+            this.pbFile2.Size = new System.Drawing.Size(9, 9);
+            this.pbFile2.TabIndex = 71;
+            this.pbFile2.TabStop = false;
+            // 
+            // pbFile1
+            // 
+            this.pbFile1.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
+            this.pbFile1.Location = new System.Drawing.Point(56, 323);
+            this.pbFile1.Name = "pbFile1";
+            this.pbFile1.Size = new System.Drawing.Size(9, 9);
+            this.pbFile1.TabIndex = 70;
+            this.pbFile1.TabStop = false;
             // 
             // lblFiles
             // 
@@ -401,6 +437,15 @@
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.lblTitle.Visible = false;
             // 
+            // pbCover
+            // 
+            this.pbCover.Location = new System.Drawing.Point(14, 20);
+            this.pbCover.Name = "pbCover";
+            this.pbCover.Size = new System.Drawing.Size(166, 249);
+            this.pbCover.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pbCover.TabIndex = 0;
+            this.pbCover.TabStop = false;
+            // 
             // label1
             // 
             this.label1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
@@ -411,11 +456,12 @@
             // 
             // btnCancel
             // 
+            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.Enabled = false;
             this.btnCancel.Image = global::XRayBuilderGUI.Properties.Resources.cancel;
-            this.btnCancel.Location = new System.Drawing.Point(797, 537);
+            this.btnCancel.Location = new System.Drawing.Point(795, 539);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(18, 18);
+            this.btnCancel.Size = new System.Drawing.Size(22, 22);
             this.btnCancel.TabIndex = 69;
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -469,51 +515,6 @@
             this.btnExtractTerms.TabIndex = 64;
             this.btnExtractTerms.UseVisualStyleBackColor = true;
             this.btnExtractTerms.Click += new System.EventHandler(this.btnExtractTerms_Click);
-            // 
-            // pbFile4
-            // 
-            this.pbFile4.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
-            this.pbFile4.Location = new System.Drawing.Point(107, 323);
-            this.pbFile4.Name = "pbFile4";
-            this.pbFile4.Size = new System.Drawing.Size(9, 9);
-            this.pbFile4.TabIndex = 73;
-            this.pbFile4.TabStop = false;
-            // 
-            // pbFile3
-            // 
-            this.pbFile3.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
-            this.pbFile3.Location = new System.Drawing.Point(90, 323);
-            this.pbFile3.Name = "pbFile3";
-            this.pbFile3.Size = new System.Drawing.Size(9, 9);
-            this.pbFile3.TabIndex = 72;
-            this.pbFile3.TabStop = false;
-            // 
-            // pbFile2
-            // 
-            this.pbFile2.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
-            this.pbFile2.Location = new System.Drawing.Point(73, 323);
-            this.pbFile2.Name = "pbFile2";
-            this.pbFile2.Size = new System.Drawing.Size(9, 9);
-            this.pbFile2.TabIndex = 71;
-            this.pbFile2.TabStop = false;
-            // 
-            // pbFile1
-            // 
-            this.pbFile1.Image = global::XRayBuilderGUI.Properties.Resources.file_off;
-            this.pbFile1.Location = new System.Drawing.Point(56, 323);
-            this.pbFile1.Name = "pbFile1";
-            this.pbFile1.Size = new System.Drawing.Size(9, 9);
-            this.pbFile1.TabIndex = 70;
-            this.pbFile1.TabStop = false;
-            // 
-            // pbCover
-            // 
-            this.pbCover.Location = new System.Drawing.Point(14, 20);
-            this.pbCover.Name = "pbCover";
-            this.pbCover.Size = new System.Drawing.Size(166, 249);
-            this.pbCover.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pbCover.TabIndex = 0;
-            this.pbCover.TabStop = false;
             // 
             // btnBrowseOutput
             // 
@@ -621,7 +622,7 @@
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(828, 564);
+            this.ClientSize = new System.Drawing.Size(828, 572);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnCreate);
             this.Controls.Add(this.btnPreview);

@@ -304,7 +304,8 @@
             this.dgvTerms.AllowUserToDeleteRows = false;
             this.dgvTerms.AllowUserToResizeRows = false;
             this.dgvTerms.BackgroundColor = System.Drawing.SystemColors.Window;
-            this.dgvTerms.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvTerms.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.dgvTerms.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             this.dgvTerms.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvTerms.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column1,

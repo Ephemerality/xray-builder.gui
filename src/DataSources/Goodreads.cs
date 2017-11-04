@@ -263,7 +263,7 @@ namespace XRayBuilderGUI.DataSources
             if (seriesHtmlDoc != null)
             {
                 SeriesNode = seriesHtmlDoc.DocumentNode.SelectSingleNode("//div[@class='greyText']");
-                match = Regex.Match(SeriesNode.InnerText, @"([0-9]*) primary works");
+                match = Regex.Match(SeriesNode.InnerText, @"([0-9]*) primary works?");
 
                 if (match.Success)
                 {
@@ -271,7 +271,7 @@ namespace XRayBuilderGUI.DataSources
                 }
                 else
                 {
-                    match = Regex.Match(SeriesNode.InnerText, @"([0-9]*) works,");
+                    match = Regex.Match(SeriesNode.InnerText, @"([0-9]*) works?,");
                     curBook.totalInSeries = match.Groups[1].Value;
                 }
                 bool notWholeNumber = curBook.seriesPosition.Contains(".");

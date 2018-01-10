@@ -20,13 +20,13 @@ namespace XRayBuilderGUI
 
         private string EaPath = "";
         private string SaPath = "";
-        private long _erl = 0;
+        private long _erl;
 
         public List<BookInfo> custAlsoBought = new List<BookInfo>();
 
-        private AuthorProfile authorProfile = null;
-        public BookInfo curBook = null;
-        DataSources.DataSource dataSource = null;
+        private AuthorProfile authorProfile;
+        public BookInfo curBook;
+        DataSources.DataSource dataSource;
 
         //Requires an already-built AuthorProfile and the BaseEndActions.txt file
         public EndActions(AuthorProfile ap, BookInfo book, long erl, DataSources.DataSource dataSource, frmMain frm)

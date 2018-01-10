@@ -56,7 +56,7 @@ namespace XRayBuilderGUI.Unpack
     public class RecordInfo
     {
         private byte[] _recordDataOffset = new byte[4];
-        private byte _recordAttributes = 0;
+        private byte _recordAttributes;
         private byte[] _uniqueID = new byte[3];
 
         public RecordInfo(FileStream fs)

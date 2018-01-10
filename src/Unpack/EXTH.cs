@@ -159,7 +159,7 @@ namespace XRayBuilderGUI.Unpack
     {
         private byte[] _recordType = new byte[4];
         private byte[] _recordLength = new byte[4];
-        private byte[] _recordData = null;
+        private byte[] _recordData;
         public long recordOffset;
 
         public EXTHRecord(FileStream fs)

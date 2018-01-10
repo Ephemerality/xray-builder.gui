@@ -21,7 +21,7 @@ namespace XRayBuilderGUI
         private List<XRay.Term> Terms = new List<XRay.Term>(100);
         private Settings settings = Settings.Default;
 
-        private bool aliasesExist = false;
+        private bool aliasesExist;
 
         private void btnAddTerm_Click(object sender, EventArgs e)
         {

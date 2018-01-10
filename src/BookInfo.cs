@@ -18,9 +18,9 @@ namespace XRayBuilderGUI
         public string sidecarName;
         public string desc = "";
         public string bookImageUrl = "";
-        private System.Drawing.Bitmap _bookImage = null;
-        public float amazonRating = 0.0F;
-        public int numReviews = 0;
+        private System.Drawing.Bitmap _bookImage;
+        public float amazonRating;
+        public int numReviews;
         public string dataUrl = "";
         public string amazonUrl = "";
         public string rawmlPath = "";
@@ -37,8 +37,8 @@ namespace XRayBuilderGUI
         public string readingHours = "";
         public string readingMinutes = "";
         public string pagesInBook = "";
-        public BookInfo nextInSeries = null;
-        public BookInfo previousInSeries = null;
+        public BookInfo nextInSeries;
+        public BookInfo previousInSeries;
 
         // List of clips and their highlight/like count
         public List<Tuple<string, int>> notableClips = null;

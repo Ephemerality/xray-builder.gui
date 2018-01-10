@@ -9,8 +9,8 @@ namespace XRayBuilderGUI.DataSources
 {
     public class AuthorSearchResults
     {
-        public string authorAsin = null;
-        public HtmlDocument authorHtmlDoc = null;
+        public string authorAsin;
+        public HtmlDocument authorHtmlDoc;
     }
 
     public static class Amazon

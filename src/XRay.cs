@@ -54,8 +54,8 @@ namespace XRayBuilderGUI
         private bool unattended;
         private bool skipShelfari;
         private int locOffset;
-        private List<Tuple<string, int>> notableClips = null;
-        private int foundNotables = 0;
+        private List<Tuple<string, int>> notableClips;
+        private int foundNotables;
 
         private bool enableEdit = Properties.Settings.Default.enableEdit;
         private frmMain main;
@@ -932,8 +932,8 @@ namespace XRayBuilderGUI
             public string image = "";
             public List<int> related_entities = new List<int>();
             public int go_to = -1;
-            public int highlights = 0;
-            public bool notable = false;
+            public int highlights;
+            public bool notable;
 
             public Excerpt(int id, int start, int length)
             {

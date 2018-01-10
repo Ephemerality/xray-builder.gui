@@ -8,7 +8,7 @@ namespace XRayBuilderGUI
 {
     public static class Logger
     {
-        public static RichTextBox ctrl = null;
+        public static RichTextBox ctrl;
         public static bool enabled = true;
 
         public static void Log(string message)

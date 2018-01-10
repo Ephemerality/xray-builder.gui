@@ -37,14 +37,14 @@ namespace XRayBuilderGUI.Unpack
         private byte[] huffmanTableOffset = new byte[4];
         private byte[] huffmanTableLength = new byte[4];
         private byte[] exthFlags = new byte[4];
-        private byte[] restOfMobiHeader = null;
-        public EXTHHeader exthHeader = null;
+        private byte[] restOfMobiHeader;
+        public EXTHHeader exthHeader;
 
-        private byte[] remainder = null;
-        private byte[] fullName = null;
+        private byte[] remainder;
+        private byte[] fullName;
 
-        public bool multibyte = false;
-        public int trailers = 0;
+        public bool multibyte;
+        public int trailers;
         
         public MobiHead(FileStream fs, uint mobiHeaderSize)
         {

@@ -16,7 +16,7 @@ namespace XRayBuilderGUI
         private readonly string _referer;
         private readonly string _userAgent;
         private readonly CookieContainer _cookiejar = new CookieContainer();
-        private bool encodingFoundInHeader = false;
+        private bool encodingFoundInHeader;
 
         public Encoding Encoding { get; set; }
         public WebHeaderCollection Headers { get; set; }

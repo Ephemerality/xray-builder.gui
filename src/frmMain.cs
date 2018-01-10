@@ -19,7 +19,7 @@ namespace XRayBuilderGUI
 {
     public partial class frmMain : Form
     {
-        public bool Exiting = false;
+        public bool Exiting;
 
         private string currentLog = Environment.CurrentDirectory + @"\log\" +
                                     String.Format("{0:HH.mm.ss.dd.MM.yyyy}.txt", DateTime.Now);
@@ -43,7 +43,7 @@ namespace XRayBuilderGUI
 
         ToolTip toolTip1 = new ToolTip();
 
-        DataSource dataSource = null;
+        DataSource dataSource;
 
         CancellationTokenSource cancelTokens = new CancellationTokenSource();
 

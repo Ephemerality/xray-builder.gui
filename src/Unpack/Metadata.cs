@@ -17,7 +17,7 @@ namespace XRayBuilderGUI.Unpack
         public PDBHeader PDB;
         public PalmDOCHeader PDH;
         public MobiHead mobiHeader;
-        public Bitmap coverImage = null;
+        public Bitmap coverImage;
         private int _startRecord = 1;
         public string rawMLPath = "";
         private string _ASIN = "";

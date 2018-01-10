@@ -19,16 +19,16 @@ namespace XRayBuilderGUI
         private BookInfo curBook;
         private string TLD;
         
-        private Bitmap ApAuthorImage = null;
+        private Bitmap ApAuthorImage;
 
-        public string ApTitle = null;
-        public string ApSubTitle = null;
+        public string ApTitle;
+        public string ApSubTitle;
         public string BioTrimmed = "";
         public List<BookInfo> otherBooks = new List<BookInfo>();
         public string authorImageUrl = "";
         public string authorAsin = "";
 
-        public string EaSubTitle = null;
+        public string EaSubTitle;
 
         public AuthorProfile(BookInfo nBook, string TLD)
         {

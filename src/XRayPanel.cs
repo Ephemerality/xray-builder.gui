@@ -26,7 +26,6 @@ namespace XRayBuilderGUI
             this.pbType.SizeMode = PictureBoxSizeMode.StretchImage;
 
             this.lblName = new Label();
-            //this.lblName.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, ((byte)(0)));
             this.lblName.AutoSize = false;
             this.lblName.AutoEllipsis = true;
             this.lblName.TextAlign = ContentAlignment.MiddleLeft;

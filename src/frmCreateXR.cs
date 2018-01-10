@@ -353,7 +353,6 @@ namespace XRayBuilderGUI
                         newTerm.DescSrc = row.Cells[5].Value.ToString();
                         newTerm.Match = (bool)row.Cells[6].Value;
                         newTerm.MatchCase = (bool)row.Cells[7].Value;
-                        //newTerm.Delete = (bool)row.Cells[8].Value;
                         newTerm.RegEx = (bool)row.Cells[9].Value;
                     }
                     Terms.Add(newTerm);

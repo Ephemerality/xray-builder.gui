@@ -48,18 +48,14 @@ namespace XRayBuilderGUI.DataSources
             }
             if (!goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results"))
             {
-                // Revert back for searching title
-                string revertTitle = title.Replace("%26", "&amp;").Replace("%27", "'").Replace("%20", " ");
-                goodreadsBookUrl = FindGoodreadsURL(goodreadsHtmlDoc, author, revertTitle);
+                goodreadsBookUrl = FindGoodreadsURL(goodreadsHtmlDoc);
                 if (goodreadsBookUrl != "")
-                {
                     return goodreadsBookUrl;
-                }
             }
             return "";
         }
 
-        private string FindGoodreadsURL(HtmlDocument goodreadsHtmlDoc, string author, string title)
+        private string FindGoodreadsURL(HtmlDocument goodreadsHtmlDoc)
         {
             goodreadsBookList.Clear();
             string goodreadsBookUrl = @"https://www.goodreads.com/book/show/{0}", ratingText = "";
@@ -74,7 +70,8 @@ namespace XRayBuilderGUI.DataSources
                 //if (coverNode.GetAttributeValue("src", "").Contains("nophoto") && (resultNodes.Count != 1)) continue;
                 //Skip audiobook results
                 HtmlNode audiobookNode = link.SelectSingleNode(".//span[@class='authorName greyText smallText role']");
-                if (audiobookNode != null && audiobookNode.InnerText.Contains("Audiobook")) continue;
+                if (audiobookNode != null && audiobookNode.InnerText.Contains("Audiobook"))
+                    continue;
                 HtmlNode titleNode = link.SelectSingleNode(".//a[@class='bookTitle']");
                 HtmlNode authorNode = link.SelectSingleNode(".//a[@class='authorName']");
 
@@ -111,7 +108,7 @@ namespace XRayBuilderGUI.DataSources
                 i = frmG.cbResults.SelectedIndex;
             }
             return goodreadsBookList[i].dataUrl;
-           }
+        }
 
         /// <summary>
         /// Searches for the next and previous books in a series, if it is part of one.

@@ -178,10 +178,6 @@ namespace XRayBuilderGUI.DataSources
 
             if (title.IndexOf(" (") >= 0)
                 title = title.Substring(0, title.IndexOf(" ("));
-            //Search Kindle store
-            //string searchUrl = @"http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Ddigital-text&field-keywords=" + 
-            //Uri.EscapeDataString(title + " " + author);
-
             //Search "all" Amazon
             string searchUrl = String.Format(@"https://www.amazon.{0}/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords={1}",
                 TLD, Uri.EscapeDataString(title + " " + author));

@@ -273,8 +273,6 @@ namespace XRayBuilderGUI.DataSources
                 {"WikiModule_Settings", "topic"},
                 {"WikiModule_Glossary", "topic"}
             };
-            string[] patterns = { @"""" };
-            string[] replacements = { @"\""" };
             
             foreach (string header in sections.Keys)
             {

@@ -495,7 +495,7 @@ namespace XRayBuilderGUI.DataSources
                 HtmlDocument quoteDoc = new HtmlDocument();
                 quoteDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(String.Format(quoteURL, i)));
                 // first time through, check how many pages there are (find previous page button, get parent div, take all children of that, 2nd last one should be the max page count
-                if (maxPages == 1)
+                if (i == 1)
                 {
                     HtmlNode tempNode = quoteDoc.DocumentNode.SelectSingleNode("//span[contains(@class,'previous_page')]/parent::div/*[last()-1]");
                     if (tempNode == null || !int.TryParse(tempNode.InnerHtml, out maxPages))

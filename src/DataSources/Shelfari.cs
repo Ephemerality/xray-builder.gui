@@ -78,7 +78,7 @@ namespace XRayBuilderGUI.DataSources
             }
 
             // Get title of next book
-            Dictionary<string, string> seriesInfo = await GetNextInSeriesTitle(curBook);
+            Dictionary<string, string> seriesInfo = await GetNextInSeriesTitle(curBook).ConfigureAwait(false);
             string title;
             if (seriesInfo.TryGetValue("Next", out title))
             {

@@ -31,7 +31,7 @@ namespace XRayBuilderGUI
         public static async Task<string> GetPageHtmlAsync(string url)
         {
             HttpDownloader http = new HttpDownloader(url);
-            return await Task.Run(() => http.GetPage());
+            return await Task.Run(() => http.GetPage()).ConfigureAwait(false);
         }
 
         public static async Task<Bitmap> GetImage(string url)

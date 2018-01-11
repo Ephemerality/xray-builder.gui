@@ -232,7 +232,7 @@ namespace XRayBuilderGUI
 
         public static async Task<Metadata> GetMetaDataInternalAsync(string mobiFile, string outDir, bool saveRawML, string randomFile = "")
         {
-            return await Task.Run(() => GetMetaDataInternal(mobiFile, outDir, saveRawML, randomFile));
+            return await Task.Run(() => GetMetaDataInternal(mobiFile, outDir, saveRawML, randomFile)).ConfigureAwait(false);
         }
 
         //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
@@ -356,7 +356,7 @@ namespace XRayBuilderGUI
 
         public static async Task<List<string>> GetMetaDataAsync(string mobiFile, string outDir, string randomFile, string mobiUnpack)
         {
-            return await Task.Run(() => GetMetaData(mobiFile, outDir, randomFile, mobiUnpack));
+            return await Task.Run(() => GetMetaData(mobiFile, outDir, randomFile, mobiUnpack)).ConfigureAwait(false);
         }
 
         public static List<string> GetMetaData(string mobiFile, string outDir, string randomFile, string mobiUnpack)

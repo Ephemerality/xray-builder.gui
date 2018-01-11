@@ -124,11 +124,11 @@ namespace XRayBuilderGUI.DataSources
             if (sourceHtmlDoc == null)
             {
                 sourceHtmlDoc = new HtmlDocument();
-                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl));
+                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl).ConfigureAwait(false));
             }
 
             // Get title of next book
-            Dictionary<string, BookInfo> seriesInfo = await GetNextInSeriesTitle(curBook);
+            Dictionary<string, BookInfo> seriesInfo = await GetNextInSeriesTitle(curBook).ConfigureAwait(false);
             BookInfo book;
             if (seriesInfo.TryGetValue("Next", out book))
             {
@@ -144,10 +144,10 @@ namespace XRayBuilderGUI.DataSources
                         {
                             nextBook = book;
                             string Url = String.Format("https://www.amazon.{0}/dp/{1}", TLD, book.asin);
-                            await nextBook.GetAmazonInfo(Url);
+                            await nextBook.GetAmazonInfo(Url).ConfigureAwait(false);
                         }
                         else
-                            nextBook = await Amazon.SearchBook(book.title, book.author, TLD);
+                            nextBook = await Amazon.SearchBook(book.title, book.author, TLD).ConfigureAwait(false);
                         if (nextBook == null && settings.promptASIN)
                         {
                             Logger.Log(String.Format("ASIN prompt for {0}...", book.title));
@@ -158,7 +158,7 @@ namespace XRayBuilderGUI.DataSources
                             frmAS.ShowDialog();
                             Logger.Log(String.Format("ASIN supplied: {0}", frmAS.tbAsin.Text));
                             string Url = String.Format("https://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text);
-                            await nextBook.GetAmazonInfo(Url);
+                            await nextBook.GetAmazonInfo(Url).ConfigureAwait(false);
                             nextBook.amazonUrl = Url;
                             nextBook.asin = frmAS.tbAsin.Text;
                         }
@@ -167,10 +167,10 @@ namespace XRayBuilderGUI.DataSources
                     {
                         Logger.Log(String.Format("Failed to find {0} on Amazon." + TLD + ", trying again with Amazon.com.", book.title));
                         TLD = "com";
-                        nextBook = await Amazon.SearchBook(book.title, book.author, TLD);
+                        nextBook = await Amazon.SearchBook(book.title, book.author, TLD).ConfigureAwait(false);
                     }
                     if (nextBook != null)
-                        await nextBook.GetAmazonInfo(nextBook.amazonUrl); //fill in desc, imageurl, and ratings
+                        await nextBook.GetAmazonInfo(nextBook.amazonUrl).ConfigureAwait(false); //fill in desc, imageurl, and ratings
                 }
                 
                 if (nextBook == null)
@@ -191,10 +191,10 @@ namespace XRayBuilderGUI.DataSources
                     {
                         prevBook = book;
                         string Url = String.Format("https://www.amazon.{0}/dp/{1}", TLD, book.asin);
-                        await prevBook.GetAmazonInfo(Url);
+                        await prevBook.GetAmazonInfo(Url).ConfigureAwait(false);
                     }
                     else if(prevBook != null)
-                        await prevBook.GetAmazonInfo(prevBook.amazonUrl);
+                        await prevBook.GetAmazonInfo(prevBook.amazonUrl).ConfigureAwait(false);
                     if (prevBook == null && settings.promptASIN)
                     {
                         Logger.Log(String.Format("ASIN prompt for {0}...", book.title));
@@ -205,7 +205,7 @@ namespace XRayBuilderGUI.DataSources
                         frmAS.ShowDialog();
                         Logger.Log(String.Format("ASIN supplied: {0}", frmAS.tbAsin.Text));
                         string Url = String.Format("https://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text);
-                        await prevBook.GetAmazonInfo(Url);
+                        await prevBook.GetAmazonInfo(Url).ConfigureAwait(false);
                         prevBook.amazonUrl = Url;
                         prevBook.asin = frmAS.tbAsin.Text;
                     }

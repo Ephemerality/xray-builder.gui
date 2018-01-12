@@ -54,7 +54,7 @@ namespace XRayBuilderGUI.DataSources
                         (listofthings.Contains(author) || listofthings.Exists(r => r.Replace(" ", "") == author.Replace(" ", ""))))
                         if (!listoflinks.Any(c => c.Contains("(collective work)")))
                         {
-                            shelfariBookUrl = listoflinks[index].ToString();
+                            shelfariBookUrl = listoflinks[index];
                             shelfariBookUrl = Regex.Replace(shelfariBookUrl, "<a href=\"", "", RegexOptions.None);
                             shelfariBookUrl = Regex.Replace(shelfariBookUrl, "\".*?</a>.*", "", RegexOptions.None);
                             if (shelfariBookUrl.ToLower().StartsWith("http://"))

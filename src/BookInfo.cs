@@ -196,7 +196,10 @@ namespace XRayBuilderGUI
             {
                 _bookImage = Task.Run(() => HttpDownloader.GetImage(bookImageUrl)).Result;
             }
-            catch (Exception) { }
+            catch (Exception ex)
+            {
+                Logger.Log("Failed to download cover image: " + ex.Message);
+            }
             return _bookImage;
         }
     }

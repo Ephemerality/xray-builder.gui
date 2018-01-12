@@ -41,7 +41,7 @@ namespace XRayBuilderGUI
         public BookInfo previousInSeries;
 
         // List of clips and their highlight/like count
-        public List<Tuple<string, int>> notableClips = null;
+        public List<Tuple<string, int>> notableClips;
 
         public BookInfo(string title, string author, string asin, string guid, string databasename, string path, string sidecarName, string dataUrl, string rawmlPath)
         {

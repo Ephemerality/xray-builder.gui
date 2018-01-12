@@ -296,9 +296,9 @@ namespace XRayBuilderGUI
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                throw ex;
+                throw;
             }
             finally
             {

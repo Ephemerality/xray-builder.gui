@@ -147,8 +147,7 @@ namespace XRayBuilderGUI
                         {
                             string input = streamReader.ReadLine();
                             string[] temp = input.Split('|');
-                            if (temp.Length <= 1 || temp[0] == "") continue;
-                            else if (temp[0].Substring(0, 1) == "#") continue;
+                            if (temp.Length <= 1 || temp[0] == "" || temp[0].Substring(0, 1) == "#") continue;
                             string temp2 = input.Substring(input.IndexOf('|') + 1);
                             if (!d.ContainsKey(temp[0]))
                                 d.Add(temp[0], temp2);

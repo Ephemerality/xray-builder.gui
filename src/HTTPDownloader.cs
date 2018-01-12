@@ -149,7 +149,7 @@ namespace XRayBuilderGUI
                 try
                 {
                     Encoding metaEncoding = Encoding.GetEncoding(charset);
-                    if (Encoding != metaEncoding)
+                    if (!Encoding.Equals(metaEncoding))
                     {
                         memStream.Position = 0L;
                         StreamReader recodeReader = new StreamReader(memStream, metaEncoding);

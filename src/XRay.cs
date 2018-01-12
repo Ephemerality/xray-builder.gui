@@ -364,7 +364,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message); //Just ignore errors
+                    Logger.Log("Error searching for chapters: " + ex.Message);
                 }
                 //Built chapters list is saved for manual editing
                 if (_chapters.Count > 0)
@@ -716,7 +716,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Logger.Log("Error searching for Calibre chapters: " + ex.Message);
                 }
             }
 

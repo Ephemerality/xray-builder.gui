@@ -475,7 +475,7 @@ namespace XRayBuilderGUI
                     {
                         if (search.Any(r => Regex.Match(node.InnerText, r).Success)
                             || search.Any(r => Regex.Match(node.InnerHtml, r).Success)
-                            || (ignoreSoftHypen && (search.Any(r => Regex.Match(noSoftHypen, r).Success) || search.Any(r => Regex.Match(noSoftHypen, r).Success))))
+                            || (ignoreSoftHypen && search.Any(r => Regex.Match(noSoftHypen, r).Success)))
                             termFound = true;
                     }
                     else

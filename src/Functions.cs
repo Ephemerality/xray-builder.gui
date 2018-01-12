@@ -602,9 +602,9 @@ namespace XRayBuilderGUI
         /// </summary>
         public static string FixAuthor(string author)
         {
-            if (author.IndexOf(';') > 0)
+            if (author.Contains(';'))
                 author = author.Split(';')[0];
-            if (author.IndexOf(',') > 0)
+            if (author.Contains(','))
             {
                 string[] parts = author.Split(',');
                 author = parts[1].Trim() + " " + parts[0].Trim();

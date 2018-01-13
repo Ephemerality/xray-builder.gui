@@ -198,18 +198,19 @@ namespace XRayBuilderGUI
             }
             try
             {
-                if (CreateTerms() == 0 && aliasesExist)
+                CreateTerms();
+                if (aliasesExist)
                 {
-                    if (CreateAliases() == 0)
-                        MessageBox.Show("X-Ray entities and Alias files created sucessfully!");
+                    CreateAliases();
+                    MessageBox.Show("X-Ray entities and Alias files created sucessfully!");
                 }
-                else if (CreateTerms() == 0)
+                else
                     MessageBox.Show("X-Ray entities file created sucessfully!");
             }
             catch (Exception ex)
             {
                 MessageBox.Show(String.Format("An error occurred saving the files: {0}\r\n{1}", ex.Message, ex.StackTrace),
-                    "Missing Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    "Save XML", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -264,90 +265,78 @@ namespace XRayBuilderGUI
             btnEditTerm_Click(sender, e);
         }
 
-        private int CreateAliases()
+        private void CreateAliases()
         {
-            try
+            string aliasFile = Environment.CurrentDirectory + @"\ext\" + txtAsin.Text + ".aliases";
+            string aliases = "";
+            if (!Directory.Exists(Environment.CurrentDirectory + @"\ext\"))
+                Directory.CreateDirectory(Environment.CurrentDirectory + @"\ext\");
+            using (var streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8))
             {
-                string aliasFile = Environment.CurrentDirectory + @"\ext\" + txtAsin.Text + ".aliases";
-                string aliases = "";
-                if (!Directory.Exists(Environment.CurrentDirectory + @"\ext\"))
-                    Directory.CreateDirectory(Environment.CurrentDirectory + @"\ext\");
-                using (var streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8))
-                    for (int i = 0; i < Terms.Count; i++)
-                        if (Terms[i].Aliases.Count > 0)
+                for (int i = 0; i < Terms.Count; i++)
+                {
+                    if (Terms[i].Aliases.Count > 0)
+                    {
+                        Terms[i].Aliases.Sort((a, b) => b.Length.CompareTo(a.Length));
+                        foreach (string word in Terms[i].Aliases)
                         {
-                            Terms[i].Aliases.Sort((a, b) => b.Length.CompareTo(a.Length));
-                            foreach (string word in Terms[i].Aliases)
-                            {
-                                aliases += word + ",";
-                            }
-                            if (aliases.LastIndexOf(",") != -1)
-                            {
-                                streamWriter.WriteLine(Terms[i].TermName + "|" + aliases.Substring(0, aliases.LastIndexOf(",")));
-                                aliases = "";
-                            }
-                            else
-                                streamWriter.WriteLine(Terms[i].TermName + "|");
+                            aliases += word + ",";
                         }
+                        if (aliases.LastIndexOf(",") != -1)
+                        {
+                            streamWriter.WriteLine(Terms[i].TermName + "|" + aliases.Substring(0, aliases.LastIndexOf(",")));
+                            aliases = "";
+                        }
+                        else
+                            streamWriter.WriteLine(Terms[i].TermName + "|");
+                    }
+                }
             }
-            catch
-            {
-                return 1;
-            }
-            return 0;
         }
 
-        private int CreateTerms()
+        private void CreateTerms()
         {
-            try
+            if (!Directory.Exists(Environment.CurrentDirectory + @"\xml\"))
+                Directory.CreateDirectory(Environment.CurrentDirectory + @"\xml\");
+            string outfile = Environment.CurrentDirectory + String.Format(@"\xml\{0}.entities.xml", txtAsin.Text);
+            Terms.Clear();
+            foreach (DataGridViewRow row in dgvTerms.Rows)
             {
-                if (!Directory.Exists(Environment.CurrentDirectory + @"\xml\"))
-                    Directory.CreateDirectory(Environment.CurrentDirectory + @"\xml\");
-                string outfile = Environment.CurrentDirectory + String.Format(@"\xml\{0}.entities.xml", txtAsin.Text);
-                Terms.Clear();
-                foreach (DataGridViewRow row in dgvTerms.Rows)
+                int termId = 1;
+                XRay.Term newTerm = new XRay.Term();
+                foreach (DataGridViewCell cell in row.Cells)
                 {
-                    int termId = 1;
-                    XRay.Term newTerm = new XRay.Term();
-                    foreach (DataGridViewCell cell in row.Cells)
+                    newTerm.Id = termId;
+                    newTerm.Type = CompareImages((Bitmap)row.Cells[0].Value, Resources.character) == true ? "character" : "topic";
+                    newTerm.TermName = row.Cells[1].Value.ToString();
+                    if (row.Cells[2].Value.ToString() != "")
                     {
-                        newTerm.Id = termId;
-                        newTerm.Type = CompareImages((Bitmap)row.Cells[0].Value, Resources.character) == true ? "character" : "topic";
-                        newTerm.TermName = row.Cells[1].Value.ToString();
-                        if (row.Cells[2].Value.ToString() != "")
+                        aliasesExist = true;
+                        string[] aliasList = row.Cells[2].Value.ToString().Split(',');
+                        foreach (string alias in aliasList)
                         {
-                            aliasesExist = true;
-                            string[] aliasList = row.Cells[2].Value.ToString().Split(',');
-                            foreach (string alias in aliasList)
+                            if (newTerm.Aliases.Contains(alias))
                             {
-                                if (newTerm.Aliases.Contains(alias))
-                                {
-                                    newTerm.Aliases.Remove(alias);
-                                    newTerm.Aliases.Add(alias);
-                                }
-                                else
-                                {
-                                    newTerm.Aliases.Add(alias);
-                                }
+                                newTerm.Aliases.Remove(alias);
+                                newTerm.Aliases.Add(alias);
+                            }
+                            else
+                            {
+                                newTerm.Aliases.Add(alias);
                             }
                         }
-                        newTerm.Desc = row.Cells[3].Value.ToString();
-                        newTerm.DescUrl = row.Cells[4].Value.ToString();
-                        newTerm.DescSrc = row.Cells[5].Value.ToString();
-                        newTerm.Match = (bool)row.Cells[6].Value;
-                        newTerm.MatchCase = (bool)row.Cells[7].Value;
-                        newTerm.RegEx = (bool)row.Cells[9].Value;
                     }
-                    Terms.Add(newTerm);
-                    termId++;
+                    newTerm.Desc = row.Cells[3].Value.ToString();
+                    newTerm.DescUrl = row.Cells[4].Value.ToString();
+                    newTerm.DescSrc = row.Cells[5].Value.ToString();
+                    newTerm.Match = (bool)row.Cells[6].Value;
+                    newTerm.MatchCase = (bool)row.Cells[7].Value;
+                    newTerm.RegEx = (bool)row.Cells[9].Value;
                 }
-                Functions.Save<List<XRay.Term>>(Terms, outfile);
+                Terms.Add(newTerm);
+                termId++;
             }
-            catch
-            {
-                return 1;
-            }
-            return 0;
+            Functions.Save<List<XRay.Term>>(Terms, outfile);
         }
 
         private static bool CompareImages(Bitmap image1, Bitmap image2)

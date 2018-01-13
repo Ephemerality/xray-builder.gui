@@ -131,7 +131,7 @@ namespace XRayBuilderGUI
                 {
                     if (bio.InnerText.Length > 1000)
                     {
-                        int lastPunc = bio.InnerText.LastIndexOfAny(new char[] { '.', '!', '?' });
+                        int lastPunc = bio.InnerText.LastIndexOfAny(new [] { '.', '!', '?' });
                         int lastSpace = bio.InnerText.LastIndexOf(' ');
                         if (lastPunc > lastSpace)
                             BioTrimmed = bio.InnerText.Substring(0, lastPunc + 1);

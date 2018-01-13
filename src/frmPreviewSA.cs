@@ -112,7 +112,7 @@ namespace XRayBuilderGUI
                         rec["asin"].ToString(), title, author, imageUrl));
                     if (imageUrl != "")
                         ilOtherBooks.Images.Add(Functions.MakeGrayscale3(await HttpDownloader.GetImage(imageUrl)));
-                    otherBookList.Add(new string[] { title, author });
+                    otherBookList.Add(new [] { title, author });
                     dgvOtherBooks.Rows.Add(ilOtherBooks.Images[ilOtherBooks.Images.Count - 1],
                         String.Format("{0}\n{1}", title, author));
                 }

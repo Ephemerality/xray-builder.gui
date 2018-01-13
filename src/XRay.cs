@@ -61,7 +61,7 @@ namespace XRayBuilderGUI
         private DataSources.DataSource dataSource;
 
         #region CommonTitles
-        string[] CommonTitles = new string[] { "Mr", "Mrs", "Ms", "Miss", "Dr", "Herr", "Monsieur", "Hr", "Frau",
+        string[] CommonTitles = new [] { "Mr", "Mrs", "Ms", "Miss", "Dr", "Herr", "Monsieur", "Hr", "Frau",
             "A V M", "Admiraal", "Admiral", "Alderman", "Alhaji", "Ambassador", "Baron", "Barones", "Brig",
             "Brigadier", "Brother", "Canon", "Capt", "Captain", "Cardinal", "Cdr", "Chief", "Cik", "Cmdr", "Col",
             "Colonel", "Commandant", "Commander", "Commissioner", "Commodore", "Comte", "Comtessa", "Congressman",
@@ -562,7 +562,7 @@ namespace XRayBuilderGUI
 
                                 while ((start > -1) && (at > -1))
                                 {
-                                    at = node.InnerHtml.LastIndexOfAny(new char[] { '.', '?', '!' }, start);
+                                    at = node.InnerHtml.LastIndexOfAny(new [] { '.', '?', '!' }, start);
                                     if (at > -1)
                                     {
                                         start = at - 1;
@@ -592,7 +592,7 @@ namespace XRayBuilderGUI
                         {
                             character.Locs.Add(String.Format("[{0},{1},{2},{3}]", location + locOffset, lenQuote,
                                 locHighlight[j], lenHighlight[j])); // For old format
-                            character.Occurrences.Add(new int[] { location + locOffset + locHighlight[j], lenHighlight[j] }); // For new format
+                            character.Occurrences.Add(new [] { location + locOffset + locHighlight[j], lenHighlight[j] }); // For new format
                         }
                         List<Excerpt> exCheck = excerpts.Where(t => t.start.Equals(location + locOffset)).ToList();
                         if (exCheck.Count > 0)

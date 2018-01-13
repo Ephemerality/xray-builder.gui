@@ -149,7 +149,7 @@ namespace XRayBuilderGUI
                     if (desc.Length > 1000)
                     {
                         desc = desc.Substring(0, 1000);
-                        int lastPunc = desc.LastIndexOfAny(new char[] {'.', '!', '?'});
+                        int lastPunc = desc.LastIndexOfAny(new [] {'.', '!', '?'});
                         int lastSpace = desc.LastIndexOf(' ');
                         if (lastPunc > lastSpace)
                             desc = desc.Substring(0, lastPunc + 1);

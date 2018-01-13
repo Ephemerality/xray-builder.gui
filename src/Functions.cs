@@ -296,10 +296,6 @@ namespace XRayBuilderGUI
                     }
                 }
             }
-            catch
-            {
-                throw;
-            }
             finally
             {
                 fs.Dispose();

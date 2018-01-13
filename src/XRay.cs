@@ -799,9 +799,7 @@ namespace XRayBuilderGUI
             Logger.Log(String.Format("Writing {0} excerpts...", excerpts.Count));
             sql = "";
             command = new SQLiteCommand(db);
-            command.CommandText =
-                String.Format(
-                    "insert into excerpt (id, start, length, image, related_entities, goto) values (@id, @start, @length, @image, @rel_ent, null);");
+            command.CommandText = "insert into excerpt (id, start, length, image, related_entities, goto) values (@id, @start, @length, @image, @rel_ent, null);";
             progress.Report(new Tuple<int, int>(0, excerpts.Count));
             foreach (Excerpt e in excerpts)
             {

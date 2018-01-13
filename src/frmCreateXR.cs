@@ -47,10 +47,10 @@ namespace XRayBuilderGUI
         private void btnEditTerm_Click(object sender, EventArgs e)
         {
             if (txtName.Text != "" && DialogResult.Cancel == MessageBox.Show(
-              String.Format("You have not added this term to the term list.\r\n" +
+              "You have not added this term to the term list.\r\n" +
               "Click Cancel to add the current term to the term list.\r\n" +
               "Press Ok to replace the current term with this one in the term list." +
-              "Do you want to continue?"),
+              "Do you want to continue?",
               "Unsaved changes",
               MessageBoxButtons.OKCancel,
               MessageBoxIcon.Warning))
@@ -183,29 +183,17 @@ namespace XRayBuilderGUI
                 return;
             if (txtAuthor.Text == "")
             {
-                MessageBox.Show(
-              String.Format("An author's name is required to save the X-Ray file."),
-              "Missing Information",
-              MessageBoxButtons.OK,
-              MessageBoxIcon.Warning);
+                MessageBox.Show("An author's name is required to save the X-Ray file.", "Missing Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
             if (txtTitle.Text == "")
             {
-                MessageBox.Show(
-              String.Format("A title is required to save the X-Ray file."),
-              "Missing Information",
-              MessageBoxButtons.OK,
-              MessageBoxIcon.Warning);
+                MessageBox.Show("A title is required to save the X-Ray file.", "Missing Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
             if (txtAsin.Text == "")
             {
-                MessageBox.Show(
-              String.Format("An ASIN is required to save the aliases file."),
-              "Missing Information",
-              MessageBoxButtons.OK,
-              MessageBoxIcon.Warning);
+                MessageBox.Show("An ASIN is required to save the aliases file.", "Missing Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
             try
@@ -220,12 +208,8 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    String.Format("An error occurred saving the files: " + ex.Message + "\r\n" + ex.StackTrace),
-                    "Missing Information",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-                return;
+                MessageBox.Show(String.Format("An error occurred saving the files: {0}\r\n{1}", ex.Message, ex.StackTrace),
+                    "Missing Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -439,11 +423,7 @@ namespace XRayBuilderGUI
         {
             if (dgvTerms.Rows.Count > 0)
             {
-                if (DialogResult.Yes == MessageBox.Show(
-                    String.Format("Clearing the term list is irreversible!"),
-                    "Are you sure?",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning))
+                if (DialogResult.Yes == MessageBox.Show("Clearing the term list is irreversible!", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
                 {
                     dgvTerms.Rows.Clear();
                     txtName.Text = "";

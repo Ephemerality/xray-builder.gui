@@ -14,12 +14,9 @@ namespace XRayBuilderGUI
     public class AuthorProfile
     {
         private static Properties.Settings settings = Properties.Settings.Default;
-
-        private string ApPath = "";
+        
         private BookInfo curBook;
         private string TLD;
-        
-        private Bitmap ApAuthorImage;
 
         public string ApTitle;
         public string ApSubTitle;
@@ -55,7 +52,7 @@ namespace XRayBuilderGUI
                 Logger.Log("An error occurred creating output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
                 outputDir = settings.outDir;
             }
-            ApPath = outputDir + @"\AuthorProfile.profile." + curBook.asin + ".asc";
+            string ApPath = outputDir + @"\AuthorProfile.profile." + curBook.asin + ".asc";
 
             if (!Properties.Settings.Default.overwrite && File.Exists(ApPath))
             {
@@ -202,6 +199,7 @@ namespace XRayBuilderGUI
 
             curBook.authorImageUrl = authorImageUrl;
 
+            Bitmap ApAuthorImage;
             try
             {
                 Logger.Log("Downloading author image...");

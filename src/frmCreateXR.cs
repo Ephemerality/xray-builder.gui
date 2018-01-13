@@ -306,7 +306,7 @@ namespace XRayBuilderGUI
                 XRay.Term newTerm = new XRay.Term();
                 foreach (DataGridViewCell cell in row.Cells)
                 {
-                    newTerm.Id = termId;
+                    newTerm.Id = termId++;
                     newTerm.Type = CompareImages((Bitmap)row.Cells[0].Value, Resources.character) == true ? "character" : "topic";
                     newTerm.TermName = row.Cells[1].Value.ToString();
                     if (row.Cells[2].Value.ToString() != "")
@@ -334,7 +334,6 @@ namespace XRayBuilderGUI
                     newTerm.RegEx = (bool)row.Cells[9].Value;
                 }
                 Terms.Add(newTerm);
-                termId++;
             }
             Functions.Save<List<XRay.Term>>(Terms, outfile);
         }

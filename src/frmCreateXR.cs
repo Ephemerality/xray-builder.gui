@@ -452,7 +452,6 @@ namespace XRayBuilderGUI
                     txtLink.Text = "";
                     Terms.Clear();
                 }
-                return;
             }
         }
     }

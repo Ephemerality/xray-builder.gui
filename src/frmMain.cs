@@ -106,10 +106,7 @@ namespace XRayBuilderGUI
         private void btnBrowseOutput_Click(object sender, EventArgs e)
         {
             if (!Directory.Exists(settings.outDir))
-            {
                 MessageBox.Show(@"Specified output directory does not exist. Please review the settings page.", @"Output Directory Not found");
-                return;
-            }
             else
                 Process.Start(settings.outDir);
         }

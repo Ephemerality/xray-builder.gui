@@ -93,7 +93,7 @@ namespace XRayBuilderGUI
         public async Task GetAmazonInfo(string amazonUrl)
         {
             if (amazonUrl == "") return;
-            HtmlDocument bookDoc = new HtmlDocument() { OptionAutoCloseOnEnd = true };
+            HtmlDocument bookDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
             bookDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(amazonUrl));
             GetAmazonInfo(bookDoc);
         }

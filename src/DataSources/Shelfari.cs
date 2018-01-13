@@ -95,7 +95,7 @@ namespace XRayBuilderGUI.DataSources
                 // Try to fill in desc, imageurl, and ratings using Shelfari Kindle edition link instead
                 if (nextBook == null)
                 {
-                    HtmlDocument bookDoc = new HtmlDocument() { OptionAutoCloseOnEnd = true };
+                    HtmlDocument bookDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
                     bookDoc.LoadHtml(HttpDownloader.GetPageHtml(seriesInfo["NextURL"]));
                     Match match = Regex.Match(bookDoc.DocumentNode.InnerHtml, "('B[A-Z0-9]{9}')");
                     if (match.Success)

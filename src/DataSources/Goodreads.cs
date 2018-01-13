@@ -21,7 +21,7 @@ namespace XRayBuilderGUI.DataSources
         private List<BookInfo> goodreadsBookList = new List<BookInfo>();
 
         // Goodreads expects %26 and %27 instead of & and ’ or ' and %20 instead of spaces
-        Dictionary<string, string> replacements = new Dictionary<string, string>()
+        Dictionary<string, string> replacements = new Dictionary<string, string>
             {
                 {"&", "%26"},
                 {"’", "%27"},
@@ -254,7 +254,7 @@ namespace XRayBuilderGUI.DataSources
             else
                 return results;
 
-            HtmlDocument seriesHtmlDoc = new HtmlDocument() { OptionAutoCloseOnEnd = true };
+            HtmlDocument seriesHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
             seriesHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(goodreadsSeriesUrl));
             
             if (seriesHtmlDoc != null)
@@ -338,7 +338,7 @@ namespace XRayBuilderGUI.DataSources
             string goodreadsBookUrl = String.Format("https://www.goodreads.com/book/show/{0}", id);
             try
             {
-                HtmlDocument bookHtmlDoc = new HtmlDocument() { OptionAutoCloseOnEnd = true };
+                HtmlDocument bookHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
                 bookHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(goodreadsBookUrl));
                 if (bookHtmlDoc != null)
                 {

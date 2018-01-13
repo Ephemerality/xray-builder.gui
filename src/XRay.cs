@@ -50,7 +50,6 @@ namespace XRayBuilderGUI
         private List<Excerpt> excerpts = new List<Excerpt>();
         private long _srl;
         private long _erl;
-        private bool _shortEx = true;
         private bool unattended;
         private bool skipShelfari;
         private int locOffset;
@@ -339,7 +338,6 @@ namespace XRayBuilderGUI
             string punctuationMarks = String.Format(@"({0}s|{0})?{1}?[!\.?,""\);:]*{0}*{1}*{2}*", apostrophes, quotes, dashesEllipsis);
 
             int excerptId = 0;
-            this._shortEx = shortEx;
             HtmlAgilityPack.HtmlDocument web = new HtmlAgilityPack.HtmlDocument();
             string readContents;
             using (StreamReader streamReader = new StreamReader(rawMl, Encoding.Default))

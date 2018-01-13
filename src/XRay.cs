@@ -294,14 +294,14 @@ namespace XRayBuilderGUI
                 Logger.Log(String.Format("{0} {1} found in file:", Terms.Count, Terms.Count > 1 ? "Terms" : "Term"));
             else
                 Logger.Log(String.Format("{0} {1} found on {2}:", Terms.Count, Terms.Count > 1 ? "Terms" : "Term", dataSource.Name));
-            string tmp = "";
+            StringBuilder str = new StringBuilder(Terms.Count * 32); // Assume that most names will be less than 32 chars
             int termId = 1;
             foreach (Term t in Terms)
             {
-                tmp += t.TermName + ", ";
+                str.Append(t.TermName).Append(", ");
                 t.Id = termId++;
             }
-            Logger.Log(tmp);
+            Logger.Log(str.ToString());
 
             if (!unattended && enableEdit)
             {
@@ -744,7 +744,7 @@ namespace XRayBuilderGUI
 
         public int PopulateDb(SQLiteConnection db, IProgress<Tuple<int, int>> progress, CancellationToken token)
         {
-            string sql = "";
+            StringBuilder sql = new StringBuilder(Terms.Count * 256);
             int entity = 1;
             int excerpt = 1;
             int personCount = 0;
@@ -784,18 +784,18 @@ namespace XRayBuilderGUI
                 command.ExecuteNonQuery();
                 command.Dispose();
 
-                sql = "";
+                sql.Clear();
                 foreach (int[] loc in t.Occurrences)
-                    sql += String.Format("insert into occurrence (entity, start, length) values ({0}, {1}, {2});\n",
+                    sql.AppendFormat("insert into occurrence (entity, start, length) values ({0}, {1}, {2});\n",
                         t.Id, loc[0], loc[1]);
-                command = new SQLiteCommand(sql, db);
+                command = new SQLiteCommand(sql.ToString(), db);
                 command.ExecuteNonQuery();
                 command.Dispose();
                 progress.Report(new Tuple<int, int>(entity++, Terms.Count));
             }
             //Write excerpts and entity_excerpt table
             Logger.Log(String.Format("Writing {0} excerpts...", excerpts.Count));
-            sql = "";
+            sql.Clear();
             command = new SQLiteCommand(db);
             command.CommandText = "insert into excerpt (id, start, length, image, related_entities, goto) values (@id, @start, @length, @image, @rel_ent, null);";
             progress.Report(new Tuple<int, int>(0, excerpts.Count));
@@ -812,7 +812,7 @@ namespace XRayBuilderGUI
                 foreach (int ent in e.related_entities)
                 {
                     if (ent != 0) // skip notable flag
-                        sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", ent, e.id);
+                        sql.AppendFormat("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", ent, e.id);
                 }
                 progress.Report(new Tuple<int, int>(excerpt++, excerpts.Count));
             }
@@ -820,14 +820,14 @@ namespace XRayBuilderGUI
             // create links to notable clips in order of popularity
             var notablesOnly = excerpts.Where(ex => ex.notable).OrderByDescending(ex => ex.highlights);
             foreach (Excerpt notable in notablesOnly)
-                sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", 0, notable.id);
+                sql.AppendFormat("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", 0, notable.id);
             // Populate some more notable clips if not enough were found, 
             // TODO: Add a config value in settings for this amount
             if (foundNotables <= 20 && foundNotables + excerpts.Count <= 20)
                 excerpts.ForEach(ex =>
                     {
                         if (!ex.notable)
-                            sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", 0, ex.id);
+                            sql.AppendFormat("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", 0, ex.id);
                     });
             else if (foundNotables <= 20)
             {
@@ -836,14 +836,14 @@ namespace XRayBuilderGUI
                 while (foundNotables <= 20 && eligible.Count > 0)
                 {
                     Excerpt randEx = eligible.ElementAt(rand.Next(eligible.Count));
-                    sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", 0, randEx.id);
+                    sql.AppendFormat("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", 0, randEx.id);
                     eligible.Remove(randEx);
                     foundNotables++;
                 }
             }
             token.ThrowIfCancellationRequested();
             Logger.Log("Writing entity excerpt table...");
-            command = new SQLiteCommand(sql, db);
+            command = new SQLiteCommand(sql.ToString(), db);
             command.ExecuteNonQuery();
             command.Dispose();
             token.ThrowIfCancellationRequested();
@@ -853,28 +853,29 @@ namespace XRayBuilderGUI
                     .OrderByDescending(t => t.Locs.Count)
                     .Select(t => t.Id)
                     .ToList<int>();
-            sql = String.Format("update type set top_mentioned_entities='{0}' where id=1;\n",
+            sql.Clear();
+            sql.AppendFormat("update type set top_mentioned_entities='{0}' where id=1;\n",
                 String.Join(",", sorted.GetRange(0, Math.Min(10, sorted.Count))));
             sorted =
                 Terms.Where<Term>(t => t.Type.Equals("topic"))
                     .OrderByDescending(t => t.Locs.Count)
                     .Select(t => t.Id)
                     .ToList<int>();
-            sql += String.Format("update type set top_mentioned_entities='{0}' where id=2;",
+            sql.AppendFormat("update type set top_mentioned_entities='{0}' where id=2;",
                 String.Join(",", sorted.GetRange(0, Math.Min(10, sorted.Count))));
-            command = new SQLiteCommand(sql, db);
+            command = new SQLiteCommand(sql.ToString(), db);
             command.ExecuteNonQuery();
             command.Dispose();
 
             token.ThrowIfCancellationRequested();
             Logger.Log("Writing metadata...");
-            
-            sql =
-                String.Format(
-                    "insert into book_metadata (srl, erl, has_images, has_excerpts, show_spoilers_default, num_people, num_terms, num_images, preview_images) "
-                    + "values ({0}, {1}, 0, 1, 0, {2}, {3}, 0, null);", _srl, _erl, personCount, termCount);
 
-            command = new SQLiteCommand(sql, db);
+            sql.Clear();
+            sql.AppendFormat(
+                "insert into book_metadata (srl, erl, has_images, has_excerpts, show_spoilers_default, num_people, num_terms, num_images, preview_images) "
+                + "values ({0}, {1}, 0, 1, 0, {2}, {3}, 0, null);", _srl, _erl, personCount, termCount);
+
+            command = new SQLiteCommand(sql.ToString(), db);
             command.ExecuteNonQuery();
             command.Dispose();
             return 0;

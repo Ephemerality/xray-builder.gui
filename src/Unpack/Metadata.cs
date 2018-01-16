@@ -12,7 +12,7 @@ using System.Text;
 
 namespace XRayBuilderGUI.Unpack
 {
-    public class Metadata
+    public class Metadata : IDisposable
     {
         public PDBHeader PDB;
         public PalmDOCHeader PDH;
@@ -58,6 +58,11 @@ namespace XRayBuilderGUI.Unpack
                     break;
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            coverImage?.Dispose();
         }
 
         private string get_image_type(byte[] data)

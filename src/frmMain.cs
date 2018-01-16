@@ -863,9 +863,11 @@ namespace XRayBuilderGUI
             {
                 try
                 {
-                    Unpack.Metadata md = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, false);
-                    results = md.getResults();
-                    pbCover.Image = md.coverImage;
+                    using (Unpack.Metadata md = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, false))
+                    {
+                        results = md.getResults();
+                        pbCover.Image = md.coverImage;
+                    }
                 }
                 catch (Exception ex)
                 {

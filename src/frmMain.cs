@@ -1166,7 +1166,7 @@ namespace XRayBuilderGUI
             openFile.InitialDirectory = settings.outDir;
             if (openFile.ShowDialog() == DialogResult.OK)
                 selPath = openFile.FileName;
-            if (selPath == "" | !selPath.Contains("XRAY.entities"))
+            if (selPath == "" || !selPath.Contains("XRAY.entities"))
             {
                 Logger.Log("Invalid or no file selected.");
                 return;

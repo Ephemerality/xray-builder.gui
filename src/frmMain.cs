@@ -695,7 +695,6 @@ namespace XRayBuilderGUI
                 }
             }
             Exiting = true;
-            cancelTokens.Cancel();
             cancelTokens.Dispose();
             Application.Exit();
         }

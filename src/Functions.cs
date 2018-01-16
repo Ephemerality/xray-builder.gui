@@ -252,7 +252,6 @@ namespace XRayBuilderGUI
                         DialogResult.Yes == MessageBox.Show("The document type is not set to EBOK. Would you like this to be updated?\r\n" +
                             "Caution: This feature is experimental and could potentially ruin your book file.", "Incorrect Content Type", MessageBoxButtons.YesNo))
                     {
-                        fs.Dispose();
                         fs = new FileStream(mobiFile, FileMode.Open, FileAccess.ReadWrite);
                         if (fs == null)
                             throw new Exception("Unable to re-open mobi file for writing.");

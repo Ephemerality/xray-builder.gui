@@ -16,7 +16,7 @@ namespace XRayBuilderGUI
 
         // http://qdevblog.blogspot.ch/2011/11/c-listview-item-spacing.html
         [DllImport("user32.dll")]
-        private static extern int SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+        private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
 
         private int MakeLong(short lowPart, short highPart)
         {

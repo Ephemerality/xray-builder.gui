@@ -189,14 +189,12 @@ namespace XRayBuilderGUI
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            int offset = 0;
-            if (!int.TryParse(txtOffset.Text, out offset))
+            if (!int.TryParse(txtOffset.Text, out var offset))
             {
                 MessageBox.Show("The offset must be an integer.", "Offset Error");
                 return;
             }
-            int offsetAZW = 0;
-            if (!int.TryParse(txtAZWOffset.Text, out offsetAZW))
+            if (!int.TryParse(txtAZWOffset.Text, out var offsetAZW))
             {
                 MessageBox.Show("The offset must be an integer.", "Offset Error");
                 return;

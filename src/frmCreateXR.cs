@@ -155,9 +155,8 @@ namespace XRayBuilderGUI
                     }
                     foreach (DataGridViewRow row in dgvTerms.Rows)
                     {
-                        string aliases;
                         string name = row.Cells[1].Value.ToString();
-                        if (d.TryGetValue(name, out aliases))
+                        if (d.TryGetValue(name, out var aliases))
                             row.Cells[2].Value = aliases;
                     }
                 }

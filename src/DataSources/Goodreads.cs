@@ -129,8 +129,7 @@ namespace XRayBuilderGUI.DataSources
 
             // Get title of next book
             Dictionary<string, BookInfo> seriesInfo = await GetNextInSeriesTitle(curBook).ConfigureAwait(false);
-            BookInfo book;
-            if (seriesInfo.TryGetValue("Next", out book))
+            if (seriesInfo.TryGetValue("Next", out var book))
             {
                 // Search author's other books for the book (assumes next in series was written by the same author...)
                 // Returns the first one found, though there should probably not be more than 1 of the same name anyway
@@ -507,8 +506,7 @@ namespace XRayBuilderGUI.DataSources
                 {
                     int start = quote.InnerText.IndexOf("&ldquo;") + 7;
                     int end = quote.InnerText.IndexOf("&rdquo;");
-                    int likes;
-                    int.TryParse(quote.SelectSingleNode(".//div[@class='right']/a").InnerText.Replace(" likes", ""), out likes);
+                    int.TryParse(quote.SelectSingleNode(".//div[@class='right']/a").InnerText.Replace(" likes", ""), out var likes);
                     result.Add(new Tuple<string, int>(quote.InnerText.Substring(start, end - start), likes));
                 }
                 if (progress != null) progress.Report(new Tuple<int, int>(i, maxPages));

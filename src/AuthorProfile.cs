@@ -66,8 +66,7 @@ namespace XRayBuilderGUI
                 curBook.guid = curBook.guid.ToUpper();
             else
             {
-                long guidDec;
-                long.TryParse(curBook.guid, out guidDec);
+                long.TryParse(curBook.guid, out var guidDec);
                 curBook.guid = guidDec.ToString("X");
             }
             if (curBook.guid == "0")

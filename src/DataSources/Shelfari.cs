@@ -79,8 +79,7 @@ namespace XRayBuilderGUI.DataSources
 
             // Get title of next book
             Dictionary<string, string> seriesInfo = await GetNextInSeriesTitle(curBook).ConfigureAwait(false);
-            string title;
-            if (seriesInfo.TryGetValue("Next", out title))
+            if (seriesInfo.TryGetValue("Next", out var title))
             {
                 // Search author's other books for the book (assumes next in series was written by the same author...)
                 // Returns the first one found, though there should probably not be more than 1 of the same name anyway

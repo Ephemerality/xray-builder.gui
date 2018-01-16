@@ -198,8 +198,7 @@ namespace XRayBuilderGUI
                 _guid = _guid.ToUpper();
             else
             {
-                long guidDec;
-                long.TryParse(_guid, out guidDec);
+                long.TryParse(_guid, out var guidDec);
                 _guid = guidDec.ToString("X");
             }
             if (_guid == "0")

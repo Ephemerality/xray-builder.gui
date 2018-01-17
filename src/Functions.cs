@@ -196,11 +196,8 @@ namespace XRayBuilderGUI
 
         public static bool ExtrasExist(string location, string asin)
         {
-            {
-                if (File.Exists(location + String.Format(@"\AuthorProfile.profile.{0}.asc", asin)) &&
-                    File.Exists(location + String.Format(@"\EndActions.data.{0}.asc", asin)))
-                    return true;
-            }
+            if (File.Exists(location + $"\\AuthorProfile.profile.{asin}.asc") && File.Exists(location + $"\\EndActions.data.{asin}.asc"))
+                return true;
             return false;
         }
 
@@ -215,8 +212,7 @@ namespace XRayBuilderGUI
             do
             {
                 path = Path.Combine(Properties.Settings.Default.tmpDir, Path.GetRandomFileName());
-            }
-            while (Directory.Exists(path));
+            } while (Directory.Exists(path));
             Directory.CreateDirectory(path);
             return path;
         }
@@ -226,8 +222,7 @@ namespace XRayBuilderGUI
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             var time = String.Format("{0:HH:mm:ss}", DateTime.Now);
             var date = String.Format("{0:dd/MM/yyyy}", DateTime.Now);
-            return String.Format("Running X-Ray Builder GUI v{0}. Log started on {1} at {2}.\r\n",
-                version, date, time);
+            return $"Running X-Ray Builder GUI v{version}. Log started on {date} at {time}.\r\n";
         }
 
         public static async Task<Metadata> GetMetaDataInternalAsync(string mobiFile, string outDir, bool saveRawML, string randomFile = "")
@@ -265,23 +260,22 @@ namespace XRayBuilderGUI
 
                 string ASIN = md.ASIN;
                 Match match = Regex.Match(ASIN, "(^B[A-Z0-9]{9})");
-                if (!match.Success && DialogResult.No == MessageBox.Show(String.Format("Incorrect ASIN detected: {0}!\n" +
+                if (!match.Success && DialogResult.No == MessageBox.Show($"Incorrect ASIN detected: {ASIN}!\n" +
                                           "Kindle may not display an X-Ray for this book.\n" +
-                                          "Do you wish to continue?", ASIN), "Incorrect ASIN", MessageBoxButtons.YesNo))
+                                          "Do you wish to continue?", "Incorrect ASIN", MessageBoxButtons.YesNo))
                 {
-                    throw new Exception(String.Format("Incorrect ASIN detected: {0}!\r\n" +
+                    throw new Exception($"Incorrect ASIN detected: {ASIN}!\r\n" +
                                       "Kindle may not display an X-Ray for this book.\r\n" +
                                       "You must either use Calibre's Quality Check plugin (Fix ASIN for Kindle Fire) " +
-                                      "or a MOBI editor (exth 113 and optionally 504) to change this.", ASIN));
+                                      "or a MOBI editor (exth 113 and optionally 504) to change this.");
                 }
 
                 if (!Properties.Settings.Default.useNewVersion && md.DBName.Length == 31)
                 {
-                    MessageBox.Show(String.Format(
-                        "WARNING: Database Name is the maximum length. If \"{0}\" is the full book title, this should not be an issue.\r\n" +
+                    MessageBox.Show(
+                        $"WARNING: Database Name is the maximum length. If \"{md.DBName}\" is the full book title, this should not be an issue.\r\n" +
                         "If the title is supposed to be longer than that, you may get an error on your Kindle (WG on firmware < 5.6).\r\n" +
-                        "This can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n",
-                        md.DBName));
+                        "This can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n");
                 }
 
                 if (saveRawML)
@@ -344,8 +338,7 @@ namespace XRayBuilderGUI
             bookInfo.pagesInBook = pageCount.ToString();
             bookInfo.readingHours = span.Hours.ToString();
             bookInfo.readingMinutes = span.Minutes.ToString();
-            output = (String.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)"
-                , span.Hours, span.Minutes, bookInfo.pagesInBook));
+            output = $"Typical time to read: {span.Hours} hours and {span.Minutes} minutes ({bookInfo.pagesInBook} pages)";
             return output;
         }
 
@@ -362,7 +355,7 @@ namespace XRayBuilderGUI
             ProcessStartInfo startInfo = new ProcessStartInfo()
             {
                 FileName = mobiUnpack,
-                Arguments = "-r -d \"" + mobiFile + @""" """ + randomFile + @"""",
+                Arguments = $"-r -d \"{mobiFile}\" \"{randomFile}\"",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 StandardOutputEncoding = Encoding.UTF8,
@@ -490,18 +483,14 @@ namespace XRayBuilderGUI
 
             if (databaseName == "" || uniqid == "" || asin == "")
             {
-                throw new Exception(String.Format(
-                    "Error: Missing metadata.\r\nDatabase Name: {0}\r\nASIN: {1}\r\nUniqueID: {2}", databaseName, asin,
-                    uniqid));
+                throw new Exception($"Error: Missing metadata.\r\nDatabase Name: {databaseName}\r\nASIN: {asin}\r\nUniqueID: {uniqid}");
             }
             else if (!Properties.Settings.Default.useNewVersion && databaseName.Length == 31)
             {
                 MessageBox.Show(
-                    String.Format(
-                        "WARNING: Database Name is the maximum length. If \"{0}\" is the full book title, this should not be an issue.\r\n" +
-                        "If the title is supposed to be longer than that, you may get an error WG on your Kindle.\r\n" +
-                        "This can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n",
-                        databaseName));
+                    $"WARNING: Database Name is the maximum length. If \"{databaseName}\" is the full book title, this should not be an issue.\r\n" +
+                    "If the title is supposed to be longer than that, you may get an error WG on your Kindle.\r\n" +
+                    "This can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n");
             }
 
             output.Add(asin);

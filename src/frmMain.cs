@@ -927,10 +927,12 @@ namespace XRayBuilderGUI
                 selPath = ApPath;
             else
             {
-                OpenFileDialog openFile = new OpenFileDialog();
-                openFile.Title = "Open a Kindle AuthorProfile file...";
-                openFile.Filter = "ASC files|*.asc";
-                openFile.InitialDirectory = settings.outDir;
+                OpenFileDialog openFile = new OpenFileDialog()
+                {
+                    Title = "Open a Kindle AuthorProfile file...",
+                    Filter = "ASC files|*.asc",
+                    InitialDirectory = settings.outDir
+                };
                 if (openFile.ShowDialog() == DialogResult.OK)
                 {
                     if (openFile.FileName.Contains("AuthorProfile"))
@@ -965,10 +967,12 @@ namespace XRayBuilderGUI
                 selPath = SaPath;
             else
             {
-                OpenFileDialog openFile = new OpenFileDialog();
-                openFile.Title = "Open a Kindle StartActions file...";
-                openFile.Filter = "ASC files|*.asc";
-                openFile.InitialDirectory = settings.outDir;
+                OpenFileDialog openFile = new OpenFileDialog
+                {
+                    Title = "Open a Kindle StartActions file...",
+                    Filter = "ASC files|*.asc",
+                    InitialDirectory = settings.outDir
+                };
                 if (openFile.ShowDialog() == DialogResult.OK)
                 {
                     if (openFile.FileName.Contains("StartActions"))
@@ -1003,10 +1007,12 @@ namespace XRayBuilderGUI
                 selPath = EaPath;
             else
             {
-                OpenFileDialog openFile = new OpenFileDialog();
-                openFile.Title = "Open a Kindle EndActions file...";
-                openFile.Filter = "ASC files|*.asc";
-                openFile.InitialDirectory = settings.outDir;
+                OpenFileDialog openFile = new OpenFileDialog
+                {
+                    Title = "Open a Kindle EndActions file...",
+                    Filter = "ASC files|*.asc",
+                    InitialDirectory = settings.outDir
+                };
                 if (openFile.ShowDialog() == DialogResult.OK)
                 {
                     if (openFile.FileName.Contains("EndActions"))
@@ -1041,10 +1047,12 @@ namespace XRayBuilderGUI
                 selPath = XrPath;
             else
             {
-                OpenFileDialog openFile = new OpenFileDialog();
-                openFile.Title = "Open a Kindle X-Ray file...";
-                openFile.Filter = "ASC files|*.asc";
-                openFile.InitialDirectory = settings.outDir;
+                OpenFileDialog openFile = new OpenFileDialog
+                {
+                    Title = "Open a Kindle X-Ray file...",
+                    Filter = "ASC files|*.asc",
+                    InitialDirectory = settings.outDir
+                };
                 if (openFile.ShowDialog() == DialogResult.OK)
                 {
                     if (openFile.FileName.Contains("XRAY.entities"))
@@ -1160,10 +1168,12 @@ namespace XRayBuilderGUI
         private void btnExtractTerms_Click(object sender, EventArgs e)
         {
             string selPath = "";
-            OpenFileDialog openFile = new OpenFileDialog();
-            openFile.Title = "Open a Kindle X-Ray file...";
-            openFile.Filter = "ASC files|*.asc";
-            openFile.InitialDirectory = settings.outDir;
+            OpenFileDialog openFile = new OpenFileDialog
+            {
+                Title = "Open a Kindle X-Ray file...",
+                Filter = "ASC files|*.asc",
+                InitialDirectory = settings.outDir
+            };
             if (openFile.ShowDialog() == DialogResult.OK)
                 selPath = openFile.FileName;
             if (selPath == "" || !selPath.Contains("XRAY.entities"))
@@ -1220,10 +1230,12 @@ namespace XRayBuilderGUI
 
             while (reader.Read())
             {
-                XRay.Term newTerm = new XRay.Term();
-                newTerm.Id = reader.GetInt32(0);
-                newTerm.TermName = reader.GetString(1);
-                newTerm.Type = reader.GetInt32(3) == 1 ? "character" : "topic";
+                XRay.Term newTerm = new XRay.Term()
+                {
+                    Id = reader.GetInt32(0),
+                    TermName = reader.GetString(1),
+                    Type = reader.GetInt32(3) == 1 ? "character" : "topic"
+                };
                 //if (newTerm.Type == "character")
                 //{
                 //    newTerm.DescSrc = "Kindle Store";

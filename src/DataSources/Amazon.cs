@@ -133,8 +133,7 @@ namespace XRayBuilderGUI.DataSources
                 url = String.Format("https://www.amazon.{1}/dp/{0}", asin, TLD);
                 if (name != "" && url != "" && asin != "")
                 {
-                    BookInfo newBook = new BookInfo(name, curAuthor, asin);
-                    newBook.amazonUrl = url;
+                    BookInfo newBook = new BookInfo(name, curAuthor, asin) { amazonUrl = url };
                     bookList.Add(newBook);
                 }
             }
@@ -161,8 +160,7 @@ namespace XRayBuilderGUI.DataSources
                     url = String.Format("https://www.amazon.{1}/dp/{0}", asin, TLD);
                     if (name != "" && url != "" && asin != "")
                     {
-                        BookInfo newBook = new BookInfo(name, curAuthor, asin);
-                        newBook.amazonUrl = url;
+                        BookInfo newBook = new BookInfo(name, curAuthor, asin) { amazonUrl = url };
                         bookList.Add(newBook);
                     }
                 }

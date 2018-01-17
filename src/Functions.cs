@@ -35,8 +35,7 @@ namespace XRayBuilderGUI
 
         public static string GetDir(string defaultFolder)
         {
-            FolderBrowserDialog f = new FolderBrowserDialog();
-            f.SelectedPath = defaultFolder;
+            FolderBrowserDialog f = new FolderBrowserDialog() { SelectedPath = defaultFolder };
             if (f.ShowDialog() == DialogResult.OK)
                 return f.SelectedPath;
             else
@@ -360,16 +359,17 @@ namespace XRayBuilderGUI
             if (mobiUnpack == null) throw new ArgumentNullException("mobiUnpack");
             List<string> output = new List<string>();
 
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = mobiUnpack;
-            startInfo.Arguments = "-r -d \"" + mobiFile + @""" """ + randomFile + @"""";
-            startInfo.RedirectStandardOutput = true;
-            startInfo.RedirectStandardError = true;
-            startInfo.StandardOutputEncoding = Encoding.UTF8;
-            startInfo.StandardErrorEncoding = Encoding.UTF8;
-            startInfo.UseShellExecute = false;
-            // Hide console window
-            startInfo.CreateNoWindow = true;
+            ProcessStartInfo startInfo = new ProcessStartInfo()
+            {
+                FileName = mobiUnpack,
+                Arguments = "-r -d \"" + mobiFile + @""" """ + randomFile + @"""",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                StandardOutputEncoding = Encoding.UTF8,
+                StandardErrorEncoding = Encoding.UTF8,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
             string rawMl = "";
             string unpackInfo = "";
             try
@@ -516,10 +516,12 @@ namespace XRayBuilderGUI
 
         public static void RunNotepad(string filename)
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = "notepad";
-            startInfo.Arguments = filename;
-            startInfo.UseShellExecute = false;
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                FileName = "notepad",
+                Arguments = filename,
+                UseShellExecute = false
+            };
             try
             {
                 using (Process process = Process.Start(startInfo))

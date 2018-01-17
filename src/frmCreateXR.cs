@@ -91,10 +91,12 @@ namespace XRayBuilderGUI
 
         private void btnOpenXml_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFile = new OpenFileDialog();
-            openFile.Title = "Open XML or TXT file";
-            openFile.Filter = "XML files (*.xml)|*.xml|TXT files (*.txt)|*.txt";
-            openFile.InitialDirectory = Environment.CurrentDirectory + @"\xml\";
+            OpenFileDialog openFile = new OpenFileDialog()
+            {
+                Title = "Open XML or TXT file",
+                Filter = "XML files (*.xml)|*.xml|TXT files (*.txt)|*.txt",
+                InitialDirectory = Environment.CurrentDirectory + @"\xml\"
+            };
             if (openFile.ShowDialog() == DialogResult.OK)
             {
                 string filetype = Path.GetExtension(openFile.FileName);
@@ -379,10 +381,12 @@ namespace XRayBuilderGUI
                             MessageBox.Show("Error: Invalid term type \"" + temp + "\" on line " + lineCount);
                             return null;
                         }
-                        XRay.Term newTerm = new XRay.Term();
-                        newTerm.Type = temp;
-                        newTerm.TermName = streamReader.ReadLine();
-                        newTerm.Desc = streamReader.ReadLine();
+                        XRay.Term newTerm = new XRay.Term()
+                        {
+                            Type = temp,
+                            TermName = streamReader.ReadLine(),
+                            Desc = streamReader.ReadLine()
+                        };
                         lineCount += 2;
                         newTerm.MatchCase = temp == "character" ? true : false;
                         newTerm.DescSrc = "shelfari";

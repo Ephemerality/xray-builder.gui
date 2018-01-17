@@ -748,9 +748,7 @@ namespace XRayBuilderGUI
             int excerpt = 1;
             int personCount = 0;
             int termCount = 0;
-            SQLiteCommand command;
-            command = new SQLiteCommand(db);
-            command.CommandText = "update string set text=@text where id=15";
+            SQLiteCommand command = new SQLiteCommand("update string set text=@text where id=15", db);
             command.Parameters.AddWithValue("text", dataUrl);
             command.ExecuteNonQuery();
             command.Dispose();
@@ -762,22 +760,16 @@ namespace XRayBuilderGUI
             {
                 if (main.Exiting) return 1;
                 token.ThrowIfCancellationRequested();
-                command = new SQLiteCommand(db);
                 if (t.Type == "character") personCount++;
                 else if (t.Type == "topic") termCount++;
-                command.CommandText =
-                    String.Format(
-                        "insert into entity (id, label, loc_label, type, count, has_info_card) values ({0}, @label, null, {1}, {2}, 1);",
-                        t.Id, t.Type == "character" ? 1 : 2, t.Occurrences.Count);
+                command = new SQLiteCommand(String.Format("insert into entity (id, label, loc_label, type, count, has_info_card) values ({0}, @label, null, {1}, {2}, 1);",
+                    t.Id, t.Type == "character" ? 1 : 2, t.Occurrences.Count), db);
                 command.Parameters.AddWithValue("label", t.TermName);
                 command.ExecuteNonQuery();
                 command.Dispose();
 
-                command = new SQLiteCommand(db);
-                command.CommandText =
-                    String.Format(
-                        "insert into entity_description (text, source_wildcard, source, entity) values (@text, @source_wildcard, {0}, {1});",
-                        t.DescSrc == "shelfari" ? 2 : 4, t.Id);
+                command = new SQLiteCommand(String.Format("insert into entity_description (text, source_wildcard, source, entity) values (@text, @source_wildcard, {0}, {1});",
+                    t.DescSrc == "shelfari" ? 2 : 4, t.Id), db);
                 command.Parameters.AddWithValue("text", t.Desc == "" ? "No description available." : t.Desc);
                 command.Parameters.AddWithValue("source_wildcard", t.TermName);
                 command.ExecuteNonQuery();
@@ -795,8 +787,7 @@ namespace XRayBuilderGUI
             //Write excerpts and entity_excerpt table
             Logger.Log(String.Format("Writing {0} excerpts...", excerpts.Count));
             sql.Clear();
-            command = new SQLiteCommand(db);
-            command.CommandText = "insert into excerpt (id, start, length, image, related_entities, goto) values (@id, @start, @length, @image, @rel_ent, null);";
+            command = new SQLiteCommand("insert into excerpt (id, start, length, image, related_entities, goto) values (@id, @start, @length, @image, @rel_ent, null);", db);
             progress.Report(new Tuple<int, int>(0, excerpts.Count));
             foreach (Excerpt e in excerpts)
             {
@@ -900,10 +891,12 @@ namespace XRayBuilderGUI
                             Logger.Log("Error: Invalid term type \"" + temp + "\" on line " + lineCount);
                             return 1;
                         }
-                        Term newTerm = new Term();
-                        newTerm.Type = temp;
-                        newTerm.TermName = streamReader.ReadLine();
-                        newTerm.Desc = streamReader.ReadLine();
+                        Term newTerm = new Term
+                        {
+                            Type = temp,
+                            TermName = streamReader.ReadLine(),
+                            Desc = streamReader.ReadLine()
+                        };
                         lineCount += 2;
                         newTerm.MatchCase = temp == "character" ? true : false;
                         newTerm.DescSrc = "shelfari";

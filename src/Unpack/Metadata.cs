@@ -78,14 +78,7 @@ namespace XRayBuilderGUI.Unpack
         // 0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
         public List<string> getResults()
         {
-            List<string> results = new List<string>(6);
-            results.Add(ASIN);
-            results.Add(UniqueID);
-            results.Add(DBName);
-            results.Add(rawMLPath);
-            results.Add(Author);
-            results.Add(Title);
-            return results;
+            return new List<string>(6) { ASIN, UniqueID, DBName, rawMLPath, Author, Title };
         }
 
         public string ASIN

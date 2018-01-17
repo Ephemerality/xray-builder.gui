@@ -88,8 +88,7 @@ namespace XRayBuilderGUI
                 ListViewItem_SetSpacing(this.lvAuthorRecs, 60 + 7, 90 + 7);
                 for (int i = 0; i < ilauthorRecs.Images.Count; i++)
                 {
-                    ListViewItem item = new ListViewItem();
-                    item.ImageIndex = i;
+                    ListViewItem item = new ListViewItem() { ImageIndex = i };
                     lvAuthorRecs.Items.Add(item);
                 }
             }
@@ -106,8 +105,7 @@ namespace XRayBuilderGUI
                 ListViewItem_SetSpacing(this.lvCustomersWhoBoughtRecs, 60 + 7, 90 + 7);
                 for (int i = 0; i < ilcustomersWhoBoughtRecs.Images.Count; i++)
                 {
-                    ListViewItem item = new ListViewItem();
-                    item.ImageIndex = i;
+                    ListViewItem item = new ListViewItem() { ImageIndex = i };
                     lvCustomersWhoBoughtRecs.Items.Add(item);
                 }
             }

@@ -542,7 +542,7 @@ namespace XRayBuilderGUI
             }
             try
             {
-                var xmlserializer = new XmlSerializer(typeof (T));
+                var xmlserializer = new XmlSerializer(typeof(T));
                 var stringWriter = new StringWriter();
                 using (var writer = XmlWriter.Create(stringWriter))
                 {
@@ -560,7 +560,7 @@ namespace XRayBuilderGUI
         {
             using (var writer = new StreamWriter(fileName, false, Encoding.UTF8))
             {
-                var serializer = new XmlSerializer(typeof (T));
+                var serializer = new XmlSerializer(typeof(T));
                 serializer.Serialize(writer, output);
                 writer.Flush();
             }
@@ -573,11 +573,11 @@ namespace XRayBuilderGUI
 
             if (File.Exists(filePath))
             {
-                var serializer = new XmlSerializer(typeof (List<T>));
+                var serializer = new XmlSerializer(typeof(List<T>));
                 TextReader reader = new StreamReader(filePath, Encoding.UTF8);
                 try
                 {
-                    itemList = (List<T>) serializer.Deserialize(reader);
+                    itemList = (List<T>)serializer.Deserialize(reader);
                 }
                 catch (Exception ex)
                 {
@@ -640,7 +640,7 @@ namespace XRayBuilderGUI
             }
             return output.ToString();
         }
-        
+
         // Shamelessly stolen from http://www.mobileread.com/forums/showthread.php?t=185565
         public static byte[] CheckBytes(byte[] bytesToCheck)
         {

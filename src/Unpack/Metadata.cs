@@ -12,7 +12,7 @@ using System.Text;
 
 namespace XRayBuilderGUI.Unpack
 {
-    public class Metadata : IDisposable
+    public sealed class Metadata : IDisposable
     {
         public PDBHeader PDB;
         public PalmDOCHeader PDH;

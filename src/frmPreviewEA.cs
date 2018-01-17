@@ -15,9 +15,6 @@ namespace XRayBuilderGUI
         #region SET LISTVIEW ICON SPACING
 
         // http://qdevblog.blogspot.ch/2011/11/c-listview-item-spacing.html
-        [DllImport("user32.dll")]
-        private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
-
         private int MakeLong(short lowPart, short highPart)
         {
             return (int) (((ushort) lowPart) | (uint) (highPart << 16));
@@ -27,7 +24,7 @@ namespace XRayBuilderGUI
         {
             const int LVM_FIRST = 0x1000;
             const int LVM_SETICONSPACING = LVM_FIRST + 53;
-            SendMessage(listview.Handle, LVM_SETICONSPACING, IntPtr.Zero, (IntPtr) MakeLong(leftPadding, topPadding));
+            NativeMethods.SendMessage(listview.Handle, LVM_SETICONSPACING, IntPtr.Zero, (IntPtr) MakeLong(leftPadding, topPadding));
         }
 
         #endregion

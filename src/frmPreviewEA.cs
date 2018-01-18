@@ -88,7 +88,7 @@ namespace XRayBuilderGUI
                 ListViewItem_SetSpacing(this.lvAuthorRecs, 60 + 7, 90 + 7);
                 for (int i = 0; i < ilauthorRecs.Images.Count; i++)
                 {
-                    ListViewItem item = new ListViewItem() { ImageIndex = i };
+                    ListViewItem item = new ListViewItem { ImageIndex = i };
                     lvAuthorRecs.Items.Add(item);
                 }
             }

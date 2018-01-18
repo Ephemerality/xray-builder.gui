@@ -927,7 +927,7 @@ namespace XRayBuilderGUI
                 selPath = ApPath;
             else
             {
-                OpenFileDialog openFile = new OpenFileDialog()
+                OpenFileDialog openFile = new OpenFileDialog
                 {
                     Title = "Open a Kindle AuthorProfile file...",
                     Filter = "ASC files|*.asc",
@@ -1230,7 +1230,7 @@ namespace XRayBuilderGUI
 
             while (reader.Read())
             {
-                XRay.Term newTerm = new XRay.Term()
+                XRay.Term newTerm = new XRay.Term
                 {
                     Id = reader.GetInt32(0),
                     TermName = reader.GetString(1),

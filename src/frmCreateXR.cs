@@ -91,7 +91,7 @@ namespace XRayBuilderGUI
 
         private void btnOpenXml_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFile = new OpenFileDialog()
+            OpenFileDialog openFile = new OpenFileDialog
             {
                 Title = "Open XML or TXT file",
                 Filter = "XML files (*.xml)|*.xml|TXT files (*.txt)|*.txt",
@@ -381,7 +381,7 @@ namespace XRayBuilderGUI
                             MessageBox.Show("Error: Invalid term type \"" + temp + "\" on line " + lineCount);
                             return null;
                         }
-                        XRay.Term newTerm = new XRay.Term()
+                        XRay.Term newTerm = new XRay.Term
                         {
                             Type = temp,
                             TermName = streamReader.ReadLine(),

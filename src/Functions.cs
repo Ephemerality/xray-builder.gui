@@ -35,7 +35,7 @@ namespace XRayBuilderGUI
 
         public static string GetDir(string defaultFolder)
         {
-            FolderBrowserDialog f = new FolderBrowserDialog() { SelectedPath = defaultFolder };
+            FolderBrowserDialog f = new FolderBrowserDialog { SelectedPath = defaultFolder };
             if (f.ShowDialog() == DialogResult.OK)
                 return f.SelectedPath;
             else
@@ -352,7 +352,7 @@ namespace XRayBuilderGUI
             if (mobiUnpack == null) throw new ArgumentNullException("mobiUnpack");
             List<string> output = new List<string>();
 
-            ProcessStartInfo startInfo = new ProcessStartInfo()
+            ProcessStartInfo startInfo = new ProcessStartInfo
             {
                 FileName = mobiUnpack,
                 Arguments = $"-r -d \"{mobiFile}\" \"{randomFile}\"",

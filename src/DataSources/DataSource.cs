@@ -10,7 +10,7 @@ namespace XRayBuilderGUI.DataSources
     {
         public abstract string Name { get; }
         public virtual HtmlDocument sourceHtmlDoc { get; set; }
-        public abstract Task<string> SearchBook(string author, string title);
+        public abstract Task<List<BookInfo>> SearchBook(string author, string title);
         public abstract Task<BookInfo> GetNextInSeries(BookInfo curBook, AuthorProfile authorProfile, string TLD);
         public virtual Task<bool> GetPageCount(BookInfo curBook) { return Task.FromResult(false); }
         public virtual Task GetExtras(BookInfo curBook, CancellationToken token, IProgress<Tuple<int, int>> progress = null) { return Task.FromResult(false); }

@@ -13,9 +13,9 @@ namespace XRayBuilderGUI.DataSources
     {
         public override string Name { get { return "Shelfari"; } }
 
-        public override Task<string> SearchBook(string author, string title)
+        public override Task<List<BookInfo>> SearchBook(string author, string title)
         {
-            return Task.FromResult("");
+            return null;
         }
 
         private string FindShelfariURL(HtmlDocument shelfariHtmlDoc, string author, string title)

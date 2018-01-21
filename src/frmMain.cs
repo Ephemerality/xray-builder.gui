@@ -628,7 +628,21 @@ namespace XRayBuilderGUI
                  results[2], results[1]));
             try
             {
-                string bookUrl = await dataSource.SearchBook(results[4], results[5]);
+                List<BookInfo> books = await dataSource.SearchBook(results[4], results[5]);
+                string bookUrl = books?.Count == 1 ? books[0].dataUrl : "";
+                if (books?.Count > 1)
+                {
+                    Logger.Log($"Warning: Multiple results returned from {dataSource.Name}...");
+                    frmGR frmG = new frmGR();
+                    frmG.BookList = books;
+                    frmG.ShowDialog();
+                    bookUrl = books[frmG.cbResults.SelectedIndex].dataUrl;
+                }
+                else if (books?.Count == 1)
+                    bookUrl = books[0].dataUrl;
+                else
+                    Logger.Log($"Unable to find this book on {dataSource.Name}!");
+
                 if (bookUrl != "")
                 {
                     txtGoodreads.Text = bookUrl;
@@ -636,8 +650,6 @@ namespace XRayBuilderGUI
                     Logger.Log(String.Format("Book found on {3}!\r\n{0} by {1}\r\n{3} URL: {2}\r\nYou may want to visit the URL to ensure it is correct.",
                          results[5], results[4], bookUrl, dataSource.Name));
                 }
-                else
-                    Logger.Log("Unable to find this book on " + dataSource.Name + "!");
             }
             catch (Exception ex)
             {

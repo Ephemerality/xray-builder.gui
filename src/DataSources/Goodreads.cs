@@ -16,9 +16,6 @@ namespace XRayBuilderGUI.DataSources
         private Properties.Settings settings = Properties.Settings.Default;
 
         private frmASIN frmAS = new frmASIN();
-        private frmGR frmG = new frmGR();
-
-        private List<BookInfo> goodreadsBookList = new List<BookInfo>();
 
         // Goodreads expects %26 and %27 instead of & and ’ or ' and %20 instead of spaces
         Dictionary<string, string> replacements = new Dictionary<string, string>
@@ -29,10 +26,9 @@ namespace XRayBuilderGUI.DataSources
                 {" ", "%20"}
             };
 
-        public override async Task<string> SearchBook(string author, string title)
+        public override async Task<List<BookInfo>> SearchBook(string author, string title)
         {
             string goodreadsSearchUrlBase = @"https://www.goodreads.com/search?q={0}%20{1}";
-            string goodreadsBookUrl = "";
            
             Regex regex = new Regex(String.Join("|", replacements.Keys.Select(k => Regex.Escape(k))));
             title = regex.Replace(title, m => replacements[m.Value]);
@@ -47,17 +43,13 @@ namespace XRayBuilderGUI.DataSources
                 goodreadsHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(String.Format(goodreadsSearchUrlBase, author, title)));
             }
             if (!goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results"))
-            {
-                goodreadsBookUrl = FindGoodreadsURL(goodreadsHtmlDoc);
-                if (goodreadsBookUrl != "")
-                    return goodreadsBookUrl;
-            }
-            return "";
+                return FindGoodreadsURL(goodreadsHtmlDoc);
+            return null;
         }
 
-        private string FindGoodreadsURL(HtmlDocument goodreadsHtmlDoc)
+        private List<BookInfo> FindGoodreadsURL(HtmlDocument goodreadsHtmlDoc)
         {
-            goodreadsBookList.Clear();
+            List<BookInfo> goodreadsBookList = new List<BookInfo>();
             string goodreadsBookUrl = @"https://www.goodreads.com/book/show/{0}", ratingText = "";
             HtmlNodeCollection resultNodes =
                 goodreadsHtmlDoc.DocumentNode.SelectNodes("//tr[@itemtype='http://schema.org/Book']");
@@ -98,16 +90,7 @@ namespace XRayBuilderGUI.DataSources
                     newBook.editions = matchID.Groups[1].Value;
                 goodreadsBookList.Add(newBook);
             }
-
-            int i = 0;
-            if (goodreadsBookList.Count > 1)
-            {
-                Logger.Log("Warning: Multiple results returned from Goodreads...");
-                frmG.BookList = goodreadsBookList;
-                frmG.ShowDialog();
-                i = frmG.cbResults.SelectedIndex;
-            }
-            return goodreadsBookList[i].dataUrl;
+            return goodreadsBookList;
         }
 
         /// <summary>

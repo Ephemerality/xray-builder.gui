@@ -22,8 +22,8 @@ namespace XRayBuilderGUI.DataSources
             string newAuthor = Functions.FixAuthor(curBook.author);
             string plusAuthorName = newAuthor.Replace(" ", "+");
             //Updated to match Search "all" Amazon
-            string amazonAuthorSearchUrl = String.Format(@"https://www.amazon.{0}/s/ref=nb_sb_noss_2?url=search-alias%3Dstripbooks&field-keywords={1}", TLD, plusAuthorName);
-            Logger.Log(String.Format("Searching for author's page on Amazon.{0}...", TLD));
+            string amazonAuthorSearchUrl = $"https://www.amazon.{TLD}/s/ref=nb_sb_noss_2?url=search-alias%3Dstripbooks&field-keywords={plusAuthorName}";
+            Logger.Log($"Searching for author's page on Amazon.{TLD}...");
 
             // Search Amazon for Author
             results.authorHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
@@ -34,7 +34,7 @@ namespace XRayBuilderGUI.DataSources
                 try
                 {
                     Logger.Log("Saving Amazon's author search webpage...");
-                    File.WriteAllText(Environment.CurrentDirectory + String.Format(@"\dmp\{0}.authorsearchHtml.txt", curBook.asin),
+                    File.WriteAllText(Environment.CurrentDirectory + $"\\dmp\\{curBook.asin}.authorsearchHtml.txt",
                         results.authorHtmlDoc.DocumentNode.InnerHtml);
                 }
                 catch (Exception ex)
@@ -46,17 +46,16 @@ namespace XRayBuilderGUI.DataSources
             // Check for captcha
             if (results.authorHtmlDoc.DocumentNode.InnerText.Contains("Robot Check"))
             {
-                Logger.Log(String.Format("Warning: Amazon.{0} is requesting a captcha. Please try another region, or try again later.", TLD));
+                Logger.Log($"Warning: Amazon.{TLD} is requesting a captcha. Please try another region, or try again later.");
             }
             // Try to find Author's page from Amazon search
             HtmlNode node = results.authorHtmlDoc.DocumentNode.SelectSingleNode("//*[@id='result_1']");
             if (node == null || !node.OuterHtml.Contains("/e/B"))
             {
-                Logger.Log(String.Format("An error occurred finding author's page on Amazon.{0}." +
+                Logger.Log($"An error occurred finding author's page on Amazon.{TLD}." +
                                   "\r\nUnable to create Author Profile." +
                                   "\r\nEnsure the author metadata field matches the author's name exactly." +
-                                  "\r\nSearch results can be viewed at {1}"
-                                  , TLD, amazonAuthorSearchUrl));
+                                  $"\r\nSearch results can be viewed at {amazonAuthorSearchUrl}");
                 return null;
             }
             results.authorAsin = node.OuterHtml;
@@ -80,8 +79,7 @@ namespace XRayBuilderGUI.DataSources
                                               "%2Cp_n_feature_browse-bin%3A618073011&bbn=283155&ie=UTF8&qid=1432378570&rnid=618072011";
 
             curBook.authorAsin = results.authorAsin;
-            Logger.Log("Author page found on Amazon!");
-            Logger.Log(String.Format("Author's Amazon Page URL: {0}", authorAmazonWebsiteLocationLog));
+            Logger.Log($"Author page found on Amazon!\r\nAuthor's Amazon Page URL: {authorAmazonWebsiteLocationLog}");
 
             // Load Author's Amazon page
             string authorpageHtml = "";
@@ -130,7 +128,7 @@ namespace XRayBuilderGUI.DataSources
                 Match match = Regex.Match(otherBook.OuterHtml, "dp/(B[A-Z0-9]{9})/");
                 if (match.Success)
                     asin = match.Groups[1].Value;
-                url = String.Format("https://www.amazon.{1}/dp/{0}", asin, TLD);
+                url = $"https://www.amazon.{TLD}/dp/{asin}";
                 if (name != "" && url != "" && asin != "")
                 {
                     BookInfo newBook = new BookInfo(name, curAuthor, asin) { amazonUrl = url };
@@ -157,7 +155,7 @@ namespace XRayBuilderGUI.DataSources
                     Match match = Regex.Match(otherBook.OuterHtml, "dp/(B[A-Z0-9]{9})/");
                     if (match.Success)
                         asin = match.Groups[1].Value;
-                    url = String.Format("https://www.amazon.{1}/dp/{0}", asin, TLD);
+                    url = $"https://www.amazon.{TLD}/dp/{asin}";
                     if (name != "" && url != "" && asin != "")
                     {
                         BookInfo newBook = new BookInfo(name, curAuthor, asin) { amazonUrl = url };

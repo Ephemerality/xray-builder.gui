@@ -125,21 +125,20 @@ namespace XRayBuilderGUI.DataSources
                         if (book.asin != null)
                         {
                             nextBook = book;
-                            string Url = String.Format("https://www.amazon.{0}/dp/{1}", TLD, book.asin);
-                            await nextBook.GetAmazonInfo(Url).ConfigureAwait(false);
+                            await nextBook.GetAmazonInfo($"https://www.amazon.{TLD}/dp/{book.asin}").ConfigureAwait(false);
                         }
                         else
                             nextBook = await Amazon.SearchBook(book.title, book.author, TLD).ConfigureAwait(false);
                         if (nextBook == null && settings.promptASIN)
                         {
-                            Logger.Log(String.Format("ASIN prompt for {0}...", book.title));
+                            Logger.Log($"ASIN prompt for {book.title}...");
                             nextBook = new BookInfo(book.title, book.author, "");
                             frmAS.Text = "Next in Series";
                             frmAS.lblTitle.Text = book.title;
                             frmAS.tbAsin.Text = "";
                             frmAS.ShowDialog();
-                            Logger.Log(String.Format("ASIN supplied: {0}", frmAS.tbAsin.Text));
-                            string Url = String.Format("https://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text);
+                            Logger.Log($"ASIN supplied: {frmAS.tbAsin.Text}");
+                            string Url = $"https://www.amazon.{TLD}/dp/{frmAS.tbAsin.Text}";
                             await nextBook.GetAmazonInfo(Url).ConfigureAwait(false);
                             nextBook.amazonUrl = Url;
                             nextBook.asin = frmAS.tbAsin.Text;
@@ -147,7 +146,7 @@ namespace XRayBuilderGUI.DataSources
                     }
                     catch
                     {
-                        Logger.Log(String.Format("Failed to find {0} on Amazon." + TLD + ", trying again with Amazon.com.", book.title));
+                        Logger.Log($"Failed to find {book.title} on Amazon.{TLD}, trying again with Amazon.com.");
                         TLD = "com";
                         nextBook = await Amazon.SearchBook(book.title, book.author, TLD).ConfigureAwait(false);
                     }
@@ -172,21 +171,20 @@ namespace XRayBuilderGUI.DataSources
                     if (book.asin != null)
                     {
                         prevBook = book;
-                        string Url = String.Format("https://www.amazon.{0}/dp/{1}", TLD, book.asin);
-                        await prevBook.GetAmazonInfo(Url).ConfigureAwait(false);
+                        await prevBook.GetAmazonInfo($"https://www.amazon.{TLD}/dp/{book.asin}").ConfigureAwait(false);
                     }
                     else if(prevBook != null)
                         await prevBook.GetAmazonInfo(prevBook.amazonUrl).ConfigureAwait(false);
                     if (prevBook == null && settings.promptASIN)
                     {
-                        Logger.Log(String.Format("ASIN prompt for {0}...", book.title));
+                        Logger.Log($"ASIN prompt for {book.title}...");
                         prevBook = new BookInfo(book.title, book.author, "");
                         frmAS.Text = "Previous in Series";
                         frmAS.lblTitle.Text = book.title;
                         frmAS.tbAsin.Text = "";
                         frmAS.ShowDialog();
-                        Logger.Log(String.Format("ASIN supplied: {0}", frmAS.tbAsin.Text));
-                        string Url = String.Format("https://www.amazon.{0}/dp/{1}", TLD, frmAS.tbAsin.Text);
+                        Logger.Log($"ASIN supplied: {frmAS.tbAsin.Text}");
+                        string Url = $"https://www.amazon.{TLD}/dp/{frmAS.tbAsin.Text}";
                         await prevBook.GetAmazonInfo(Url).ConfigureAwait(false);
                         prevBook.amazonUrl = Url;
                         prevBook.asin = frmAS.tbAsin.Text;
@@ -194,8 +192,7 @@ namespace XRayBuilderGUI.DataSources
                 }
                 if (prevBook == null)
                 {
-                    Logger.Log(
-                        "Book was found to be part of a series, but an error occurred finding the previous book.\r\n" +
+                    Logger.Log("Book was found to be part of a series, but an error occurred finding the previous book.\r\n" +
                         "Please report this book and the Goodreads URL and output log to improve parsing.");
                 }
             }

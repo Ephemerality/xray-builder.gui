@@ -61,7 +61,7 @@ namespace XRayBuilderGUI
         private DataSources.DataSource dataSource;
 
         #region CommonTitles
-        string[] CommonTitles = new [] { "Mr", "Mrs", "Ms", "Miss", "Dr", "Herr", "Monsieur", "Hr", "Frau",
+        string[] CommonTitles = new[] { "Mr", "Mrs", "Ms", "Miss", "Dr", "Herr", "Monsieur", "Hr", "Frau",
             "A V M", "Admiraal", "Admiral", "Alderman", "Alhaji", "Ambassador", "Baron", "Barones", "Brig",
             "Brigadier", "Brother", "Canon", "Capt", "Captain", "Cardinal", "Cdr", "Chief", "Cik", "Cmdr", "Col",
             "Colonel", "Commandant", "Commander", "Commissioner", "Commodore", "Comte", "Comtessa", "Congressman",
@@ -561,7 +561,7 @@ namespace XRayBuilderGUI
 
                                 while ((start > -1) && (at > -1))
                                 {
-                                    at = node.InnerHtml.LastIndexOfAny(new [] { '.', '?', '!' }, start);
+                                    at = node.InnerHtml.LastIndexOfAny(new[] { '.', '?', '!' }, start);
                                     if (at > -1)
                                     {
                                         start = at - 1;
@@ -591,7 +591,7 @@ namespace XRayBuilderGUI
                         {
                             character.Locs.Add(String.Format("[{0},{1},{2},{3}]", location + locOffset, lenQuote,
                                 locHighlight[j], lenHighlight[j])); // For old format
-                            character.Occurrences.Add(new [] { location + locOffset + locHighlight[j], lenHighlight[j] }); // For new format
+                            character.Occurrences.Add(new[] { location + locOffset + locHighlight[j], lenHighlight[j] }); // For new format
                         }
                         List<Excerpt> exCheck = excerpts.Where(t => t.start.Equals(location + locOffset)).ToList();
                         if (exCheck.Count > 0)
@@ -986,11 +986,12 @@ namespace XRayBuilderGUI
             [XmlElement("url")] public string DescUrl = "";
 
             [XmlIgnore] public List<string> Aliases = new List<string>();
-            
+
             [JsonIgnore]
-            [XmlIgnore] public List<string> Locs = new List<string>();
-            
-            [XmlIgnore] public List<string> Assets = new List<string> {""};
+            [XmlIgnore]
+            public List<string> Locs = new List<string>();
+
+            [XmlIgnore] public List<string> Assets = new List<string> { "" };
 
             [XmlIgnore] public int Id = -1;
 
@@ -1094,73 +1095,75 @@ namespace XRayBuilderGUI
             {
                 List<string> aliasCheck = new List<string>();
                 foreach (var c in Terms)
+                {
                     if (c.Type == "character" && c.TermName.Contains(" "))
+                    {
                         try
                         {
-                        if (Properties.Settings.Default.splitAliases)
-                        {
-                            string splitName = "";
-                            string titleTrimmed = "";
-                            string[] words;
-                            List<string> aliasList = new List<string>();
-                            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
-                            
-                            string pattern = @"( ?(" + string.Join("|", CommonTitles) +
-                                ")\\.? )|(^[A-Z]\\. )|( [A-Z]\\.)|(\")|(\u201C)|(\u201D)|(,)|(')";
-
-                            Regex regex = new Regex(pattern);
-                            Match matchCheck = Regex.Match(c.TermName, pattern);
-                            if (matchCheck.Success)
+                            if (Properties.Settings.Default.splitAliases)
                             {
-                                titleTrimmed = c.TermName;
-                                foreach (Match match in regex.Matches(titleTrimmed))
-                                {
-                                    titleTrimmed = titleTrimmed.Replace(match.Value, String.Empty);
-                                }
-                                foreach (Match match in regex.Matches(titleTrimmed))
-                                {
-                                    titleTrimmed = titleTrimmed.Replace(match.Value, String.Empty);
-                                }
-                                aliasList.Add(titleTrimmed);
-                            }
-                            else
-                                titleTrimmed = c.TermName;
+                                string splitName = "";
+                                string titleTrimmed = "";
+                                string[] words;
+                                List<string> aliasList = new List<string>();
+                                TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
 
-                            titleTrimmed = Regex.Replace(titleTrimmed, @"\s+", " ");
-                            titleTrimmed = Regex.Replace(titleTrimmed, @"( ?V?I{0,3}$)", String.Empty);
-                            titleTrimmed = Regex.Replace(titleTrimmed, @"(\(aka )", "(");
+                                string pattern = @"( ?(" + string.Join("|", CommonTitles) +
+                                    ")\\.? )|(^[A-Z]\\. )|( [A-Z]\\.)|(\")|(\u201C)|(\u201D)|(,)|(')";
 
-                            Match bracketedName = Regex.Match(titleTrimmed, @"(.*)(\()(.*)(\))");
-                            if (bracketedName.Success)
-                            {
-                                aliasList.Add(bracketedName.Groups[3].Value);
-                                aliasList.Add(bracketedName.Groups[1].Value.TrimEnd());
-                                titleTrimmed = titleTrimmed.Replace(bracketedName.Groups[2].Value, "")
-                                    .Replace(bracketedName.Groups[4].Value, "");
-                            }
+                                Regex regex = new Regex(pattern);
+                                Match matchCheck = Regex.Match(c.TermName, pattern);
+                                if (matchCheck.Success)
+                                {
+                                    titleTrimmed = c.TermName;
+                                    foreach (Match match in regex.Matches(titleTrimmed))
+                                    {
+                                        titleTrimmed = titleTrimmed.Replace(match.Value, String.Empty);
+                                    }
+                                    foreach (Match match in regex.Matches(titleTrimmed))
+                                    {
+                                        titleTrimmed = titleTrimmed.Replace(match.Value, String.Empty);
+                                    }
+                                    aliasList.Add(titleTrimmed);
+                                }
+                                else
+                                    titleTrimmed = c.TermName;
 
-                            if (titleTrimmed.Contains(" "))
-                            {
-                                titleTrimmed = titleTrimmed.Replace(" &amp;","").Replace(" &", "");
-                                words = titleTrimmed.Split(' ');
-                                foreach (string word in words)
+                                titleTrimmed = Regex.Replace(titleTrimmed, @"\s+", " ");
+                                titleTrimmed = Regex.Replace(titleTrimmed, @"( ?V?I{0,3}$)", String.Empty);
+                                titleTrimmed = Regex.Replace(titleTrimmed, @"(\(aka )", "(");
+
+                                Match bracketedName = Regex.Match(titleTrimmed, @"(.*)(\()(.*)(\))");
+                                if (bracketedName.Success)
                                 {
-                                    if (word.ToUpper() == word)
-                                        aliasList.Add(textInfo.ToTitleCase(word.ToLower()));
-                                    else
-                                        aliasList.Add(word);
+                                    aliasList.Add(bracketedName.Groups[3].Value);
+                                    aliasList.Add(bracketedName.Groups[1].Value.TrimEnd());
+                                    titleTrimmed = titleTrimmed.Replace(bracketedName.Groups[2].Value, "")
+                                        .Replace(bracketedName.Groups[4].Value, "");
                                 }
-                            }
-                            if (aliasList.Count > 0)
-                            {
-                                aliasList.Sort((a, b) => b.Length.CompareTo(a.Length));
-                                foreach (string word in aliasList)
+
+                                if (titleTrimmed.Contains(" "))
                                 {
-                                    if (aliasCheck.Any(str => str.Equals(word)))
-                                        continue;
-                                    aliasCheck.Add(word);
-                                    splitName += word + ",";
+                                    titleTrimmed = titleTrimmed.Replace(" &amp;", "").Replace(" &", "");
+                                    words = titleTrimmed.Split(' ');
+                                    foreach (string word in words)
+                                    {
+                                        if (word.ToUpper() == word)
+                                            aliasList.Add(textInfo.ToTitleCase(word.ToLower()));
+                                        else
+                                            aliasList.Add(word);
+                                    }
                                 }
+                                if (aliasList.Count > 0)
+                                {
+                                    aliasList.Sort((a, b) => b.Length.CompareTo(a.Length));
+                                    foreach (string word in aliasList)
+                                    {
+                                        if (aliasCheck.Any(str => str.Equals(word)))
+                                            continue;
+                                        aliasCheck.Add(word);
+                                        splitName += word + ",";
+                                    }
                                     if (splitName.LastIndexOf(",") != -1)
                                     {
                                         streamWriter.WriteLine(c.TermName + "|" + splitName.Substring(0, splitName.LastIndexOf(",")));
@@ -1168,16 +1171,18 @@ namespace XRayBuilderGUI
                                     else
                                         streamWriter.WriteLine(c.TermName + "|");
                                 }
+                            }
+                            else
+                                streamWriter.WriteLine(c.TermName + "|");
                         }
-                        else
-                            streamWriter.WriteLine(c.TermName + "|");
-                    }
                         catch (Exception ex)
                         {
                             Logger.Log("An error occurred while splitting the aliases.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                         }
+                    }
                     else
                         streamWriter.WriteLine(c.TermName + "|");
+                }
             }
         }
 
@@ -1264,7 +1269,7 @@ namespace XRayBuilderGUI
                 streamWriter.Write(ToString());
             }
         }
-        
+
         public async Task SaveToFileNew(string path, Progress<Tuple<int, int>> progress, CancellationToken token)
         {
             SQLiteConnection.CreateFile(path);

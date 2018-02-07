@@ -1106,7 +1106,7 @@ namespace XRayBuilderGUI
                             TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
                             
                             string pattern = @"( ?(" + string.Join("|", CommonTitles) +
-                                ")\\.? )|(^[A-Z]\\. )|( [A-Z]\\.)|(\")|(“)|(”)|(,)|(')";
+                                ")\\.? )|(^[A-Z]\\. )|( [A-Z]\\.)|(\")|(\u201C)|(\u0x201D)|(,)|(')";
 
                             Regex regex = new Regex(pattern);
                             Match matchCheck = Regex.Match(c.TermName, pattern);

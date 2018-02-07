@@ -376,7 +376,7 @@ namespace XRayBuilderGUI
                             chapterFile));
             }
 
-            if (enableEdit)
+            if (!unattended && enableEdit)
                 if (DialogResult.Yes ==
                     main.SafeShow("Would you like to open the chapters file in notepad for editing?", "Chapters",
                         MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))

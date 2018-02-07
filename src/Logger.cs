@@ -13,10 +13,15 @@ namespace XRayBuilderGUI
 
         public static void Log(string message)
         {
-            if (ctrl == null) throw new NullReferenceException("Log control not set.");
             if (!enabled) return;
             if (!message.EndsWith("\r\n")) message += "\r\n";
-            ctrl.SafeAppendText(message);
+            if (ctrl == null)
+            {
+                Console.WriteLine(message);
+                return;
+            }
+            else
+                ctrl.SafeAppendText(message);
         }
         
         public static void SafeAppendText(this RichTextBox rtfBox, string message)

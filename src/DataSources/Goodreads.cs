@@ -398,7 +398,7 @@ namespace XRayBuilderGUI.DataSources
             if (allChars.Count > 20)
                 Logger.Log("More than 20 characters found. Consider using the 'download to XML' option if you need to build repeatedly.");
             int count = 1;
-            if (progress != null) progress.Report(new Tuple<int, int>(1, allChars.Count));
+            progress?.Report(new Tuple<int, int>(1, allChars.Count));
             foreach (HtmlNode charNode in allChars)
             {
                 token.ThrowIfCancellationRequested();
@@ -407,7 +407,7 @@ namespace XRayBuilderGUI.DataSources
                     XRay.Term tempTerm = await GetTerm(dataUrl, charNode.GetAttributeValue("href", ""));
                     if (tempTerm != null)
                         terms.Add(tempTerm);
-                    if (progress != null) progress.Report(new Tuple<int, int>(count++, allChars.Count));
+                    progress?.Report(new Tuple<int, int>(count++, allChars.Count));
                 }
                 catch (Exception ex)
                 {

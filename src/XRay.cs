@@ -430,11 +430,11 @@ namespace XRayBuilderGUI
             if (nodes == null)
                 throw new Exception("Could not locate any paragraphs in this book.\r\n" +
                     "Report this error along with a copy of the book to improve parsing.");
-            progress.Report(new Tuple<int, int>(0, nodes.Count));
+            progress?.Report(new Tuple<int, int>(0, nodes.Count));
             for (int i = 0; i < nodes.Count; i++)
             {
-                if (main.Exiting || token.IsCancellationRequested) return 1;
-                progress.Report(new Tuple<int, int>(i + 1, nodes.Count));
+                if ((main?.Exiting ?? false) || token.IsCancellationRequested) return 1;
+                progress?.Report(new Tuple<int, int>(i + 1, nodes.Count));
 
                 HtmlNode node = nodes[i];
                 if (node.FirstChild == null) continue; //If the inner HTML is just empty, skip the paragraph!
@@ -755,10 +755,10 @@ namespace XRayBuilderGUI
             Logger.Log("Updating database with terms, descriptions, and excerpts...");
             //Write all entities and occurrences
             Logger.Log(String.Format("Writing {0} terms...", Terms.Count));
-            progress.Report(new Tuple<int, int>(0, Terms.Count));
+            progress?.Report(new Tuple<int, int>(0, Terms.Count));
             foreach (Term t in Terms)
             {
-                if (main.Exiting) return 1;
+                if (main?.Exiting ?? false) return 1;
                 token.ThrowIfCancellationRequested();
                 if (t.Type == "character") personCount++;
                 else if (t.Type == "topic") termCount++;
@@ -782,16 +782,16 @@ namespace XRayBuilderGUI
                 command = new SQLiteCommand(sql.ToString(), db);
                 command.ExecuteNonQuery();
                 command.Dispose();
-                progress.Report(new Tuple<int, int>(entity++, Terms.Count));
+                progress?.Report(new Tuple<int, int>(entity++, Terms.Count));
             }
             //Write excerpts and entity_excerpt table
             Logger.Log(String.Format("Writing {0} excerpts...", excerpts.Count));
             sql.Clear();
             command = new SQLiteCommand("insert into excerpt (id, start, length, image, related_entities, goto) values (@id, @start, @length, @image, @rel_ent, null);", db);
-            progress.Report(new Tuple<int, int>(0, excerpts.Count));
+            progress?.Report(new Tuple<int, int>(0, excerpts.Count));
             foreach (Excerpt e in excerpts)
             {
-                if (main.Exiting) return 1;
+                if (main?.Exiting ?? false) return 1;
                 token.ThrowIfCancellationRequested();
                 command.Parameters.AddWithValue("id", e.id);
                 command.Parameters.AddWithValue("start", e.start);
@@ -804,7 +804,7 @@ namespace XRayBuilderGUI
                     if (ent != 0) // skip notable flag
                         sql.AppendFormat("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", ent, e.id);
                 }
-                progress.Report(new Tuple<int, int>(excerpt++, excerpts.Count));
+                progress?.Report(new Tuple<int, int>(excerpt++, excerpts.Count));
             }
             command.Dispose();
             // create links to notable clips in order of popularity

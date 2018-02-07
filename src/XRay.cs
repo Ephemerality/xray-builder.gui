@@ -1256,6 +1256,72 @@ namespace XRayBuilderGUI
                 }
             }
         }
+
+        public void SaveToFileOld(string path, bool useutf8)
+        {
+            using (StreamWriter streamWriter = new StreamWriter(path, false, useutf8 ? Encoding.UTF8 : Encoding.Default))
+            {
+                streamWriter.Write(ToString());
+            }
+        }
+        
+        public async Task SaveToFileNew(string path, Progress<Tuple<int, int>> progress, CancellationToken token)
+        {
+            SQLiteConnection.CreateFile(path);
+            using (SQLiteConnection m_dbConnection = new SQLiteConnection($"Data Source={path};Version=3;"))
+            {
+                m_dbConnection.Open();
+                string sql;
+                try
+                {
+                    using (StreamReader streamReader = new StreamReader(Environment.CurrentDirectory + @"\dist\BaseDB.sql", Encoding.UTF8))
+                    {
+                        sql = streamReader.ReadToEnd();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new IOException("An error occurred while opening the BaseDB.sql file. Ensure you extracted it to the same directory as the program.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                }
+                SQLiteCommand command = new SQLiteCommand("BEGIN; " + sql + " COMMIT;", m_dbConnection);
+                Logger.Log("Building new X-Ray database. May take a few minutes...");
+                command.ExecuteNonQuery();
+                command.Dispose();
+                command = new SQLiteCommand("PRAGMA user_version = 1; PRAGMA encoding = utf8; BEGIN;", m_dbConnection);
+                command.ExecuteNonQuery();
+                command.Dispose();
+                Logger.Log("Done building initial database. Populating with info from source X-Ray...");
+                try
+                {
+                    await Task.Run(() =>
+                    {
+                        PopulateDb(m_dbConnection, progress, token);
+                    }, token).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    if (ex is OperationCanceledException)
+                        Logger.Log("Building canceled.");
+                    else
+                        throw;
+                }
+                Logger.Log("Updating indices...");
+                sql = "CREATE INDEX idx_occurrence_start ON occurrence(start ASC);\n"
+                      + "CREATE INDEX idx_entity_type ON entity(type ASC);\n"
+                      + "CREATE INDEX idx_entity_excerpt ON entity_excerpt(entity ASC); COMMIT;";
+                command = new SQLiteCommand(sql, m_dbConnection);
+                command.ExecuteNonQuery();
+                command.Dispose();
+            }
+        }
+
+        public void SavePreviewToFile(string path, bool useutf8)
+        {
+            using (StreamWriter streamWriter = new StreamWriter(path, false, useutf8 ? Encoding.UTF8 : Encoding.Default))
+            {
+                streamWriter.Write(getPreviewData());
+            }
+        }
     }
 
     public class XRayJsonDef

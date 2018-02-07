@@ -273,77 +273,20 @@ namespace XRayBuilderGUI
             {
                 try
                 {
-                    SQLiteConnection.CreateFile(_newPath);
+                    await xray.SaveToFileNew(_newPath, new Progress<Tuple<int, int>>(UpdateProgressBar), cancelTokens.Token).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log("An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                    Logger.Log($"An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n{ex.Message}");
                     return;
                 }
-                using (SQLiteConnection m_dbConnection = new SQLiteConnection(("Data Source=" + _newPath + ";Version=3;")))
-                {
-                    m_dbConnection.Open();
-                    string sql;
-                    try
-                    {
-                        using (StreamReader streamReader = new StreamReader(Environment.CurrentDirectory + @"\dist\BaseDB.sql", Encoding.UTF8))
-                        {
-                            sql = streamReader.ReadToEnd();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log("An error occurred while opening the BaseDB.sql file. Ensure you extracted it to the same directory as the program.\n"
-                             + ex.Message + "\r\n" + ex.StackTrace);
-                        m_dbConnection.Dispose();
-                        return;
-                    }
-                    SQLiteCommand command = new SQLiteCommand("BEGIN; " + sql + " COMMIT;", m_dbConnection);
-                    Logger.Log("Building new X-Ray database. May take a few minutes...");
-                    command.ExecuteNonQuery();
-                    command.Dispose();
-                    command = new SQLiteCommand("PRAGMA user_version = 1; PRAGMA encoding = utf8; BEGIN;", m_dbConnection);
-                    command.ExecuteNonQuery();
-                    command.Dispose();
-                    Logger.Log("Done building initial database. Populating with info from source X-Ray...");
-                    CancellationToken token = cancelTokens.Token;
-                    try
-                    {
-                        await Task.Run(() =>
-                        {
-                            xray.PopulateDb(m_dbConnection, new Progress<Tuple<int, int>>(UpdateProgressBar), token);
-                        }, token);
-                    }
-                    catch (Exception ex)
-                    {
-                        command.Dispose();
-                        m_dbConnection.Close();
-                        if (ex is OperationCanceledException)
-                            Logger.Log("Building canceled.");
-                        else
-                            Logger.Log("An error occurred while populating the X-Ray database.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                        return;
-                    }
-                    Logger.Log("Updating indices...");
-                    sql = "CREATE INDEX idx_occurrence_start ON occurrence(start ASC);\n"
-                          + "CREATE INDEX idx_entity_type ON entity(type ASC);\n"
-                          + "CREATE INDEX idx_entity_excerpt ON entity_excerpt(entity ASC); COMMIT;";
-                    command = new SQLiteCommand(sql, m_dbConnection);
-                    command.ExecuteNonQuery();
-                    command.Dispose();
-                    m_dbConnection.Close();
-                    XrPath = outFolder + @"\XRAY.entities." + results[0];
-                }
+                XrPath = outFolder + @"\XRAY.entities." + results[0];
 
                 //Save the new XRAY.ASIN.previewData file
                 try
                 {
                     string PdPath = outFolder + @"\XRAY." + results[0] + ".previewData";
-                    using (StreamWriter streamWriter = new StreamWriter(PdPath, false,
-                        settings.utf8 ? Encoding.UTF8 : Encoding.Default))
-                    {
-                        streamWriter.Write(xray.getPreviewData());
-                    }
+                    xray.SavePreviewToFile(PdPath, settings.utf8);
                     Logger.Log("X-Ray previewData file created successfully!\r\nSaved to " + PdPath);
                 }
                 catch (Exception ex)
@@ -353,10 +296,7 @@ namespace XRayBuilderGUI
             }
             else
             {
-                using (StreamWriter streamWriter = new StreamWriter(_newPath, false, settings.utf8 ? Encoding.UTF8 : Encoding.Default))
-                {
-                    streamWriter.Write(xray.ToString());
-                }
+                xray.SaveToFileOld(_newPath, settings.utf8);
             }
             Logger.Log("X-Ray file created successfully!\r\nSaved to " + _newPath);
 

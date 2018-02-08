@@ -73,8 +73,6 @@ namespace XRayBuilderGUI.Unpack
             fs.Read(firstNonBookIndex, 0, firstNonBookIndex.Length);
             fs.Read(fullNameOffset, 0, fullNameOffset.Length);
             fs.Read(fullNameLength, 0, fullNameLength.Length);
-
-            int fullNameLen = BitConverter.ToInt32(Functions.CheckBytes(fullNameLength), 0);
             fs.Read(locale, 0, locale.Length);
             fs.Read(inputLanguage, 0, inputLanguage.Length);
             fs.Read(outputLanguage, 0, outputLanguage.Length);
@@ -92,9 +90,7 @@ namespace XRayBuilderGUI.Unpack
             fs.Read(restOfMobiHeader, 0, restOfMobiHeader.Length);
 
             if (exthExists)
-            {
                 exthHeader = new EXTHHeader(fs);
-            }
 
             // If applicable, read mbh flags regarding trailing bytes in record data
             if (MinVersion >= 5 && HeaderLength >= 228)
@@ -116,7 +112,7 @@ namespace XRayBuilderGUI.Unpack
             fs.Read(remainder, 0, remainder.Length);
 
             int fullNameIndexInRemainder = BitConverter.ToInt32(Functions.CheckBytes(fullNameOffset), 0) - currentOffset;
-
+            int fullNameLen = BitConverter.ToInt32(Functions.CheckBytes(fullNameLength), 0);
             fullName = new byte[fullNameLen];
 
             if (fullNameIndexInRemainder >= 0 &&

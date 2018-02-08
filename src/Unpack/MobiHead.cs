@@ -48,48 +48,48 @@ namespace XRayBuilderGUI.Unpack
         
         public MobiHead(FileStream fs, uint mobiHeaderSize)
         {
-            fs.Read(this.identifier, 0, this.identifier.Length);
-            if (this.IdentifierAsString != "MOBI")
+            fs.Read(identifier, 0, identifier.Length);
+            if (IdentifierAsString != "MOBI")
                 throw new IOException("Did not get expected MOBI identifier");
 
-            fs.Read(this.headerLength, 0, this.headerLength.Length);
-            this.restOfMobiHeader = new byte[this.HeaderLength + 16 - 132];
+            fs.Read(headerLength, 0, headerLength.Length);
+            restOfMobiHeader = new byte[HeaderLength + 16 - 132];
 
-            fs.Read(this.mobiType, 0, this.mobiType.Length);
-            fs.Read(this.textEncoding, 0, this.textEncoding.Length);
-            fs.Read(this.uniqueID, 0, this.uniqueID.Length);
-            Array.Reverse(this.uniqueID);
-            fs.Read(this.fileVersion, 0, this.fileVersion.Length);
-            fs.Read(this.orthographicIndex, 0, this.orthographicIndex.Length);
-            fs.Read(this.inflectionIndex, 0, this.inflectionIndex.Length);
-            fs.Read(this.indexNames, 0, this.indexNames.Length);
-            fs.Read(this.indexKeys, 0, this.indexKeys.Length);
-            fs.Read(this.extraIndex0, 0, this.extraIndex0.Length);
-            fs.Read(this.extraIndex1, 0, this.extraIndex1.Length);
-            fs.Read(this.extraIndex2, 0, this.extraIndex2.Length);
-            fs.Read(this.extraIndex3, 0, this.extraIndex3.Length);
-            fs.Read(this.extraIndex4, 0, this.extraIndex4.Length);
-            fs.Read(this.extraIndex5, 0, this.extraIndex5.Length);
-            fs.Read(this.firstNonBookIndex, 0, this.firstNonBookIndex.Length);
-            fs.Read(this.fullNameOffset, 0, this.fullNameOffset.Length);
-            fs.Read(this.fullNameLength, 0, this.fullNameLength.Length);
+            fs.Read(mobiType, 0, mobiType.Length);
+            fs.Read(textEncoding, 0, textEncoding.Length);
+            fs.Read(uniqueID, 0, uniqueID.Length);
+            Array.Reverse(uniqueID);
+            fs.Read(fileVersion, 0, fileVersion.Length);
+            fs.Read(orthographicIndex, 0, orthographicIndex.Length);
+            fs.Read(inflectionIndex, 0, inflectionIndex.Length);
+            fs.Read(indexNames, 0, indexNames.Length);
+            fs.Read(indexKeys, 0, indexKeys.Length);
+            fs.Read(extraIndex0, 0, extraIndex0.Length);
+            fs.Read(extraIndex1, 0, extraIndex1.Length);
+            fs.Read(extraIndex2, 0, extraIndex2.Length);
+            fs.Read(extraIndex3, 0, extraIndex3.Length);
+            fs.Read(extraIndex4, 0, extraIndex4.Length);
+            fs.Read(extraIndex5, 0, extraIndex5.Length);
+            fs.Read(firstNonBookIndex, 0, firstNonBookIndex.Length);
+            fs.Read(fullNameOffset, 0, fullNameOffset.Length);
+            fs.Read(fullNameLength, 0, fullNameLength.Length);
 
-            int fullNameLen = BitConverter.ToInt32(Functions.CheckBytes(this.fullNameLength), 0);
-            fs.Read(this.locale, 0, this.locale.Length);
-            fs.Read(this.inputLanguage, 0, this.inputLanguage.Length);
-            fs.Read(this.outputLanguage, 0, this.outputLanguage.Length);
-            fs.Read(this.minVersion, 0, this.minVersion.Length);
-            fs.Read(this.firstImageIndex, 0, this.firstImageIndex.Length);
-            fs.Read(this.huffmanRecordOffset, 0, this.huffmanRecordOffset.Length);
-            fs.Read(this.huffmanRecordCount, 0, this.huffmanRecordCount.Length);
-            fs.Read(this.huffmanTableOffset, 0, this.huffmanTableOffset.Length);
-            fs.Read(this.huffmanTableLength, 0, this.huffmanTableLength.Length);
-            fs.Read(this.exthFlags, 0, this.exthFlags.Length);
+            int fullNameLen = BitConverter.ToInt32(Functions.CheckBytes(fullNameLength), 0);
+            fs.Read(locale, 0, locale.Length);
+            fs.Read(inputLanguage, 0, inputLanguage.Length);
+            fs.Read(outputLanguage, 0, outputLanguage.Length);
+            fs.Read(minVersion, 0, minVersion.Length);
+            fs.Read(firstImageIndex, 0, firstImageIndex.Length);
+            fs.Read(huffmanRecordOffset, 0, huffmanRecordOffset.Length);
+            fs.Read(huffmanRecordCount, 0, huffmanRecordCount.Length);
+            fs.Read(huffmanTableOffset, 0, huffmanTableOffset.Length);
+            fs.Read(huffmanTableLength, 0, huffmanTableLength.Length);
+            fs.Read(exthFlags, 0, exthFlags.Length);
 
             //If bit 6 (0x40) is set, then there's an EXTH record 
-            bool exthExists = (BitConverter.ToUInt32(Functions.CheckBytes(this.exthFlags), 0) & 0x40) != 0;
+            bool exthExists = (BitConverter.ToUInt32(Functions.CheckBytes(exthFlags), 0) & 0x40) != 0;
 
-            fs.Read(this.restOfMobiHeader, 0, this.restOfMobiHeader.Length);
+            fs.Read(restOfMobiHeader, 0, restOfMobiHeader.Length);
 
             if (exthExists)
             {
@@ -97,10 +97,10 @@ namespace XRayBuilderGUI.Unpack
             }
 
             // If applicable, read mbh flags regarding trailing bytes in record data
-            if (this.MinVersion >= 5 && this.HeaderLength >= 228)
+            if (MinVersion >= 5 && HeaderLength >= 228)
             {
                 byte[] tempFlags = new byte[2];
-                Array.Copy(this.restOfMobiHeader, 110, tempFlags, 0, 2);
+                Array.Copy(restOfMobiHeader, 110, tempFlags, 0, 2);
                 ushort mbhFlags = BitConverter.ToUInt16(Functions.CheckBytes(tempFlags), 0);
                 multibyte = Convert.ToBoolean(mbhFlags & 1);
                 while (mbhFlags > 1)
@@ -111,19 +111,19 @@ namespace XRayBuilderGUI.Unpack
                 }
             }
 
-            int currentOffset = 132 + this.restOfMobiHeader.Length + ExthHeaderSize;
-            this.remainder = new byte[(int)(mobiHeaderSize - currentOffset)];
-            fs.Read(this.remainder, 0, this.remainder.Length);
+            int currentOffset = 132 + restOfMobiHeader.Length + ExthHeaderSize;
+            remainder = new byte[(int)(mobiHeaderSize - currentOffset)];
+            fs.Read(remainder, 0, remainder.Length);
 
-            int fullNameIndexInRemainder = BitConverter.ToInt32(Functions.CheckBytes(this.fullNameOffset), 0) - currentOffset;
+            int fullNameIndexInRemainder = BitConverter.ToInt32(Functions.CheckBytes(fullNameOffset), 0) - currentOffset;
 
-            this.fullName = new byte[fullNameLen];
+            fullName = new byte[fullNameLen];
 
             if (fullNameIndexInRemainder >= 0 &&
-                fullNameIndexInRemainder < this.remainder.Length &&
-                fullNameIndexInRemainder + fullNameLen <= this.remainder.Length && fullNameLen > 0)
+                fullNameIndexInRemainder < remainder.Length &&
+                fullNameIndexInRemainder + fullNameLen <= remainder.Length && fullNameLen > 0)
             {
-                Array.Copy(this.remainder, fullNameIndexInRemainder, this.fullName, 0, fullNameLen);
+                Array.Copy(remainder, fullNameIndexInRemainder, fullName, 0, fullNameLen);
             }
         }
 
@@ -131,39 +131,39 @@ namespace XRayBuilderGUI.Unpack
         {
             get
             {
-                if (this.exthHeader == null)
+                if (exthHeader == null)
                     return 0;
                 else
-                    return this.exthHeader.Size;
+                    return exthHeader.Size;
             }
 
         }
 
         public string FullName
         {
-            get { return Encoding.UTF8.GetString(this.fullName).Trim('\0'); }
+            get { return Encoding.UTF8.GetString(fullName).Trim('\0'); }
         }
 
         public string IdentifierAsString
         {
-            get { return Encoding.ASCII.GetString(this.identifier).Trim('\0'); }
+            get { return Encoding.ASCII.GetString(identifier).Trim('\0'); }
         }
 
         public uint HeaderLength
         {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(this.headerLength), 0); }
+            get { return BitConverter.ToUInt32(Functions.CheckBytes(headerLength), 0); }
         }
 
         public uint MobiType
         {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(this.mobiType), 0); }
+            get { return BitConverter.ToUInt32(Functions.CheckBytes(mobiType), 0); }
         }
 
         public string MobiTypeAsString
         {
             get
             {
-                switch (this.MobiType)
+                switch (MobiType)
                 {
                     case 2: return "Mobipocket Book";
                     case 3: return "PalmDoc Book";
@@ -178,64 +178,64 @@ namespace XRayBuilderGUI.Unpack
                     case 517: return "TEXT";
                     case 518: return "HTML";
                     default:
-                        return String.Format("Unknown {0}", this.MobiType);
+                        return String.Format("Unknown {0}", MobiType);
                 }
             }
         }
 
         public uint UniqueID
         {
-            get { return BitConverter.ToUInt32(this.uniqueID, 0); }
+            get { return BitConverter.ToUInt32(uniqueID, 0); }
         }
 
         public uint FileVersion
         {
-            get { return BitConverter.ToUInt32(this.fileVersion, 0); }
+            get { return BitConverter.ToUInt32(fileVersion, 0); }
         }
 
         public uint IndexKeys
         {
-            get { return BitConverter.ToUInt32(this.indexKeys, 0); }
+            get { return BitConverter.ToUInt32(indexKeys, 0); }
         }
 
         public uint FirstNonBookIndex
         {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(this.firstNonBookIndex), 0); }
+            get { return BitConverter.ToUInt32(Functions.CheckBytes(firstNonBookIndex), 0); }
         }
 
         public uint FullNameOffset
         {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(this.fullNameOffset), 0); }
+            get { return BitConverter.ToUInt32(Functions.CheckBytes(fullNameOffset), 0); }
         }
 
         public uint FullNameLength
         {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(this.fullNameLength), 0); }
+            get { return BitConverter.ToUInt32(Functions.CheckBytes(fullNameLength), 0); }
         }
 
         public uint MinVersion
         {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(this.minVersion), 0); }
+            get { return BitConverter.ToUInt32(Functions.CheckBytes(minVersion), 0); }
         }
 
         public uint HuffmanRecordOffset
         {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(this.huffmanRecordOffset), 0); }
+            get { return BitConverter.ToUInt32(Functions.CheckBytes(huffmanRecordOffset), 0); }
         }
 
         public uint HuffmanRecordCount
         {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(this.huffmanRecordCount), 0); }
+            get { return BitConverter.ToUInt32(Functions.CheckBytes(huffmanRecordCount), 0); }
         }
 
         public uint HuffmanTableOffset
         {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(this.huffmanTableOffset), 0); }
+            get { return BitConverter.ToUInt32(Functions.CheckBytes(huffmanTableOffset), 0); }
         }
 
         public uint HuffmanTableLength
         {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(this.huffmanTableLength), 0); }
+            get { return BitConverter.ToUInt32(Functions.CheckBytes(huffmanTableLength), 0); }
         }
     }
 }

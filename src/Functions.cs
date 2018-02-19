@@ -635,6 +635,7 @@ namespace XRayBuilderGUI
         // Shamelessly stolen from http://www.mobileread.com/forums/showthread.php?t=185565
         public static byte[] CheckBytes(byte[] bytesToCheck)
         {
+            if (bytesToCheck == null) return null;
             byte[] buffer = (byte[])bytesToCheck.Clone();
             if (BitConverter.IsLittleEndian)
                 Array.Reverse(buffer);

@@ -112,7 +112,7 @@ namespace XRayBuilderGUI.Unpack
 
         public int CoverOffset
         {
-            get { return BitConverter.ToInt32(Functions.CheckBytes(GetRecordBytesByType(201)), 0); }
+            get { return BitConverter.ToInt32(Functions.CheckBytes(GetRecordBytesByType(201)) ?? new byte[] { 255, 255, 255, 255 }, 0); }
         }
 
         private byte[] GetRecordBytesByType(int recType)

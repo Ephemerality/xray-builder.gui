@@ -58,14 +58,24 @@ namespace XRayBuilderGUI.DataSources
                                   $"\r\nSearch results can be viewed at {amazonAuthorSearchUrl}");
                 return null;
             }
-            results.authorAsin = node.OuterHtml;
-            int index1 = results.authorAsin.IndexOf("data-asin");
-            if (index1 > 0)
-                results.authorAsin = results.authorAsin.Substring(index1 + 11, 10);
 
-            node = node.SelectSingleNode("//*[@id='result_1']/div/div/div/div/a");
-            string properAuthor = node?.GetAttributeValue("href", "");
-            if (properAuthor == "" || properAuthor == null || properAuthor.IndexOf('/', 1) < 3)
+            string properAuthor = "";
+            // Check for typical search results, second item is the author page
+            if ((node = node.SelectSingleNode("//*[@id='result_1']/div/div/div/div/a")) != null)
+            {
+                results.authorAsin = node.GetAttributeValue("data-asin", "");
+                properAuthor = node.GetAttributeValue("href", "");
+            }
+            // otherwise check for "by so-and-so" text beneath the titles for a possible match
+            else if ((node = results.authorHtmlDoc.DocumentNode.SelectSingleNode($"//div[@id='resultsCol']//li[@class='s-result-item celwidget  ']//a[text()=\"{newAuthor}\"]")) != null)
+            {
+                properAuthor = node.GetAttributeValue("href", "");
+                int i = properAuthor.IndexOf("/e/B");
+                if (i > 0)
+                    results.authorAsin = properAuthor.Substring(i + 3, 10);
+            }
+            
+            if (properAuthor == "" || properAuthor == null || properAuthor.IndexOf('/', 1) < 3 || results.authorAsin == "")
             {
                 Logger.Log("Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: " + amazonAuthorSearchUrl);
                 return null;

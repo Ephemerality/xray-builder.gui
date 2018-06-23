@@ -269,28 +269,18 @@ namespace XRayBuilderGUI
         private void CreateAliases()
         {
             string aliasFile = Environment.CurrentDirectory + @"\ext\" + txtAsin.Text + ".aliases";
-            string aliases = "";
-            if (!Directory.Exists(Environment.CurrentDirectory + @"\ext\"))
-                Directory.CreateDirectory(Environment.CurrentDirectory + @"\ext\");
+            Directory.CreateDirectory(Environment.CurrentDirectory + @"\ext\");
             using (var streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8))
             {
-                for (int i = 0; i < Terms.Count; i++)
+                foreach (var term in Terms)
                 {
-                    if (Terms[i].Aliases.Count > 0)
+                    if (term.Aliases.Count > 0)
                     {
-                        Terms[i].Aliases.Sort((a, b) => b.Length.CompareTo(a.Length));
-                        foreach (string word in Terms[i].Aliases)
-                        {
-                            aliases += word + ",";
-                        }
-                        if (aliases.LastIndexOf(",") != -1)
-                        {
-                            streamWriter.WriteLine(Terms[i].TermName + "|" + aliases.Substring(0, aliases.LastIndexOf(",")));
-                            aliases = "";
-                        }
-                        else
-                            streamWriter.WriteLine(Terms[i].TermName + "|");
+                        term.Aliases.Sort((a, b) => b.Length.CompareTo(a.Length));
+                        streamWriter.WriteLine($"{term.TermName}|{string.Join(",", term.Aliases)}");
                     }
+                    else
+                        streamWriter.WriteLine(term.TermName + "|");
                 }
             }
         }

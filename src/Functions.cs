@@ -334,7 +334,7 @@ namespace XRayBuilderGUI
 
         public static List<string> GetMetaData(string mobiFile, string outDir, string randomFile, string mobiUnpack)
         {
-            if (mobiUnpack == null) throw new ArgumentNullException("mobiUnpack");
+            if (mobiUnpack == null) throw new ArgumentNullException(nameof(mobiUnpack));
             List<string> output = new List<string>();
 
             ProcessStartInfo startInfo = new ProcessStartInfo

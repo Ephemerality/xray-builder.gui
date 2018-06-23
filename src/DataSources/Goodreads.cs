@@ -382,18 +382,15 @@ namespace XRayBuilderGUI.DataSources
                 sourceHtmlDoc = new HtmlDocument();
                 sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(dataUrl));
             }
-			List<HtmlNode> allChars;
+
             HtmlNodeCollection charNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/a");
             if (charNodes == null) return terms;
-			allChars = charNodes.ToList();
+			var allChars = charNodes.ToList();
             // Check if ...more link exists on Goodreads page
             HtmlNodeCollection moreCharNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/span[@class='toggleContent']/a");
-            if (moreCharNodes != null)
-            {
-                List<HtmlNode> moreChars = moreCharNodes.ToList();
-                if (moreChars != null)
-                    allChars.AddRange(moreChars);
-            }
+            List<HtmlNode> moreChars = moreCharNodes?.ToList();
+            if (moreChars != null)
+                allChars.AddRange(moreChars);
             Logger.Log("Gathering term information from Goodreads... (" + allChars.Count + ")");
             if (allChars.Count > 20)
                 Logger.Log("More than 20 characters found. Consider using the 'download to XML' option if you need to build repeatedly.");
@@ -465,9 +462,9 @@ namespace XRayBuilderGUI.DataSources
             List<Tuple<string, int>> result = null;
             HtmlNode quoteNode = srcDoc.DocumentNode.SelectSingleNode("//div[@class='h2Container gradientHeaderContainer']/h2/a[starts-with(.,'Quotes from')]");
             if (quoteNode == null) return null;
-            string quoteURL = String.Format("https://www.goodreads.com{0}?page={{0}}", quoteNode.GetAttributeValue("href", ""));
+            string quoteURL = $"https://www.goodreads.com{quoteNode.GetAttributeValue("href", "")}?page={{0}}";
             int maxPages = 1;
-            if (progress != null) progress.Report(new Tuple<int, int>(0, 1));
+            progress?.Report(new Tuple<int, int>(0, 1));
             for (int i = 1; i <= maxPages; i++)
             {
                 token.ThrowIfCancellationRequested();

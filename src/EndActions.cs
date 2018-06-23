@@ -104,9 +104,9 @@ namespace XRayBuilderGUI
                         {
                             nodeTitle = item.SelectSingleNode(".//div/a");
                             //Remove CR, LF and TAB
-                            nodeTitleCheck = nodeTitle.InnerText.CleanString();
+                            nodeTitleCheck = nodeTitle.InnerText.Clean();
                         }
-                        cleanAuthor = item.SelectSingleNode(".//div/div").InnerText.CleanString();
+                        cleanAuthor = item.SelectSingleNode(".//div/div").InnerText.Clean();
                         //Exclude the current book title from other books search
                         Match match = Regex.Match(nodeTitleCheck, curBook.title, RegexOptions.IgnoreCase);
                         if (match.Success)

@@ -157,7 +157,7 @@ namespace XRayBuilderGUI
                             desc = desc.Substring(0, lastSpace) + '\u2026';
                     }
                     desc = System.Net.WebUtility.HtmlDecode(desc);
-                    desc = desc.CleanString();
+                    desc = desc.Clean();
                 }
             }
             if (numReviews == 0)

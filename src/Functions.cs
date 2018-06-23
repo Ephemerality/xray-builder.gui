@@ -14,13 +14,12 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
 using XRayBuilderGUI.Unpack;
+using Regex = System.Text.RegularExpressions.Regex;
 
 namespace XRayBuilderGUI
 {
     public static class Functions
     {
-        private static readonly HashSet<char> badChars = new HashSet<char> { '!', '@', '#', '$', '%', '_', '"' };
-
         //http://www.levibotelho.com/development/c-remove-diacritics-accents-from-a-string/
         public static string RemoveDiacritics(this string text)
         {
@@ -81,34 +80,24 @@ namespace XRayBuilderGUI
                 return defaultFile;
         }
 
-        public static string CleanString(this string s)
+        // TODO: Clean this up more cause it still sucks
+        public static string Clean(this string str)
         {
-            StringBuilder sb = new StringBuilder(s.Length);
-            for (int i = 0; i < s.Length; i++)
+            (string[] searches, string replace)[] replacements =
             {
-                if (!badChars.Contains(s[i]))
-                    sb.Append(s[i]);
+                (new[] {"&#169;", "&amp;#169;", "&#174;", "&amp;#174;", "&mdash;", @"</?[a-z]+>" }, ""),
+                (new[] { "“", "”", "\"" }, "'"),
+                (new[] { "&#133;", "&amp;#133;", @" \. \. \." }, "…"),
+                (new[] { " - ", "--" }, "—"),
+                (new[] { @"\t|\n|\r|•", @"\s+"}, " "),
+                (new[] { @"\. …$"}, "."),
+                (new[] {"@", "#", @"\$", "%", "_", }, "")
+            };
+            foreach (var (s, r) in replacements)
+            {
+                str = Regex.Replace(str, $"({string.Join("|", s)})", r, RegexOptions.Multiline);
             }
-            string cleanedString = sb.ToString();
-            cleanedString = Regex.Replace(cleanedString, @"“|”", "'");
-            cleanedString = cleanedString.Replace("\"", "'")
-                .Replace("<br>", string.Empty)
-                .Replace("&#133;", "…")
-                .Replace("&amp;#133;", "…")
-                .Replace("&#169;", string.Empty)
-                .Replace(" . . .", "…")
-                .Replace("&amp;#169;", string.Empty)
-                .Replace("&#174;", string.Empty)
-                .Replace("&amp;#174;", string.Empty)
-                .Replace(" - ", "—")
-                .Replace("--", "—")
-                .Replace("&mdash;", string.Empty);
-            cleanedString = Regex.Replace(cleanedString, @"</?[a-z]>", string.Empty, RegexOptions.Multiline);
-            cleanedString = Regex.Replace(cleanedString, @"\t|\n|\r|•", " ", RegexOptions.Multiline);
-            cleanedString = Regex.Replace(cleanedString, @"\s+", " ", RegexOptions.Multiline);
-            cleanedString = Regex.Replace(cleanedString, @"^ | $", string.Empty, RegexOptions.Multiline);
-            cleanedString = Regex.Replace(cleanedString, @"\. …$", ".", RegexOptions.Multiline);
-            return cleanedString.Trim();
+            return str.Trim();
         }
 
         public static string ImageToBase64(Image image, ImageFormat format)

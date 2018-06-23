@@ -78,7 +78,7 @@ namespace XRayBuilderGUI.DataSources
                 newBook.dataUrl = String.Format(goodreadsBookUrl, matchID.Groups[1].Value);
 
                 HtmlNode ratingNode = link.SelectSingleNode(".//span[@class='greyText smallText uitext']");
-                ratingText = Functions.CleanString(ratingNode.InnerText.Trim());
+                ratingText = ratingNode.InnerText.Clean();
                 matchID = Regex.Match(ratingText, @"(\d+[\.,]?\d*) avg rating");
                 if (matchID.Success)
                     newBook.amazonRating = float.Parse(matchID.Groups[1].Value);

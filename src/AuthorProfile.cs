@@ -141,7 +141,7 @@ namespace XRayBuilderGUI
                     {
                         BioTrimmed = bio.InnerText;
                     }
-                    BioTrimmed = Functions.CleanString(BioTrimmed);
+                    BioTrimmed = BioTrimmed.Clean();
                     Logger.Log("Author biography found on Amazon!");
                 }
             }

@@ -49,13 +49,13 @@ namespace XRayBuilderGUI
 
         public void UpdateProgressBar(Tuple<int, int> vals)
         {
-            Functions.SetPropertyThreadSafe(prgBar, "Maximum", vals.Item2);
-            Functions.SetPropertyThreadSafe(prgBar, "Value", vals.Item1);
+            prgBar.SetPropertyThreadSafe("Maximum", vals.Item2);
+            prgBar.SetPropertyThreadSafe("Value", vals.Item1);
         }
 
         public DialogResult SafeShow(string msg, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton def)
         {
-            return (DialogResult)this.Invoke(new Func<DialogResult>(() => { return MessageBox.Show(this, msg, caption, buttons, icon, def); }));
+            return (DialogResult)Invoke(new Func<DialogResult>(() => MessageBox.Show(this, msg, caption, buttons, icon, def)));
         }
 
         private void ToggleInterface(bool enabled)

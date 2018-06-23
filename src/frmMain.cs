@@ -5,14 +5,12 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilderGUI.DataSources;
 using XRayBuilderGUI.Properties;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace XRayBuilderGUI
@@ -77,24 +75,8 @@ namespace XRayBuilderGUI
                 cancelTokens.Dispose();
                 cancelTokens = new CancellationTokenSource();
             }
-            else if (enabled == true)
+            else if (enabled)
                 UpdateProgressBar(new Tuple<int, int>(0, 0));
-        }
-
-        public static bool checkInternet()
-        {
-            try
-            {
-                using (WebClient client = new WebClient())
-                {
-                    using (Stream stream = client.OpenRead("https://www.google.com"))
-                        return true;
-                }
-            }
-            catch (Exception)
-            {
-                return false;
-            }
         }
 
         private void btnBrowseMobi_Click(object sender, EventArgs e)
@@ -625,10 +607,7 @@ namespace XRayBuilderGUI
             settings.mobiFile = txtMobi.Text;
             settings.xmlFile = txtXMLFile.Text;
             settings.Goodreads = txtGoodreads.Text;
-            if (rdoGoodreads.Checked)
-                settings.buildSource = "Goodreads";
-            else
-                settings.buildSource = "XML";
+            settings.buildSource = rdoGoodreads.Checked ? "Goodreads" : "XML";
             settings.Save();
             if (txtOutput.Text.Trim().Length != 0)
                 File.WriteAllText(currentLog, txtOutput.Text.ToString());
@@ -799,10 +778,7 @@ namespace XRayBuilderGUI
                 try
                 {
                     results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
-                    if (results.Count == 7)
-                        pbCover.Image = new Bitmap(results[6]);
-                    else
-                        pbCover.Image = null;
+                    pbCover.Image = results.Count == 7 ? new Bitmap(results[6]) : null;
                 }
                 catch (Exception ex)
                 {

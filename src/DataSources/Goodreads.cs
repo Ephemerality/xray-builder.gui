@@ -30,7 +30,7 @@ namespace XRayBuilderGUI.DataSources
         {
             string goodreadsSearchUrlBase = @"https://www.goodreads.com/search?q={0}%20{1}";
            
-            Regex regex = new Regex(String.Join("|", replacements.Keys.Select(k => Regex.Escape(k))));
+            Regex regex = new Regex(String.Join("|", replacements.Keys.Select(Regex.Escape)));
             title = regex.Replace(title, m => replacements[m.Value]);
             author = Functions.FixAuthor(author);
             author = regex.Replace(author, m => replacements[m.Value]);
@@ -489,7 +489,8 @@ namespace XRayBuilderGUI.DataSources
                     int.TryParse(quote.SelectSingleNode(".//div[@class='right']/a").InnerText.Replace(" likes", ""), out var likes);
                     result.Add(new Tuple<string, int>(quote.InnerText.Substring(start, end - start), likes));
                 }
-                if (progress != null) progress.Report(new Tuple<int, int>(i, maxPages));
+
+                progress?.Report(new Tuple<int, int>(i, maxPages));
             }
             return result;
         }

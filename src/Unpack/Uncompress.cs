@@ -28,7 +28,7 @@ namespace XRayBuilderGUI.Unpack
             int op = 0;
             while (p < data.Length)
             {
-                int c = (int)data[p++];
+                int c = data[p++];
                 if (c >= 1 && c <= 8)
                 {
                     for (int i = 1; i <= c; i++)

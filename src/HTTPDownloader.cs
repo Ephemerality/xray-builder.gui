@@ -16,7 +16,7 @@ namespace XRayBuilderGUI
         private readonly string _referer;
         private readonly string _userAgent;
         private readonly CookieContainer _cookiejar = new CookieContainer();
-        private bool encodingFoundInHeader;
+        private bool _encodingFoundInHeader;
 
         public Encoding Encoding { get; set; }
         public WebHeaderCollection Headers { get; set; }
@@ -36,14 +36,12 @@ namespace XRayBuilderGUI
 
         public static async Task<Bitmap> GetImage(string url)
         {
-            Bitmap result = null;
             WebRequest request = WebRequest.Create(url);
             request.Timeout = 2000;
             using (WebResponse response = await request.GetResponseAsync())
             {
-                result = new Bitmap(response.GetResponseStream());
+                return new Bitmap(response.GetResponseStream());
             }
-            return result;
         }
 
         public HttpDownloader(string url) : this(url, null, null, "Mozilla/5.0(Windows NT 6.1; WOW64; Trident/7.0; AS; rv:11.0) like Gecko") { }
@@ -100,7 +98,7 @@ namespace XRayBuilderGUI
             using (StreamReader r = new StreamReader(memStream, Encoding))
             {
                 html = r.ReadToEnd().Trim();
-                if (!encodingFoundInHeader)
+                if (!_encodingFoundInHeader)
                     html = CheckMetaCharSetAndReEncode(memStream, html);
             }
 
@@ -115,8 +113,8 @@ namespace XRayBuilderGUI
                 Match m = Regex.Match(response.ContentType, @";\s*charset\s*=\s*(?<charset>.*)", RegexOptions.IgnoreCase);
                 if (m.Success)
                 {
-                    charset = m.Groups["charset"].Value.Trim(new[] { '\'', '"' });
-                    encodingFoundInHeader = true;
+                    charset = m.Groups["charset"].Value.Trim('\'', '"');
+                    _encodingFoundInHeader = true;
                 }
             }
             else
@@ -138,28 +136,26 @@ namespace XRayBuilderGUI
         private string CheckMetaCharSetAndReEncode(Stream memStream, string html)
         {
             Match m = new Regex(@"<meta\s+.*?charset\s*=\s*(?<charset>[A-Za-z0-9_-]+)", RegexOptions.Singleline | RegexOptions.IgnoreCase).Match(html);
-            if (m.Success)
+            if (!m.Success) return html;
+            string charset = m.Groups["charset"].Value.ToLower();
+            if ((charset == "unicode") || (charset == "utf-16"))
             {
-                string charset = m.Groups["charset"].Value.ToLower() ?? "iso-8859-1";
-                if ((charset == "unicode") || (charset == "utf-16"))
-                {
-                    charset = "utf-8";
-                }
+                charset = "utf-8";
+            }
 
-                try
+            try
+            {
+                Encoding metaEncoding = Encoding.GetEncoding(charset);
+                if (!Encoding.Equals(metaEncoding))
                 {
-                    Encoding metaEncoding = Encoding.GetEncoding(charset);
-                    if (!Encoding.Equals(metaEncoding))
-                    {
-                        memStream.Position = 0L;
-                        StreamReader recodeReader = new StreamReader(memStream, metaEncoding);
-                        html = recodeReader.ReadToEnd().Trim();
-                        recodeReader.Close();
-                    }
+                    memStream.Position = 0L;
+                    StreamReader recodeReader = new StreamReader(memStream, metaEncoding);
+                    html = recodeReader.ReadToEnd().Trim();
+                    recodeReader.Close();
                 }
-                catch (ArgumentException)
-                {
-                }
+            }
+            catch (ArgumentException)
+            {
             }
 
             return html;

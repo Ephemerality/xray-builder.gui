@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Reflection;
 using System.Windows.Forms;
 
 namespace XRayBuilderGUI
@@ -90,10 +89,7 @@ namespace XRayBuilderGUI
             else
                 rdoShelfari.Checked = true;
             chkPromptAsin.Checked = Properties.Settings.Default.promptASIN;
-            if (txtTemp.Text == "")
-                txtTemp.Text = Path.GetTempPath();
-            else
-                txtTemp.Text = Properties.Settings.Default.tmpDir;
+            txtTemp.Text = txtTemp.Text == "" ? Path.GetTempPath() : Properties.Settings.Default.tmpDir;
             chkDeleteTemp.Checked = Properties.Settings.Default.deleteTemp;
 
             // Added \r\n to show smaller tooltips
@@ -229,21 +225,18 @@ namespace XRayBuilderGUI
             Properties.Settings.Default.pageCount = chkPageCount.Checked;
             Properties.Settings.Default.saveBio = chkSaveBio.Checked;
             Properties.Settings.Default.amazonTLD = cmbRegion.SelectedValue.ToString();
-            if (rdoGoodreads.Checked)
-                Properties.Settings.Default.dataSource = "Goodreads";
-            else
-                Properties.Settings.Default.dataSource = "Shelfari";
+            Properties.Settings.Default.dataSource = rdoGoodreads.Checked ? "Goodreads" : "Shelfari";
             Properties.Settings.Default.promptASIN = chkPromptAsin.Checked;
             Properties.Settings.Default.tmpDir = txtTemp.Text;
             Properties.Settings.Default.deleteTemp = chkDeleteTemp.Checked;
             Properties.Settings.Default.Save();
             
-            this.Close();
+            Close();
         }
 
         private void chkAndroid_CheckedChanged(object sender, EventArgs e)
         {
-            if (chkAndroid.Checked == true)
+            if (chkAndroid.Checked)
             {
                 chkUseNew.Checked = true;
                 chkUseNew.Enabled = false;

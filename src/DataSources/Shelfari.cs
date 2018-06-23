@@ -233,9 +233,7 @@ namespace XRayBuilderGUI.DataSources
                 sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl));
             }
             HtmlNode pageNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_FirstEdition']");
-            if (pageNode == null)
-                return false;
-            HtmlNode node1 = pageNode.SelectSingleNode(".//div/div");
+            HtmlNode node1 = pageNode?.SelectSingleNode(".//div/div");
             if (node1 == null)
                 return false;
             //Parse page count and multiply by average reading time

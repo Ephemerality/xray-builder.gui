@@ -137,9 +137,8 @@ namespace XRayBuilderGUI
             }
             if (desc == "")
             {
-                HtmlNode descNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='bookDescription_feature_div']/noscript");
-                if (descNode == null)
-                    descNode = bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-size-medium series-detail-description-text']");
+                HtmlNode descNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='bookDescription_feature_div']/noscript")
+                    ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-size-medium series-detail-description-text']");
                 if (descNode != null && descNode.InnerText != "")
                 {
                     desc = descNode.InnerText.Trim();
@@ -164,9 +163,8 @@ namespace XRayBuilderGUI
             {
                 try
                 {
-                    HtmlNode ratingNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='acrPopover']");
-                    if (ratingNode == null)
-                        ratingNode = bookDoc.DocumentNode.SelectSingleNode("//*[@class='fl acrStars']/span");
+                    HtmlNode ratingNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='acrPopover']")
+                        ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='fl acrStars']/span");
                     if (ratingNode != null)
                     {
                         string aRating = ratingNode.GetAttributeValue("title", "0");

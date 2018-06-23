@@ -16,10 +16,7 @@ namespace XRayBuilderGUI
             if (!enabled) return;
             if (!message.EndsWith("\r\n")) message += "\r\n";
             if (ctrl == null)
-            {
                 Console.WriteLine(message);
-                return;
-            }
             else
                 ctrl.SafeAppendText(message);
         }
@@ -41,7 +38,7 @@ namespace XRayBuilderGUI
                     rtfBox.SelectionColor = Color.Green;
                 }
                 List<string> redFlags = new List<string> { "error", "failed", "problem", "skipping", "warning", "unable" };
-                if (redFlags.Any(s => message.ContainsIgnorecase(s)))
+                if (redFlags.Any(message.ContainsIgnorecase))
                 {
                     rtfBox.SelectionStart = rtfBox.TextLength;
                     rtfBox.SelectionLength = 0;
@@ -55,7 +52,7 @@ namespace XRayBuilderGUI
 
         public static void SafeClearText(this RichTextBox rtfBox)
         {
-            rtfBox.BeginInvoke((Action)(() => rtfBox.Clear()));
+            rtfBox.BeginInvoke((Action)rtfBox.Clear);
         }
     }
 }

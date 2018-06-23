@@ -26,14 +26,14 @@ namespace XRayBuilderGUI
         private void btnAddTerm_Click(object sender, EventArgs e)
         {
             if (txtName.Text == "") return;
-            Image typeImage = rdoCharacter.Checked == true ? Resources.character : Resources.setting;
+            Image typeImage = rdoCharacter.Checked ? Resources.character : Resources.setting;
             dgvTerms.Rows.Add(
                 typeImage,
                 txtName.Text,
                 txtAliases.Text,
                 txtDescription.Text,
                 txtLink.Text,
-                rdoGoodreads.Checked == true ? "Goodreads" : "Wikipedia",
+                rdoGoodreads.Checked ? "Goodreads" : "Wikipedia",
                 chkMatch.Checked,
                 chkCase.Checked,
                 chkDelete.Checked,
@@ -57,7 +57,7 @@ namespace XRayBuilderGUI
                 return;
             foreach (DataGridViewRow row in dgvTerms.Rows)
             {
-                if (row.Selected == true)
+                if (row.Selected)
                 {
                     rdoCharacter.Checked = CompareImages((Bitmap)row.Cells[0].Value, Resources.character);
                     rdoTopic.Checked = CompareImages((Bitmap)row.Cells[0].Value, Resources.setting);
@@ -173,7 +173,7 @@ namespace XRayBuilderGUI
         {
             foreach (DataGridViewRow row in dgvTerms.Rows)
             {
-                if (row.Selected == true)
+                if (row.Selected)
                     dgvTerms.Rows.Remove(row);
             }
         }
@@ -308,7 +308,7 @@ namespace XRayBuilderGUI
                 foreach (DataGridViewCell cell in row.Cells)
                 {
                     newTerm.Id = termId++;
-                    newTerm.Type = CompareImages((Bitmap)row.Cells[0].Value, Resources.character) == true ? "character" : "topic";
+                    newTerm.Type = CompareImages((Bitmap)row.Cells[0].Value, Resources.character) ? "character" : "topic";
                     newTerm.TermName = row.Cells[1].Value.ToString();
                     if (row.Cells[2].Value.ToString() != "")
                     {

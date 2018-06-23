@@ -19,7 +19,6 @@ namespace XRayBuilderGUI.Unpack
 
         public PDBHeader(FileStream fs)
         {
-            byte[] temp4 = new byte[4];
             fs.Read(_dbName, 0, 32);
             fs.Seek(44, SeekOrigin.Current);
             fs.Read(_numRecords, 0, 2);

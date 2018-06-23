@@ -1346,14 +1346,13 @@ namespace XRayBuilderGUI
     public static class ExtensionMethods
     {
         //http://stackoverflow.com/questions/166855/c-sharp-preg-replace
-        public static String PregReplace(this String input, string[] pattern, string[] replacements)
+        public static string PregReplace(this string input, string[] pattern, string[] replacements)
         {
             if (replacements.Length != pattern.Length)
-                throw new ArgumentException("Replacement and Pattern Arrays must be balanced");
+                throw new ArgumentException("Replacement and pattern arrays must be balanced");
 
             for (var i = 0; i < pattern.Length; i++)
             {
-                var s = Regex.IsMatch(input, "\"");
                 input = Regex.Replace(input, pattern[i], replacements[i]);
             }
             return input;

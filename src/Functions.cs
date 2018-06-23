@@ -153,11 +153,9 @@ namespace XRayBuilderGUI
 
         public static string GetBookOutputDirectory(string author, string title)
         {
-            string path, newAuthor, newTitle;
-            newAuthor = RemoveInvalidFileChars(author);
-            newTitle = RemoveInvalidFileChars(title);
-            path = Path.Combine(Properties.Settings.Default.outDir,
-                String.Format(@"{0}\{1}", newAuthor, newTitle));
+            var newAuthor = RemoveInvalidFileChars(author);
+            var newTitle = RemoveInvalidFileChars(title);
+            var path = Path.Combine(Properties.Settings.Default.outDir, $"{newAuthor}\\{newTitle}");
             if (!author.Equals(newAuthor) || !title.Equals(newTitle))
                 MessageBox.Show("The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.", "Invalid Characters");
             Directory.CreateDirectory(path);
@@ -166,11 +164,9 @@ namespace XRayBuilderGUI
 
         public static string GetBookOutputDirectoryOnly(string author, string title)
         {
-            string path, newAuthor, newTitle;
-            newAuthor = RemoveInvalidFileChars(author);
-            newTitle = RemoveInvalidFileChars(title);
-            path = Path.Combine(Properties.Settings.Default.outDir,
-                String.Format(@"{0}\{1}", newAuthor, newTitle));
+            var newAuthor = RemoveInvalidFileChars(author);
+            var newTitle = RemoveInvalidFileChars(title);
+            var path = Path.Combine(Properties.Settings.Default.outDir, $"{newAuthor}\\{newTitle}");
             if (!author.Equals(newAuthor) || !title.Equals(newTitle))
                 MessageBox.Show("The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.", "Invalid Characters");
             //Directory.CreateDirectory(path);

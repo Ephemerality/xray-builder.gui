@@ -9,12 +9,16 @@ namespace XRayBuilderGUI
         public frmAbout()
         {
             InitializeComponent();
-            this.Text = String.Format("About {0}", AssemblyTitle);
-            this.labelProductName.Text = AssemblyProduct;
-            this.labelVersion.Text = String.Format("Version {0}", AssemblyVersion);
-            this.labelBuilt.Text = String.Format("Build Date {0}", AssemblyBuilt);
-            this.labelCopyright.Text = AssemblyCopyright;
-            this.textBoxDescription.Text = AssemblyDescription;
+            labelProductName.Text = AssemblyProduct;
+            labelVersion.Text = $"Version {AssemblyVersion}";
+            labelBuilt.Text = $"Build Date {AssemblyBuilt}";
+            labelCopyright.Text = AssemblyCopyright;
+            textBoxDescription.Text = AssemblyDescription;
+        }
+
+        private void frmAbout_Load(object sender, EventArgs e)
+        {
+            Text = $"About {AssemblyTitle}";
         }
 
         #region Assembly Attribute Accessors

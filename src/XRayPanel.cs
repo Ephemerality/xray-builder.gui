@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace XRayBuilderGUI
@@ -34,13 +33,13 @@ namespace XRayBuilderGUI
             this.lblName.Text = name;
 
             this.lblMentions = new Label();
-            this.lblMentions.Font = new Font("Microsoft Sans Serif", 6.75F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
+            this.lblMentions.Font = new Font("Microsoft Sans Serif", 6.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             this.lblMentions.AutoSize = false;
             this.lblMentions.AutoEllipsis = true;
             this.lblMentions.TextAlign = ContentAlignment.MiddleRight;
             this.lblMentions.Location = new Point(180, 3);
             this.lblMentions.Size = new Size(80, 13);
-            this.lblMentions.Text = mentions == "0" ? "" : String.Format("{0} mentions", mentions);
+            this.lblMentions.Text = mentions == "0" ? "" : $"{mentions} mentions";
 
             this.lblDescription = new Label();
             this.lblDescription.AutoSize = false;

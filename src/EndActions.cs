@@ -257,7 +257,6 @@ namespace XRayBuilderGUI
             catch (Exception ex)
             {
                 Logger.Log("An error occurred while writing the End Action file: " + ex.Message + "\r\n" + ex.StackTrace);
-                return;
             }
         }
 
@@ -266,7 +265,7 @@ namespace XRayBuilderGUI
             string[] templates = GetBaseTemplates(Environment.CurrentDirectory + @"\dist\BaseEndActions.txt", 3);
             if (templates == null) return;
 
-            Logger.Log(String.Format("Gathering additional metadata for {0}...", curBook.title));
+            Logger.Log($"Gathering additional metadata for {curBook.title}...");
             string bookInfoTemplate = templates[0];
             string widgetsTemplate = templates[1];
             string layoutsTemplate = templates[2];
@@ -474,7 +473,6 @@ namespace XRayBuilderGUI
             {
                 Logger.Log("Error: EndActions file already exists... Skipping!\r\n" +
                          "Please review the settings page if you want to overwite any existing files.");
-                return;
             }
         }
 

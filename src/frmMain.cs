@@ -555,8 +555,7 @@ namespace XRayBuilderGUI
                 if (books?.Count > 1)
                 {
                     Logger.Log($"Warning: Multiple results returned from {dataSource.Name}...");
-                    frmGR frmG = new frmGR();
-                    frmG.BookList = books;
+                    var frmG = new frmGR {BookList = books};
                     frmG.ShowDialog();
                     bookUrl = books[frmG.cbResults.SelectedIndex].dataUrl;
                 }

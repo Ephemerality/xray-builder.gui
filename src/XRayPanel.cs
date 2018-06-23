@@ -14,51 +14,51 @@ namespace XRayBuilderGUI
 
         public XRayPanel(string type, string name, string mentions, string description) : base()
         {
-            this.BorderStyle = BorderStyle.None;
-            this.Name = "XRayPanel";
-            this.Size = new Size(258, 66);
+            BorderStyle = BorderStyle.None;
+            Name = "XRayPanel";
+            Size = new Size(258, 66);
 
-            this.pbType = new PictureBox();
-            this.pbType.Image = type == "character" ? Properties.Resources.people : Properties.Resources.terms;
-            this.pbType.Location = new Point(0, 0);
-            this.pbType.Size = new Size(20, 20);
-            this.pbType.SizeMode = PictureBoxSizeMode.StretchImage;
+            pbType = new PictureBox();
+            pbType.Image = type == "character" ? Properties.Resources.people : Properties.Resources.terms;
+            pbType.Location = new Point(0, 0);
+            pbType.Size = new Size(20, 20);
+            pbType.SizeMode = PictureBoxSizeMode.StretchImage;
 
-            this.lblName = new Label();
-            this.lblName.AutoSize = false;
-            this.lblName.AutoEllipsis = true;
-            this.lblName.TextAlign = ContentAlignment.MiddleLeft;
-            this.lblName.Location = new Point(26, 2);
-            this.lblName.Size = new Size(100, 13);
-            this.lblName.Text = name;
+            lblName = new Label();
+            lblName.AutoSize = false;
+            lblName.AutoEllipsis = true;
+            lblName.TextAlign = ContentAlignment.MiddleLeft;
+            lblName.Location = new Point(26, 2);
+            lblName.Size = new Size(100, 13);
+            lblName.Text = name;
 
-            this.lblMentions = new Label();
-            this.lblMentions.Font = new Font("Microsoft Sans Serif", 6.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            this.lblMentions.AutoSize = false;
-            this.lblMentions.AutoEllipsis = true;
-            this.lblMentions.TextAlign = ContentAlignment.MiddleRight;
-            this.lblMentions.Location = new Point(180, 3);
-            this.lblMentions.Size = new Size(80, 13);
-            this.lblMentions.Text = mentions == "0" ? "" : $"{mentions} mentions";
+            lblMentions = new Label();
+            lblMentions.Font = new Font("Microsoft Sans Serif", 6.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            lblMentions.AutoSize = false;
+            lblMentions.AutoEllipsis = true;
+            lblMentions.TextAlign = ContentAlignment.MiddleRight;
+            lblMentions.Location = new Point(180, 3);
+            lblMentions.Size = new Size(80, 13);
+            lblMentions.Text = mentions == "0" ? "" : $"{mentions} mentions";
 
-            this.lblDescription = new Label();
-            this.lblDescription.AutoSize = false;
-            this.lblDescription.AutoEllipsis = true;
-            this.lblDescription.TextAlign = ContentAlignment.TopLeft;
-            this.lblDescription.Location = new Point(26, 19);
-            this.lblDescription.Size = new Size(230, 45);
-            this.lblDescription.Text = description;
+            lblDescription = new Label();
+            lblDescription.AutoSize = false;
+            lblDescription.AutoEllipsis = true;
+            lblDescription.TextAlign = ContentAlignment.TopLeft;
+            lblDescription.Location = new Point(26, 19);
+            lblDescription.Size = new Size(230, 45);
+            lblDescription.Text = description;
 
-            this.pbSeperator = new PictureBox();
-            this.pbSeperator.Image = Properties.Resources.seperator;
-            this.pbSeperator.Location = new Point(0, 65);
-            this.pbSeperator.Size = new Size(350, 2);
+            pbSeperator = new PictureBox();
+            pbSeperator.Image = Properties.Resources.seperator;
+            pbSeperator.Location = new Point(0, 65);
+            pbSeperator.Size = new Size(350, 2);
 
-            this.Controls.Add(this.lblName);
-            this.Controls.Add(this.lblMentions);
-            this.Controls.Add(this.lblDescription);
-            this.Controls.Add(this.pbType);
-            this.Controls.Add(this.pbSeperator);
+            Controls.Add(lblName);
+            Controls.Add(lblMentions);
+            Controls.Add(lblDescription);
+            Controls.Add(pbType);
+            Controls.Add(pbSeperator);
         }
     }
 }

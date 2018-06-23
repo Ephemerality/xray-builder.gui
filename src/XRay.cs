@@ -93,8 +93,8 @@ namespace XRayBuilderGUI
         {
             if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
                 shelfari = "https://" + shelfari;
-            this.dataUrl = shelfari;
-            this.main = frm;
+            dataUrl = shelfari;
+            main = frm;
             this.dataSource = dataSource;
         }
 
@@ -106,14 +106,14 @@ namespace XRayBuilderGUI
 
             if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
                 shelfari = "https://" + shelfari;
-            this.dataUrl = shelfari;
-            this.databaseName = db;
-            this._guid = guid;
+            dataUrl = shelfari;
+            databaseName = db;
+            _guid = guid;
             this.asin = asin;
             this.locOffset = locOffset;
             this.aliaspath = aliaspath;
             this.unattended = unattended;
-            this.main = frm;
+            main = frm;
             this.dataSource = dataSource;
         }
 
@@ -122,16 +122,16 @@ namespace XRayBuilderGUI
         {
             if (xml == "" || db == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
-            this.xmlFile = xml;
-            this.databaseName = db;
-            this._guid = guid;
+            xmlFile = xml;
+            databaseName = db;
+            _guid = guid;
             this.asin = asin;
             this.locOffset = locOffset;
             this.aliaspath = aliaspath;
-            this.unattended = false;
-            this.main = frm;
+            unattended = false;
+            main = frm;
             this.dataSource = dataSource;
-            this.skipShelfari = true;
+            skipShelfari = true;
         }
 
         public async Task<int> SaveXml(string outfile, IProgress<Tuple<int, int>> progress, CancellationToken token)
@@ -954,16 +954,16 @@ namespace XRayBuilderGUI
 
             public Chapter()
             {
-                this.name = "";
-                this.start = 1;
-                this.End = 9999999;
+                name = "";
+                start = 1;
+                End = 9999999;
             }
 
             public Chapter(string name, long start, long end)
             {
                 this.name = name;
                 this.start = start;
-                this.End = end;
+                End = end;
             }
 
             public override string ToString()
@@ -1009,7 +1009,7 @@ namespace XRayBuilderGUI
 
             public Term(string type)
             {
-                this.Type = type;
+                Type = type;
             }
 
             public override string ToString()

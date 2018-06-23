@@ -27,7 +27,7 @@ namespace XRayBuilderGUI
             if (tempData != null)
             {
                 lblAuthorMore.Text = String.Format(" Kindle Books By {0}", tempData["n"].ToString());
-                this.Text = String.Format("About {0}", lblAuthorMore.Text);
+                Text = String.Format("About {0}", lblAuthorMore.Text);
                 lblBiography.Text = tempData["b"]?.ToString() ?? "";
                 string image64 = tempData["i"]?.ToString() ?? "";
                 if (image64 != "")

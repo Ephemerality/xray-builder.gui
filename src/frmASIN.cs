@@ -16,7 +16,7 @@ namespace XRayBuilderGUI
         private void btnOK_Click(object sender, EventArgs e)
         {
             if (CheckAsin())
-                this.Close();
+                Close();
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -24,7 +24,7 @@ namespace XRayBuilderGUI
             if (keyData == Keys.Enter)
             {
                 if (CheckAsin())
-                    this.Close();
+                    Close();
                 return true;
             }
             return base.ProcessCmdKey(ref msg, keyData);

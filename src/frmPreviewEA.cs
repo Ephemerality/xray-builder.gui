@@ -83,7 +83,7 @@ namespace XRayBuilderGUI
                     if (imageUrl != "" && imageUrl != null)
                         ilauthorRecs.Images.Add(Functions.MakeGrayscale3(await HttpDownloader.GetImage(imageUrl)));
                 }
-                ListViewItem_SetSpacing(this.lvAuthorRecs, 60 + 7, 90 + 7);
+                ListViewItem_SetSpacing(lvAuthorRecs, 60 + 7, 90 + 7);
                 for (int i = 0; i < ilauthorRecs.Images.Count; i++)
                 {
                     ListViewItem item = new ListViewItem { ImageIndex = i };
@@ -100,7 +100,7 @@ namespace XRayBuilderGUI
                     if (imageUrl != "" && imageUrl != null)
                         ilcustomersWhoBoughtRecs.Images.Add(Functions.MakeGrayscale3(await HttpDownloader.GetImage(imageUrl)));
                 }
-                ListViewItem_SetSpacing(this.lvCustomersWhoBoughtRecs, 60 + 7, 90 + 7);
+                ListViewItem_SetSpacing(lvCustomersWhoBoughtRecs, 60 + 7, 90 + 7);
                 for (int i = 0; i < ilcustomersWhoBoughtRecs.Images.Count; i++)
                 {
                     ListViewItem item = new ListViewItem() { ImageIndex = i };

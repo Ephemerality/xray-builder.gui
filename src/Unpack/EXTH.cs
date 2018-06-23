@@ -39,7 +39,7 @@ namespace XRayBuilderGUI.Unpack
             get
             {
                 int size = 0;
-                foreach (EXTHRecord rec in this.recordList)
+                foreach (EXTHRecord rec in recordList)
                 {
                     size += rec.Size;
                 }
@@ -52,7 +52,7 @@ namespace XRayBuilderGUI.Unpack
         {
             get
             {
-                int dataSize = this.DataSize;
+                int dataSize = DataSize;
                 return 12 + dataSize + GetPaddingSize(dataSize);
             }
         }

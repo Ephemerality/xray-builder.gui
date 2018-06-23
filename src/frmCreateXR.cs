@@ -227,7 +227,7 @@ namespace XRayBuilderGUI
                 if (e.Button == MouseButtons.Right)
                 {
                     Point relativeMousePosition = dgvTerms.PointToClient(Cursor.Position);
-                    this.cmsTerms.Show(dgvTerms, relativeMousePosition);
+                    cmsTerms.Show(dgvTerms, relativeMousePosition);
                 }
             }
         }

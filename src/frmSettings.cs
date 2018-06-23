@@ -253,7 +253,7 @@ namespace XRayBuilderGUI
         {
             if (keyData == Keys.Escape)
             {
-                this.Close();
+                Close();
                 return true;
             }
             return base.ProcessCmdKey(ref msg, keyData);
@@ -267,7 +267,7 @@ namespace XRayBuilderGUI
                 return;
             }
             else
-                this.TopMost = false;
+                TopMost = false;
             Process.Start(Environment.CurrentDirectory + @"\log");
         }
 

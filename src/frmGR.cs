@@ -21,7 +21,7 @@ namespace XRayBuilderGUI
         {
             if (keyData == Keys.Enter)
             {
-                this.Close();
+                Close();
                 return true;
             }
             return base.ProcessCmdKey(ref msg, keyData);
@@ -29,7 +29,7 @@ namespace XRayBuilderGUI
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         private void cbResults_SelectedIndexChanged(object sender, EventArgs e)

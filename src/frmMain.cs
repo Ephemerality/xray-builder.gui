@@ -633,7 +633,7 @@ namespace XRayBuilderGUI
         {
             Logger.ctrl = txtOutput;
             //this.WindowState = FormWindowState.Maximized;
-            this.ActiveControl = lblGoodreads;
+            ActiveControl = lblGoodreads;
             toolTip1.SetToolTip(btnBrowseMobi, "Open a Kindle book.");
             toolTip1.SetToolTip(btnBrowseOutput, "Open the default output directory.");
             toolTip1.SetToolTip(btnOneClick, "One Click to try to build the Start\r\nAction, Author Profile, End Action\r\nand X-Ray files for this book.");
@@ -654,8 +654,8 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(pbFile3, "End Actions");
             toolTip1.SetToolTip(pbFile4, "X-Ray");
 
-            this.DragEnter += frmMain_DragEnter;
-            this.DragDrop += frmMain_DragDrop;
+            DragEnter += frmMain_DragEnter;
+            DragDrop += frmMain_DragDrop;
 
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1)
@@ -878,7 +878,7 @@ namespace XRayBuilderGUI
                 {
                     frmPreviewAP frmAuthorProfile = new frmPreviewAP();
                     frmAuthorProfile.populateAuthorProfile(selPath);
-                    frmAuthorProfile.Location = new Point(this.Left, this.Top);
+                    frmAuthorProfile.Location = new Point(Left, Top);
                     frmAuthorProfile.ShowDialog();
                 }
                 catch (Exception ex)
@@ -918,7 +918,7 @@ namespace XRayBuilderGUI
                 {
                     frmPreviewSA frmStartAction = new frmPreviewSA();
                     await frmStartAction.populateStartActions(selPath);
-                    frmStartAction.Location = new Point(this.Left, this.Top);
+                    frmStartAction.Location = new Point(Left, Top);
                     frmStartAction.ShowDialog();
                 }
                 catch (Exception ex)
@@ -958,7 +958,7 @@ namespace XRayBuilderGUI
                 {
                     frmPreviewEA frmEndAction = new frmPreviewEA();
                     await frmEndAction.populateEndActions(selPath);
-                    frmEndAction.Location = new Point(this.Left, this.Top);
+                    frmEndAction.Location = new Point(Left, Top);
                     frmEndAction.ShowDialog();
                 }
                 catch (Exception ex)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -19,9 +20,6 @@ namespace XRayBuilderGUI
 
         private ToolTip toolTip1 = new ToolTip();
         private List<XRay.Term> Terms = new List<XRay.Term>(100);
-        private Settings settings = Settings.Default;
-
-        private bool aliasesExist;
 
         private void btnAddTerm_Click(object sender, EventArgs e)
         {
@@ -65,8 +63,8 @@ namespace XRayBuilderGUI
                     txtAliases.Text = row.Cells[2].Value.ToString();
                     txtDescription.Text = row.Cells[3].Value.ToString();
                     txtLink.Text = row.Cells[4].Value.ToString();
-                    rdoGoodreads.Checked = row.Cells[5].Value.ToString() == "Goodreads" ? true : false;
-                    rdoWikipedia.Checked = row.Cells[5].Value.ToString() == "Wikipedia" ? true : false;
+                    rdoGoodreads.Checked = row.Cells[5].Value.ToString() == "Goodreads";
+                    rdoWikipedia.Checked = row.Cells[5].Value.ToString() == "Wikipedia";
                     chkMatch.Checked = (bool)row.Cells[6].Value;
                     chkCase.Checked = (bool)row.Cells[7].Value;
                     //chkDelete.Checked = (bool)row.Cells[8].Value;
@@ -200,13 +198,8 @@ namespace XRayBuilderGUI
             try
             {
                 CreateTerms();
-                if (aliasesExist)
-                {
-                    CreateAliases();
-                    MessageBox.Show("X-Ray entities and Alias files created sucessfully!");
-                }
-                else
-                    MessageBox.Show("X-Ray entities file created sucessfully!");
+                CreateAliases();
+                MessageBox.Show("X-Ray entities and Alias files created sucessfully!");
             }
             catch (Exception ex)
             {
@@ -289,44 +282,29 @@ namespace XRayBuilderGUI
         {
             if (!Directory.Exists(Environment.CurrentDirectory + @"\xml\"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\xml\");
-            string outfile = Environment.CurrentDirectory + String.Format(@"\xml\{0}.entities.xml", txtAsin.Text);
+            string outfile = Environment.CurrentDirectory + $@"\xml\{txtAsin.Text}.entities.xml";
             Terms.Clear();
+            var termId = 1;
             foreach (DataGridViewRow row in dgvTerms.Rows)
             {
-                int termId = 1;
-                XRay.Term newTerm = new XRay.Term();
-                foreach (DataGridViewCell cell in row.Cells)
+                XRay.Term newTerm = new XRay.Term
                 {
-                    newTerm.Id = termId++;
-                    newTerm.Type = CompareImages((Bitmap)row.Cells[0].Value, Resources.character) ? "character" : "topic";
-                    newTerm.TermName = row.Cells[1].Value.ToString();
-                    if (row.Cells[2].Value.ToString() != "")
-                    {
-                        aliasesExist = true;
-                        string[] aliasList = row.Cells[2].Value.ToString().Split(',');
-                        foreach (string alias in aliasList)
-                        {
-                            if (newTerm.Aliases.Contains(alias))
-                            {
-                                newTerm.Aliases.Remove(alias);
-                                newTerm.Aliases.Add(alias);
-                            }
-                            else
-                            {
-                                newTerm.Aliases.Add(alias);
-                            }
-                        }
-                    }
-                    newTerm.Desc = row.Cells[3].Value.ToString();
-                    newTerm.DescUrl = row.Cells[4].Value.ToString();
-                    newTerm.DescSrc = row.Cells[5].Value.ToString();
-                    newTerm.Match = (bool)row.Cells[6].Value;
-                    newTerm.MatchCase = (bool)row.Cells[7].Value;
-                    newTerm.RegEx = (bool)row.Cells[9].Value;
-                }
+                    Id = termId++,
+                    Type = CompareImages((Bitmap) row.Cells[0].Value, Resources.character) ? "character" : "topic",
+                    TermName = row.Cells[1].Value.ToString(),
+                    Aliases = row.Cells[2].Value.ToString() != ""
+                        ? row.Cells[2].Value.ToString().Split(',').Distinct().ToList()
+                        : new List<string>(),
+                    Desc = row.Cells[3].Value.ToString(),
+                    DescUrl = row.Cells[4].Value.ToString(),
+                    DescSrc = row.Cells[5].Value.ToString(),
+                    Match = (bool) row.Cells[6].Value,
+                    MatchCase = (bool) row.Cells[7].Value,
+                    RegEx = (bool) row.Cells[9].Value
+                };
                 Terms.Add(newTerm);
             }
-            Functions.Save<List<XRay.Term>>(Terms, outfile);
+            Functions.Save(Terms, outfile);
         }
 
         private static bool CompareImages(Bitmap image1, Bitmap image2)
@@ -363,9 +341,9 @@ namespace XRayBuilderGUI
                 {
                     try
                     {
-                        string temp = streamReader.ReadLine().ToLower();
+                        string temp = streamReader.ReadLine()?.ToLower();
+                        if (string.IsNullOrEmpty(temp)) continue;
                         lineCount++;
-                        if (temp == "") continue;
                         if (temp != "character" && temp != "topic")
                         {
                             MessageBox.Show("Error: Invalid term type \"" + temp + "\" on line " + lineCount);
@@ -378,7 +356,7 @@ namespace XRayBuilderGUI
                             Desc = streamReader.ReadLine()
                         };
                         lineCount += 2;
-                        newTerm.MatchCase = temp == "character" ? true : false;
+                        newTerm.MatchCase = temp == "character";
                         newTerm.DescSrc = "shelfari";
                         newTerm.Id = termId++;
                         Terms.Add(newTerm);

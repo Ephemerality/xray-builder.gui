@@ -81,25 +81,13 @@ namespace XRayBuilderGUI.Unpack
             return new List<string>(6) { ASIN, UniqueID, DBName, rawMLPath, Author, Title };
         }
 
-        public string ASIN
-        {
-            get { return _ASIN; }
-        }
+        public string ASIN => _ASIN;
 
-        public string DBName
-        {
-            get { return PDB.DBName; }
-        }
+        public string DBName => PDB.DBName;
 
-        public string UniqueID
-        {
-            get { return mobiHeader.UniqueID.ToString(); }
-        }
+        public string UniqueID => mobiHeader.UniqueID.ToString();
 
-        public string Author
-        {
-            get { return mobiHeader.exthHeader.Author; }
-        }
+        public string Author => mobiHeader.exthHeader.Author;
 
         public string Title
         {

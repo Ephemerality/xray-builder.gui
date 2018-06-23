@@ -11,7 +11,7 @@ namespace XRayBuilderGUI.DataSources
 {
     public class Shelfari : DataSource
     {
-        public override string Name { get { return "Shelfari"; } }
+        public override string Name => "Shelfari";
 
         public override Task<List<BookInfo>> SearchBook(string author, string title)
         {

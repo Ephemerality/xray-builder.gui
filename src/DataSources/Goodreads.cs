@@ -12,7 +12,7 @@ namespace XRayBuilderGUI.DataSources
 {
     public class Goodreads : DataSource
     {
-        public override string Name { get { return "Goodreads"; } }
+        public override string Name => "Goodreads";
         private Properties.Settings settings = Properties.Settings.Default;
 
         private frmASIN frmAS = new frmASIN();

@@ -135,25 +135,13 @@ namespace XRayBuilderGUI.Unpack
 
         }
 
-        public string FullName
-        {
-            get { return Encoding.UTF8.GetString(fullName).Trim('\0'); }
-        }
+        public string FullName => Encoding.UTF8.GetString(fullName).Trim('\0');
 
-        public string IdentifierAsString
-        {
-            get { return Encoding.ASCII.GetString(identifier).Trim('\0'); }
-        }
+        public string IdentifierAsString => Encoding.ASCII.GetString(identifier).Trim('\0');
 
-        public uint HeaderLength
-        {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(headerLength), 0); }
-        }
+        public uint HeaderLength => BitConverter.ToUInt32(Functions.CheckBytes(headerLength), 0);
 
-        public uint MobiType
-        {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(mobiType), 0); }
-        }
+        public uint MobiType => BitConverter.ToUInt32(Functions.CheckBytes(mobiType), 0);
 
         public string MobiTypeAsString
         {
@@ -179,59 +167,26 @@ namespace XRayBuilderGUI.Unpack
             }
         }
 
-        public uint UniqueID
-        {
-            get { return BitConverter.ToUInt32(uniqueID, 0); }
-        }
+        public uint UniqueID => BitConverter.ToUInt32(uniqueID, 0);
 
-        public uint FileVersion
-        {
-            get { return BitConverter.ToUInt32(fileVersion, 0); }
-        }
+        public uint FileVersion => BitConverter.ToUInt32(fileVersion, 0);
 
-        public uint IndexKeys
-        {
-            get { return BitConverter.ToUInt32(indexKeys, 0); }
-        }
+        public uint IndexKeys => BitConverter.ToUInt32(indexKeys, 0);
 
-        public uint FirstNonBookIndex
-        {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(firstNonBookIndex), 0); }
-        }
+        public uint FirstNonBookIndex => BitConverter.ToUInt32(Functions.CheckBytes(firstNonBookIndex), 0);
 
-        public uint FullNameOffset
-        {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(fullNameOffset), 0); }
-        }
+        public uint FullNameOffset => BitConverter.ToUInt32(Functions.CheckBytes(fullNameOffset), 0);
 
-        public uint FullNameLength
-        {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(fullNameLength), 0); }
-        }
+        public uint FullNameLength => BitConverter.ToUInt32(Functions.CheckBytes(fullNameLength), 0);
 
-        public uint MinVersion
-        {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(minVersion), 0); }
-        }
+        public uint MinVersion => BitConverter.ToUInt32(Functions.CheckBytes(minVersion), 0);
 
-        public uint HuffmanRecordOffset
-        {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(huffmanRecordOffset), 0); }
-        }
+        public uint HuffmanRecordOffset => BitConverter.ToUInt32(Functions.CheckBytes(huffmanRecordOffset), 0);
 
-        public uint HuffmanRecordCount
-        {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(huffmanRecordCount), 0); }
-        }
+        public uint HuffmanRecordCount => BitConverter.ToUInt32(Functions.CheckBytes(huffmanRecordCount), 0);
 
-        public uint HuffmanTableOffset
-        {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(huffmanTableOffset), 0); }
-        }
+        public uint HuffmanTableOffset => BitConverter.ToUInt32(Functions.CheckBytes(huffmanTableOffset), 0);
 
-        public uint HuffmanTableLength
-        {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(huffmanTableLength), 0); }
-        }
+        public uint HuffmanTableLength => BitConverter.ToUInt32(Functions.CheckBytes(huffmanTableLength), 0);
     }
 }

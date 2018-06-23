@@ -28,29 +28,14 @@ namespace XRayBuilderGUI.Unpack
             fs.Seek(2, SeekOrigin.Current);
         }
 
-        public ushort Compression
-        {
-            get { return BitConverter.ToUInt16(Functions.CheckBytes(_compression), 0); }
-        }
+        public ushort Compression => BitConverter.ToUInt16(Functions.CheckBytes(_compression), 0);
 
-        public uint TextLength
-        {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(_textLength), 0); }
-        }
+        public uint TextLength => BitConverter.ToUInt32(Functions.CheckBytes(_textLength), 0);
 
-        public ushort RecordCount
-        {
-            get { return BitConverter.ToUInt16(Functions.CheckBytes(_recordCount), 0); }
-        }
+        public ushort RecordCount => BitConverter.ToUInt16(Functions.CheckBytes(_recordCount), 0);
 
-        public ushort RecordSize
-        {
-            get { return BitConverter.ToUInt16(Functions.CheckBytes(_recordSize), 0); }
-        }
+        public ushort RecordSize => BitConverter.ToUInt16(Functions.CheckBytes(_recordSize), 0);
 
-        public ushort EncryptionType
-        {
-            get { return BitConverter.ToUInt16(Functions.CheckBytes(_encryptionType), 0); }
-        }
+        public ushort EncryptionType => BitConverter.ToUInt16(Functions.CheckBytes(_encryptionType), 0);
     }
 }

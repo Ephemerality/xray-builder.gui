@@ -220,6 +220,7 @@ namespace XRayBuilderGUI
                 var bookBag = new ConcurrentBag<BookInfo>();
                 await bookList.ParallelForEachAsync(async book =>
                 {
+                    // TODO: retry a couple times if one fails maybe
                     try
                     {
                         //Gather book desc, image url, etc, if using new format
@@ -246,8 +247,7 @@ namespace XRayBuilderGUI
             List<string> authorsOtherBookList = new List<string>();
             foreach (BookInfo bk in otherBooks)
             {
-                authorsOtherBookList.Add(String.Format(@"{{""e"":1,""a"":""{0}"",""t"":""{1}""}}",
-                    bk.asin, bk.title));
+                authorsOtherBookList.Add($@"{{""e"":1,""a"":""{bk.asin}"",""t"":""{bk.title}""}}");
             }
 
             //Create finalAuthorProfile.profile.ASIN.asc
@@ -259,7 +259,7 @@ namespace XRayBuilderGUI
                                           string.Join(@""",""", otherBooks.Select(book => book.asin).ToArray()) + @"""],""n"":""" +
                                           curBook.author + @""",""a"":""" + authorAsin + @""",""b"":""" + BioTrimmed +
                                           @""",""i"":""" + base64Image + @"""}],""a"":""" +
-                                          String.Format(@"{0}"",""d"":{1},""o"":[", curBook.asin, unixTimestamp) +
+                                          $@"{curBook.asin}"",""d"":{unixTimestamp},""o"":[" +
                                           string.Join(",", authorsOtherBookList.ToArray()) + "]}";
                 File.WriteAllText(ApPath, authorProfileOutput);
                 Logger.Log("Author Profile file created successfully!\r\nSaved to " + ApPath);

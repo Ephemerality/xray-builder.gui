@@ -63,19 +63,18 @@ namespace XRayBuilderGUI.DataSources
             // Check for typical search results, second item is the author page
             if ((node = node.SelectSingleNode("//*[@id='result_1']/div/div/div/div/a")) != null)
             {
-                results.authorAsin = node.GetAttributeValue("data-asin", "");
                 properAuthor = node.GetAttributeValue("href", "");
+                results.authorAsin = node.GetAttributeValue("data-asin", null)
+                    ?? AsinFromUrl(properAuthor);
             }
             // otherwise check for "by so-and-so" text beneath the titles for a possible match
             else if ((node = results.authorHtmlDoc.DocumentNode.SelectSingleNode($"//div[@id='resultsCol']//li[@class='s-result-item celwidget  ']//a[text()=\"{newAuthor}\"]")) != null)
             {
                 properAuthor = node.GetAttributeValue("href", "");
-                int i = properAuthor.IndexOf("/e/B");
-                if (i > 0)
-                    results.authorAsin = properAuthor.Substring(i + 3, 10);
+                results.authorAsin = AsinFromUrl(properAuthor);
             }
             
-            if (properAuthor == "" || properAuthor == null || properAuthor.IndexOf('/', 1) < 3 || results.authorAsin == "")
+            if (string.IsNullOrEmpty(properAuthor) || properAuthor.IndexOf('/', 1) < 3 || results.authorAsin == "")
             {
                 Logger.Log("Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: " + amazonAuthorSearchUrl);
                 return null;
@@ -210,6 +209,12 @@ namespace XRayBuilderGUI.DataSources
                 }
             }
             return result;
+        }
+
+        private static string AsinFromUrl(string url)
+        {
+            var asinMatch = Regex.Match(url, @"/e/(B\w+)/", RegexOptions.Compiled);
+            return asinMatch.Success ? asinMatch.Groups[1].Value : "";
         }
     }
 }

@@ -165,30 +165,27 @@ namespace XRayBuilderGUI.DataSources
 
             if (seriesInfo.TryGetValue("Previous", out book))
             {
-                if (prevBook == null)
+                prevBook = authorProfile.otherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.title, "^" + book.title + @"(?: \(.*\))?$"));
+                if (book.asin != null)
                 {
-                    prevBook = authorProfile.otherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.title, "^" + book.title + @"(?: \(.*\))?$"));
-                    if (book.asin != null)
-                    {
-                        prevBook = book;
-                        await prevBook.GetAmazonInfo($"https://www.amazon.{TLD}/dp/{book.asin}").ConfigureAwait(false);
-                    }
-                    else if(prevBook != null)
-                        await prevBook.GetAmazonInfo(prevBook.amazonUrl).ConfigureAwait(false);
-                    if (prevBook == null && settings.promptASIN)
-                    {
-                        Logger.Log($"ASIN prompt for {book.title}...");
-                        prevBook = new BookInfo(book.title, book.author, "");
-                        frmAS.Text = "Previous in Series";
-                        frmAS.lblTitle.Text = book.title;
-                        frmAS.tbAsin.Text = "";
-                        frmAS.ShowDialog();
-                        Logger.Log($"ASIN supplied: {frmAS.tbAsin.Text}");
-                        string Url = $"https://www.amazon.{TLD}/dp/{frmAS.tbAsin.Text}";
-                        await prevBook.GetAmazonInfo(Url).ConfigureAwait(false);
-                        prevBook.amazonUrl = Url;
-                        prevBook.asin = frmAS.tbAsin.Text;
-                    }
+                    prevBook = book;
+                    await prevBook.GetAmazonInfo($"https://www.amazon.{TLD}/dp/{book.asin}").ConfigureAwait(false);
+                }
+                else if(prevBook != null)
+                    await prevBook.GetAmazonInfo(prevBook.amazonUrl).ConfigureAwait(false);
+                if (prevBook == null && settings.promptASIN)
+                {
+                    Logger.Log($"ASIN prompt for {book.title}...");
+                    prevBook = new BookInfo(book.title, book.author, "");
+                    frmAS.Text = "Previous in Series";
+                    frmAS.lblTitle.Text = book.title;
+                    frmAS.tbAsin.Text = "";
+                    frmAS.ShowDialog();
+                    Logger.Log($"ASIN supplied: {frmAS.tbAsin.Text}");
+                    string Url = $"https://www.amazon.{TLD}/dp/{frmAS.tbAsin.Text}";
+                    await prevBook.GetAmazonInfo(Url).ConfigureAwait(false);
+                    prevBook.amazonUrl = Url;
+                    prevBook.asin = frmAS.tbAsin.Text;
                 }
                 if (prevBook == null)
                 {
@@ -216,14 +213,14 @@ namespace XRayBuilderGUI.DataSources
             //Search Goodreads for series info
             string goodreadsSeriesUrl = @"https://www.goodreads.com/series/{0}";
             HtmlNode metaNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
-            HtmlNode SeriesNode = metaNode.SelectSingleNode("//h1[@id='bookTitle']");
-            if (SeriesNode == null)
+            HtmlNode seriesNode = metaNode?.SelectSingleNode("//h1[@id='bookTitle']/a");
+            if (seriesNode == null)
                 return results;
-            match = Regex.Match(SeriesNode.OuterHtml, @"/series/([0-9]*)");
+            match = Regex.Match(seriesNode.OuterHtml, @"/series/([0-9]*)");
             if (!match.Success)
                 return results;
             goodreadsSeriesUrl = String.Format(goodreadsSeriesUrl, match.Groups[1].Value);
-            match = Regex.Match(SeriesNode.InnerText, @"\((.*) #?([0-9]*([.,][0-9])?)\)");
+            match = Regex.Match(seriesNode.InnerText, @"\((.*) #?([0-9]*([.,][0-9])?)\)");
             if (match.Success)
             {
                 Logger.Log(String.Format("Series Goodreads Page URL: {0}", goodreadsSeriesUrl));
@@ -238,18 +235,11 @@ namespace XRayBuilderGUI.DataSources
             
             if (seriesHtmlDoc != null)
             {
-                SeriesNode = seriesHtmlDoc.DocumentNode.SelectSingleNode("//div[@class='greyText']");
-                match = Regex.Match(SeriesNode.InnerText, @"([0-9]*) primary works?");
-
+                seriesNode = seriesHtmlDoc.DocumentNode.SelectSingleNode("//div[contains(@class, 'responsiveSeriesHeader__subtitle')]");
+                match = Regex.Match(seriesNode?.InnerText ?? "", @"([0-9]*) (?:primary )?works?");
                 if (match.Success)
-                {
                     curBook.totalInSeries = match.Groups[1].Value;
-                }
-                else
-                {
-                    match = Regex.Match(SeriesNode.InnerText, @"([0-9]*) works?,");
-                    curBook.totalInSeries = match.Groups[1].Value;
-                }
+
                 bool notWholeNumber = curBook.seriesPosition.Contains(".");
                 int positionInt = (int)Convert.ToDouble(curBook.seriesPosition, CultureInfo.InvariantCulture.NumberFormat);
                 int totalInt = (int)Convert.ToDouble(curBook.totalInSeries, CultureInfo.InvariantCulture.NumberFormat);

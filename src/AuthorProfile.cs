@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Async;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -215,21 +217,23 @@ namespace XRayBuilderGUI
             if (bookList != null)
             {
                 Logger.Log("Gathering metadata for other books...");
-                foreach (BookInfo book in bookList)
+                var bookBag = new ConcurrentBag<BookInfo>();
+                await bookList.ParallelForEachAsync(async book =>
                 {
                     try
                     {
                         //Gather book desc, image url, etc, if using new format
                         if (settings.useNewVersion)
                             await book.GetAmazonInfo(book.amazonUrl);
-                        otherBooks.Add(book);
+                        bookBag.Add(book);
                     }
                     catch (Exception ex)
                     {
                         Logger.Log(String.Format("An error occurred gathering metadata for other books: {0}\r\nURL: {1}\r\nBook: {2}", ex.Message, book.amazonUrl, book.title));
-                        return false;
+                        throw;
                     }
-                }
+                });
+                otherBooks.AddRange(bookBag);
             }
             else
             {

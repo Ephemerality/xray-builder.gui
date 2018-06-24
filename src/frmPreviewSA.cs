@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -22,8 +21,6 @@ namespace XRayBuilderGUI
         public string descriptionPopup = "";
         public string biographyPopup = "";
 
-        private List<string[]> otherBookList = new List<string[]>();
-
         public async Task populateStartActions(string inputFile)
         {
             string input;
@@ -39,7 +36,7 @@ namespace XRayBuilderGUI
                 string position = tempData["positionInSeries"].ToString();
                 string total = tempData["totalInSeries"].ToString();
                 string name = tempData["seriesName"].ToString();
-                lblSeries.Text = String.Format("This is book {0} of {1} in {2}", position, total, name);
+                lblSeries.Text = $"This is book {position} of {total} in {name}";
                 if (position == "1")
                 {
                     pbPreviousCover.Visible = false;
@@ -83,56 +80,53 @@ namespace XRayBuilderGUI
                 lblDescription.Text = tempData["description"].ToString();
                 descriptionPopup = lblDescription.Text;
                 Match rating = Regex.Match(tempData["amazonRating"].ToString(), @"(\d+)");
-                if (rating != null && rating.Groups.Count > 1)
-                    pbRating.Image = (Image)Resources.ResourceManager.GetObject(String.Format("STAR{0}", rating.Groups[1].Value));
-                lblVotes.Text = String.Format("({0} votes)", tempData["numberOfReviews"].ToString());
+                if (rating.Success)
+                    pbRating.Image = (Image)Resources.ResourceManager.GetObject($"STAR{rating.Groups[1].Value}");
+                lblVotes.Text = $"({tempData["numberOfReviews"]} votes)";
             }
 
             tempData = sa["data"]["authorBios"]?["authors"]?[0];
             if (tempData != null)
             {
-                string imageUrl = tempData["imageUrl"]?.ToString();
-                if (imageUrl != "" && imageUrl != null)
+                string imageUrl = tempData["imageUrl"]?.ToString() ?? "";
+                if (imageUrl != "")
                     pbAuthorImage.Image = Functions.MakeGrayscale3(await HttpDownloader.GetImage(imageUrl));
-                lblBiography.Text = tempData["bio"].ToString();
+                lblBiography.Text = tempData["bio"]?.ToString();
                 biographyPopup = lblBiography.Text;
             }
 
-            tempData = sa["data"]["authorRecs"]["recommendations"];
+            tempData = sa["data"]["authorRecs"]?["recommendations"];
             if (tempData != null)
             {
-                var otherBooks = new List<Tuple<string, string, string, string>>();
+                // TODO: Figure out why otherBooks is here but not used
+                //var otherBooks = new List<Tuple<string, string, string, string>>();
                 foreach (var rec in tempData)
                 {
                     string imageUrl = rec["imageUrl"]?.ToString() ?? "";
                     string author = rec["authors"][0].ToString();
                     string title = rec["title"].ToString();
-                    otherBooks.Add(new Tuple<string, string, string, string>(
-                        rec["asin"].ToString(), title, author, imageUrl));
+                    //otherBooks.Add(new Tuple<string, string, string, string>(rec["asin"].ToString(), title, author, imageUrl));
                     if (imageUrl != "")
                         ilOtherBooks.Images.Add(Functions.MakeGrayscale3(await HttpDownloader.GetImage(imageUrl)));
-                    otherBookList.Add(new [] { title, author });
-                    dgvOtherBooks.Rows.Add(ilOtherBooks.Images[ilOtherBooks.Images.Count - 1],
-                        String.Format("{0}\n{1}", title, author));
+                    dgvOtherBooks.Rows.Add(ilOtherBooks.Images[ilOtherBooks.Images.Count - 1], $"{title}\n{author}");
                 }
             }
 
             tempData = sa["data"]["readingTime"];
             if (tempData != null)
             {
-                lblReadingTime.Text = String.Format("{0} hours and {1} minutes to read",
-                    tempData["hours"].ToString(), tempData["minutes"].ToString());
+                lblReadingTime.Text = $"{tempData["hours"]} hours and {tempData["minutes"]} minutes to read";
                 tempData = sa["data"]["readingPages"];
                 if (tempData != null)
-                    lblReadingTime.Text = lblReadingTime.Text + String.Format(@" ({0} pages)", tempData["pagesInBook"].ToString());
+                    lblReadingTime.Text = $"{lblReadingTime.Text} ({tempData["pagesInBook"]} pages)";
             }
 
             tempData = sa["data"]["previousBookInTheSeries"];
             if (tempData != null)
             {
                 lblPreviousTitle.Text = tempData["title"].ToString();
-                string imageUrl = tempData["imageUrl"]?.ToString();
-                if (imageUrl != "" && imageUrl != null)
+                string imageUrl = tempData["imageUrl"]?.ToString() ?? "";
+                if (imageUrl != "")
                     pbPreviousCover.Image = Functions.MakeGrayscale3(await HttpDownloader.GetImage(imageUrl));
             }
         }

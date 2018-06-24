@@ -236,7 +236,7 @@ namespace XRayBuilderGUI.DataSources
             if (seriesHtmlDoc != null)
             {
                 seriesNode = seriesHtmlDoc.DocumentNode.SelectSingleNode("//div[contains(@class, 'responsiveSeriesHeader__subtitle')]");
-                match = Regex.Match(seriesNode?.InnerText ?? "", @"([0-9]*) (?:primary )?works?");
+                match = Regex.Match(seriesNode?.InnerText ?? "", @"([0-9]+) (?:primary )?works?");
                 if (match.Success)
                     curBook.totalInSeries = match.Groups[1].Value;
 

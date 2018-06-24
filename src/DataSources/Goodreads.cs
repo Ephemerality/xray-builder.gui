@@ -430,6 +430,7 @@ namespace XRayBuilderGUI.DataSources
             return result;
         }
 
+        // TODO: Parallelize
         /// <summary>
         /// Gather the list of quotes & number of times they've been liked -- close enough to "x paragraphs have been highlighted y times" from Amazon
         /// </summary>

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Async;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -93,6 +95,7 @@ namespace XRayBuilderGUI
                         "//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card a-float-left']");
                 if (recList != null)
                 {
+                    var possibleBooks = new List<BookInfo>();
                     foreach (HtmlNode item in recList.Where(item => item != null))
                     {
                         HtmlNode nodeTitle = item.SelectSingleNode(".//div/a");
@@ -106,6 +109,7 @@ namespace XRayBuilderGUI
                             //Remove CR, LF and TAB
                             nodeTitleCheck = nodeTitle.InnerText.Clean();
                         }
+
                         cleanAuthor = item.SelectSingleNode(".//div/div").InnerText.Clean();
                         //Exclude the current book title from other books search
                         Match match = Regex.Match(nodeTitleCheck, curBook.title, RegexOptions.IgnoreCase);
@@ -116,21 +120,27 @@ namespace XRayBuilderGUI
                             RegexOptions.IgnoreCase);
                         if (match.Success)
                             continue;
-                        BookInfo newBook = new BookInfo(nodeTitleCheck, cleanAuthor,
-                            item.SelectSingleNode(".//div").GetAttributeValue("data-asin", ""));
+                        possibleBooks.Add(new BookInfo(nodeTitleCheck, cleanAuthor,
+                            item.SelectSingleNode(".//div")?.GetAttributeValue("data-asin", null)));
+                    }
+                    var bookBag = new ConcurrentBag<BookInfo>();
+                    await possibleBooks.ParallelForEachAsync(async book =>
+                    {
+                        if (book == null) return;
+                        // TODO: Make a separate function for this, duplicate here and AuthorProfile
                         try
                         {
                             //Gather book desc, image url, etc, if using new format
                             if (settings.useNewVersion)
-                                await newBook.GetAmazonInfo(nodeUrl);
-                            custAlsoBought.Add(newBook);
+                                await book.GetAmazonInfo(nodeUrl);
+                            bookBag.Add(book);
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log(String.Format("Error: {0}\r\n{1}", ex.Message, nodeUrl));
-                            return false;
+                            Logger.Log($"Error: {ex}\r\n{nodeUrl}");
                         }
-                    }
+                    });
+                    custAlsoBought.AddRange(bookBag);
                 }
                 //Add sponsored related, if they exist...
                 HtmlNode otherItems =
@@ -141,21 +151,26 @@ namespace XRayBuilderGUI
                     if (recList != null)
                     {
                         string sponsTitle = "", sponsAuthor = "", sponsAsin = "", sponsUrl = "";
+                        var possibleBooks = new List<BookInfo>();
+                        // TODO: This entire foreach is pretty much the exact same as the one above...
                         foreach (HtmlNode result in recList.Where(result => result != null))
                         {
-                            HtmlNode otherBook = result.SelectSingleNode(".//div[@class='a-fixed-left-grid-col a-col-left']/a");
+                            HtmlNode otherBook =
+                                result.SelectSingleNode(".//div[@class='a-fixed-left-grid-col a-col-left']/a");
                             if (otherBook == null)
                                 continue;
                             Match match = Regex.Match(otherBook.GetAttributeValue("href", ""),
                                 "dp/(B[A-Z0-9]{9})");
                             if (!match.Success)
                                 match = Regex.Match(otherBook.GetAttributeValue("href", ""),
-                                "gp/product/(B[A-Z0-9]{9})");
+                                    "gp/product/(B[A-Z0-9]{9})");
                             if (match.Success)
                             {
                                 sponsAsin = match.Groups[1].Value;
-                                sponsUrl = String.Format("https://www.amazon.{1}/dp/{0}", sponsAsin, settings.amazonTLD);
+                                sponsUrl = String.Format("https://www.amazon.{1}/dp/{0}", sponsAsin,
+                                    settings.amazonTLD);
                             }
+
                             otherBook = otherBook.SelectSingleNode(".//img");
                             match = Regex.Match(otherBook.GetAttributeValue("alt", ""),
                                 @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)",
@@ -171,20 +186,25 @@ namespace XRayBuilderGUI
                                 result.SelectSingleNode(
                                     ".//div[@class='a-row a-size-small']");
                             sponsAuthor = otherBook.InnerText.Trim();
-                            BookInfo newBook = new BookInfo(sponsTitle, sponsAuthor, sponsAsin);
+                            possibleBooks.Add(new BookInfo(sponsTitle, sponsAuthor, sponsAsin));
+                        }
+
+                        var bookBag = new ConcurrentBag<BookInfo>();
+                        await possibleBooks.ParallelForEachAsync(async book =>
+                        {
                             //Gather book desc, image url, etc, if using new format
                             try
                             {
                                 if (settings.useNewVersion)
-                                    await newBook.GetAmazonInfo(sponsUrl);
-                                custAlsoBought.Add(newBook);
+                                    await book.GetAmazonInfo(sponsUrl);
+                                bookBag.Add(book);
                             }
                             catch (Exception ex)
                             {
-                                Logger.Log(String.Format("Error: {0}\r\n{1}", ex.Message, sponsUrl));
-                                return false;
+                                Logger.Log($"Error: {ex.Message}\r\n{sponsUrl}");
                             }
-                        }
+                        });
+                        custAlsoBought.AddRange(bookBag);
                     }
                 }
             }

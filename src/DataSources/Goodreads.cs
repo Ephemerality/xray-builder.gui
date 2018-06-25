@@ -12,82 +12,72 @@ namespace XRayBuilderGUI.DataSources
 {
     public class Goodreads : DataSource
     {
+        private const string BookUrl = "https://www.goodreads.com/book/show/{0}";
+
         public override string Name => "Goodreads";
         private Properties.Settings settings = Properties.Settings.Default;
 
         private frmASIN frmAS = new frmASIN();
 
-        // Goodreads expects %26 and %27 instead of & and ’ or ' and %20 instead of spaces
-        Dictionary<string, string> replacements = new Dictionary<string, string>
-            {
-                {"&", "%26"},
-                {"’", "%27"},
-                {"'", "%27"},
-                {" ", "%20"}
-            };
-
         public override async Task<List<BookInfo>> SearchBook(string author, string title)
         {
-            string goodreadsSearchUrlBase = @"https://www.goodreads.com/search?q={0}%20{1}";
-           
-            Regex regex = new Regex(String.Join("|", replacements.Keys.Select(Regex.Escape)));
-            title = regex.Replace(title, m => replacements[m.Value]);
-            author = Functions.FixAuthor(author);
-            author = regex.Replace(author, m => replacements[m.Value]);
+            var goodreadsSearchUrlBase = @"https://www.goodreads.com/search?q={0}%20{1}";
 
-            HtmlDocument goodreadsHtmlDoc = new HtmlDocument();
+            title = Uri.EscapeDataString(title);
+            author = Uri.EscapeDataString(Functions.FixAuthor(author));
+
+            var goodreadsHtmlDoc = new HtmlDocument();
             goodreadsHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(String.Format(goodreadsSearchUrlBase, author, title)));
             if (goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results"))
             {
                 author = Functions.TrimAuthor(author);
                 goodreadsHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(String.Format(goodreadsSearchUrlBase, author, title)));
             }
-            if (!goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results"))
-                return FindGoodreadsURL(goodreadsHtmlDoc);
-            return null;
+            return !goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results")
+                ? ParseSearchResults(goodreadsHtmlDoc)
+                : null;
         }
 
-        private List<BookInfo> FindGoodreadsURL(HtmlDocument goodreadsHtmlDoc)
+        private List<BookInfo> ParseSearchResults(HtmlDocument goodreadsHtmlDoc)
         {
             List<BookInfo> goodreadsBookList = new List<BookInfo>();
-            string goodreadsBookUrl = @"https://www.goodreads.com/book/show/{0}", ratingText = "";
             HtmlNodeCollection resultNodes =
                 goodreadsHtmlDoc.DocumentNode.SelectNodes("//tr[@itemtype='http://schema.org/Book']");
-            //Allow user to choose from a list of search results
+            //Return a list of search results
             foreach (HtmlNode link in resultNodes)
             {
-                HtmlNode coverNode = link.SelectSingleNode(".//img");
-                //If more than one result found, skip book if it does not have a cover
-                //Books with a cover are more likely to be a correct match?
-                //if (coverNode.GetAttributeValue("src", "").Contains("nophoto") && (resultNodes.Count != 1)) continue;
                 //Skip audiobook results
-                HtmlNode audiobookNode = link.SelectSingleNode(".//span[@class='authorName greyText smallText role']");
-                if (audiobookNode != null && audiobookNode.InnerText.Contains("Audiobook"))
+                if (link.SelectSingleNode(".//span[@class='authorName greyText smallText role']")?.InnerText.Contains("Audiobook") ?? false)
                     continue;
-                HtmlNode titleNode = link.SelectSingleNode(".//a[@class='bookTitle']");
-                HtmlNode authorNode = link.SelectSingleNode(".//a[@class='authorName']");
-
-                string cleanTitle = titleNode.InnerText.Trim().Replace("&amp;", "&").Replace("%27", "'").Replace("%20", " ");
+                var coverNode = link.SelectSingleNode(".//img");
+                var titleNode = link.SelectSingleNode(".//a[@class='bookTitle']");
+                var authorNode = link.SelectSingleNode(".//a[@class='authorName']");
+                
+                var cleanTitle = titleNode.InnerText.Trim().Replace("&amp;", "&").Replace("%27", "'").Replace("%20", " ");
 
                 BookInfo newBook = new BookInfo(cleanTitle, authorNode.InnerText.Trim(), null);
 
-                Match matchID = Regex.Match(link.OuterHtml, @"./book/show/([0-9]*)");
-                if (matchID.Success)
-                    newBook.goodreadsID = matchID.Groups[1].Value;
-                newBook.bookImageUrl = coverNode.GetAttributeValue("src", "");
-                newBook.dataUrl = String.Format(goodreadsBookUrl, matchID.Groups[1].Value);
+                Match matchId = Regex.Match(link.OuterHtml, @"./book/show/([0-9]+)");
+                if (matchId.Success)
+                {
+                    newBook.goodreadsID = matchId.Groups[1].Value;
+                    newBook.dataUrl = string.Format(BookUrl, matchId.Groups[1].Value);
+                }
 
-                HtmlNode ratingNode = link.SelectSingleNode(".//span[@class='greyText smallText uitext']");
-                ratingText = ratingNode.InnerText.Clean();
-                matchID = Regex.Match(ratingText, @"(\d+[\.,]?\d*) avg rating");
-                if (matchID.Success)
-                    newBook.amazonRating = float.Parse(matchID.Groups[1].Value);
-                matchID = Regex.Match(ratingText, @"(\d+) ratings");
-                if (matchID.Success)
-                    newBook.numReviews = int.Parse(matchID.Groups[1].Value);
-                matchID = Regex.Match(ratingText, @"(\d+) edition|editions");
-                if (matchID.Success)
-                    newBook.editions = matchID.Groups[1].Value;
+                newBook.bookImageUrl = coverNode.GetAttributeValue("src", "");
+                
+                var ratingText = link.SelectSingleNode(".//span[@class='greyText smallText uitext']")?.InnerText.Clean();
+                if (ratingText != null)
+                {
+                    matchId = Regex.Match(ratingText, @"(\d+[\.,]?\d*) avg rating\s+(\d+[\.,]?\d*).*(\d+) editions?");
+                    if (matchId.Success)
+                    {
+                        newBook.amazonRating = float.Parse(matchId.Groups[1].Value);
+                        newBook.numReviews = int.Parse(matchId.Groups[2].Value, NumberStyles.AllowThousands, CultureInfo.CurrentCulture);
+                        newBook.editions = matchId.Groups[3].Value;
+                    }
+                }
+
                 goodreadsBookList.Add(newBook);
             }
             return goodreadsBookList;

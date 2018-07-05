@@ -426,7 +426,7 @@ namespace XRayBuilderGUI.DataSources
         /// <summary>
         /// Gather the list of quotes & number of times they've been liked -- close enough to "x paragraphs have been highlighted y times" from Amazon
         /// </summary>
-        public override async Task<List<Tuple<string, int>>> GetNotableClips(string url, CancellationToken token, HtmlDocument srcDoc = null, IProgress<Tuple<int, int>> progress = null)
+        public override async Task<List<NotableClip>> GetNotableClips(string url, CancellationToken token, HtmlDocument srcDoc = null, IProgress<Tuple<int, int>> progress = null)
         {
             if (srcDoc == null)
             {
@@ -438,7 +438,7 @@ namespace XRayBuilderGUI.DataSources
             string quoteURL = $"https://www.goodreads.com{quoteNode.GetAttributeValue("href", "")}?page={{0}}";
             progress?.Report(new Tuple<int, int>(0, 1));
             
-            var quoteBag = new ConcurrentBag<IEnumerable<Tuple<string, int>>>();
+            var quoteBag = new ConcurrentBag<IEnumerable<NotableClip>>();
             var initialPage = new HtmlDocument();
             initialPage.LoadHtml(await HttpDownloader.GetPageHtmlAsync(string.Format(quoteURL, 1)));
 
@@ -448,7 +448,7 @@ namespace XRayBuilderGUI.DataSources
             if (!int.TryParse(maxPageNode.InnerHtml, out var maxPages))
                 maxPages = 1;
 
-            IEnumerable<Tuple<string, int>> ParseQuotePage(HtmlDocument quoteDoc)
+            IEnumerable<NotableClip> ParseQuotePage(HtmlDocument quoteDoc)
             {
                 HtmlNodeCollection tempNodes = quoteDoc.DocumentNode.SelectNodes("//div[@class='quotes']/div[@class='quote']");
                 return tempNodes?.Select(node =>
@@ -457,7 +457,11 @@ namespace XRayBuilderGUI.DataSources
                     var likesMatch = Regex.Match(node.SelectSingleNode(".//div[@class='right']/a")?.InnerText ?? "",
                         @"(\d+) likes", RegexOptions.Compiled);
                     if (!quoteMatch.Success || !likesMatch.Success) return null;
-                    return new Tuple<string, int>(quoteMatch.Groups[1].Value, int.Parse(likesMatch.Groups[1].Value));
+                    return new NotableClip
+                    {
+                        Text = quoteMatch.Groups[1].Value,
+                        Likes = int.Parse(likesMatch.Groups[1].Value)
+                    };
                 }).Where(quote => quote != null);
             }
 

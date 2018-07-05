@@ -33,6 +33,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
+using XRayBuilderGUI.DataSources;
 
 namespace XRayBuilderGUI
 {
@@ -53,7 +54,7 @@ namespace XRayBuilderGUI
         private bool unattended;
         private bool skipShelfari;
         private int locOffset;
-        private List<Tuple<string, int>> notableClips;
+        private List<NotableClip> notableClips;
         private int foundNotables;
 
         private bool enableEdit = Properties.Settings.Default.enableEdit;
@@ -611,20 +612,20 @@ namespace XRayBuilderGUI
                 // Attempt to match downloaded notable clips, not worried if no matches occur as some will be added later anyway
                 if (Properties.Settings.Default.useNewVersion && notableClips != null)
                 {
-                    foreach (Tuple<string, int> quote in notableClips)
+                    foreach (var quote in notableClips)
                     {
-                        int index = node.InnerText.IndexOf(quote.Item1);
+                        int index = node.InnerText.IndexOf(quote.Text);
                         if (index > -1)
                         {
                             // See if an excerpt already exists at this location
                             Excerpt excerpt = excerpts.FirstOrDefault(e => e.start == index);
                             if (excerpt == null)
                             {
-                                excerpt = new Excerpt(excerptId++, index, quote.Item1.Length);
+                                excerpt = new Excerpt(excerptId++, index, quote.Text.Length);
                                 excerpt.related_entities.Add(0); // Mark the excerpt as notable
                                                                  // TODO: also add other related entities
                                 excerpt.notable = true;
-                                excerpt.highlights = quote.Item2;
+                                excerpt.highlights = quote.Likes;
                                 excerpts.Add(excerpt);
                             }
                             else

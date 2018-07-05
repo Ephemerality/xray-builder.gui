@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using HtmlAgilityPack;
+using XRayBuilderGUI.DataSources;
 
 namespace XRayBuilderGUI
 {
@@ -41,7 +42,7 @@ namespace XRayBuilderGUI
         public BookInfo previousInSeries;
 
         // List of clips and their highlight/like count
-        public List<Tuple<string, int>> notableClips;
+        public List<NotableClip> notableClips;
 
         public BookInfo(string title, string author, string asin, string guid, string databasename, string path, string sidecarName, string dataUrl, string rawmlPath)
         {

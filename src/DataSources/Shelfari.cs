@@ -304,14 +304,14 @@ namespace XRayBuilderGUI.DataSources
             return terms;
         }
 
-        public override async Task<List<Tuple<string, int>>> GetNotableClips(string url, CancellationToken token, HtmlDocument srcDoc = null, IProgress<Tuple<int, int>> progress = null)
+        public override async Task<List<NotableClip>> GetNotableClips(string url, CancellationToken token, HtmlDocument srcDoc = null, IProgress<Tuple<int, int>> progress = null)
         {
             if (srcDoc == null)
             {
                 srcDoc = new HtmlDocument();
                 srcDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(url));
             }
-            List<Tuple<string, int>> result = new List<Tuple<string, int>>();
+            List<NotableClip> result = new List<NotableClip>();
             HtmlNodeCollection quoteNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@id='WikiModule_Quotations']/div/ul[@class='li_6']/li");
             if (quoteNodes != null)
             {
@@ -323,7 +323,7 @@ namespace XRayBuilderGUI.DataSources
                     // Remove quotes (sometimes people put unnecessary quotes in the quote as well)
                     quote = Regex.Replace(quote, "^(&ldquo;){1,2}", "");
                     quote = Regex.Replace(quote, "(&rdquo;){1,2}$", "");
-                    result.Add(new Tuple<string, int>(quote, 0));
+                    result.Add(new NotableClip { Text = quote, Likes = 0 });
                 }
             }
             return result;

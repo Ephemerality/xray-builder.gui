@@ -484,7 +484,7 @@ namespace XRayBuilderGUI.DataSources
             
             //Add rating and reviews count if missing from Amazon book info
             HtmlNode metaNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
-            if (curBook.amazonRating == 0)
+            if (metaNode != null && curBook.amazonRating == 0)
             {
                 HtmlNode goodreadsRating = metaNode.SelectSingleNode("//span[@class='value rating']");
                 if (goodreadsRating != null)

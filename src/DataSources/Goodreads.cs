@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Async;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -13,6 +15,7 @@ namespace XRayBuilderGUI.DataSources
     public class Goodreads : DataSource
     {
         private const string BookUrl = "https://www.goodreads.com/book/show/{0}";
+        private const int MaxConcurrentRequests = 10;
 
         public override string Name => "Goodreads";
         private Properties.Settings settings = Properties.Settings.Default;
@@ -419,8 +422,7 @@ namespace XRayBuilderGUI.DataSources
             }
             return result;
         }
-
-        // TODO: Parallelize
+        
         /// <summary>
         /// Gather the list of quotes & number of times they've been liked -- close enough to "x paragraphs have been highlighted y times" from Amazon
         /// </summary>
@@ -431,37 +433,45 @@ namespace XRayBuilderGUI.DataSources
                 srcDoc = new HtmlDocument();
                 srcDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(url));
             }
-            List<Tuple<string, int>> result = null;
             HtmlNode quoteNode = srcDoc.DocumentNode.SelectSingleNode("//div[@class='h2Container gradientHeaderContainer']/h2/a[starts-with(.,'Quotes from')]");
             if (quoteNode == null) return null;
             string quoteURL = $"https://www.goodreads.com{quoteNode.GetAttributeValue("href", "")}?page={{0}}";
-            int maxPages = 1;
             progress?.Report(new Tuple<int, int>(0, 1));
-            for (int i = 1; i <= maxPages; i++)
-            {
-                token.ThrowIfCancellationRequested();
-                HtmlDocument quoteDoc = new HtmlDocument();
-                quoteDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(String.Format(quoteURL, i)));
-                // first time through, check how many pages there are (find previous page button, get parent div, take all children of that, 2nd last one should be the max page count
-                if (i == 1)
-                {
-                    HtmlNode tempNode = quoteDoc.DocumentNode.SelectSingleNode("//span[contains(@class,'previous_page')]/parent::div/*[last()-1]");
-                    if (tempNode == null || !int.TryParse(tempNode.InnerHtml, out maxPages))
-                        maxPages = 1;
-                    result = new List<Tuple<string, int>>(maxPages * 30);
-                }
-                HtmlNodeCollection tempNodes = quoteDoc.DocumentNode.SelectNodes("//div[@class='quotes']/div[@class='quote']");
-                foreach (HtmlNode quote in tempNodes)
-                {
-                    int start = quote.InnerText.IndexOf("&ldquo;") + 7;
-                    int end = quote.InnerText.IndexOf("&rdquo;");
-                    int.TryParse(quote.SelectSingleNode(".//div[@class='right']/a").InnerText.Replace(" likes", ""), out var likes);
-                    result.Add(new Tuple<string, int>(quote.InnerText.Substring(start, end - start), likes));
-                }
+            
+            var quoteBag = new ConcurrentBag<IEnumerable<Tuple<string, int>>>();
+            var initialPage = new HtmlDocument();
+            initialPage.LoadHtml(await HttpDownloader.GetPageHtmlAsync(string.Format(quoteURL, 1)));
 
-                progress?.Report(new Tuple<int, int>(i, maxPages));
+            // check how many pages there are (find previous page button, get parent div, take all children of that, 2nd last one should be the max page count
+            HtmlNode maxPageNode = initialPage.DocumentNode.SelectSingleNode("//span[contains(@class,'previous_page')]/parent::div/*[last()-1]");
+            if (maxPageNode == null) return null;
+            if (!int.TryParse(maxPageNode.InnerHtml, out var maxPages))
+                maxPages = 1;
+
+            IEnumerable<Tuple<string, int>> ParseQuotePage(HtmlDocument quoteDoc)
+            {
+                HtmlNodeCollection tempNodes = quoteDoc.DocumentNode.SelectNodes("//div[@class='quotes']/div[@class='quote']");
+                return tempNodes?.Select(node =>
+                {
+                    var quoteMatch = Regex.Match(node.InnerText, "&ldquo;(.*?)&rdquo;", RegexOptions.Compiled);
+                    var likesMatch = Regex.Match(node.SelectSingleNode(".//div[@class='right']/a")?.InnerText ?? "",
+                        @"(\d+) likes", RegexOptions.Compiled);
+                    if (!quoteMatch.Success || !likesMatch.Success) return null;
+                    return new Tuple<string, int>(quoteMatch.Groups[1].Value, int.Parse(likesMatch.Groups[1].Value));
+                }).Where(quote => quote != null);
             }
-            return result;
+
+            quoteBag.Add(ParseQuotePage(initialPage));
+            await Enumerable.Range(2, maxPages).ParallelForEachAsync(async page =>
+            {
+                var quotePage = new HtmlDocument();
+                quotePage.LoadHtml(await HttpDownloader.GetPageHtmlAsync(string.Format(quoteURL, page)));
+                quoteBag.Add(ParseQuotePage(quotePage));
+
+                //progress?.Report(new Tuple<int, int>(i, maxPages));
+            }, MaxConcurrentRequests, token);
+
+            return quoteBag.Where(quotes => quotes != null && quotes.Any()).SelectMany(quotes => quotes).ToList();
         }
 
         /// <summary>

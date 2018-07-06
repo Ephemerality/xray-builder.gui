@@ -399,14 +399,10 @@ namespace XRayBuilderGUI.DataSources
                 if (tempNode.Id.Contains("_aliases")) // If present, add any aliases found
                 {
                     string aliasStr = tempNodes[0].InnerText.Replace("[close]", "").Trim();
-                    string[] aliases = aliasStr.Split(new [] { ", " }, StringSplitOptions.RemoveEmptyEntries);
-                    if (aliases != null)
-                        result.Aliases.AddRange(aliases);
+                    result.Aliases.AddRange(aliasStr.Split(new [] { ", " }, StringSplitOptions.RemoveEmptyEntries));
                 }
                 else
-                {
                     result.Desc = tempNode.InnerText.Replace("[close]", "").Trim();
-                }
             }
             return result;
         }

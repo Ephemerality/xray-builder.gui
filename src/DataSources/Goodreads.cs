@@ -31,11 +31,6 @@ namespace XRayBuilderGUI.DataSources
 
             var goodreadsHtmlDoc = new HtmlDocument();
             goodreadsHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(String.Format(goodreadsSearchUrlBase, author, title)));
-            if (goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results"))
-            {
-                author = Functions.TrimAuthor(author);
-                goodreadsHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(String.Format(goodreadsSearchUrlBase, author, title)));
-            }
             return !goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results")
                 ? ParseSearchResults(goodreadsHtmlDoc)
                 : null;

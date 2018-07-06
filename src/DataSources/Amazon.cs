@@ -179,8 +179,6 @@ namespace XRayBuilderGUI.DataSources
         {
             BookInfo result = null;
 
-            author = Functions.TrimAuthor(author);
-
             if (title.IndexOf(" (") >= 0)
                 title = title.Substring(0, title.IndexOf(" ("));
             //Search "all" Amazon

@@ -561,23 +561,6 @@ namespace XRayBuilderGUI
             return author;
         }
 
-        /// <summary>
-        /// Trim spaces in author names that contain initials (helps with searching)
-        /// </summary>
-        public static string TrimAuthor(string author)
-        {
-            Regex regex = new Regex(@"( [A-Z]\.)|( [a-z]\.)", RegexOptions.Compiled);
-            Match match = Regex.Match(author, @"( [A-Z]\.)|( [a-z]\.)", RegexOptions.Compiled);
-            if (match.Success)
-            {
-                foreach (Match m in regex.Matches(author))
-                {
-                    author = author.Replace(m.Value, m.Value.Trim());
-                }
-            }
-            return author;
-        }
-
         public static string ExpandUnicode(string input)
         {
             StringBuilder output = new StringBuilder(input.Length);

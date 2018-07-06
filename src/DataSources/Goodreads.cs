@@ -285,26 +285,22 @@ namespace XRayBuilderGUI.DataSources
             {
                 HtmlDocument bookHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
                 bookHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(goodreadsBookUrl));
-                if (bookHtmlDoc != null)
+                HtmlNode link = bookHtmlDoc.DocumentNode.SelectSingleNode("//div[@class='otherEditionsActions']/a");
+                Match match = Regex.Match(link.GetAttributeValue("href", ""), @"editions/([0-9]*)-");
+                if (match.Success)
                 {
-                    HtmlNode link = bookHtmlDoc.DocumentNode.SelectSingleNode("//div[@class='otherEditionsActions']/a");
-                    Match match = Regex.Match(link.GetAttributeValue("href", ""), @"editions/([0-9]*)-");
-                    if (match.Success)
+                    string kindleEditionsUrl = String.Format("https://www.goodreads.com/work/editions/{0}?utf8=%E2%9C%93&sort=num_ratings&filter_by_format=Kindle+Edition", match.Groups[1].Value);
+                    bookHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(kindleEditionsUrl));
+                    HtmlNodeCollection bookNodes = bookHtmlDoc.DocumentNode.SelectNodes("//div[@class='elementList clearFix']");
+                    if (bookNodes != null)
                     {
-                        string kindleEditionsUrl = String.Format("https://www.goodreads.com/work/editions/{0}?utf8=%E2%9C%93&sort=num_ratings&filter_by_format=Kindle+Edition", match.Groups[1].Value);
-                        bookHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(kindleEditionsUrl));
-                        HtmlNodeCollection bookNodes = bookHtmlDoc.DocumentNode.SelectNodes("//div[@class='elementList clearFix']");
-                        if (bookNodes != null)
+                        foreach (HtmlNode book in bookNodes)
                         {
-                            foreach (HtmlNode book in bookNodes)
-                            {
-                                match = Regex.Match(book.InnerHtml, "(B[A-Z0-9]{9})");
-                                if (match.Success)
-                                    return match.Value;
-                            }
+                            match = Regex.Match(book.InnerHtml, "(B[A-Z0-9]{9})");
+                            if (match.Success)
+                                return match.Value;
                         }
                     }
-                    return "";
                 }
                 return "";
             }

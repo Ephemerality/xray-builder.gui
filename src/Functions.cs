@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
+using HtmlAgilityPack;
 using XRayBuilderGUI.Unpack;
 using Regex = System.Text.RegularExpressions.Regex;
 
@@ -126,7 +127,7 @@ namespace XRayBuilderGUI
 
             //create the grayscale ColorMatrix
             ColorMatrix colorMatrix = new ColorMatrix(
-                new float[][]
+                new[]
                 {
                     new [] {.3f, .3f, .3f, 0, 0},
                     new [] {.59f, .59f, .59f, 0, 0},
@@ -233,8 +234,6 @@ namespace XRayBuilderGUI
                             "Caution: This feature is experimental and could potentially ruin your book file.", "Incorrect Content Type", MessageBoxButtons.YesNo))
                     {
                         fs = new FileStream(mobiFile, FileMode.Open, FileAccess.ReadWrite);
-                        if (fs == null)
-                            throw new Exception("Unable to re-open mobi file for writing.");
                         md.mobiHeader.exthHeader.UpdateCDEContentType(fs);
                     }
                     else
@@ -284,10 +283,8 @@ namespace XRayBuilderGUI
 
         public static string GetPageCount(string rawML, BookInfo bookInfo)
         {
-            string output = "";
-            int lineLength = 0;
+            string output;
             double lineCount = 0;
-            int pageCount = 0;
             if (!File.Exists(rawML) || bookInfo == null)
             {
                 output = "Error: RawML could not be found, aborting.\r\nPath: " + rawML;
@@ -295,16 +292,15 @@ namespace XRayBuilderGUI
             }
             HtmlAgilityPack.HtmlDocument bookDoc = new HtmlAgilityPack.HtmlDocument { OptionAutoCloseOnEnd = true };
             bookDoc.Load(rawML, Encoding.UTF8);
-            HtmlAgilityPack.HtmlNodeCollection booklineNodes = null;
-            booklineNodes = bookDoc.DocumentNode.SelectNodes("//p") ?? bookDoc.DocumentNode.SelectNodes("//div");
+            var booklineNodes = bookDoc.DocumentNode.SelectNodes("//p") ?? bookDoc.DocumentNode.SelectNodes("//div");
             if (booklineNodes == null)
             {
                 output = "An error occurred while estimating page count!";
                 return output;
             }
-            foreach (HtmlAgilityPack.HtmlNode line in booklineNodes)
+            foreach (HtmlNode line in booklineNodes)
             {
-                lineLength = line.InnerText.Length + 1;
+                var lineLength = line.InnerText.Length + 1;
                 if (lineLength < 70)
                 {
                     lineCount++;
@@ -312,7 +308,7 @@ namespace XRayBuilderGUI
                 }
                 lineCount += Math.Ceiling((double)lineLength / 70);
             }
-            pageCount = Convert.ToInt32(Math.Ceiling(lineCount / 31));
+            var pageCount = Convert.ToInt32(Math.Ceiling(lineCount / 31));
             if (pageCount == 0)
             {
                 output = "An error occurred while estimating page count!";
@@ -348,7 +344,6 @@ namespace XRayBuilderGUI
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
-            string rawMl = "";
             string unpackInfo = "";
             try
             {
@@ -368,7 +363,7 @@ namespace XRayBuilderGUI
             {
                 throw new Exception(String.Format("An error occurred while running Kindleunpack: {0}\r\n", ex.Message));
             }
-            rawMl = Path.GetFileNameWithoutExtension(mobiFile) + ".rawml";
+            var rawMl = Path.GetFileNameWithoutExtension(mobiFile) + ".rawml";
             //Was the unpack successful?
             if (!unpackInfo.Contains("Write opf\r\n") && !unpackInfo.Contains("\r\nCompleted"))
             {
@@ -386,29 +381,18 @@ namespace XRayBuilderGUI
             string databaseName = "";
             string uniqid = "";
             string asin = "";
-            string incorrectAsin = "";
             string author = "";
             string title = "";
             string image = "";
 
             DirectoryInfo d = new DirectoryInfo(randomFile + @"/mobi7/Images");
-            if (d != null)
-            {
-                FileInfo[] Files = d.GetFiles("*.jpeg");
-                foreach (FileInfo file in Files)
-                {
-                    if (file.Name.Contains("cover"))
-                    {
-                        image = file.FullName;
-                        break;
-                    }
-                }
-            }
+            if (d.Exists)
+                image = d.GetFiles("*.jpeg").FirstOrDefault(file => file.Name.Contains("cover"))?.FullName ?? "";
 
             Match match = Regex.Match(unpackInfo, @"ASIN\s*(.*)");
             if (match.Success && match.Groups.Count > 1)
             {
-                incorrectAsin = match.Groups[1].Value.Replace("\r", "");
+                var incorrectAsin = match.Groups[1].Value.Replace("\r", "");
                 //Improve actual Amazon ASIN matching
                 match = Regex.Match(match.Groups[1].Value, "(^B[A-Z0-9]{9})");
                 if (!match.Success)
@@ -454,23 +438,16 @@ namespace XRayBuilderGUI
             byte[] dbinput = new byte[32];
             using (FileStream stream = File.Open(mobiFile, FileMode.Open, FileAccess.Read))
             {
-                if (stream == null)
-                {
-                    throw new Exception("Error opening mobi file (stream error).");
-                }
-                int bytesRead = stream.Read(dbinput, 0, 32);
-                if (bytesRead != 32)
-                {
+                if (stream.Read(dbinput, 0, 32) != 32)
                     throw new Exception("Error reading from mobi file.");
-                }
+
                 databaseName = Encoding.Default.GetString(dbinput).Trim('\0');
             }
 
             if (databaseName == "" || uniqid == "" || asin == "")
-            {
                 throw new Exception($"Error: Missing metadata.\r\nDatabase Name: {databaseName}\r\nASIN: {asin}\r\nUniqueID: {uniqid}");
-            }
-            else if (!Properties.Settings.Default.useNewVersion && databaseName.Length == 31)
+
+            if (!Properties.Settings.Default.useNewVersion && databaseName.Length == 31)
             {
                 MessageBox.Show(
                     $"WARNING: Database Name is the maximum length. If \"{databaseName}\" is the full book title, this should not be an issue.\r\n" +
@@ -500,7 +477,7 @@ namespace XRayBuilderGUI
             {
                 using (Process process = Process.Start(startInfo))
                 {
-                    process.WaitForExit();
+                    process?.WaitForExit();
                 }
             }
             catch (Exception ex)
@@ -655,7 +632,7 @@ namespace XRayBuilderGUI
             if (ctrl.InvokeRequired)
                 ctrl.BeginInvoke(new Action(() => SetPropertyThreadSafe(ctrl, name, value)));
             else
-                ctrl.GetType().InvokeMember(name, System.Reflection.BindingFlags.SetProperty, null, ctrl, new object[] { value });
+                ctrl.GetType().InvokeMember(name, System.Reflection.BindingFlags.SetProperty, null, ctrl, new [] { value });
         }
     }
 

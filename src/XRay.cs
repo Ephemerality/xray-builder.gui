@@ -1344,7 +1344,7 @@ namespace XRayBuilderGUI
         public int erl;
     }
 
-    public static class ExtensionMethods
+    public static partial class ExtensionMethods
     {
         //http://stackoverflow.com/questions/166855/c-sharp-preg-replace
         public static string PregReplace(this string input, string[] pattern, string[] replacements)

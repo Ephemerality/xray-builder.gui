@@ -212,7 +212,7 @@ namespace XRayBuilderGUI.DataSources
             match = Regex.Match(seriesNode.InnerText, @"\((.*) #?([0-9]*([.,][0-9])?)\)");
             if (match.Success)
             {
-                Logger.Log(String.Format("Series Goodreads Page URL: {0}", goodreadsSeriesUrl));
+                Logger.Log($"Series Goodreads Page URL: {goodreadsSeriesUrl}");
                 curBook.seriesName = match.Groups[1].Value.Trim();
                 curBook.seriesPosition = match.Groups[2].Value.Trim();
             }
@@ -337,7 +337,6 @@ namespace XRayBuilderGUI.DataSources
 
         public override async Task<List<XRay.Term>> GetTerms(string dataUrl, IProgress<Tuple<int, int>> progress, CancellationToken token)
         {
-            List<XRay.Term> terms = new List<XRay.Term>();
             if (sourceHtmlDoc == null)
             {
                 Logger.Log("Downloading Goodreads page...");
@@ -345,28 +344,23 @@ namespace XRayBuilderGUI.DataSources
                 sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(dataUrl));
             }
 
-            HtmlNodeCollection charNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/a");
-            if (charNodes == null) return terms;
-			var allChars = charNodes.ToList();
+            var charNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/a");
+            if (charNodes == null) return new List<XRay.Term>();
             // Check if ...more link exists on Goodreads page
-            HtmlNodeCollection moreCharNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/span[@class='toggleContent']/a");
-            List<HtmlNode> moreChars = moreCharNodes?.ToList();
-            if (moreChars != null)
-                allChars.AddRange(moreChars);
-            Logger.Log("Gathering term information from Goodreads... (" + allChars.Count + ")");
-            if (allChars.Count > 20)
+            var moreCharNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/span[@class='toggleContent']/a");
+            var allChars = moreCharNodes == null ? charNodes : charNodes.Concat(moreCharNodes);
+            var termCount = moreCharNodes == null ? charNodes.Count : charNodes.Count + moreCharNodes.Count;
+            Logger.Log($"Gathering term information from Goodreads... ({termCount})");
+            if (termCount > 20)
                 Logger.Log("More than 20 characters found. Consider using the 'download to XML' option if you need to build repeatedly.");
-            int count = 1;
-            progress?.Report(new Tuple<int, int>(1, allChars.Count));
-            foreach (HtmlNode charNode in allChars)
+            //progress?.Report(new Tuple<int, int>(1, termCount));
+            var terms = new ConcurrentBag<XRay.Term>();
+            await allChars.ParallelForEachAsync(async charNode =>
             {
-                token.ThrowIfCancellationRequested();
                 try
                 {
-                    XRay.Term tempTerm = await GetTerm(dataUrl, charNode.GetAttributeValue("href", ""));
-                    if (tempTerm != null)
-                        terms.Add(tempTerm);
-                    progress?.Report(new Tuple<int, int>(count++, allChars.Count));
+                    terms.AddNotNull(await GetTerm(dataUrl, charNode.GetAttributeValue("href", "")));
+                    //progress?.Report(new Tuple<int, int>(count++, allChars.Count));
                 }
                 catch (Exception ex)
                 {
@@ -374,8 +368,8 @@ namespace XRayBuilderGUI.DataSources
                         Logger.Log("Error getting page for character. URL: " + "https://www.goodreads.com" + charNode.GetAttributeValue("href", "")
                             + "\r\nMessage: " + ex.Message + "\r\n" + ex.StackTrace);
                 }
-            }
-            return terms;
+            }, MaxConcurrentRequests, token);
+            return terms.ToList();
         }
 
         // Are there actually any goodreads pages that aren't at goodreads.com for other languages??
@@ -398,7 +392,7 @@ namespace XRayBuilderGUI.DataSources
             {
                 if (tempNode.Id.Contains("_aliases")) // If present, add any aliases found
                 {
-                    string aliasStr = tempNodes[0].InnerText.Replace("[close]", "").Trim();
+                    string aliasStr = tempNode.InnerText.Replace("[close]", "").Trim();
                     result.Aliases.AddRange(aliasStr.Split(new [] { ", " }, StringSplitOptions.RemoveEmptyEntries));
                 }
                 else

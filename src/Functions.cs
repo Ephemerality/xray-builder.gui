@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -623,5 +624,18 @@ namespace XRayBuilderGUI
     {
         [DllImport("user32.dll")]
         internal static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+    }
+
+    public static partial class ExtensionMethods
+    {
+        public static void AddNotNull<T>(this IList<T> list, T value)
+        {
+            if (value != null) list.Add(value);
+        }
+
+        public static void AddNotNull<T>(this ConcurrentBag<T> list, T value)
+        {
+            if (value != null) list.Add(value);
+        }
     }
 }

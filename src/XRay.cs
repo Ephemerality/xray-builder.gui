@@ -59,7 +59,7 @@ namespace XRayBuilderGUI
 
         private bool enableEdit = Properties.Settings.Default.enableEdit;
         private frmMain main;
-        private DataSources.DataSource dataSource;
+        private readonly DataSource dataSource;
 
         #region CommonTitles
         string[] CommonTitles = new[] { "Mr", "Mrs", "Ms", "Miss", "Dr", "Herr", "Monsieur", "Hr", "Frau",
@@ -90,7 +90,7 @@ namespace XRayBuilderGUI
         {
         }
 
-        public XRay(string shelfari, frmMain frm, DataSources.DataSource dataSource)
+        public XRay(string shelfari, frmMain frm, DataSource dataSource)
         {
             if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
                 shelfari = "https://" + shelfari;
@@ -99,7 +99,7 @@ namespace XRayBuilderGUI
             this.dataSource = dataSource;
         }
 
-        public XRay(string shelfari, string db, string guid, string asin, frmMain frm, DataSources.DataSource dataSource,
+        public XRay(string shelfari, string db, string guid, string asin, frmMain frm, DataSource dataSource,
             int locOffset = 0, string aliaspath = "", bool unattended = false)
         {
             if (shelfari == "" || db == "" || guid == "" || asin == "")
@@ -109,7 +109,7 @@ namespace XRayBuilderGUI
                 shelfari = "https://" + shelfari;
             dataUrl = shelfari;
             databaseName = db;
-            _guid = guid;
+            Guid = guid;
             this.asin = asin;
             this.locOffset = locOffset;
             this.aliaspath = aliaspath;
@@ -118,14 +118,14 @@ namespace XRayBuilderGUI
             this.dataSource = dataSource;
         }
 
-        public XRay(string xml, string db, string guid, string asin, frmMain frm, DataSources.DataSource dataSource,
+        public XRay(string xml, string db, string guid, string asin, frmMain frm, DataSource dataSource,
             int locOffset = 0, string aliaspath = "")
         {
             if (xml == "" || db == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
             xmlFile = xml;
             databaseName = db;
-            _guid = guid;
+            Guid = guid;
             this.asin = asin;
             this.locOffset = locOffset;
             this.aliaspath = aliaspath;
@@ -133,6 +133,25 @@ namespace XRayBuilderGUI
             main = frm;
             this.dataSource = dataSource;
             skipShelfari = true;
+        }
+
+        private string Guid
+        {
+            set
+            {
+                //Process GUID. If in decimal form, convert to hex.
+                if (Regex.IsMatch(value, "/[a-zA-Z]/", RegexOptions.Compiled))
+                    _guid = value.ToUpper();
+                else
+                {
+                    long.TryParse(_guid, out var guidDec);
+                    _guid = guidDec.ToString("X");
+                }
+
+                if (_guid == "0")
+                    throw new ArgumentException("An error occurred while converting the GUID.");
+            }
+            get => _guid;
         }
 
         public async Task<int> SaveXml(string outfile, IProgress<Tuple<int, int>> progress, CancellationToken token)
@@ -165,14 +184,14 @@ namespace XRayBuilderGUI
                 return
                     String.Format(
                         @"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{8}"",""created"":""{9}"",""terms"":[{4}],""chapters"":[{5}],""assets"":{{}},""srl"":{6},""erl"":{7}}}",
-                        asin, databaseName, _guid, version, string.Join<Term>(",", Terms),
+                        asin, databaseName, Guid, version, string.Join<Term>(",", Terms),
                         string.Join<Chapter>(",", _chapters), _srl, _erl, xrayversion, date);
             else
             {
                 return
                     String.Format(
                         @"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{5}"",""created"":""{6}"",""terms"":[{4}],""chapters"":[{{""name"":null,""start"":1,""end"":9999999}}]}}",
-                        asin, databaseName, _guid, version, string.Join<Term>(",", Terms), xrayversion, date);
+                        asin, databaseName, Guid, version, string.Join<Term>(",", Terms), xrayversion, date);
             }
         }
 
@@ -184,30 +203,11 @@ namespace XRayBuilderGUI
             return preview;
         }
 
-        public string GetXRayName(bool android = false)
-        {
-            if (android)
-                return String.Format("XRAY.{0}.{1}_{2}.db", asin, databaseName, _guid);
-            else
-                return "XRAY.entities." + asin + ".asc";
-        }
+        public string XRayName(bool android = false) =>
+            android ? $"XRAY.{asin}.{databaseName}_{Guid}.db" : $"XRAY.entities.{asin}.asc";
 
         public async Task<int> CreateXray(IProgress<Tuple<int, int>> progress, CancellationToken token)
         {
-            //Process GUID. If in decimal form, convert to hex.
-            if (Regex.IsMatch(_guid, "/[a-zA-Z]/"))
-                _guid = _guid.ToUpper();
-            else
-            {
-                long.TryParse(_guid, out var guidDec);
-                _guid = guidDec.ToString("X");
-            }
-            if (_guid == "0")
-            {
-                Logger.Log("An error occurred while converting the GUID.");
-                return 1;
-            }
-
             //Download Shelfari info if not skipping
             if (skipShelfari)
             {

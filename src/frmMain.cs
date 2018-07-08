@@ -249,7 +249,7 @@ namespace XRayBuilderGUI
                 Logger.Log("Failed to create output directory: " + ex.Message + "\r\n" + ex.StackTrace + "\r\nFiles will be placed in the default output directory.");
                 outFolder = settings.outDir;
             }
-            _newPath = outFolder + "\\" + xray.GetXRayName(settings.android);
+            _newPath = outFolder + "\\" + xray.XRayName(settings.android);
 
             if (settings.useNewVersion)
             {

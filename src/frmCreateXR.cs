@@ -130,7 +130,7 @@ namespace XRayBuilderGUI
                             t.Match,
                             t.MatchCase,
                             false,
-                            t.RegEx);
+                            t.RegexAliases);
                     }
                     Terms.Clear();
                 }
@@ -300,7 +300,7 @@ namespace XRayBuilderGUI
                     DescSrc = row.Cells[5].Value.ToString(),
                     Match = (bool) row.Cells[6].Value,
                     MatchCase = (bool) row.Cells[7].Value,
-                    RegEx = (bool) row.Cells[9].Value
+                    RegexAliases = (bool) row.Cells[9].Value
                 };
                 Terms.Add(newTerm);
             }

@@ -167,7 +167,7 @@ namespace XRayBuilderGUI
             if (Terms.Count == 0)
                 return 1;
             Logger.Log(@"Exporting terms...");
-            Functions.Save<List<Term>>(Terms, outfile);
+            Functions.Save(Terms, outfile);
             return 0;
         }
 
@@ -184,14 +184,14 @@ namespace XRayBuilderGUI
                 return
                     String.Format(
                         @"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{8}"",""created"":""{9}"",""terms"":[{4}],""chapters"":[{5}],""assets"":{{}},""srl"":{6},""erl"":{7}}}",
-                        asin, databaseName, Guid, version, string.Join<Term>(",", Terms),
-                        string.Join<Chapter>(",", _chapters), _srl, _erl, xrayversion, date);
+                        asin, databaseName, Guid, version, string.Join(",", Terms),
+                        string.Join(",", _chapters), _srl, _erl, xrayversion, date);
             else
             {
                 return
                     String.Format(
                         @"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{5}"",""created"":""{6}"",""terms"":[{4}],""chapters"":[{{""name"":null,""start"":1,""end"":9999999}}]}}",
-                        asin, databaseName, Guid, version, string.Join<Term>(",", Terms), xrayversion, date);
+                        asin, databaseName, Guid, version, string.Join(",", Terms), xrayversion, date);
             }
         }
 
@@ -469,7 +469,7 @@ namespace XRayBuilderGUI
                     {
                         search.Add(Encoding.Default.GetString(Encoding.UTF8.GetBytes(alias)));
                     }
-                    if (character.RegEx)
+                    if (character.RegexAliases)
                     {
                         if (search.Any(r => Regex.Match(node.InnerText, r).Success)
                             || search.Any(r => Regex.Match(node.InnerHtml, r).Success)
@@ -495,7 +495,7 @@ namespace XRayBuilderGUI
                         //Search html for character name and aliases
                         foreach (string s in search)
                         {
-                            MatchCollection matches = Regex.Matches(node.InnerHtml, quotes + @"?\b" + s + punctuationMarks, character.MatchCase || character.RegEx ? RegexOptions.None : RegexOptions.IgnoreCase);
+                            MatchCollection matches = Regex.Matches(node.InnerHtml, quotes + @"?\b" + s + punctuationMarks, character.MatchCase || character.RegexAliases ? RegexOptions.None : RegexOptions.IgnoreCase);
                             foreach (Match match in matches)
                             {
                                 if (locHighlight.Contains(match.Index) && lenHighlight.Contains(match.Length))
@@ -517,12 +517,12 @@ namespace XRayBuilderGUI
                                 //Match HTML tags -- provided there's nothing malformed
                                 string patternSoftHypen = "(\u00C2\u00AD|&shy;|&#173;|&#xad;|&#0173;|&#x00AD;)*";
                                 pattern = String.Format("{0}{1}{0}{2}", patternHTML,
-                                    string.Join(patternHTML + patternSoftHypen, character.RegEx ? s.ToCharArray() : Regex.Unescape(s).ToCharArray()), punctuationMarks);
+                                    string.Join(patternHTML + patternSoftHypen, character.RegexAliases ? s.ToCharArray() : Regex.Unescape(s).ToCharArray()), punctuationMarks);
                                 patterns.Add(pattern);
                                 foreach (string pat in patterns)
                                 {
                                     MatchCollection matches;
-                                    if (character.MatchCase || character.RegEx)
+                                    if (character.MatchCase || character.RegexAliases)
                                         matches = Regex.Matches(node.InnerHtml, pat);
                                     else
                                         matches = Regex.Matches(node.InnerHtml, pat, RegexOptions.IgnoreCase);
@@ -614,7 +614,7 @@ namespace XRayBuilderGUI
                 {
                     foreach (var quote in notableClips)
                     {
-                        int index = node.InnerText.IndexOf(quote.Text);
+                        int index = node.InnerText.IndexOf(quote.Text, StringComparison.Ordinal);
                         if (index > -1)
                         {
                             // See if an excerpt already exists at this location
@@ -657,26 +657,25 @@ namespace XRayBuilderGUI
         /// <param name="rawML">Path to the book's rawML file</param>
         private void SearchChapters(HtmlAgilityPack.HtmlDocument bookDoc, string rawML)
         {
-            string leadingZeros = @"^0+(?=\d)";
-            string tocHtml = "";
+            var leadingZerosRegex = new Regex(@"^0+(?=\d)", RegexOptions.Compiled);
+            string tocHtml;
             HtmlAgilityPack.HtmlDocument tocDoc = new HtmlAgilityPack.HtmlDocument();
-            HtmlNodeCollection tocNodes = null;
             HtmlNode toc = bookDoc.DocumentNode.SelectSingleNode(
                     "//reference[translate(@title,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='TABLE OF CONTENTS']");
             _chapters.Clear();
             //Find table of contents, using case-insensitive search
             if (toc != null)
             {
-                int tocloc = Convert.ToInt32(Regex.Replace(toc.GetAttributeValue("filepos", ""), leadingZeros, ""));
-                tocHtml = rawML.Substring(tocloc, rawML.IndexOf("<mbp:pagebreak/>", tocloc + 1) - tocloc);
+                int tocloc = Convert.ToInt32(leadingZerosRegex.Replace(toc.GetAttributeValue("filepos", ""), ""));
+                tocHtml = rawML.Substring(tocloc, rawML.IndexOf("<mbp:pagebreak/>", tocloc + 1, StringComparison.Ordinal) - tocloc);
                 tocDoc = new HtmlAgilityPack.HtmlDocument();
                 tocDoc.LoadHtml(tocHtml);
-                tocNodes = tocDoc.DocumentNode.SelectNodes("//a");
+                var tocNodes = tocDoc.DocumentNode.SelectNodes("//a");
                 foreach (HtmlNode chapter in tocNodes)
                 {
                     if (chapter.InnerHtml == "") continue;
                     int filepos =
-                        Convert.ToInt32(Regex.Replace(chapter.GetAttributeValue("filepos", "0"), leadingZeros, ""));
+                        Convert.ToInt32(leadingZerosRegex.Replace(chapter.GetAttributeValue("filepos", "0"), ""));
                     if (_chapters.Count > 0)
                     {
                         _chapters[_chapters.Count - 1].End = filepos;
@@ -699,7 +698,7 @@ namespace XRayBuilderGUI
                         breakIndex = rawML.IndexOf("div class=\"mbppagebreak\"", index);
                     tocHtml = rawML.Substring(index, breakIndex - index);
                     tocDoc.LoadHtml(tocHtml);
-                    tocNodes = tocDoc.DocumentNode.SelectNodes("//p");
+                    var tocNodes = tocDoc.DocumentNode.SelectNodes("//p");
                     // Search for each chapter heading, ignore any misses (user can go and add any that are missing if necessary)
                     foreach (HtmlNode chap in tocNodes)
                     {
@@ -721,12 +720,14 @@ namespace XRayBuilderGUI
             //Try a broad search for chapterish names just for fun
             if (_chapters.Count == 0)
             {
-                string chapterPattern = @"((?:chapter|book|section|part|capitulo)\s+.*)|((?:prolog|prologue|epilogue)(?:\s+|$).*)|((?:one|two|three|four|five|six|seven|eight|nine|ten)(?:\s+|$).*)";
-                string xpath = "//*[self::h1 or self::h2 or self::h3 or self::h4 or self::h5]";
-                IEnumerable<HtmlNode> chapterNodes = bookDoc.DocumentNode.SelectNodes("//a").
-                    Where(div => div.GetAttributeValue("class", "") == "chapter" || Regex.IsMatch(div.InnerText, chapterPattern, RegexOptions.IgnoreCase));
-                IEnumerable<HtmlNode> headingNodes = bookDoc.DocumentNode.SelectNodes(xpath);
-                if (headingNodes.Count() > chapterNodes.Count())
+                // TODO: Expand on the chapter matching pattern concept
+                const string chapterPattern = @"((?:chapter|book|section|part|capitulo)\s+.*)|((?:prolog|prologue|epilogue)(?:\s+|$).*)|((?:one|two|three|four|five|six|seven|eight|nine|ten)(?:\s+|$).*)";
+                const string xpath = "//*[self::h1 or self::h2 or self::h3 or self::h4 or self::h5]";
+                var chapterNodes = bookDoc.DocumentNode.SelectNodes("//a")
+                    .Where(div => div.GetAttributeValue("class", "") == "chapter" || Regex.IsMatch(div.InnerText, chapterPattern, RegexOptions.IgnoreCase))
+                    .ToList();
+                var headingNodes = bookDoc.DocumentNode.SelectNodes(xpath).ToList();
+                if (headingNodes.Count > chapterNodes.Count)
                     chapterNodes = headingNodes;
                 foreach (HtmlNode chap in chapterNodes)
                 {
@@ -755,7 +756,7 @@ namespace XRayBuilderGUI
             command.Dispose();
             Logger.Log("Updating database with terms, descriptions, and excerpts...");
             //Write all entities and occurrences
-            Logger.Log(String.Format("Writing {0} terms...", Terms.Count));
+            Logger.Log($"Writing {Terms.Count} terms...");
             progress?.Report(new Tuple<int, int>(0, Terms.Count));
             foreach (Term t in Terms)
             {
@@ -840,18 +841,18 @@ namespace XRayBuilderGUI
             token.ThrowIfCancellationRequested();
             Logger.Log("Writing top mentions...");
             List<int> sorted =
-                Terms.Where<Term>(t => t.Type.Equals("character"))
+                Terms.Where(t => t.Type.Equals("character"))
                     .OrderByDescending(t => t.Locs.Count)
                     .Select(t => t.Id)
-                    .ToList<int>();
+                    .ToList();
             sql.Clear();
             sql.AppendFormat("update type set top_mentioned_entities='{0}' where id=1;\n",
                 String.Join(",", sorted.GetRange(0, Math.Min(10, sorted.Count))));
             sorted =
-                Terms.Where<Term>(t => t.Type.Equals("topic"))
+                Terms.Where(t => t.Type.Equals("topic"))
                     .OrderByDescending(t => t.Locs.Count)
                     .Select(t => t.Id)
-                    .ToList<int>();
+                    .ToList();
             sql.AppendFormat("update type set top_mentioned_entities='{0}' where id=2;",
                 String.Join(",", sorted.GetRange(0, Math.Min(10, sorted.Count))));
             command = new SQLiteCommand(sql.ToString(), db);
@@ -884,25 +885,24 @@ namespace XRayBuilderGUI
                 {
                     try
                     {
-                        string temp = streamReader.ReadLine().ToLower(); //type
+                        var temp = streamReader.ReadLine()?.ToLower(); //type
+                        if (string.IsNullOrEmpty(temp)) continue;
                         lineCount++;
-                        if (temp == "") continue;
                         if (temp != "character" && temp != "topic")
                         {
                             Logger.Log("Error: Invalid term type \"" + temp + "\" on line " + lineCount);
                             return 1;
                         }
-                        Term newTerm = new Term
+                        Terms.Add(new Term
                         {
                             Type = temp,
                             TermName = streamReader.ReadLine(),
-                            Desc = streamReader.ReadLine()
-                        };
+                            Desc = streamReader.ReadLine(),
+                            MatchCase = temp == "character",
+                            DescSrc = "shelfari",
+                            Id = termId++
+                        });
                         lineCount += 2;
-                        newTerm.MatchCase = temp == "character" ? true : false;
-                        newTerm.DescSrc = "shelfari";
-                        newTerm.Id = termId++;
-                        Terms.Add(newTerm);
                     }
                     catch (Exception ex)
                     {
@@ -941,7 +941,7 @@ namespace XRayBuilderGUI
                         go_to == -1 ? "null" : go_to.ToString());
                 foreach (int i in related_entities)
                 {
-                    sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", i, id);
+                    sql += $"insert into entity_excerpt (entity, excerpt) values ({i}, {id});\n";
                 }
                 return sql;
             }
@@ -998,11 +998,14 @@ namespace XRayBuilderGUI
 
             [XmlIgnore] public List<int[]> Occurrences = new List<int[]>();
 
-            public bool MatchCase = false;
+            public bool MatchCase;
 
             public bool Match = true;
 
-            public bool RegEx = false;
+            /// <summary>
+            /// Determines if the aliases are in Regex format
+            /// </summary>
+            public bool RegexAliases;
 
             public Term()
             {
@@ -1055,8 +1058,8 @@ namespace XRayBuilderGUI
             {
                 while (!streamReader.EndOfStream)
                 {
-                    string[] tmp = streamReader.ReadLine().Split('|');
-                    if (tmp.Length != 3) return false; //Malformed chapters file
+                    string[] tmp = streamReader.ReadLine()?.Split('|');
+                    if (tmp?.Length != 3) return false; //Malformed chapters file
                     if (tmp[0] == "" || tmp[0].Substring(0, 1) == "#") continue;
                     _chapters.Add(new Chapter(tmp[0], Convert.ToInt32(tmp[1]), Convert.ToInt64(tmp[2])));
                 }
@@ -1070,13 +1073,12 @@ namespace XRayBuilderGUI
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\ext\");
 
             //Try to load custom common titles from BaseSplitIgnore.txt
-            string[] CustomSplitIgnore = null;
             try
             {
                 using (StreamReader streamReader = new StreamReader(Environment.CurrentDirectory + @"\dist\BaseSplitIgnore.txt", Encoding.UTF8))
                 {
-                    CustomSplitIgnore = streamReader.ReadToEnd().Split(new string[] { "\r\n" }, StringSplitOptions.None);
-                    CustomSplitIgnore = CustomSplitIgnore.Where(r => !r.StartsWith("//")).ToArray(); //Remove commented lines
+                    var CustomSplitIgnore = streamReader.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.None)
+                        .Where(r => !r.StartsWith("//")).ToArray();
                     if (CustomSplitIgnore.Length >= 1)
                     {
                         CommonTitles = CustomSplitIgnore;
@@ -1104,8 +1106,7 @@ namespace XRayBuilderGUI
                             if (Properties.Settings.Default.splitAliases)
                             {
                                 string splitName = "";
-                                string titleTrimmed = "";
-                                string[] words;
+                                string titleTrimmed;
                                 List<string> aliasList = new List<string>();
                                 TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
 
@@ -1146,7 +1147,7 @@ namespace XRayBuilderGUI
                                 if (titleTrimmed.Contains(" "))
                                 {
                                     titleTrimmed = titleTrimmed.Replace(" &amp;", "").Replace(" &", "");
-                                    words = titleTrimmed.Split(' ');
+                                    var words = titleTrimmed.Split(' ');
                                     foreach (string word in words)
                                     {
                                         if (word.ToUpper() == word)
@@ -1196,9 +1197,8 @@ namespace XRayBuilderGUI
                 while (!streamReader.EndOfStream)
                 {
                     string input = streamReader.ReadLine();
-                    string[] temp = input.Split('|');
-                    if (temp.Length <= 1 || temp[0] == "") continue;
-                    else if (temp[0].Substring(0, 1) == "#") continue;
+                    string[] temp = input?.Split('|');
+                    if (temp == null || temp.Length <= 1 || temp[0] == "" || temp[0].StartsWith("#")) continue;
                     string[] temp2 = input.Substring(input.IndexOf('|') + 1).Split(',');
                     //Check for misplaced pipe character in aliases
                     if (temp2[0] != "" && temp2.Any(r => Regex.Match(@"\|", r).Success))
@@ -1256,7 +1256,7 @@ namespace XRayBuilderGUI
                     }
                     else if (t.Aliases[0] == "/r")
                     {
-                        t.RegEx = true;
+                        t.RegexAliases = true;
                         t.Aliases.Remove("/r");
                     }
                 }

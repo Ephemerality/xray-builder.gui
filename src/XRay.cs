@@ -287,7 +287,7 @@ namespace XRayBuilderGUI
             if (!aliasesDownloaded && (!File.Exists(aliasFile) || Properties.Settings.Default.overwriteAliases))
             {
                 SaveCharacters(aliasFile);
-                Logger.Log(String.Format("Characters exported to {0} for adding aliases.", aliasFile));
+                Logger.Log($"Characters exported to {aliasFile} for adding aliases.");
             }
 
             if (skipShelfari)
@@ -350,9 +350,9 @@ namespace XRayBuilderGUI
             if (File.Exists(chapterFile) && !Properties.Settings.Default.overwriteChapters)
             {
                 if (LoadChapters())
-                    Logger.Log(String.Format("Chapters read from {0}.\r\nDelete this file if you want chapters built automatically.", chapterFile));
+                    Logger.Log($"Chapters read from {chapterFile}.\r\nDelete this file if you want chapters built automatically.");
                 else
-                    Logger.Log(String.Format("An error occurred reading chapters from {0}.\r\nFile is missing or not formatted correctly.", chapterFile));
+                    Logger.Log($"An error occurred reading chapters from {chapterFile}.\r\nFile is missing or not formatted correctly.");
             }
             else
             {
@@ -368,13 +368,10 @@ namespace XRayBuilderGUI
                 if (_chapters.Count > 0)
                 {
                     SaveChapters();
-                    Logger.Log(String.Format("Chapters exported to {0} for manual editing.", chapterFile));
+                    Logger.Log($"Chapters exported to {chapterFile} for manual editing.");
                 }
                 else
-                    Logger.Log(
-                        String.Format(
-                            "No chapters detected.\r\nYou can create a file at {0} if you want to define chapters manually.",
-                            chapterFile));
+                    Logger.Log($"No chapters detected.\r\nYou can create a file at {chapterFile} if you want to define chapters manually.");
             }
 
             if (!unattended && enableEdit)
@@ -387,10 +384,7 @@ namespace XRayBuilderGUI
                     if (LoadChapters())
                         Logger.Log("Reloaded chapters from edited file.");
                     else
-                        Logger.Log(
-                            String.Format(
-                                "An error occurred reloading chapters from {0}.\r\nFile is missing or not formatted correctly.",
-                                chapterFile));
+                        Logger.Log($"An error occurred reloading chapters from {chapterFile}.\r\nFile is missing or not formatted correctly.");
                 }
 
             //If no chapters were found, add a default chapter that spans the entire book
@@ -411,7 +405,7 @@ namespace XRayBuilderGUI
                 foreach (Chapter c in _chapters)
                 {
                     if (c.End > _erl) _erl = c.End;
-                    Logger.Log(String.Format("{0} | start: {1} | end: {2}", c.name, c.start, c.End));
+                    Logger.Log($"{c.name} | start: {c.start} | end: {c.End}");
                 }
             }
 
@@ -642,10 +636,7 @@ namespace XRayBuilderGUI
             foreach (Term t in Terms)
             {
                 if (t.Match && t.Locs.Count == 0)
-                    Logger.Log(
-                        String.Format(
-                            "No locations were found for the term \"{0}\".\r\nYou should add aliases for this term using the book or rawml as a reference.",
-                            t.TermName));
+                    Logger.Log($"No locations were found for the term \"{t.TermName}\".\r\nYou should add aliases for this term using the book or rawml as a reference.");
             }
             return 0;
         }
@@ -674,8 +665,7 @@ namespace XRayBuilderGUI
                 foreach (HtmlNode chapter in tocNodes)
                 {
                     if (chapter.InnerHtml == "") continue;
-                    int filepos =
-                        Convert.ToInt32(leadingZerosRegex.Replace(chapter.GetAttributeValue("filepos", "0"), ""));
+                    int filepos = Convert.ToInt32(leadingZerosRegex.Replace(chapter.GetAttributeValue("filepos", "0"), ""));
                     if (_chapters.Count > 0)
                     {
                         _chapters[_chapters.Count - 1].End = filepos;

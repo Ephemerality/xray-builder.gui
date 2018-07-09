@@ -921,7 +921,7 @@ namespace XRayBuilderGUI
             public int length;
             public string image = "";
             public List<int> related_entities = new List<int>();
-            public int go_to = -1;
+            //public int go_to = -1; unused but in the db
             public int highlights;
             public bool notable;
 
@@ -930,20 +930,6 @@ namespace XRayBuilderGUI
                 this.id = id;
                 this.start = start;
                 this.length = length;
-            }
-
-            public string GetQuery()
-            {
-                string sql =
-                    String.Format(
-                        "insert into excerpt (id, start, length, image, related_entities, goto) values ({0}, {1}, {2}, {3}, '{4}', {5});\n",
-                        id, start, length, image == "" ? "null" : image, String.Join(",", related_entities),
-                        go_to == -1 ? "null" : go_to.ToString());
-                foreach (int i in related_entities)
-                {
-                    sql += $"insert into entity_excerpt (entity, excerpt) values ({i}, {id});\n";
-                }
-                return sql;
             }
         }
 

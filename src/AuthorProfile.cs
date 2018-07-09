@@ -127,7 +127,7 @@ namespace XRayBuilderGUI
             {
                 HtmlNode bio = DataSources.Amazon.GetBioNode(searchResults, TLD);
                 //Trim authour biography to less than 1000 characters and/or replace more problematic characters.
-                if (bio == null || bio.InnerText.Trim().Length != 0)
+                if (bio?.InnerText.Trim().Length > 0)
                 {
                     if (bio.InnerText.Length > 1000)
                     {

@@ -506,11 +506,10 @@ namespace XRayBuilderGUI
                             foreach (string s in search)
                             {
                                 List<string> patterns = new List<string>();
-                                string pattern;
                                 string patternHTML = "(?:<[^>]*>)*";
                                 //Match HTML tags -- provided there's nothing malformed
                                 string patternSoftHypen = "(\u00C2\u00AD|&shy;|&#173;|&#xad;|&#0173;|&#x00AD;)*";
-                                pattern = String.Format("{0}{1}{0}{2}", patternHTML,
+                                var pattern = String.Format("{0}{1}{0}{2}", patternHTML,
                                     string.Join(patternHTML + patternSoftHypen, character.RegexAliases ? s.ToCharArray() : Regex.Unescape(s).ToCharArray()), punctuationMarks);
                                 patterns.Add(pattern);
                                 foreach (string pat in patterns)

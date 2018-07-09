@@ -228,8 +228,7 @@ namespace XRayBuilderGUI
             }
 
             Logger.Log("Saving X-Ray to file...");
-            string outFolder = "";
-            string _newPath = "";
+            string outFolder;
             try
             {
                 if (settings.android)
@@ -249,7 +248,7 @@ namespace XRayBuilderGUI
                 Logger.Log("Failed to create output directory: " + ex.Message + "\r\n" + ex.StackTrace + "\r\nFiles will be placed in the default output directory.");
                 outFolder = settings.outDir;
             }
-            _newPath = outFolder + "\\" + xray.XRayName(settings.android);
+            var _newPath = outFolder + "\\" + xray.XRayName(settings.android);
 
             if (settings.useNewVersion)
             {
@@ -357,7 +356,7 @@ namespace XRayBuilderGUI
 
             //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
             List<string> results;
-            long rawMLSize = 0;
+            long rawMLSize;
             if (settings.useKindleUnpack)
             {
                 Logger.Log("Running Kindleunpack to get metadata...");
@@ -609,7 +608,7 @@ namespace XRayBuilderGUI
             settings.buildSource = rdoGoodreads.Checked ? "Goodreads" : "XML";
             settings.Save();
             if (txtOutput.Text.Trim().Length != 0)
-                File.WriteAllText(currentLog, txtOutput.Text.ToString());
+                File.WriteAllText(currentLog, txtOutput.Text);
             if (settings.deleteTemp)
             {
                 try
@@ -618,10 +617,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(
-                     String.Format(
-                         "An error occurred while trying to delete temporary files: {0}\r\n{1}\r\nTry deleting these files manually.",
-                         ex.Message, ex.StackTrace));
+                    Logger.Log($"An error occurred while trying to delete temporary files: {ex.Message}\r\n{ex.StackTrace}\r\nTry deleting these files manually.");
                 }
             }
             Exiting = true;
@@ -657,16 +653,9 @@ namespace XRayBuilderGUI
             DragDrop += frmMain_DragDrop;
 
             string[] args = Environment.GetCommandLineArgs();
-            if (args.Length > 1)
-            {
-                for (int i = 0; i < args.Length; i++)
-                {
-                    if (File.Exists(args[i]))
-                        txtMobi.Text = Path.GetFullPath(args[i]);
-                }
-            }
 
-            if (txtMobi.Text == "") txtMobi.Text = settings.mobiFile;
+            txtMobi.Text = args.Where(File.Exists).Select(Path.GetFullPath).FirstOrDefault()
+                           ?? settings.mobiFile;
 
             if (txtXMLFile.Text == "") txtXMLFile.Text = settings.xmlFile;
             if (!Directory.Exists(Environment.CurrentDirectory + @"\out"))
@@ -876,7 +865,7 @@ namespace XRayBuilderGUI
                 try
                 {
                     frmPreviewAP frmAuthorProfile = new frmPreviewAP();
-                    frmAuthorProfile.populateAuthorProfile(selPath);
+                    frmAuthorProfile.PopulateAuthorProfile(selPath);
                     frmAuthorProfile.Location = new Point(Left, Top);
                     frmAuthorProfile.ShowDialog();
                 }
@@ -956,7 +945,7 @@ namespace XRayBuilderGUI
                 try
                 {
                     frmPreviewEA frmEndAction = new frmPreviewEA();
-                    await frmEndAction.populateEndActions(selPath);
+                    await frmEndAction.PopulateEndActions(selPath);
                     frmEndAction.Location = new Point(Left, Top);
                     frmEndAction.ShowDialog();
                 }
@@ -1120,7 +1109,7 @@ namespace XRayBuilderGUI
                 if (!Directory.Exists(Environment.CurrentDirectory + @"\xml\"))
                     Directory.CreateDirectory(Environment.CurrentDirectory + @"\xml\");
                 string outfile = Environment.CurrentDirectory + @"\xml\" + Path.GetFileNameWithoutExtension(selPath) + ".xml";
-                Functions.Save<List<XRay.Term>>(terms, outfile);
+                Functions.Save(terms, outfile);
                 Logger.Log("Character data has been saved to: " + outfile);
             }
             catch (Exception ex)
@@ -1135,11 +1124,15 @@ namespace XRayBuilderGUI
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 int c = fs.ReadByte();
-                if (c == 'S')
-                    return 2;
-                else if (c == '{')
-                    return 1;
-                return 0;
+                switch (c)
+                {
+                    case 'S':
+                        return 2;
+                    case '{':
+                        return 1;
+                    default:
+                        return 0;
+                }
             }
         }
 
@@ -1200,14 +1193,13 @@ namespace XRayBuilderGUI
 
         private List<XRay.Term> ExtractTermsOld(string path)
         {
-            List<XRay.Term> terms;
             string readContents;
             using (StreamReader streamReader = new StreamReader(path, Encoding.UTF8))
                 readContents = streamReader.ReadToEnd();
 
             JObject xray = JObject.Parse(readContents);
             var termsjson = xray["terms"].Children().ToList();
-            terms = new List<XRay.Term>(termsjson.Count);
+            var terms = new List<XRay.Term>(termsjson.Count);
             foreach (var term in termsjson)
                 terms.Add(term.ToObject<XRay.Term>());
             return terms;

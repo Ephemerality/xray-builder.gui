@@ -89,7 +89,6 @@ namespace XRayBuilderGUI.DataSources
         public override async Task<BookInfo> GetNextInSeries(BookInfo curBook, AuthorProfile authorProfile, string TLD)
         {
             BookInfo nextBook = null;
-            BookInfo prevBook = null;
 
             if (curBook.dataUrl == "") return null;
             if (sourceHtmlDoc == null)
@@ -154,7 +153,7 @@ namespace XRayBuilderGUI.DataSources
 
             if (seriesInfo.TryGetValue("Previous", out book))
             {
-                prevBook = authorProfile.otherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.title, $@"^{book.title}(?: \(.*\))?$"));
+                var prevBook = authorProfile.otherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.title, $@"^{book.title}(?: \(.*\))?$"));
                 if (book.asin != null)
                 {
                     prevBook = book;
@@ -191,7 +190,6 @@ namespace XRayBuilderGUI.DataSources
         /// </summary>
         private async Task<Dictionary<string, BookInfo>> GetNextInSeriesTitle(BookInfo curBook)
         {
-            Match match;
             Dictionary<string, BookInfo> results = new Dictionary<string, BookInfo>(2); 
             if (sourceHtmlDoc == null)
             {
@@ -205,7 +203,7 @@ namespace XRayBuilderGUI.DataSources
             HtmlNode seriesNode = metaNode?.SelectSingleNode("//h1[@id='bookTitle']/a");
             if (seriesNode == null)
                 return results;
-            match = Regex.Match(seriesNode.OuterHtml, @"/series/([0-9]*)");
+            var match = Regex.Match(seriesNode.OuterHtml, @"/series/([0-9]*)");
             if (!match.Success)
                 return results;
             goodreadsSeriesUrl = String.Format(goodreadsSeriesUrl, match.Groups[1].Value);
@@ -460,7 +458,6 @@ namespace XRayBuilderGUI.DataSources
         /// Scrape any notable quotes from Goodreads and grab ratings if missing from book info
         /// Modifies curBook.
         /// </summary>
-        /// <param name="curBook"></param>
         public override async Task GetExtras(BookInfo curBook, CancellationToken token, IProgress<Tuple<int, int>> progress = null)
         {
             if (sourceHtmlDoc == null)

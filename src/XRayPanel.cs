@@ -6,7 +6,7 @@ namespace XRayBuilderGUI
     [System.ComponentModel.DesignerCategory("Code")]
     public partial class XRayPanel : Panel
     {
-        public XRayPanel(string type, string name, string mentions, string description) : base()
+        public XRayPanel(string type, string name, string mentions, string description)
         {
             BorderStyle = BorderStyle.None;
             Name = "XRayPanel";

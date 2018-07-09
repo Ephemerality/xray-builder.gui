@@ -46,7 +46,7 @@ namespace XRayBuilderGUI
 
         #endregion
 
-        public async Task populateEndActions(string inputFile)
+        public async Task PopulateEndActions(string inputFile)
         {
             string input;
             using (StreamReader streamReader = new StreamReader(inputFile, Encoding.UTF8))
@@ -63,7 +63,7 @@ namespace XRayBuilderGUI
                 lblNextTitle.Text = tempData["title"].ToString();
                 lblNextAuthor.Text = tempData["authors"][0].ToString();
                 string imageUrl = tempData["imageUrl"]?.ToString();
-                if (imageUrl != "" && imageUrl != null)
+                if (!string.IsNullOrEmpty(imageUrl))
                     pbNextCover.Image = Functions.MakeGrayscale3(await HttpDownloader.GetImage(imageUrl));
             }
             else
@@ -80,7 +80,7 @@ namespace XRayBuilderGUI
                 foreach (var rec in tempData)
                 {
                     string imageUrl = rec["imageUrl"]?.ToString();
-                    if (imageUrl != "" && imageUrl != null)
+                    if (!string.IsNullOrEmpty(imageUrl))
                         ilauthorRecs.Images.Add(Functions.MakeGrayscale3(await HttpDownloader.GetImage(imageUrl)));
                 }
                 ListViewItem_SetSpacing(lvAuthorRecs, 60 + 7, 90 + 7);
@@ -97,7 +97,7 @@ namespace XRayBuilderGUI
                 foreach (var rec in tempData)
                 {
                     string imageUrl = rec["imageUrl"]?.ToString();
-                    if (imageUrl != "" && imageUrl != null)
+                    if (!string.IsNullOrEmpty(imageUrl))
                         ilcustomersWhoBoughtRecs.Images.Add(Functions.MakeGrayscale3(await HttpDownloader.GetImage(imageUrl)));
                 }
                 ListViewItem_SetSpacing(lvCustomersWhoBoughtRecs, 60 + 7, 90 + 7);

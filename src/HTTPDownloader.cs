@@ -80,6 +80,7 @@ namespace XRayBuilderGUI
             SetEncodingFromHeader(response);
 
             Stream s = response.GetResponseStream();
+            if (s == null) return null;
             if (response.ContentEncoding.ToLower().Contains("gzip"))
                 s = new GZipStream(s, CompressionMode.Decompress);
             else if (response.ContentEncoding.ToLower().Contains("deflate"))

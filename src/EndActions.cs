@@ -89,7 +89,7 @@ namespace XRayBuilderGUI
             //Parse Recommended Author titles and ASINs
             try
             {
-                string nodeTitleCheck = "", nodeUrl = "", cleanAuthor = "";
+                string nodeUrl = "";
                 HtmlNodeCollection recList =
                     bookHtmlDoc.DocumentNode.SelectNodes(
                         "//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card a-float-left']");
@@ -99,7 +99,7 @@ namespace XRayBuilderGUI
                     foreach (HtmlNode item in recList.Where(item => item != null))
                     {
                         HtmlNode nodeTitle = item.SelectSingleNode(".//div/a");
-                        nodeTitleCheck = nodeTitle.GetAttributeValue("title", "");
+                        var nodeTitleCheck = nodeTitle.GetAttributeValue("title", "");
                         nodeUrl = nodeTitle.GetAttributeValue("href", "");
                         if (nodeUrl != "")
                             nodeUrl = "https://www.amazon." + settings.amazonTLD + nodeUrl;
@@ -110,7 +110,7 @@ namespace XRayBuilderGUI
                             nodeTitleCheck = nodeTitle.InnerText.Clean();
                         }
 
-                        cleanAuthor = item.SelectSingleNode(".//div/div").InnerText.Clean();
+                        var cleanAuthor = item.SelectSingleNode(".//div/div").InnerText.Clean();
                         //Exclude the current book title from other books search
                         Match match = Regex.Match(nodeTitleCheck, curBook.title, RegexOptions.IgnoreCase);
                         if (match.Success)
@@ -150,7 +150,7 @@ namespace XRayBuilderGUI
                     recList = otherItems.SelectNodes(".//li[@class='a-spacing-medium p13n-sc-list-item']");
                     if (recList != null)
                     {
-                        string sponsTitle = "", sponsAuthor = "", sponsAsin = "", sponsUrl = "";
+                        string sponsTitle, sponsAsin = "", sponsUrl = "";
                         var possibleBooks = new List<BookInfo>();
                         // TODO: This entire foreach is pretty much the exact same as the one above...
                         foreach (HtmlNode result in recList.Where(result => result != null))
@@ -185,7 +185,7 @@ namespace XRayBuilderGUI
                             otherBook =
                                 result.SelectSingleNode(
                                     ".//div[@class='a-row a-size-small']");
-                            sponsAuthor = otherBook.InnerText.Trim();
+                            var sponsAuthor = otherBook.InnerText.Trim();
                             possibleBooks.Add(new BookInfo(sponsTitle, sponsAuthor, sponsAsin));
                         }
 
@@ -415,7 +415,6 @@ namespace XRayBuilderGUI
             bookInfoTemplate = String.Format(bookInfoTemplate, curBook.asin, Math.Round(timestamp.TotalMilliseconds), curBook.bookImageUrl);
 
             // Build data object
-            string dataTemplate = "";
             string authorRecsTemplate = @"""authorRecs"":{{""class"":""recommendationList"",""recommendations"":[{0}]}}";
 
             string seriesPosition = curBook.seriesPosition == "" ? "" : String.Format(@"""seriesPosition"":{{""class"":""seriesPosition"",""positionInSeries"":{0},""totalInSeries"":{1},""seriesName"":""{2}""}}", curBook.seriesPosition, curBook.totalInSeries, curBook.seriesName);
@@ -434,7 +433,7 @@ namespace XRayBuilderGUI
 
             try
             {
-                dataTemplate = @"""data"":{{{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12}}}";
+                var dataTemplate = @"""data"":{{{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12}}}";
 
                 dataTemplate = string.Format(dataTemplate,
                     seriesPosition,
@@ -503,27 +502,26 @@ namespace XRayBuilderGUI
         /// </summary>
         private string[] GetBaseTemplates(string baseFile, int templateCount)
         {
-            string[] templates = null;
             try
             {
                 using (StreamReader streamReader = new StreamReader(baseFile, Encoding.UTF8))
                 {
-                    templates = streamReader.ReadToEnd().Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
-                    templates = templates.Where(r => !r.StartsWith("//")).ToArray(); //Remove commented lines
-                    if (templates == null || templates.Length != templateCount || !templates[0].StartsWith(@"""bookInfo"""))
+                    var templates = streamReader.ReadToEnd().Split(new [] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries)
+                        .Where(r => !r.StartsWith("//")).ToArray(); //Remove commented lines
+                    if (templates.Length == 0 || templates.Length != templateCount || !templates[0].StartsWith(@"""bookInfo"""))
                     {
-                        Logger.Log("An error occurred parsing " + baseFile + ". If you modified it, ensure you followed the specified format.");
+                        Logger.Log($"An error occurred parsing {baseFile}. If you modified it, ensure you followed the specified format.");
                         return null;
                     }
+                    return templates;
                 }
             }
             catch (Exception ex)
             {
-                Logger.Log("An error occurred while opening the " + baseFile + " file.\r\n" +
-                    "Ensure you extracted it to the same directory as the program.\r\n" +
-                    ex.Message);
+                Logger.Log($"An error occurred while opening the {baseFile} file.\r\n"
+                    + $"Ensure you extracted it to the same directory as the program.\r\n{ex.Message}");
             }
-            return templates;
+            return null;
         }
     }
 }

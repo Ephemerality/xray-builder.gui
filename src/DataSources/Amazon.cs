@@ -91,7 +91,7 @@ namespace XRayBuilderGUI.DataSources
             Logger.Log($"Author page found on Amazon!\r\nAuthor's Amazon Page URL: {authorAmazonWebsiteLocationLog}");
 
             // Load Author's Amazon page
-            string authorpageHtml = "";
+            string authorpageHtml;
             try
             {
                 authorpageHtml = await HttpDownloader.GetPageHtmlAsync(authorAmazonWebsiteLocation);
@@ -125,19 +125,19 @@ namespace XRayBuilderGUI.DataSources
             foreach (HtmlNode result in resultsNodes)
             {
                 if (!result.Id.StartsWith("result_")) continue;
-                string name = "", url = "", asin = "";
+                string asin = "";
                 HtmlNode otherBook = result.SelectSingleNode(".//div[@class='a-row a-spacing-small']/a/h2");
                 if (otherBook == null) continue;
                 //Exclude the current book title from other books search
                 if (Regex.Match(otherBook.InnerText, curTitle, RegexOptions.IgnoreCase).Success
                     || Regex.Match(otherBook.InnerText, @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase).Success)
                     continue;
-                name = otherBook.InnerText.Trim();
+                var name = otherBook.InnerText.Trim();
                 otherBook = result.SelectSingleNode(".//*[@title='Kindle Edition']");
                 Match match = Regex.Match(otherBook.OuterHtml, "dp/(B[A-Z0-9]{9})/");
                 if (match.Success)
                     asin = match.Groups[1].Value;
-                url = $"https://www.amazon.{TLD}/dp/{asin}";
+                var url = $"https://www.amazon.{TLD}/dp/{asin}";
                 if (name != "" && url != "" && asin != "")
                 {
                     BookInfo newBook = new BookInfo(name, curAuthor, asin) { amazonUrl = url };
@@ -151,10 +151,10 @@ namespace XRayBuilderGUI.DataSources
                 if (resultsNodes == null) return null;
                 foreach (HtmlNode result in resultsNodes)
                 {
-                    string name = "", url = "", asin = "";
+                    string asin = "";
                     HtmlNode otherBook = result.SelectSingleNode(".//a/img");
                     if (otherBook == null) continue;
-                    name = otherBook.GetAttributeValue("alt", "");
+                    var name = otherBook.GetAttributeValue("alt", "");
                     //Exclude the current book title from other books search
                     if (Regex.Match(name, curTitle, RegexOptions.IgnoreCase).Success
                         || Regex.Match(name, @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase).Success)
@@ -164,7 +164,7 @@ namespace XRayBuilderGUI.DataSources
                     Match match = Regex.Match(otherBook.OuterHtml, "dp/(B[A-Z0-9]{9})/");
                     if (match.Success)
                         asin = match.Groups[1].Value;
-                    url = $"https://www.amazon.{TLD}/dp/{asin}";
+                    var url = $"https://www.amazon.{TLD}/dp/{asin}";
                     if (name != "" && url != "" && asin != "")
                     {
                         BookInfo newBook = new BookInfo(name, curAuthor, asin) { amazonUrl = url };

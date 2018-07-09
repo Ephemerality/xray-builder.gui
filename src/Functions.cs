@@ -188,11 +188,6 @@ namespace XRayBuilderGUI
             return false;
         }
 
-        public static bool RefreshPreview(string type)
-        {
-            return true;
-        }
-
         public static string GetTempDirectory()
         {
             string path;
@@ -379,7 +374,6 @@ namespace XRayBuilderGUI
                 throw new Exception("Error finding .rawml file. Path: " + rawMl);
             }
 
-            string databaseName = "";
             string uniqid = "";
             string asin = "";
             string author = "";
@@ -398,14 +392,14 @@ namespace XRayBuilderGUI
                 match = Regex.Match(match.Groups[1].Value, "(^B[A-Z0-9]{9})");
                 if (!match.Success)
                 {
-                    if (DialogResult.No == MessageBox.Show(String.Format("Incorrect ASIN detected: {0}!\n" +
+                    if (DialogResult.No == MessageBox.Show($"Incorrect ASIN detected: {incorrectAsin}!\n" +
                                       "Kindle may not display an X-Ray for this book.\n" +
-                                      "Do you wish to continue?", incorrectAsin), "Incorrect ASIN", MessageBoxButtons.YesNo))
+                                      "Do you wish to continue?", "Incorrect ASIN", MessageBoxButtons.YesNo))
                     {
-                        throw new Exception(String.Format("Incorrect ASIN detected: {0}!\r\n" +
+                        throw new Exception($"Incorrect ASIN detected: {incorrectAsin}!\r\n" +
                                           "Kindle may not display an X-Ray for this book.\r\n" +
                                           "You must either use Calibre's Quality Check plugin (Fix ASIN for Kindle Fire) " +
-                                          "or a Mobi editor (exth 113 and 504) to change this.", incorrectAsin));
+                                          "or a Mobi editor (exth 113 and 504) to change this.");
                     }
                 }
                 asin = incorrectAsin;
@@ -437,6 +431,8 @@ namespace XRayBuilderGUI
             //Attempt to get database name from the mobi file.
             //If mobi_unpack ran successfully, then hopefully this will always be valid?
             byte[] dbinput = new byte[32];
+
+            string databaseName;
             using (FileStream stream = File.Open(mobiFile, FileMode.Open, FileAccess.Read))
             {
                 if (stream.Read(dbinput, 0, 32) != 32)
@@ -491,22 +487,14 @@ namespace XRayBuilderGUI
         public static string Serialize<T>(T value)
         {
             if (value == null)
-            {
                 return string.Empty;
-            }
-            try
+
+            var xmlserializer = new XmlSerializer(typeof(T));
+            var stringWriter = new StringWriter();
+            using (var writer = XmlWriter.Create(stringWriter))
             {
-                var xmlserializer = new XmlSerializer(typeof(T));
-                var stringWriter = new StringWriter();
-                using (var writer = XmlWriter.Create(stringWriter))
-                {
-                    xmlserializer.Serialize(writer, value);
-                    return stringWriter.ToString();
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred", ex);
+                xmlserializer.Serialize(writer, value);
+                return stringWriter.ToString();
             }
         }
 

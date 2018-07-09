@@ -21,8 +21,6 @@ namespace XRayBuilderGUI.DataSources
         private string FindShelfariURL(HtmlDocument shelfariHtmlDoc, string author, string title)
         {
             // Try to find book's page from Shelfari search
-            string shelfariBookUrl = "";
-            int index = 0;
             List<string> listofthings = new List<string>();
             List<string> listoflinks = new List<string>();
             Dictionary<string, string> retData = new Dictionary<string, string>();
@@ -41,7 +39,7 @@ namespace XRayBuilderGUI.DataSources
                     listofthings.Add(bookItems.ChildNodes[i].InnerText.Trim());
                     listoflinks.Add(bookItems.ChildNodes[i].InnerHtml);
                 }
-                index = 0;
+                var index = 0;
                 foreach (string line in listofthings)
                 {
                     // Search for author with spaces removed to avoid situations like "J.R.R. Tolkien" / "J. R. R. Tolkien"
@@ -54,7 +52,7 @@ namespace XRayBuilderGUI.DataSources
                         (listofthings.Contains(author) || listofthings.Exists(r => r.Replace(" ", "") == author.Replace(" ", ""))))
                         if (!listoflinks.Any(c => c.Contains("(collective work)")))
                         {
-                            shelfariBookUrl = listoflinks[index];
+                            var shelfariBookUrl = listoflinks[index];
                             shelfariBookUrl = Regex.Replace(shelfariBookUrl, "<a href=\"", "", RegexOptions.None);
                             shelfariBookUrl = Regex.Replace(shelfariBookUrl, "\".*?</a>.*", "", RegexOptions.None);
                             if (shelfariBookUrl.ToLower().StartsWith("http://"))
@@ -295,7 +293,7 @@ namespace XRayBuilderGUI.DataSources
                     if (header == "WikiModule_Glossary")
                         newTerm.MatchCase = false;
                     //Default glossary terms to be case insensitive when searching through book
-                    if (terms.Select<XRay.Term, string>(t => t.TermName).Contains<string>(newTerm.TermName))
+                    if (terms.Select(t => t.TermName).Contains(newTerm.TermName))
                         Logger.Log("Duplicate term \"" + newTerm.TermName + "\" found. Ignoring this duplicate.");
                     else
                         terms.Add(newTerm);

@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
@@ -14,7 +13,7 @@ namespace XRayBuilderGUI
             InitializeComponent();
         }
 
-        public void populateAuthorProfile(string inputFile)
+        public void PopulateAuthorProfile(string inputFile)
         {
             string input;
             using (StreamReader streamReader = new StreamReader(inputFile, Encoding.UTF8))
@@ -26,8 +25,8 @@ namespace XRayBuilderGUI
             var tempData = ap["u"]?[0];
             if (tempData != null)
             {
-                lblAuthorMore.Text = String.Format(" Kindle Books By {0}", tempData["n"].ToString());
-                Text = String.Format("About {0}", lblAuthorMore.Text);
+                lblAuthorMore.Text = $" Kindle Books By {tempData["n"]}";
+                Text = $"About {lblAuthorMore.Text}";
                 lblBiography.Text = tempData["b"]?.ToString() ?? "";
                 string image64 = tempData["i"]?.ToString() ?? "";
                 if (image64 != "")
@@ -38,7 +37,7 @@ namespace XRayBuilderGUI
             if (tempData != null)
             {
                 foreach (var rec in tempData)
-                    dgvOtherBooks.Rows.Add(" " + rec["t"].ToString(), Resources.arrow_right);
+                    dgvOtherBooks.Rows.Add(" " + rec["t"], Resources.arrow_right);
             }
         }
     }

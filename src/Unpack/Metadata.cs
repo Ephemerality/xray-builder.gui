@@ -20,7 +20,7 @@ namespace XRayBuilderGUI.Unpack
         public Bitmap coverImage;
         private int _startRecord = 1;
         public string rawMLPath = "";
-        private string _ASIN = "";
+        private string _ASIN;
 
         public Metadata(FileStream fs)
         {

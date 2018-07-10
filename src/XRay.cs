@@ -328,7 +328,7 @@ namespace XRayBuilderGUI
             return 0;
         }
 
-        public int ExpandFromRawMl(string rawMl, IProgress<Tuple<int, int>> progress, CancellationToken token, bool ignoreSoftHypen = false, bool shortEx = true)
+        public int ExpandFromRawMl(string rawMl, ProgressBarCtrl progress, CancellationToken token, bool ignoreSoftHypen = false, bool shortEx = true)
         {
             // If there is an apostrophe, attempt to match 's at the end of the term
             // Match end of word, then search for any lingering punctuation
@@ -425,11 +425,10 @@ namespace XRayBuilderGUI
             if (nodes == null)
                 throw new Exception("Could not locate any paragraphs in this book.\r\n" +
                     "Report this error along with a copy of the book to improve parsing.");
-            progress?.Report(new Tuple<int, int>(0, nodes.Count));
+            progress?.Set(0, nodes.Count);
             for (int i = 0; i < nodes.Count; i++)
             {
                 if ((main?.Exiting ?? false) || token.IsCancellationRequested) return 1;
-                progress?.Report(new Tuple<int, int>(i + 1, nodes.Count));
 
                 HtmlNode node = nodes[i];
                 if (node.FirstChild == null) continue; //If the inner HTML is just empty, skip the paragraph!
@@ -627,6 +626,7 @@ namespace XRayBuilderGUI
                         }
                     }
                 }
+                progress?.Add(1);
             }
 
             timer.Stop();
@@ -732,10 +732,9 @@ namespace XRayBuilderGUI
             }
         }
 
-        public int PopulateDb(SQLiteConnection db, IProgress<Tuple<int, int>> progress, CancellationToken token)
+        public int PopulateDb(SQLiteConnection db, ProgressBarCtrl progress, CancellationToken token)
         {
             StringBuilder sql = new StringBuilder(Terms.Count * 256);
-            int entity = 1;
             int excerpt = 1;
             int personCount = 0;
             int termCount = 0;
@@ -746,7 +745,7 @@ namespace XRayBuilderGUI
             Logger.Log("Updating database with terms, descriptions, and excerpts...");
             //Write all entities and occurrences
             Logger.Log($"Writing {Terms.Count} terms...");
-            progress?.Report(new Tuple<int, int>(0, Terms.Count));
+            progress?.Set(0, Terms.Count);
             foreach (Term t in Terms)
             {
                 if (main?.Exiting ?? false) return 1;
@@ -773,13 +772,13 @@ namespace XRayBuilderGUI
                 command = new SQLiteCommand(sql.ToString(), db);
                 command.ExecuteNonQuery();
                 command.Dispose();
-                progress?.Report(new Tuple<int, int>(entity++, Terms.Count));
+                progress?.Add(1);
             }
             //Write excerpts and entity_excerpt table
             Logger.Log(String.Format("Writing {0} excerpts...", excerpts.Count));
             sql.Clear();
             command = new SQLiteCommand("insert into excerpt (id, start, length, image, related_entities, goto) values (@id, @start, @length, @image, @rel_ent, null);", db);
-            progress?.Report(new Tuple<int, int>(0, excerpts.Count));
+            progress?.Set(0, excerpts.Count);
             foreach (Excerpt e in excerpts)
             {
                 if (main?.Exiting ?? false) return 1;
@@ -795,7 +794,7 @@ namespace XRayBuilderGUI
                     if (ent != 0) // skip notable flag
                         sql.AppendFormat("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", ent, e.id);
                 }
-                progress?.Report(new Tuple<int, int>(excerpt++, excerpts.Count));
+                progress?.Add(1);
             }
             command.Dispose();
             // create links to notable clips in order of popularity
@@ -1246,7 +1245,7 @@ namespace XRayBuilderGUI
             }
         }
 
-        public async Task SaveToFileNew(string path, Progress<Tuple<int, int>> progress, CancellationToken token)
+        public async Task SaveToFileNew(string path, ProgressBarCtrl progress, CancellationToken token)
         {
             SQLiteConnection.CreateFile(path);
             using (SQLiteConnection m_dbConnection = new SQLiteConnection($"Data Source={path};Version=3;"))

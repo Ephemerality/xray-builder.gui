@@ -653,7 +653,7 @@ namespace XRayBuilderGUI
 
             string[] args = Environment.GetCommandLineArgs();
 
-            txtMobi.Text = args.Where(File.Exists).Select(Path.GetFullPath).FirstOrDefault()
+            txtMobi.Text = args.Skip(1).Where(File.Exists).Select(Path.GetFullPath).FirstOrDefault()
                            ?? settings.mobiFile;
 
             if (txtXMLFile.Text == "") txtXMLFile.Text = settings.xmlFile;

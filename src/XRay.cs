@@ -735,7 +735,6 @@ namespace XRayBuilderGUI
         public int PopulateDb(SQLiteConnection db, ProgressBarCtrl progress, CancellationToken token)
         {
             StringBuilder sql = new StringBuilder(Terms.Count * 256);
-            int excerpt = 1;
             int personCount = 0;
             int termCount = 0;
             SQLiteCommand command = new SQLiteCommand("update string set text=@text where id=15", db);

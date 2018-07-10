@@ -178,6 +178,7 @@
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
     <Compile Include="src\HTTPDownloader.cs" />
+    <Compile Include="src\Progress.cs" />
     <Compile Include="src\Logger.cs" />
     <Compile Include="src\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

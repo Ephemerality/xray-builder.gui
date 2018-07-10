@@ -280,7 +280,7 @@ namespace XRayBuilderGUI
             }
         }
 
-        public async Task GenerateEndActions(CancellationToken token)
+        public async Task GenerateEndActions(ProgressBarCtrl progress, CancellationToken token)
         {
             string[] templates = GetBaseTemplates(Environment.CurrentDirectory + @"\dist\BaseEndActions.txt", 3);
             if (templates == null) return;
@@ -313,7 +313,6 @@ namespace XRayBuilderGUI
 
             try
             {
-                Progress<Tuple<int, int>> progress = new Progress<Tuple<int, int>>(main.UpdateProgressBar);
                 await dataSource.GetExtras(curBook, token, progress);
                 curBook.nextInSeries = await dataSource.GetNextInSeries(curBook, authorProfile, settings.amazonTLD);
                 nextBook = curBook.nextInSeries != null ? curBook.nextInSeries.ToJSON("recommendation", false) : "";

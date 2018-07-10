@@ -32,6 +32,7 @@ namespace XRayBuilderGUI
         public frmMain()
         {
             InitializeComponent();
+            _progress = new ProgressBarCtrl(prgBar);
         }
 
         private frmAbout frmInfo = new frmAbout();
@@ -43,13 +44,9 @@ namespace XRayBuilderGUI
 
         DataSource dataSource;
 
-        CancellationTokenSource cancelTokens = new CancellationTokenSource();
+        private readonly ProgressBarCtrl _progress;
 
-        public void UpdateProgressBar(Tuple<int, int> vals)
-        {
-            prgBar.SetPropertyThreadSafe("Maximum", vals.Item2);
-            prgBar.SetPropertyThreadSafe("Value", vals.Item1);
-        }
+        CancellationTokenSource cancelTokens = new CancellationTokenSource();
 
         public DialogResult SafeShow(string msg, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton def)
         {
@@ -76,7 +73,7 @@ namespace XRayBuilderGUI
                 cancelTokens = new CancellationTokenSource();
             }
             else if (enabled)
-                UpdateProgressBar(new Tuple<int, int>(0, 0));
+                _progress.Set(0, 0);
         }
 
         private void btnBrowseMobi_Click(object sender, EventArgs e)
@@ -206,16 +203,15 @@ namespace XRayBuilderGUI
                 else
                     xray = new XRay(txtXMLFile.Text, results[2], results[1], results[0], this, dataSource,
                         (AZW3 ? settings.offsetAZW3 : settings.offset), "");
-                Progress<Tuple<int, int>> progress = new Progress<Tuple<int, int>>(UpdateProgressBar);
 
-                if ((await Task.Run(() => xray.CreateXray(progress, cancelTokens.Token))) > 0)
+                if ((await Task.Run(() => xray.CreateXray(_progress, cancelTokens.Token))) > 0)
                 {
                     Logger.Log("Build canceled or error while processing.");
                     return;
                 }
                 Logger.Log("Initial X-Ray built, adding locations and chapters...");
                 //Expand the X-Ray file from the unpacked mobi
-                if ((await Task.Run(() => xray.ExpandFromRawMl(results[3], progress, cancelTokens.Token, settings.ignoresofthyphen, !settings.useNewVersion))) > 0)
+                if ((await Task.Run(() => xray.ExpandFromRawMl(results[3], _progress, cancelTokens.Token, settings.ignoresofthyphen, !settings.useNewVersion))) > 0)
                 {
                     Logger.Log("Build canceled or error occurred while processing locations and chapters.");
                     return;
@@ -254,7 +250,7 @@ namespace XRayBuilderGUI
             {
                 try
                 {
-                    await xray.SaveToFileNew(_newPath, new Progress<Tuple<int, int>>(UpdateProgressBar), cancelTokens.Token).ConfigureAwait(false);
+                    await xray.SaveToFileNew(_newPath, _progress, cancelTokens.Token).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -464,7 +460,7 @@ namespace XRayBuilderGUI
                 txtXMLFile.Text = path;
 
                 XRay xray = new XRay(txtGoodreads.Text, this, dataSource);
-                int result = await Task.Run(() => xray.SaveXml(path, new Progress<Tuple<int, int>>(UpdateProgressBar), cancelTokens.Token));
+                int result = await Task.Run(() => xray.SaveXml(path, _progress, cancelTokens.Token));
                 if (result == 1)
                     Logger.Log("Warning: Unable to download character data as no character data found on Goodreads.");
                 else if (result == 2)

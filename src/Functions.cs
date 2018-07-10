@@ -606,6 +606,13 @@ namespace XRayBuilderGUI
             else
                 ctrl.GetType().InvokeMember(name, System.Reflection.BindingFlags.SetProperty, null, ctrl, new [] { value });
         }
+
+        public static object GetPropertyTS(this Control ctrl, string name)
+        {
+            return ctrl.InvokeRequired
+                ? ctrl.BeginInvoke(new Action(() => GetPropertyTS(ctrl, name)))
+                : ctrl.GetType().InvokeMember(name, System.Reflection.BindingFlags.GetProperty, null, ctrl, null);
+        }
     }
 
     internal static class NativeMethods

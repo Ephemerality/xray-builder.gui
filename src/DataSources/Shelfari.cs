@@ -249,7 +249,7 @@ namespace XRayBuilderGUI.DataSources
             return false;
         }
         
-        public override async Task<List<XRay.Term>> GetTerms(string dataUrl, IProgress<Tuple<int, int>> progress, CancellationToken token)
+        public override async Task<List<XRay.Term>> GetTerms(string dataUrl, ProgressBarCtrl progress, CancellationToken token)
         {
             Logger.Log("Downloading Shelfari page...");
             List<XRay.Term> terms = new List<XRay.Term>();
@@ -302,7 +302,7 @@ namespace XRayBuilderGUI.DataSources
             return terms;
         }
 
-        public override async Task<List<NotableClip>> GetNotableClips(string url, CancellationToken token, HtmlDocument srcDoc = null, IProgress<Tuple<int, int>> progress = null)
+        public override async Task<List<NotableClip>> GetNotableClips(string url, CancellationToken token, HtmlDocument srcDoc = null, ProgressBarCtrl progress = null)
         {
             if (srcDoc == null)
             {

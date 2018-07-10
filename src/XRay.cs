@@ -154,7 +154,7 @@ namespace XRayBuilderGUI
             get => _guid;
         }
 
-        public async Task<int> SaveXml(string outfile, IProgress<Tuple<int, int>> progress, CancellationToken token)
+        public async Task<int> SaveXml(string outfile, ProgressBarCtrl progress, CancellationToken token)
         {
             try
             {
@@ -206,7 +206,7 @@ namespace XRayBuilderGUI
         public string XRayName(bool android = false) =>
             android ? $"XRAY.{asin}.{databaseName}_{Guid}.db" : $"XRAY.entities.{asin}.asc";
 
-        public async Task<int> CreateXray(IProgress<Tuple<int, int>> progress, CancellationToken token)
+        public async Task<int> CreateXray(ProgressBarCtrl progress, CancellationToken token)
         {
             //Download Shelfari info if not skipping
             if (skipShelfari)

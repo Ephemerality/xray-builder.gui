@@ -333,7 +333,7 @@ namespace XRayBuilderGUI.DataSources
             return false;
         }
 
-        public override async Task<List<XRay.Term>> GetTerms(string dataUrl, IProgress<Tuple<int, int>> progress, CancellationToken token)
+        public override async Task<List<XRay.Term>> GetTerms(string dataUrl, ProgressBarCtrl progress, CancellationToken token)
         {
             if (sourceHtmlDoc == null)
             {
@@ -349,16 +349,16 @@ namespace XRayBuilderGUI.DataSources
             var allChars = moreCharNodes == null ? charNodes : charNodes.Concat(moreCharNodes);
             var termCount = moreCharNodes == null ? charNodes.Count : charNodes.Count + moreCharNodes.Count;
             Logger.Log($"Gathering term information from Goodreads... ({termCount})");
+            progress?.Set(0, termCount);
             if (termCount > 20)
                 Logger.Log("More than 20 characters found. Consider using the 'download to XML' option if you need to build repeatedly.");
-            //progress?.Report(new Tuple<int, int>(1, termCount));
             var terms = new ConcurrentBag<XRay.Term>();
             await allChars.ParallelForEachAsync(async charNode =>
             {
                 try
                 {
                     terms.AddNotNull(await GetTerm(dataUrl, charNode.GetAttributeValue("href", "")));
-                    //progress?.Report(new Tuple<int, int>(count++, allChars.Count));
+                    progress?.Add(1);
                 }
                 catch (Exception ex)
                 {
@@ -402,7 +402,7 @@ namespace XRayBuilderGUI.DataSources
         /// <summary>
         /// Gather the list of quotes & number of times they've been liked -- close enough to "x paragraphs have been highlighted y times" from Amazon
         /// </summary>
-        public override async Task<List<NotableClip>> GetNotableClips(string url, CancellationToken token, HtmlDocument srcDoc = null, IProgress<Tuple<int, int>> progress = null)
+        public override async Task<List<NotableClip>> GetNotableClips(string url, CancellationToken token, HtmlDocument srcDoc = null, ProgressBarCtrl progress = null)
         {
             if (srcDoc == null)
             {
@@ -412,7 +412,7 @@ namespace XRayBuilderGUI.DataSources
             HtmlNode quoteNode = srcDoc.DocumentNode.SelectSingleNode("//div[@class='h2Container gradientHeaderContainer']/h2/a[starts-with(.,'Quotes from')]");
             if (quoteNode == null) return null;
             string quoteURL = $"https://www.goodreads.com{quoteNode.GetAttributeValue("href", "")}?page={{0}}";
-            progress?.Report(new Tuple<int, int>(0, 1));
+            progress?.Set(0, 1);
             
             var quoteBag = new ConcurrentBag<IEnumerable<NotableClip>>();
             var initialPage = new HtmlDocument();
@@ -442,13 +442,13 @@ namespace XRayBuilderGUI.DataSources
             }
 
             quoteBag.Add(ParseQuotePage(initialPage));
+            progress?.Set(1, maxPages);
             await Enumerable.Range(2, maxPages).ParallelForEachAsync(async page =>
             {
                 var quotePage = new HtmlDocument();
                 quotePage.LoadHtml(await HttpDownloader.GetPageHtmlAsync(string.Format(quoteURL, page)));
                 quoteBag.Add(ParseQuotePage(quotePage));
-
-                //progress?.Report(new Tuple<int, int>(i, maxPages));
+                progress?.Add(1);
             }, MaxConcurrentRequests, token);
 
             return quoteBag.Where(quotes => quotes != null && quotes.Any()).SelectMany(quotes => quotes).ToList();
@@ -458,7 +458,7 @@ namespace XRayBuilderGUI.DataSources
         /// Scrape any notable quotes from Goodreads and grab ratings if missing from book info
         /// Modifies curBook.
         /// </summary>
-        public override async Task GetExtras(BookInfo curBook, CancellationToken token, IProgress<Tuple<int, int>> progress = null)
+        public override async Task GetExtras(BookInfo curBook, CancellationToken token, ProgressBarCtrl progress = null)
         {
             if (sourceHtmlDoc == null)
             {

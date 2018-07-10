@@ -412,17 +412,20 @@ namespace XRayBuilderGUI
                 SaPath = outputDir + @"\StartActions.data." + bookInfo.asin + ".asc";
                 ApPath = outputDir + @"\AuthorProfile.profile." + bookInfo.asin + ".asc";
                 Logger.Log("Attempting to build Start Actions and End Actions...");
-                EndActions ea = new EndActions(ap, bookInfo, rawMLSize, dataSource, this);
+                EndActions ea = new EndActions(ap, bookInfo, rawMLSize, dataSource);
                 if (!(await ea.Generate())) return;
 
                 if (settings.useNewVersion)
                 {
-                    await ea.GenerateEndActions(cancelTokens.Token);
+                    await ea.GenerateEndActions(_progress, cancelTokens.Token);
                     ea.GenerateStartActions();
+                    cmsPreview.Items[3].Enabled = true;
                     EaPath = outputDir + @"\EndActions.data." + bookInfo.asin + ".asc";
                 }
                 else
                     ea.GenerateOld();
+
+                cmsPreview.Items[1].Enabled = true;
 
                 checkFiles(bookInfo.author, bookInfo.title, bookInfo.asin);
                 if (settings.playSound)

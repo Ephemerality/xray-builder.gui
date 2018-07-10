@@ -18,7 +18,6 @@ namespace XRayBuilderGUI
     class EndActions
     {
         private Properties.Settings settings = Properties.Settings.Default;
-        private frmMain main;
 
         private string EaPath = "";
         private string SaPath = "";
@@ -31,13 +30,12 @@ namespace XRayBuilderGUI
         DataSources.DataSource dataSource;
 
         //Requires an already-built AuthorProfile and the BaseEndActions.txt file
-        public EndActions(AuthorProfile ap, BookInfo book, long erl, DataSources.DataSource dataSource, frmMain frm)
+        public EndActions(AuthorProfile ap, BookInfo book, long erl, DataSources.DataSource dataSource)
         {
             authorProfile = ap;
             curBook = book;
             _erl = erl;
             this.dataSource = dataSource;
-            main = frm;
         }
 
         public async Task<bool> Generate()
@@ -223,61 +221,53 @@ namespace XRayBuilderGUI
             string dt = DateTime.Now.ToString("s");
             string tz = DateTime.Now.ToString("zzz");
             XmlTextWriter writer = new XmlTextWriter(EaPath, Encoding.UTF8);
-            try
+            Logger.Log("Writing EndActions to file...");
+            writer.WriteProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"");
+            writer.WriteStartElement("endaction");
+            writer.WriteAttributeString("version", "0");
+            writer.WriteAttributeString("guid", curBook.databasename + ":" + curBook.guid);
+            writer.WriteAttributeString("key", curBook.asin);
+            writer.WriteAttributeString("type", "EBOK");
+            writer.WriteAttributeString("timestamp", dt + tz);
+            writer.WriteElementString("treatment", "d");
+            writer.WriteStartElement("currentBook");
+            writer.WriteElementString("imageUrl", curBook.bookImageUrl);
+            writer.WriteElementString("asin", curBook.asin);
+            writer.WriteElementString("hasSample", "false");
+            writer.WriteEndElement();
+            writer.WriteStartElement("customerProfile");
+            writer.WriteElementString("penName", settings.penName);
+            writer.WriteElementString("realName", settings.realName);
+            writer.WriteEndElement();
+            writer.WriteStartElement("recs");
+            writer.WriteAttributeString("type", "author");
+            for (int i = 0; i < Math.Min(authorProfile.otherBooks.Count, 5); i++)
             {
-                Logger.Log("Writing EndActions to file...");
-                writer.WriteProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"");
-                writer.WriteStartElement("endaction");
-                writer.WriteAttributeString("version", "0");
-                writer.WriteAttributeString("guid", curBook.databasename + ":" + curBook.guid);
-                writer.WriteAttributeString("key", curBook.asin);
-                writer.WriteAttributeString("type", "EBOK");
-                writer.WriteAttributeString("timestamp", dt + tz);
-                writer.WriteElementString("treatment", "d");
-                writer.WriteStartElement("currentBook");
-                writer.WriteElementString("imageUrl", curBook.bookImageUrl);
-                writer.WriteElementString("asin", curBook.asin);
-                writer.WriteElementString("hasSample", "false");
+                writer.WriteStartElement("rec");
+                writer.WriteAttributeString("hasSample", "false");
+                writer.WriteAttributeString("asin", authorProfile.otherBooks[i].asin);
+                writer.WriteElementString("title", authorProfile.otherBooks[i].title);
+                writer.WriteElementString("author", curBook.author);
                 writer.WriteEndElement();
-                writer.WriteStartElement("customerProfile");
-                writer.WriteElementString("penName", settings.penName);
-                writer.WriteElementString("realName", settings.realName);
-                writer.WriteEndElement();
-                writer.WriteStartElement("recs");
-                writer.WriteAttributeString("type", "author");
-                for (int i = 0; i < Math.Min(authorProfile.otherBooks.Count, 5); i++)
-                {
-                    writer.WriteStartElement("rec");
-                    writer.WriteAttributeString("hasSample", "false");
-                    writer.WriteAttributeString("asin", authorProfile.otherBooks[i].asin);
-                    writer.WriteElementString("title", authorProfile.otherBooks[i].title);
-                    writer.WriteElementString("author", curBook.author);
-                    writer.WriteEndElement();
-                }
-                writer.WriteEndElement();
-                writer.WriteStartElement("recs");
-                writer.WriteAttributeString("type", "purchase");
-                for (int i = 0; i < Math.Min(custAlsoBought.Count, 5); i++)
-                {
-                    writer.WriteStartElement("rec");
-                    writer.WriteAttributeString("hasSample", "false");
-                    writer.WriteAttributeString("asin", custAlsoBought[i].asin);
-                    writer.WriteElementString("title", custAlsoBought[i].title);
-                    writer.WriteElementString("author", custAlsoBought[i].author);
-                    writer.WriteEndElement();
-                }
-                writer.WriteEndElement();
-                writer.WriteElementString("booksMentionedPosition", "2");
-                writer.WriteEndElement();
-                writer.Flush();
-                writer.Close();
-                Logger.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
-                main.cmsPreview.Items[1].Enabled = true;
             }
-            catch (Exception ex)
+            writer.WriteEndElement();
+            writer.WriteStartElement("recs");
+            writer.WriteAttributeString("type", "purchase");
+            for (int i = 0; i < Math.Min(custAlsoBought.Count, 5); i++)
             {
-                Logger.Log("An error occurred while writing the End Action file: " + ex.Message + "\r\n" + ex.StackTrace);
+                writer.WriteStartElement("rec");
+                writer.WriteAttributeString("hasSample", "false");
+                writer.WriteAttributeString("asin", custAlsoBought[i].asin);
+                writer.WriteElementString("title", custAlsoBought[i].title);
+                writer.WriteElementString("author", custAlsoBought[i].author);
+                writer.WriteEndElement();
             }
+            writer.WriteEndElement();
+            writer.WriteElementString("booksMentionedPosition", "2");
+            writer.WriteEndElement();
+            writer.Flush();
+            writer.Close();
+            Logger.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
         }
 
         public async Task GenerateEndActions(ProgressBarCtrl progress, CancellationToken token)
@@ -324,6 +314,7 @@ namespace XRayBuilderGUI
                         "If reading from a file, you can switch the source to Goodreads to specify a URL, then switch back to File.");
                 else
                     Logger.Log("An error occurred finding next book in series: " + ex.Message + "\r\n" + ex.StackTrace);
+                throw;
             }
 
             try
@@ -339,6 +330,7 @@ namespace XRayBuilderGUI
             catch (Exception ex)
             {
                 Logger.Log("An error occurred while searching for or estimating the page count: " + ex.Message + "\r\n" + ex.StackTrace);
+                throw;
             }
 
             if (authorProfile.otherBooks.Count > 0)
@@ -383,6 +375,7 @@ namespace XRayBuilderGUI
             catch (Exception ex)
             {
                 Logger.Log("An error occurred creating the EndAction data template: " + ex.Message + "\r\n" + ex.StackTrace);
+                throw;
             }
 
             finalOutput = String.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
@@ -394,7 +387,6 @@ namespace XRayBuilderGUI
                 streamWriter.Flush();
             }
             Logger.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
-            main.cmsPreview.Items[1].Enabled = true;
         }
 
         public void GenerateStartActions()
@@ -464,7 +456,6 @@ namespace XRayBuilderGUI
                 streamWriter.Flush();
             }
             Logger.Log("StartActions file created successfully!\r\nSaved to " + SaPath);
-            main.cmsPreview.Items[3].Enabled = true;
         }
 
         private void SetPaths()

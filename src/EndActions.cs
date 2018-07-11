@@ -87,10 +87,8 @@ namespace XRayBuilderGUI
             //Parse Recommended Author titles and ASINs
             try
             {
-                string nodeUrl = "";
-                HtmlNodeCollection recList =
-                    bookHtmlDoc.DocumentNode.SelectNodes(
-                        "//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card a-float-left']");
+                var nodeUrl = "";
+                var recList = bookHtmlDoc.DocumentNode.SelectNodes("//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card a-float-left']");
                 if (recList != null)
                 {
                     var possibleBooks = new List<BookInfo>();
@@ -342,35 +340,18 @@ namespace XRayBuilderGUI
                     String.Join(",", custAlsoBought.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
             try
             {
-                if (nextBook != "")
-                {
-                    dataTemplate = @"""data"":{{{0},""nextBook"":{1},{2},{3},{4},{5},{6},{7},{8}}}";
-                    dataTemplate = String.Format(dataTemplate,
-                        followSubscriptions,
-                        nextBook,
-                        publicSharedRating,
-                        customerProfile,
-                        rating,
-                        authorBios,
-                        authorRecs,
-                        customersWhoBoughtRecs,
-                        authorSubscriptions);
-                    dataTemplate = dataTemplate.Replace(",,", ",");
-                }
-                else
-                {
-                    dataTemplate = @"""data"":{{{0},{1},{2},{3},{4},{5},{6},{7}}}";
-                    dataTemplate = String.Format(dataTemplate,
-                        followSubscriptions,
-                        publicSharedRating,
-                        customerProfile,
-                        rating,
-                        authorBios,
-                        authorRecs,
-                        customersWhoBoughtRecs,
-                        authorSubscriptions);
-                    dataTemplate = dataTemplate.Replace(",,", ",");
-                }
+                dataTemplate = @"""data"":{{{0},{1},{2},{3},{4},{5},{6},{7},{8}}}";
+                dataTemplate = String.Format(dataTemplate,
+                    followSubscriptions,
+                    nextBook != "" ? $"\"nextBook\":{nextBook}" : "",
+                    publicSharedRating,
+                    customerProfile,
+                    rating,
+                    authorBios,
+                    authorRecs,
+                    customersWhoBoughtRecs,
+                    authorSubscriptions);
+                dataTemplate = dataTemplate.Replace(",,", ",");
             }
             catch (Exception ex)
             {

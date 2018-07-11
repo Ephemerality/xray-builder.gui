@@ -204,7 +204,7 @@ namespace XRayBuilderGUI
                     xray = new XRay(txtXMLFile.Text, results[2], results[1], results[0], this, dataSource,
                         (AZW3 ? settings.offsetAZW3 : settings.offset), "");
 
-                if ((await Task.Run(() => xray.CreateXray(_progress, cancelTokens.Token))) > 0)
+                if ((await Task.Run(() => xray.CreateXray(_progress, cancelTokens.Token)).ConfigureAwait(false)) > 0)
                 {
                     Logger.Log("Build canceled or error while processing.");
                     return;

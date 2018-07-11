@@ -610,7 +610,7 @@ namespace XRayBuilderGUI
         public static object GetPropertyTS(this Control ctrl, string name)
         {
             return ctrl.InvokeRequired
-                ? ctrl.BeginInvoke(new Action(() => GetPropertyTS(ctrl, name)))
+                ? ctrl.Invoke(new Func<object>(() => ctrl.GetPropertyTS(name)))
                 : ctrl.GetType().InvokeMember(name, System.Reflection.BindingFlags.GetProperty, null, ctrl, null);
         }
     }

@@ -1,10 +1,13 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace XRayBuilderGUI
 {
     public class ProgressBarCtrl
     {
         private readonly ProgressBar _prgBar;
+        private readonly object _semaphore = new object();
 
         public ProgressBarCtrl(ProgressBar prgBar)
         {
@@ -13,7 +16,12 @@ namespace XRayBuilderGUI
         
         public void Add(int value)
         {
-            _prgBar.SetPropertyThreadSafe(nameof(_prgBar.Value), (int)_prgBar.GetPropertyTS(nameof(_prgBar.Value)) + value);
+            lock (_semaphore)
+            {
+                var current = (int) _prgBar.GetPropertyTS(nameof(_prgBar.Value));
+                var max = (int)_prgBar.GetPropertyTS(nameof(_prgBar.Maximum));
+                _prgBar.SetPropertyThreadSafe(nameof(_prgBar.Value), Math.Min(max, current + value));
+            }
         }
 
         public void Set(int value)

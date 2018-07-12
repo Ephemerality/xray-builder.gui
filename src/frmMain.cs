@@ -412,7 +412,16 @@ namespace XRayBuilderGUI
                 SaPath = outputDir + @"\StartActions.data." + bookInfo.asin + ".asc";
                 ApPath = outputDir + @"\AuthorProfile.profile." + bookInfo.asin + ".asc";
                 Logger.Log("Attempting to build Start Actions and End Actions...");
-                EndActions ea = new EndActions(ap, bookInfo, rawMLSize, dataSource);
+                EndActions ea = new EndActions(ap, bookInfo, rawMLSize, dataSource, new EndActions.Settings
+                {
+                    AmazonTld = settings.amazonTLD,
+                    Android = settings.android,
+                    OutDir = settings.outDir,
+                    PenName = settings.penName,
+                    RealName = settings.realName,
+                    UseNewVersion = settings.useNewVersion,
+                    UseSubDirectories = settings.useSubDirectories
+                });
                 if (!(await ea.Generate())) return;
 
                 if (settings.useNewVersion)

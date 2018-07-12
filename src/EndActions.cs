@@ -18,8 +18,6 @@ namespace XRayBuilderGUI
 {
     class EndActions
     {
-        private Properties.Settings settings = Properties.Settings.Default;
-
         private string EaPath = "";
         private string SaPath = "";
         private long _erl;
@@ -29,6 +27,7 @@ namespace XRayBuilderGUI
         private AuthorProfile authorProfile;
         public BookInfo curBook;
         DataSources.DataSource dataSource;
+        private readonly Settings _settings;
 
         //Requires an already-built AuthorProfile and the BaseEndActions.txt file
         public EndActions(AuthorProfile ap, BookInfo book, long erl, DataSources.DataSource dataSource)
@@ -46,7 +45,7 @@ namespace XRayBuilderGUI
         {
             Logger.Log("Attempting to find book on Amazon...");
             //Generate Book search URL from book's ASIN
-            string ebookLocation = String.Format(@"https://www.amazon.{0}/dp/{1}", settings.amazonTLD, curBook.asin);
+            string ebookLocation = String.Format(@"https://www.amazon.{0}/dp/{1}", _settings.AmazonTld, curBook.asin);
 
             // Search Amazon for book
             //Logger.Log(String.Format("Book's Amazon page URL: {0}", ebookLocation));
@@ -102,7 +101,7 @@ namespace XRayBuilderGUI
                         var nodeTitleCheck = nodeTitle.GetAttributeValue("title", "");
                         nodeUrl = nodeTitle.GetAttributeValue("href", "");
                         if (nodeUrl != "")
-                            nodeUrl = "https://www.amazon." + settings.amazonTLD + nodeUrl;
+                            nodeUrl = "https://www.amazon." + _settings.AmazonTld + nodeUrl;
                         if (nodeTitleCheck == "")
                         {
                             nodeTitle = item.SelectSingleNode(".//div/a");
@@ -131,7 +130,7 @@ namespace XRayBuilderGUI
                         try
                         {
                             //Gather book desc, image url, etc, if using new format
-                            if (settings.useNewVersion)
+                            if (_settings.UseNewVersion)
                                 await book.GetAmazonInfo(nodeUrl);
                             bookBag.Add(book);
                         }
@@ -195,7 +194,7 @@ namespace XRayBuilderGUI
                             //Gather book desc, image url, etc, if using new format
                             try
                             {
-                                if (settings.useNewVersion)
+                                if (_settings.UseNewVersion)
                                     await book.GetAmazonInfo(sponsUrl);
                                 bookBag.Add(book);
                             }
@@ -238,8 +237,8 @@ namespace XRayBuilderGUI
             writer.WriteElementString("hasSample", "false");
             writer.WriteEndElement();
             writer.WriteStartElement("customerProfile");
-            writer.WriteElementString("penName", settings.penName);
-            writer.WriteElementString("realName", settings.realName);
+            writer.WriteElementString("penName", _settings.PenName);
+            writer.WriteElementString("realName", _settings.RealName);
             writer.WriteEndElement();
             writer.WriteStartElement("recs");
             writer.WriteAttributeString("type", "author");
@@ -450,18 +449,18 @@ namespace XRayBuilderGUI
             string outputDir;
             try
             {
-                if (settings.android)
+                if (_settings.Android)
                 {
-                    outputDir = settings.outDir + @"\Android\" + curBook.asin;
+                    outputDir = _settings.OutDir + @"\Android\" + curBook.asin;
                     Directory.CreateDirectory(outputDir);
                 }
                 else
-                    outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectory(curBook.author, curBook.sidecarName) : settings.outDir;
+                    outputDir = _settings.UseSubDirectories ? Functions.GetBookOutputDirectory(curBook.author, curBook.sidecarName) : _settings.OutDir;
             }
             catch (Exception ex)
             {
                 Logger.Log("An error occurred creating the output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
-                outputDir = settings.outDir;
+                outputDir = _settings.OutDir;
             }
             EaPath = outputDir + @"\EndActions.data." + curBook.asin + ".asc";
             SaPath = outputDir + @"\StartActions.data." + curBook.asin + ".asc";
@@ -499,6 +498,17 @@ namespace XRayBuilderGUI
                     + $"Ensure you extracted it to the same directory as the program.\r\n{ex.Message}");
             }
             return null;
+        }
+
+        public class Settings
+        {
+            public string OutDir { get; set; }
+            public bool Android { get; set; }
+            public string PenName { get; set; }
+            public string RealName { get; set; }
+            public string AmazonTld { get; set; }
+            public bool UseNewVersion { get; set; }
+            public bool UseSubDirectories { get; set; }
         }
     }
 }

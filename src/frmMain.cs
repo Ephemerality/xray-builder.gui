@@ -407,7 +407,15 @@ namespace XRayBuilderGUI
                 string outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectory(bookInfo.author, bookInfo.sidecarName) : settings.outDir;
 
                 Logger.Log("Attempting to build Author Profile...");
-                AuthorProfile ap = new AuthorProfile(bookInfo, settings.amazonTLD);
+                AuthorProfile ap = new AuthorProfile(bookInfo, new AuthorProfile.Settings
+                {
+                    AmazonTld = settings.amazonTLD,
+                    Android = settings.android,
+                    OutDir = settings.outDir,
+                    SaveBio = settings.saveBio,
+                    UseNewVersion = settings.useNewVersion,
+                    UseSubDirectories = settings.useSubDirectories
+                });
                 if (!(await ap.Generate())) return;
                 SaPath = outputDir + @"\StartActions.data." + bookInfo.asin + ".asc";
                 ApPath = outputDir + @"\AuthorProfile.profile." + bookInfo.asin + ".asc";

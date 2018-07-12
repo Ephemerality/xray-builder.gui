@@ -14,11 +14,6 @@ namespace XRayBuilderGUI
 {
     public class AuthorProfile
     {
-        private static Properties.Settings settings = Properties.Settings.Default;
-        
-        private BookInfo curBook;
-        private string TLD;
-
         public string ApTitle;
         public string ApSubTitle;
         public string BioTrimmed = "";
@@ -28,10 +23,13 @@ namespace XRayBuilderGUI
 
         public string EaSubTitle;
 
-        public AuthorProfile(BookInfo nBook, string TLD)
+        private readonly BookInfo _curBook;
+        private readonly Settings _settings;
+        
+        public AuthorProfile(BookInfo curBook, Settings settings)
         {
-            curBook = nBook;
-            this.TLD = TLD;
+            _curBook = curBook;
+            _settings = settings;
         }
 
         // TODO: Review this...
@@ -40,20 +38,20 @@ namespace XRayBuilderGUI
             string outputDir;
             try
             {
-                if (settings.android)
+                if (_settings.Android)
                 {
-                    outputDir = settings.outDir + @"\Android\" + curBook.asin;
+                    outputDir = _settings.OutDir + @"\Android\" + _curBook.asin;
                     Directory.CreateDirectory(outputDir);
                 }
                 else
-                    outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectory(curBook.author, curBook.sidecarName) : settings.outDir;
+                    outputDir = _settings.UseSubDirectories ? Functions.GetBookOutputDirectory(_curBook.author, _curBook.sidecarName) : _settings.OutDir;
             }
             catch (Exception ex)
             {
                 Logger.Log("An error occurred creating output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
-                outputDir = settings.outDir;
+                outputDir = _settings.OutDir;
             }
-            string ApPath = outputDir + @"\AuthorProfile.profile." + curBook.asin + ".asc";
+            string ApPath = outputDir + @"\AuthorProfile.profile." + _curBook.asin + ".asc";
 
             if (!Properties.Settings.Default.overwrite && File.Exists(ApPath))
             {
@@ -63,14 +61,14 @@ namespace XRayBuilderGUI
             }
             
             //Process GUID. If in decimal form, convert to hex.
-            if (Regex.IsMatch(curBook.guid, "/[a-zA-Z]/"))
-                curBook.guid = curBook.guid.ToUpper();
+            if (Regex.IsMatch(_curBook.guid, "/[a-zA-Z]/"))
+                _curBook.guid = _curBook.guid.ToUpper();
             else
             {
-                long.TryParse(curBook.guid, out var guidDec);
-                curBook.guid = guidDec.ToString("X");
+                long.TryParse(_curBook.guid, out var guidDec);
+                _curBook.guid = guidDec.ToString("X");
             }
-            if (curBook.guid == "0")
+            if (_curBook.guid == "0")
             {
                 Logger.Log("An error occurred while converting the GUID.");
                 return false;
@@ -81,22 +79,22 @@ namespace XRayBuilderGUI
             // If the .com search crashes, it will crash back to the caller in frmMain
             try
             {
-                searchResults = await DataSources.Amazon.SearchAuthor(curBook, TLD);
+                searchResults = await DataSources.Amazon.SearchAuthor(_curBook, _settings.AmazonTld);
             }
             catch (Exception ex)
             {
-                Logger.Log("Error searching Amazon." + TLD + ": " + ex.Message + "\r\n" + ex.StackTrace);
+                Logger.Log("Error searching Amazon." + _settings.AmazonTld + ": " + ex.Message + "\r\n" + ex.StackTrace);
             }
             finally
             {
                 if (searchResults == null)
                 {
-                    Logger.Log(String.Format("Failed to find {0} on Amazon." + TLD, curBook.author));
-                    if (TLD != "com")
+                    Logger.Log(String.Format("Failed to find {0} on Amazon." + _settings.AmazonTld, _curBook.author));
+                    if (_settings.AmazonTld != "com")
                     {
                         Logger.Log("Trying again with Amazon.com.");
-                        TLD = "com";
-                        searchResults = await DataSources.Amazon.SearchAuthor(curBook, TLD);
+                        _settings.AmazonTld = "com";
+                        searchResults = await DataSources.Amazon.SearchAuthor(_curBook, _settings.AmazonTld);
                     }
                 }
             }
@@ -108,7 +106,7 @@ namespace XRayBuilderGUI
                 try
                 {
                     Logger.Log("Saving author's Amazon webpage...");
-                    File.WriteAllText(Environment.CurrentDirectory + String.Format(@"\dmp\{0}.authorpageHtml.txt", curBook.asin),
+                    File.WriteAllText(Environment.CurrentDirectory + String.Format(@"\dmp\{0}.authorpageHtml.txt", _curBook.asin),
                         searchResults.authorHtmlDoc.DocumentNode.InnerHtml);
                 }
                 catch (Exception ex)
@@ -119,13 +117,13 @@ namespace XRayBuilderGUI
 
             // Try to find author's biography
             string bioFile = Environment.CurrentDirectory + @"\ext\" + authorAsin + ".bio";
-            if (settings.saveBio && File.Exists(bioFile))
+            if (_settings.SaveBio && File.Exists(bioFile))
             {
                 if (!readBio(bioFile)) return false;
             }
             if (BioTrimmed == "")
             {
-                HtmlNode bio = DataSources.Amazon.GetBioNode(searchResults, TLD);
+                HtmlNode bio = DataSources.Amazon.GetBioNode(searchResults, _settings.AmazonTld);
                 //Trim authour biography to less than 1000 characters and/or replace more problematic characters.
                 if (bio?.InnerText.Trim().Length > 0)
                 {
@@ -164,7 +162,7 @@ namespace XRayBuilderGUI
                     Logger.Log("An error occurred finding the author biography on Amazon.");
                 }
             }
-            if (settings.saveBio)
+            if (_settings.SaveBio)
             {
                 if (!File.Exists(bioFile))
                 {
@@ -190,14 +188,14 @@ namespace XRayBuilderGUI
                 }
             }
             // Try to download Author image
-            HtmlNode imageXpath = DataSources.Amazon.GetAuthorImageNode(searchResults, TLD);
+            HtmlNode imageXpath = DataSources.Amazon.GetAuthorImageNode(searchResults, _settings.AmazonTld);
             authorImageUrl = Regex.Replace(imageXpath.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
 
             // cleanup to match retail file image links
             if (authorImageUrl.Contains(@"https://images-na.ssl-images-amazon"))
                 authorImageUrl = authorImageUrl.Replace(@"https://images-na.ssl-images-amazon", @"http://ecx.images-amazon");
 
-            curBook.authorImageUrl = authorImageUrl;
+            _curBook.authorImageUrl = authorImageUrl;
 
             Bitmap ApAuthorImage;
             try
@@ -213,7 +211,7 @@ namespace XRayBuilderGUI
             }
 
             Logger.Log("Gathering author's other books...");
-            List<BookInfo> bookList = DataSources.Amazon.GetAuthorBooks(searchResults, curBook.title, curBook.author, TLD);
+            List<BookInfo> bookList = DataSources.Amazon.GetAuthorBooks(searchResults, _curBook.title, _curBook.author, _settings.AmazonTld);
             if (bookList != null)
             {
                 Logger.Log("Gathering metadata for other books...");
@@ -224,7 +222,7 @@ namespace XRayBuilderGUI
                     try
                     {
                         //Gather book desc, image url, etc, if using new format
-                        if (settings.useNewVersion)
+                        if (_settings.UseNewVersion)
                             await book.GetAmazonInfo(book.amazonUrl);
                         bookBag.Add(book);
                     }
@@ -257,9 +255,9 @@ namespace XRayBuilderGUI
                 string base64Image = Functions.ImageToBase64(ApAuthorImage, ImageFormat.Jpeg);
                 string authorProfileOutput = @"{""u"":[{""y"":" + ApAuthorImage.Height + @",""l"":[""" +
                                           string.Join(@""",""", otherBooks.Select(book => book.asin).ToArray()) + @"""],""n"":""" +
-                                          curBook.author + @""",""a"":""" + authorAsin + @""",""b"":""" + BioTrimmed +
+                                          _curBook.author + @""",""a"":""" + authorAsin + @""",""b"":""" + BioTrimmed +
                                           @""",""i"":""" + base64Image + @"""}],""a"":""" +
-                                          $@"{curBook.asin}"",""d"":{unixTimestamp},""o"":[" +
+                                          $@"{_curBook.asin}"",""d"":{unixTimestamp},""o"":[" +
                                           string.Join(",", authorsOtherBookList.ToArray()) + "]}";
                 File.WriteAllText(ApPath, authorProfileOutput);
                 Logger.Log("Author Profile file created successfully!\r\nSaved to " + ApPath);
@@ -270,16 +268,16 @@ namespace XRayBuilderGUI
                 return false;
             }
 
-            ApTitle = "About " + curBook.author;
-            ApSubTitle = "Kindle Books By " + curBook.author;
-            EaSubTitle = "More Books By " + curBook.author;
+            ApTitle = "About " + _curBook.author;
+            ApSubTitle = "Kindle Books By " + _curBook.author;
+            EaSubTitle = "More Books By " + _curBook.author;
             return true;
         }
 
         public string ToJSON()
         {
             string template = @"{{""class"":""authorBio"",""asin"":""{0}"",""name"":""{1}"",""bio"":""{2}"",""imageUrl"":""{3}""}}";
-            return Functions.ExpandUnicode(String.Format(template, authorAsin, curBook.author, BioTrimmed, authorImageUrl));
+            return Functions.ExpandUnicode(String.Format(template, authorAsin, _curBook.author, BioTrimmed, authorImageUrl));
         }
 
         private bool readBio(string bioFile)
@@ -301,6 +299,16 @@ namespace XRayBuilderGUI
                 return false;
             }
             return true;
+        }
+
+        public class Settings
+        {
+            public string AmazonTld { get; set; }
+            public string OutDir { get; set; }
+            public bool Android { get; set; }
+            public bool UseNewVersion { get; set; }
+            public bool UseSubDirectories { get; set; }
+            public bool SaveBio { get; set; }
         }
     }
 }

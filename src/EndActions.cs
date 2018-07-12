@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Xml;
 
 using HtmlAgilityPack;
+using XRayBuilderGUI.DataSources;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI
@@ -38,6 +39,9 @@ namespace XRayBuilderGUI
             this.dataSource = dataSource;
         }
 
+        /// <summary>
+        /// Generate the necessities for both old and new formats
+        /// </summary>
         public async Task<bool> Generate()
         {
             Logger.Log("Attempting to find book on Amazon...");
@@ -268,48 +272,18 @@ namespace XRayBuilderGUI
             Logger.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
         }
 
-        public async Task GenerateEndActions(ProgressBarCtrl progress, CancellationToken token)
+        public async Task GenerateNewFormatData(ProgressBarCtrl progress, CancellationToken token)
         {
-            string[] templates = GetBaseTemplates(Environment.CurrentDirectory + @"\dist\BaseEndActions.txt", 3);
-            if (templates == null) return;
-
-            Logger.Log($"Gathering additional metadata for {curBook.title}...");
-            string bookInfoTemplate = templates[0];
-            string widgetsTemplate = templates[1];
-            string layoutsTemplate = templates[2];
-            string finalOutput = "{{{0},{1},{2},{3}}}"; //bookInfo, widgets, layouts, data
-            
-            // Build bookInfo object
-            TimeSpan timestamp = DateTime.Now - new DateTime(1970, 1, 1);
-            bookInfoTemplate = String.Format(bookInfoTemplate, curBook.asin, Math.Round(timestamp.TotalMilliseconds), curBook.bookImageUrl, curBook.databasename, curBook.guid, _erl);
-            double dateMs = Math.Round(timestamp.TotalMilliseconds);
-            string ratingText = Math.Floor(curBook.amazonRating).ToString();
-
-            // Build data object
-            string dataTemplate = "";
-            string nextBook = "{}";
-
-            string followSubscriptions = String.Format(@"""followSubscriptions"":{{""class"":""authorSubscriptionInfoList"",""subscriptions"":[{{""class"":""authorSubscriptionInfo"",""asin"":""{0}"",""name"":""{1}"",""subscribed"":false,""imageUrl"":""{2}""}}]}}", curBook.authorAsin, curBook.author, curBook.authorImageUrl);
-            string authorSubscriptions = String.Format(@"""authorSubscriptions"":{{""class"":""authorSubscriptionInfoList"",""subscriptions"":[{{""class"":""authorSubscriptionInfo"",""asin"":""{0}"",""name"":""{1}"",""subscribed"":false,""imageUrl"":""{2}""}}]}}", curBook.authorAsin, curBook.author, curBook.authorImageUrl);
-            string publicSharedRating = String.Format(@"""publicSharedRating"":{{""class"":""publicSharedRating"",""timestamp"":{0},""value"":{1}}}", dateMs, ratingText);
-            string customerProfile = String.Format(@"""customerProfile"":{{""class"":""customerProfile"",""penName"":""{0}"",""realName"":""{1}""}}", settings.penName, settings.realName);
-            string rating = String.Format(@"""rating"":{{""class"":""personalizationRating"",""timestamp"":{0},""value"":{1}}}", dateMs, ratingText);
-            string authorBios = String.Format(@"""authorBios"":{{""class"":""authorBioList"",""authors"":[{0}]}}", authorProfile.ToJSON());
-            string authorRecs = @"""authorRecs"":{{""class"":""featuredRecommendationList"",""recommendations"":[{0}]}}";
-            string customersWhoBoughtRecs = @"""customersWhoBoughtRecs"":{{""class"":""featuredRecommendationList"",""recommendations"":[{0}]}}";
-            string goodReads = String.Format(@"""goodReadsReview"":{{""class"":""goodReadsReview"",""reviewId"":""NoReviewId"",""rating"":{0},""submissionDateMs"":{1}}}", ratingText, dateMs);
-
             try
             {
                 await dataSource.GetExtras(curBook, token, progress);
                 curBook.nextInSeries = await dataSource.GetNextInSeries(curBook, authorProfile, settings.amazonTLD);
-                nextBook = curBook.nextInSeries != null ? curBook.nextInSeries.ToJSON("recommendation", false) : "";
             }
             catch (Exception ex)
             {
                 if (ex.Message.Contains("(404)"))
                     Logger.Log("An error occurred finding next book in series: Goodreads URL not found.\r\n" +
-                        "If reading from a file, you can switch the source to Goodreads to specify a URL, then switch back to File.");
+                               "If reading from a file, you can switch the source to Goodreads to specify a URL, then switch back to File.");
                 else
                     Logger.Log("An error occurred finding next book in series: " + ex.Message + "\r\n" + ex.StackTrace);
                 throw;
@@ -330,6 +304,38 @@ namespace XRayBuilderGUI
                 Logger.Log("An error occurred while searching for or estimating the page count: " + ex.Message + "\r\n" + ex.StackTrace);
                 throw;
             }
+        }
+
+        public async Task GenerateEndActions(ProgressBarCtrl progress, CancellationToken token)
+        {
+            string[] templates = GetBaseTemplates(Environment.CurrentDirectory + @"\dist\BaseEndActions.txt", 3);
+            if (templates == null) return;
+
+            Logger.Log($"Gathering additional metadata for {curBook.title}...");
+            string bookInfoTemplate = templates[0];
+            string widgetsTemplate = templates[1];
+            string layoutsTemplate = templates[2];
+            string finalOutput = "{{{0},{1},{2},{3}}}"; //bookInfo, widgets, layouts, data
+            
+            // Build bookInfo object
+            TimeSpan timestamp = DateTime.Now - new DateTime(1970, 1, 1);
+            bookInfoTemplate = String.Format(bookInfoTemplate, curBook.asin, Math.Round(timestamp.TotalMilliseconds), curBook.bookImageUrl, curBook.databasename, curBook.guid, _erl);
+            double dateMs = Math.Round(timestamp.TotalMilliseconds);
+            string ratingText = Math.Floor(curBook.amazonRating).ToString();
+
+            // Build data object
+            string dataTemplate = "";
+
+            string followSubscriptions = String.Format(@"""followSubscriptions"":{{""class"":""authorSubscriptionInfoList"",""subscriptions"":[{{""class"":""authorSubscriptionInfo"",""asin"":""{0}"",""name"":""{1}"",""subscribed"":false,""imageUrl"":""{2}""}}]}}", curBook.authorAsin, curBook.author, curBook.authorImageUrl);
+            string authorSubscriptions = String.Format(@"""authorSubscriptions"":{{""class"":""authorSubscriptionInfoList"",""subscriptions"":[{{""class"":""authorSubscriptionInfo"",""asin"":""{0}"",""name"":""{1}"",""subscribed"":false,""imageUrl"":""{2}""}}]}}", curBook.authorAsin, curBook.author, curBook.authorImageUrl);
+            string publicSharedRating = String.Format(@"""publicSharedRating"":{{""class"":""publicSharedRating"",""timestamp"":{0},""value"":{1}}}", dateMs, ratingText);
+            string customerProfile = String.Format(@"""customerProfile"":{{""class"":""customerProfile"",""penName"":""{0}"",""realName"":""{1}""}}", settings.penName, settings.realName);
+            string rating = String.Format(@"""rating"":{{""class"":""personalizationRating"",""timestamp"":{0},""value"":{1}}}", dateMs, ratingText);
+            string authorBios = String.Format(@"""authorBios"":{{""class"":""authorBioList"",""authors"":[{0}]}}", authorProfile.ToJSON());
+            string authorRecs = @"""authorRecs"":{{""class"":""featuredRecommendationList"",""recommendations"":[{0}]}}";
+            string customersWhoBoughtRecs = @"""customersWhoBoughtRecs"":{{""class"":""featuredRecommendationList"",""recommendations"":[{0}]}}";
+            string goodReads = String.Format(@"""goodReadsReview"":{{""class"":""goodReadsReview"",""reviewId"":""NoReviewId"",""rating"":{0},""submissionDateMs"":{1}}}", ratingText, dateMs);
+            string nextBook = curBook.nextInSeries != null ? curBook.nextInSeries.ToJSON("recommendation", false) : "";
 
             if (authorProfile.otherBooks.Count > 0)
                 authorRecs = String.Format(authorRecs,

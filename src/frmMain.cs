@@ -417,6 +417,7 @@ namespace XRayBuilderGUI
 
                 if (settings.useNewVersion)
                 {
+                    await ea.GenerateNewFormatData(_progress, cancelTokens.Token);
                     await ea.GenerateEndActions(_progress, cancelTokens.Token);
                     ea.GenerateStartActions();
                     cmsPreview.Items[3].Enabled = true;

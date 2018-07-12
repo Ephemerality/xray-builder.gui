@@ -370,7 +370,7 @@ namespace XRayBuilderGUI
             Logger.Log("Writing EndActions to file...");
             using (StreamWriter streamWriter = new StreamWriter(EaPath, false))
             {
-                streamWriter.Write(finalOutput);
+                await streamWriter.WriteAsync(finalOutput);
                 streamWriter.Flush();
             }
             Logger.Log("EndActions file created successfully!\r\nSaved to " + EaPath);

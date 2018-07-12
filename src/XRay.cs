@@ -58,8 +58,10 @@ namespace XRayBuilderGUI
         private int foundNotables;
 
         private bool enableEdit = Properties.Settings.Default.enableEdit;
-        private frmMain main;
         private readonly DataSource dataSource;
+
+        public delegate DialogResult SafeShowDelegate(string msg, string caption, MessageBoxButtons buttons,
+            MessageBoxIcon icon, MessageBoxDefaultButton def);
 
         #region CommonTitles
         string[] CommonTitles = new[] { "Mr", "Mrs", "Ms", "Miss", "Dr", "Herr", "Monsieur", "Hr", "Frau",
@@ -90,16 +92,15 @@ namespace XRayBuilderGUI
         {
         }
 
-        public XRay(string shelfari, frmMain frm, DataSource dataSource)
+        public XRay(string shelfari, DataSource dataSource)
         {
             if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
                 shelfari = "https://" + shelfari;
             dataUrl = shelfari;
-            main = frm;
             this.dataSource = dataSource;
         }
 
-        public XRay(string shelfari, string db, string guid, string asin, frmMain frm, DataSource dataSource,
+        public XRay(string shelfari, string db, string guid, string asin, DataSource dataSource,
             int locOffset = 0, string aliaspath = "", bool unattended = false)
         {
             if (shelfari == "" || db == "" || guid == "" || asin == "")
@@ -114,11 +115,10 @@ namespace XRayBuilderGUI
             this.locOffset = locOffset;
             this.aliaspath = aliaspath;
             this.unattended = unattended;
-            main = frm;
             this.dataSource = dataSource;
         }
 
-        public XRay(string xml, string db, string guid, string asin, frmMain frm, DataSource dataSource,
+        public XRay(string xml, string db, string guid, string asin, DataSource dataSource,
             int locOffset = 0, string aliaspath = "")
         {
             if (xml == "" || db == "" || guid == "" || asin == "")
@@ -130,7 +130,6 @@ namespace XRayBuilderGUI
             this.locOffset = locOffset;
             this.aliaspath = aliaspath;
             unattended = false;
-            main = frm;
             this.dataSource = dataSource;
             skipShelfari = true;
         }
@@ -206,7 +205,8 @@ namespace XRayBuilderGUI
         public string XRayName(bool android = false) =>
             android ? $"XRAY.{asin}.{databaseName}_{Guid}.db" : $"XRAY.entities.{asin}.asc";
 
-        public async Task<int> CreateXray(ProgressBarCtrl progress, CancellationToken token)
+        // TODO: Completely remove the need to pass in a message box handler
+        public async Task<int> CreateXray(SafeShowDelegate safeShow, ProgressBarCtrl progress, CancellationToken token)
         {
             //Download Shelfari info if not skipping
             if (skipShelfari)
@@ -306,7 +306,7 @@ namespace XRayBuilderGUI
             if (!unattended && enableEdit)
             {
                 if (DialogResult.Yes ==
-                    main.SafeShow(
+                    safeShow(
                         "Terms have been exported to an alias file or already exist in that file. Would you like to open the file in notepad for editing?\r\n"
                         + "See the MobileRead forum thread (link in Settings) for more information on building aliases.",
                         "Aliases",
@@ -328,7 +328,7 @@ namespace XRayBuilderGUI
             return 0;
         }
 
-        public int ExpandFromRawMl(string rawMl, ProgressBarCtrl progress, CancellationToken token, bool ignoreSoftHypen = false, bool shortEx = true)
+        public int ExpandFromRawMl(string rawMl, SafeShowDelegate safeShow, ProgressBarCtrl progress, CancellationToken token, bool ignoreSoftHypen = false, bool shortEx = true)
         {
             // If there is an apostrophe, attempt to match 's at the end of the term
             // Match end of word, then search for any lingering punctuation
@@ -376,7 +376,7 @@ namespace XRayBuilderGUI
 
             if (!unattended && enableEdit)
                 if (DialogResult.Yes ==
-                    main.SafeShow("Would you like to open the chapters file in notepad for editing?", "Chapters",
+                    safeShow("Would you like to open the chapters file in notepad for editing?", "Chapters",
                         MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
                 {
                     Functions.RunNotepad(chapterFile);
@@ -428,8 +428,7 @@ namespace XRayBuilderGUI
             progress?.Set(0, nodes.Count);
             for (int i = 0; i < nodes.Count; i++)
             {
-                if ((main?.Exiting ?? false) || token.IsCancellationRequested) return 1;
-
+                token.ThrowIfCancellationRequested();
                 HtmlNode node = nodes[i];
                 if (node.FirstChild == null) continue; //If the inner HTML is just empty, skip the paragraph!
                 int lenQuote = node.InnerHtml.Length;
@@ -747,7 +746,6 @@ namespace XRayBuilderGUI
             progress?.Set(0, Terms.Count);
             foreach (Term t in Terms)
             {
-                if (main?.Exiting ?? false) return 1;
                 token.ThrowIfCancellationRequested();
                 if (t.Type == "character") personCount++;
                 else if (t.Type == "topic") termCount++;
@@ -780,7 +778,6 @@ namespace XRayBuilderGUI
             progress?.Set(0, excerpts.Count);
             foreach (Excerpt e in excerpts)
             {
-                if (main?.Exiting ?? false) return 1;
                 token.ThrowIfCancellationRequested();
                 command.Parameters.AddWithValue("id", e.id);
                 command.Parameters.AddWithValue("start", e.start);

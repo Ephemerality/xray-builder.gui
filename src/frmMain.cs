@@ -198,20 +198,20 @@ namespace XRayBuilderGUI
             try
             {
                 if (rdoGoodreads.Checked)
-                    xray = new XRay(txtGoodreads.Text, results[2], results[1], results[0], this, dataSource,
+                    xray = new XRay(txtGoodreads.Text, results[2], results[1], results[0], dataSource,
                         (AZW3 ? settings.offsetAZW3 : settings.offset), "", false);
                 else
-                    xray = new XRay(txtXMLFile.Text, results[2], results[1], results[0], this, dataSource,
+                    xray = new XRay(txtXMLFile.Text, results[2], results[1], results[0], dataSource,
                         (AZW3 ? settings.offsetAZW3 : settings.offset), "");
 
-                if ((await Task.Run(() => xray.CreateXray(_progress, cancelTokens.Token)).ConfigureAwait(false)) > 0)
+                if ((await Task.Run(() => xray.CreateXray(SafeShow, _progress, cancelTokens.Token)).ConfigureAwait(false)) > 0)
                 {
                     Logger.Log("Build canceled or error while processing.");
                     return;
                 }
                 Logger.Log("Initial X-Ray built, adding locations and chapters...");
                 //Expand the X-Ray file from the unpacked mobi
-                if ((await Task.Run(() => xray.ExpandFromRawMl(results[3], _progress, cancelTokens.Token, settings.ignoresofthyphen, !settings.useNewVersion))) > 0)
+                if ((await Task.Run(() => xray.ExpandFromRawMl(results[3], SafeShow, _progress, cancelTokens.Token, settings.ignoresofthyphen, !settings.useNewVersion))) > 0)
                 {
                     Logger.Log("Build canceled or error occurred while processing locations and chapters.");
                     return;
@@ -480,7 +480,7 @@ namespace XRayBuilderGUI
             {
                 txtXMLFile.Text = path;
 
-                XRay xray = new XRay(txtGoodreads.Text, this, dataSource);
+                XRay xray = new XRay(txtGoodreads.Text, dataSource);
                 int result = await Task.Run(() => xray.SaveXml(path, _progress, cancelTokens.Token));
                 if (result == 1)
                     Logger.Log("Warning: Unable to download character data as no character data found on Goodreads.");

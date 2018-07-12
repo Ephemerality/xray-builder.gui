@@ -20,22 +20,23 @@ namespace XRayBuilderGUI
     {
         private string EaPath = "";
         private string SaPath = "";
-        private long _erl;
 
         public List<BookInfo> custAlsoBought = new List<BookInfo>();
 
-        private AuthorProfile authorProfile;
         public BookInfo curBook;
-        DataSources.DataSource dataSource;
+        private readonly AuthorProfile _authorProfile;
+        private readonly DataSource _dataSource;
+        private readonly long _erl;
         private readonly Settings _settings;
 
         //Requires an already-built AuthorProfile and the BaseEndActions.txt file
-        public EndActions(AuthorProfile ap, BookInfo book, long erl, DataSources.DataSource dataSource)
+        public EndActions(AuthorProfile authorProfile, BookInfo book, long erl, DataSource dataSource, Settings settings)
         {
-            authorProfile = ap;
+            _authorProfile = authorProfile;
             curBook = book;
             _erl = erl;
-            this.dataSource = dataSource;
+            _dataSource = dataSource;
+            _settings = settings;
         }
 
         /// <summary>
@@ -167,7 +168,7 @@ namespace XRayBuilderGUI
                             {
                                 sponsAsin = match.Groups[1].Value;
                                 sponsUrl = String.Format("https://www.amazon.{1}/dp/{0}", sponsAsin,
-                                    settings.amazonTLD);
+                                    _settings.AmazonTld);
                             }
 
                             otherBook = otherBook.SelectSingleNode(".//img");
@@ -242,12 +243,12 @@ namespace XRayBuilderGUI
             writer.WriteEndElement();
             writer.WriteStartElement("recs");
             writer.WriteAttributeString("type", "author");
-            for (int i = 0; i < Math.Min(authorProfile.otherBooks.Count, 5); i++)
+            for (int i = 0; i < Math.Min(_authorProfile.otherBooks.Count, 5); i++)
             {
                 writer.WriteStartElement("rec");
                 writer.WriteAttributeString("hasSample", "false");
-                writer.WriteAttributeString("asin", authorProfile.otherBooks[i].asin);
-                writer.WriteElementString("title", authorProfile.otherBooks[i].title);
+                writer.WriteAttributeString("asin", _authorProfile.otherBooks[i].asin);
+                writer.WriteElementString("title", _authorProfile.otherBooks[i].title);
                 writer.WriteElementString("author", curBook.author);
                 writer.WriteEndElement();
             }
@@ -275,8 +276,8 @@ namespace XRayBuilderGUI
         {
             try
             {
-                await dataSource.GetExtras(curBook, token, progress);
-                curBook.nextInSeries = await dataSource.GetNextInSeries(curBook, authorProfile, settings.amazonTLD);
+                await _dataSource.GetExtras(curBook, token, progress);
+                curBook.nextInSeries = await _dataSource.GetNextInSeries(curBook, _authorProfile, _settings.AmazonTld);
             }
             catch (Exception ex)
             {
@@ -290,7 +291,7 @@ namespace XRayBuilderGUI
 
             try
             {
-                if (!(await dataSource.GetPageCount(curBook)))
+                if (!(await _dataSource.GetPageCount(curBook)))
                 {
                     if (!Properties.Settings.Default.pageCount)
                         Logger.Log("No page count found on Goodreads");
@@ -328,18 +329,18 @@ namespace XRayBuilderGUI
             string followSubscriptions = String.Format(@"""followSubscriptions"":{{""class"":""authorSubscriptionInfoList"",""subscriptions"":[{{""class"":""authorSubscriptionInfo"",""asin"":""{0}"",""name"":""{1}"",""subscribed"":false,""imageUrl"":""{2}""}}]}}", curBook.authorAsin, curBook.author, curBook.authorImageUrl);
             string authorSubscriptions = String.Format(@"""authorSubscriptions"":{{""class"":""authorSubscriptionInfoList"",""subscriptions"":[{{""class"":""authorSubscriptionInfo"",""asin"":""{0}"",""name"":""{1}"",""subscribed"":false,""imageUrl"":""{2}""}}]}}", curBook.authorAsin, curBook.author, curBook.authorImageUrl);
             string publicSharedRating = String.Format(@"""publicSharedRating"":{{""class"":""publicSharedRating"",""timestamp"":{0},""value"":{1}}}", dateMs, ratingText);
-            string customerProfile = String.Format(@"""customerProfile"":{{""class"":""customerProfile"",""penName"":""{0}"",""realName"":""{1}""}}", settings.penName, settings.realName);
+            string customerProfile = String.Format(@"""customerProfile"":{{""class"":""customerProfile"",""penName"":""{0}"",""realName"":""{1}""}}", _settings.PenName, _settings.RealName);
             string rating = String.Format(@"""rating"":{{""class"":""personalizationRating"",""timestamp"":{0},""value"":{1}}}", dateMs, ratingText);
-            string authorBios = String.Format(@"""authorBios"":{{""class"":""authorBioList"",""authors"":[{0}]}}", authorProfile.ToJSON());
+            string authorBios = String.Format(@"""authorBios"":{{""class"":""authorBioList"",""authors"":[{0}]}}", _authorProfile.ToJSON());
             string authorRecs = @"""authorRecs"":{{""class"":""featuredRecommendationList"",""recommendations"":[{0}]}}";
             string customersWhoBoughtRecs = @"""customersWhoBoughtRecs"":{{""class"":""featuredRecommendationList"",""recommendations"":[{0}]}}";
             string goodReads = String.Format(@"""goodReadsReview"":{{""class"":""goodReadsReview"",""reviewId"":""NoReviewId"",""rating"":{0},""submissionDateMs"":{1}}}", ratingText, dateMs);
             string nextBook = curBook.nextInSeries != null ? curBook.nextInSeries.ToJSON("recommendation", false) : "";
 
-            if (authorProfile.otherBooks.Count > 0)
+            if (_authorProfile.otherBooks.Count > 0)
                 authorRecs = String.Format(authorRecs,
                     String.Join(",",
-                        authorProfile.otherBooks.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
+                        _authorProfile.otherBooks.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
             if (custAlsoBought.Count > 0)
                 customersWhoBoughtRecs = String.Format(customersWhoBoughtRecs,
                     String.Join(",", custAlsoBought.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
@@ -400,8 +401,8 @@ namespace XRayBuilderGUI
                 curBook.notableClips.Count, curBook.notableClips.Sum(c => c.Likes));
             string grokShelfInfo = String.Format(@"""grokShelfInfo"":{{""class"":""goodReadsShelfInfo"",""asin"":""{0}"",""shelves"":[""to-read""],""is_sensitive"":false,""is_autoshelving_enabled"":true}}", curBook.asin);
             string bookDescription = String.Format(@"""bookDescription"":{0}", curBook.ToExtraJSON("featuredRecommendation"));
-            string authorBios = String.Format(@"""authorBios"":{{""class"":""authorBioList"",""authors"":[{0}]}}", authorProfile.ToJSON());
-            string authorRecs = authorProfile.otherBooks.Count > 0 ? String.Format(authorRecsTemplate, String.Join(",", authorProfile.otherBooks.Select(bk => bk.ToJSON("recommendation", false)).ToArray())) : "";
+            string authorBios = String.Format(@"""authorBios"":{{""class"":""authorBioList"",""authors"":[{0}]}}", _authorProfile.ToJSON());
+            string authorRecs = _authorProfile.otherBooks.Count > 0 ? String.Format(authorRecsTemplate, String.Join(",", _authorProfile.otherBooks.Select(bk => bk.ToJSON("recommendation", false)).ToArray())) : "";
             string currentBook = String.Format(@"""currentBook"":{0}", curBook.ToExtraJSON("featuredRecommendation"));
             string readingTime = String.Format(@"""readingTime"":{{""class"":""time"",""hours"":{0},""minutes"":{1},""formattedTime"":{{""de"":""{0} Stunden und {1} Minuten"",""en-US"":""{0} hours and {1} minutes"",""ru"":""{0}\u00A0\u0447 \u043{0} {1}\u00A0\u043C\u043{0}\u043D"",""pt-BR"":""{0} horas e {1} minutos"",""ja"":""{0}\u6642\u9593{1}\u5206"",""en"":""{0} hours and {1} minutes"",""it"":""{0} ore e {1} minuti"",""fr"":""{0} heures et {1} minutes"",""zh-CN"":""{0} \u5C0F\u65F6 {1} \u5206\u949F"",""es"":""{0} horas y {1} minutos"",""nl"":""{0} uur en {1} minuten""}}}}", curBook.readingHours, curBook.readingMinutes);
             string previousBookInSeries = curBook.previousInSeries == null ? "" : String.Format(@"""previousBookInTheSeries"":{0}", curBook.previousInSeries.ToExtraJSON("featuredRecommendation"));

@@ -44,7 +44,7 @@ namespace XRayBuilderGUI
                     Directory.CreateDirectory(outputDir);
                 }
                 else
-                    outputDir = _settings.UseSubDirectories ? Functions.GetBookOutputDirectory(_curBook.author, _curBook.sidecarName) : _settings.OutDir;
+                    outputDir = _settings.UseSubDirectories ? Functions.GetBookOutputDirectory(_curBook.author, _curBook.sidecarName, true) : _settings.OutDir;
             }
             catch (Exception ex)
             {

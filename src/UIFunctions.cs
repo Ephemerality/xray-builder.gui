@@ -13,10 +13,13 @@ namespace XRayBuilderGUI
             return f.ShowDialog() == DialogResult.OK ? f.SelectedPath : defaultFolder;
         }
 
-        public static string GetFile(string title, string defaultFile, string filter = "All files (*.*)|*.*")
+        public static string GetFile(string title, string defaultFile, string filter = "All files (*.*)|*.*", string initialDir = "")
         {
             OpenFileDialog f = new OpenFileDialog();
-            if (defaultFile != "") f.InitialDirectory = Path.GetDirectoryName(defaultFile);
+            if (!string.IsNullOrEmpty(initialDir))
+                f.InitialDirectory = initialDir;
+            else if (!string.IsNullOrEmpty(defaultFile))
+                f.InitialDirectory = Path.GetDirectoryName(defaultFile);
             f.Filter = filter;
             f.RestoreDirectory = true;
             return f.ShowDialog() == DialogResult.OK ? f.FileName : defaultFile;

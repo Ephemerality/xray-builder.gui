@@ -53,6 +53,13 @@ namespace XRayBuilderGUI
             return (DialogResult)Invoke(new Func<DialogResult>(() => MessageBox.Show(this, msg, caption, buttons, icon, def)));
         }
 
+        public string OutputDirectory(string author, string title, bool create)
+        {
+            if (!settings.useSubDirectories) return settings.outDir;
+            UIFunctions.ValidateFilename(author, title);
+            return Functions.GetBookOutputDirectory(author, title, create);
+        }
+
         private void ToggleInterface(bool enabled)
         {
             foreach (Control c in Controls)
@@ -234,9 +241,7 @@ namespace XRayBuilderGUI
                 }
                 else
                 {
-                    outFolder = settings.useSubDirectories
-                        ? Functions.GetBookOutputDirectory(results[4], Functions.RemoveInvalidFileChars(results[5]))
-                        : settings.outDir;
+                    outFolder = OutputDirectory(results[4], results[5], true);
                 }
             }
             catch (Exception ex)
@@ -404,7 +409,7 @@ namespace XRayBuilderGUI
                 BookInfo bookInfo = new BookInfo(results[5], results[4], results[0], results[1], results[2],
                                                 randomFile, Functions.RemoveInvalidFileChars(results[5]), txtGoodreads.Text, results[3]);
 
-                string outputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectory(bookInfo.author, bookInfo.sidecarName) : settings.outDir;
+                string outputDir = OutputDirectory(bookInfo.author, bookInfo.sidecarName, true);
 
                 Logger.Log("Attempting to build Author Profile...");
                 AuthorProfile ap = new AuthorProfile(bookInfo, new AuthorProfile.Settings
@@ -1255,7 +1260,7 @@ namespace XRayBuilderGUI
 
         private void checkFiles(string author, string title, string asin)
         {
-            string bookOutputDir = settings.useSubDirectories ? Functions.GetBookOutputDirectoryOnly(author, Functions.RemoveInvalidFileChars(title)) : settings.outDir;
+            string bookOutputDir = OutputDirectory(author, Functions.RemoveInvalidFileChars(title), false);
 
             if (File.Exists(bookOutputDir + @"\StartActions.data." + asin + ".asc"))
                 pbFile1.Image = Resources.file_on;

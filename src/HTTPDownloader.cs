@@ -11,6 +11,7 @@ namespace XRayBuilderGUI
 {
     // Taken from http://stackoverflow.com/a/2700707
     // Downloads an HTML page using appropriate encoding
+    // TODO: Review
     public class HttpDownloader
     {
         private readonly string _referer;
@@ -21,17 +22,11 @@ namespace XRayBuilderGUI
         public Encoding Encoding { get; set; }
         public WebHeaderCollection Headers { get; set; }
         public Uri Url { get; set; }
-
-        public static string GetPageHtml(string url)
+        
+        public static Task<string> GetPageHtmlAsync(string url)
         {
             HttpDownloader http = new HttpDownloader(url);
-            return http.GetPage();
-        }
-
-        public static async Task<string> GetPageHtmlAsync(string url)
-        {
-            HttpDownloader http = new HttpDownloader(url);
-            return await Task.Run(() => http.GetPage()).ConfigureAwait(false);
+            return Task.Run(() => http.GetPage());
         }
 
         public static async Task<Bitmap> GetImage(string url)
@@ -55,7 +50,7 @@ namespace XRayBuilderGUI
             if (jar != null) _cookiejar = jar;
         }
 
-        public string GetPage()
+        public async Task<string> GetPage()
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Url);
             if (!string.IsNullOrEmpty(_referer))
@@ -66,7 +61,7 @@ namespace XRayBuilderGUI
             request.CookieContainer = _cookiejar;
             request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
 
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponseAsync().Result)
+            using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
             {
                 Headers = response.Headers;
                 Url = response.ResponseUri;

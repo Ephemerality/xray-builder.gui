@@ -153,7 +153,7 @@ namespace XRayBuilderGUI
                 Logger.Log("Running Kindleunpack to get metadata...");
                 try
                 {
-                    results = await Functions.GetMetaDataAsync(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                    results = await Task.Run(() => Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack));
                 }
                 catch (Exception ex)
                 {
@@ -166,7 +166,7 @@ namespace XRayBuilderGUI
                 Logger.Log("Extracting metadata...");
                 try
                 {
-                    results = (await Functions.GetMetaDataInternalAsync(txtMobi.Text, settings.outDir, true, randomFile)).getResults();
+                    results = await Task.Run(() => Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, true, randomFile).getResults());
                 }
                 catch (Exception ex)
                 {
@@ -199,19 +199,19 @@ namespace XRayBuilderGUI
             {
                 if (rdoGoodreads.Checked)
                     xray = new XRay(txtGoodreads.Text, results[2], results[1], results[0], dataSource,
-                        (AZW3 ? settings.offsetAZW3 : settings.offset), "", false);
+                        AZW3 ? settings.offsetAZW3 : settings.offset, "", false);
                 else
                     xray = new XRay(txtXMLFile.Text, results[2], results[1], results[0], dataSource,
-                        (AZW3 ? settings.offsetAZW3 : settings.offset), "");
+                        AZW3 ? settings.offsetAZW3 : settings.offset, "");
 
-                if ((await Task.Run(() => xray.CreateXray(SafeShow, _progress, cancelTokens.Token)).ConfigureAwait(false)) > 0)
+                if (await Task.Run(() => xray.CreateXray(SafeShow, _progress, cancelTokens.Token)).ConfigureAwait(false) > 0)
                 {
                     Logger.Log("Build canceled or error while processing.");
                     return;
                 }
                 Logger.Log("Initial X-Ray built, adding locations and chapters...");
                 //Expand the X-Ray file from the unpacked mobi
-                if ((await Task.Run(() => xray.ExpandFromRawMl(results[3], SafeShow, _progress, cancelTokens.Token, settings.ignoresofthyphen, !settings.useNewVersion))) > 0)
+                if (await Task.Run(() => xray.ExpandFromRawMl(results[3], SafeShow, _progress, cancelTokens.Token, settings.ignoresofthyphen, !settings.useNewVersion)).ConfigureAwait(false) > 0)
                 {
                     Logger.Log("Build canceled or error occurred while processing locations and chapters.");
                     return;
@@ -358,7 +358,7 @@ namespace XRayBuilderGUI
                 Logger.Log("Running Kindleunpack to get metadata...");
                 try
                 {
-                    results = await Functions.GetMetaDataAsync(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                    results = await Task.Run(() => Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack));
                     if (!File.Exists(results[3]))
                     {
                         Logger.Log("Error: RawML could not be found, aborting.\r\nPath: " + results[3]);
@@ -378,7 +378,7 @@ namespace XRayBuilderGUI
                 try
                 {
                     //Same results with addition of rawML filename
-                    results = (await Functions.GetMetaDataInternalAsync(txtMobi.Text, settings.outDir, true, randomFile)).getResults();
+                    results = await Task.Run(() => Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, true, randomFile).getResults());
                     rawMLSize = new FileInfo(results[3]).Length;
                 }
                 catch (Exception ex)
@@ -540,7 +540,7 @@ namespace XRayBuilderGUI
                 Logger.Log("Running Kindleunpack to get metadata...");
                 try
                 {
-                    results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                    results = await Task.Run(() => Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack));
                 }
                 catch (Exception ex)
                 {
@@ -553,7 +553,7 @@ namespace XRayBuilderGUI
                 Logger.Log("Extracting metadata...");
                 try
                 {
-                    results = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, false).getResults();
+                    results = await Task.Run(() => Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, false).getResults());
                 }
                 catch (Exception ex)
                 {
@@ -764,7 +764,7 @@ namespace XRayBuilderGUI
                 lblGoodreads.Left = 134;
         }
 
-        private void txtMobi_TextChanged(object sender, EventArgs e)
+        private async void txtMobi_TextChanged(object sender, EventArgs e)
         {
             if (txtMobi.Text == "" || !File.Exists(txtMobi.Text)) return;
             txtGoodreads.Text = "";
@@ -782,7 +782,7 @@ namespace XRayBuilderGUI
                 Logger.Log("Running Kindleunpack to get metadata...");
                 try
                 {
-                    results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                    results = await Task.Run(() => Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack));
                     pbCover.Image = results.Count == 7 ? new Bitmap(results[6]) : null;
                 }
                 catch (Exception ex)
@@ -796,7 +796,7 @@ namespace XRayBuilderGUI
             {
                 try
                 {
-                    using (Unpack.Metadata md = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, false))
+                    using (Unpack.Metadata md = await Task.Run(() => Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, false)))
                     {
                         results = md.getResults();
                         pbCover.Image = (Image)md.coverImage?.Clone();
@@ -1022,7 +1022,7 @@ namespace XRayBuilderGUI
             }
         }
 
-        private void btnUnpack_Click(object sender, EventArgs e)
+        private async void btnUnpack_Click(object sender, EventArgs e)
         {
             //Check current settings
             if (!File.Exists(txtMobi.Text))
@@ -1053,7 +1053,7 @@ namespace XRayBuilderGUI
                 Logger.Log("Running Kindleunpack to extract rawML...");
                 try
                 {
-                    results = Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack);
+                    results = await Task.Run(() => Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack)).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
@@ -1066,7 +1066,7 @@ namespace XRayBuilderGUI
                 Logger.Log("Extracting rawML...");
                 try
                 {
-                    results = Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, true, randomFile).getResults();
+                    results = await Task.Run(() => Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, true, randomFile).getResults()).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {

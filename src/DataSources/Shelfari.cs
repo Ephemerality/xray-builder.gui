@@ -72,7 +72,7 @@ namespace XRayBuilderGUI.DataSources
             if (sourceHtmlDoc == null)
             {
                 sourceHtmlDoc = new HtmlDocument();
-                sourceHtmlDoc.LoadHtml(HttpDownloader.GetPageHtml(curBook.dataUrl));
+                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl));
             }
 
             // Get title of next book
@@ -93,7 +93,7 @@ namespace XRayBuilderGUI.DataSources
                 if (nextBook == null)
                 {
                     HtmlDocument bookDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
-                    bookDoc.LoadHtml(HttpDownloader.GetPageHtml(seriesInfo["NextURL"]));
+                    bookDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(seriesInfo["NextURL"]));
                     Match match = Regex.Match(bookDoc.DocumentNode.InnerHtml, "('B[A-Z0-9]{9}')");
                     if (match.Success)
                     {
@@ -123,7 +123,7 @@ namespace XRayBuilderGUI.DataSources
                     if (curBook.previousInSeries == null)
                     {
                         HtmlDocument bookDoc = new HtmlDocument() { OptionAutoCloseOnEnd = true };
-                        bookDoc.LoadHtml(HttpDownloader.GetPageHtml(seriesInfo["PreviousURL"]));
+                        bookDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(seriesInfo["PreviousURL"]));
                         Match match = Regex.Match(bookDoc.DocumentNode.InnerHtml, "('B[A-Z0-9]{9}')");
                         if (match.Success)
                         {

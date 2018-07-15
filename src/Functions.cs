@@ -207,11 +207,6 @@ namespace XRayBuilderGUI
             return $"Running X-Ray Builder GUI v{version}. Log started on {date} at {time}.\r\n";
         }
 
-        public static async Task<Metadata> GetMetaDataInternalAsync(string mobiFile, string outDir, bool saveRawML, string randomFile = "")
-        {
-            return await Task.Run(() => GetMetaDataInternal(mobiFile, outDir, saveRawML, randomFile)).ConfigureAwait(false);
-        }
-
         //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
         public static Metadata GetMetaDataInternal(string mobiFile, string outDir, bool saveRawML, string randomFile = "")
         {
@@ -317,11 +312,6 @@ namespace XRayBuilderGUI
             bookInfo.readingMinutes = span.Minutes.ToString();
             output = $"Typical time to read: {span.Hours} hours and {span.Minutes} minutes ({bookInfo.pagesInBook} pages)";
             return output;
-        }
-
-        public static async Task<List<string>> GetMetaDataAsync(string mobiFile, string outDir, string randomFile, string mobiUnpack)
-        {
-            return await Task.Run(() => GetMetaData(mobiFile, outDir, randomFile, mobiUnpack)).ConfigureAwait(false);
         }
 
         public static List<string> GetMetaData(string mobiFile, string outDir, string randomFile, string mobiUnpack)

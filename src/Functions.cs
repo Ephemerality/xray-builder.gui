@@ -10,13 +10,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
 using HtmlAgilityPack;
 using XRayBuilderGUI.Unpack;
-using Regex = System.Text.RegularExpressions.Regex;
 
 namespace XRayBuilderGUI
 {
@@ -32,54 +29,6 @@ namespace XRayBuilderGUI
             var chars = text.Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) !=
                 System.Globalization.UnicodeCategory.NonSpacingMark).ToArray();
             return new string(chars).Normalize(NormalizationForm.FormC);
-        }
-
-        public static string GetDir(string defaultFolder)
-        {
-            FolderBrowserDialog f = new FolderBrowserDialog { SelectedPath = defaultFolder };
-            if (f.ShowDialog() == DialogResult.OK)
-                return f.SelectedPath;
-            else
-                return defaultFolder;
-        }
-
-        public static string GetFile(string defaultFile, string filter = "All files (*.*)|*.*")
-        {
-            OpenFileDialog f = new OpenFileDialog();
-            if (defaultFile != "") f.InitialDirectory = Path.GetDirectoryName(defaultFile);
-            f.Filter = filter;
-            f.RestoreDirectory = true;
-            if (f.ShowDialog() == DialogResult.OK)
-                return f.FileName;
-            else
-                return defaultFile;
-        }
-
-        public static string GetExe(string defaultFile)
-        {
-            OpenFileDialog f = new OpenFileDialog();
-            if (defaultFile != "") f.InitialDirectory = Path.GetDirectoryName(defaultFile);
-            f.Title = "Browse for the Kindleunpack executable";
-            f.Filter = "Application (*.exe)|*.exe";
-            f.RestoreDirectory = true;
-            if (f.ShowDialog() == DialogResult.OK)
-                return f.FileName;
-            else
-                return defaultFile;
-        }
-
-        //Addition open file dialog for books only
-        public static string GetBook(string defaultFile)
-        {
-            OpenFileDialog f = new OpenFileDialog();
-            if (defaultFile != "") f.InitialDirectory = Path.GetDirectoryName(defaultFile);
-            f.Title = "Open a Kindle book";
-            f.Filter = "Kindle Books (*.azw3, *.mobi)|*.azw3; *.mobi";
-            f.RestoreDirectory = true;
-            if (f.ShowDialog() == DialogResult.OK)
-                return f.FileName;
-            else
-                return defaultFile;
         }
 
         // TODO: Clean this up more cause it still sucks
@@ -153,25 +102,13 @@ namespace XRayBuilderGUI
             return newBitmap;
         }
 
-        public static string GetBookOutputDirectory(string author, string title)
+        public static string GetBookOutputDirectory(string author, string title, bool create)
         {
             var newAuthor = RemoveInvalidFileChars(author);
             var newTitle = RemoveInvalidFileChars(title);
             var path = Path.Combine(Properties.Settings.Default.outDir, $"{newAuthor}\\{newTitle}");
-            if (!author.Equals(newAuthor) || !title.Equals(newTitle))
-                MessageBox.Show("The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.", "Invalid Characters");
-            Directory.CreateDirectory(path);
-            return path;
-        }
-
-        public static string GetBookOutputDirectoryOnly(string author, string title)
-        {
-            var newAuthor = RemoveInvalidFileChars(author);
-            var newTitle = RemoveInvalidFileChars(title);
-            var path = Path.Combine(Properties.Settings.Default.outDir, $"{newAuthor}\\{newTitle}");
-            if (!author.Equals(newAuthor) || !title.Equals(newTitle))
-                MessageBox.Show("The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.", "Invalid Characters");
-            //Directory.CreateDirectory(path);
+            if (create)
+                Directory.CreateDirectory(path);
             return path;
         }
 

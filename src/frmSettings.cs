@@ -175,12 +175,12 @@ namespace XRayBuilderGUI
 
         private void btnBrowseUnpack_Click(object sender, EventArgs e)
         {
-            txtUnpack.Text = Functions.GetExe(txtUnpack.Text);
+            txtUnpack.Text = UIFunctions.GetExe(txtUnpack.Text);
         }
 
         private void btnBrowseOut_Click(object sender, EventArgs e)
         {
-            txtOut.Text = Functions.GetDir(txtOut.Text);
+            txtOut.Text = UIFunctions.GetDir(txtOut.Text);
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -355,7 +355,7 @@ namespace XRayBuilderGUI
 
         private void btnBrowseTemp_Click(object sender, EventArgs e)
         {
-            txtOut.Text = Functions.GetDir(txtTemp.Text);
+            txtOut.Text = UIFunctions.GetDir(txtTemp.Text);
         }
     }
 }

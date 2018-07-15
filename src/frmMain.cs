@@ -79,7 +79,7 @@ namespace XRayBuilderGUI
         private void btnBrowseMobi_Click(object sender, EventArgs e)
         {
             txtMobi.Text = "";
-            txtMobi.Text = Functions.GetBook(txtMobi.Text);
+            txtMobi.Text = UIFunctions.GetBook(txtMobi.Text);
         }
 
         private void btnBrowseOutput_Click(object sender, EventArgs e)
@@ -92,7 +92,7 @@ namespace XRayBuilderGUI
 
         private void btnBrowseXML_Click(object sender, EventArgs e)
         {
-            txtXMLFile.Text = Functions.GetFile(txtXMLFile.Text, "XML files (*.xml)|*.xml|TXT files (*.txt)|*.txt");
+            txtXMLFile.Text = UIFunctions.GetFile(txtXMLFile.Text, "XML files (*.xml)|*.xml|TXT files (*.txt)|*.txt");
         }
 
         private async void btnBuild_Click(object sender, EventArgs e)

@@ -59,20 +59,6 @@ namespace XRayBuilderGUI
                          "Please review the settings page if you want to overwite any existing files.");
                 return false;
             }
-            
-            //Process GUID. If in decimal form, convert to hex.
-            if (Regex.IsMatch(_curBook.guid, "/[a-zA-Z]/"))
-                _curBook.guid = _curBook.guid.ToUpper();
-            else
-            {
-                long.TryParse(_curBook.guid, out var guidDec);
-                _curBook.guid = guidDec.ToString("X");
-            }
-            if (_curBook.guid == "0")
-            {
-                Logger.Log("An error occurred while converting the GUID.");
-                return false;
-            }
 
             DataSources.AuthorSearchResults searchResults = null;
             // Attempt to download from the alternate site, if present. If it fails in some way, try .com

@@ -134,22 +134,9 @@ namespace XRayBuilderGUI
             skipShelfari = true;
         }
 
-        private string Guid
+        public string Guid
         {
-            set
-            {
-                //Process GUID. If in decimal form, convert to hex.
-                if (Regex.IsMatch(value, "/[a-zA-Z]/", RegexOptions.Compiled))
-                    _guid = value.ToUpper();
-                else
-                {
-                    long.TryParse(value, out var guidDec);
-                    _guid = guidDec.ToString("X");
-                }
-
-                if (_guid == "0")
-                    throw new ArgumentException("An error occurred while converting the GUID.");
-            }
+            set => Functions.ConvertGuid(value);
             get => _guid;
         }
 

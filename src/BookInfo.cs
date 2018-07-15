@@ -13,7 +13,7 @@ namespace XRayBuilderGUI
         public string title;
         public string author;
         public string asin;
-        public string guid;
+        private string _guid;
         public string databasename;
         public string path;
         public string sidecarName;
@@ -44,12 +44,18 @@ namespace XRayBuilderGUI
         // List of clips and their highlight/like count
         public List<NotableClip> notableClips;
 
+        public string Guid
+        {
+            set => Functions.ConvertGuid(value);
+            get => _guid;
+        }
+
         public BookInfo(string title, string author, string asin, string guid, string databasename, string path, string sidecarName, string dataUrl, string rawmlPath)
         {
             this.title = title;
             this.author = author;
             this.asin = asin;
-            this.guid = guid;
+            _guid = guid;
             this.databasename = databasename;
             this.path = path;
             this.sidecarName = sidecarName;

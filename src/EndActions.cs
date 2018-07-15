@@ -227,7 +227,7 @@ namespace XRayBuilderGUI
             writer.WriteProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"");
             writer.WriteStartElement("endaction");
             writer.WriteAttributeString("version", "0");
-            writer.WriteAttributeString("guid", curBook.databasename + ":" + curBook.guid);
+            writer.WriteAttributeString("guid", $"{curBook.databasename}:{curBook.Guid}");
             writer.WriteAttributeString("key", curBook.asin);
             writer.WriteAttributeString("type", "EBOK");
             writer.WriteAttributeString("timestamp", dt + tz);
@@ -319,7 +319,7 @@ namespace XRayBuilderGUI
             
             // Build bookInfo object
             TimeSpan timestamp = DateTime.Now - new DateTime(1970, 1, 1);
-            bookInfoTemplate = String.Format(bookInfoTemplate, curBook.asin, Math.Round(timestamp.TotalMilliseconds), curBook.bookImageUrl, curBook.databasename, curBook.guid, _erl);
+            bookInfoTemplate = String.Format(bookInfoTemplate, curBook.asin, Math.Round(timestamp.TotalMilliseconds), curBook.bookImageUrl, curBook.databasename, curBook.Guid, _erl);
             double dateMs = Math.Round(timestamp.TotalMilliseconds);
             string ratingText = Math.Floor(curBook.amazonRating).ToString();
 

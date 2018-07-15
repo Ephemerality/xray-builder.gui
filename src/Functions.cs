@@ -526,6 +526,25 @@ namespace XRayBuilderGUI
             return true;
         }
 
+        /// <summary>
+        /// Process GUID. If in decimal form, convert to hex.
+        /// </summary>
+        public static string ConvertGuid(string guid)
+        {
+            if (Regex.IsMatch(guid, "/[a-zA-Z]/", RegexOptions.Compiled))
+                guid = guid.ToUpper();
+            else
+            {
+                long.TryParse(guid, out var guidDec);
+                guid = guidDec.ToString("X");
+            }
+
+            if (guid == "0")
+                throw new ArgumentException("An error occurred while converting the GUID.");
+
+            return guid;
+        }
+
         public static void SetPropertyThreadSafe(this Control ctrl, string name, object value)
         {
             if (ctrl.InvokeRequired)

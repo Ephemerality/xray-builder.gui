@@ -257,7 +257,7 @@ namespace XRayBuilderGUI
             {
                 try
                 {
-                    await xray.SaveToFileNew(newPath, _progress, cancelTokens.Token).ConfigureAwait(false);
+                    xray.SaveToFileNew(newPath, _progress, cancelTokens.Token);
                 }
                 catch (Exception ex)
                 {

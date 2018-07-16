@@ -718,6 +718,7 @@ namespace XRayBuilderGUI
             }
         }
 
+        // TODO: Make async
         public int PopulateDb(SQLiteConnection db, ProgressBarCtrl progress, CancellationToken token)
         {
             StringBuilder sql = new StringBuilder(Terms.Count * 256);
@@ -1228,7 +1229,7 @@ namespace XRayBuilderGUI
             }
         }
 
-        public async Task SaveToFileNew(string path, ProgressBarCtrl progress, CancellationToken token)
+        public void SaveToFileNew(string path, ProgressBarCtrl progress, CancellationToken token)
         {
             SQLiteConnection.CreateFile(path);
             using (SQLiteConnection m_dbConnection = new SQLiteConnection($"Data Source={path};Version=3;"))
@@ -1256,10 +1257,7 @@ namespace XRayBuilderGUI
                 Logger.Log("Done building initial database. Populating with info from source X-Ray...");
                 try
                 {
-                    await Task.Run(() =>
-                    {
-                        PopulateDb(m_dbConnection, progress, token);
-                    }, token).ConfigureAwait(false);
+                    PopulateDb(m_dbConnection, progress, token);
                 }
                 catch (Exception ex)
                 {

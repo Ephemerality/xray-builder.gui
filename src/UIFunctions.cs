@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -41,6 +42,25 @@ namespace XRayBuilderGUI
         {
             char[] fileChars = Path.GetInvalidFileNameChars();
             return new string(filename.Where(x => !fileChars.Contains(x)).ToArray());
+        }
+    }
+
+    // ReSharper disable once InconsistentNaming
+    public static class UIExtensionMethods
+    {
+        public static void SetPropertyThreadSafe(this Control ctrl, string name, object value)
+        {
+            if (ctrl.InvokeRequired)
+                ctrl.BeginInvoke(new Action(() => SetPropertyThreadSafe(ctrl, name, value)));
+            else
+                ctrl.GetType().InvokeMember(name, System.Reflection.BindingFlags.SetProperty, null, ctrl, new[] { value });
+        }
+
+        public static object GetPropertyTS(this Control ctrl, string name)
+        {
+            return ctrl.InvokeRequired
+                ? ctrl.Invoke(new Func<object>(() => ctrl.GetPropertyTS(name)))
+                : ctrl.GetType().InvokeMember(name, System.Reflection.BindingFlags.GetProperty, null, ctrl, null);
         }
     }
 }

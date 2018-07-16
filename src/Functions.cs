@@ -406,7 +406,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error trying to launch notepad: " + ex.Message + "\r\n" + ex.StackTrace);
+                throw new Exception("Error trying to launch notepad.", ex);
             }
         }
 
@@ -440,24 +440,20 @@ namespace XRayBuilderGUI
         {
             var itemList = new List<T>();
 
-            if (File.Exists(filePath))
+            if (!File.Exists(filePath)) return itemList;
+
+            var serializer = new XmlSerializer(typeof(List<T>));
+            TextReader reader = new StreamReader(filePath, Encoding.UTF8);
+            try
             {
-                var serializer = new XmlSerializer(typeof(List<T>));
-                TextReader reader = new StreamReader(filePath, Encoding.UTF8);
-                try
-                {
-                    itemList = (List<T>)serializer.Deserialize(reader);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(
-                        "Error processing XML file: " + ex.Message +
-                        "\r\nIf the error contains a (#, #), the first number is the line the error occurred on.",
-                        "XML Error");
-                    return null;
-                }
-                reader.Close();
+                itemList = (List<T>)serializer.Deserialize(reader);
             }
+            catch (Exception ex)
+            {
+                throw new InvalidDataException($"Error processing XML file: {ex.Message}"
+                                               + "\r\nIf the error contains a (#, #), the first number is the line the error occurred on.", ex);
+            }
+            reader.Close();
 
             return itemList;
         }
@@ -543,21 +539,6 @@ namespace XRayBuilderGUI
                 throw new ArgumentException("An error occurred while converting the GUID.");
 
             return guid;
-        }
-
-        public static void SetPropertyThreadSafe(this Control ctrl, string name, object value)
-        {
-            if (ctrl.InvokeRequired)
-                ctrl.BeginInvoke(new Action(() => SetPropertyThreadSafe(ctrl, name, value)));
-            else
-                ctrl.GetType().InvokeMember(name, System.Reflection.BindingFlags.SetProperty, null, ctrl, new [] { value });
-        }
-
-        public static object GetPropertyTS(this Control ctrl, string name)
-        {
-            return ctrl.InvokeRequired
-                ? ctrl.Invoke(new Func<object>(() => ctrl.GetPropertyTS(name)))
-                : ctrl.GetType().InvokeMember(name, System.Reflection.BindingFlags.GetProperty, null, ctrl, null);
         }
     }
 

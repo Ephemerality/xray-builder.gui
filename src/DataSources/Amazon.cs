@@ -46,9 +46,11 @@ namespace XRayBuilderGUI.DataSources
             }
 
             // Check for captcha
+            // TODO: Try to prompt for captcha and have user complete it to continue
             if (results.authorHtmlDoc.DocumentNode.InnerText.Contains("Robot Check"))
             {
-                Logger.Log($"Warning: Amazon.{TLD} is requesting a captcha. Please try another region, or try again later.");
+                Logger.Log($"Warning: Amazon.{TLD} is requesting a captcha."
+                    + $"You can try visiting Amazon.{TLD} in a real browser first, try another region, or try again later.");
             }
             // Try to find Author's page from Amazon search
             HtmlNode node = results.authorHtmlDoc.DocumentNode.SelectSingleNode("//*[@id='result_1']");

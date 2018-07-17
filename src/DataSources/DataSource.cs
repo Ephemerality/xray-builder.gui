@@ -12,9 +12,9 @@ namespace XRayBuilderGUI.DataSources
         public abstract Task<List<BookInfo>> SearchBook(string author, string title);
         public abstract Task<BookInfo> GetNextInSeries(BookInfo curBook, AuthorProfile authorProfile, string TLD);
         public virtual Task<bool> GetPageCount(BookInfo curBook) { return Task.FromResult(false); }
-        public virtual Task GetExtras(BookInfo curBook, CancellationToken token, ProgressBarCtrl progress = null) { return Task.FromResult(false); }
-        public virtual Task<List<XRay.Term>> GetTerms(string dataUrl, ProgressBarCtrl progress, CancellationToken token) { return Task.FromResult(new List<XRay.Term>()); }
-        public virtual Task<List<NotableClip>> GetNotableClips(string url, CancellationToken token, HtmlDocument srcDoc = null, ProgressBarCtrl progress = null) { return Task.FromResult(new List<NotableClip>()); }
+        public virtual Task GetExtras(BookInfo curBook, CancellationToken token, IProgressBar progress = null) { return Task.FromResult(false); }
+        public virtual Task<List<XRay.Term>> GetTerms(string dataUrl, IProgressBar progress, CancellationToken token) { return Task.FromResult(new List<XRay.Term>()); }
+        public virtual Task<List<NotableClip>> GetNotableClips(string url, CancellationToken token, HtmlDocument srcDoc = null, IProgressBar progress = null) { return Task.FromResult(new List<NotableClip>()); }
     }
 
     public class NotableClip

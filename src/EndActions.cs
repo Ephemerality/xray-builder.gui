@@ -9,7 +9,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-
 using HtmlAgilityPack;
 using XRayBuilderGUI.DataSources;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
@@ -272,7 +271,7 @@ namespace XRayBuilderGUI
             Logger.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
         }
 
-        public async Task GenerateNewFormatData(ProgressBarCtrl progress, CancellationToken token)
+        public async Task GenerateNewFormatData(IProgressBar progress, CancellationToken token)
         {
             try
             {
@@ -306,7 +305,7 @@ namespace XRayBuilderGUI
             }
         }
 
-        public async Task GenerateEndActions(ProgressBarCtrl progress, CancellationToken token)
+        public async Task GenerateEndActions(IProgressBar progress, CancellationToken token)
         {
             string[] templates = GetBaseTemplates(Environment.CurrentDirectory + @"\dist\BaseEndActions.txt", 3);
             if (templates == null) return;

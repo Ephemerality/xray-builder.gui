@@ -333,7 +333,7 @@ namespace XRayBuilderGUI.DataSources
             return false;
         }
 
-        public override async Task<List<XRay.Term>> GetTerms(string dataUrl, ProgressBarCtrl progress, CancellationToken token)
+        public override async Task<List<XRay.Term>> GetTerms(string dataUrl, IProgressBar progress, CancellationToken token)
         {
             if (sourceHtmlDoc == null)
             {
@@ -402,7 +402,7 @@ namespace XRayBuilderGUI.DataSources
         /// <summary>
         /// Gather the list of quotes & number of times they've been liked -- close enough to "x paragraphs have been highlighted y times" from Amazon
         /// </summary>
-        public override async Task<List<NotableClip>> GetNotableClips(string url, CancellationToken token, HtmlDocument srcDoc = null, ProgressBarCtrl progress = null)
+        public override async Task<List<NotableClip>> GetNotableClips(string url, CancellationToken token, HtmlDocument srcDoc = null, IProgressBar progress = null)
         {
             if (srcDoc == null)
             {
@@ -458,7 +458,7 @@ namespace XRayBuilderGUI.DataSources
         /// Scrape any notable quotes from Goodreads and grab ratings if missing from book info
         /// Modifies curBook.
         /// </summary>
-        public override async Task GetExtras(BookInfo curBook, CancellationToken token, ProgressBarCtrl progress = null)
+        public override async Task GetExtras(BookInfo curBook, CancellationToken token, IProgressBar progress = null)
         {
             if (sourceHtmlDoc == null)
             {

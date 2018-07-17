@@ -44,7 +44,7 @@ namespace XRayBuilderGUI
 
         DataSource dataSource;
 
-        private readonly ProgressBarCtrl _progress;
+        private readonly IProgressBar _progress;
 
         CancellationTokenSource cancelTokens = new CancellationTokenSource();
 

@@ -140,7 +140,7 @@ namespace XRayBuilderGUI
             get => _guid;
         }
 
-        public async Task<int> SaveXml(string outfile, ProgressBarCtrl progress, CancellationToken token)
+        public async Task<int> SaveXml(string outfile, IProgressBar progress, CancellationToken token)
         {
             try
             {
@@ -193,7 +193,7 @@ namespace XRayBuilderGUI
             android ? $"XRAY.{asin}.{databaseName}_{Guid}.db" : $"XRAY.entities.{asin}.asc";
 
         // TODO: Completely remove the need to pass in a message box handler
-        public async Task<int> CreateXray(SafeShowDelegate safeShow, ProgressBarCtrl progress, CancellationToken token)
+        public async Task<int> CreateXray(SafeShowDelegate safeShow, IProgressBar progress, CancellationToken token)
         {
             //Download Shelfari info if not skipping
             if (skipShelfari)
@@ -315,7 +315,7 @@ namespace XRayBuilderGUI
             return 0;
         }
 
-        public int ExpandFromRawMl(string rawMl, SafeShowDelegate safeShow, ProgressBarCtrl progress, CancellationToken token, bool ignoreSoftHypen = false, bool shortEx = true)
+        public int ExpandFromRawMl(string rawMl, SafeShowDelegate safeShow, IProgressBar progress, CancellationToken token, bool ignoreSoftHypen = false, bool shortEx = true)
         {
             // If there is an apostrophe, attempt to match 's at the end of the term
             // Match end of word, then search for any lingering punctuation
@@ -719,7 +719,7 @@ namespace XRayBuilderGUI
         }
 
         // TODO: Make async
-        public int PopulateDb(SQLiteConnection db, ProgressBarCtrl progress, CancellationToken token)
+        public int PopulateDb(SQLiteConnection db, IProgressBar progress, CancellationToken token)
         {
             StringBuilder sql = new StringBuilder(Terms.Count * 256);
             int personCount = 0;
@@ -1229,7 +1229,7 @@ namespace XRayBuilderGUI
             }
         }
 
-        public void SaveToFileNew(string path, ProgressBarCtrl progress, CancellationToken token)
+        public void SaveToFileNew(string path, IProgressBar progress, CancellationToken token)
         {
             SQLiteConnection.CreateFile(path);
             using (SQLiteConnection m_dbConnection = new SQLiteConnection($"Data Source={path};Version=3;"))

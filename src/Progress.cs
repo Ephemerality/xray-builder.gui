@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace XRayBuilderGUI
 {
-    public class ProgressBarCtrl
+    public class ProgressBarCtrl : IProgressBar
     {
         private readonly ProgressBar _prgBar;
         private readonly object _semaphore = new object();

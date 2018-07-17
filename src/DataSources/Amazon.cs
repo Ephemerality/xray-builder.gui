@@ -15,6 +15,8 @@ namespace XRayBuilderGUI.DataSources
 
     public static class Amazon
     {
+        public static bool IsAsin(string asin) => Regex.IsMatch(asin, "^B[A-Z0-9]{9}$");
+
         public static async Task<AuthorSearchResults> SearchAuthor(BookInfo curBook, string TLD)
         {
             AuthorSearchResults results = new AuthorSearchResults();

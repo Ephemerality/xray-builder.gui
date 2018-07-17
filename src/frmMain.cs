@@ -175,7 +175,7 @@ namespace XRayBuilderGUI
                 Logger.Log("Extracting metadata...");
                 try
                 {
-                    results = await Task.Run(() => Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, true, randomFile).getResults());
+                    results = (await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, settings.outDir, true, randomFile))).getResults();
                 }
                 catch (Exception ex)
                 {
@@ -385,7 +385,7 @@ namespace XRayBuilderGUI
                 try
                 {
                     //Same results with addition of rawML filename
-                    results = await Task.Run(() => Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, true, randomFile).getResults());
+                    results = (await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, settings.outDir, true, randomFile))).getResults();
                     rawMLSize = new FileInfo(results[3]).Length;
                 }
                 catch (Exception ex)
@@ -559,7 +559,7 @@ namespace XRayBuilderGUI
                 Logger.Log("Extracting metadata...");
                 try
                 {
-                    results = await Task.Run(() => Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, false).getResults());
+                    results = (await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, settings.outDir, false))).getResults();
                 }
                 catch (Exception ex)
                 {
@@ -795,11 +795,9 @@ namespace XRayBuilderGUI
             {
                 try
                 {
-                    using (Unpack.Metadata md = await Task.Run(() => Functions.GetMetaDataInternal(txtMobi.Text, settings.outDir, false)))
-                    {
-                        results = md.getResults();
-                        pbCover.Image = (Image)md.coverImage?.Clone();
-                    }
+                    var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, settings.outDir, false));
+                    results = metadata.getResults();
+                    pbCover.Image = (Image)metadata.coverImage?.Clone();
                 }
                 catch (Exception ex)
                 {

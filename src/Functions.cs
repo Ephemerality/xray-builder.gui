@@ -147,48 +147,12 @@ namespace XRayBuilderGUI
         //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
         public static Metadata GetMetaDataInternal(string mobiFile, string outDir, bool saveRawML, string randomFile = "")
         {
-            FileStream fs = new FileStream(mobiFile, FileMode.Open, FileAccess.Read);
-            if (fs == null)
-                throw new Exception("Unable to open mobi file.");
-            Metadata md = new Metadata(fs);
-            try
+            using (var fs = new FileStream(mobiFile, FileMode.Open, FileAccess.Read))
             {
+                Metadata md = new Metadata(fs);
                 if (md.mobiHeader.exthHeader == null)
-                    throw new Exception("No EXT Header found. Ensure this book was processed with Calibre then try again.");
-
-                if (md.mobiHeader.exthHeader.CDEType != "EBOK")
-                    if (md.mobiHeader.exthHeader.CDEType.Length == 4 &&
-                        DialogResult.Yes == MessageBox.Show("The document type is not set to EBOK. Would you like this to be updated?\r\n" +
-                            "Caution: This feature is experimental and could potentially ruin your book file.", "Incorrect Content Type", MessageBoxButtons.YesNo))
-                    {
-                        fs = new FileStream(mobiFile, FileMode.Open, FileAccess.ReadWrite);
-                        md.mobiHeader.exthHeader.UpdateCDEContentType(fs);
-                    }
-                    else
-                    {
-                        throw new Exception("The document type is not set to EBOK; Kindle will not display an X-Ray for this book.\r\n" +
-                            "You must either use Calibre's convert feature (Personal Doc tag under MOBI Output) or a MOBI editor (exth 501) to change this.");
-                    }
-
-                string ASIN = md.ASIN;
-                Match match = Regex.Match(ASIN, "(^B[A-Z0-9]{9})");
-                if (!match.Success && DialogResult.No == MessageBox.Show($"Incorrect ASIN detected: {ASIN}!\n" +
-                                          "Kindle may not display an X-Ray for this book.\n" +
-                                          "Do you wish to continue?", "Incorrect ASIN", MessageBoxButtons.YesNo))
-                {
-                    throw new Exception($"Incorrect ASIN detected: {ASIN}!\r\n" +
-                                      "Kindle may not display an X-Ray for this book.\r\n" +
-                                      "You must either use Calibre's Quality Check plugin (Fix ASIN for Kindle Fire) " +
-                                      "or a MOBI editor (exth 113 and optionally 504) to change this.");
-                }
-
-                if (!Properties.Settings.Default.useNewVersion && md.DBName.Length == 31)
-                {
-                    MessageBox.Show(
-                        $"WARNING: Database Name is the maximum length. If \"{md.DBName}\" is the full book title, this should not be an issue.\r\n" +
-                        "If the title is supposed to be longer than that, you may get an error on your Kindle (WG on firmware < 5.6).\r\n" +
-                        "This can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n");
-                }
+                    throw new Exception(
+                        "No EXT Header found. Ensure this book was processed with Calibre then try again.");
 
                 if (saveRawML)
                 {
@@ -200,12 +164,8 @@ namespace XRayBuilderGUI
                         rawMLFile.Write(rawML, 0, rawML.Length);
                     }
                 }
+                return md;
             }
-            finally
-            {
-                fs.Dispose();
-            }
-            return md;
         }
 
 
@@ -218,7 +178,7 @@ namespace XRayBuilderGUI
                 output = "Error: RawML could not be found, aborting.\r\nPath: " + rawML;
                 return output;
             }
-            HtmlAgilityPack.HtmlDocument bookDoc = new HtmlAgilityPack.HtmlDocument { OptionAutoCloseOnEnd = true };
+            HtmlDocument bookDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
             bookDoc.Load(rawML, Encoding.UTF8);
             var booklineNodes = bookDoc.DocumentNode.SelectNodes("//p") ?? bookDoc.DocumentNode.SelectNodes("//div");
             if (booklineNodes == null)
@@ -315,20 +275,7 @@ namespace XRayBuilderGUI
             if (match.Success && match.Groups.Count > 1)
             {
                 var incorrectAsin = match.Groups[1].Value.Replace("\r", "");
-                //Improve actual Amazon ASIN matching
-                match = Regex.Match(match.Groups[1].Value, "(^B[A-Z0-9]{9})");
-                if (!match.Success)
-                {
-                    if (DialogResult.No == MessageBox.Show($"Incorrect ASIN detected: {incorrectAsin}!\n" +
-                                      "Kindle may not display an X-Ray for this book.\n" +
-                                      "Do you wish to continue?", "Incorrect ASIN", MessageBoxButtons.YesNo))
-                    {
-                        throw new Exception($"Incorrect ASIN detected: {incorrectAsin}!\r\n" +
-                                          "Kindle may not display an X-Ray for this book.\r\n" +
-                                          "You must either use Calibre's Quality Check plugin (Fix ASIN for Kindle Fire) " +
-                                          "or a Mobi editor (exth 113 and 504) to change this.");
-                    }
-                }
+                UIFunctions.IncorrectAsinPromptOrThrow(incorrectAsin);
                 asin = incorrectAsin;
             }
             match = Regex.Match(unpackInfo, @"(\d*) unique_id");
@@ -370,15 +317,7 @@ namespace XRayBuilderGUI
 
             if (databaseName == "" || uniqid == "" || asin == "")
                 throw new Exception($"Error: Missing metadata.\r\nDatabase Name: {databaseName}\r\nASIN: {asin}\r\nUniqueID: {uniqid}");
-
-            if (!Properties.Settings.Default.useNewVersion && databaseName.Length == 31)
-            {
-                MessageBox.Show(
-                    $"WARNING: Database Name is the maximum length. If \"{databaseName}\" is the full book title, this should not be an issue.\r\n" +
-                    "If the title is supposed to be longer than that, you may get an error WG on your Kindle.\r\n" +
-                    "This can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n");
-            }
-
+            
             output.Add(asin);
             output.Add(uniqid);
             output.Add(databaseName);

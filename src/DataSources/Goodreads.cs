@@ -108,9 +108,10 @@ namespace XRayBuilderGUI.DataSources
                 if (nextBook == null)
                 {
                     // Attempt to search Amazon for the book instead
+                    // TODO: This should be elsewhere
                     try
                     {
-                        if (book.asin != null)
+                        if (!string.IsNullOrEmpty(book.asin))
                         {
                             nextBook = book;
                             await nextBook.GetAmazonInfo($"https://www.amazon.{TLD}/dp/{book.asin}").ConfigureAwait(false);

@@ -183,7 +183,9 @@ namespace XRayBuilderGUI
                                 continue;
                             otherBook =
                                 result.SelectSingleNode(
-                                    ".//div[@class='a-row a-size-small']");
+                                    ".//a[@class='a-size-small a-link-child']")
+                                ?? throw new Exception("Amazon format changed)");
+                            // TODO: Throw more format changed exceptions to make it obvious that the site changed
                             var sponsAuthor = otherBook.InnerText.Trim();
                             possibleBooks.Add(new BookInfo(sponsTitle, sponsAuthor, sponsAsin));
                         }

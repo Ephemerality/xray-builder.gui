@@ -99,7 +99,7 @@ namespace XRayBuilderGUI
             {
                 string filetype = Path.GetExtension(openFile.FileName);
                 string file = openFile.FileName;
-                Match match = Regex.Match(file, "(B[A-Z0-9]{9})");
+                Match match = Regex.Match(file, "(B[A-Z0-9]{9})", RegexOptions.Compiled);
                 if (match.Success)
                     txtAsin.Text = match.Value;
                 string aliasFile = Environment.CurrentDirectory + @"\ext\" + txtAsin.Text + ".aliases";
@@ -215,13 +215,10 @@ namespace XRayBuilderGUI
 
         private void dgvTerms_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (e.RowIndex != -1 && e.ColumnIndex != -1)
+            if (e.RowIndex != -1 && e.ColumnIndex != -1 && e.Button == MouseButtons.Right)
             {
-                if (e.Button == MouseButtons.Right)
-                {
-                    Point relativeMousePosition = dgvTerms.PointToClient(Cursor.Position);
-                    cmsTerms.Show(dgvTerms, relativeMousePosition);
-                }
+                Point relativeMousePosition = dgvTerms.PointToClient(Cursor.Position);
+                cmsTerms.Show(dgvTerms, relativeMousePosition);
             }
         }
 
@@ -235,11 +232,8 @@ namespace XRayBuilderGUI
             //txtAuthor.Text = "";
             //txtTitle.Text = "";
             //txtAsin.Text = "";
-            dgvTerms.Columns[5].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dgvTerms.Columns[6].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dgvTerms.Columns[7].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dgvTerms.Columns[8].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dgvTerms.Columns[9].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            for (var i = 5; i <= 9; i++)
+                dgvTerms.Columns[i].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
             toolTip1.SetToolTip(btnAddTerm, "Add this character or\r\ntopic to the term list.");
             toolTip1.SetToolTip(btnLink, "Open this link in your\r\ndefault browser.");
             toolTip1.SetToolTip(btnEditTerm, "Edit the selected term. It will be\r\nremoved from the list and used to fill\r\nin the information above. Don't\r\nforget to add to the list when done.");

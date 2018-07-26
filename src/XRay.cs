@@ -241,40 +241,23 @@ namespace XRayBuilderGUI
                 }
             }
 
-            //Export list of Shelfari characters to a file to make it easier to create aliases or import the modified aliases if they exist
+        public void ExportAndDisplayTerms()
+        {
+            //Export available terms to a file to make it easier to create aliases or import the modified aliases if they exist
             //Could potentially just attempt to automate the creation of aliases, but in some cases it is very subjective...
             //For example, Shelfari shows the character "Artemis Fowl II", but in the book he is either referred to as "Artemis Fowl", "Artemis", or even "Arty"
             //Other characters have one name on Shelfari but can have completely different names within the book
-            string aliasFile;
-            if (aliaspath == "")
-                aliasFile = Environment.CurrentDirectory + @"\ext\" + asin + ".aliases";
-            else
-                aliasFile = aliaspath;
             bool aliasesDownloaded = false;
-            if ((!File.Exists(aliasFile) || Properties.Settings.Default.overwriteAliases) && Properties.Settings.Default.downloadAliases)
-            {
-                try
-                {
-                    string aliases = await HttpDownloader.GetPageHtmlAsync("https://www.revensoftware.com/xray/aliases/" + asin);
-                    StreamWriter fs = new StreamWriter(aliasFile, false, Encoding.UTF8);
-                    fs.Write(aliases);
-                    fs.Close();
-                    Logger.Log("Found and downloaded pre-made aliases file.");
-                    aliasesDownloaded = true;
-                }
-                catch (Exception ex)
-                {
-                    if (!ex.Message.Contains("(404) Not Found"))
-                        Logger.Log("No pre-made aliases available for this book.");
-                    else
-                        Logger.Log("An error occurred downloading aliases: " + ex.Message + "\r\n" + ex.StackTrace);
-                }
-            }
+            // TODO: Review this download process
+            //if ((!File.Exists(AliasPath) || Properties.Settings.Default.overwriteAliases) && Properties.Settings.Default.downloadAliases)
+            //{
+            //    aliasesDownloaded = await AttemptAliasDownload();
+            //}
 
-            if (!aliasesDownloaded && (!File.Exists(aliasFile) || Properties.Settings.Default.overwriteAliases))
+            if (!aliasesDownloaded && (!File.Exists(AliasPath) || Properties.Settings.Default.overwriteAliases))
             {
-                SaveCharacters(aliasFile);
-                Logger.Log($"Characters exported to {aliasFile} for adding aliases.");
+                SaveCharacters(AliasPath);
+                Logger.Log($"Characters exported to {AliasPath} for adding aliases.");
             }
 
             if (skipShelfari)
@@ -289,31 +272,29 @@ namespace XRayBuilderGUI
                 t.Id = termId++;
             }
             Logger.Log(str.ToString());
-
-            if (!unattended && enableEdit)
-            {
-                if (DialogResult.Yes ==
-                    safeShow(
-                        "Terms have been exported to an alias file or already exist in that file. Would you like to open the file in notepad for editing?\r\n"
-                        + "See the MobileRead forum thread (link in Settings) for more information on building aliases.",
-                        "Aliases",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question,
-                        MessageBoxDefaultButton.Button2))
-                {
-                    Functions.RunNotepad(aliasFile);
-                }
-            }
-            //Load the aliases now that we know they exist
-            if (!File.Exists(aliasFile))
-                Logger.Log("Aliases file not found.");
-            else
-            {
-                LoadAliases(aliasFile);
-                Logger.Log("Character aliases read from " + aliasFile + ".");
-            }
-            return 0;
         }
+
+        //public async Task<bool> AttemptAliasDownload()
+        //{
+        //    try
+        //    {
+        //        string aliases = await HttpDownloader.GetPageHtmlAsync("https://www.revensoftware.com/xray/aliases/" + asin);
+        //        StreamWriter fs = new StreamWriter(AliasPath, false, Encoding.UTF8);
+        //        fs.Write(aliases);
+        //        fs.Close();
+        //        Logger.Log("Found and downloaded pre-made aliases file.");
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        if (!ex.Message.Contains("(404) Not Found"))
+        //            Logger.Log("No pre-made aliases available for this book.");
+        //        else
+        //            Logger.Log("An error occurred downloading aliases: " + ex.Message + "\r\n" + ex.StackTrace);
+        //    }
+
+        //    return false;
+        //}
 
         public int ExpandFromRawMl(string rawMl, SafeShowDelegate safeShow, IProgressBar progress, CancellationToken token, bool ignoreSoftHypen = false, bool shortEx = true)
         {

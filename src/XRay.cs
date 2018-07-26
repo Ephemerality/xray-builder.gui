@@ -34,6 +34,7 @@ using System.Xml.Serialization;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
 using XRayBuilderGUI.DataSources;
+using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI
 {
@@ -305,23 +306,8 @@ namespace XRayBuilderGUI
         //    return false;
         //}
 
-        public int ExpandFromRawMl(string rawMl, SafeShowDelegate safeShow, IProgressBar progress, CancellationToken token, bool ignoreSoftHypen = false, bool shortEx = true)
+        public void HandleChapters(long mlLen, HtmlDocument doc, string rawMl)
         {
-            // If there is an apostrophe, attempt to match 's at the end of the term
-            // Match end of word, then search for any lingering punctuation
-            string apostrophes = Encoding.Default.GetString(Encoding.UTF8.GetBytes("('|\u2019|\u0060|\u00B4)")); // '\u2019\u0060\u00B4
-            string quotes = Encoding.Default.GetString(Encoding.UTF8.GetBytes("(\"|\u2018|\u2019|\u201A|\u201B|\u201C|\u201D|\u201E|\u201F)"));
-            string dashesEllipsis = Encoding.Default.GetString(Encoding.UTF8.GetBytes("(-|\u2010|\u2011|\u2012|\u2013|\u2014|\u2015|\u2026|&#8211;|&#8212;|&#8217;|&#8218;|&#8230;)")); //U+2010 to U+2015 and U+2026
-            string punctuationMarks = String.Format(@"({0}s|{0})?{1}?[!\.?,""\);:]*{0}*{1}*{2}*", apostrophes, quotes, dashesEllipsis);
-
-            int excerptId = 0;
-            HtmlAgilityPack.HtmlDocument web = new HtmlAgilityPack.HtmlDocument();
-            string readContents;
-            using (StreamReader streamReader = new StreamReader(rawMl, Encoding.Default))
-            {
-                readContents = streamReader.ReadToEnd();
-            }
-            web.LoadHtml(readContents);
             //Similar to aliases, if chapters definition exists, load it. Otherwise, attempt to build it from the book
             string chapterFile = Environment.CurrentDirectory + @"\ext\" + asin + ".chapters";
             if (File.Exists(chapterFile) && !Properties.Settings.Default.overwriteChapters)
@@ -335,7 +321,7 @@ namespace XRayBuilderGUI
             {
                 try
                 {
-                    SearchChapters(web, readContents);
+                    SearchChapters(doc, rawMl);
                 }
                 catch (Exception ex)
                 {
@@ -368,10 +354,9 @@ namespace XRayBuilderGUI
             //Define srl and erl so "progress bar" shows up correctly
             if (_chapters.Count == 0)
             {
-                long len = (new FileInfo(rawMl)).Length;
-                _chapters.Add(new Chapter("", 1, len));
+                _chapters.Add(new Chapter("", 1, mlLen));
                 _srl = 1;
-                _erl = len;
+                _erl = mlLen;
             }
             else
             {
@@ -385,7 +370,28 @@ namespace XRayBuilderGUI
                     Logger.Log($"{c.name} | start: {c.start} | end: {c.End}");
                 }
             }
+        }
 
+        public int ExpandFromRawMl(string rawMl, SafeShowDelegate safeShow, IProgressBar progress, CancellationToken token, bool ignoreSoftHypen = false, bool shortEx = true)
+        {
+            // If there is an apostrophe, attempt to match 's at the end of the term
+            // Match end of word, then search for any lingering punctuation
+            string apostrophes = Encoding.Default.GetString(Encoding.UTF8.GetBytes("('|\u2019|\u0060|\u00B4)")); // '\u2019\u0060\u00B4
+            string quotes = Encoding.Default.GetString(Encoding.UTF8.GetBytes("(\"|\u2018|\u2019|\u201A|\u201B|\u201C|\u201D|\u201E|\u201F)"));
+            string dashesEllipsis = Encoding.Default.GetString(Encoding.UTF8.GetBytes("(-|\u2010|\u2011|\u2012|\u2013|\u2014|\u2015|\u2026|&#8211;|&#8212;|&#8217;|&#8218;|&#8230;)")); //U+2010 to U+2015 and U+2026
+            string punctuationMarks = String.Format(@"({0}s|{0})?{1}?[!\.?,""\);:]*{0}*{1}*{2}*", apostrophes, quotes, dashesEllipsis);
+
+            int excerptId = 0;
+            HtmlDocument web = new HtmlDocument();
+            string readContents;
+            using (StreamReader streamReader = new StreamReader(rawMl, Encoding.Default))
+            {
+                readContents = streamReader.ReadToEnd();
+            }
+            web.LoadHtml(readContents);
+
+            HandleChapters(new FileInfo(rawMl).Length, web, readContents);
+            
             Logger.Log("Scanning book content...");
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
             timer.Start();
@@ -621,11 +627,11 @@ namespace XRayBuilderGUI
         /// </summary>
         /// <param name="bookDoc">Book's HTML</param>
         /// <param name="rawML">Path to the book's rawML file</param>
-        private void SearchChapters(HtmlAgilityPack.HtmlDocument bookDoc, string rawML)
+        private void SearchChapters(HtmlDocument bookDoc, string rawML)
         {
             var leadingZerosRegex = new Regex(@"^0+(?=\d)", RegexOptions.Compiled);
             string tocHtml;
-            HtmlAgilityPack.HtmlDocument tocDoc = new HtmlAgilityPack.HtmlDocument();
+            HtmlDocument tocDoc = new HtmlDocument();
             HtmlNode toc = bookDoc.DocumentNode.SelectSingleNode(
                     "//reference[translate(@title,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='TABLE OF CONTENTS']");
             _chapters.Clear();
@@ -634,7 +640,7 @@ namespace XRayBuilderGUI
             {
                 int tocloc = Convert.ToInt32(leadingZerosRegex.Replace(toc.GetAttributeValue("filepos", ""), ""));
                 tocHtml = rawML.Substring(tocloc, rawML.IndexOf("<mbp:pagebreak/>", tocloc + 1, StringComparison.Ordinal) - tocloc);
-                tocDoc = new HtmlAgilityPack.HtmlDocument();
+                tocDoc = new HtmlDocument();
                 tocDoc.LoadHtml(tocHtml);
                 var tocNodes = tocDoc.DocumentNode.SelectNodes("//a");
                 foreach (HtmlNode chapter in tocNodes)

@@ -132,20 +132,14 @@ namespace XRayBuilderGUI
                         t.RegexAliases);
                 }
                 Terms.Clear();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-            }
-            try
-            {
+
                 if (!File.Exists(aliasFile)) return;
                 using (var streamReader = new StreamReader(aliasFile, Encoding.UTF8))
                 {
                     while (!streamReader.EndOfStream)
                     {
                         string input = streamReader.ReadLine();
-                        string[] temp = input.Split('|');
+                        string[] temp = input?.Split('|') ?? throw new IOException("Empty or invalid file.");
                         if (temp.Length <= 1 || temp[0] == "" || temp[0].Substring(0, 1) == "#") continue;
                         string temp2 = input.Substring(input.IndexOf('|') + 1);
                         if (!d.ContainsKey(temp[0]))

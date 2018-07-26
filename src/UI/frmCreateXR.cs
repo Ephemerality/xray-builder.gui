@@ -295,24 +295,13 @@ namespace XRayBuilderGUI
 
         private static bool CompareImages(Bitmap image1, Bitmap image2)
         {
-            if (image1.Width == image2.Width && image1.Height == image2.Height)
-            {
-                for (int i = 0; i < image1.Width; i++)
-                {
-                    for (int j = 0; j < image1.Height; j++)
-                    {
-                        if (image1.GetPixel(i, j) != image2.GetPixel(i, j))
-                        {
-                            return false;
-                        }
-                    }
-                }
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            if (image1.Width != image2.Width || image1.Height != image2.Height) return false;
+            for (int i = 0; i < image1.Width; i++)
+                for (int j = 0; j < image1.Height; j++)
+                    if (image1.GetPixel(i, j) != image2.GetPixel(i, j))
+                        return false;
+            return true;
+
         }
 
         private List<T> LoadTermsFromTxt<T>(string txtfile)

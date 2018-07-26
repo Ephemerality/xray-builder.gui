@@ -95,75 +95,73 @@ namespace XRayBuilderGUI
                 Filter = "XML files (*.xml)|*.xml|TXT files (*.txt)|*.txt",
                 InitialDirectory = Environment.CurrentDirectory + @"\xml\"
             };
-            if (openFile.ShowDialog() == DialogResult.OK)
+            if (openFile.ShowDialog() != DialogResult.OK) return;
+            string filetype = Path.GetExtension(openFile.FileName);
+            string file = openFile.FileName;
+            Match match = Regex.Match(file, "(B[A-Z0-9]{9})", RegexOptions.Compiled);
+            if (match.Success)
+                txtAsin.Text = match.Value;
+            string aliasFile = Environment.CurrentDirectory + @"\ext\" + txtAsin.Text + ".aliases";
+            var d = new Dictionary<string, string>();
+            dgvTerms.Rows.Clear();
+            txtName.Text = "";
+            txtAliases.Text = "";
+            txtDescription.Text = "";
+            txtLink.Text = "";
+            try
             {
-                string filetype = Path.GetExtension(openFile.FileName);
-                string file = openFile.FileName;
-                Match match = Regex.Match(file, "(B[A-Z0-9]{9})", RegexOptions.Compiled);
-                if (match.Success)
-                    txtAsin.Text = match.Value;
-                string aliasFile = Environment.CurrentDirectory + @"\ext\" + txtAsin.Text + ".aliases";
-                var d = new Dictionary<string, string>();
-                dgvTerms.Rows.Clear();
-                txtName.Text = "";
-                txtAliases.Text = "";
-                txtDescription.Text = "";
-                txtLink.Text = "";
-                try
+                if (filetype == ".xml")
+                    Terms = Functions.DeserializeList<XRay.Term>(file);
+                else if (filetype == ".txt")
+                    Terms = LoadTermsFromTxt<XRay.Term>(file);
+                else
+                    MessageBox.Show("Error: Bad file type \"" + filetype + "\"");
+                foreach (XRay.Term t in Terms)
                 {
-                    if (filetype == ".xml")
-                        Terms = Functions.DeserializeList<XRay.Term>(file);
-                    else if (filetype == ".txt")
-                        Terms = LoadTermsFromTxt<XRay.Term>(file);
-                    else
-                        MessageBox.Show("Error: Bad file type \"" + filetype + "\"");
-                    foreach (XRay.Term t in Terms)
-                    {
-                        Image typeImage = t.Type == "character" ? Resources.character : Resources.setting;
-                        dgvTerms.Rows.Add(
-                            typeImage,
-                            t.TermName,
-                            "",
-                            t.Desc,
-                            t.DescUrl,
-                            t.DescSrc,
-                            t.Match,
-                            t.MatchCase,
-                            false,
-                            t.RegexAliases);
-                    }
-                    Terms.Clear();
+                    Image typeImage = t.Type == "character" ? Resources.character : Resources.setting;
+                    dgvTerms.Rows.Add(
+                        typeImage,
+                        t.TermName,
+                        "",
+                        t.Desc,
+                        t.DescUrl,
+                        t.DescSrc,
+                        t.Match,
+                        t.MatchCase,
+                        false,
+                        t.RegexAliases);
                 }
-                catch (Exception ex)
+                Terms.Clear();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+            }
+            try
+            {
+                if (!File.Exists(aliasFile)) return;
+                using (var streamReader = new StreamReader(aliasFile, Encoding.UTF8))
                 {
-                    MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                }
-                try
-                {
-                    if (!File.Exists(aliasFile)) return;
-                    using (var streamReader = new StreamReader(aliasFile, Encoding.UTF8))
+                    while (!streamReader.EndOfStream)
                     {
-                        while (!streamReader.EndOfStream)
-                        {
-                            string input = streamReader.ReadLine();
-                            string[] temp = input.Split('|');
-                            if (temp.Length <= 1 || temp[0] == "" || temp[0].Substring(0, 1) == "#") continue;
-                            string temp2 = input.Substring(input.IndexOf('|') + 1);
-                            if (!d.ContainsKey(temp[0]))
-                                d.Add(temp[0], temp2);
-                        }
-                    }
-                    foreach (DataGridViewRow row in dgvTerms.Rows)
-                    {
-                        string name = row.Cells[1].Value.ToString();
-                        if (d.TryGetValue(name, out var aliases))
-                            row.Cells[2].Value = aliases;
+                        string input = streamReader.ReadLine();
+                        string[] temp = input.Split('|');
+                        if (temp.Length <= 1 || temp[0] == "" || temp[0].Substring(0, 1) == "#") continue;
+                        string temp2 = input.Substring(input.IndexOf('|') + 1);
+                        if (!d.ContainsKey(temp[0]))
+                            d.Add(temp[0], temp2);
                     }
                 }
-                catch (Exception ex)
+                foreach (DataGridViewRow row in dgvTerms.Rows)
                 {
-                    MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                    string name = row.Cells[1].Value.ToString();
+                    if (d.TryGetValue(name, out var aliases))
+                        row.Cells[2].Value = aliases;
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
             }
         }
 

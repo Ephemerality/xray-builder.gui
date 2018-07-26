@@ -213,11 +213,29 @@ namespace XRayBuilderGUI
                     xray = new XRay(txtXMLFile.Text, results[2], results[1], results[0], dataSource,
                         AZW3 ? settings.offsetAZW3 : settings.offset, "");
 
-                if (await Task.Run(() => xray.CreateXray(SafeShow, _progress, cancelTokens.Token)).ConfigureAwait(false) > 0)
+                await Task.Run(() => xray.CreateXray(_progress, cancelTokens.Token)).ConfigureAwait(false);
+
+                xray.ExportAndDisplayTerms();
+
+                if (settings.enableEdit && DialogResult.Yes ==
+                    MessageBox.Show(
+                        "Terms have been exported to an alias file or already exist in that file. Would you like to open the file in notepad for editing?\r\n"
+                        + "See the MobileRead forum thread (link in Settings) for more information on building aliases.",
+                        "Aliases",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question,
+                        MessageBoxDefaultButton.Button2))
                 {
-                    Logger.Log("Build canceled or error while processing.");
-                    return;
+                    Functions.RunNotepad(xray.AliasPath);
                 }
+                if (!File.Exists(xray.AliasPath))
+                    Logger.Log("Aliases file not found.");
+                else
+                {
+                    xray.LoadAliases();
+                    Logger.Log($"Character aliases read from {xray.AliasPath}.");
+                }
+
                 Logger.Log("Initial X-Ray built, adding locations and chapters...");
                 //Expand the X-Ray file from the unpacked mobi
                 if (await Task.Run(() => xray.ExpandFromRawMl(results[3], SafeShow, _progress, cancelTokens.Token, settings.ignoresofthyphen, !settings.useNewVersion)).ConfigureAwait(false) > 0)
@@ -225,6 +243,11 @@ namespace XRayBuilderGUI
                     Logger.Log("Build canceled or error occurred while processing locations and chapters.");
                     return;
                 }
+            }
+            catch (OperationCanceledException)
+            {
+                Logger.Log("Build canceled.");
+                return;
             }
             catch (Exception ex)
             {

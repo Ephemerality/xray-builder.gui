@@ -199,7 +199,7 @@ namespace XRayBuilderGUI
             android ? $"XRAY.{asin}.{databaseName}_{Guid}.db" : $"XRAY.entities.{asin}.asc";
 
         // TODO: Completely remove the need to pass in a message box handler
-        public async Task<int> CreateXray(SafeShowDelegate safeShow, IProgressBar progress, CancellationToken token)
+        public async Task<int> CreateXray(IProgressBar progress, CancellationToken token)
         {
             //Download Shelfari info if not skipping
             if (skipShelfari)
@@ -246,6 +246,9 @@ namespace XRayBuilderGUI
                     return 1;
                 }
             }
+            
+            return 0;
+        }
 
         public void ExportAndDisplayTerms()
         {

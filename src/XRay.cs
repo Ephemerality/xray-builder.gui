@@ -45,7 +45,7 @@ namespace XRayBuilderGUI
         private string _guid = "";
         private string asin = "";
         private string version = "1";
-        private string aliaspath = "";
+        private string _aliasPath;
         public List<Term> Terms = new List<Term>(100);
         private List<Chapter> _chapters = new List<Chapter>();
         private List<Excerpt> excerpts = new List<Excerpt>();
@@ -113,7 +113,7 @@ namespace XRayBuilderGUI
             Guid = guid;
             this.asin = asin;
             this.locOffset = locOffset;
-            this.aliaspath = aliaspath;
+            _aliasPath = aliaspath;
             this.unattended = unattended;
             this.dataSource = dataSource;
         }
@@ -128,10 +128,16 @@ namespace XRayBuilderGUI
             Guid = guid;
             this.asin = asin;
             this.locOffset = locOffset;
-            this.aliaspath = aliaspath;
+            _aliasPath = aliaspath;
             unattended = false;
             this.dataSource = dataSource;
             skipShelfari = true;
+        }
+
+        public string AliasPath
+        {
+            set => _aliasPath = value;
+            get => string.IsNullOrEmpty(_aliasPath) ? Environment.CurrentDirectory + @"\ext\" + asin + ".aliases" : _aliasPath;
         }
 
         public string Guid
@@ -1127,9 +1133,10 @@ namespace XRayBuilderGUI
             }
         }
 
-        public void LoadAliases(string aliasFile)
+        public void LoadAliases(string aliasFile = null)
         {
             var d = new Dictionary<string, string[]>();
+            aliasFile = aliasFile ?? AliasPath;
             if (!File.Exists(aliasFile)) return;
             using (var streamReader = new StreamReader(aliasFile, Encoding.UTF8))
             {

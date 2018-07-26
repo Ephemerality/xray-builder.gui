@@ -134,14 +134,13 @@ namespace XRayBuilderGUI
                 MessageBox.Show(@"Specified output directory does not exist.\r\nPlease review the settings page.", @"Output Directory Not found");
                 return;
             }
-            if (settings.realName.Trim().Length == 0
-                || settings.penName.Trim().Length == 0)
+            if (settings.realName.Trim().Length == 0 || settings.penName.Trim().Length == 0)
             {
                 MessageBox.Show(
                     @"Both Real and Pen names are required for End Action\r\n" +
                     @"file creation. This information allows you to rate this\r\n" +
-                    @"book on Amazon. Please review the settings page.",
-                    @"Amazon Customer Details Not found");
+                    "book on Amazon. Please review the settings page.",
+                    "Amazon Customer Details Not found");
                 return;
             }
 
@@ -191,15 +190,14 @@ namespace XRayBuilderGUI
             }
 
             // Added author name to log output
-            Logger.Log(String.Format("Got metadata!\r\nDatabase Name: {0}\r\nUniqueID: {1}",
-                 results[2], results[1]));
-            Logger.Log(String.Format("Book's {0} URL: {1}", dataSource.Name, txtGoodreads.Text));
+            Logger.Log($"Got metadata!\r\nDatabase Name: {results[2]}\r\nUniqueID: {results[1]}");
+            Logger.Log($"Book's {dataSource.Name} URL: {txtGoodreads.Text}");
             if (cancelTokens.IsCancellationRequested) return;
             Logger.Log("Attempting to build X-Ray...");
 
             //If AZW3 file use AZW3 offset, if checked. Checked by default.
             bool AZW3 = Path.GetExtension(txtMobi.Text) == ".azw3" && settings.overrideOffset;
-            Logger.Log("Offset: " + (AZW3 ? settings.offsetAZW3.ToString() + " (AZW3)" : settings.offset.ToString()));
+            Logger.Log("Offset: " + (AZW3 ? $"{settings.offsetAZW3} (AZW3)" : settings.offset.ToString()));
 
             //Create X-Ray and attempt to create the base file (essentially the same as the site)
             XRay xray;
@@ -294,7 +292,7 @@ namespace XRayBuilderGUI
                 {
                     string PdPath = outFolder + @"\XRAY." + results[0] + ".previewData";
                     xray.SavePreviewToFile(PdPath, settings.utf8);
-                    Logger.Log("X-Ray previewData file created successfully!\r\nSaved to " + PdPath);
+                    Logger.Log($"X-Ray previewData file created successfully!\r\nSaved to {PdPath}");
                 }
                 catch (Exception ex)
                 {
@@ -305,7 +303,7 @@ namespace XRayBuilderGUI
             {
                 xray.SaveToFileOld(newPath, settings.utf8);
             }
-            Logger.Log("X-Ray file created successfully!\r\nSaved to " + newPath);
+            Logger.Log($"X-Ray file created successfully!\r\nSaved to {newPath}");
 
             checkFiles(results[4], results[5], results[0]);
 
@@ -345,14 +343,14 @@ namespace XRayBuilderGUI
             {
                 if (txtGoodreads.Text == "")
                 {
-                    MessageBox.Show("No " + dataSource.Name + " link was specified.", "Missing " + dataSource.Name + " Link");
+                    MessageBox.Show($"No {dataSource.Name} link was specified.", $"Missing {dataSource.Name} Link");
                     return;
                 }
-                else if (!txtGoodreads.Text.ToLower().Contains(settings.dataSource.ToLower()))
+                if (!txtGoodreads.Text.ToLower().Contains(settings.dataSource.ToLower()))
                 {
-                    MessageBox.Show(String.Format("Invalid {0} link was specified.\r\n"
-                        + "If you do not want to use {0}, you can change the data source in Settings.", dataSource.Name)
-                        , "Invalid " + dataSource.Name + " Link");
+                    MessageBox.Show($"Invalid {dataSource.Name} link was specified.\r\n"
+                        + $"If you do not want to use {dataSource.Name}, you can change the data source in Settings."
+                        , $"Invalid {dataSource.Name} Link");
                     return;
                 }
             }
@@ -391,7 +389,7 @@ namespace XRayBuilderGUI
                     results = await Task.Run(() => Functions.GetMetaData(txtMobi.Text, settings.outDir, randomFile, settings.mobi_unpack));
                     if (!File.Exists(results[3]))
                     {
-                        Logger.Log("Error: RawML could not be found, aborting.\r\nPath: " + results[3]);
+                        Logger.Log($"Error: RawML could not be found, aborting.\r\nPath: {results[3]}");
                         return;
                     }
                     rawMLSize = new FileInfo(results[3]).Length;
@@ -421,8 +419,7 @@ namespace XRayBuilderGUI
             if (settings.saverawml && settings.useKindleUnpack)
             {
                 Logger.Log("Saving rawML to dmp directory...");
-                File.Copy(results[3], Path.Combine(Environment.CurrentDirectory + @"\dmp",
-                    Path.GetFileName(results[3])), true);
+                File.Copy(results[3], Path.Combine(Environment.CurrentDirectory + @"\dmp", Path.GetFileName(results[3])), true);
             }
 
             Logger.Log($"Got metadata!\r\nDatabase Name: {results[2]}\r\nUniqueID: {results[1]}");
@@ -445,9 +442,9 @@ namespace XRayBuilderGUI
                     UseNewVersion = settings.useNewVersion,
                     UseSubDirectories = settings.useSubDirectories
                 });
-                if (!(await ap.Generate())) return;
-                SaPath = outputDir + @"\StartActions.data." + bookInfo.asin + ".asc";
-                ApPath = outputDir + @"\AuthorProfile.profile." + bookInfo.asin + ".asc";
+                if (!await ap.Generate()) return;
+                SaPath = $@"{outputDir}\StartActions.data.{bookInfo.asin}.asc";
+                ApPath = $@"{outputDir}\AuthorProfile.profile.{bookInfo.asin}.asc";
                 Logger.Log("Attempting to build Start Actions and End Actions...");
                 EndActions ea = new EndActions(ap, bookInfo, rawMLSize, dataSource, new EndActions.Settings
                 {
@@ -459,7 +456,7 @@ namespace XRayBuilderGUI
                     UseNewVersion = settings.useNewVersion,
                     UseSubDirectories = settings.useSubDirectories
                 });
-                if (!(await ea.Generate())) return;
+                if (!await ea.Generate()) return;
 
                 if (settings.useNewVersion)
                 {
@@ -467,7 +464,7 @@ namespace XRayBuilderGUI
                     await ea.GenerateEndActions(_progress, cancelTokens.Token);
                     ea.GenerateStartActions();
                     cmsPreview.Items[3].Enabled = true;
-                    EaPath = $"{outputDir}\\EndActions.data.{bookInfo.asin}.asc";
+                    EaPath = $@"{outputDir}\EndActions.data.{bookInfo.asin}.asc";
                 }
                 else
                     ea.GenerateOld();
@@ -477,8 +474,7 @@ namespace XRayBuilderGUI
                 checkFiles(bookInfo.author, bookInfo.title, bookInfo.asin);
                 if (settings.playSound)
                 {
-                    System.Media.SoundPlayer player =
-                        new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
+                    System.Media.SoundPlayer player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
                     player.Play();
                 }
             }
@@ -855,7 +851,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Logger.Log("An error occurred while trying to delete temporary files: {ex.Message}\r\n{ex.StackTrace}\r\n"
+                Logger.Log($"An error occurred while trying to delete temporary files: {ex.Message}\r\n{ex.StackTrace}\r\n"
                     + "Try deleting these files manually.");
             }
         }

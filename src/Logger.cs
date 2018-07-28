@@ -37,12 +37,18 @@ namespace XRayBuilderGUI
                     rtfBox.SelectionLength = 0;
                     rtfBox.SelectionColor = Color.Green;
                 }
-                List<string> redFlags = new List<string> { "error", "failed", "problem", "skipping", "warning", "unable" };
+                List<string> redFlags = new List<string> { "error", "failed", "problem", "skipping", "unable" };
                 if (redFlags.Any(message.ContainsIgnorecase))
                 {
                     rtfBox.SelectionStart = rtfBox.TextLength;
                     rtfBox.SelectionLength = 0;
                     rtfBox.SelectionColor = Color.Red;
+                }
+                if (message.ContainsIgnorecase("warning"))
+                {
+                    rtfBox.SelectionStart = rtfBox.TextLength;
+                    rtfBox.SelectionLength = 0;
+                    rtfBox.SelectionColor = Color.DarkOrange;
                 }
                 rtfBox.AppendText(message);
                 rtfBox.SelectionColor = rtfBox.ForeColor;

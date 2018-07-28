@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SQLite;
 using System.Globalization;
 using System.IO;
@@ -716,82 +717,91 @@ namespace XRayBuilderGUI
                 }
             }
         }
-
-        // TODO: Make async
+        
         public int PopulateDb(SQLiteConnection db, IProgressBar progress, CancellationToken token)
         {
             StringBuilder sql = new StringBuilder(Terms.Count * 256);
             int personCount = 0;
             int termCount = 0;
-            SQLiteCommand command = new SQLiteCommand("update string set text=@text where id=15", db);
-            command.Parameters.AddWithValue("text", dataUrl);
+            var command = new SQLiteCommand($"update string set text='{dataUrl}' where id=15", db);
             command.ExecuteNonQuery();
-            command.Dispose();
+
             Logger.Log("Updating database with terms, descriptions, and excerpts...");
             //Write all entities and occurrences
             Logger.Log($"Writing {Terms.Count} terms...");
             progress?.Set(0, Terms.Count);
+            command = new SQLiteCommand("insert into entity (id, label, loc_label, type, count, has_info_card) values (@id, @label, null, @type, @count, 1)", db);
+            var command2 = new SQLiteCommand("insert into entity_description (text, source_wildcard, source, entity) values (@text, @source_wildcard, @source, @entity)", db);
+            var command3 = new SQLiteCommand("insert into occurrence (entity, start, length) values (@entity, @start, @length)", db);
             foreach (Term t in Terms)
             {
                 token.ThrowIfCancellationRequested();
                 if (t.Type == "character") personCount++;
                 else if (t.Type == "topic") termCount++;
-                command = new SQLiteCommand(String.Format("insert into entity (id, label, loc_label, type, count, has_info_card) values ({0}, @label, null, {1}, {2}, 1);",
-                    t.Id, t.Type == "character" ? 1 : 2, t.Occurrences.Count), db);
-                command.Parameters.AddWithValue("label", t.TermName);
+                command.Parameters.Add("@id", DbType.Int32).Value = t.Id;
+                command.Parameters.Add("@label", DbType.String).Value = t.TermName;
+                command.Parameters.Add("@type", DbType.Int32).Value = t.Type == "character" ? 1 : 2;
+                command.Parameters.Add("@count", DbType.Int32).Value = t.Occurrences.Count;
                 command.ExecuteNonQuery();
-                command.Dispose();
 
-                command = new SQLiteCommand(String.Format("insert into entity_description (text, source_wildcard, source, entity) values (@text, @source_wildcard, {0}, {1});",
-                    t.DescSrc == "shelfari" ? 2 : 4, t.Id), db);
-                command.Parameters.AddWithValue("text", t.Desc == "" ? "No description available." : t.Desc);
-                command.Parameters.AddWithValue("source_wildcard", t.TermName);
-                command.ExecuteNonQuery();
-                command.Dispose();
+                command2.Parameters.Add("@text", DbType.String).Value = t.Desc == "" ? "No description available." : t.Desc;
+                command2.Parameters.Add("@source_wildcard", DbType.String).Value = t.TermName;
+                command2.Parameters.Add("@source", DbType.Int32).Value = t.DescSrc == "shelfari" ? 4 : 6;
+                command2.Parameters.Add("@entity", DbType.Int32).Value = t.Id;
+                command2.ExecuteNonQuery();
 
-                sql.Clear();
                 foreach (int[] loc in t.Occurrences)
-                    sql.AppendFormat("insert into occurrence (entity, start, length) values ({0}, {1}, {2});\n",
-                        t.Id, loc[0], loc[1]);
-                command = new SQLiteCommand(sql.ToString(), db);
-                command.ExecuteNonQuery();
-                command.Dispose();
-                progress?.Add(1);
-            }
-            //Write excerpts and entity_excerpt table
-            Logger.Log(String.Format("Writing {0} excerpts...", excerpts.Count));
-            sql.Clear();
-            command = new SQLiteCommand("insert into excerpt (id, start, length, image, related_entities, goto) values (@id, @start, @length, @image, @rel_ent, null);", db);
-            progress?.Set(0, excerpts.Count);
-            foreach (Excerpt e in excerpts)
-            {
-                token.ThrowIfCancellationRequested();
-                command.Parameters.AddWithValue("id", e.id);
-                command.Parameters.AddWithValue("start", e.start);
-                command.Parameters.AddWithValue("length", e.length);
-                command.Parameters.AddWithValue("image", e.image);
-                command.Parameters.AddWithValue("rel_ent", String.Join(",", e.related_entities.Where(en => en != 0).ToArray())); // don't write 0 (notable flag)
-                command.ExecuteNonQuery();
-                foreach (int ent in e.related_entities)
                 {
-                    if (ent != 0) // skip notable flag
-                        sql.AppendFormat("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", ent, e.id);
+                    command3.Parameters.Add("@entity", DbType.Int32).Value = t.Id;
+                    command3.Parameters.Add("@start", DbType.Int32).Value = loc[0];
+                    command3.Parameters.Add("@length", DbType.Int32).Value = loc[1];
+                    command3.ExecuteNonQuery();
                 }
                 progress?.Add(1);
             }
-            command.Dispose();
+
+            //Write excerpts and entity_excerpt table
+            Logger.Log($"Writing {excerpts.Count} excerpts...");
+            command.CommandText = "insert into excerpt (id, start, length, image, related_entities, goto) values (@id, @start, @length, @image, @rel_ent, null);";
+            command.Parameters.Clear();
+            command2.CommandText = "insert into entity_excerpt (entity, excerpt) values (@entityId, @excerptId)";
+            command2.Parameters.Clear();
+            progress?.Set(0, excerpts.Count);
+            foreach (var e in excerpts)
+            {
+                token.ThrowIfCancellationRequested();
+                command.Parameters.Add("id", DbType.Int32).Value = e.id;
+                command.Parameters.Add("start", DbType.Int32).Value = e.start;
+                command.Parameters.Add("length", DbType.Int32).Value = e.length;
+                command.Parameters.Add("image", DbType.String).Value = e.image;
+                command.Parameters.Add("rel_ent", DbType.String).Value = string.Join(",", e.related_entities.Where(en => en != 0).ToArray()); // don't write 0 (notable flag)
+                command.ExecuteNonQuery();
+                foreach (int ent in e.related_entities)
+                {
+                    token.ThrowIfCancellationRequested();
+                    if (ent == 0) continue; // skip notable flag
+                    command2.Parameters.Add("@entityId", DbType.Int32).Value = ent;
+                    command2.Parameters.Add("@excerptId", DbType.Int32).Value = e.id;
+                    command2.ExecuteNonQuery();
+                }
+                progress?.Add(1);
+            }
+
             // create links to notable clips in order of popularity
+            Logger.Log("Adding notable clips...");
+            command.Parameters.Clear();
             var notablesOnly = excerpts.Where(ex => ex.notable).OrderByDescending(ex => ex.highlights);
             foreach (Excerpt notable in notablesOnly)
-                sql.AppendFormat("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", 0, notable.id);
-            // Populate some more notable clips if not enough were found, 
+            {
+                command.CommandText = $"insert into entity_excerpt (entity, excerpt) values (0, {notable.id})";
+                command.ExecuteNonQuery();
+            }
+
+            // Populate some more clips if not enough were found initially
             // TODO: Add a config value in settings for this amount
+            var toAdd = new List<Excerpt>(20);
             if (foundNotables <= 20 && foundNotables + excerpts.Count <= 20)
-                excerpts.ForEach(ex =>
-                    {
-                        if (!ex.notable)
-                            sql.AppendFormat("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", 0, ex.id);
-                    });
+                toAdd.AddRange(excerpts);
             else if (foundNotables <= 20)
             {
                 Random rand = new Random();
@@ -799,16 +809,18 @@ namespace XRayBuilderGUI
                 while (foundNotables <= 20 && eligible.Count > 0)
                 {
                     Excerpt randEx = eligible.ElementAt(rand.Next(eligible.Count));
-                    sql.AppendFormat("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", 0, randEx.id);
+                    toAdd.Add(randEx);
                     eligible.Remove(randEx);
                     foundNotables++;
                 }
             }
-            token.ThrowIfCancellationRequested();
-            Logger.Log("Writing entity excerpt table...");
-            command = new SQLiteCommand(sql.ToString(), db);
-            command.ExecuteNonQuery();
+            foreach (var excerpt in toAdd)
+            {
+                command.CommandText = $"insert into entity_excerpt (entity, excerpt) values (0, {excerpt.id})";
+                command.ExecuteNonQuery();
+            }
             command.Dispose();
+            
             token.ThrowIfCancellationRequested();
             Logger.Log("Writing top mentions...");
             List<int> sorted =

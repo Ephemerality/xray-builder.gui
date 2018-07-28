@@ -52,7 +52,8 @@ namespace XRayBuilderGUI
         public string OutputDirectory(string author, string title, bool create)
         {
             if (!_settings.useSubDirectories) return _settings.outDir;
-            UIFunctions.ValidateFilename(author, title);
+            if (!Functions.ValidateFilename(author, title))
+                Logger.Log("Warning: The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.");
             return Functions.GetBookOutputDirectory(author, title, create);
         }
 

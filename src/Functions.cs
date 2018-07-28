@@ -479,6 +479,13 @@ namespace XRayBuilderGUI
 
             return guid;
         }
+
+        public static bool ValidateFilename(string author, string title)
+        {
+            var newAuthor = RemoveInvalidFileChars(author);
+            var newTitle = RemoveInvalidFileChars(title);
+            return author.Equals(newAuthor) && title.Equals(newTitle);
+        }
     }
 
     internal static class NativeMethods

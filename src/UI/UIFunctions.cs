@@ -33,14 +33,6 @@ namespace XRayBuilderGUI
 
         public static string GetBook(string defaultFile) => GetFile("Open a Kindle book", defaultFile, "Kindle Books (*.azw3, *.mobi)|*.azw3; *.mobi");
 
-        public static void ValidateFilename(string author, string title)
-        {
-            var newAuthor = RemoveInvalidFileChars(author);
-            var newTitle = RemoveInvalidFileChars(title);
-            if (!author.Equals(newAuthor) || !title.Equals(newTitle))
-                MessageBox.Show("The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.", "Invalid Characters");
-        }
-
         public static string RemoveInvalidFileChars(string filename)
         {
             char[] fileChars = Path.GetInvalidFileNameChars();

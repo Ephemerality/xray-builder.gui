@@ -69,6 +69,7 @@
             this.lblOffset = new System.Windows.Forms.Label();
             this.txtOffset = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.chkSkipNoLikes = new System.Windows.Forms.CheckBox();
             this.gbXray = new System.Windows.Forms.GroupBox();
             this.chkAndroid = new System.Windows.Forms.CheckBox();
             this.chkUseNew = new System.Windows.Forms.CheckBox();
@@ -93,6 +94,8 @@
             this.txtPen = new System.Windows.Forms.TextBox();
             this.lblPen = new System.Windows.Forms.Label();
             this.listSettings = new System.Windows.Forms.ListBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtMinClipLen = new System.Windows.Forms.TextBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.gbProcess.SuspendLayout();
@@ -529,13 +532,25 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.label2);
+            this.groupBox3.Controls.Add(this.txtMinClipLen);
+            this.groupBox3.Controls.Add(this.chkSkipNoLikes);
             this.groupBox3.Location = new System.Drawing.Point(6, 92);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(378, 48);
             this.groupBox3.TabIndex = 27;
             this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Notable Clips";
             // 
+            // chkSkipNoLikes
             // 
+            this.chkSkipNoLikes.AutoSize = true;
+            this.chkSkipNoLikes.Location = new System.Drawing.Point(14, 19);
+            this.chkSkipNoLikes.Name = "chkSkipNoLikes";
+            this.chkSkipNoLikes.Size = new System.Drawing.Size(129, 17);
+            this.chkSkipNoLikes.TabIndex = 25;
+            this.chkSkipNoLikes.Text = "Ignore clips w/ 0 likes";
+            this.chkSkipNoLikes.UseVisualStyleBackColor = true;
             // 
             // gbXray
             // 
@@ -798,6 +813,23 @@
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(168, 20);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(83, 13);
+            this.label2.TabIndex = 26;
+            this.label2.Text = "Minimum length:";
+            // 
+            // txtMinClipLen
+            // 
+            this.txtMinClipLen.Location = new System.Drawing.Point(257, 17);
+            this.txtMinClipLen.Name = "txtMinClipLen";
+            this.txtMinClipLen.Size = new System.Drawing.Size(47, 20);
+            this.txtMinClipLen.TabIndex = 27;
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -906,6 +938,7 @@
         private System.Windows.Forms.Label lblOffset;
         private System.Windows.Forms.TextBox txtOffset;
         private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.CheckBox chkSkipNoLikes;
         private System.Windows.Forms.GroupBox gbXray;
         private System.Windows.Forms.CheckBox chkAndroid;
         private System.Windows.Forms.CheckBox chkUseNew;
@@ -924,5 +957,7 @@
         private System.Windows.Forms.Button btnBrowseTemp;
         private System.Windows.Forms.Label lblNote;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox txtMinClipLen;
     }
 }

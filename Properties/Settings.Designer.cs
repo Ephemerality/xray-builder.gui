@@ -418,5 +418,29 @@ namespace XRayBuilderGUI.Properties {
                 this["deleteTemp"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("25")]
+        public int minClipLen {
+            get {
+                return ((int)(this["minClipLen"]));
+            }
+            set {
+                this["minClipLen"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool skipNoLikes {
+            get {
+                return ((bool)(this["skipNoLikes"]));
+            }
+            set {
+                this["skipNoLikes"] = value;
+            }
+        }
     }
 }

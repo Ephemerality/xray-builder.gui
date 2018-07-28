@@ -70,6 +70,8 @@ namespace XRayBuilderGUI
             txtPen.Text = Properties.Settings.Default.penName;
             chkEnableEdit.Checked = Properties.Settings.Default.enableEdit;
             chkSubDirectories.Checked = Properties.Settings.Default.useSubDirectories;
+            chkSkipNoLikes.Checked = Properties.Settings.Default.skipNoLikes;
+            txtMinClipLen.Text = Properties.Settings.Default.minClipLen.ToString();
             if (txtUnpack.Text == "") txtUnpack.Text = "dist/kindleunpack.exe";
             chkOverwrite.Checked = Properties.Settings.Default.overwrite;
             chkAlias.Checked = Properties.Settings.Default.overwriteAliases;
@@ -111,8 +113,10 @@ namespace XRayBuilderGUI
                 "for the Android Kindle app. Forces building with\r\n" +
                 "the new format. Files will be placed in the output\r\n" +
                 "directory within the 'Android' folder.");
-                "Use this option if there are accented characters\r\n" +
-                "in your book, the title, or author's name.");
+            toolTip1.SetToolTip(chkSkipNoLikes, "Skip notable clips with no likes.\r\n" +
+                                                "Good for filtering out garbage quotes from Goodreads.");
+            toolTip1.SetToolTip(txtMinClipLen, "Minimum length for notable clips.\r\n" +
+                                               "Good for filtering out garbage quotes from Goodreads.");
             toolTip1.SetToolTip(txtReal, "Required during the EndActions.data file\r\n" +
                                          "creation. This information allows you to\r\n" +
                                          "rate this book on Amazon.");
@@ -197,6 +201,11 @@ namespace XRayBuilderGUI
             {
                 MessageBox.Show("Both Real and Pen names are required for\r\nEnd Action file creation.");
             }
+            if (!int.TryParse(txtMinClipLen.Text, out var minClipLen))
+            {
+                MessageBox.Show("Length must be an integer.", "Length Error");
+                return;
+            }
 
             Properties.Settings.Default.outDir = txtOut.Text;
             Properties.Settings.Default.mobi_unpack = txtUnpack.Text;
@@ -204,6 +213,8 @@ namespace XRayBuilderGUI
             Properties.Settings.Default.ignoresofthyphen = chkSoftHyphen.Checked;
             Properties.Settings.Default.useNewVersion = chkUseNew.Checked;
             Properties.Settings.Default.android = chkAndroid.Checked;
+            Properties.Settings.Default.skipNoLikes = chkSkipNoLikes.Checked;
+            Properties.Settings.Default.minClipLen = minClipLen;
             Properties.Settings.Default.offset = offset;
             Properties.Settings.Default.realName = txtReal.Text;
             Properties.Settings.Default.penName = txtPen.Text;

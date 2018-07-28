@@ -595,7 +595,10 @@ namespace XRayBuilderGUI
                             Excerpt excerpt = excerpts.FirstOrDefault(e => e.start == index);
                             if (excerpt == null)
                             {
-                                excerpt = new Excerpt(excerptId++, index, quote.Text.Length);
+                                if (Properties.Settings.Default.skipNoLikes && quote.Likes == 0
+                                    || quote.Text.Length < Properties.Settings.Default.minClipLen)
+                                    continue;
+                                excerpt = new Excerpt(excerptId++, location + index, quote.Text.Length);
                                 excerpt.related_entities.Add(0); // Mark the excerpt as notable
                                                                  // TODO: also add other related entities
                                 excerpt.notable = true;

@@ -750,7 +750,7 @@ namespace XRayBuilderGUI
                 command2.Parameters.Add("@entity", DbType.Int32).Value = t.Id;
                 command2.ExecuteNonQuery();
 
-                foreach (int[] loc in t.Occurrences)
+                foreach (var loc in t.Occurrences)
                 {
                     command3.Parameters.Add("@entity", DbType.Int32).Value = t.Id;
                     command3.Parameters.Add("@start", DbType.Int32).Value = loc[0];

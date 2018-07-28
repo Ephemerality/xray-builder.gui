@@ -1100,15 +1100,7 @@ namespace XRayBuilderGUI
 
         private void btnExtractTerms_Click(object sender, EventArgs e)
         {
-            string selPath = "";
-            OpenFileDialog openFile = new OpenFileDialog
-            {
-                Title = "Open a Kindle X-Ray file...",
-                Filter = "ASC files|*.asc",
-                InitialDirectory = _settings.outDir
-            };
-            if (openFile.ShowDialog() == DialogResult.OK)
-                selPath = openFile.FileName;
+            string selPath = UIFunctions.GetFile("Open a Kindle X-Ray file...", "", "ASC files|*.asc", _settings.outDir);
             if (selPath == "" || !selPath.Contains("XRAY.entities"))
             {
                 Logger.Log("Invalid or no file selected.");

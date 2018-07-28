@@ -170,9 +170,9 @@ namespace XRayBuilderGUI
             //Insert a version tag of the current program version so you know which version built it.
             //Will be ignored by the Kindle.
             Version dd = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            string xrayversion = dd.Major.ToString() + "." + dd.Minor.ToString() + dd.Build.ToString();
+            string xrayversion = $"{dd.Major}.{dd.Minor}{dd.Build}";
             //Insert creation date... seems useful?
-            string date = DateTime.Now.ToString("MM/dd/yy HH:mm:ss");
+            string date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             //If there are no chapters built (someone only ran create X-Ray), just use the default version
             if (_chapters.Count > 0)
                 return
@@ -180,13 +180,10 @@ namespace XRayBuilderGUI
                         @"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{8}"",""created"":""{9}"",""terms"":[{4}],""chapters"":[{5}],""assets"":{{}},""srl"":{6},""erl"":{7}}}",
                         asin, databaseName, Guid, version, string.Join(",", Terms),
                         string.Join(",", _chapters), _srl, _erl, xrayversion, date);
-            else
-            {
-                return
-                    String.Format(
-                        @"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{5}"",""created"":""{6}"",""terms"":[{4}],""chapters"":[{{""name"":null,""start"":1,""end"":9999999}}]}}",
-                        asin, databaseName, Guid, version, string.Join(",", Terms), xrayversion, date);
-            }
+            return
+                String.Format(
+                    @"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{5}"",""created"":""{6}"",""terms"":[{4}],""chapters"":[{{""name"":null,""start"":1,""end"":9999999}}]}}",
+                    asin, databaseName, Guid, version, string.Join(",", Terms), xrayversion, date);
         }
 
         //Add string creation for new XRAY.ASIN.previewData file

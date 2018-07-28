@@ -70,7 +70,6 @@ namespace XRayBuilderGUI
             txtPen.Text = Properties.Settings.Default.penName;
             chkEnableEdit.Checked = Properties.Settings.Default.enableEdit;
             chkSubDirectories.Checked = Properties.Settings.Default.useSubDirectories;
-            chkUTF8.Checked = Properties.Settings.Default.utf8;
             if (txtUnpack.Text == "") txtUnpack.Text = "dist/kindleunpack.exe";
             chkOverwrite.Checked = Properties.Settings.Default.overwrite;
             chkAlias.Checked = Properties.Settings.Default.overwriteAliases;
@@ -112,7 +111,6 @@ namespace XRayBuilderGUI
                 "for the Android Kindle app. Forces building with\r\n" +
                 "the new format. Files will be placed in the output\r\n" +
                 "directory within the 'Android' folder.");
-            toolTip1.SetToolTip(chkUTF8, "Write the X-Ray file in UTF8 instead of ANSI.\r\n" +
                 "Use this option if there are accented characters\r\n" +
                 "in your book, the title, or author's name.");
             toolTip1.SetToolTip(txtReal, "Required during the EndActions.data file\r\n" +
@@ -206,7 +204,6 @@ namespace XRayBuilderGUI
             Properties.Settings.Default.ignoresofthyphen = chkSoftHyphen.Checked;
             Properties.Settings.Default.useNewVersion = chkUseNew.Checked;
             Properties.Settings.Default.android = chkAndroid.Checked;
-            Properties.Settings.Default.utf8 = chkUTF8.Checked;
             Properties.Settings.Default.offset = offset;
             Properties.Settings.Default.realName = txtReal.Text;
             Properties.Settings.Default.penName = txtPen.Text;

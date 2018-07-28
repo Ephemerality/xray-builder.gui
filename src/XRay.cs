@@ -1218,12 +1218,10 @@ namespace XRayBuilderGUI
             }
         }
 
-        public void SaveToFileOld(string path, bool useutf8)
+        public void SaveToFileOld(string path)
         {
-            using (StreamWriter streamWriter = new StreamWriter(path, false, useutf8 ? Encoding.UTF8 : Encoding.Default))
-            {
+            using (var streamWriter = new StreamWriter(path, false, Encoding.UTF8))
                 streamWriter.Write(ToString());
-            }
         }
 
         public void SaveToFileNew(string path, IProgressBar progress, CancellationToken token)
@@ -1273,12 +1271,10 @@ namespace XRayBuilderGUI
             }
         }
 
-        public void SavePreviewToFile(string path, bool useutf8)
+        public void SavePreviewToFile(string path)
         {
-            using (StreamWriter streamWriter = new StreamWriter(path, false, useutf8 ? Encoding.UTF8 : Encoding.Default))
-            {
+            using (var streamWriter = new StreamWriter(path, false, Encoding.UTF8))
                 streamWriter.Write(getPreviewData());
-            }
         }
     }
 

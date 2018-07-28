@@ -287,7 +287,7 @@ namespace XRayBuilderGUI
                 try
                 {
                     string PdPath = outFolder + @"\XRAY." + results[0] + ".previewData";
-                    xray.SavePreviewToFile(PdPath, _settings.utf8);
+                    xray.SavePreviewToFile(PdPath);
                     Logger.Log($"X-Ray previewData file created successfully!\r\nSaved to {PdPath}");
                 }
                 catch (Exception ex)
@@ -297,7 +297,7 @@ namespace XRayBuilderGUI
             }
             else
             {
-                xray.SaveToFileOld(newPath, _settings.utf8);
+                xray.SaveToFileOld(newPath);
             }
             Logger.Log($"X-Ray file created successfully!\r\nSaved to {newPath}");
 

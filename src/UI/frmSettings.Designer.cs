@@ -69,7 +69,6 @@
             this.lblOffset = new System.Windows.Forms.Label();
             this.txtOffset = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.chkUTF8 = new System.Windows.Forms.CheckBox();
             this.gbXray = new System.Windows.Forms.GroupBox();
             this.chkAndroid = new System.Windows.Forms.CheckBox();
             this.chkUseNew = new System.Windows.Forms.CheckBox();
@@ -530,23 +529,13 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.chkUTF8);
             this.groupBox3.Location = new System.Drawing.Point(6, 92);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(378, 48);
             this.groupBox3.TabIndex = 27;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Output";
             // 
-            // chkUTF8
             // 
-            this.chkUTF8.AutoSize = true;
-            this.chkUTF8.Location = new System.Drawing.Point(14, 19);
-            this.chkUTF8.Name = "chkUTF8";
-            this.chkUTF8.Size = new System.Drawing.Size(99, 17);
-            this.chkUTF8.TabIndex = 25;
-            this.chkUTF8.Text = "Output in UTF8";
-            this.chkUTF8.UseVisualStyleBackColor = true;
             // 
             // gbXray
             // 
@@ -917,7 +906,6 @@
         private System.Windows.Forms.Label lblOffset;
         private System.Windows.Forms.TextBox txtOffset;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.CheckBox chkUTF8;
         private System.Windows.Forms.GroupBox gbXray;
         private System.Windows.Forms.CheckBox chkAndroid;
         private System.Windows.Forms.CheckBox chkUseNew;

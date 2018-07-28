@@ -277,8 +277,14 @@ namespace XRayBuilderGUI
                 {
                     xray.SaveToFileNew(newPath, _progress, cancelTokens.Token);
                 }
+                catch (OperationCanceledException)
+                {
+                    Logger.Log("Building canceled.");
+                    return;
+                }
                 catch (Exception ex)
                 {
+                    // TODO: Add option to retry maybe?
                     Logger.Log($"An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n{ex.Message}");
                     return;
                 }

@@ -200,7 +200,7 @@ namespace XRayBuilderGUI
         public string XRayName(bool android = false) =>
             android ? $"XRAY.{asin}.{databaseName}_{Guid}.db" : $"XRAY.entities.{asin}.asc";
 
-        // TODO: Completely remove the need to pass in a message box handler
+        // TODO: Change return values to exceptions instead
         public async Task<int> CreateXray(IProgressBar progress, CancellationToken token)
         {
             //Download Shelfari info if not skipping
@@ -1265,17 +1265,7 @@ namespace XRayBuilderGUI
                 command.ExecuteNonQuery();
                 command.Dispose();
                 Logger.Log("Done building initial database. Populating with info from source X-Ray...");
-                try
-                {
-                    PopulateDb(m_dbConnection, progress, token);
-                }
-                catch (Exception ex)
-                {
-                    if (ex is OperationCanceledException)
-                        Logger.Log("Building canceled.");
-                    else
-                        throw;
-                }
+                PopulateDb(m_dbConnection, progress, token);
                 Logger.Log("Updating indices...");
                 sql = "CREATE INDEX idx_occurrence_start ON occurrence(start ASC);\n"
                       + "CREATE INDEX idx_entity_type ON entity(type ASC);\n"

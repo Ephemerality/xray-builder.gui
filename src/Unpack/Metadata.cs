@@ -89,21 +89,9 @@ namespace XRayBuilderGUI.Unpack
 
         public string Author => mobiHeader.exthHeader.Author;
 
-        public string Title
-        {
-            get
-            {
-                if (mobiHeader.FullName != "")
-                    return mobiHeader.FullName;
-                else
-                    return mobiHeader.exthHeader.UpdatedTitle;
-            }
-        }
+        public string Title => mobiHeader.FullName != "" ? mobiHeader.FullName : mobiHeader.exthHeader.UpdatedTitle;
 
-        public long rawMLSize()
-        {
-            return PDH.TextLength;
-        }
+        public long RawMlSize => PDH.TextLength;
 
         /// <summary>
         /// Throws <see cref="EncryptedBookException"/> if DRM is enabled.

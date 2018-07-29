@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using XRayBuilderGUI.DataSources;
 using XRayBuilderGUI.Properties;
 using Newtonsoft.Json.Linq;
+using XRayBuilderGUI.Unpack;
 
 namespace XRayBuilderGUI
 {
@@ -818,8 +819,9 @@ namespace XRayBuilderGUI
                 try
                 {
                     var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, false));
+                    metadata.CheckDRM();
                     results = metadata.getResults();
-                    pbCover.Image = (Image)metadata.coverImage?.Clone();
+                    pbCover.Image = (Image) metadata.coverImage?.Clone();
                 }
                 catch (Exception ex)
                 {

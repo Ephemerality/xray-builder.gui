@@ -105,10 +105,18 @@ namespace XRayBuilderGUI.Unpack
             return PDH.TextLength;
         }
 
-        public byte[] getRawML(FileStream fs)
+        /// <summary>
+        /// Throws <see cref="EncryptedBookException"/> if DRM is enabled.
+        /// </summary>
+        public void CheckDRM()
         {
             if (PDH.EncryptionType != 0)
-                throw new Exception("This book has DRM (it is encrypted). X-Ray Builder will only work on books that do not have DRM.");
+                throw new EncryptedBookException();
+        }
+
+        public byte[] getRawML(FileStream fs)
+        {
+            CheckDRM();
 
             Decompressor decomp;
             switch (PDH.Compression)
@@ -192,5 +200,10 @@ namespace XRayBuilderGUI.Unpack
             }
             return num;
         }
+    }
+
+    public class EncryptedBookException : Exception
+    {
+        public EncryptedBookException() : base("-This book has DRM (it is encrypted). X-Ray Builder will only work on books that do not have DRM.") { }
     }
 }

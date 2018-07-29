@@ -304,7 +304,7 @@ namespace XRayBuilderGUI
         //    return false;
         //}
 
-        public void HandleChapters(long mlLen, HtmlDocument doc, string rawMl)
+        public void HandleChapters(long mlLen, HtmlDocument doc, string rawMl, SafeShowDelegate safeShow)
         {
             //Similar to aliases, if chapters definition exists, load it. Otherwise, attempt to build it from the book
             string chapterFile = Environment.CurrentDirectory + @"\ext\" + asin + ".chapters";
@@ -388,7 +388,7 @@ namespace XRayBuilderGUI
             }
             web.LoadHtml(readContents);
 
-            HandleChapters(new FileInfo(rawMl).Length, web, readContents);
+            HandleChapters(new FileInfo(rawMl).Length, web, readContents, safeShow);
             
             Logger.Log("Scanning book content...");
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();

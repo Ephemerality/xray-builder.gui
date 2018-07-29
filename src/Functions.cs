@@ -486,6 +486,11 @@ namespace XRayBuilderGUI
             var newTitle = RemoveInvalidFileChars(title);
             return author.Equals(newAuthor) && title.Equals(newTitle);
         }
+
+        public static long UnixTimestampNow()
+        {
+            return (long) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
+        }
     }
 
     internal static class NativeMethods

@@ -193,6 +193,7 @@
     <Compile Include="src\Unpack\Uncompress.cs" />
     <Compile Include="src\XRay.cs" />
     <Compile Include="src\UI\XRayPanel.cs" />
+    <Compile Include="src\XRay\XRayUtil.cs" />
     <Content Include="dist\BaseEndActions.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

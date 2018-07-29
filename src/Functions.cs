@@ -364,7 +364,7 @@ namespace XRayBuilderGUI
             }
         }
 
-        public static void Save<T>(T output, string fileName)
+        public static void Save<T>(T output, string fileName) where T : class
         {
             using (var writer = new StreamWriter(fileName, false, Encoding.UTF8))
             {

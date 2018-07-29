@@ -1004,16 +1004,18 @@ namespace XRayBuilderGUI
             }
             try
             {
-                int ver = CheckXRayVersion(selPath);
-                if (ver == 0)
+                var ver = XRayUtil.CheckXRayVersion(selPath);
+                if (ver == XRayUtil.XRayVersion.Invalid)
                 {
                     Logger.Log("Invalid X-Ray file.");
                     return;
                 }
-                List<XRay.Term> terms = ver == 2 ? ExtractTermsNew(selPath) : ExtractTermsOld(selPath);
+                var terms = ver == XRayUtil.XRayVersion.New
+                    ? XRayUtil.ExtractTermsNew(new SQLiteConnection($"Data Source={selPath}; Version=3;"), true)
+                    : XRayUtil.ExtractTermsOld(selPath);
                 
                 frmPreviewXR frmXraPreview = new frmPreviewXR();
-                frmXraPreview.PopulateXRay(terms);
+                frmXraPreview.PopulateXRay(terms.ToList());
                 frmXraPreview.ShowDialog();
 
             }
@@ -1106,112 +1108,27 @@ namespace XRayBuilderGUI
                 Logger.Log("Invalid or no file selected.");
                 return;
             }
-            int newVer = CheckXRayVersion(selPath);
-            if (newVer == 0)
+            var newVer = XRayUtil.CheckXRayVersion(selPath);
+            if (newVer == XRayUtil.XRayVersion.Invalid)
             {
                 Logger.Log("Invalid X-Ray file.");
                 return;
             }
             try
             {
-                List<XRay.Term> terms = newVer == 2 ? ExtractTermsNew(selPath) : ExtractTermsOld(selPath);
+                var terms = newVer == XRayUtil.XRayVersion.New
+                    ? XRayUtil.ExtractTermsNew(new SQLiteConnection($"Data Source={selPath}; Version=3;"), true)
+                    : XRayUtil.ExtractTermsOld(selPath);
                 if (!Directory.Exists(Environment.CurrentDirectory + @"\xml\"))
                     Directory.CreateDirectory(Environment.CurrentDirectory + @"\xml\");
                 string outfile = Environment.CurrentDirectory + @"\xml\" + Path.GetFileNameWithoutExtension(selPath) + ".xml";
-                Functions.Save(terms, outfile);
-                Logger.Log("Character data has been saved to: " + outfile);
+                Functions.Save(terms.ToList(), outfile);
+                Logger.Log("Character data has been successfully extracted and saved to: " + outfile);
             }
             catch (Exception ex)
             {
                 Logger.Log("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
             }
-        }
-
-        // 0 = invalid, 1 = old, 2 = new
-        public int CheckXRayVersion(string path)
-        {
-            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
-            {
-                int c = fs.ReadByte();
-                switch (c)
-                {
-                    case 'S':
-                        return 2;
-                    case '{':
-                        return 1;
-                    default:
-                        return 0;
-                }
-            }
-        }
-
-        private List<XRay.Term> ExtractTermsNew(string path)
-        {
-            List<XRay.Term> terms = new List<XRay.Term>(100);
-
-            string xrayDB = "Data Source=" + path + ";Version=3;";
-            SQLiteConnection m_dbConnection = new SQLiteConnection(xrayDB);
-            m_dbConnection.Open();
-
-            string sql = "SELECT * FROM entity WHERE has_info_card = '1'";
-            SQLiteCommand command = new SQLiteCommand(sql, m_dbConnection);
-            SQLiteDataReader reader = command.ExecuteReader();
-
-            while (reader.Read())
-            {
-                XRay.Term newTerm = new XRay.Term
-                {
-                    Id = reader.GetInt32(0),
-                    TermName = reader.GetString(1),
-                    Type = reader.GetInt32(3) == 1 ? "character" : "topic"
-                };
-                //if (newTerm.Type == "character")
-                //{
-                //    newTerm.DescSrc = "Kindle Store";
-                //    newTerm.DescUrl = String.Format(@"http://www.amazon.{0}/s/ref=nb_sb_ss_i_5_4?url=search-alias%3Ddigital-text&field-keywords={1}",
-                //        settings.amazonTLD, newTerm.TermName.Replace(" ", "+"));
-                //}
-                //else
-                //{
-                // Actual location aren't needed for extracting terms for preview or XML saving, but need count
-                int i = reader.GetInt32(4);
-                for (; i > 0; i--)
-                    newTerm.Locs.Add(null);
-                newTerm.DescSrc = "Wikipedia";
-                newTerm.DescUrl = String.Format(@"http://en.wikipedia.org/wiki/{0}", newTerm.TermName.Replace(" ", "_"));
-                //newTerm.DescSrc = Convert.ToString(reader.GetInt32(4));
-                //}
-                terms.Add(newTerm);
-            }
-
-            command.Dispose();
-
-            for (int i = 1; i < terms.Count + 1; i++)
-            {
-                sql = $"SELECT * FROM entity_description WHERE entity = '{i}'";
-
-                command = new SQLiteCommand(sql, m_dbConnection);
-                reader = command.ExecuteReader();
-                while (reader.Read())
-                    terms[i - 1].Desc = reader.GetString(0);
-                command.Dispose();
-            }
-            m_dbConnection.Close();
-            return terms;
-        }
-
-        private List<XRay.Term> ExtractTermsOld(string path)
-        {
-            string readContents;
-            using (StreamReader streamReader = new StreamReader(path, Encoding.UTF8))
-                readContents = streamReader.ReadToEnd();
-
-            JObject xray = JObject.Parse(readContents);
-            var termsjson = xray["terms"].Children().ToList();
-            var terms = new List<XRay.Term>(termsjson.Count);
-            foreach (var term in termsjson)
-                terms.Add(term.ToObject<XRay.Term>());
-            return terms;
         }
 
         private void btnHelp_Click(object sender, EventArgs e)

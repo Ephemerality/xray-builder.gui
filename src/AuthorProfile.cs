@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using Newtonsoft.Json;
 
 namespace XRayBuilderGUI
 {
@@ -226,25 +227,37 @@ namespace XRayBuilderGUI
             }
 
             Logger.Log("Writing Author Profile to file...");
-
-            //Create list of Asin numbers and titles
-            List<string> authorsOtherBookList = new List<string>();
-            foreach (BookInfo bk in otherBooks)
+            
+            var authorOtherBooks = otherBooks.Select(book => new Model.AuthorProfile.Book
             {
-                authorsOtherBookList.Add($@"{{""e"":1,""a"":""{bk.asin}"",""t"":""{bk.title}""}}");
-            }
+                E = 1,
+                Asin = book.asin,
+                Title = book.title
+            }).ToArray();
 
-            //Create finalAuthorProfile.profile.ASIN.asc
-            int unixTimestamp = (Int32) (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            var ap = new Model.AuthorProfile
+            {
+                Asin = _curBook.asin,
+                CreationDate = Functions.UnixTimestampNow(),
+                OtherBooks = authorOtherBooks,
+                Authors = new []
+                {
+                    new Model.AuthorProfile.Author
+                    {
+                        Asin = authorAsin,
+                        Bio = BioTrimmed,
+                        ImageHeight = ApAuthorImage.Height,
+                        Name = _curBook.author,
+                        OtherBookAsins = otherBooks.Select(book => book.asin).ToArray(),
+                        Picture = Functions.ImageToBase64(ApAuthorImage, ImageFormat.Jpeg)
+                    }
+                }
+            };
+
+            string authorProfileOutput = JsonConvert.SerializeObject(ap);
+
             try
             {
-                string base64Image = Functions.ImageToBase64(ApAuthorImage, ImageFormat.Jpeg);
-                string authorProfileOutput = @"{""u"":[{""y"":" + ApAuthorImage.Height + @",""l"":[""" +
-                                          string.Join(@""",""", otherBooks.Select(book => book.asin).ToArray()) + @"""],""n"":""" +
-                                          _curBook.author + @""",""a"":""" + authorAsin + @""",""b"":""" + BioTrimmed +
-                                          @""",""i"":""" + base64Image + @"""}],""a"":""" +
-                                          $@"{_curBook.asin}"",""d"":{unixTimestamp},""o"":[" +
-                                          string.Join(",", authorsOtherBookList.ToArray()) + "]}";
                 File.WriteAllText(ApPath, authorProfileOutput);
                 Logger.Log("Author Profile file created successfully!\r\nSaved to " + ApPath);
             }

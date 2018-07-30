@@ -10,7 +10,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using HtmlAgilityPack;
+using Newtonsoft.Json;
 using XRayBuilderGUI.DataSources;
+using XRayBuilderGUI.Model;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI
@@ -379,62 +381,77 @@ namespace XRayBuilderGUI
 
         public void GenerateStartActions()
         {
-            string[] templates = GetBaseTemplates(Environment.CurrentDirectory + @"\dist\BaseStartActions.txt", 4);
-            if (templates == null) return;
+            //string[] templates = GetBaseTemplates(Environment.CurrentDirectory + @"\dist\BaseStartActions.txt", 4);
+            //if (templates == null) return;
+            var template = File.ReadAllText(Environment.CurrentDirectory + @"\dist\NewBaseStartActions.txt", Encoding.UTF8);
+            var startActions = JsonConvert.DeserializeObject<StartActions>(template);
+            startActions.BookInfo = new StartActions.StartActionsBookInfo
+            {
+                Asin = curBook.asin,
+                ContentType = "EBOK",
+                Timestamp = Functions.UnixTimestampMilliseconds(),
+                RefTagSuffix = "AAAgAAA",
+                ImageUrl = curBook.bookImageUrl,
+                Erl = -1
+            };
+            startActions.Data.SeriesPosition = new StartActions.SeriesPosition
+            {
+                PositionInSeries = Convert.ToInt32(double.Parse(curBook.seriesPosition)),
+                TotalInSeries = curBook.totalInSeries,
+                SeriesName = curBook.seriesName
+            };
+            startActions.Data.FollowSubscriptions = new StartActions.AuthorSubscriptions
+            {
+                Subscriptions = new []
+                {
+                    new StartActions.Subscription
+                    {
+                        Asin = curBook.authorAsin,
+                        Name = curBook.author,
+                        ImageUrl = curBook.authorImageUrl
+                    }
+                }
+            };
+            startActions.Data.AuthorSubscriptions = startActions.Data.FollowSubscriptions;
+            startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMPASSAGES%", curBook.notableClips.Count.ToString());
+            startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMHIGHLIGHTS%", curBook.notableClips.Sum(c => c.Likes).ToString());
+            startActions.Data.GrokShelfInfo.Asin = curBook.asin;
+            startActions.Data.BookDescription = StartActionsExtensions.BookInfoToBook(curBook, true);
+            startActions.Data.CurrentBook = startActions.Data.BookDescription;
+            startActions.Data.AuthorBios = new StartActions.AuthorBios
+            {
+                Authors = new []
+                {
+                    new StartActions.Author
+                    {
+                        // TODO: Check mismatched fields from curbook and authorprofile
+                        Asin = _authorProfile.authorAsin,
+                        Name = curBook.author,
+                        Bio = _authorProfile.BioTrimmed,
+                        ImageUrl = _authorProfile.authorImageUrl
+                    }
+                }
+            };
+            startActions.Data.AuthorRecs = new StartActions.AuthorRecs
+            {
+                Recommendations = _authorProfile.otherBooks.Select(bk => StartActionsExtensions.BookInfoToBook(bk, false)).ToArray()
+            };
+            startActions.Data.ReadingTime.Hours = curBook.readingHours;
+            startActions.Data.ReadingTime.Minutes = curBook.readingMinutes;
+            startActions.Data.ReadingTime.FormattedTime.Replace("%HOURS%", curBook.readingHours.ToString());
+            startActions.Data.ReadingTime.FormattedTime.Replace("%MINUTES%", curBook.readingMinutes.ToString());
+            startActions.Data.PreviousBookInTheSeries = StartActionsExtensions.BookInfoToBook(curBook.previousInSeries, true);
+            startActions.Data.ReadingPages.PagesInBook = curBook.pagesInBook;
 
-            string bookInfoTemplate = templates[0];
-            string widgetsTemplate = templates[1];
-            string layoutsTemplate = templates[2];
-            string welcomeTextTemplate = templates[3];
-
-            string finalOutput = "{{{0},{1},{2},{3}}}"; //bookInfo, widgets, layouts, welcometext, data
-
-            // Build bookInfo object
-            TimeSpan timestamp = DateTime.Now - new DateTime(1970, 1, 1);
-            bookInfoTemplate = String.Format(bookInfoTemplate, curBook.asin, Math.Round(timestamp.TotalMilliseconds), curBook.bookImageUrl);
-
-            // Build data object
-            string authorRecsTemplate = @"""authorRecs"":{{""class"":""recommendationList"",""recommendations"":[{0}]}}";
-
-            string seriesPosition = curBook.seriesPosition == "" ? "" : String.Format(@"""seriesPosition"":{{""class"":""seriesPosition"",""positionInSeries"":{0},""totalInSeries"":{1},""seriesName"":""{2}""}}", curBook.seriesPosition, curBook.totalInSeries, curBook.seriesName);
-            string followSubscriptions = String.Format(@"""followSubscriptions"":{{""class"":""authorSubscriptionInfoList"",""subscriptions"":[{{""class"":""authorSubscriptionInfo"",""asin"":""{0}"",""name"":""{1}"",""subscribed"":false,""imageUrl"":""{2}""}}]}}", curBook.authorAsin, curBook.author, curBook.authorImageUrl);
-            string popularHighlightsText = curBook.notableClips == null ? "" : String.Format(@"""popularHighlightsText"":{{""class"":""dynamicText"",""localizedText"":{{""de"":""{0} Passagen wurden {1} mal markiert"",""en-US"":""{0} passages have been highlighted {1} times"",""ru"":""1\u00A0902 \u043E\u0442\u0440\u044B\u0432\u043A\u043E\u0432 \u0431\u044B\u043B\u043E \u0432\u044B\u0434\u0435\u043B\u0435\u043D\u043E 18\u00A0660 \u0440\u0430\u0437"",""pt-BR"":""{0} trechos foram destacados {1} vezes"",""ja"":""{0}\u7B87\u6240\u304C{1}\u56DE\u30CF\u30A4\u30E9\u30A4\u30C8\u3055\u308C\u307E\u3057\u305F"",""en"":""{0} passages have been highlighted {1} times"",""it"":""{0} brani sono stati evidenziati {1} volte"",""fr"":""{0}\u00A0902 passages ont \u00E9t\u00E9 surlign\u00E9s {1}\u00A0660 fois"",""zh-CN"":""{0} \u4E2A\u6BB5\u843D\u88AB\u6807\u6CE8\u4E86 {1} \u6B21"",""es"":""Se han subrayado {0} pasajes {1} veces"",""nl"":""{0} fragmenten zijn {1} keer gemarkeerd""}}}}",
-                curBook.notableClips.Count, curBook.notableClips.Sum(c => c.Likes));
-            string grokShelfInfo = String.Format(@"""grokShelfInfo"":{{""class"":""goodReadsShelfInfo"",""asin"":""{0}"",""shelves"":[""to-read""],""is_sensitive"":false,""is_autoshelving_enabled"":true}}", curBook.asin);
-            string bookDescription = String.Format(@"""bookDescription"":{0}", curBook.ToExtraJSON("featuredRecommendation"));
-            string authorBios = String.Format(@"""authorBios"":{{""class"":""authorBioList"",""authors"":[{0}]}}", _authorProfile.ToJSON());
-            string authorRecs = _authorProfile.otherBooks.Count > 0 ? String.Format(authorRecsTemplate, String.Join(",", _authorProfile.otherBooks.Select(bk => bk.ToJSON("recommendation", false)).ToArray())) : "";
-            string currentBook = String.Format(@"""currentBook"":{0}", curBook.ToExtraJSON("featuredRecommendation"));
-            string readingTime = String.Format(@"""readingTime"":{{""class"":""time"",""hours"":{0},""minutes"":{1},""formattedTime"":{{""de"":""{0} Stunden und {1} Minuten"",""en-US"":""{0} hours and {1} minutes"",""ru"":""{0}\u00A0\u0447 \u043{0} {1}\u00A0\u043C\u043{0}\u043D"",""pt-BR"":""{0} horas e {1} minutos"",""ja"":""{0}\u6642\u9593{1}\u5206"",""en"":""{0} hours and {1} minutes"",""it"":""{0} ore e {1} minuti"",""fr"":""{0} heures et {1} minutes"",""zh-CN"":""{0} \u5C0F\u65F6 {1} \u5206\u949F"",""es"":""{0} horas y {1} minutos"",""nl"":""{0} uur en {1} minuten""}}}}", curBook.readingHours, curBook.readingMinutes);
-            string previousBookInSeries = curBook.previousInSeries == null ? "" : String.Format(@"""previousBookInTheSeries"":{0}", curBook.previousInSeries.ToExtraJSON("featuredRecommendation"));
-            string authorSubscriptions = String.Format(@"""authorSubscriptions"":{{""class"":""authorSubscriptionInfoList"",""subscriptions"":[{{""class"":""authorSubscriptionInfo"",""asin"":""{0}"",""name"":""{1}"",""subscribed"":false,""imageUrl"":""{2}""}}]}}", curBook.authorAsin, curBook.author, curBook.authorImageUrl);
-            string readingPages = String.Format(@"""readingPages"":{{""class"":""pages"",""pagesInBook"":{0}}}", curBook.pagesInBook);
-
+            string finalOutput;
             try
             {
-                var dataTemplate = @"""data"":{{{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12}}}";
-
-                dataTemplate = string.Format(dataTemplate,
-                    seriesPosition,
-                    followSubscriptions,
-                    welcomeTextTemplate,
-                    popularHighlightsText,
-                    grokShelfInfo,
-                    bookDescription,
-                    authorBios,
-                    authorRecs,
-                    currentBook,
-                    readingTime,
-                    previousBookInSeries,
-                    authorSubscriptions,
-                    readingPages);
-                dataTemplate = dataTemplate.Replace(",,", ",");
-
-                finalOutput = String.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
+                finalOutput = Functions.ExpandUnicode(JsonConvert.SerializeObject(startActions));
             }
             catch (Exception ex)
             {
-                Logger.Log("An error occurred creating the StartAction data template: " + ex.Message + "\r\n" + ex.StackTrace);
+                Logger.Log("An error occurred creating the StartActions template: " + ex.Message + "\r\n" + ex.StackTrace);
+                return;
             }
 
             Logger.Log("Writing StartActions to file...");

@@ -149,7 +149,7 @@ namespace XRayBuilderGUI.DataSources
                         "Please report this book and the Goodreads URL and output log to improve parsing.");
                 }
             }
-            else if (curBook.seriesPosition != curBook.totalInSeries && !curBook.seriesPosition.Contains("."))
+            else if (curBook.seriesPosition != curBook.totalInSeries.ToString() && !curBook.seriesPosition.Contains("."))
                 Logger.Log("An error occurred finding the next book in series, the book may not be part of a series, or it is the latest release.");
 
             if (seriesInfo.TryGetValue("Previous", out book))
@@ -213,7 +213,7 @@ namespace XRayBuilderGUI.DataSources
             {
                 Logger.Log($"Series Goodreads Page URL: {goodreadsSeriesUrl}");
                 curBook.seriesName = match.Groups[1].Value.Trim();
-                curBook.seriesPosition = match.Groups[2].Value.Trim();
+                curBook.seriesPosition = match.Groups[2].Value;
             }
             else
                 return results;
@@ -224,7 +224,7 @@ namespace XRayBuilderGUI.DataSources
             seriesNode = seriesHtmlDoc.DocumentNode.SelectSingleNode("//div[contains(@class, 'responsiveSeriesHeader__subtitle')]");
             match = Regex.Match(seriesNode?.InnerText ?? "", @"([0-9]+) (?:primary )?works?");
             if (match.Success)
-                curBook.totalInSeries = match.Groups[1].Value;
+                curBook.totalInSeries = int.Parse(match.Groups[1].Value);
             
             int positionInt = (int)Convert.ToDouble(curBook.seriesPosition, CultureInfo.InvariantCulture.NumberFormat);
             int totalInt = (int)Convert.ToDouble(curBook.totalInSeries, CultureInfo.InvariantCulture.NumberFormat);
@@ -326,9 +326,9 @@ namespace XRayBuilderGUI.DataSources
                 double minutes = int.Parse(match.Groups[1].Value, NumberStyles.AllowThousands) * 1.2890625;
                 TimeSpan span = TimeSpan.FromMinutes(minutes);
                 Logger.Log(String.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)", span.Hours, span.Minutes, match.Groups[1].Value));
-                curBook.pagesInBook = match.Groups[1].Value;
-                curBook.readingHours = span.Hours.ToString();
-                curBook.readingMinutes = span.Minutes.ToString();
+                curBook.pagesInBook = int.Parse(match.Groups[1].Value);
+                curBook.readingHours = span.Hours;
+                curBook.readingMinutes = span.Minutes;
                 return true;
             }
             return false;

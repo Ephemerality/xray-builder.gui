@@ -107,7 +107,7 @@ namespace XRayBuilderGUI.DataSources
                         "Please report this book and the Shelfari URL and output log to improve parsing.");
 
             }
-            else if (curBook.seriesPosition != curBook.totalInSeries)
+            else if (curBook.seriesPosition != curBook.totalInSeries.ToString())
                 Logger.Log("An error occured finding the next book in series, the book may not be part of a series, or it is the latest release.");
 
             if (seriesInfo.TryGetValue("Previous", out title))
@@ -176,7 +176,7 @@ namespace XRayBuilderGUI.DataSources
 
                         Logger.Log("About the series: " + seriesType.InnerText.Replace(". (standard series)", ""));
                         curBook.seriesPosition = match.Groups[1].Value;
-                        curBook.totalInSeries = match.Groups[2].Value;
+                        curBook.totalInSeries = int.Parse(match.Groups[2].Value);
                         curBook.seriesName = match.Groups[3].Value;
                         HtmlNode seriesInfo = seriesNode.SelectSingleNode(".//p");
                         //Parse preceding book
@@ -241,9 +241,9 @@ namespace XRayBuilderGUI.DataSources
                 double minutes = int.Parse(match1.Groups[1].Value, NumberStyles.AllowThousands) * 1.2890625;
                 TimeSpan span = TimeSpan.FromMinutes(minutes);
                 Logger.Log(String.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)", span.Hours, span.Minutes, match1.Groups[1].Value));
-                curBook.pagesInBook = match1.Groups[1].Value;
-                curBook.readingHours = span.Hours.ToString();
-                curBook.readingMinutes = span.Minutes.ToString();
+                curBook.pagesInBook = int.Parse(match1.Groups[1].Value);
+                curBook.readingHours = span.Hours;
+                curBook.readingMinutes = span.Minutes;
                 return true;
             }
             return false;

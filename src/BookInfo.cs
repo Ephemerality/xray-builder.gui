@@ -19,7 +19,7 @@ namespace XRayBuilderGUI
         public string desc = "";
         public string bookImageUrl = "";
         private System.Drawing.Bitmap _bookImage;
-        public float amazonRating;
+        public double amazonRating;
         public int numReviews;
         public string dataUrl = "";
         public string amazonUrl = "";
@@ -32,11 +32,11 @@ namespace XRayBuilderGUI
 
         // Added StartAction info
         public string seriesName = "";
-        public string seriesPosition = "";
-        public string totalInSeries = "";
-        public string readingHours = "";
-        public string readingMinutes = "";
-        public string pagesInBook = "";
+        public string seriesPosition;
+        public int totalInSeries;
+        public int readingHours;
+        public int readingMinutes;
+        public int pagesInBook;
         public BookInfo nextInSeries;
         public BookInfo previousInSeries;
 

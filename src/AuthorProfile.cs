@@ -238,7 +238,7 @@ namespace XRayBuilderGUI
             var ap = new Model.AuthorProfile
             {
                 Asin = _curBook.asin,
-                CreationDate = Functions.UnixTimestampNow(),
+                CreationDate = Functions.UnixTimestampSeconds(),
                 OtherBooks = authorOtherBooks,
                 Authors = new []
                 {

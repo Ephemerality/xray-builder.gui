@@ -487,9 +487,14 @@ namespace XRayBuilderGUI
             return author.Equals(newAuthor) && title.Equals(newTitle);
         }
 
-        public static long UnixTimestampNow()
+        public static long UnixTimestampSeconds()
         {
             return (long) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
+        }
+
+        public static long UnixTimestampMilliseconds()
+        {
+            return (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
         }
     }
 

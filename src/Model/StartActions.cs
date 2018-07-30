@@ -20,7 +20,7 @@ namespace XRayBuilderGUI.Model
         public class StartActionsBookInfo
         {
             [JsonProperty("class")]
-            public string Class { get; set; }
+            public string Class { get; set; } = "bookInfo";
 
             [JsonProperty("asin")]
             public string Asin { get; set; }
@@ -233,7 +233,7 @@ namespace XRayBuilderGUI.Model
         public class SeriesPosition
         {
             [JsonProperty("class")]
-            public string Class { get; set; }
+            public string Class { get; set; } = "seriesPosition";
 
             [JsonProperty("positionInSeries")]
             public int PositionInSeries { get; set; }
@@ -249,7 +249,7 @@ namespace XRayBuilderGUI.Model
         {
 
             [JsonProperty("class")]
-            public string Class { get; set; }
+            public string Class { get; set; } = "authorSubscriptionInfo";
 
             [JsonProperty("asin")]
             public string Asin { get; set; }
@@ -264,10 +264,10 @@ namespace XRayBuilderGUI.Model
             public string ImageUrl { get; set; }
         }
 
-        public class FollowSubscriptions
+        public class AuthorSubscriptions
         {
             [JsonProperty("class")]
-            public string Class { get; set; }
+            public string Class { get; set; } = "authorSubscriptionInfoList";
 
             [JsonProperty("subscriptions")]
             public Subscription[] Subscriptions { get; set; }
@@ -351,42 +351,10 @@ namespace XRayBuilderGUI.Model
             public bool IsAutoshelvingEnabled { get; set; }
         }
 
-        public class BookDescription
-        {
-
-            [JsonProperty("class")]
-            public string Class { get; set; }
-
-            [JsonProperty("asin")]
-            public string Asin { get; set; }
-
-            [JsonProperty("title")]
-            public string Title { get; set; }
-
-            [JsonProperty("description")]
-            public string Description { get; set; }
-
-            [JsonProperty("authors")]
-            public string[] Authors { get; set; }
-
-            [JsonProperty("imageUrl")]
-            public string ImageUrl { get; set; }
-
-            [JsonProperty("hasSample")]
-            public bool HasSample { get; set; }
-
-            [JsonProperty("amazonRating")]
-            public double AmazonRating { get; set; }
-
-            [JsonProperty("numberOfReviews")]
-            public int NumberOfReviews { get; set; }
-        }
-
         public class Author
         {
-
             [JsonProperty("class")]
-            public string Class { get; set; }
+            public string Class { get; set; } = "authorBio";
 
             [JsonProperty("asin")]
             public string Asin { get; set; }
@@ -403,9 +371,8 @@ namespace XRayBuilderGUI.Model
 
         public class AuthorBios
         {
-
             [JsonProperty("class")]
-            public string Class { get; set; }
+            public string Class { get; set; } = "authorBioList";
 
             [JsonProperty("authors")]
             public Author[] Authors { get; set; }
@@ -413,9 +380,8 @@ namespace XRayBuilderGUI.Model
 
         public class Recommendation
         {
-
             [JsonProperty("class")]
-            public string Class { get; set; }
+            public string Class { get; set; } = "recommendation";
 
             [JsonProperty("asin")]
             public string Asin { get; set; }
@@ -435,16 +401,16 @@ namespace XRayBuilderGUI.Model
 
         public class AuthorRecs
         {
-
             [JsonProperty("class")]
-            public string Class { get; set; }
+            public string Class { get; set; } = "recommendationList";
 
             [JsonProperty("recommendations")]
-            public Recommendation[] Recommendations { get; set; }
+            public Book[] Recommendations { get; set; }
         }
 
-        public class CurrentBook
+        public class Book
         {
+            private double? _amazonRating;
 
             [JsonProperty("class")]
             public string Class { get; set; }
@@ -455,7 +421,7 @@ namespace XRayBuilderGUI.Model
             [JsonProperty("title")]
             public string Title { get; set; }
 
-            [JsonProperty("description")]
+            [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
             public string Description { get; set; }
 
             [JsonProperty("authors")]
@@ -467,18 +433,21 @@ namespace XRayBuilderGUI.Model
             [JsonProperty("hasSample")]
             public bool HasSample { get; set; }
 
-            [JsonProperty("amazonRating")]
-            public double AmazonRating { get; set; }
+            [JsonProperty("amazonRating", NullValueHandling = NullValueHandling.Ignore)]
+            public double? AmazonRating
+            {
+                get => _amazonRating.HasValue ? (double?) Math.Round(_amazonRating.Value, 1) : null;
+                set => _amazonRating = value;
+            }
 
-            [JsonProperty("numberOfReviews")]
-            public int NumberOfReviews { get; set; }
+            [JsonProperty("numberOfReviews", NullValueHandling = NullValueHandling.Ignore)]
+            public int? NumberOfReviews { get; set; }
         }
 
         public class ReadingTime
         {
-
             [JsonProperty("class")]
-            public string Class { get; set; }
+            public string Class { get; set; } = "time";
 
             [JsonProperty("hours")]
             public int Hours { get; set; }
@@ -490,52 +459,10 @@ namespace XRayBuilderGUI.Model
             public LocalizedText FormattedTime { get; set; }
         }
 
-        public class PreviousBookInTheSeries
-        {
-
-            [JsonProperty("class")]
-            public string Class { get; set; }
-
-            [JsonProperty("asin")]
-            public string Asin { get; set; }
-
-            [JsonProperty("title")]
-            public string Title { get; set; }
-
-            [JsonProperty("description")]
-            public string Description { get; set; }
-
-            [JsonProperty("authors")]
-            public string[] Authors { get; set; }
-
-            [JsonProperty("imageUrl")]
-            public string ImageUrl { get; set; }
-
-            [JsonProperty("hasSample")]
-            public bool HasSample { get; set; }
-
-            [JsonProperty("amazonRating")]
-            public double AmazonRating { get; set; }
-
-            [JsonProperty("numberOfReviews")]
-            public int NumberOfReviews { get; set; }
-        }
-
-        public class AuthorSubscriptions
-        {
-
-            [JsonProperty("class")]
-            public string Class { get; set; }
-
-            [JsonProperty("subscriptions")]
-            public Subscription[] Subscriptions { get; set; }
-        }
-
         public class ReadingPages
         {
-
             [JsonProperty("class")]
-            public string Class { get; set; }
+            public string Class { get; set; } = "pages";
 
             [JsonProperty("pagesInBook")]
             public int PagesInBook { get; set; }
@@ -543,12 +470,11 @@ namespace XRayBuilderGUI.Model
 
         public class DataJson
         {
-
             [JsonProperty("seriesPosition")]
             public SeriesPosition SeriesPosition { get; set; }
 
             [JsonProperty("followSubscriptions")]
-            public FollowSubscriptions FollowSubscriptions { get; set; }
+            public AuthorSubscriptions FollowSubscriptions { get; set; }
 
             [JsonProperty("welcomeText")]
             public WelcomeText WelcomeText { get; set; }
@@ -560,7 +486,7 @@ namespace XRayBuilderGUI.Model
             public GrokShelfInfo GrokShelfInfo { get; set; }
 
             [JsonProperty("bookDescription")]
-            public BookDescription BookDescription { get; set; }
+            public Book BookDescription { get; set; }
 
             [JsonProperty("authorBios")]
             public AuthorBios AuthorBios { get; set; }
@@ -569,13 +495,13 @@ namespace XRayBuilderGUI.Model
             public AuthorRecs AuthorRecs { get; set; }
 
             [JsonProperty("currentBook")]
-            public CurrentBook CurrentBook { get; set; }
+            public Book CurrentBook { get; set; }
 
             [JsonProperty("readingTime")]
             public ReadingTime ReadingTime { get; set; }
 
             [JsonProperty("previousBookInTheSeries")]
-            public PreviousBookInTheSeries PreviousBookInTheSeries { get; set; }
+            public Book PreviousBookInTheSeries { get; set; }
 
             [JsonProperty("authorSubscriptions")]
             public AuthorSubscriptions AuthorSubscriptions { get; set; }

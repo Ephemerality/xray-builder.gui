@@ -417,7 +417,7 @@ namespace XRayBuilderGUI
             StringBuilder output = new StringBuilder(input.Length);
             for (int i = 0; i < input.Length; i++)
             {
-                if (input[i] > 255)
+                if (input[i] > 127)
                 {
                     byte[] uniBytes = Encoding.Unicode.GetBytes(input.Substring(i, 1));
                     output.AppendFormat(@"\u{0:X2}{1:X2}", uniBytes[1], uniBytes[0]);

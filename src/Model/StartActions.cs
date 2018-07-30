@@ -1,8 +1,38 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
+using static XRayBuilderGUI.Model.StartActions;
 
 namespace XRayBuilderGUI.Model
 {
+    public static class StartActionsExtensions
+    {
+        public static void Replace(this StartActions.LocalizedText text, string toReplace, string replacement)
+        {
+            var props = text.GetType().GetProperties();
+            foreach (var prop in props)
+            {
+                var curVal = prop.GetValue(text).ToString();
+                prop.SetValue(text, curVal.Replace(toReplace, replacement));
+            }
+        }
+
+        public static Book BookInfoToBook(BookInfo bookInfo, bool featured)
+        {
+            return new Book
+            {
+                Class = featured ? "featuredRecommendation" : "recommendation",
+                Asin = bookInfo.asin,
+                Title = bookInfo.title,
+                Authors = new [] { bookInfo.author },
+                ImageUrl = bookInfo.bookImageUrl,
+                Description = featured ? bookInfo.desc : null,
+                AmazonRating = featured ? (double?) bookInfo.amazonRating : null,
+                NumberOfReviews = featured ? (int?) bookInfo.numReviews : null
+            };
+        }
+    }
+
     public class StartActions
     {
         [JsonProperty("bookInfo")]

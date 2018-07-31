@@ -311,64 +311,81 @@ namespace XRayBuilderGUI
 
         public async Task GenerateEndActions(IProgressBar progress, CancellationToken token)
         {
-            string[] templates = GetBaseTemplates(Environment.CurrentDirectory + @"\dist\BaseEndActions.txt", 3);
-            if (templates == null) return;
+            var template = File.ReadAllText(Environment.CurrentDirectory + @"\dist\BaseEndActions.txt", Encoding.UTF8);
+            var endActions = JsonConvert.DeserializeObject<Model.EndActions>(template);
+            endActions.BookInfo = new Model.EndActions.EndActionsBookInfo
+            {
+                Asin = curBook.asin,
+                ContentType = "EBOK",
+                Timestamp = Functions.UnixTimestampMilliseconds(),
+                RefTagSuffix = "AAATAAB",
+                ImageUrl = curBook.bookImageUrl,
+                EmbeddedID = $"{curBook.databasename}:{curBook.Guid}",
+                Erl = _erl
+            };
+            endActions.Data.FollowSubscriptions = new Model.EndActions.AuthorSubscriptions
+            {
+                Subscriptions = new[]
+                {
+                    new Subscription
+                    {
+                        Asin = curBook.authorAsin,
+                        Name = curBook.author,
+                        ImageUrl = curBook.authorImageUrl
+                    }
+                }
+            };
+            endActions.Data.AuthorSubscriptions = endActions.Data.FollowSubscriptions;
+            endActions.Data.NextBook = Extensions.BookInfoToBook(curBook.nextInSeries, false);
+            endActions.Data.PublicSharedRating = new Model.EndActions.Rating
+            {
+                Class = "publicSharedRating",
+                Timestamp = Functions.UnixTimestampMilliseconds(),
+                Value = Math.Round(curBook.amazonRating, 1)
+            };
+            endActions.Data.CustomerProfile = new Model.EndActions.CustomerProfile
+            {
+                PenName = _settings.PenName,
+                RealName = _settings.RealName
+            };
+            endActions.Data.Rating = endActions.Data.PublicSharedRating;
+            endActions.Data.AuthorBios = new AuthorBios
+            {
+                Authors = new[]
+                {
+                    new Author
+                    {
+                        // TODO: Check mismatched fields from curbook and authorprofile
+                        Asin = _authorProfile.authorAsin,
+                        Name = curBook.author,
+                        Bio = _authorProfile.BioTrimmed,
+                        ImageUrl = _authorProfile.authorImageUrl
+                    }
+                }
+            };
+            endActions.Data.AuthorRecs = new Recs
+            {
+                Class = "featuredRecommendationList",
+                Recommendations = _authorProfile.otherBooks.Select(bk => Extensions.BookInfoToBook(bk, true)).ToArray()
+            };
+            endActions.Data.CustomersWhoBoughtRecs = new Recs
+            {
+                Class = "featuredRecommendationList",
+                Recommendations = custAlsoBought.Select(bk => Extensions.BookInfoToBook(bk, true)).ToArray()
+            };
 
-            Logger.Log($"Gathering additional metadata for {curBook.title}...");
-            string bookInfoTemplate = templates[0];
-            string widgetsTemplate = templates[1];
-            string layoutsTemplate = templates[2];
-            string finalOutput = "{{{0},{1},{2},{3}}}"; //bookInfo, widgets, layouts, data
-            
-            // Build bookInfo object
-            TimeSpan timestamp = DateTime.Now - new DateTime(1970, 1, 1);
-            bookInfoTemplate = String.Format(bookInfoTemplate, curBook.asin, Math.Round(timestamp.TotalMilliseconds), curBook.bookImageUrl, curBook.databasename, curBook.Guid, _erl);
-            double dateMs = Math.Round(timestamp.TotalMilliseconds);
-            string ratingText = Math.Floor(curBook.amazonRating).ToString();
+            //string goodReads = String.Format(@"""goodReadsReview"":{{""class"":""goodReadsReview"",""reviewId"":""NoReviewId"",""rating"":{0},""submissionDateMs"":{1}}}", ratingText, dateMs);
 
-            // Build data object
-            string dataTemplate = "";
-
-            string followSubscriptions = String.Format(@"""followSubscriptions"":{{""class"":""authorSubscriptionInfoList"",""subscriptions"":[{{""class"":""authorSubscriptionInfo"",""asin"":""{0}"",""name"":""{1}"",""subscribed"":false,""imageUrl"":""{2}""}}]}}", curBook.authorAsin, curBook.author, curBook.authorImageUrl);
-            string authorSubscriptions = String.Format(@"""authorSubscriptions"":{{""class"":""authorSubscriptionInfoList"",""subscriptions"":[{{""class"":""authorSubscriptionInfo"",""asin"":""{0}"",""name"":""{1}"",""subscribed"":false,""imageUrl"":""{2}""}}]}}", curBook.authorAsin, curBook.author, curBook.authorImageUrl);
-            string publicSharedRating = String.Format(@"""publicSharedRating"":{{""class"":""publicSharedRating"",""timestamp"":{0},""value"":{1}}}", dateMs, ratingText);
-            string customerProfile = String.Format(@"""customerProfile"":{{""class"":""customerProfile"",""penName"":""{0}"",""realName"":""{1}""}}", _settings.PenName, _settings.RealName);
-            string rating = String.Format(@"""rating"":{{""class"":""personalizationRating"",""timestamp"":{0},""value"":{1}}}", dateMs, ratingText);
-            string authorBios = String.Format(@"""authorBios"":{{""class"":""authorBioList"",""authors"":[{0}]}}", _authorProfile.ToJSON());
-            string authorRecs = @"""authorRecs"":{{""class"":""featuredRecommendationList"",""recommendations"":[{0}]}}";
-            string customersWhoBoughtRecs = @"""customersWhoBoughtRecs"":{{""class"":""featuredRecommendationList"",""recommendations"":[{0}]}}";
-            string goodReads = String.Format(@"""goodReadsReview"":{{""class"":""goodReadsReview"",""reviewId"":""NoReviewId"",""rating"":{0},""submissionDateMs"":{1}}}", ratingText, dateMs);
-            string nextBook = curBook.nextInSeries != null ? curBook.nextInSeries.ToJSON("recommendation", false) : "";
-
-            if (_authorProfile.otherBooks.Count > 0)
-                authorRecs = String.Format(authorRecs,
-                    String.Join(",",
-                        _authorProfile.otherBooks.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
-            if (custAlsoBought.Count > 0)
-                customersWhoBoughtRecs = String.Format(customersWhoBoughtRecs,
-                    String.Join(",", custAlsoBought.Select(bk => bk.ToJSON("featuredRecommendation", true)).ToArray()));
+            string finalOutput;
             try
             {
-                dataTemplate = @"""data"":{{{0},{1},{2},{3},{4},{5},{6},{7},{8}}}";
-                dataTemplate = String.Format(dataTemplate,
-                    followSubscriptions,
-                    nextBook != "" ? $"\"nextBook\":{nextBook}" : "",
-                    publicSharedRating,
-                    customerProfile,
-                    rating,
-                    authorBios,
-                    authorRecs,
-                    customersWhoBoughtRecs,
-                    authorSubscriptions);
-                dataTemplate = dataTemplate.Replace(",,", ",");
+                finalOutput = Functions.ExpandUnicode(JsonConvert.SerializeObject(endActions));
             }
             catch (Exception ex)
             {
                 Logger.Log("An error occurred creating the EndAction data template: " + ex.Message + "\r\n" + ex.StackTrace);
                 throw;
             }
-
-            finalOutput = String.Format(finalOutput, bookInfoTemplate, widgetsTemplate, layoutsTemplate, dataTemplate);
 
             Logger.Log("Writing EndActions to file...");
             using (StreamWriter streamWriter = new StreamWriter(EaPath, false))

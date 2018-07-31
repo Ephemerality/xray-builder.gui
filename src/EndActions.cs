@@ -507,34 +507,6 @@ namespace XRayBuilderGUI
             }
         }
 
-        /// <summary>
-        /// Retrieve templates from specified file.
-        /// Array will always have the length of templateCount. Index 0 will always be the bookInfo template.
-        /// </summary>
-        private string[] GetBaseTemplates(string baseFile, int templateCount)
-        {
-            try
-            {
-                using (StreamReader streamReader = new StreamReader(baseFile, Encoding.UTF8))
-                {
-                    var templates = streamReader.ReadToEnd().Split(new [] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries)
-                        .Where(r => !r.StartsWith("//")).ToArray(); //Remove commented lines
-                    if (templates.Length == 0 || templates.Length != templateCount || !templates[0].StartsWith(@"""bookInfo"""))
-                    {
-                        Logger.Log($"An error occurred parsing {baseFile}. If you modified it, ensure you followed the specified format.");
-                        return null;
-                    }
-                    return templates;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Log($"An error occurred while opening the {baseFile} file.\r\n"
-                    + $"Ensure you extracted it to the same directory as the program.\r\n{ex.Message}");
-            }
-            return null;
-        }
-
         public class Settings
         {
             public string OutDir { get; set; }

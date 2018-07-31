@@ -381,9 +381,7 @@ namespace XRayBuilderGUI
 
         public void GenerateStartActions()
         {
-            //string[] templates = GetBaseTemplates(Environment.CurrentDirectory + @"\dist\BaseStartActions.txt", 4);
-            //if (templates == null) return;
-            var template = File.ReadAllText(Environment.CurrentDirectory + @"\dist\NewBaseStartActions.txt", Encoding.UTF8);
+            var template = File.ReadAllText(Environment.CurrentDirectory + @"\dist\BaseStartActions.txt", Encoding.UTF8);
             var startActions = JsonConvert.DeserializeObject<StartActions>(template);
             startActions.BookInfo = new StartActions.StartActionsBookInfo
             {
@@ -404,7 +402,7 @@ namespace XRayBuilderGUI
             {
                 Subscriptions = new []
                 {
-                    new StartActions.Subscription
+                    new Subscription
                     {
                         Asin = curBook.authorAsin,
                         Name = curBook.author,
@@ -416,13 +414,13 @@ namespace XRayBuilderGUI
             startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMPASSAGES%", curBook.notableClips.Count.ToString());
             startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMHIGHLIGHTS%", curBook.notableClips.Sum(c => c.Likes).ToString());
             startActions.Data.GrokShelfInfo.Asin = curBook.asin;
-            startActions.Data.BookDescription = StartActionsExtensions.BookInfoToBook(curBook, true);
+            startActions.Data.BookDescription = Extensions.BookInfoToBook(curBook, true);
             startActions.Data.CurrentBook = startActions.Data.BookDescription;
-            startActions.Data.AuthorBios = new StartActions.AuthorBios
+            startActions.Data.AuthorBios = new AuthorBios
             {
                 Authors = new []
                 {
-                    new StartActions.Author
+                    new Author
                     {
                         // TODO: Check mismatched fields from curbook and authorprofile
                         Asin = _authorProfile.authorAsin,
@@ -432,15 +430,16 @@ namespace XRayBuilderGUI
                     }
                 }
             };
-            startActions.Data.AuthorRecs = new StartActions.AuthorRecs
+            startActions.Data.AuthorRecs = new Recs
             {
-                Recommendations = _authorProfile.otherBooks.Select(bk => StartActionsExtensions.BookInfoToBook(bk, false)).ToArray()
+                Class = "recommendationList",
+                Recommendations = _authorProfile.otherBooks.Select(bk => Extensions.BookInfoToBook(bk, false)).ToArray()
             };
             startActions.Data.ReadingTime.Hours = curBook.readingHours;
             startActions.Data.ReadingTime.Minutes = curBook.readingMinutes;
             startActions.Data.ReadingTime.FormattedTime.Replace("%HOURS%", curBook.readingHours.ToString());
             startActions.Data.ReadingTime.FormattedTime.Replace("%MINUTES%", curBook.readingMinutes.ToString());
-            startActions.Data.PreviousBookInTheSeries = StartActionsExtensions.BookInfoToBook(curBook.previousInSeries, true);
+            startActions.Data.PreviousBookInTheSeries = Extensions.BookInfoToBook(curBook.previousInSeries, true);
             startActions.Data.ReadingPages.PagesInBook = curBook.pagesInBook;
 
             string finalOutput;

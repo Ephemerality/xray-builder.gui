@@ -8,12 +8,12 @@ namespace XRayBuilderGUI.Unpack
 {
     public abstract class Decompressor
     {
-        public abstract byte[] unpack(byte[] data, uint unpackedSize);
+        public abstract byte[] unpack(byte[] data);
     }
 
     class UncompressedReader : Decompressor
     {
-        public override byte[] unpack(byte[] data, uint unpackedSize)
+        public override byte[] unpack(byte[] data)
         {
             return data;
         }
@@ -21,10 +21,10 @@ namespace XRayBuilderGUI.Unpack
 
     class PalmDOCReader : Decompressor
     {
-        public override byte[] unpack(byte[] data, uint unpackedSize)
+        public override byte[] unpack(byte[] data)
         {
             int p = 0;
-            byte[] o = new byte[unpackedSize];
+            byte[] o = new byte[4096];
             int op = 0;
             while (p < data.Length)
             {
@@ -153,9 +153,9 @@ namespace XRayBuilderGUI.Unpack
             return new Slice(slice, blen & 0x8000);
         }
 
-        public override byte[] unpack(byte[] data, uint unpackedSize)
+        public override byte[] unpack(byte[] data)
         {
-            byte[] o = new byte[unpackedSize];
+            byte[] o = new byte[4096];
             byte[] temp8 = new byte[8];
             int op = 0;
             int bitsleft = data.Length * 8;
@@ -191,7 +191,7 @@ namespace XRayBuilderGUI.Unpack
                 Slice slice = dictionary[r];
                 if (slice.flag == 0)
                 {
-                    byte[] newSlice = unpack(slice.slice, 4096);
+                    byte[] newSlice = unpack(slice.slice);
                     slice = new Slice(newSlice, 1);
                     dictionary[r] = slice;
                 }

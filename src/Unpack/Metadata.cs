@@ -149,7 +149,7 @@ namespace XRayBuilderGUI.Unpack
                 fs.Seek(PDB._recInfo[i].RecordDataOffset, SeekOrigin.Begin);
                 fs.Read(buffer, 0, buffer.Length);
                 buffer = trimTrailingDataEntries(buffer);
-                byte[] result = decomp.unpack(buffer, PDB.MobiHeaderSize);
+                byte[] result = decomp.unpack(buffer);
                 buffer = new byte[rawML.Length + result.Length];
                 Buffer.BlockCopy(rawML, 0, buffer, 0, rawML.Length);
                 Buffer.BlockCopy(result, 0, buffer, rawML.Length, result.Length);

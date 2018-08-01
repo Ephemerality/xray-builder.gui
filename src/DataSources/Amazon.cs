@@ -118,7 +118,9 @@ namespace XRayBuilderGUI.DataSources
 
         public static HtmlNode GetAuthorImageNode(AuthorSearchResults searchResults, string TLD)
         {
-            return searchResults.authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-image']/img");
+            return searchResults.authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-image']/img")
+                   ?? searchResults.authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='authorImage']/img")
+                   ?? throw new DataSource.FormatChangedException(nameof(Amazon), "author image");
         }
 
         public static List<BookInfo> GetAuthorBooks(AuthorSearchResults searchResults, string curTitle, string curAuthor, string TLD)

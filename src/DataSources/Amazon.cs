@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
@@ -113,7 +114,9 @@ namespace XRayBuilderGUI.DataSources
         // Get biography from results page; TLD included in case different Amazon sites have different formatting
         public static HtmlNode GetBioNode(AuthorSearchResults searchResults, string TLD)
         {
-            return searchResults.authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-bio' and @class='a-row']/div/div/span");
+            return searchResults.authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-bio' and @class='a-row']/div/div/span")
+                   ?? searchResults.authorHtmlDoc.DocumentNode.SelectSingleNode("//span[@id='author_biography']")
+                   ?? throw new DataSource.FormatChangedException(nameof(Amazon), "author bio"); ;
         }
 
         public static HtmlNode GetAuthorImageNode(AuthorSearchResults searchResults, string TLD)
@@ -121,6 +124,48 @@ namespace XRayBuilderGUI.DataSources
             return searchResults.authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-image']/img")
                    ?? searchResults.authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='authorImage']/img")
                    ?? throw new DataSource.FormatChangedException(nameof(Amazon), "author image");
+        }
+
+        /// <summary>
+        /// As of 2018-07-31, format changed. For some amount of time, keep both just in case.
+        /// TODO: Switch to Kindle section and grab only those instead
+        /// </summary>
+        public static List<BookInfo> GetAuthorBooksNew(AuthorSearchResults searchResults, string curTitle, string curAuthor, string TLD)
+        {
+            var resultsNodes = searchResults.authorHtmlDoc.DocumentNode.SelectNodes("//div[@id='searchWidget']/div");
+            if (resultsNodes == null) return null;
+            var bookList = new List<BookInfo>(resultsNodes.Count);
+            foreach (var result in resultsNodes)
+            {
+                if (result.InnerHtml.Contains("a-pagination"))
+                    continue;
+                var bookNodes = result.SelectNodes(".//div[@class='a-fixed-right-grid-inner']/div/div")
+                    ?? throw new DataSource.FormatChangedException(nameof(Amazon), "book results - title nodes");
+                var name = bookNodes.FirstOrDefault()?.SelectSingleNode("./a")?.InnerText.Trim()
+                    ?? throw new DataSource.FormatChangedException(nameof(Amazon), "book results - title");
+                //Exclude the current book title
+                if (name.ContainsIgnorecase(curTitle)
+                    || name.ContainsIgnorecase(@"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)"))
+                    continue;
+
+                // Get Kindle ASIN
+                var asin = "";
+                foreach (var bookNode in bookNodes)
+                {
+                    var match = Regex.Match(bookNode.OuterHtml, "(dp/(?<asin>B[A-Z0-9]{9})/|/gp/product/(?<asin>B[A-Z0-9]{9}))", RegexOptions.Compiled);
+                    if (!match.Success)
+                        continue;
+                    asin = match.Groups["asin"].Value;
+                    break;
+                }
+                if (asin == "")
+                    throw new DataSource.FormatChangedException(nameof(Amazon), "book results - kindle edition asin");
+                bookList.Add(new BookInfo(name, curAuthor, asin)
+                {
+                    amazonUrl = $"https://www.amazon.{TLD}/dp/{asin}"
+                });
+            }
+            return bookList;
         }
 
         public static List<BookInfo> GetAuthorBooks(AuthorSearchResults searchResults, string curTitle, string curAuthor, string TLD)

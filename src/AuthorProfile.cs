@@ -110,6 +110,7 @@ namespace XRayBuilderGUI
             }
             if (BioTrimmed == "")
             {
+                // TODO: Let users edit bio in same style as chapters and aliases
                 HtmlNode bio = DataSources.Amazon.GetBioNode(searchResults, _settings.AmazonTld);
                 //Trim authour biography to less than 1000 characters and/or replace more problematic characters.
                 if (bio?.InnerText.Trim().Length > 0)
@@ -198,7 +199,8 @@ namespace XRayBuilderGUI
             }
 
             Logger.Log("Gathering author's other books...");
-            List<BookInfo> bookList = DataSources.Amazon.GetAuthorBooks(searchResults, _curBook.title, _curBook.author, _settings.AmazonTld);
+            var bookList = DataSources.Amazon.GetAuthorBooks(searchResults, _curBook.title, _curBook.author, _settings.AmazonTld)
+                ?? DataSources.Amazon.GetAuthorBooksNew(searchResults, _curBook.title, _curBook.author, _settings.AmazonTld);
             if (bookList != null)
             {
                 Logger.Log("Gathering metadata for other books...");

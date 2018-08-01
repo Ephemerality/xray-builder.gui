@@ -484,7 +484,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Logger.Log("An error occurred while creating the new Author Profile, Start Actions, and/or End Actions files: " + ex.Message + "\r\n" + ex.StackTrace);
+                Logger.Log("An error occurred while creating the new Author Profile, Start Actions, and/or End Actions files:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
             }
 
         }

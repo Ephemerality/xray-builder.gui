@@ -158,8 +158,10 @@ namespace XRayBuilderGUI.DataSources
                     asin = match.Groups["asin"].Value;
                     break;
                 }
+
+                // TODO: This should be removable when the Kindle Only page is parsed instead
                 if (asin == "")
-                    throw new DataSource.FormatChangedException(nameof(Amazon), "book results - kindle edition asin");
+                    continue; //throw new DataSource.FormatChangedException(nameof(Amazon), "book results - kindle edition asin");
                 bookList.Add(new BookInfo(name, curAuthor, asin)
                 {
                     amazonUrl = $"https://www.amazon.{TLD}/dp/{asin}"

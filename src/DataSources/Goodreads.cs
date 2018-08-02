@@ -146,7 +146,7 @@ namespace XRayBuilderGUI.DataSources
                 if (nextBook == null)
                 {
                     Logger.Log("Book was found to be part of a series, but an error occurred finding the next book.\r\n" +
-                        "Please report this book and the Goodreads URL and output log to improve parsing.");
+                        "Please report this book and the Goodreads URL and output log to improve parsing (if it's a real book - not still being written.");
                 }
             }
             else if (curBook.seriesPosition != curBook.totalInSeries.ToString() && !curBook.seriesPosition.Contains("."))

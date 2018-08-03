@@ -116,7 +116,7 @@ namespace XRayBuilderGUI.DataSources
         {
             return searchResults.authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-bio' and @class='a-row']/div/div/span")
                    ?? searchResults.authorHtmlDoc.DocumentNode.SelectSingleNode("//span[@id='author_biography']")
-                   ?? throw new DataSource.FormatChangedException(nameof(Amazon), "author bio"); ;
+                   ?? throw new DataSource.FormatChangedException(nameof(Amazon), "author bio");
         }
 
         public static HtmlNode GetAuthorImageNode(AuthorSearchResults searchResults, string TLD)
@@ -228,6 +228,7 @@ namespace XRayBuilderGUI.DataSources
             return bookList;
         }
 
+        // TODO: All calls to Amazon should check for the captcha page (or ideally avoid it somehow)
         public static async Task<BookInfo> SearchBook(string title, string author, string TLD)
         {
             BookInfo result = null;

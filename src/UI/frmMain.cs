@@ -35,6 +35,7 @@ namespace XRayBuilderGUI
         private readonly Settings _settings = Settings.Default;
         private readonly string _currentLog = $@"{Environment.CurrentDirectory}\log\{DateTime.Now:HH.mm.ss.dd.MM.yyyy}.txt";
 
+        // TODO: Do something else for this
         public List<string> openBook = new List<string>();
         
         private readonly IProgressBar _progress;

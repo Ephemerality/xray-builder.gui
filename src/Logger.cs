@@ -21,6 +21,7 @@ namespace XRayBuilderGUI
                 ctrl.SafeAppendText(message);
         }
         
+        // TODO: Rely on log levels rather than strings to determine colour
         public static void SafeAppendText(this RichTextBox rtfBox, string message)
         {
             if (rtfBox.InvokeRequired)

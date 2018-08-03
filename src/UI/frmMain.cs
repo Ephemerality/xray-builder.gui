@@ -5,14 +5,11 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilderGUI.DataSources;
 using XRayBuilderGUI.Properties;
-using Newtonsoft.Json.Linq;
-using XRayBuilderGUI.Unpack;
 
 namespace XRayBuilderGUI
 {
@@ -30,8 +27,7 @@ namespace XRayBuilderGUI
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
         }
-
-        private readonly frmAbout _frmInfo = new frmAbout();
+        
         private readonly frmCreateXR _frmCreator = new frmCreateXR();
         private readonly ToolTip _tooltip = new ToolTip();
         private readonly Settings _settings = Settings.Default;
@@ -39,11 +35,10 @@ namespace XRayBuilderGUI
 
         public List<string> openBook = new List<string>();
         
-        DataSource dataSource;
-
         private readonly IProgressBar _progress;
 
-        CancellationTokenSource cancelTokens = new CancellationTokenSource();
+        private CancellationTokenSource _cancelTokens = new CancellationTokenSource();
+        private DataSource _dataSource;
 
         public DialogResult SafeShow(string msg, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton def)
         {
@@ -74,10 +69,10 @@ namespace XRayBuilderGUI
             rdoGoodreads.Enabled = enabled;
             btnCancel.Enabled = !enabled;
             // If process was canceled and we're disabling the interface for another time, reset token source
-            if (enabled == false && cancelTokens.IsCancellationRequested)
+            if (enabled == false && _cancelTokens.IsCancellationRequested)
             {
-                cancelTokens.Dispose();
-                cancelTokens = new CancellationTokenSource();
+                _cancelTokens.Dispose();
+                _cancelTokens = new CancellationTokenSource();
             }
             else if (enabled)
                 _progress.Set(0, 0);
@@ -119,7 +114,7 @@ namespace XRayBuilderGUI
             }
             if (rdoGoodreads.Checked && txtGoodreads.Text == "")
             {
-                MessageBox.Show("No " + dataSource.Name + " link was specified.", "Missing " + dataSource.Name + " Link");
+                MessageBox.Show("No " + _dataSource.Name + " link was specified.", "Missing " + _dataSource.Name + " Link");
                 return;
             }
             if (_settings.useKindleUnpack && !File.Exists(_settings.mobi_unpack))
@@ -189,8 +184,8 @@ namespace XRayBuilderGUI
 
             // Added author name to log output
             Logger.Log($"Got metadata!\r\nDatabase Name: {results[2]}\r\nUniqueID: {results[1]}");
-            Logger.Log($"Book's {dataSource.Name} URL: {txtGoodreads.Text}");
-            if (cancelTokens.IsCancellationRequested) return;
+            Logger.Log($"Book's {_dataSource.Name} URL: {txtGoodreads.Text}");
+            if (_cancelTokens.IsCancellationRequested) return;
             Logger.Log("Attempting to build X-Ray...");
 
             //If AZW3 file use AZW3 offset, if checked. Checked by default.
@@ -203,13 +198,13 @@ namespace XRayBuilderGUI
             try
             {
                 if (rdoGoodreads.Checked)
-                    xray = new XRay(txtGoodreads.Text, results[2], results[1], results[0], dataSource,
+                    xray = new XRay(txtGoodreads.Text, results[2], results[1], results[0], _dataSource,
                         AZW3 ? _settings.offsetAZW3 : _settings.offset, "", false);
                 else
-                    xray = new XRay(txtXMLFile.Text, results[2], results[1], results[0], dataSource,
+                    xray = new XRay(txtXMLFile.Text, results[2], results[1], results[0], _dataSource,
                         AZW3 ? _settings.offsetAZW3 : _settings.offset, "");
 
-                await Task.Run(() => xray.CreateXray(_progress, cancelTokens.Token)).ConfigureAwait(false);
+                await Task.Run(() => xray.CreateXray(_progress, _cancelTokens.Token)).ConfigureAwait(false);
 
                 xray.ExportAndDisplayTerms();
 
@@ -234,7 +229,7 @@ namespace XRayBuilderGUI
 
                 Logger.Log("Initial X-Ray built, adding locations and chapters...");
                 //Expand the X-Ray file from the unpacked mobi
-                if (await Task.Run(() => xray.ExpandFromRawMl(results[3], SafeShow, _progress, cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion)).ConfigureAwait(false) > 0)
+                if (await Task.Run(() => xray.ExpandFromRawMl(results[3], SafeShow, _progress, _cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion)).ConfigureAwait(false) > 0)
                 {
                     Logger.Log("Build canceled or error occurred while processing locations and chapters.");
                     return;
@@ -276,7 +271,7 @@ namespace XRayBuilderGUI
             {
                 try
                 {
-                    xray.SaveToFileNew(newPath, _progress, cancelTokens.Token);
+                    xray.SaveToFileNew(newPath, _progress, _cancelTokens.Token);
                 }
                 catch (OperationCanceledException)
                 {
@@ -347,14 +342,14 @@ namespace XRayBuilderGUI
             {
                 if (txtGoodreads.Text == "")
                 {
-                    MessageBox.Show($"No {dataSource.Name} link was specified.", $"Missing {dataSource.Name} Link");
+                    MessageBox.Show($"No {_dataSource.Name} link was specified.", $"Missing {_dataSource.Name} Link");
                     return;
                 }
                 if (!txtGoodreads.Text.ToLower().Contains(_settings.dataSource.ToLower()))
                 {
-                    MessageBox.Show($"Invalid {dataSource.Name} link was specified.\r\n"
-                        + $"If you do not want to use {dataSource.Name}, you can change the data source in Settings."
-                        , $"Invalid {dataSource.Name} Link");
+                    MessageBox.Show($"Invalid {_dataSource.Name} link was specified.\r\n"
+                        + $"If you do not want to use {_dataSource.Name}, you can change the data source in Settings."
+                        , $"Invalid {_dataSource.Name} Link");
                     return;
                 }
             }
@@ -428,7 +423,7 @@ namespace XRayBuilderGUI
 
             Logger.Log($"Got metadata!\r\nDatabase Name: {results[2]}\r\nUniqueID: {results[1]}");
             SetDatasourceLabels(); // Reset the dataSource for the new build process
-            Logger.Log($"Book's {dataSource.Name} URL: {txtGoodreads.Text}");
+            Logger.Log($"Book's {_dataSource.Name} URL: {txtGoodreads.Text}");
             try
             {
                 BookInfo bookInfo = new BookInfo(results[5], results[4], results[0], results[1], results[2],
@@ -450,7 +445,7 @@ namespace XRayBuilderGUI
                 SaPath = $@"{outputDir}\StartActions.data.{bookInfo.asin}.asc";
                 ApPath = $@"{outputDir}\AuthorProfile.profile.{bookInfo.asin}.asc";
                 Logger.Log("Attempting to build Start Actions and End Actions...");
-                EndActions ea = new EndActions(ap, bookInfo, rawMLSize, dataSource, new EndActions.Settings
+                EndActions ea = new EndActions(ap, bookInfo, rawMLSize, _dataSource, new EndActions.Settings
                 {
                     AmazonTld = _settings.amazonTLD,
                     Android = _settings.android,
@@ -464,8 +459,8 @@ namespace XRayBuilderGUI
 
                 if (_settings.useNewVersion)
                 {
-                    await ea.GenerateNewFormatData(_progress, cancelTokens.Token);
-                    await ea.GenerateEndActions(_progress, cancelTokens.Token);
+                    await ea.GenerateNewFormatData(_progress, _cancelTokens.Token);
+                    await ea.GenerateEndActions(_progress, _cancelTokens.Token);
                     ea.GenerateStartActions();
                     cmsPreview.Items[3].Enabled = true;
                     EaPath = $@"{outputDir}\EndActions.data.{bookInfo.asin}.asc";
@@ -509,8 +504,8 @@ namespace XRayBuilderGUI
             {
                 txtXMLFile.Text = path;
 
-                XRay xray = new XRay(txtGoodreads.Text, dataSource);
-                int result = await Task.Run(() => xray.SaveXml(path, _progress, cancelTokens.Token));
+                XRay xray = new XRay(txtGoodreads.Text, _dataSource);
+                int result = await Task.Run(() => xray.SaveXml(path, _progress, _cancelTokens.Token));
                 if (result == 1)
                     Logger.Log("Warning: Unable to download character data as no character data found on Goodreads.");
                 else if (result == 2)
@@ -594,11 +589,11 @@ namespace XRayBuilderGUI
             Logger.Log($"Got metadata!\r\nDatabase Name: {results[2]}\r\nUniqueID: {results[1]}\r\nASIN: {results[0]}");
             try
             {
-                List<BookInfo> books = await dataSource.SearchBook(results[4], results[5]);
+                List<BookInfo> books = await _dataSource.SearchBook(results[4], results[5]);
                 string bookUrl = books?.Count == 1 ? books[0].dataUrl : "";
                 if (books?.Count > 1)
                 {
-                    Logger.Log($"Warning: Multiple results returned from {dataSource.Name}...");
+                    Logger.Log($"Warning: Multiple results returned from {_dataSource.Name}...");
                     var frmG = new frmGR {BookList = books};
                     frmG.ShowDialog();
                     bookUrl = books[frmG.cbResults.SelectedIndex].dataUrl;
@@ -606,13 +601,13 @@ namespace XRayBuilderGUI
                 else if (books?.Count == 1)
                     bookUrl = books[0].dataUrl;
                 else
-                    Logger.Log($"Unable to find this book on {dataSource.Name}!");
+                    Logger.Log($"Unable to find this book on {_dataSource.Name}!");
 
                 if (bookUrl != "")
                 {
                     txtGoodreads.Text = bookUrl;
                     txtGoodreads.Refresh();
-                    Logger.Log($"Book found on {dataSource.Name}!\r\n{results[5]} by {results[4]}\r\n{dataSource.Name} URL: {bookUrl}\r\n"
+                    Logger.Log($"Book found on {_dataSource.Name}!\r\n{results[5]} by {results[4]}\r\n{_dataSource.Name} URL: {bookUrl}\r\n"
                         + "You may want to visit the URL to ensure it is correct.");
                 }
             }
@@ -729,7 +724,7 @@ namespace XRayBuilderGUI
             if (_settings.dataSource == "Goodreads")
             {
                 btnSearchGoodreads.Enabled = true;
-                dataSource = new Goodreads();
+                _dataSource = new Goodreads();
                 rdoGoodreads.Text = "Goodreads";
                 lblGoodreads.Text = "Goodreads URL:";
                 lblGoodreads.Left = 134;
@@ -739,7 +734,7 @@ namespace XRayBuilderGUI
             else
             {
                 btnSearchGoodreads.Enabled = false;
-                dataSource = new Shelfari();
+                _dataSource = new Shelfari();
                 rdoGoodreads.Text = "Shelfari";
                 lblGoodreads.Text = "Shelfari URL:";
                 lblGoodreads.Left = 150;
@@ -1148,7 +1143,7 @@ namespace XRayBuilderGUI
 
         private void btnAbout_Click(object sender, EventArgs e)
         {
-            _frmInfo.ShowDialog();
+            new frmAbout().ShowDialog();
         }
 
         private void btnCreate_Click(object sender, EventArgs e)
@@ -1190,10 +1185,10 @@ namespace XRayBuilderGUI
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            if (!cancelTokens.IsCancellationRequested)
+            if (!_cancelTokens.IsCancellationRequested)
             {
                 Logger.Log("Canceling...");
-                cancelTokens.Cancel();
+                _cancelTokens.Cancel();
             }
         }
     }

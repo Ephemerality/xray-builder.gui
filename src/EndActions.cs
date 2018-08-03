@@ -183,10 +183,9 @@ namespace XRayBuilderGUI
                             BookInfo repeat = custAlsoBought.FirstOrDefault(check => check.title.Contains(sponsTitle));
                             if (repeat != null)
                                 continue;
-                            otherBook =
-                                result.SelectSingleNode(
-                                    ".//a[@class='a-size-small a-link-child']")
-                                ?? throw new Exception("Amazon format changed)");
+                            otherBook = result.SelectSingleNode(".//a[@class='a-size-small a-link-child']")
+                                ?? result.SelectSingleNode(".//span[@class='a-size-small a-color-base']")
+                                ?? throw new DataSource.FormatChangedException("Amazon", "Sponsored book author");
                             // TODO: Throw more format changed exceptions to make it obvious that the site changed
                             var sponsAuthor = otherBook.InnerText.Trim();
                             possibleBooks.Add(new BookInfo(sponsTitle, sponsAuthor, sponsAsin));

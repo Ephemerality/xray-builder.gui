@@ -591,7 +591,7 @@ namespace XRayBuilderGUI
                 }
             }
 
-            Logger.Log($"Got metadata!\r\nDatabase Name: {results[2]}\r\nUniqueID: {results[1]}");
+            Logger.Log($"Got metadata!\r\nDatabase Name: {results[2]}\r\nUniqueID: {results[1]}\r\nASIN: {results[0]}");
             try
             {
                 List<BookInfo> books = await dataSource.SearchBook(results[4], results[5]);

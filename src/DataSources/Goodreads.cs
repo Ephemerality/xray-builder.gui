@@ -118,6 +118,7 @@ namespace XRayBuilderGUI.DataSources
                         }
                         else
                             nextBook = await Amazon.SearchBook(book.title, book.author, TLD);
+
                         if (nextBook == null && settings.promptASIN)
                         {
                             Logger.Log($"ASIN prompt for {book.title}...");
@@ -139,18 +140,21 @@ namespace XRayBuilderGUI.DataSources
                         TLD = "com";
                         nextBook = await Amazon.SearchBook(book.title, book.author, TLD);
                     }
+
                     if (nextBook != null)
                         await nextBook.GetAmazonInfo(nextBook.amazonUrl); //fill in desc, imageurl, and ratings
                 }
-                
+
                 if (nextBook == null)
                 {
-                    Logger.Log("Book was found to be part of a series, but an error occurred finding the next book.\r\n" +
-                        "Please report this book and the Goodreads URL and output log to improve parsing (if it's a real book).");
+                    Logger.Log("Book was found to be part of a series, but an error occurred finding the next book.\r\n"
+                        + "Please report this book and the Goodreads URL and output log to improve parsing (if it's a real book).");
                 }
             }
-            else if (curBook.seriesPosition != curBook.totalInSeries.ToString() && !curBook.seriesPosition.Contains("."))
-                Logger.Log("An error occurred finding the next book in series, the book may not be part of a series, or it is the latest release.");
+            else if (curBook.totalInSeries == 0)
+                Logger.Log("The book was not found to be part of a series.");
+            else if (curBook.seriesPosition != curBook.totalInSeries.ToString() && !curBook.seriesPosition?.Contains(".") == true)
+                Logger.Log("An error occurred finding the next book in series. The book may not be part of a series, or it is the latest release.");
 
             if (seriesInfo.TryGetValue("Previous", out book))
             {

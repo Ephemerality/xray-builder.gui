@@ -5,10 +5,13 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 using XRayBuilderGUI.DataSources;
+using XRayBuilderGUI.Model;
 using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI
@@ -459,8 +462,44 @@ namespace XRayBuilderGUI
                 if (_settings.useNewVersion)
                 {
                     await ea.GenerateNewFormatData(_progress, _cancelTokens.Token);
-                    await ea.GenerateEndActions(_progress, _cancelTokens.Token);
-                    ea.GenerateStartActions();
+
+                    // TODO: Do the templates differently
+                    Model.EndActions eaBase;
+                    try
+                    {
+                        var template = File.ReadAllText(Environment.CurrentDirectory + @"\dist\BaseEndActions.json", Encoding.UTF8);
+                        eaBase = JsonConvert.DeserializeObject<Model.EndActions>(template);
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        Logger.Log(@"Unable to find dist\BaseEndActions.json, make sure it has been extracted!");
+                        return;
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Log($@"An error occurred while loading dist\BaseEndActions.json (make sure any new versions have been extracted!)\r\n{e.Message}\r\n{e.StackTrace}");
+                        return;
+                    }
+                    await ea.GenerateEndActionsFromBase(eaBase, _progress, _cancelTokens.Token);
+
+                    StartActions sa;
+                    try
+                    {
+                        var template = File.ReadAllText(Environment.CurrentDirectory + @"\dist\BaseStartActions.json", Encoding.UTF8);
+                        sa = JsonConvert.DeserializeObject<StartActions>(template);
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        Logger.Log(@"Unable to find dist\BaseStartActions.json, make sure it has been extracted!");
+                        return;
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Log($@"An error occurred while loading dist\BaseStartActions.json (make sure any new versions have been extracted!)\r\n{e.Message}\r\n{e.StackTrace}");
+                        return;
+                    }
+                    ea.GenerateStartActionsFromBase(sa);
+
                     cmsPreview.Items[3].Enabled = true;
                     EaPath = $@"{outputDir}\EndActions.data.{bookInfo.asin}.asc";
                 }

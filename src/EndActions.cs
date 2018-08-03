@@ -308,11 +308,9 @@ namespace XRayBuilderGUI
             }
         }
 
-        public async Task GenerateEndActions(IProgressBar progress, CancellationToken token)
+        public async Task GenerateEndActionsFromBase(Model.EndActions baseEndActions, IProgressBar progress, CancellationToken token)
         {
-            var template = File.ReadAllText(Environment.CurrentDirectory + @"\dist\BaseEndActions.txt", Encoding.UTF8);
-            var endActions = JsonConvert.DeserializeObject<Model.EndActions>(template);
-            endActions.BookInfo = new Model.EndActions.EndActionsBookInfo
+            baseEndActions.BookInfo = new Model.EndActions.EndActionsBookInfo
             {
                 Asin = curBook.asin,
                 ContentType = "EBOK",
@@ -322,7 +320,7 @@ namespace XRayBuilderGUI
                 EmbeddedID = $"{curBook.databasename}:{curBook.Guid}",
                 Erl = _erl
             };
-            endActions.Data.FollowSubscriptions = new Model.EndActions.AuthorSubscriptions
+            baseEndActions.Data.FollowSubscriptions = new Model.EndActions.AuthorSubscriptions
             {
                 Subscriptions = new[]
                 {
@@ -334,21 +332,21 @@ namespace XRayBuilderGUI
                     }
                 }
             };
-            endActions.Data.AuthorSubscriptions = endActions.Data.FollowSubscriptions;
-            endActions.Data.NextBook = Extensions.BookInfoToBook(curBook.nextInSeries, false);
-            endActions.Data.PublicSharedRating = new Model.EndActions.Rating
+            baseEndActions.Data.AuthorSubscriptions = baseEndActions.Data.FollowSubscriptions;
+            baseEndActions.Data.NextBook = Extensions.BookInfoToBook(curBook.nextInSeries, false);
+            baseEndActions.Data.PublicSharedRating = new Model.EndActions.Rating
             {
                 Class = "publicSharedRating",
                 Timestamp = Functions.UnixTimestampMilliseconds(),
                 Value = Math.Round(curBook.amazonRating, 1)
             };
-            endActions.Data.CustomerProfile = new Model.EndActions.CustomerProfile
+            baseEndActions.Data.CustomerProfile = new Model.EndActions.CustomerProfile
             {
                 PenName = _settings.PenName,
                 RealName = _settings.RealName
             };
-            endActions.Data.Rating = endActions.Data.PublicSharedRating;
-            endActions.Data.AuthorBios = new AuthorBios
+            baseEndActions.Data.Rating = baseEndActions.Data.PublicSharedRating;
+            baseEndActions.Data.AuthorBios = new AuthorBios
             {
                 Authors = new[]
                 {
@@ -362,12 +360,12 @@ namespace XRayBuilderGUI
                     }
                 }
             };
-            endActions.Data.AuthorRecs = new Recs
+            baseEndActions.Data.AuthorRecs = new Recs
             {
                 Class = "featuredRecommendationList",
                 Recommendations = _authorProfile.otherBooks.Select(bk => Extensions.BookInfoToBook(bk, true)).ToArray()
             };
-            endActions.Data.CustomersWhoBoughtRecs = new Recs
+            baseEndActions.Data.CustomersWhoBoughtRecs = new Recs
             {
                 Class = "featuredRecommendationList",
                 Recommendations = custAlsoBought.Select(bk => Extensions.BookInfoToBook(bk, true)).ToArray()
@@ -378,7 +376,7 @@ namespace XRayBuilderGUI
             string finalOutput;
             try
             {
-                finalOutput = Functions.ExpandUnicode(JsonConvert.SerializeObject(endActions));
+                finalOutput = Functions.ExpandUnicode(JsonConvert.SerializeObject(baseEndActions));
             }
             catch (Exception ex)
             {
@@ -395,11 +393,9 @@ namespace XRayBuilderGUI
             Logger.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
         }
 
-        public void GenerateStartActions()
+        public void GenerateStartActionsFromBase(StartActions baseStartActions)
         {
-            var template = File.ReadAllText(Environment.CurrentDirectory + @"\dist\BaseStartActions.txt", Encoding.UTF8);
-            var startActions = JsonConvert.DeserializeObject<StartActions>(template);
-            startActions.BookInfo = new StartActions.StartActionsBookInfo
+            baseStartActions.BookInfo = new StartActions.StartActionsBookInfo
             {
                 Asin = curBook.asin,
                 ContentType = "EBOK",
@@ -410,14 +406,14 @@ namespace XRayBuilderGUI
             };
             if (curBook.seriesPosition != null)
             {
-                startActions.Data.SeriesPosition = new StartActions.SeriesPosition
+                baseStartActions.Data.SeriesPosition = new StartActions.SeriesPosition
                 {
                     PositionInSeries = Convert.ToInt32(double.Parse(curBook.seriesPosition)),
                     TotalInSeries = curBook.totalInSeries,
                     SeriesName = curBook.seriesName
                 };
             }
-            startActions.Data.FollowSubscriptions = new StartActions.AuthorSubscriptions
+            baseStartActions.Data.FollowSubscriptions = new StartActions.AuthorSubscriptions
             {
                 Subscriptions = new []
                 {
@@ -429,13 +425,13 @@ namespace XRayBuilderGUI
                     }
                 }
             };
-            startActions.Data.AuthorSubscriptions = startActions.Data.FollowSubscriptions;
-            startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMPASSAGES%", curBook.notableClips.Count.ToString());
-            startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMHIGHLIGHTS%", curBook.notableClips.Sum(c => c.Likes).ToString());
-            startActions.Data.GrokShelfInfo.Asin = curBook.asin;
-            startActions.Data.BookDescription = Extensions.BookInfoToBook(curBook, true);
-            startActions.Data.CurrentBook = startActions.Data.BookDescription;
-            startActions.Data.AuthorBios = new AuthorBios
+            baseStartActions.Data.AuthorSubscriptions = baseStartActions.Data.FollowSubscriptions;
+            baseStartActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMPASSAGES%", curBook.notableClips.Count.ToString());
+            baseStartActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMHIGHLIGHTS%", curBook.notableClips.Sum(c => c.Likes).ToString());
+            baseStartActions.Data.GrokShelfInfo.Asin = curBook.asin;
+            baseStartActions.Data.BookDescription = Extensions.BookInfoToBook(curBook, true);
+            baseStartActions.Data.CurrentBook = baseStartActions.Data.BookDescription;
+            baseStartActions.Data.AuthorBios = new AuthorBios
             {
                 Authors = new []
                 {
@@ -449,22 +445,22 @@ namespace XRayBuilderGUI
                     }
                 }
             };
-            startActions.Data.AuthorRecs = new Recs
+            baseStartActions.Data.AuthorRecs = new Recs
             {
                 Class = "recommendationList",
                 Recommendations = _authorProfile.otherBooks.Select(bk => Extensions.BookInfoToBook(bk, false)).ToArray()
             };
-            startActions.Data.ReadingTime.Hours = curBook.readingHours;
-            startActions.Data.ReadingTime.Minutes = curBook.readingMinutes;
-            startActions.Data.ReadingTime.FormattedTime.Replace("%HOURS%", curBook.readingHours.ToString());
-            startActions.Data.ReadingTime.FormattedTime.Replace("%MINUTES%", curBook.readingMinutes.ToString());
-            startActions.Data.PreviousBookInTheSeries = Extensions.BookInfoToBook(curBook.previousInSeries, true);
-            startActions.Data.ReadingPages.PagesInBook = curBook.pagesInBook;
+            baseStartActions.Data.ReadingTime.Hours = curBook.readingHours;
+            baseStartActions.Data.ReadingTime.Minutes = curBook.readingMinutes;
+            baseStartActions.Data.ReadingTime.FormattedTime.Replace("%HOURS%", curBook.readingHours.ToString());
+            baseStartActions.Data.ReadingTime.FormattedTime.Replace("%MINUTES%", curBook.readingMinutes.ToString());
+            baseStartActions.Data.PreviousBookInTheSeries = Extensions.BookInfoToBook(curBook.previousInSeries, true);
+            baseStartActions.Data.ReadingPages.PagesInBook = curBook.pagesInBook;
 
             string finalOutput;
             try
             {
-                finalOutput = Functions.ExpandUnicode(JsonConvert.SerializeObject(startActions));
+                finalOutput = Functions.ExpandUnicode(JsonConvert.SerializeObject(baseStartActions));
             }
             catch (Exception ex)
             {

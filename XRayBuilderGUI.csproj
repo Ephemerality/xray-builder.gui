@@ -198,19 +198,19 @@
     <Compile Include="src\XRay.cs" />
     <Compile Include="src\UI\XRayPanel.cs" />
     <Compile Include="src\XRay\XRayUtil.cs" />
-    <Content Include="dist\BaseEndActions.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="dist\BaseSplitIgnore.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="dist\BaseStartActions.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="dist\done.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Icon.ico" />
+    <None Include="dist\BaseEndActions.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="dist\BaseStartActions.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\cancel.png" />
     <None Include="packages.config" />
     <None Include="Resources\file-on.png" />

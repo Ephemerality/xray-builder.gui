@@ -409,12 +409,15 @@ namespace XRayBuilderGUI
                 ImageUrl = curBook.bookImageUrl,
                 Erl = -1
             };
-            startActions.Data.SeriesPosition = new StartActions.SeriesPosition
+            if (curBook.seriesPosition != null)
             {
-                PositionInSeries = Convert.ToInt32(double.Parse(curBook.seriesPosition)),
-                TotalInSeries = curBook.totalInSeries,
-                SeriesName = curBook.seriesName
-            };
+                startActions.Data.SeriesPosition = new StartActions.SeriesPosition
+                {
+                    PositionInSeries = Convert.ToInt32(double.Parse(curBook.seriesPosition)),
+                    TotalInSeries = curBook.totalInSeries,
+                    SeriesName = curBook.seriesName
+                };
+            }
             startActions.Data.FollowSubscriptions = new StartActions.AuthorSubscriptions
             {
                 Subscriptions = new []

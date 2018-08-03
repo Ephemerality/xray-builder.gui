@@ -28,7 +28,6 @@ namespace XRayBuilderGUI
             _progress = new ProgressBarCtrl(prgBar);
         }
         
-        private readonly frmCreateXR _frmCreator = new frmCreateXR();
         private readonly ToolTip _tooltip = new ToolTip();
         private readonly Settings _settings = Settings.Default;
         private readonly string _currentLog = $@"{Environment.CurrentDirectory}\log\{DateTime.Now:HH.mm.ss.dd.MM.yyyy}.txt";
@@ -1148,15 +1147,14 @@ namespace XRayBuilderGUI
 
         private void btnCreate_Click(object sender, EventArgs e)
         {
+            var frmCreateXr = new frmCreateXR();
             if (openBook.Count == 3)
             {
-                _frmCreator.txtAuthor.Text = openBook[0];
-                _frmCreator.txtTitle.Text = openBook[1];
-                _frmCreator.txtAsin.Text = openBook[2];
-                _frmCreator.ShowDialog();
+                frmCreateXr.txtAuthor.Text = openBook[0];
+                frmCreateXr.txtTitle.Text = openBook[1];
+                frmCreateXr.txtAsin.Text = openBook[2];
             }
-            else
-                _frmCreator.ShowDialog();
+            frmCreateXr.ShowDialog();
         }
 
         // TODO: Fix this mess

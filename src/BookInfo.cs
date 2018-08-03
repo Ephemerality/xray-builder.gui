@@ -116,7 +116,9 @@ namespace XRayBuilderGUI
                 HtmlNode bookImageLoc = bookDoc.DocumentNode.SelectSingleNode("//*[@id='imgBlkFront']")
                     ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='imageBlock']")
                     ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='series-detail-product-image']")
-                    ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='ebooksImgBlkFront']"); //co.uk seems to use this id sometimes
+                    ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='ebooksImgBlkFront']") //co.uk seems to use this id sometimes
+                    // for more generic matching, such as on audiobooks (which apparently have BXXXXXXXX asins also)
+                    ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='main-image']");
                 if (bookImageLoc == null)
                     throw new HtmlWebException(String.Format(@"Error finding book image. If you want, you can report the book's Amazon URL to help with parsing.\r\n{0}", amazonUrl));
                 else

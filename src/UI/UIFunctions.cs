@@ -28,9 +28,6 @@ namespace XRayBuilderGUI
             f.RestoreDirectory = true;
             return f.ShowDialog() == DialogResult.OK ? f.FileName : defaultFile;
         }
-
-        public static string GetExe(string defaultFile) => GetFile("Browse for the Kindleunpack executable", defaultFile, "Application (*.exe)|*.exe");
-
         public static string GetBook(string defaultFile) => GetFile("Open a Kindle book", defaultFile, "Kindle Books (*.azw3, *.mobi)|*.azw3; *.mobi");
 
         public static string RemoveInvalidFileChars(string filename)

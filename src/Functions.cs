@@ -167,8 +167,7 @@ namespace XRayBuilderGUI
                 return md;
             }
         }
-
-
+        
         public static string GetPageCount(string rawML, BookInfo bookInfo)
         {
             string output;
@@ -208,123 +207,6 @@ namespace XRayBuilderGUI
             bookInfo.readingHours = span.Hours;
             bookInfo.readingMinutes = span.Minutes;
             output = $"Typical time to read: {span.Hours} hours and {span.Minutes} minutes ({bookInfo.pagesInBook} pages)";
-            return output;
-        }
-
-        public static List<string> GetMetaData(string mobiFile, string outDir, string randomFile, string mobiUnpack)
-        {
-            if (mobiUnpack == null) throw new ArgumentNullException(nameof(mobiUnpack));
-            List<string> output = new List<string>();
-
-            ProcessStartInfo startInfo = new ProcessStartInfo
-            {
-                FileName = mobiUnpack,
-                Arguments = $"-r -d \"{mobiFile}\" \"{randomFile}\"",
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                StandardOutputEncoding = Encoding.UTF8,
-                StandardErrorEncoding = Encoding.UTF8,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-            string unpackInfo = "";
-            try
-            {
-                using (Process process = Process.Start(startInfo))
-                {
-                    if (process != null)
-                    {
-                        process.BeginErrorReadLine();
-                        using (StreamReader reader = process.StandardOutput)
-                        {
-                            unpackInfo = reader.ReadToEnd();
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(String.Format("An error occurred while running Kindleunpack: {0}\r\n", ex.Message));
-            }
-            var rawMl = Path.GetFileNameWithoutExtension(mobiFile) + ".rawml";
-            //Was the unpack successful?
-            if (!unpackInfo.Contains("Write opf\r\n") && !unpackInfo.Contains("\r\nCompleted"))
-            {
-                throw new Exception("Kindleunpack returned: " + unpackInfo + "\r\nAn error occurred during unpack. See above info for details.\r\n");
-            }
-            //Attempt to find the .rawml unpacked from the mobi
-            rawMl = randomFile + @"/mobi8/" + rawMl;
-            if (!File.Exists(rawMl))
-                rawMl = randomFile + @"/mobi7/" + Path.GetFileNameWithoutExtension(mobiFile) + ".rawml";
-            if (!File.Exists(rawMl))
-            {
-                throw new Exception("Error finding .rawml file. Path: " + rawMl);
-            }
-
-            string uniqid = "";
-            string asin = "";
-            string author = "";
-            string title = "";
-            string image = "";
-
-            DirectoryInfo d = new DirectoryInfo(randomFile + @"/mobi7/Images");
-            if (d.Exists)
-                image = d.GetFiles("*.jpeg").FirstOrDefault(file => file.Name.Contains("cover"))?.FullName ?? "";
-
-            Match match = Regex.Match(unpackInfo, @"ASIN\s*(.*)");
-            if (match.Success && match.Groups.Count > 1)
-            {
-                var incorrectAsin = match.Groups[1].Value.Replace("\r", "");
-                UIFunctions.IncorrectAsinPromptOrThrow(incorrectAsin);
-                asin = incorrectAsin;
-            }
-            match = Regex.Match(unpackInfo, @"(\d*) unique_id");
-            if (match.Success && match.Groups.Count > 1)
-                uniqid = match.Groups[1].Value;
-            match = Regex.Match(unpackInfo, @"Document Type\s*(\w*)");
-            if (match.Success && match.Groups.Count > 1)
-            {
-                if (match.Groups[1].Value != "EBOK")
-                {
-                    throw new Exception("The document type is not set to EBOK; Kindle will not display an X-Ray for this book.\r\n"
-                        + "You must either use Calibre's convert feature (Personal Doc tag under MOBI Output) or a Mobi editor (exth 501) to change this.");
-                }
-            }
-            // Find author name in Kindleunpack output
-            match = Regex.Match(unpackInfo, @" Creator\s{2,}(.*)");
-            if (match.Success && match.Groups.Count > 1)
-                author = match.Groups[1].Value.Replace("\r", "");
-
-            // Find book title in Kindleunpack output
-            match = Regex.Match(unpackInfo, @"Title in header at offset.*: '(.*)'");
-            if (!match.Success || match.Groups.Count <= 1)
-                match = Regex.Match(unpackInfo, @" Updated_Title\s*(.*)");
-            if (match.Success && match.Groups.Count > 1)
-                title = match.Groups[1].Value.Replace("\r", "");
-
-            //Attempt to get database name from the mobi file.
-            //If mobi_unpack ran successfully, then hopefully this will always be valid?
-            byte[] dbinput = new byte[32];
-
-            string databaseName;
-            using (FileStream stream = File.Open(mobiFile, FileMode.Open, FileAccess.Read))
-            {
-                if (stream.Read(dbinput, 0, 32) != 32)
-                    throw new Exception("Error reading from mobi file.");
-
-                databaseName = Encoding.Default.GetString(dbinput).Trim('\0');
-            }
-
-            if (databaseName == "" || uniqid == "" || asin == "")
-                throw new Exception($"Error: Missing metadata.\r\nDatabase Name: {databaseName}\r\nASIN: {asin}\r\nUniqueID: {uniqid}");
-            
-            output.Add(asin);
-            output.Add(uniqid);
-            output.Add(databaseName);
-            output.Add(rawMl);
-            output.Add(author);
-            output.Add(title);
-            output.Add(image);
             return output;
         }
 

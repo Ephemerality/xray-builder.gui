@@ -5,9 +5,6 @@
     <Setting Name="outDir" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="mobi_unpack" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
     <Setting Name="Goodreads" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
@@ -63,9 +60,6 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="overwriteAliases" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="useKindleUnpack" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="downloadAliases" Type="System.Boolean" Scope="User">

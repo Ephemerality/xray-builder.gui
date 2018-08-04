@@ -120,11 +120,6 @@ namespace XRayBuilderGUI
                 MessageBox.Show("No " + _dataSource.Name + " link was specified.", "Missing " + _dataSource.Name + " Link");
                 return;
             }
-            if (_settings.useKindleUnpack && !File.Exists(_settings.mobi_unpack))
-            {
-                MessageBox.Show(@"Kindleunpack was not found.\r\nPlease review the settings page.", @"Kindleunpack Not Found");
-                return;
-            }
             if (!Directory.Exists(_settings.outDir))
             {
                 MessageBox.Show(@"Specified output directory does not exist.\r\nPlease review the settings page.", @"Output Directory Not found");
@@ -152,31 +147,15 @@ namespace XRayBuilderGUI
 
             //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
             List<string> results;
-            if (_settings.useKindleUnpack)
+            Logger.Log("Extracting metadata...");
+            try
             {
-                Logger.Log("Running Kindleunpack to get metadata...");
-                try
-                {
-                    results = await Task.Run(() => Functions.GetMetaData(txtMobi.Text, _settings.outDir, randomFile, _settings.mobi_unpack));
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
-                    return;
-                }
+                results = (await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, true, randomFile))).getResults();
             }
-            else
+            catch (Exception ex)
             {
-                Logger.Log("Extracting metadata...");
-                try
-                {
-                    results = (await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, true, randomFile))).getResults();
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
-                    return;
-                }
+                Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
+                return;
             }
 
             if (_settings.saverawml)
@@ -356,11 +335,6 @@ namespace XRayBuilderGUI
                     return;
                 }
             }
-            if (!File.Exists(_settings.mobi_unpack))
-            {
-                MessageBox.Show("Kindleunpack was not found. Please review the settings page.", "Kindleunpack Not Found");
-                return;
-            }
             if (_settings.realName.Trim().Length == 0 |
                 _settings.penName.Trim().Length == 0)
             {
@@ -383,42 +357,21 @@ namespace XRayBuilderGUI
             //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
             List<string> results;
             long rawMLSize;
-            if (_settings.useKindleUnpack)
+            Logger.Log("Extracting metadata...");
+            try
             {
-                Logger.Log("Running Kindleunpack to get metadata...");
-                try
-                {
-                    results = await Task.Run(() => Functions.GetMetaData(txtMobi.Text, _settings.outDir, randomFile, _settings.mobi_unpack));
-                    if (!File.Exists(results[3]))
-                    {
-                        Logger.Log($"Error: RawML could not be found, aborting.\r\nPath: {results[3]}");
-                        return;
-                    }
-                    rawMLSize = new FileInfo(results[3]).Length;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
-                    return;
-                }
+                //Same results with addition of rawML filename
+                results = (await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, true, randomFile))).getResults();
+                rawMLSize = new FileInfo(results[3]).Length;
             }
-            else
+            catch (Exception ex)
             {
-                Logger.Log("Extracting metadata...");
-                try
-                {
-                    //Same results with addition of rawML filename
-                    results = (await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, true, randomFile))).getResults();
-                    rawMLSize = new FileInfo(results[3]).Length;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
-                    return;
-                }
+                Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
+                return;
             }
 
-            if (_settings.saverawml && _settings.useKindleUnpack)
+            // TODO: Why does this only save w/ kindleunpack on?
+            if (_settings.saverawml && false)
             {
                 Logger.Log("Saving rawML to dmp directory...");
                 File.Copy(results[3], Path.Combine(Environment.CurrentDirectory + @"\dmp", Path.GetFileName(results[3])), true);
@@ -576,11 +529,6 @@ namespace XRayBuilderGUI
                 MessageBox.Show("Specified book was not found.", "Book Not Found");
                 return;
             }
-            if (!File.Exists(_settings.mobi_unpack))
-            {
-                MessageBox.Show("Kindleunpack was not found. Please review the settings page.", "Kindleunpack Not Found");
-                return;
-            }
             if (!Directory.Exists(_settings.outDir))
             {
                 MessageBox.Show("Specified output directory does not exist. Please review the settings page.",
@@ -598,31 +546,15 @@ namespace XRayBuilderGUI
             //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
             //this.TopMost = true;
             List<string> results;
-            if (_settings.useKindleUnpack)
+            Logger.Log("Extracting metadata...");
+            try
             {
-                Logger.Log("Running Kindleunpack to get metadata...");
-                try
-                {
-                    results = await Task.Run(() => Functions.GetMetaData(txtMobi.Text, _settings.outDir, randomFile, _settings.mobi_unpack));
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
-                    return;
-                }
+                results = (await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, false))).getResults();
             }
-            else
+            catch (Exception ex)
             {
-                Logger.Log("Extracting metadata...");
-                try
-                {
-                    results = (await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, false))).getResults();
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
-                    return;
-                }
+                Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
+                return;
             }
 
             Logger.Log($"Got metadata!\r\nDatabase Name: {results[2]}\r\nUniqueID: {results[1]}\r\nASIN: {results[0]}");
@@ -747,8 +679,6 @@ namespace XRayBuilderGUI
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\tmp");
             if (_settings.tmpDir == "")
                 _settings.tmpDir = Environment.CurrentDirectory + @"\tmp";
-            if (_settings.mobi_unpack == "")
-                _settings.mobi_unpack = Environment.CurrentDirectory + @"\dist\kindleunpack.exe";
 
             txtGoodreads.Text = _settings.Goodreads;
             if (_settings.buildSource == "Goodreads")
@@ -834,37 +764,18 @@ namespace XRayBuilderGUI
                 return;
             }
             List<string> results;
-            
-            if (_settings.useKindleUnpack)
+            try
             {
-                Logger.Log("Running Kindleunpack to get metadata...");
-                try
-                {
-                    results = await Task.Run(() => Functions.GetMetaData(txtMobi.Text, _settings.outDir, randomFile, _settings.mobi_unpack));
-                    pbCover.Image = results.Count == 7 ? new Bitmap(results[6]) : null;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
-                    txtMobi.Text = "";
-                    return;
-                }
+                var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, false));
+                metadata.CheckDRM();
+                results = metadata.getResults();
+                pbCover.Image = (Image) metadata.coverImage?.Clone();
             }
-            else
+            catch (Exception ex)
             {
-                try
-                {
-                    var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, false));
-                    metadata.CheckDRM();
-                    results = metadata.getResults();
-                    pbCover.Image = (Image) metadata.coverImage?.Clone();
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
-                    txtMobi.Text = "";
-                    return;
-                }
+                Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
+                txtMobi.Text = "";
+                return;
             }
 
             lblTitle.Visible = true;
@@ -1071,11 +982,6 @@ namespace XRayBuilderGUI
                 MessageBox.Show(@"Specified book was not found.", @"Book Not Found");
                 return;
             }
-            if (_settings.useKindleUnpack && !File.Exists(_settings.mobi_unpack))
-            {
-                MessageBox.Show(@"Kindleunpack was not found.\r\nPlease review the settings page.", @"Kindleunpack Not Found");
-                return;
-            }
             if (!Directory.Exists(_settings.outDir))
             {
                 MessageBox.Show(@"Specified output directory does not exist.\r\nPlease review the settings page.", @"Output Directory Not found");
@@ -1089,31 +995,15 @@ namespace XRayBuilderGUI
                 return;
             }
             List<string> results;
-            if (_settings.useKindleUnpack)
+            Logger.Log("Extracting rawML...");
+            try
             {
-                Logger.Log("Running Kindleunpack to extract rawML...");
-                try
-                {
-                    results = await Task.Run(() => Functions.GetMetaData(txtMobi.Text, _settings.outDir, randomFile, _settings.mobi_unpack)).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log("An error occurred extracting rawML: " + ex.Message + "\r\n" + ex.StackTrace);
-                    return;
-                }
+                results = await Task.Run(() => Functions.GetMetaDataInternal(txtMobi.Text, _settings.outDir, true, randomFile).getResults()).ConfigureAwait(false);
             }
-            else
+            catch (Exception ex)
             {
-                Logger.Log("Extracting rawML...");
-                try
-                {
-                    results = await Task.Run(() => Functions.GetMetaDataInternal(txtMobi.Text, _settings.outDir, true, randomFile).getResults()).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log("An error occurred extracting rawML: " + ex.Message + "\r\n" + ex.StackTrace);
-                    return;
-                }
+                Logger.Log("An error occurred extracting rawML: " + ex.Message + "\r\n" + ex.StackTrace);
+                return;
             }
             string rawmlPath = Path.Combine(Environment.CurrentDirectory + @"\dmp", Path.GetFileName(results[3]));
             File.Copy(results[3], rawmlPath, true);

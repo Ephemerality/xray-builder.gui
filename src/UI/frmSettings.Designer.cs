@@ -43,7 +43,6 @@
             this.lblNote = new System.Windows.Forms.Label();
             this.chkSaveHtml = new System.Windows.Forms.CheckBox();
             this.chkRaw = new System.Windows.Forms.CheckBox();
-            this.chkKindleUnpack = new System.Windows.Forms.CheckBox();
             this.gbGeneral = new System.Windows.Forms.GroupBox();
             this.chkSound = new System.Windows.Forms.CheckBox();
             this.tabPgDirectories = new System.Windows.Forms.TabPage();
@@ -55,9 +54,6 @@
             this.chkSubDirectories = new System.Windows.Forms.CheckBox();
             this.txtOut = new System.Windows.Forms.TextBox();
             this.btnBrowseOut = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.btnBrowseUnpack = new System.Windows.Forms.Button();
-            this.txtUnpack = new System.Windows.Forms.TextBox();
             this.tabPgXray = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.rdoShelfari = new System.Windows.Forms.RadioButton();
@@ -69,6 +65,8 @@
             this.lblOffset = new System.Windows.Forms.Label();
             this.txtOffset = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.txtMinClipLen = new System.Windows.Forms.TextBox();
             this.chkSkipNoLikes = new System.Windows.Forms.CheckBox();
             this.gbXray = new System.Windows.Forms.GroupBox();
             this.chkAndroid = new System.Windows.Forms.CheckBox();
@@ -94,8 +92,6 @@
             this.txtPen = new System.Windows.Forms.TextBox();
             this.lblPen = new System.Windows.Forms.Label();
             this.listSettings = new System.Windows.Forms.ListBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.txtMinClipLen = new System.Windows.Forms.TextBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.gbProcess.SuspendLayout();
@@ -105,7 +101,6 @@
             this.tabPgDirectories.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.gbDirectories.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.tabPgXray.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -200,7 +195,7 @@
             // gbProcess
             // 
             this.gbProcess.Controls.Add(this.chkPageCount);
-            this.gbProcess.Location = new System.Drawing.Point(6, 181);
+            this.gbProcess.Location = new System.Drawing.Point(6, 159);
             this.gbProcess.Name = "gbProcess";
             this.gbProcess.Size = new System.Drawing.Size(378, 48);
             this.gbProcess.TabIndex = 38;
@@ -223,10 +218,9 @@
             this.gbUnpack.Controls.Add(this.lblNote);
             this.gbUnpack.Controls.Add(this.chkSaveHtml);
             this.gbUnpack.Controls.Add(this.chkRaw);
-            this.gbUnpack.Controls.Add(this.chkKindleUnpack);
             this.gbUnpack.Location = new System.Drawing.Point(6, 66);
             this.gbUnpack.Name = "gbUnpack";
-            this.gbUnpack.Size = new System.Drawing.Size(378, 109);
+            this.gbUnpack.Size = new System.Drawing.Size(378, 89);
             this.gbUnpack.TabIndex = 37;
             this.gbUnpack.TabStop = false;
             this.gbUnpack.Text = "eBook Unpacking";
@@ -246,14 +240,15 @@
             this.lblNote.ForeColor = System.Drawing.SystemColors.HotTrack;
             this.lblNote.Location = new System.Drawing.Point(31, 43);
             this.lblNote.Name = "lblNote";
-            this.lblNote.Size = new System.Drawing.Size(325, 60);
+            this.lblNote.Size = new System.Drawing.Size(325, 43);
             this.lblNote.TabIndex = 34;
-            this.lblNote.Text = resources.GetString("lblNote.Text");
+            this.lblNote.Text = "Metadata is now gathered internally rather than with KindleUnpack. If you run int" +
+    "o any metadata extraction errors, please report them on the MobileRead thread.";
             // 
             // chkSaveHtml
             // 
             this.chkSaveHtml.AutoSize = true;
-            this.chkSaveHtml.Location = new System.Drawing.Point(254, 19);
+            this.chkSaveHtml.Location = new System.Drawing.Point(124, 19);
             this.chkSaveHtml.Name = "chkSaveHtml";
             this.chkSaveHtml.Size = new System.Drawing.Size(84, 17);
             this.chkSaveHtml.TabIndex = 33;
@@ -263,23 +258,12 @@
             // chkRaw
             // 
             this.chkRaw.AutoSize = true;
-            this.chkRaw.Location = new System.Drawing.Point(144, 19);
+            this.chkRaw.Location = new System.Drawing.Point(14, 19);
             this.chkRaw.Name = "chkRaw";
             this.chkRaw.Size = new System.Drawing.Size(81, 17);
             this.chkRaw.TabIndex = 32;
             this.chkRaw.Text = "Save rawml";
             this.chkRaw.UseVisualStyleBackColor = true;
-            // 
-            // chkKindleUnpack
-            // 
-            this.chkKindleUnpack.AutoSize = true;
-            this.chkKindleUnpack.Location = new System.Drawing.Point(14, 19);
-            this.chkKindleUnpack.Name = "chkKindleUnpack";
-            this.chkKindleUnpack.Size = new System.Drawing.Size(115, 17);
-            this.chkKindleUnpack.TabIndex = 31;
-            this.chkKindleUnpack.Text = "Use KindleUnpack";
-            this.chkKindleUnpack.UseVisualStyleBackColor = true;
-            this.chkKindleUnpack.CheckedChanged += new System.EventHandler(this.chkKindleUnpack_CheckedChanged);
             // 
             // gbGeneral
             // 
@@ -305,7 +289,6 @@
             // 
             this.tabPgDirectories.Controls.Add(this.groupBox7);
             this.tabPgDirectories.Controls.Add(this.gbDirectories);
-            this.tabPgDirectories.Controls.Add(this.groupBox1);
             this.tabPgDirectories.Location = new System.Drawing.Point(4, 5);
             this.tabPgDirectories.Name = "tabPgDirectories";
             this.tabPgDirectories.Padding = new System.Windows.Forms.Padding(3);
@@ -319,7 +302,7 @@
             this.groupBox7.Controls.Add(this.chkDeleteTemp);
             this.groupBox7.Controls.Add(this.txtTemp);
             this.groupBox7.Controls.Add(this.btnBrowseTemp);
-            this.groupBox7.Location = new System.Drawing.Point(6, 160);
+            this.groupBox7.Location = new System.Drawing.Point(6, 97);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(378, 81);
             this.groupBox7.TabIndex = 40;
@@ -391,37 +374,6 @@
             this.btnBrowseOut.Text = "...";
             this.btnBrowseOut.UseVisualStyleBackColor = true;
             this.btnBrowseOut.Click += new System.EventHandler(this.btnBrowseOut_Click);
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.btnBrowseUnpack);
-            this.groupBox1.Controls.Add(this.txtUnpack);
-            this.groupBox1.Location = new System.Drawing.Point(6, 99);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(378, 55);
-            this.groupBox1.TabIndex = 38;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "KindleUnpack Location";
-            // 
-            // btnBrowseUnpack
-            // 
-            this.btnBrowseUnpack.Enabled = false;
-            this.btnBrowseUnpack.Location = new System.Drawing.Point(331, 19);
-            this.btnBrowseUnpack.Name = "btnBrowseUnpack";
-            this.btnBrowseUnpack.Size = new System.Drawing.Size(34, 22);
-            this.btnBrowseUnpack.TabIndex = 16;
-            this.btnBrowseUnpack.Text = "...";
-            this.btnBrowseUnpack.UseVisualStyleBackColor = true;
-            this.btnBrowseUnpack.Click += new System.EventHandler(this.btnBrowseUnpack_Click);
-            // 
-            // txtUnpack
-            // 
-            this.txtUnpack.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.txtUnpack.Enabled = false;
-            this.txtUnpack.Location = new System.Drawing.Point(14, 20);
-            this.txtUnpack.Name = "txtUnpack";
-            this.txtUnpack.Size = new System.Drawing.Size(308, 20);
-            this.txtUnpack.TabIndex = 15;
             // 
             // tabPgXray
             // 
@@ -541,6 +493,23 @@
             this.groupBox3.TabIndex = 27;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Notable Clips";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(168, 20);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(83, 13);
+            this.label2.TabIndex = 26;
+            this.label2.Text = "Minimum length:";
+            // 
+            // txtMinClipLen
+            // 
+            this.txtMinClipLen.Location = new System.Drawing.Point(257, 17);
+            this.txtMinClipLen.Name = "txtMinClipLen";
+            this.txtMinClipLen.Size = new System.Drawing.Size(47, 20);
+            this.txtMinClipLen.TabIndex = 27;
             // 
             // chkSkipNoLikes
             // 
@@ -813,23 +782,6 @@
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(168, 20);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(83, 13);
-            this.label2.TabIndex = 26;
-            this.label2.Text = "Minimum length:";
-            // 
-            // txtMinClipLen
-            // 
-            this.txtMinClipLen.Location = new System.Drawing.Point(257, 17);
-            this.txtMinClipLen.Name = "txtMinClipLen";
-            this.txtMinClipLen.Size = new System.Drawing.Size(47, 20);
-            this.txtMinClipLen.TabIndex = 27;
-            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -866,8 +818,6 @@
             this.groupBox7.PerformLayout();
             this.gbDirectories.ResumeLayout(false);
             this.gbDirectories.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.tabPgXray.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
@@ -904,16 +854,12 @@
         private System.Windows.Forms.TabPage tabPgAmazon;
         private System.Windows.Forms.GroupBox gbGeneral;
         private System.Windows.Forms.CheckBox chkSound;
-        private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox gbDirectories;
         private System.Windows.Forms.TextBox txtOut;
         private System.Windows.Forms.Button btnBrowseOut;
-        private System.Windows.Forms.TextBox txtUnpack;
-        private System.Windows.Forms.Button btnBrowseUnpack;
         private System.Windows.Forms.GroupBox gbUnpack;
         private System.Windows.Forms.CheckBox chkSaveHtml;
         private System.Windows.Forms.CheckBox chkRaw;
-        private System.Windows.Forms.CheckBox chkKindleUnpack;
         private System.Windows.Forms.CheckBox chkSubDirectories;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.CheckBox chkAlias;

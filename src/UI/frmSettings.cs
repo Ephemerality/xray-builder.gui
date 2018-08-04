@@ -60,7 +60,6 @@ namespace XRayBuilderGUI
                 }
             }
             txtOut.Text = Properties.Settings.Default.outDir;
-            txtUnpack.Text = Properties.Settings.Default.mobi_unpack;
             chkRaw.Checked = Properties.Settings.Default.saverawml;
             chkSoftHyphen.Checked = Properties.Settings.Default.ignoresofthyphen;
             chkUseNew.Checked = Properties.Settings.Default.useNewVersion;
@@ -72,14 +71,12 @@ namespace XRayBuilderGUI
             chkSubDirectories.Checked = Properties.Settings.Default.useSubDirectories;
             chkSkipNoLikes.Checked = Properties.Settings.Default.skipNoLikes;
             txtMinClipLen.Text = Properties.Settings.Default.minClipLen.ToString();
-            if (txtUnpack.Text == "") txtUnpack.Text = "dist/kindleunpack.exe";
             chkOverwrite.Checked = Properties.Settings.Default.overwrite;
             chkAlias.Checked = Properties.Settings.Default.overwriteAliases;
             chkChapters.Checked = Properties.Settings.Default.overwriteChapters;
             chkSaveHtml.Checked = Properties.Settings.Default.saveHtml;
             chkSplitAliases.Checked = Properties.Settings.Default.splitAliases;
             chkSound.Checked = Properties.Settings.Default.playSound;
-            chkKindleUnpack.Checked = Properties.Settings.Default.useKindleUnpack;
             chkDownloadAliases.Checked = Properties.Settings.Default.downloadAliases;
             chkOverrideOffset.Checked = Properties.Settings.Default.overrideOffset;
             txtAZWOffset.Text = Properties.Settings.Default.offsetAZW3.ToString();
@@ -138,10 +135,6 @@ namespace XRayBuilderGUI
             toolTip1.SetToolTip(chkSound, "Play a sound after generating the Author\r\n" +
                                         "Profile, End Action and Start Action\r\n" +
                                         "files, or after generating an X-Ray file.");
-            toolTip1.SetToolTip(chkKindleUnpack, "If left unchecked, X-Ray Builder GUI will attempt to extract\r\n" +
-                "the metadata and rawML (raw markup) without KindleUnpack.\r\n" +
-                "If it fails, enable this option to use the KindleUnpack tool\r\n" +
-                "and report your findings on the MobileRead thread.");
             toolTip1.SetToolTip(chkDownloadAliases, "Attempt to download pre-made aliases if none exist\r\n" +
                                                     "locally yet. If \"Overwrite aliases\" is enabled, local\r\n" +
                                                     "aliases will be overwritten with the ones downloaded.");
@@ -175,11 +168,6 @@ namespace XRayBuilderGUI
             cmbRegion.SelectedValue = Properties.Settings.Default.amazonTLD;
         }
 
-        private void btnBrowseUnpack_Click(object sender, EventArgs e)
-        {
-            txtUnpack.Text = UIFunctions.GetExe(txtUnpack.Text);
-        }
-
         private void btnBrowseOut_Click(object sender, EventArgs e)
         {
             txtOut.Text = UIFunctions.GetDir(txtOut.Text);
@@ -208,7 +196,6 @@ namespace XRayBuilderGUI
             }
 
             Properties.Settings.Default.outDir = txtOut.Text;
-            Properties.Settings.Default.mobi_unpack = txtUnpack.Text;
             Properties.Settings.Default.saverawml = chkRaw.Checked;
             Properties.Settings.Default.ignoresofthyphen = chkSoftHyphen.Checked;
             Properties.Settings.Default.useNewVersion = chkUseNew.Checked;
@@ -226,7 +213,6 @@ namespace XRayBuilderGUI
             Properties.Settings.Default.saveHtml = chkSaveHtml.Checked;
             Properties.Settings.Default.splitAliases = chkSplitAliases.Checked;
             Properties.Settings.Default.playSound = chkSound.Checked;
-            Properties.Settings.Default.useKindleUnpack = chkKindleUnpack.Checked;
             Properties.Settings.Default.downloadAliases = chkDownloadAliases.Checked;
             Properties.Settings.Default.overrideOffset = chkOverrideOffset.Checked;
             Properties.Settings.Default.offsetAZW3 = offsetAZW;
@@ -311,13 +297,7 @@ namespace XRayBuilderGUI
                 chkChapters.Checked = false;
             }
         }
-
-        private void chkKindleUnpack_CheckedChanged(object sender, EventArgs e)
-        {
-            txtUnpack.Enabled = chkKindleUnpack.Checked;
-            btnBrowseUnpack.Enabled = chkKindleUnpack.Checked;
-        }
-
+        
         private void btnSupport_Click(object sender, EventArgs e)
         {
             Process.Start("http://www.mobileread.com/forums/showthread.php?t=245754");

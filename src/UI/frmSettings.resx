@@ -137,9 +137,6 @@
         ZiM7FbRz9IP3ByvziX8j1GpKAAAAAElFTkSuQmCC
 </value>
   </data>
-  <data name="lblNote.Text" xml:space="preserve">
-    <value>Metadata is now gathered internally rather than with KindleUnpack. If you run into any metadata extraction errors, there is a setting to turn KindleUnpack back on. Please report any such errors on the MobileRead thread to help improve the program.</value>
-  </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAQAQAAAAAAAAAAAAAAAAAAAAA

@@ -38,18 +38,6 @@ namespace XRayBuilderGUI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string mobi_unpack {
-            get {
-                return ((string)(this["mobi_unpack"]));
-            }
-            set {
-                this["mobi_unpack"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string Goodreads {
             get {
                 return ((string)(this["Goodreads"]));
@@ -272,18 +260,6 @@ namespace XRayBuilderGUI.Properties {
             }
             set {
                 this["overwriteAliases"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool useKindleUnpack {
-            get {
-                return ((bool)(this["useKindleUnpack"]));
-            }
-            set {
-                this["useKindleUnpack"] = value;
             }
         }
         

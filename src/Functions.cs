@@ -143,29 +143,19 @@ namespace XRayBuilderGUI
             var date = String.Format("{0:dd/MM/yyyy}", DateTime.Now);
             return $"Running X-Ray Builder GUI v{version}. Log started on {date} at {time}.\r\n";
         }
-
-        //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
+        
         public static Metadata GetMetaDataInternal(string mobiFile, string outDir, bool saveRawML, string randomFile = "")
         {
-            using (var fs = new FileStream(mobiFile, FileMode.Open, FileAccess.Read))
-            {
-                Metadata md = new Metadata(fs);
-                if (md.mobiHeader.exthHeader == null)
-                    throw new Exception(
-                        "No EXT Header found. Ensure this book was processed with Calibre then try again.");
+            Metadata md = new Metadata(mobiFile);
+            if (md.mobiHeader.exthHeader == null)
+                throw new Exception(
+                    "No EXT Header found. Ensure this book was processed with Calibre then try again.");
 
-                if (saveRawML)
-                {
-                    // Everything else checked out, grab rawml and write to the temp file
-                    md.rawMLPath = randomFile + "\\" + Path.GetFileNameWithoutExtension(mobiFile) + ".rawml";
-                    byte[] rawML = md.getRawML(fs);
-                    using (FileStream rawMLFile = new FileStream(md.rawMLPath, FileMode.Create, FileAccess.Write))
-                    {
-                        rawMLFile.Write(rawML, 0, rawML.Length);
-                    }
-                }
-                return md;
-            }
+            // Everything else checked out, grab rawml and write to the temp file
+            if (saveRawML)
+                md.SaveRawMl(randomFile + "\\" + Path.GetFileNameWithoutExtension(mobiFile) + ".rawml");
+
+            return md;
         }
 
 

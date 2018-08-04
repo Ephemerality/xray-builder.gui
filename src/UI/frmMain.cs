@@ -532,17 +532,6 @@ namespace XRayBuilderGUI
             _settings.Save();
             if (txtOutput.Text.Trim().Length != 0)
                 File.WriteAllText(_currentLog, txtOutput.Text);
-            if (_settings.deleteTemp)
-            {
-                try
-                {
-                    Functions.CleanUp(Environment.CurrentDirectory + @"\tmp\");
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log($"An error occurred while trying to delete temporary files: {ex.Message}\r\n{ex.StackTrace}\r\nTry deleting these files manually.");
-                }
-            }
             Exiting = true;
             Application.Exit();
         }
@@ -591,8 +580,6 @@ namespace XRayBuilderGUI
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\dmp");
             if (!Directory.Exists(Environment.CurrentDirectory + @"\tmp"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\tmp");
-            if (_settings.tmpDir == "")
-                _settings.tmpDir = Environment.CurrentDirectory + @"\tmp";
 
             txtGoodreads.Text = _settings.Goodreads;
             if (_settings.buildSource == "Goodreads")

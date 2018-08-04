@@ -87,8 +87,6 @@ namespace XRayBuilderGUI
             else
                 rdoShelfari.Checked = true;
             chkPromptAsin.Checked = Properties.Settings.Default.promptASIN;
-            txtTemp.Text = txtTemp.Text == "" ? Path.GetTempPath() : Properties.Settings.Default.tmpDir;
-            chkDeleteTemp.Checked = Properties.Settings.Default.deleteTemp;
 
             // Added \r\n to show smaller tooltips
             ToolTip toolTip1 = new ToolTip();
@@ -221,8 +219,6 @@ namespace XRayBuilderGUI
             Properties.Settings.Default.amazonTLD = cmbRegion.SelectedValue.ToString();
             Properties.Settings.Default.dataSource = rdoGoodreads.Checked ? "Goodreads" : "Shelfari";
             Properties.Settings.Default.promptASIN = chkPromptAsin.Checked;
-            Properties.Settings.Default.tmpDir = txtTemp.Text;
-            Properties.Settings.Default.deleteTemp = chkDeleteTemp.Checked;
             Properties.Settings.Default.Save();
             
             Close();
@@ -339,11 +335,6 @@ namespace XRayBuilderGUI
         private void chkOverrideOffset_CheckedChanged(object sender, EventArgs e)
         {
             txtAZWOffset.Enabled = chkOverrideOffset.Checked;
-        }
-
-        private void btnBrowseTemp_Click(object sender, EventArgs e)
-        {
-            txtOut.Text = UIFunctions.GetDir(txtTemp.Text);
         }
     }
 }

@@ -46,10 +46,6 @@
             this.gbGeneral = new System.Windows.Forms.GroupBox();
             this.chkSound = new System.Windows.Forms.CheckBox();
             this.tabPgDirectories = new System.Windows.Forms.TabPage();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.chkDeleteTemp = new System.Windows.Forms.CheckBox();
-            this.txtTemp = new System.Windows.Forms.TextBox();
-            this.btnBrowseTemp = new System.Windows.Forms.Button();
             this.gbDirectories = new System.Windows.Forms.GroupBox();
             this.chkSubDirectories = new System.Windows.Forms.CheckBox();
             this.txtOut = new System.Windows.Forms.TextBox();
@@ -99,7 +95,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.gbGeneral.SuspendLayout();
             this.tabPgDirectories.SuspendLayout();
-            this.groupBox7.SuspendLayout();
             this.gbDirectories.SuspendLayout();
             this.tabPgXray.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -287,7 +282,6 @@
             // 
             // tabPgDirectories
             // 
-            this.tabPgDirectories.Controls.Add(this.groupBox7);
             this.tabPgDirectories.Controls.Add(this.gbDirectories);
             this.tabPgDirectories.Location = new System.Drawing.Point(4, 5);
             this.tabPgDirectories.Name = "tabPgDirectories";
@@ -296,45 +290,6 @@
             this.tabPgDirectories.TabIndex = 1;
             this.tabPgDirectories.Text = "tabPage2";
             this.tabPgDirectories.UseVisualStyleBackColor = true;
-            // 
-            // groupBox7
-            // 
-            this.groupBox7.Controls.Add(this.chkDeleteTemp);
-            this.groupBox7.Controls.Add(this.txtTemp);
-            this.groupBox7.Controls.Add(this.btnBrowseTemp);
-            this.groupBox7.Location = new System.Drawing.Point(6, 97);
-            this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(378, 81);
-            this.groupBox7.TabIndex = 40;
-            this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "Temporary Directory";
-            // 
-            // chkDeleteTemp
-            // 
-            this.chkDeleteTemp.AutoSize = true;
-            this.chkDeleteTemp.Location = new System.Drawing.Point(14, 52);
-            this.chkDeleteTemp.Name = "chkDeleteTemp";
-            this.chkDeleteTemp.Size = new System.Drawing.Size(127, 17);
-            this.chkDeleteTemp.TabIndex = 26;
-            this.chkDeleteTemp.Text = "Delete temporary files";
-            this.chkDeleteTemp.UseVisualStyleBackColor = true;
-            // 
-            // txtTemp
-            // 
-            this.txtTemp.Location = new System.Drawing.Point(14, 20);
-            this.txtTemp.Name = "txtTemp";
-            this.txtTemp.Size = new System.Drawing.Size(308, 20);
-            this.txtTemp.TabIndex = 12;
-            // 
-            // btnBrowseTemp
-            // 
-            this.btnBrowseTemp.Location = new System.Drawing.Point(331, 19);
-            this.btnBrowseTemp.Name = "btnBrowseTemp";
-            this.btnBrowseTemp.Size = new System.Drawing.Size(34, 22);
-            this.btnBrowseTemp.TabIndex = 13;
-            this.btnBrowseTemp.Text = "...";
-            this.btnBrowseTemp.UseVisualStyleBackColor = true;
-            this.btnBrowseTemp.Click += new System.EventHandler(this.btnBrowseTemp_Click);
             // 
             // gbDirectories
             // 
@@ -814,8 +769,6 @@
             this.gbGeneral.ResumeLayout(false);
             this.gbGeneral.PerformLayout();
             this.tabPgDirectories.ResumeLayout(false);
-            this.groupBox7.ResumeLayout(false);
-            this.groupBox7.PerformLayout();
             this.gbDirectories.ResumeLayout(false);
             this.gbDirectories.PerformLayout();
             this.tabPgXray.ResumeLayout(false);
@@ -897,10 +850,6 @@
         private System.Windows.Forms.ComboBox cmbRegion;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox chkPromptAsin;
-        private System.Windows.Forms.GroupBox groupBox7;
-        private System.Windows.Forms.CheckBox chkDeleteTemp;
-        private System.Windows.Forms.TextBox txtTemp;
-        private System.Windows.Forms.Button btnBrowseTemp;
         private System.Windows.Forms.Label lblNote;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label2;

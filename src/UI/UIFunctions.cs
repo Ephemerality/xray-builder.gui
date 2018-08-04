@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using XRayBuilderGUI.DataSources;
 using XRayBuilderGUI.Unpack;
@@ -53,19 +52,38 @@ namespace XRayBuilderGUI
             }
         }
 
-        public static Metadata GetAndValidateMetadata(string mobiFile, string outDir, bool saveRawML, string randomFile = "")
+        public static string RawMlPath(string filename) => Path.Combine(Environment.CurrentDirectory, "dmp", filename + ".rawml");
+        public static Metadata GetAndValidateMetadata(string mobiFile, string outDir, bool saveRawML)
         {
-            var metadata = Functions.GetMetaDataInternal(mobiFile, outDir, saveRawML, randomFile);
-            EbokTagPromptOrThrow(metadata, mobiFile);
-            IncorrectAsinPromptOrThrow(metadata.ASIN);
-            if (!Properties.Settings.Default.useNewVersion && metadata.DBName.Length == 31)
+            Logger.Log("Extracting metadata...");
+            try
             {
-                MessageBox.Show(
-                    $"WARNING: Database Name is the maximum length. If \"{metadata.DBName}\" is the full book title, this should not be an issue.\r\n" +
-                    "If the title is supposed to be longer than that, you may get an error on your Kindle (WG on firmware < 5.6).\r\n" +
-                    "This can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n");
+                var metadata = Functions.GetMetaDataInternal(mobiFile, outDir, saveRawML);
+                EbokTagPromptOrThrow(metadata, mobiFile);
+                IncorrectAsinPromptOrThrow(metadata.ASIN);
+                if (!Properties.Settings.Default.useNewVersion && metadata.DBName.Length == 31)
+                {
+                    MessageBox.Show(
+                        $"WARNING: Database Name is the maximum length. If \"{metadata.DBName}\" is the full book title, this should not be an issue.\r\n" +
+                        "If the title is supposed to be longer than that, you may get an error on your Kindle (WG on firmware < 5.6).\r\n" +
+                        "This can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n");
+                }
+
+                if (saveRawML)
+                {
+                    Logger.Log("Saving rawML to dmp directory...");
+                    metadata.SaveRawMl(RawMlPath(Path.GetFileNameWithoutExtension(mobiFile)));
+                }
+                Logger.Log($"Got metadata!\r\nDatabase Name: {metadata.DBName}\r\nUniqueID: {metadata.UniqueID}");
+
+                return metadata;
             }
-            return metadata;
+            catch (Exception ex)
+            {
+                Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
+            }
+
+            return null;
         }
 
         public static void IncorrectAsinPromptOrThrow(string asin)

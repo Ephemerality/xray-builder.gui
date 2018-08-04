@@ -19,10 +19,19 @@ namespace XRayBuilderGUI.Unpack
         public MobiHead mobiHeader;
         public Bitmap coverImage;
         private int _startRecord = 1;
-        public string rawMLPath = "";
         private string _ASIN;
+        private readonly FileStream _fs;
+        private readonly string _path;
 
-        public Metadata(FileStream fs)
+        public Metadata(string file)
+        {
+            var fs = new FileStream(_path, FileMode.Open, FileAccess.Read);
+            _fs = fs;
+            _path = file;
+            Initialize(fs);
+        }
+
+        private void Initialize(FileStream fs)
         {
             fs.Seek(0, SeekOrigin.Begin);
             PDB = new PDBHeader(fs);
@@ -63,6 +72,7 @@ namespace XRayBuilderGUI.Unpack
         public void Dispose()
         {
             coverImage?.Dispose();
+            _fs?.Dispose();
         }
 
         private string get_image_type(byte[] data)
@@ -72,13 +82,6 @@ namespace XRayBuilderGUI.Unpack
                 || (data[0] == 0xFF && data[1] == 0xD8 && data[data.Length - 2] == 0xFF && data[data.Length - 1] == 0xD9))
                 return "jpeg";
             return "";
-        }
-
-        // Temporary function to mimic old GetMetaData functionality until it can be removed
-        // 0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
-        public List<string> getResults()
-        {
-            return new List<string>(6) { ASIN, UniqueID, DBName, rawMLPath, Author, Title };
         }
 
         public string ASIN => _ASIN;
@@ -102,7 +105,12 @@ namespace XRayBuilderGUI.Unpack
                 throw new EncryptedBookException();
         }
 
-        public byte[] getRawML(FileStream fs)
+        public void SaveRawMl(string path)
+        {
+            File.WriteAllBytes(path, getRawML());
+        }
+
+        public byte[] getRawML()
         {
             CheckDRM();
 
@@ -121,15 +129,15 @@ namespace XRayBuilderGUI.Unpack
                     {
                         int recOffset = (int)mobiHeader.HuffmanRecordOffset;
                         byte[] huffSect = new byte[PDB._recInfo[recOffset + 1].RecordDataOffset - PDB._recInfo[recOffset].RecordDataOffset];
-                        fs.Seek(PDB._recInfo[recOffset].RecordDataOffset, SeekOrigin.Begin);
-                        fs.Read(huffSect, 0, huffSect.Length);
+                        _fs.Seek(PDB._recInfo[recOffset].RecordDataOffset, SeekOrigin.Begin);
+                        _fs.Read(huffSect, 0, huffSect.Length);
                         reader.loadHuff(huffSect);
                         int recCount = (int)mobiHeader.HuffmanRecordCount;
                         for (int i = 1; i < recCount; i++)
                         {
                             huffSect = new byte[PDB._recInfo[recOffset + i + 1].RecordDataOffset - PDB._recInfo[recOffset + i].RecordDataOffset];
-                            fs.Seek(PDB._recInfo[recOffset + i].RecordDataOffset, SeekOrigin.Begin);
-                            fs.Read(huffSect, 0, huffSect.Length);
+                            _fs.Seek(PDB._recInfo[recOffset + i].RecordDataOffset, SeekOrigin.Begin);
+                            _fs.Read(huffSect, 0, huffSect.Length);
                             reader.loadCdic(huffSect);
                         }
                     } catch (Exception ex)
@@ -146,8 +154,8 @@ namespace XRayBuilderGUI.Unpack
             for (int i = _startRecord; i <= endRecord; i++)
             {
                 byte[] buffer = new byte[PDB._recInfo[i + 1].RecordDataOffset - PDB._recInfo[i].RecordDataOffset];
-                fs.Seek(PDB._recInfo[i].RecordDataOffset, SeekOrigin.Begin);
-                fs.Read(buffer, 0, buffer.Length);
+                _fs.Seek(PDB._recInfo[i].RecordDataOffset, SeekOrigin.Begin);
+                _fs.Read(buffer, 0, buffer.Length);
                 buffer = trimTrailingDataEntries(buffer);
                 byte[] result = decomp.unpack(buffer);
                 buffer = new byte[rawML.Length + result.Length];

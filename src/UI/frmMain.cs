@@ -812,6 +812,8 @@ namespace XRayBuilderGUI
                 txtGoodreads.Visible = !txtGoodreads.Visible;
                 btnBrowseXML.Visible = !btnBrowseXML.Visible;
                 btnSearchGoodreads.Visible = !btnSearchGoodreads.Visible;
+                btnKindleExtras.Enabled = !btnKindleExtras.Enabled;
+                btnOneClick.Enabled = !btnOneClick.Enabled;
             }
             if (((RadioButton)sender).Text == "Shelfari")
                 lblGoodreads.Left = 150;

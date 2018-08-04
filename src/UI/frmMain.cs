@@ -138,6 +138,8 @@ namespace XRayBuilderGUI
             prgBar.Value = 0;
             
             var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, _settings.saverawml));
+            if (metadata == null)
+                return;
             
             // Added author name to log output
             Logger.Log($"Book's {_dataSource.Name} URL: {txtGoodreads.Text}");
@@ -185,7 +187,7 @@ namespace XRayBuilderGUI
 
                 Logger.Log("Initial X-Ray built, adding locations and chapters...");
                 //Expand the X-Ray file from the unpacked mobi
-                if (await Task.Run(() => xray.ExpandFromRawMl(results[3], SafeShow, _progress, _cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion)).ConfigureAwait(false) > 0)
+                if (await Task.Run(() => xray.ExpandFromRawMl(metadata.GetRawMlStream(), SafeShow, _progress, _cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion)).ConfigureAwait(false) > 0)
                 {
                     Logger.Log("Build canceled or error occurred while processing locations and chapters.");
                     return;

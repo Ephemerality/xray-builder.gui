@@ -370,7 +370,7 @@ namespace XRayBuilderGUI
             }
         }
 
-        public int ExpandFromRawMl(string rawMl, SafeShowDelegate safeShow, IProgressBar progress, CancellationToken token, bool ignoreSoftHypen = false, bool shortEx = true)
+        public int ExpandFromRawMl(Stream rawMlStream, SafeShowDelegate safeShow, IProgressBar progress, CancellationToken token, bool ignoreSoftHypen = false, bool shortEx = true)
         {
             // If there is an apostrophe, attempt to match 's at the end of the term
             // Match end of word, then search for any lingering punctuation
@@ -381,14 +381,12 @@ namespace XRayBuilderGUI
 
             int excerptId = 0;
             HtmlDocument web = new HtmlDocument();
-            string readContents;
-            using (StreamReader streamReader = new StreamReader(rawMl, Encoding.Default))
+            using (var streamReader = new StreamReader(rawMlStream, Encoding.Default))
             {
-                readContents = streamReader.ReadToEnd();
+                var readContents = streamReader.ReadToEnd();
+                web.LoadHtml(readContents);
+                HandleChapters(rawMlStream.Length, web, readContents, safeShow);
             }
-            web.LoadHtml(readContents);
-
-            HandleChapters(new FileInfo(rawMl).Length, web, readContents, safeShow);
             
             Logger.Log("Scanning book content...");
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();

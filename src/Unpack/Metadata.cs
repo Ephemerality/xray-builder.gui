@@ -5,7 +5,6 @@
  */ 
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -19,15 +18,12 @@ namespace XRayBuilderGUI.Unpack
         public MobiHead mobiHeader;
         public Bitmap coverImage;
         private int _startRecord = 1;
-        private string _ASIN;
         private readonly FileStream _fs;
-        private readonly string _path;
 
         public Metadata(string file)
         {
-            var fs = new FileStream(_path, FileMode.Open, FileAccess.Read);
+            var fs = new FileStream(file, FileMode.Open, FileAccess.Read);
             _fs = fs;
-            _path = file;
             Initialize(fs);
         }
 
@@ -38,7 +34,6 @@ namespace XRayBuilderGUI.Unpack
             PDH = new PalmDOCHeader(fs);
             mobiHeader = new MobiHead(fs, PDB.MobiHeaderSize);
             // Use ASIN of the first book in the mobi
-            _ASIN = mobiHeader.exthHeader.ASIN != "" ? mobiHeader.exthHeader.ASIN : mobiHeader.exthHeader.ASIN2;
             int coverOffset = mobiHeader.exthHeader.CoverOffset;
             int firstImage = -1;
             // Start at end of first book records, search for a second (KF8) and use it instead (for combo books)
@@ -84,7 +79,7 @@ namespace XRayBuilderGUI.Unpack
             return "";
         }
 
-        public string ASIN => _ASIN;
+        public string ASIN => mobiHeader.exthHeader.ASIN != "" ? mobiHeader.exthHeader.ASIN : mobiHeader.exthHeader.ASIN2;
 
         public string DBName => PDB.DBName;
 
@@ -108,6 +103,11 @@ namespace XRayBuilderGUI.Unpack
         public void SaveRawMl(string path)
         {
             File.WriteAllBytes(path, getRawML());
+        }
+
+        public MemoryStream GetRawMlStream()
+        {
+            return new MemoryStream(getRawML());
         }
 
         public byte[] getRawML()

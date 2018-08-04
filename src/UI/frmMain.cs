@@ -135,37 +135,11 @@ namespace XRayBuilderGUI
                 return;
             }
 
-            //Create temp dir and ensure it exists
-            string randomFile = Functions.GetTempDirectory();
-            if (!Directory.Exists(randomFile))
-            {
-                MessageBox.Show(@"Temporary path not accessible for some reason.", @"Temporary Directory Error");
-                return;
-            }
-
             prgBar.Value = 0;
-
-            //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
-            List<string> results;
-            Logger.Log("Extracting metadata...");
-            try
-            {
-                results = (await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, true, randomFile))).getResults();
-            }
-            catch (Exception ex)
-            {
-                Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
-                return;
-            }
-
-            if (_settings.saverawml)
-            {
-                Logger.Log("Saving rawML to dmp directory...");
-                File.Copy(results[3], Path.Combine(Environment.CurrentDirectory + @"\dmp", Path.GetFileName(results[3])), true);
-            }
-
+            
+            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, _settings.saverawml));
+            
             // Added author name to log output
-            Logger.Log($"Got metadata!\r\nDatabase Name: {results[2]}\r\nUniqueID: {results[1]}");
             Logger.Log($"Book's {_dataSource.Name} URL: {txtGoodreads.Text}");
             if (_cancelTokens.IsCancellationRequested) return;
             Logger.Log("Attempting to build X-Ray...");
@@ -180,10 +154,10 @@ namespace XRayBuilderGUI
             try
             {
                 if (rdoGoodreads.Checked)
-                    xray = new XRay(txtGoodreads.Text, results[2], results[1], results[0], _dataSource,
+                    xray = new XRay(txtGoodreads.Text, metadata.DBName, metadata.UniqueID, metadata.ASIN, _dataSource,
                         AZW3 ? _settings.offsetAZW3 : _settings.offset, "", false);
                 else
-                    xray = new XRay(txtXMLFile.Text, results[2], results[1], results[0], _dataSource,
+                    xray = new XRay(txtXMLFile.Text, metadata.DBName, metadata.UniqueID, metadata.ASIN, _dataSource,
                         AZW3 ? _settings.offsetAZW3 : _settings.offset, "");
 
                 await Task.Run(() => xray.CreateXray(_progress, _cancelTokens.Token)).ConfigureAwait(false);
@@ -234,12 +208,12 @@ namespace XRayBuilderGUI
             {
                 if (_settings.android)
                 {
-                    outFolder = _settings.outDir + @"\Android\" + results[0];
+                    outFolder = _settings.outDir + @"\Android\" + metadata.ASIN;
                     Directory.CreateDirectory(outFolder);
                 }
                 else
                 {
-                    outFolder = OutputDirectory(results[4], results[5], true);
+                    outFolder = OutputDirectory(metadata.Author, metadata.Title, true);
                 }
             }
             catch (Exception ex)
@@ -266,12 +240,12 @@ namespace XRayBuilderGUI
                     Logger.Log($"An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n{ex.Message}");
                     return;
                 }
-                XrPath = outFolder + @"\XRAY.entities." + results[0];
+                XrPath = outFolder + @"\XRAY.entities." + metadata.ASIN;
 
                 //Save the new XRAY.ASIN.previewData file
                 try
                 {
-                    string PdPath = outFolder + @"\XRAY." + results[0] + ".previewData";
+                    string PdPath = outFolder + @"\XRAY." + metadata.ASIN + ".previewData";
                     xray.SavePreviewToFile(PdPath);
                     Logger.Log($"X-Ray previewData file created successfully!\r\nSaved to {PdPath}");
                 }
@@ -286,7 +260,7 @@ namespace XRayBuilderGUI
             }
             Logger.Log($"X-Ray file created successfully!\r\nSaved to {newPath}");
 
-            checkFiles(results[4], results[5], results[0]);
+            checkFiles(metadata.Author, metadata.Title, metadata.ASIN);
 
             if (_settings.playSound)
             {
@@ -294,15 +268,7 @@ namespace XRayBuilderGUI
                 player.Play();
             }
 
-            try
-            {
-                if (_settings.deleteTemp)
-                    Directory.Delete(randomFile, true);
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(String.Format("An error occurred while trying to delete temporary files: {0}\r\n{1}\r\nTry deleting these files manually.", ex.Message, ex.StackTrace));
-            }
+            metadata.Dispose();
         }
 
         private async void btnKindleExtras_Click(object sender, EventArgs e)
@@ -345,45 +311,15 @@ namespace XRayBuilderGUI
                     "Amazon Customer Details Not found");
                 return;
             }
-
-            //Create temp dir and ensure it exists
-            string randomFile = Functions.GetTempDirectory();
-            if (!Directory.Exists(randomFile))
-            {
-                MessageBox.Show("Temporary path not accessible for some reason.", "Temporary Directory Error");
-                return;
-            }
-
-            //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
-            List<string> results;
-            long rawMLSize;
-            Logger.Log("Extracting metadata...");
-            try
-            {
-                //Same results with addition of rawML filename
-                results = (await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, true, randomFile))).getResults();
-                rawMLSize = new FileInfo(results[3]).Length;
-            }
-            catch (Exception ex)
-            {
-                Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
-                return;
-            }
-
-            // TODO: Why does this only save w/ kindleunpack on?
-            if (_settings.saverawml && false)
-            {
-                Logger.Log("Saving rawML to dmp directory...");
-                File.Copy(results[3], Path.Combine(Environment.CurrentDirectory + @"\dmp", Path.GetFileName(results[3])), true);
-            }
-
-            Logger.Log($"Got metadata!\r\nDatabase Name: {results[2]}\r\nUniqueID: {results[1]}");
+            
+            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, _settings.saverawml));
+            
             SetDatasourceLabels(); // Reset the dataSource for the new build process
             Logger.Log($"Book's {_dataSource.Name} URL: {txtGoodreads.Text}");
             try
             {
-                BookInfo bookInfo = new BookInfo(results[5], results[4], results[0], results[1], results[2],
-                                                randomFile, Functions.RemoveInvalidFileChars(results[5]), txtGoodreads.Text, results[3]);
+                BookInfo bookInfo = new BookInfo(metadata.Title, metadata.Author, metadata.ASIN, metadata.UniqueID, metadata.DBName,
+                    randomFile, Functions.RemoveInvalidFileChars(metadata.Title), txtGoodreads.Text);
 
                 string outputDir = OutputDirectory(bookInfo.author, bookInfo.sidecarName, true);
 
@@ -401,7 +337,7 @@ namespace XRayBuilderGUI
                 SaPath = $@"{outputDir}\StartActions.data.{bookInfo.asin}.asc";
                 ApPath = $@"{outputDir}\AuthorProfile.profile.{bookInfo.asin}.asc";
                 Logger.Log("Attempting to build Start Actions and End Actions...");
-                EndActions ea = new EndActions(ap, bookInfo, rawMLSize, _dataSource, new EndActions.Settings
+                EndActions ea = new EndActions(ap, bookInfo, metadata.RawMlSize, _dataSource, new EndActions.Settings
                 {
                     AmazonTld = _settings.amazonTLD,
                     Android = _settings.android,
@@ -434,6 +370,7 @@ namespace XRayBuilderGUI
                         Logger.Log($@"An error occurred while loading dist\BaseEndActions.json (make sure any new versions have been extracted!)\r\n{e.Message}\r\n{e.StackTrace}");
                         return;
                     }
+
                     await ea.GenerateEndActionsFromBase(eaBase, _progress, _cancelTokens.Token);
 
                     StartActions sa;
@@ -452,6 +389,7 @@ namespace XRayBuilderGUI
                         Logger.Log($@"An error occurred while loading dist\BaseStartActions.json (make sure any new versions have been extracted!)\r\n{e.Message}\r\n{e.StackTrace}");
                         return;
                     }
+
                     ea.GenerateStartActionsFromBase(sa);
 
                     cmsPreview.Items[3].Enabled = true;
@@ -473,7 +411,10 @@ namespace XRayBuilderGUI
             {
                 Logger.Log("An error occurred while creating the new Author Profile, Start Actions, and/or End Actions files:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
             }
-
+            finally
+            {
+                metadata.Dispose();
+            }
         }
 
         private async void btnDownloadTerms_Click(object sender, EventArgs e)
@@ -535,67 +476,39 @@ namespace XRayBuilderGUI
                     "Output Directory Not found");
                 return;
             }
-            //Create temp dir and ensure it exists
-            string randomFile = Functions.GetTempDirectory();
-            if (!Directory.Exists(randomFile))
-            {
-                MessageBox.Show("Temporary path not accessible for some reason.", "Temporary Directory Error");
-                return;
-            }
 
-            //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
             //this.TopMost = true;
-            List<string> results;
-            Logger.Log("Extracting metadata...");
-            try
+            using (var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, false)))
             {
-                results = (await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, false))).getResults();
-            }
-            catch (Exception ex)
-            {
-                Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
-                return;
-            }
-
-            Logger.Log($"Got metadata!\r\nDatabase Name: {results[2]}\r\nUniqueID: {results[1]}\r\nASIN: {results[0]}");
-            try
-            {
-                List<BookInfo> books = await _dataSource.SearchBook(results[4], results[5]);
-                string bookUrl = books?.Count == 1 ? books[0].dataUrl : "";
-                if (books?.Count > 1)
+                try
                 {
-                    Logger.Log($"Warning: Multiple results returned from {_dataSource.Name}...");
-                    var frmG = new frmGR {BookList = books};
-                    frmG.ShowDialog();
-                    bookUrl = books[frmG.cbResults.SelectedIndex].dataUrl;
-                }
-                else if (books?.Count == 1)
-                    bookUrl = books[0].dataUrl;
-                else
-                    Logger.Log($"Unable to find this book on {_dataSource.Name}!");
+                    List<BookInfo> books = await _dataSource.SearchBook(metadata.Author, metadata.Title);
+                    string bookUrl = books?.Count == 1 ? books[0].dataUrl : "";
+                    if (books?.Count > 1)
+                    {
+                        Logger.Log($"Warning: Multiple results returned from {_dataSource.Name}...");
+                        var frmG = new frmGR { BookList = books };
+                        frmG.ShowDialog();
+                        bookUrl = books[frmG.cbResults.SelectedIndex].dataUrl;
+                    }
+                    else if (books?.Count == 1)
+                        bookUrl = books[0].dataUrl;
+                    else
+                        Logger.Log($"Unable to find this book on {_dataSource.Name}!");
 
-                if (bookUrl != "")
+                    if (bookUrl != "")
+                    {
+                        txtGoodreads.Text = bookUrl;
+                        txtGoodreads.Refresh();
+                        Logger.Log(
+                            $"Book found on {_dataSource.Name}!\r\n{metadata.Title} by {metadata.Author}\r\n{_dataSource.Name} URL: {bookUrl}\r\n"
+                            + "You may want to visit the URL to ensure it is correct.");
+                    }
+                }
+                catch (Exception ex)
                 {
-                    txtGoodreads.Text = bookUrl;
-                    txtGoodreads.Refresh();
-                    Logger.Log($"Book found on {_dataSource.Name}!\r\n{results[5]} by {results[4]}\r\n{_dataSource.Name} URL: {bookUrl}\r\n"
-                        + "You may want to visit the URL to ensure it is correct.");
+                    Logger.Log("An error occurred while searching: " + ex.Message + "\r\n" + ex.StackTrace);
                 }
-            }
-            catch (Exception ex)
-            {
-                Logger.Log("An error occurred while searching: " + ex.Message + "\r\n" + ex.StackTrace);
-            }
-
-            try
-            {
-                if (_settings.deleteTemp)
-                    Directory.Delete(randomFile, true);
-            }
-            catch (Exception ex)
-            {
-                Logger.Log($"An error occurred while trying to delete temporary files: {ex.Message}\r\n{ex.StackTrace}\r\n"
-                    + "Try deleting these files manually.");
             }
         }
 
@@ -757,26 +670,15 @@ namespace XRayBuilderGUI
             txtGoodreads.Text = "";
             prgBar.Value = 0;
 
-            string randomFile = Functions.GetTempDirectory();
-            if (!Directory.Exists(randomFile))
+            
+            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, false));
+            if (metadata == null)
             {
-                MessageBox.Show("Temporary path not accessible for some reason.", "Temporary Directory Error");
-                return;
-            }
-            List<string> results;
-            try
-            {
-                var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, false));
-                metadata.CheckDRM();
-                results = metadata.getResults();
-                pbCover.Image = (Image) metadata.coverImage?.Clone();
-            }
-            catch (Exception ex)
-            {
-                Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
                 txtMobi.Text = "";
                 return;
             }
+            metadata.CheckDRM();
+            pbCover.Image = (Image) metadata.coverImage?.Clone();
 
             lblTitle.Visible = true;
             lblAuthor.Visible = true;
@@ -785,17 +687,17 @@ namespace XRayBuilderGUI
             txtAuthor.Visible = true;
             txtAsin.Visible = true;
 
-            txtAuthor.Text = results[4];
-            txtTitle.Text = results[5];
-            txtAsin.Text = results[0];
+            txtAuthor.Text = metadata.Author;
+            txtTitle.Text = metadata.Title;
+            txtAsin.Text = metadata.ASIN;
             _tooltip.SetToolTip(txtAsin, AmazonUrl(txtAsin.Text));
 
             openBook.Clear();
-            openBook.Add(results[4]);
-            openBook.Add(results[5]);
-            openBook.Add(results[0]);
+            openBook.Add(metadata.Author);
+            openBook.Add(metadata.Title);
+            openBook.Add(metadata.ASIN);
 
-            checkFiles(results[4], results[5], results[0]);
+            checkFiles(metadata.Author, metadata.Title, metadata.ASIN);
 
             try
             {
@@ -987,27 +889,12 @@ namespace XRayBuilderGUI
                 MessageBox.Show(@"Specified output directory does not exist.\r\nPlease review the settings page.", @"Output Directory Not found");
                 return;
             }
-            //Create temp dir and ensure it exists
-            string randomFile = Functions.GetTempDirectory();
-            if (!Directory.Exists(randomFile))
+            var metadata = await Task.Run(() => Functions.GetMetaDataInternal(txtMobi.Text, _settings.outDir, _settings.saverawml)).ConfigureAwait(false);
+            if (metadata != null)
             {
-                MessageBox.Show(@"Temporary path not accessible for some reason.", @"Temporary Directory Error");
-                return;
+                Logger.Log("Extracted rawml successfully!\r\n");
+                metadata.Dispose();
             }
-            List<string> results;
-            Logger.Log("Extracting rawML...");
-            try
-            {
-                results = await Task.Run(() => Functions.GetMetaDataInternal(txtMobi.Text, _settings.outDir, true, randomFile).getResults()).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                Logger.Log("An error occurred extracting rawML: " + ex.Message + "\r\n" + ex.StackTrace);
-                return;
-            }
-            string rawmlPath = Path.Combine(Environment.CurrentDirectory + @"\dmp", Path.GetFileName(results[3]));
-            File.Copy(results[3], rawmlPath, true);
-            Logger.Log("Extracted rawml successfully!\r\nSaved to " + rawmlPath);
         }
 
         private void txtOutput_LinkClicked(object sender, LinkClickedEventArgs e)
@@ -1069,7 +956,6 @@ namespace XRayBuilderGUI
             {
                 MessageBox.Show(@"Unable to open the supplied help document.", @"Help Document Not found");
             }
-
         }
 
         private void btnAbout_Click(object sender, EventArgs e)

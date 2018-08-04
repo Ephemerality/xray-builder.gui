@@ -125,16 +125,16 @@ namespace XRayBuilderGUI
             return false;
         }
 
-        public static string GetTempDirectory()
-        {
-            string path;
-            do
-            {
-                path = Path.Combine(Properties.Settings.Default.tmpDir, Path.GetRandomFileName());
-            } while (Directory.Exists(path));
-            Directory.CreateDirectory(path);
-            return path;
-        }
+        //public static string GetTempDirectory()
+        //{
+        //    string path;
+        //    do
+        //    {
+        //        path = Path.Combine(Properties.Settings.Default.tmpDir, Path.GetRandomFileName());
+        //    } while (Directory.Exists(path));
+        //    Directory.CreateDirectory(path);
+        //    return path;
+        //}
 
         public static string TimeStamp()
         {

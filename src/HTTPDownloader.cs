@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
 
 namespace XRayBuilderGUI
 {
@@ -22,20 +23,30 @@ namespace XRayBuilderGUI
         public Encoding Encoding { get; set; }
         public WebHeaderCollection Headers { get; set; }
         public Uri Url { get; set; }
-        
+
         public static Task<string> GetPageHtmlAsync(string url)
         {
-            HttpDownloader http = new HttpDownloader(url);
-            return Task.Run(() => http.GetPage());
+            var http = new HttpDownloader(url);
+            return http.GetPage();
+        }
+
+        public static async Task<HtmlDocument> GetHtmlDocAsync(string url)
+        {
+            var http = new HttpDownloader(url);
+            var doc = new HtmlDocument();
+            doc.Load(await http.GetPage());
+            return doc;
         }
 
         public static async Task<Bitmap> GetImage(string url)
         {
-            WebRequest request = WebRequest.Create(url);
+            var request = (HttpWebRequest)WebRequest.Create(url);
             request.Timeout = 2000;
-            using (WebResponse response = await request.GetResponseAsync())
+            using (var response = (HttpWebResponse) await request.GetResponseAsync())
             {
-                return new Bitmap(response.GetResponseStream());
+                var stream = response.GetResponseStream()
+                             ?? throw new Exception($"Failed to download image ({response.StatusCode} {response.StatusDescription})");
+                return new Bitmap(stream);
             }
         }
 
@@ -67,7 +78,6 @@ namespace XRayBuilderGUI
                 Url = response.ResponseUri;
                 return ProcessContent(response);
             }
-
         }
 
         private string ProcessContent(HttpWebResponse response)
@@ -95,7 +105,7 @@ namespace XRayBuilderGUI
                 if (!_encodingFoundInHeader)
                     html = CheckMetaCharSetAndReEncode(memStream, html);
             }
-
+            
             return html;
         }
 

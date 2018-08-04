@@ -320,8 +320,7 @@ namespace XRayBuilderGUI
             Logger.Log($"Book's {_dataSource.Name} URL: {txtGoodreads.Text}");
             try
             {
-                BookInfo bookInfo = new BookInfo(metadata.Title, metadata.Author, metadata.ASIN, metadata.UniqueID, metadata.DBName,
-                    randomFile, Functions.RemoveInvalidFileChars(metadata.Title), txtGoodreads.Text);
+                BookInfo bookInfo = new BookInfo(metadata, txtGoodreads.Text);
 
                 string outputDir = OutputDirectory(bookInfo.author, bookInfo.sidecarName, true);
 

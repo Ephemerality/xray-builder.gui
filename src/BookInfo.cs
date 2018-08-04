@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using XRayBuilderGUI.DataSources;
+using XRayBuilderGUI.Unpack;
 
 namespace XRayBuilderGUI
 {
@@ -43,10 +44,24 @@ namespace XRayBuilderGUI
         // List of clips and their highlight/like count
         public List<NotableClip> notableClips;
 
+        private readonly Metadata _metadata;
+
         public string Guid
         {
             set => Functions.ConvertGuid(value);
             get => _guid;
+        }
+
+        public BookInfo(Metadata metadata, string dataUrl)
+        {
+            _metadata = metadata;
+            title = metadata.Title;
+            author = metadata.Author;
+            asin = metadata.ASIN;
+            _guid = metadata.UniqueID;
+            databasename = metadata.DBName;
+            sidecarName = Functions.RemoveInvalidFileChars(metadata.Title);
+            this.dataUrl = dataUrl;
         }
 
         public BookInfo(string title, string author, string asin, string guid, string databasename, string path, string sidecarName, string dataUrl, string rawmlPath)

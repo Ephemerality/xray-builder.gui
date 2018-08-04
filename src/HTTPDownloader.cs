@@ -59,7 +59,7 @@ namespace XRayBuilderGUI
                 request.UserAgent = _userAgent;
 
             request.CookieContainer = _cookiejar;
-            request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
+            request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip");
 
             using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
             {
@@ -78,8 +78,6 @@ namespace XRayBuilderGUI
             if (s == null) return null;
             if (response.ContentEncoding.ToLower().Contains("gzip"))
                 s = new GZipStream(s, CompressionMode.Decompress);
-            else if (response.ContentEncoding.ToLower().Contains("deflate"))
-                s = new DeflateStream(s, CompressionMode.Decompress);
 
             MemoryStream memStream = new MemoryStream();
             int bytesRead;

@@ -315,6 +315,8 @@ namespace XRayBuilderGUI
             }
             
             var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, _settings.saverawml));
+            if (metadata == null)
+                return;
             
             SetDatasourceLabels(); // Reset the dataSource for the new build process
             Logger.Log($"Book's {_dataSource.Name} URL: {txtGoodreads.Text}");
@@ -481,6 +483,9 @@ namespace XRayBuilderGUI
             //this.TopMost = true;
             using (var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, false)))
             {
+                if (metadata == null)
+                    return;
+
                 try
                 {
                     List<BookInfo> books = await _dataSource.SearchBook(metadata.Author, metadata.Title);

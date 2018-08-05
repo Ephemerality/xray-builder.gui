@@ -701,10 +701,7 @@ namespace XRayBuilderGUI
 
         private void btnPreview_Click(object sender, EventArgs e)
         {
-            if (cmsPreview.Visible)
-                cmsPreview.Hide();
-            else
-                cmsPreview.Show(btnPreview, new Point(2, btnPreview.Height));
+            cmsPreview.Show(btnPreview, new Point(2, btnPreview.Height));
         }
 
         // TODO: Clean up these preview handlers

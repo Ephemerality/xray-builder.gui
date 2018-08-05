@@ -575,16 +575,12 @@ namespace XRayBuilderGUI
                            ?? _settings.mobiFile;
 
             if (txtXMLFile.Text == "") txtXMLFile.Text = _settings.xmlFile;
-            if (!Directory.Exists(Environment.CurrentDirectory + @"\out"))
-                Directory.CreateDirectory(Environment.CurrentDirectory + @"\out");
+
+            foreach (var dir in new [] { "out", "log", "dmp", "tmp" })
+                Directory.CreateDirectory(Environment.CurrentDirectory + $"\\{dir}");
+
             if (_settings.outDir == "")
                 _settings.outDir = Environment.CurrentDirectory + @"\out";
-            if (!Directory.Exists(Environment.CurrentDirectory + @"\log"))
-                Directory.CreateDirectory(Environment.CurrentDirectory + @"\log");
-            if (!Directory.Exists(Environment.CurrentDirectory + @"\dmp"))
-                Directory.CreateDirectory(Environment.CurrentDirectory + @"\dmp");
-            if (!Directory.Exists(Environment.CurrentDirectory + @"\tmp"))
-                Directory.CreateDirectory(Environment.CurrentDirectory + @"\tmp");
 
             txtGoodreads.Text = _settings.Goodreads;
             if (_settings.buildSource == "Goodreads")

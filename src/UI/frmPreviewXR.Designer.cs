@@ -83,6 +83,7 @@
             this.flpPeople.Name = "flpPeople";
             this.flpPeople.Size = new System.Drawing.Size(289, 372);
             this.flpPeople.TabIndex = 1;
+            this.flpPeople.Scroll += new System.Windows.Forms.ScrollEventHandler(this.flpPeople_Scroll);
             // 
             // tbTerms
             // 

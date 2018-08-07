@@ -45,6 +45,9 @@ namespace XRayBuilderGUI
             base.ShowDialog();
         }
 
+        private void flpPeople_Scroll(object sender, ScrollEventArgs e)
+        {
+            flpPeople.VerticalScroll.Value = e.NewValue;
         }
     }
 }

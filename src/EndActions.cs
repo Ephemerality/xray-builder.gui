@@ -92,7 +92,6 @@ namespace XRayBuilderGUI
             //Parse Recommended Author titles and ASINs
             try
             {
-                var nodeUrl = "";
                 var recList = bookHtmlDoc.DocumentNode.SelectNodes("//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card a-float-left']");
                 if (recList != null)
                 {
@@ -101,7 +100,7 @@ namespace XRayBuilderGUI
                     {
                         HtmlNode nodeTitle = item.SelectSingleNode(".//div/a");
                         var nodeTitleCheck = nodeTitle.GetAttributeValue("title", "");
-                        nodeUrl = nodeTitle.GetAttributeValue("href", "");
+                        var nodeUrl = nodeTitle.GetAttributeValue("href", "");
                         if (nodeUrl != "")
                             nodeUrl = "https://www.amazon." + _settings.AmazonTld + nodeUrl;
                         if (nodeTitleCheck == "")
@@ -110,6 +109,9 @@ namespace XRayBuilderGUI
                             //Remove CR, LF and TAB
                             nodeTitleCheck = nodeTitle.InnerText.Clean();
                         }
+                        //Check for duplicate by title
+                        if (possibleBooks.Any(bk => bk.title.Contains(nodeTitleCheck)))
+                            continue;
 
                         var cleanAuthor = item.SelectSingleNode(".//div/div").InnerText.Clean();
                         //Exclude the current book title from other books search
@@ -122,7 +124,7 @@ namespace XRayBuilderGUI
                         if (match.Success)
                             continue;
                         possibleBooks.Add(new BookInfo(nodeTitleCheck, cleanAuthor,
-                            item.SelectSingleNode(".//div")?.GetAttributeValue("data-asin", null)));
+                            item.SelectSingleNode(".//div")?.GetAttributeValue("data-asin", null)) { amazonUrl = nodeUrl });
                     }
                     var bookBag = new ConcurrentBag<BookInfo>();
                     await possibleBooks.ParallelForEachAsync(async book =>
@@ -133,12 +135,12 @@ namespace XRayBuilderGUI
                         {
                             //Gather book desc, image url, etc, if using new format
                             if (_settings.UseNewVersion)
-                                await book.GetAmazonInfo(nodeUrl);
+                                await book.GetAmazonInfo(book.amazonUrl);
                             bookBag.Add(book);
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log($"Error: {ex}\r\n{nodeUrl}");
+                            Logger.Log($"Error: {ex}\r\n{book.amazonUrl}");
                         }
                     });
                     custAlsoBought.AddRange(bookBag);
@@ -180,15 +182,14 @@ namespace XRayBuilderGUI
                                 continue;
                             sponsTitle = otherBook.GetAttributeValue("alt", "");
                             //Check for duplicate by title
-                            BookInfo repeat = custAlsoBought.FirstOrDefault(check => check.title.Contains(sponsTitle));
-                            if (repeat != null)
+                            if (custAlsoBought.Any(bk => bk.title.Contains(sponsTitle)) || possibleBooks.Any(bk => bk.title.Contains(sponsTitle)))
                                 continue;
                             otherBook = result.SelectSingleNode(".//a[@class='a-size-small a-link-child']")
                                 ?? result.SelectSingleNode(".//span[@class='a-size-small a-color-base']")
                                 ?? throw new DataSource.FormatChangedException("Amazon", "Sponsored book author");
                             // TODO: Throw more format changed exceptions to make it obvious that the site changed
                             var sponsAuthor = otherBook.InnerText.Trim();
-                            possibleBooks.Add(new BookInfo(sponsTitle, sponsAuthor, sponsAsin));
+                            possibleBooks.Add(new BookInfo(sponsTitle, sponsAuthor, sponsAsin) { amazonUrl = sponsUrl });
                         }
 
                         var bookBag = new ConcurrentBag<BookInfo>();
@@ -198,12 +199,12 @@ namespace XRayBuilderGUI
                             try
                             {
                                 if (_settings.UseNewVersion)
-                                    await book.GetAmazonInfo(sponsUrl);
+                                    await book.GetAmazonInfo(book.amazonUrl);
                                 bookBag.Add(book);
                             }
                             catch (Exception ex)
                             {
-                                Logger.Log($"Error: {ex.Message}\r\n{sponsUrl}");
+                                Logger.Log($"Error: {ex.Message}\r\n{book.amazonUrl}");
                             }
                         });
                         custAlsoBought.AddRange(bookBag);

@@ -703,163 +703,25 @@ namespace XRayBuilderGUI
         {
             cmsPreview.Show(btnPreview, new Point(2, btnPreview.Height));
         }
-
-        // TODO: Clean up these preview handlers
-        private void tmiAuthorProfile_Click(object sender, EventArgs e)
+        
+        private async void tmiAuthorProfile_Click(object sender, EventArgs e)
         {
-            string selPath = "";
-            if (File.Exists(ApPath))
-                selPath = ApPath;
-            else
-            {
-                OpenFileDialog openFile = new OpenFileDialog
-                {
-                    Title = "Open a Kindle AuthorProfile file...",
-                    Filter = "ASC files|*.asc",
-                    InitialDirectory = _settings.outDir
-                };
-                if (openFile.ShowDialog() == DialogResult.OK)
-                {
-                    if (openFile.FileName.Contains("AuthorProfile"))
-                        selPath = openFile.FileName;
-                    else
-                    {
-                        Logger.Log("Invalid Author Profile file.");
-                        return;
-                    }
-                }
-            }
-            if (selPath != "")
-            {
-                try
-                {
-                    frmPreviewAP frmAuthorProfile = new frmPreviewAP();
-                    frmAuthorProfile.PopulateAuthorProfile(selPath);
-                    frmAuthorProfile.Location = new Point(Left, Top);
-                    frmAuthorProfile.ShowDialog();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                }
-            }
+            await UIFunctions.ShowPreview(Filetype.AuthorProfile, ApPath, _settings.outDir);
         }
 
         private async void tmiStartAction_Click(object sender, EventArgs e)
         {
-            string selPath = "";
-            if (File.Exists(SaPath))
-                selPath = SaPath;
-            else
-            {
-                OpenFileDialog openFile = new OpenFileDialog
-                {
-                    Title = "Open a Kindle StartActions file...",
-                    Filter = "ASC files|*.asc",
-                    InitialDirectory = _settings.outDir
-                };
-                if (openFile.ShowDialog() == DialogResult.OK)
-                {
-                    if (openFile.FileName.Contains("StartActions"))
-                        selPath = openFile.FileName;
-                    else
-                    {
-                        Logger.Log("Invalid Start Actions file.");
-                        return;
-                    }
-                }
-            }
-            if (selPath != "")
-            {
-                try
-                {
-                    frmPreviewSA frmStartAction = new frmPreviewSA();
-                    await frmStartAction.populateStartActions(selPath);
-                    frmStartAction.Location = new Point(Left, Top);
-                    frmStartAction.ShowDialog();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                }
-            }
+            await UIFunctions.ShowPreview(Filetype.StartActions, ApPath, _settings.outDir);
         }
 
         private async void tmiEndAction_Click(object sender, EventArgs e)
         {
-            string selPath = "";
-            if (File.Exists(EaPath))
-                selPath = EaPath;
-            else
-            {
-                OpenFileDialog openFile = new OpenFileDialog
-                {
-                    Title = "Open a Kindle EndActions file...",
-                    Filter = "ASC files|*.asc",
-                    InitialDirectory = _settings.outDir
-                };
-                if (openFile.ShowDialog() == DialogResult.OK)
-                {
-                    if (openFile.FileName.Contains("EndActions"))
-                        selPath = openFile.FileName;
-                    else
-                    {
-                        Logger.Log("Invalid End Actions file.");
-                        return;
-                    }
-                }
-            }
-            if (selPath != "")
-            {
-                try
-                {
-                    frmPreviewEA frmEndAction = new frmPreviewEA();
-                    await frmEndAction.PopulateEndActions(selPath);
-                    frmEndAction.Location = new Point(Left, Top);
-                    frmEndAction.ShowDialog();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                }
-            }
+            await UIFunctions.ShowPreview(Filetype.EndActions, ApPath, _settings.outDir);
         }
 
-        private void tmiXray_Click(object sender, EventArgs e)
+        private async void tmiXray_Click(object sender, EventArgs e)
         {
-            string selPath;
-            if (File.Exists(XrPath))
-                selPath = XrPath;
-            else
-            {
-                selPath = UIFunctions.GetFile("Open a Kindle X-Ray file...", null, "ASC files|*.asc", _settings.outDir);
-                if (selPath.Contains("XRAY.entities"))
-                {
-                    Logger.Log("Invalid X-Ray file.");
-                    return;
-                }
-            }
-            try
-            {
-                var ver = XRayUtil.CheckXRayVersion(selPath);
-                if (ver == XRayUtil.XRayVersion.Invalid)
-                {
-                    Logger.Log("Invalid X-Ray file.");
-                    return;
-                }
-                var terms = ver == XRayUtil.XRayVersion.New
-                    ? XRayUtil.ExtractTermsNew(new SQLiteConnection($"Data Source={selPath}; Version=3;"), true)
-                    : XRayUtil.ExtractTermsOld(selPath);
-                
-                frmPreviewXR frmXraPreview = new frmPreviewXR();
-                frmXraPreview.PopulateXRay(terms.ToList());
-                frmXraPreview.ShowDialog();
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-            }
+            await UIFunctions.ShowPreview(Filetype.XRay, ApPath, _settings.outDir);
         }
 
         private async void btnUnpack_Click(object sender, EventArgs e)

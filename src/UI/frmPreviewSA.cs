@@ -20,7 +20,7 @@ namespace XRayBuilderGUI
         public string descriptionPopup = "";
         public string biographyPopup = "";
 
-        public async Task populateStartActions(string inputFile)
+        public async Task Populate(string inputFile)
         {
             string input;
             using (StreamReader streamReader = new StreamReader(inputFile, Encoding.UTF8))
@@ -128,6 +128,11 @@ namespace XRayBuilderGUI
                 if (imageUrl != "")
                     pbPreviousCover.Image = Functions.MakeGrayscale3(await HttpDownloader.GetImage(imageUrl));
             }
+        }
+
+        public new void ShowDialog()
+        {
+            base.ShowDialog();
         }
     }
 }

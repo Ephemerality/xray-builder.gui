@@ -1,19 +1,20 @@
 ﻿using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI
 {
-    public partial class frmPreviewAP : Form
+    public partial class frmPreviewAP : Form, IPreviewForm
     {
         public frmPreviewAP()
         {
             InitializeComponent();
         }
 
-        public void PopulateAuthorProfile(string inputFile)
+        public Task Populate(string inputFile)
         {
             string input;
             using (StreamReader streamReader = new StreamReader(inputFile, Encoding.UTF8))
@@ -39,6 +40,13 @@ namespace XRayBuilderGUI
                 foreach (var rec in tempData)
                     dgvOtherBooks.Rows.Add(" " + rec["t"], Resources.arrow_right);
             }
+
+            return Task.Delay(1);
+        }
+
+        public new void ShowDialog()
+        {
+            base.ShowDialog();
         }
     }
 }

@@ -1,15 +1,77 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilderGUI.DataSources;
 using XRayBuilderGUI.Unpack;
 
 namespace XRayBuilderGUI
 {
+    public interface IPreviewForm
+    {
+        Task Populate(string filePath);
+        void ShowDialog();
+    }
+
+    public enum Filetype
+    {
+        AuthorProfile,
+        EndActions,
+        StartActions,
+        XRay
+    }
+
+    public class PreviewDef
+    {
+        public string Name { get; set; }
+        public string Validator { get; set; }
+        public Type Form { get; set; }
+    }
+
     // ReSharper disable once InconsistentNaming
     public static class UIFunctions
     {
+        public static Dictionary<Filetype, PreviewDef> PreviewMap = new Dictionary<Filetype, PreviewDef>
+        {
+            {Filetype.AuthorProfile, new PreviewDef { Name = "AuthorProfile", Form = typeof(frmPreviewAP), Validator = "AuthorProfile"}},
+            {Filetype.EndActions, new PreviewDef { Name = "EndActions", Form = typeof(frmPreviewEA), Validator = "EndActions"}},
+            {Filetype.StartActions, new PreviewDef { Name = "StartActions", Form = typeof(frmPreviewSA), Validator = "StartActions"}},
+            {Filetype.XRay, new PreviewDef { Name = "X-Ray", Form = typeof(frmPreviewXR), Validator = "XRAY.entities"}}
+        };
+        
+        public static async Task ShowPreview(Filetype type, string filePath, string defaultDir)
+        {
+            var previewData = PreviewMap[type];
+
+            string selPath;
+            if (File.Exists(filePath))
+                selPath = filePath;
+            else
+            {
+                selPath = GetFile($"Open a Kindle {previewData.Name} file...", null, "ASC files|*.asc", defaultDir);
+                if (!selPath.Contains(previewData.Validator))
+                {
+                    Logger.Log($"Invalid {previewData.Name} file.");
+                    return;
+                }
+            }
+            
+            try
+            {
+                IPreviewForm previewForm = (IPreviewForm) Activator.CreateInstance(previewData.Form);
+                await previewForm.Populate(selPath);
+                //.Location = new Point(Left, Top);
+                previewForm.ShowDialog();
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+            }
+        }
+
         public static string GetDir(string defaultFolder)
         {
             FolderBrowserDialog f = new FolderBrowserDialog { SelectedPath = defaultFolder };

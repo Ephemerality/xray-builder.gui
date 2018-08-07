@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Data.SQLite;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace XRayBuilderGUI
 {
-    public partial class frmPreviewXR : Form
+    public partial class frmPreviewXR : Form, IPreviewForm
     {
         public frmPreviewXR()
         {
@@ -12,8 +13,18 @@ namespace XRayBuilderGUI
         }
 
         // TODO: Add notable clips
-        public void PopulateXRay(List<XRay.Term> terms)
+        public Task Populate(string filePath)
         {
+            var ver = XRayUtil.CheckXRayVersion(filePath);
+            if (ver == XRayUtil.XRayVersion.Invalid)
+            {
+                Logger.Log("Invalid X-Ray file.");
+                return Task.Delay(1);
+            }
+            var terms = ver == XRayUtil.XRayVersion.New
+                ? XRayUtil.ExtractTermsNew(new SQLiteConnection($"Data Source={filePath}; Version=3;"), true)
+                : XRayUtil.ExtractTermsOld(filePath);
+
             flpPeople.Controls.Clear();
             flpTerms.Controls.Clear();
 
@@ -26,6 +37,14 @@ namespace XRayBuilderGUI
                     flpTerms.Controls.Add(p);
             }
             tcXray.SelectedIndex = 0;
+            return Task.Delay(1);
+        }
+
+        public new void ShowDialog()
+        {
+            base.ShowDialog();
+        }
+
         }
     }
 }

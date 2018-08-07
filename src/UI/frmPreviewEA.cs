@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace XRayBuilderGUI
 {
-    public partial class frmPreviewEA : Form
+    public partial class frmPreviewEA : Form, IPreviewForm
     {
 
         #region SET LISTVIEW ICON SPACING
@@ -46,7 +46,7 @@ namespace XRayBuilderGUI
 
         #endregion
 
-        public async Task PopulateEndActions(string inputFile)
+        public async Task Populate(string inputFile)
         {
             string input;
             using (StreamReader streamReader = new StreamReader(inputFile, Encoding.UTF8))
@@ -107,6 +107,11 @@ namespace XRayBuilderGUI
                     lvCustomersWhoBoughtRecs.Items.Add(item);
                 }
             }
+        }
+
+        public new void ShowDialog()
+        {
+            base.ShowDialog();
         }
     }
 }

@@ -96,14 +96,14 @@ namespace XRayBuilderGUI
             {
                 foreach (var rec in tempData)
                 {
-                    string imageUrl = rec["imageUrl"]?.ToString();
+                    var imageUrl = rec["imageUrl"]?.ToString();
                     if (!string.IsNullOrEmpty(imageUrl))
                         ilcustomersWhoBoughtRecs.Images.Add(Functions.MakeGrayscale3(await HttpDownloader.GetImage(imageUrl)));
                 }
                 ListViewItem_SetSpacing(lvCustomersWhoBoughtRecs, 60 + 7, 90 + 7);
                 for (int i = 0; i < ilcustomersWhoBoughtRecs.Images.Count; i++)
                 {
-                    ListViewItem item = new ListViewItem() { ImageIndex = i };
+                    var item = new ListViewItem { ImageIndex = i };
                     lvCustomersWhoBoughtRecs.Items.Add(item);
                 }
             }

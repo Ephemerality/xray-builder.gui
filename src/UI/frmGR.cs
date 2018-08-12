@@ -15,7 +15,7 @@ namespace XRayBuilderGUI
             InitializeComponent();
         }
 
-        ToolTip toolTip1 = new ToolTip();
+        private readonly ToolTip _toolTip1 = new ToolTip();
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
@@ -34,21 +34,14 @@ namespace XRayBuilderGUI
 
         private void cbResults_SelectedIndexChanged(object sender, EventArgs e)
         {
-            pbCover.Image = Resources.missing_image;
-            lblTitle.Text = "";
-            lblAuthor.Text = "";
-            lblRating.Text = "";
-            lblEditions.Text = "";
-            linkID.Text = "";
-
             int i = cbResults.SelectedIndex == -1 ? 0 : cbResults.SelectedIndex;
-            pbCover.Image = BookList[i].CoverImage();
+            pbCover.Image = BookList[i].CoverImage() ?? Resources.missing_image;
             lblTitle.Text = BookList[i].title;
             lblAuthor.Text = "by " + BookList[i].author;
-            lblRating.Text = String.Format("{0} average rating ({1} ratings)", BookList[i].amazonRating, BookList[i].numReviews);
-            lblEditions.Text = String.Format(BookList[i].editions == "1" ? "{0} edition" : "{0} editions", BookList[i].editions);
+            lblRating.Text = $"{BookList[i].amazonRating:#.#} average rating " + Functions.Pluralize($"({BookList[i].numReviews:rating})");
+            lblEditions.Text = Functions.Pluralize($"{BookList[i].editions:edition}");
             linkID.Text = BookList[i].goodreadsID;
-            toolTip1.SetToolTip(linkID, @"http://www.goodreads.com/book/show/" + linkID.Text);
+            _toolTip1.SetToolTip(linkID, $"http://www.goodreads.com/book/show/{linkID.Text}");
         }
 
         private void linkID_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -58,7 +51,7 @@ namespace XRayBuilderGUI
 
         private void frmGR_Load(object sender, EventArgs e)
         {
-            lblMessage1.Text = String.Format("{0} matches for this book were found of Goodreads.", BookList.Count);
+            lblMessage1.Text = $"{BookList.Count} matches for this book were found on Goodreads.";
             cbResults.Items.Clear();
             foreach (BookInfo book in BookList)
                 cbResults.Items.Add(book.title);

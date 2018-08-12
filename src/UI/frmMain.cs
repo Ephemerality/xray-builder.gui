@@ -489,7 +489,7 @@ namespace XRayBuilderGUI
                 try
                 {
                     List<BookInfo> books = await _dataSource.SearchBook(metadata.Author, metadata.Title);
-                    string bookUrl = books?.Count == 1 ? books[0].dataUrl : "";
+                    string bookUrl;
                     if (books?.Count > 1)
                     {
                         Logger.Log($"Warning: Multiple results returned from {_dataSource.Name}...");
@@ -500,9 +500,12 @@ namespace XRayBuilderGUI
                     else if (books?.Count == 1)
                         bookUrl = books[0].dataUrl;
                     else
+                    {
                         Logger.Log($"Unable to find this book on {_dataSource.Name}!");
+                        return;
+                    }
 
-                    if (bookUrl != "")
+                    if (!string.IsNullOrEmpty(bookUrl))
                     {
                         txtGoodreads.Text = bookUrl;
                         txtGoodreads.Refresh();

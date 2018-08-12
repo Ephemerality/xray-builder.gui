@@ -62,9 +62,9 @@
             this.lblMessage1.AutoSize = true;
             this.lblMessage1.Location = new System.Drawing.Point(9, 38);
             this.lblMessage1.Name = "lblMessage1";
-            this.lblMessage1.Size = new System.Drawing.Size(249, 13);
+            this.lblMessage1.Size = new System.Drawing.Size(252, 13);
             this.lblMessage1.TabIndex = 4;
-            this.lblMessage1.Text = "?? matches for this book were found of Goodreads.";
+            this.lblMessage1.Text = "?? matches for this book were found on Goodreads.";
             // 
             // btnOK
             // 

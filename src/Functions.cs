@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data.Entity.Design.PluralizationServices;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -368,6 +370,8 @@ namespace XRayBuilderGUI
         {
             return (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
         }
+
+        public static string Pluralize(FormattableString formattable) => formattable.ToString(new PluralFormatProvider());
     }
 
     internal static class NativeMethods
@@ -387,5 +391,22 @@ namespace XRayBuilderGUI
         {
             if (value != null) list.Add(value);
         }
+
+        public static string Plural(this string value, int count)
+        {
+            return count == 1
+                ? value
+                : PluralizationService
+                    .CreateService(new CultureInfo("en-US"))
+                    .Pluralize(value);
+        }
+    }
+
+    public class PluralFormatProvider : IFormatProvider, ICustomFormatter
+    {
+        public object GetFormat(Type formatType) => this;
+        
+        public string Format(string format, object arg, IFormatProvider formatProvider)
+            => arg + " " + format.Plural((int) arg);
     }
 }

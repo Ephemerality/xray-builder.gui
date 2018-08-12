@@ -72,7 +72,7 @@ namespace XRayBuilderGUI.DataSources
                     {
                         newBook.amazonRating = float.Parse(matchId.Groups[1].Value);
                         newBook.numReviews = int.Parse(matchId.Groups[2].Value, NumberStyles.AllowThousands, CultureInfo.CurrentCulture);
-                        newBook.editions = matchId.Groups[3].Value;
+                        newBook.editions = int.Parse(matchId.Groups[3].Value);
                     }
                 }
 

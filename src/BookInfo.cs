@@ -29,7 +29,7 @@ namespace XRayBuilderGUI
         public string authorAsin = "";
         public string authorImageUrl = "";
         public string goodreadsID = "";
-        public string editions = "";
+        public int editions = 0;
 
         // Added StartAction info
         public string seriesName = "";

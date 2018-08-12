@@ -67,7 +67,7 @@ namespace XRayBuilderGUI.DataSources
                 var ratingText = link.SelectSingleNode(".//span[@class='greyText smallText uitext']")?.InnerText.Clean();
                 if (ratingText != null)
                 {
-                    matchId = Regex.Match(ratingText, @"(\d+[\.,]?\d*) avg rating\s+(\d+[\.,]?\d*).*(\d+) editions?");
+                    matchId = Regex.Match(ratingText, @"(\d+[\.,]?\d*) avg rating\s+(\d+[\.,]?\d*).*\b(\d+) editions?");
                     if (matchId.Success)
                     {
                         newBook.amazonRating = float.Parse(matchId.Groups[1].Value);

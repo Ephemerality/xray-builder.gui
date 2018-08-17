@@ -276,6 +276,7 @@ namespace XRayBuilderGUI
         /// </summary>
         public static string FixAuthor(string author)
         {
+            if (author == null) return null;
             if (author.Contains(';'))
                 author = author.Split(';')[0];
             if (author.Contains(','))

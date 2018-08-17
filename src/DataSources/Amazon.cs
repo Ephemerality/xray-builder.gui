@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using Newtonsoft.Json;
+using XRayBuilderGUI.DataSources.Model;
 
 namespace XRayBuilderGUI.DataSources
 {
@@ -272,5 +273,11 @@ namespace XRayBuilderGUI.DataSources
 
         public static Task<string> DownloadStartActions(string asin)
             => HttpDownloader.GetPageHtmlAsync($"https://www.revensoftware.com/amazon/sa/{asin}");
+
+        public static async Task<NextBookResult> DownloadNextInSeries(string asin)
+        {
+            var response = await HttpDownloader.GetPageHtmlAsync($"https://www.revensoftware.com/amazon/next/{asin}");
+            return JsonConvert.DeserializeObject<NextBookResult>(response);
+        }
     }
 }

@@ -291,6 +291,34 @@ namespace XRayBuilderGUI
                     Logger.Log("An error occurred finding next book in series: " + ex.Message + "\r\n" + ex.StackTrace);
                 throw;
             }
+            
+            // TODO: Refactor next/previous series stuff
+            if (curBook.nextInSeries == null)
+            {
+                try
+                {
+                    var seriesResult = await Amazon.DownloadNextInSeries(curBook.asin);
+                    switch (seriesResult?.Error?.ErrorCode)
+                    {
+                        case "ERR004":
+                            Logger.Log("According to Amazon, this book is not part of a series.");
+                            break;
+                        case "ERR000":
+                            curBook.nextInSeries =
+                                new BookInfo(seriesResult.NextBook.Title.TitleName,
+                                    Functions.FixAuthor(seriesResult.NextBook.Authors.FirstOrDefault()?.AuthorName),
+                                    seriesResult.NextBook.Asin);
+                            // TODO: AmazonURL should be a property on the book itself, not passed in like this, and probably generated
+                            curBook.nextInSeries.amazonUrl = $"https://www.amazon.com/dp/{curBook.nextInSeries.asin}";
+                            await curBook.nextInSeries.GetAmazonInfo(curBook.nextInSeries.amazonUrl);
+                            break;
+                    }
+                }
+                catch
+                {
+                    // Ignore
+                }
+            }
 
             try
             {

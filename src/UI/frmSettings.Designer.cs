@@ -88,6 +88,7 @@
             this.txtPen = new System.Windows.Forms.TextBox();
             this.lblPen = new System.Windows.Forms.Label();
             this.listSettings = new System.Windows.Forms.ListBox();
+            this.chkDownloadSA = new System.Windows.Forms.CheckBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.gbProcess.SuspendLayout();
@@ -620,13 +621,14 @@
             // 
             // gbAmazonPrefs
             // 
+            this.gbAmazonPrefs.Controls.Add(this.chkDownloadSA);
             this.gbAmazonPrefs.Controls.Add(this.chkPromptAsin);
             this.gbAmazonPrefs.Controls.Add(this.label1);
             this.gbAmazonPrefs.Controls.Add(this.cmbRegion);
             this.gbAmazonPrefs.Controls.Add(this.chkSaveBio);
             this.gbAmazonPrefs.Location = new System.Drawing.Point(6, 106);
             this.gbAmazonPrefs.Name = "gbAmazonPrefs";
-            this.gbAmazonPrefs.Size = new System.Drawing.Size(378, 104);
+            this.gbAmazonPrefs.Size = new System.Drawing.Size(378, 147);
             this.gbAmazonPrefs.TabIndex = 29;
             this.gbAmazonPrefs.TabStop = false;
             this.gbAmazonPrefs.Text = "Preferences";
@@ -645,7 +647,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(12, 71);
+            this.label1.Location = new System.Drawing.Point(12, 94);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(44, 13);
             this.label1.TabIndex = 26;
@@ -655,7 +657,7 @@
             // 
             this.cmbRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbRegion.FormattingEnabled = true;
-            this.cmbRegion.Location = new System.Drawing.Point(62, 68);
+            this.cmbRegion.Location = new System.Drawing.Point(62, 91);
             this.cmbRegion.Name = "cmbRegion";
             this.cmbRegion.Size = new System.Drawing.Size(78, 21);
             this.cmbRegion.TabIndex = 25;
@@ -736,6 +738,16 @@
             this.listSettings.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listSettings_DrawItem);
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
+            // 
+            // chkDownloadSA
+            // 
+            this.chkDownloadSA.AutoSize = true;
+            this.chkDownloadSA.Location = new System.Drawing.Point(14, 68);
+            this.chkDownloadSA.Name = "chkDownloadSA";
+            this.chkDownloadSA.Size = new System.Drawing.Size(137, 17);
+            this.chkDownloadSA.TabIndex = 28;
+            this.chkDownloadSA.Text = "Download Start Actions";
+            this.chkDownloadSA.UseVisualStyleBackColor = true;
             // 
             // frmSettings
             // 
@@ -854,5 +866,6 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtMinClipLen;
+        private System.Windows.Forms.CheckBox chkDownloadSA;
     }
 }

@@ -87,6 +87,7 @@ namespace XRayBuilderGUI
             else
                 rdoShelfari.Checked = true;
             chkPromptAsin.Checked = Properties.Settings.Default.promptASIN;
+            chkDownloadSA.Checked = Properties.Settings.Default.downloadSA;
 
             // Added \r\n to show smaller tooltips
             ToolTip toolTip1 = new ToolTip();
@@ -219,6 +220,7 @@ namespace XRayBuilderGUI
             Properties.Settings.Default.amazonTLD = cmbRegion.SelectedValue.ToString();
             Properties.Settings.Default.dataSource = rdoGoodreads.Checked ? "Goodreads" : "Shelfari";
             Properties.Settings.Default.promptASIN = chkPromptAsin.Checked;
+            Properties.Settings.Default.downloadSA = chkDownloadSA.Checked;
             Properties.Settings.Default.Save();
             
             Close();

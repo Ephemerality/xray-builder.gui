@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
@@ -268,5 +269,8 @@ namespace XRayBuilderGUI.DataSources
             var asinMatch = Regex.Match(url, @"/e/(B\w+)/", RegexOptions.Compiled);
             return asinMatch.Success ? asinMatch.Groups[1].Value : "";
         }
+
+        public static Task<string> DownloadStartActions(string asin)
+            => HttpDownloader.GetPageHtmlAsync($"https://www.revensoftware.com/amazon/sa/{asin}");
     }
 }

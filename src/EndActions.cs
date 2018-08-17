@@ -394,7 +394,7 @@ namespace XRayBuilderGUI
             Logger.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
         }
 
-        public void GenerateStartActionsFromBase(StartActions baseStartActions)
+        public string GenerateStartActionsFromBase(StartActions baseStartActions)
         {
             baseStartActions.BookInfo = new StartActions.StartActionsBookInfo
             {
@@ -457,22 +457,26 @@ namespace XRayBuilderGUI
             baseStartActions.Data.ReadingTime.FormattedTime.Replace("%MINUTES%", curBook.readingMinutes.ToString());
             baseStartActions.Data.PreviousBookInTheSeries = Extensions.BookInfoToBook(curBook.previousInSeries, true);
             baseStartActions.Data.ReadingPages.PagesInBook = curBook.pagesInBook;
-
-            string finalOutput;
+            
             try
             {
-                finalOutput = Functions.ExpandUnicode(JsonConvert.SerializeObject(baseStartActions));
+                return Functions.ExpandUnicode(JsonConvert.SerializeObject(baseStartActions));
             }
             catch (Exception ex)
             {
                 Logger.Log("An error occurred creating the StartActions template: " + ex.Message + "\r\n" + ex.StackTrace);
-                return;
             }
 
+            return null;
+        }
+
+        public void WriteStartActions(string saContent)
+        {
+            if (string.IsNullOrEmpty(saContent)) return;
             Logger.Log("Writing StartActions to file...");
-            using (StreamWriter streamWriter = new StreamWriter(SaPath, false))
+            using (var streamWriter = new StreamWriter(SaPath, false))
             {
-                streamWriter.Write(finalOutput);
+                streamWriter.Write(saContent);
                 streamWriter.Flush();
             }
             Logger.Log("StartActions file created successfully!\r\nSaved to " + SaPath);

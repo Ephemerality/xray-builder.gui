@@ -394,5 +394,17 @@ namespace XRayBuilderGUI.Properties {
                 this["skipNoLikes"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool downloadSA {
+            get {
+                return ((bool)(this["downloadSA"]));
+            }
+            set {
+                this["downloadSA"] = value;
+            }
+        }
     }
 }

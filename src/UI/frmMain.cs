@@ -393,7 +393,23 @@ namespace XRayBuilderGUI
                         return;
                     }
 
-                    ea.GenerateStartActionsFromBase(sa);
+                    // TODO: Separate out SA logic
+                    string saContent = null;
+                    if (_settings.downloadSA)
+                    {
+                        Logger.Log("Attempting to download Start Actions...");
+                        try
+                        {
+                            saContent = await Amazon.DownloadStartActions(metadata.ASIN);
+                        }
+                        catch
+                        {
+                            Logger.Log("No pre-made Start Actions available, building...");
+                        }
+                    }
+                    if (string.IsNullOrEmpty(saContent))
+                        saContent = ea.GenerateStartActionsFromBase(sa);
+                    ea.WriteStartActions(saContent);
 
                     cmsPreview.Items[3].Enabled = true;
                     EaPath = $@"{outputDir}\EndActions.data.{bookInfo.asin}.asc";

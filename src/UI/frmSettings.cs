@@ -184,7 +184,7 @@ namespace XRayBuilderGUI
                 MessageBox.Show("The offset must be an integer.", "Offset Error");
                 return;
             }
-            if (txtReal.Text.Trim().Length == 0 | txtPen.Text.Trim().Length == 0)
+            if (txtReal.Text.Trim().Length == 0 || txtPen.Text.Trim().Length == 0)
             {
                 MessageBox.Show("Both Real and Pen names are required for\r\nEnd Action file creation.");
             }

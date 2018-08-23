@@ -24,4 +24,4 @@ deploy:
   auth_token:
     secure: A5MafI3gk/NJ0J5SmEOGGNV5wxKZKOgxjEph6LsLdvFiSV+6KLOx2G5lPfn9nECJ
   artifact: /.*\.zip/
-  draft: false
+  draft: true

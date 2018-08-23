@@ -254,7 +254,7 @@ namespace XRayBuilderGUI.DataSources
                         prevBook.title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", "", RegexOptions.Compiled);
                         match = Regex.Match(title.GetAttributeValue("href", ""), @"show/([0-9]+)");
                         if (match.Success)
-                            prevBook.asin = await SearchBookASIN(match.Groups[1].Value, prevBook.title);
+                            prevBook.asin = await SearchBookASIN(match.Groups[1].Value, prevBook.title).ConfigureAwait(false);
                         prevBook.author = book.SelectSingleNode(".//span[@itemprop='author']//a")?.InnerText.Trim() ?? "";                            
                         results["Previous"] = prevBook;
                         curBook.previousInSeries = prevBook;
@@ -268,7 +268,7 @@ namespace XRayBuilderGUI.DataSources
                         nextBook.title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", "", RegexOptions.Compiled);
                         match = Regex.Match(title.GetAttributeValue("href", ""), @"show/([0-9]+)");
                         if (match.Success)
-                            nextBook.asin = await SearchBookASIN(match.Groups[1].Value, nextBook.title);                            
+                            nextBook.asin = await SearchBookASIN(match.Groups[1].Value, nextBook.title).ConfigureAwait(false);                            
                         nextBook.author = book.SelectSingleNode(".//span[@itemprop='author']//a")?.InnerText.Trim() ?? "";
                         results["Next"] = nextBook;
                         curBook.nextInSeries = nextBook;
@@ -362,7 +362,7 @@ namespace XRayBuilderGUI.DataSources
             {
                 try
                 {
-                    terms.AddNotNull(await GetTerm(dataUrl, charNode.GetAttributeValue("href", "")));
+                    terms.AddNotNull(await GetTerm(dataUrl, charNode.GetAttributeValue("href", "")).ConfigureAwait(false));
                     progress?.Add(1);
                 }
                 catch (Exception ex)
@@ -473,7 +473,7 @@ namespace XRayBuilderGUI.DataSources
             
             if (curBook.notableClips == null)
             {
-                curBook.notableClips = await GetNotableClips("", token, sourceHtmlDoc, progress);
+                curBook.notableClips = await GetNotableClips("", token, sourceHtmlDoc, progress).ConfigureAwait(false);
             }
             
             //Add rating and reviews count if missing from Amazon book info

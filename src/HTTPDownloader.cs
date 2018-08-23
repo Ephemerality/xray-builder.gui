@@ -27,14 +27,14 @@ namespace XRayBuilderGUI
         public static Task<string> GetPageHtmlAsync(string url)
         {
             var http = new HttpDownloader(url);
-            return Task.Run(async () => await http.GetPage());
+            return Task.Run(async () => await http.GetPage().ConfigureAwait(false));
         }
 
         public static async Task<HtmlDocument> GetHtmlDocAsync(string url)
         {
             var http = new HttpDownloader(url);
             var doc = new HtmlDocument();
-            doc.Load(await http.GetPage());
+            doc.Load(await http.GetPage().ConfigureAwait(false));
             return doc;
         }
 

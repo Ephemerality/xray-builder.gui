@@ -152,9 +152,10 @@
             // 
             // btnLink
             // 
-            this.btnLink.Location = new System.Drawing.Point(492, 155);
+            this.btnLink.Image = global::XRayBuilderGUI.Properties.Resources.setting;
+            this.btnLink.Location = new System.Drawing.Point(491, 150);
             this.btnLink.Name = "btnLink";
-            this.btnLink.Size = new System.Drawing.Size(31, 21);
+            this.btnLink.Size = new System.Drawing.Size(31, 26);
             this.btnLink.TabIndex = 49;
             this.btnLink.Text = "...";
             this.btnLink.UseVisualStyleBackColor = true;

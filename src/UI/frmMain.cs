@@ -303,8 +303,7 @@ namespace XRayBuilderGUI
                     return;
                 }
             }
-            if (_settings.realName.Trim().Length == 0 |
-                _settings.penName.Trim().Length == 0)
+            if (_settings.realName.Trim().Length == 0 || _settings.penName.Trim().Length == 0)
             {
                 MessageBox.Show(
                     "Both Real and Pen names are required for End Action\r\n" +

@@ -8,17 +8,20 @@ namespace XRayBuilderGUI
 {
     public static class Logger
     {
-        public static RichTextBox ctrl = null;
+        public static RichTextBox ctrl;
         public static bool enabled = true;
 
         public static void Log(string message)
         {
-            if (ctrl == null) throw new NullReferenceException("Log control not set.");
             if (!enabled) return;
             if (!message.EndsWith("\r\n")) message += "\r\n";
-            ctrl.SafeAppendText(message);
+            if (ctrl == null)
+                Console.WriteLine(message);
+            else
+                ctrl.SafeAppendText(message);
         }
         
+        // TODO: Rely on log levels rather than strings to determine colour
         public static void SafeAppendText(this RichTextBox rtfBox, string message)
         {
             if (rtfBox.InvokeRequired)
@@ -35,12 +38,18 @@ namespace XRayBuilderGUI
                     rtfBox.SelectionLength = 0;
                     rtfBox.SelectionColor = Color.Green;
                 }
-                List<string> redFlags = new List<string>() { "error", "failed", "problem", "skipping", "warning", "unable" };
-                if (redFlags.Any(s => message.ContainsIgnorecase(s)))
+                List<string> redFlags = new List<string> { "error", "failed", "problem", "skipping", "unable" };
+                if (redFlags.Any(message.ContainsIgnorecase))
                 {
                     rtfBox.SelectionStart = rtfBox.TextLength;
                     rtfBox.SelectionLength = 0;
                     rtfBox.SelectionColor = Color.Red;
+                }
+                if (message.ContainsIgnorecase("warning"))
+                {
+                    rtfBox.SelectionStart = rtfBox.TextLength;
+                    rtfBox.SelectionLength = 0;
+                    rtfBox.SelectionColor = Color.DarkOrange;
                 }
                 rtfBox.AppendText(message);
                 rtfBox.SelectionColor = rtfBox.ForeColor;
@@ -50,7 +59,7 @@ namespace XRayBuilderGUI
 
         public static void SafeClearText(this RichTextBox rtfBox)
         {
-            rtfBox.BeginInvoke((Action)(() => rtfBox.Clear()));
+            rtfBox.BeginInvoke((Action)rtfBox.Clear);
         }
     }
 }

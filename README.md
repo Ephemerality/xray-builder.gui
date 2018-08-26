@@ -8,11 +8,10 @@ Thanks to darrenmcg, Author Profile, Start Actions, and End Actions files can al
 * [Original X-Ray script by shinew](http://www.mobileread.com/forums/showthread.php?t=157770)  
 
 ## Requirements
-* Windows (may work in Parallels/WINE, untested)  
-* .NET Framework 4.5.1+  
-* Python 2.X if you plan on using mobi_unpack.py instead of the .exe (Optional)  
-* You will need to install the [Microsoft Visual C++ 2010 x86 Redistributable](https://www.microsoft.com/en-ca/download/details.aspx?id=5555) if you have firmware version 5.6 or higher on your Kindle.  
+* Windows  
+* .NET Framework 4.6.2  
+* [Microsoft Visual C++ 2010 x86 Redistributable](https://www.microsoft.com/en-ca/download/details.aspx?id=5555)  
   
 ## Instructions and Binary Downloads
-Furthur instructions are available within the appplication's help button.
-Instructions, support, and binaries are available in the thread on MobileRead: http://www.mobileread.com/forums/showthread.php?t=245754
+* Furthur instructions are available within the appplication's help button.
+* Instructions and support are available in the thread on MobileRead: http://www.mobileread.com/forums/showthread.php?t=245754

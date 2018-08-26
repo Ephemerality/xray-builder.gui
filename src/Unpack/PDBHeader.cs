@@ -19,7 +19,6 @@ namespace XRayBuilderGUI.Unpack
 
         public PDBHeader(FileStream fs)
         {
-            byte[] temp4 = new byte[4];
             fs.Read(_dbName, 0, 32);
             fs.Seek(44, SeekOrigin.Current);
             fs.Read(_numRecords, 0, 2);
@@ -31,15 +30,9 @@ namespace XRayBuilderGUI.Unpack
             fs.Seek(2, SeekOrigin.Current);
         }
 
-        public string DBName
-        {
-            get { return Encoding.UTF8.GetString(_dbName).Trim('\0'); }
-        }
+        public string DBName => Encoding.UTF8.GetString(_dbName).Trim('\0');
 
-        public int NumRecords
-        {
-            get { return BitConverter.ToInt16(Functions.CheckBytes(_numRecords), 0); }
-        }
+        public int NumRecords => BitConverter.ToInt16(Functions.CheckBytes(_numRecords), 0);
 
         public uint MobiHeaderSize
         {
@@ -56,7 +49,7 @@ namespace XRayBuilderGUI.Unpack
     public class RecordInfo
     {
         private byte[] _recordDataOffset = new byte[4];
-        private byte _recordAttributes = 0;
+        private byte _recordAttributes;
         private byte[] _uniqueID = new byte[3];
 
         public RecordInfo(FileStream fs)
@@ -66,9 +59,6 @@ namespace XRayBuilderGUI.Unpack
             fs.Read(_uniqueID, 0, _uniqueID.Length);
         }
 
-        public uint RecordDataOffset
-        {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(_recordDataOffset), 0); }
-        }
+        public uint RecordDataOffset => BitConverter.ToUInt32(Functions.CheckBytes(_recordDataOffset), 0);
     }
 }

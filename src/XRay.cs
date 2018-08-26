@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SQLite;
 using System.Globalization;
 using System.IO;
@@ -33,6 +34,8 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
+using XRayBuilderGUI.DataSources;
+using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI
 {
@@ -44,25 +47,26 @@ namespace XRayBuilderGUI
         private string _guid = "";
         private string asin = "";
         private string version = "1";
-        private string aliaspath = "";
+        private string _aliasPath;
         public List<Term> Terms = new List<Term>(100);
         private List<Chapter> _chapters = new List<Chapter>();
         private List<Excerpt> excerpts = new List<Excerpt>();
         private long _srl;
         private long _erl;
-        private bool _shortEx = true;
         private bool unattended;
         private bool skipShelfari;
         private int locOffset;
-        private List<Tuple<string, int>> notableClips = null;
-        private int foundNotables = 0;
+        private List<NotableClip> notableClips;
+        private int foundNotables;
 
         private bool enableEdit = Properties.Settings.Default.enableEdit;
-        private frmMain main;
-        private DataSources.DataSource dataSource;
+        private readonly DataSource dataSource;
+
+        public delegate DialogResult SafeShowDelegate(string msg, string caption, MessageBoxButtons buttons,
+            MessageBoxIcon icon, MessageBoxDefaultButton def);
 
         #region CommonTitles
-        string[] CommonTitles = new string[] { "Mr", "Mrs", "Ms", "Miss", "Dr", "Herr", "Monsieur", "Hr", "Frau",
+        string[] CommonTitles = new[] { "Mr", "Mrs", "Ms", "Miss", "Dr", "Herr", "Monsieur", "Hr", "Frau",
             "A V M", "Admiraal", "Admiral", "Alderman", "Alhaji", "Ambassador", "Baron", "Barones", "Brig",
             "Brigadier", "Brother", "Canon", "Capt", "Captain", "Cardinal", "Cdr", "Chief", "Cik", "Cmdr", "Col",
             "Colonel", "Commandant", "Commander", "Commissioner", "Commodore", "Comte", "Comtessa", "Congressman",
@@ -90,16 +94,15 @@ namespace XRayBuilderGUI
         {
         }
 
-        public XRay(string shelfari, frmMain frm, DataSources.DataSource dataSource)
+        public XRay(string shelfari, DataSource dataSource)
         {
             if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
                 shelfari = "https://" + shelfari;
-            this.dataUrl = shelfari;
-            this.main = frm;
+            dataUrl = shelfari;
             this.dataSource = dataSource;
         }
 
-        public XRay(string shelfari, string db, string guid, string asin, frmMain frm, DataSources.DataSource dataSource,
+        public XRay(string shelfari, string db, string guid, string asin, DataSource dataSource,
             int locOffset = 0, string aliaspath = "", bool unattended = false)
         {
             if (shelfari == "" || db == "" || guid == "" || asin == "")
@@ -107,35 +110,45 @@ namespace XRayBuilderGUI
 
             if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
                 shelfari = "https://" + shelfari;
-            this.dataUrl = shelfari;
-            this.databaseName = db;
-            this._guid = guid;
+            dataUrl = shelfari;
+            databaseName = db;
+            Guid = guid;
             this.asin = asin;
             this.locOffset = locOffset;
-            this.aliaspath = aliaspath;
+            _aliasPath = aliaspath;
             this.unattended = unattended;
-            this.main = frm;
             this.dataSource = dataSource;
         }
 
-        public XRay(string xml, string db, string guid, string asin, frmMain frm, DataSources.DataSource dataSource,
+        public XRay(string xml, string db, string guid, string asin, DataSource dataSource,
             int locOffset = 0, string aliaspath = "")
         {
             if (xml == "" || db == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
-            this.xmlFile = xml;
-            this.databaseName = db;
-            this._guid = guid;
+            xmlFile = xml;
+            databaseName = db;
+            Guid = guid;
             this.asin = asin;
             this.locOffset = locOffset;
-            this.aliaspath = aliaspath;
-            this.unattended = false;
-            this.main = frm;
+            _aliasPath = aliaspath;
+            unattended = false;
             this.dataSource = dataSource;
-            this.skipShelfari = true;
+            skipShelfari = true;
         }
 
-        public async Task<int> SaveXml(string outfile, IProgress<Tuple<int, int>> progress, CancellationToken token)
+        public string AliasPath
+        {
+            set => _aliasPath = value;
+            get => string.IsNullOrEmpty(_aliasPath) ? Environment.CurrentDirectory + @"\ext\" + asin + ".aliases" : _aliasPath;
+        }
+
+        public string Guid
+        {
+            set => Functions.ConvertGuid(value);
+            get => _guid;
+        }
+
+        public async Task<int> SaveXml(string outfile, IProgressBar progress, CancellationToken token)
         {
             try
             {
@@ -148,7 +161,7 @@ namespace XRayBuilderGUI
             if (Terms.Count == 0)
                 return 1;
             Logger.Log(@"Exporting terms...");
-            Functions.Save<List<Term>>(Terms, outfile);
+            Functions.Save(Terms, outfile);
             return 0;
         }
 
@@ -157,23 +170,20 @@ namespace XRayBuilderGUI
             //Insert a version tag of the current program version so you know which version built it.
             //Will be ignored by the Kindle.
             Version dd = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            string xrayversion = dd.Major.ToString() + "." + dd.Minor.ToString() + dd.Build.ToString();
+            string xrayversion = $"{dd.Major}.{dd.Minor}{dd.Build}";
             //Insert creation date... seems useful?
-            string date = DateTime.Now.ToString("MM/dd/yy HH:mm:ss");
+            string date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             //If there are no chapters built (someone only ran create X-Ray), just use the default version
             if (_chapters.Count > 0)
                 return
                     String.Format(
                         @"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{8}"",""created"":""{9}"",""terms"":[{4}],""chapters"":[{5}],""assets"":{{}},""srl"":{6},""erl"":{7}}}",
-                        asin, databaseName, _guid, version, string.Join<Term>(",", Terms),
-                        string.Join<Chapter>(",", _chapters), _srl, _erl, xrayversion, date);
-            else
-            {
-                return
-                    String.Format(
-                        @"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{5}"",""created"":""{6}"",""terms"":[{4}],""chapters"":[{{""name"":null,""start"":1,""end"":9999999}}]}}",
-                        asin, databaseName, _guid, version, string.Join<Term>(",", Terms), xrayversion, date);
-            }
+                        asin, databaseName, Guid, version, string.Join(",", Terms),
+                        string.Join(",", _chapters), _srl, _erl, xrayversion, date);
+            return
+                String.Format(
+                    @"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{5}"",""created"":""{6}"",""terms"":[{4}],""chapters"":[{{""name"":null,""start"":1,""end"":9999999}}]}}",
+                    asin, databaseName, Guid, version, string.Join(",", Terms), xrayversion, date);
         }
 
         //Add string creation for new XRAY.ASIN.previewData file
@@ -184,31 +194,12 @@ namespace XRayBuilderGUI
             return preview;
         }
 
-        public string GetXRayName(bool android = false)
-        {
-            if (android)
-                return String.Format("XRAY.{0}.{1}_{2}.db", asin, databaseName, _guid);
-            else
-                return "XRAY.entities." + asin + ".asc";
-        }
+        public string XRayName(bool android = false) =>
+            android ? $"XRAY.{asin}.{databaseName}_{Guid}.db" : $"XRAY.entities.{asin}.asc";
 
-        public async Task<int> CreateXray(IProgress<Tuple<int, int>> progress, CancellationToken token)
+        // TODO: Change return values to exceptions instead
+        public async Task<int> CreateXray(IProgressBar progress, CancellationToken token)
         {
-            //Process GUID. If in decimal form, convert to hex.
-            if (Regex.IsMatch(_guid, "/[a-zA-Z]/"))
-                _guid = _guid.ToUpper();
-            else
-            {
-                long guidDec;
-                long.TryParse(_guid, out guidDec);
-                _guid = guidDec.ToString("X");
-            }
-            if (_guid == "0")
-            {
-                Logger.Log("An error occurred while converting the GUID.");
-                return 1;
-            }
-
             //Download Shelfari info if not skipping
             if (skipShelfari)
             {
@@ -254,134 +245,99 @@ namespace XRayBuilderGUI
                     return 1;
                 }
             }
+            
+            return 0;
+        }
 
-            //Export list of Shelfari characters to a file to make it easier to create aliases or import the modified aliases if they exist
+        public void ExportAndDisplayTerms()
+        {
+            //Export available terms to a file to make it easier to create aliases or import the modified aliases if they exist
             //Could potentially just attempt to automate the creation of aliases, but in some cases it is very subjective...
             //For example, Shelfari shows the character "Artemis Fowl II", but in the book he is either referred to as "Artemis Fowl", "Artemis", or even "Arty"
             //Other characters have one name on Shelfari but can have completely different names within the book
-            string aliasFile;
-            if (aliaspath == "")
-                aliasFile = Environment.CurrentDirectory + @"\ext\" + asin + ".aliases";
-            else
-                aliasFile = aliaspath;
             bool aliasesDownloaded = false;
-            if ((!File.Exists(aliasFile) || Properties.Settings.Default.overwriteAliases) && Properties.Settings.Default.downloadAliases)
-            {
-                try
-                {
-                    string aliases = await HttpDownloader.GetPageHtmlAsync("https://www.revensoftware.com/xray/aliases/" + asin);
-                    StreamWriter fs = new StreamWriter(aliasFile, false, Encoding.UTF8);
-                    fs.Write(aliases);
-                    fs.Close();
-                    Logger.Log("Found and downloaded pre-made aliases file.");
-                    aliasesDownloaded = true;
-                }
-                catch (Exception ex)
-                {
-                    if (!ex.Message.Contains("(404) Not Found"))
-                        Logger.Log("No pre-made aliases available for this book.");
-                    else
-                        Logger.Log("An error occurred downloading aliases: " + ex.Message + "\r\n" + ex.StackTrace);
-                }
-            }
+            // TODO: Review this download process
+            //if ((!File.Exists(AliasPath) || Properties.Settings.Default.overwriteAliases) && Properties.Settings.Default.downloadAliases)
+            //{
+            //    aliasesDownloaded = await AttemptAliasDownload();
+            //}
 
-            if (!aliasesDownloaded && (!File.Exists(aliasFile) || Properties.Settings.Default.overwriteAliases))
+            if (!aliasesDownloaded && (!File.Exists(AliasPath) || Properties.Settings.Default.overwriteAliases))
             {
-                SaveCharacters(aliasFile);
-                Logger.Log(String.Format("Characters exported to {0} for adding aliases.", aliasFile));
+                SaveCharacters(AliasPath);
+                Logger.Log($"Characters exported to {AliasPath} for adding aliases.");
             }
 
             if (skipShelfari)
                 Logger.Log(String.Format("{0} {1} found in file:", Terms.Count, Terms.Count > 1 ? "Terms" : "Term"));
             else
                 Logger.Log(String.Format("{0} {1} found on {2}:", Terms.Count, Terms.Count > 1 ? "Terms" : "Term", dataSource.Name));
-            string tmp = "";
+            StringBuilder str = new StringBuilder(Terms.Count * 32); // Assume that most names will be less than 32 chars
             int termId = 1;
             foreach (Term t in Terms)
             {
-                tmp += t.TermName + ", ";
+                str.Append(t.TermName).Append(", ");
                 t.Id = termId++;
             }
-            Logger.Log(tmp);
-
-            if (!unattended && enableEdit)
-            {
-                if (DialogResult.Yes ==
-                    main.SafeShow(
-                        "Terms have been exported to an alias file or already exist in that file. Would you like to open the file in notepad for editing?\r\n"
-                        + "See the MobileRead forum thread (link in Settings) for more information on building aliases.",
-                        "Aliases",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question,
-                        MessageBoxDefaultButton.Button2))
-                {
-                    Functions.RunNotepad(aliasFile);
-                }
-            }
-            //Load the aliases now that we know they exist
-            if (!File.Exists(aliasFile))
-                Logger.Log("Aliases file not found.");
-            else
-            {
-                LoadAliases(aliasFile);
-                Logger.Log("Character aliases read from " + aliasFile + ".");
-            }
-            return 0;
+            Logger.Log(str.ToString());
         }
 
-        public int ExpandFromRawMl(string rawMl, IProgress<Tuple<int, int>> progress, CancellationToken token, bool ignoreSoftHypen = false, bool shortEx = true)
-        {
-            // If there is an apostrophe, attempt to match 's at the end of the term
-            // Match end of word, then search for any lingering punctuation
-            string apostrophes = Encoding.Default.GetString(Encoding.UTF8.GetBytes("('|\u2019|\u0060|\u00B4)")); // '\u2019\u0060\u00B4
-            string quotes = Encoding.Default.GetString(Encoding.UTF8.GetBytes("(\"|\u2018|\u2019|\u201A|\u201B|\u201C|\u201D|\u201E|\u201F)"));
-            string dashesEllipsis = Encoding.Default.GetString(Encoding.UTF8.GetBytes("(-|\u2010|\u2011|\u2012|\u2013|\u2014|\u2015|\u2026|&#8211;|&#8212;|&#8217;|&#8218;|&#8230;)")); //U+2010 to U+2015 and U+2026
-            string punctuationMarks = String.Format(@"({0}s|{0})?{1}?[!\.?,""\);:]*{0}*{1}*{2}*", apostrophes, quotes, dashesEllipsis);
+        //public async Task<bool> AttemptAliasDownload()
+        //{
+        //    try
+        //    {
+        //        string aliases = await HttpDownloader.GetPageHtmlAsync("https://www.revensoftware.com/xray/aliases/" + asin);
+        //        StreamWriter fs = new StreamWriter(AliasPath, false, Encoding.UTF8);
+        //        fs.Write(aliases);
+        //        fs.Close();
+        //        Logger.Log("Found and downloaded pre-made aliases file.");
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        if (!ex.Message.Contains("(404) Not Found"))
+        //            Logger.Log("No pre-made aliases available for this book.");
+        //        else
+        //            Logger.Log("An error occurred downloading aliases: " + ex.Message + "\r\n" + ex.StackTrace);
+        //    }
 
-            int excerptId = 0;
-            this._shortEx = shortEx;
-            HtmlAgilityPack.HtmlDocument web = new HtmlAgilityPack.HtmlDocument();
-            string readContents;
-            using (StreamReader streamReader = new StreamReader(rawMl, Encoding.Default))
-            {
-                readContents = streamReader.ReadToEnd();
-            }
-            web.LoadHtml(readContents);
+        //    return false;
+        //}
+
+        public void HandleChapters(long mlLen, HtmlDocument doc, string rawMl, SafeShowDelegate safeShow)
+        {
             //Similar to aliases, if chapters definition exists, load it. Otherwise, attempt to build it from the book
             string chapterFile = Environment.CurrentDirectory + @"\ext\" + asin + ".chapters";
             if (File.Exists(chapterFile) && !Properties.Settings.Default.overwriteChapters)
             {
                 if (LoadChapters())
-                    Logger.Log(String.Format("Chapters read from {0}.\r\nDelete this file if you want chapters built automatically.", chapterFile));
+                    Logger.Log($"Chapters read from {chapterFile}.\r\nDelete this file if you want chapters built automatically.");
                 else
-                    Logger.Log(String.Format("An error occurred reading chapters from {0}.\r\nFile is missing or not formatted correctly.", chapterFile));
+                    Logger.Log($"An error occurred reading chapters from {chapterFile}.\r\nFile is missing or not formatted correctly.");
             }
             else
             {
                 try
                 {
-                    SearchChapters(web, readContents);
+                    SearchChapters(doc, rawMl);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message); //Just ignore errors
+                    Logger.Log("Error searching for chapters: " + ex.Message);
                 }
                 //Built chapters list is saved for manual editing
                 if (_chapters.Count > 0)
                 {
                     SaveChapters();
-                    Logger.Log(String.Format("Chapters exported to {0} for manual editing.", chapterFile));
+                    Logger.Log($"Chapters exported to {chapterFile} for manual editing.");
                 }
                 else
-                    Logger.Log(
-                        String.Format(
-                            "No chapters detected.\r\nYou can create a file at {0} if you want to define chapters manually.",
-                            chapterFile));
+                    Logger.Log($"No chapters detected.\r\nYou can create a file at {chapterFile} if you want to define chapters manually.");
             }
 
-            if (enableEdit)
+            if (!unattended && enableEdit)
                 if (DialogResult.Yes ==
-                    main.SafeShow("Would you like to open the chapters file in notepad for editing?", "Chapters",
+                    safeShow("Would you like to open the chapters file in notepad for editing?", "Chapters",
                         MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
                 {
                     Functions.RunNotepad(chapterFile);
@@ -389,20 +345,16 @@ namespace XRayBuilderGUI
                     if (LoadChapters())
                         Logger.Log("Reloaded chapters from edited file.");
                     else
-                        Logger.Log(
-                            String.Format(
-                                "An error occurred reloading chapters from {0}.\r\nFile is missing or not formatted correctly.",
-                                chapterFile));
+                        Logger.Log($"An error occurred reloading chapters from {chapterFile}.\r\nFile is missing or not formatted correctly.");
                 }
 
             //If no chapters were found, add a default chapter that spans the entire book
             //Define srl and erl so "progress bar" shows up correctly
             if (_chapters.Count == 0)
             {
-                long len = (new FileInfo(rawMl)).Length;
-                _chapters.Add(new Chapter("", 1, len));
+                _chapters.Add(new Chapter("", 1, mlLen));
                 _srl = 1;
-                _erl = len;
+                _erl = mlLen;
             }
             else
             {
@@ -413,10 +365,29 @@ namespace XRayBuilderGUI
                 foreach (Chapter c in _chapters)
                 {
                     if (c.End > _erl) _erl = c.End;
-                    Logger.Log(String.Format("{0} | start: {1} | end: {2}", c.name, c.start, c.End));
+                    Logger.Log($"{c.name} | start: {c.start} | end: {c.End}");
                 }
             }
+        }
 
+        public int ExpandFromRawMl(Stream rawMlStream, SafeShowDelegate safeShow, IProgressBar progress, CancellationToken token, bool ignoreSoftHypen = false, bool shortEx = true)
+        {
+            // If there is an apostrophe, attempt to match 's at the end of the term
+            // Match end of word, then search for any lingering punctuation
+            string apostrophes = Encoding.Default.GetString(Encoding.UTF8.GetBytes("('|\u2019|\u0060|\u00B4)")); // '\u2019\u0060\u00B4
+            string quotes = Encoding.Default.GetString(Encoding.UTF8.GetBytes("(\"|\u2018|\u2019|\u201A|\u201B|\u201C|\u201D|\u201E|\u201F)"));
+            string dashesEllipsis = Encoding.Default.GetString(Encoding.UTF8.GetBytes("(-|\u2010|\u2011|\u2012|\u2013|\u2014|\u2015|\u2026|&#8211;|&#8212;|&#8217;|&#8218;|&#8230;)")); //U+2010 to U+2015 and U+2026
+            string punctuationMarks = String.Format(@"({0}s|{0})?{1}?[!\.?,""\);:]*{0}*{1}*{2}*", apostrophes, quotes, dashesEllipsis);
+
+            int excerptId = 0;
+            HtmlDocument web = new HtmlDocument();
+            using (var streamReader = new StreamReader(rawMlStream, Encoding.Default))
+            {
+                var readContents = streamReader.ReadToEnd();
+                web.LoadHtml(readContents);
+                HandleChapters(rawMlStream.Length, web, readContents, safeShow);
+            }
+            
             Logger.Log("Scanning book content...");
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
             timer.Start();
@@ -433,12 +404,10 @@ namespace XRayBuilderGUI
             if (nodes == null)
                 throw new Exception("Could not locate any paragraphs in this book.\r\n" +
                     "Report this error along with a copy of the book to improve parsing.");
-            progress.Report(new Tuple<int, int>(0, nodes.Count));
+            progress?.Set(0, nodes.Count);
             for (int i = 0; i < nodes.Count; i++)
             {
-                if (main.Exiting || token.IsCancellationRequested) return 1;
-                progress.Report(new Tuple<int, int>(i + 1, nodes.Count));
-
+                token.ThrowIfCancellationRequested();
                 HtmlNode node = nodes[i];
                 if (node.FirstChild == null) continue; //If the inner HTML is just empty, skip the paragraph!
                 int lenQuote = node.InnerHtml.Length;
@@ -471,11 +440,11 @@ namespace XRayBuilderGUI
                     {
                         search.Add(Encoding.Default.GetString(Encoding.UTF8.GetBytes(alias)));
                     }
-                    if (character.RegEx)
+                    if (character.RegexAliases)
                     {
                         if (search.Any(r => Regex.Match(node.InnerText, r).Success)
                             || search.Any(r => Regex.Match(node.InnerHtml, r).Success)
-                            || (ignoreSoftHypen && (search.Any(r => Regex.Match(noSoftHypen, r).Success) || search.Any(r => Regex.Match(noSoftHypen, r).Success))))
+                            || (ignoreSoftHypen && search.Any(r => Regex.Match(noSoftHypen, r).Success)))
                             termFound = true;
                     }
                     else
@@ -497,7 +466,7 @@ namespace XRayBuilderGUI
                         //Search html for character name and aliases
                         foreach (string s in search)
                         {
-                            MatchCollection matches = Regex.Matches(node.InnerHtml, quotes + @"?\b" + s + punctuationMarks, character.MatchCase || character.RegEx ? RegexOptions.None : RegexOptions.IgnoreCase);
+                            MatchCollection matches = Regex.Matches(node.InnerHtml, quotes + @"?\b" + s + punctuationMarks, character.MatchCase || character.RegexAliases ? RegexOptions.None : RegexOptions.IgnoreCase);
                             foreach (Match match in matches)
                             {
                                 if (locHighlight.Contains(match.Index) && lenHighlight.Contains(match.Length))
@@ -514,17 +483,16 @@ namespace XRayBuilderGUI
                             foreach (string s in search)
                             {
                                 List<string> patterns = new List<string>();
-                                string pattern;
                                 string patternHTML = "(?:<[^>]*>)*";
                                 //Match HTML tags -- provided there's nothing malformed
                                 string patternSoftHypen = "(\u00C2\u00AD|&shy;|&#173;|&#xad;|&#0173;|&#x00AD;)*";
-                                pattern = String.Format("{0}{1}{0}{2}", patternHTML,
-                                    string.Join(patternHTML + patternSoftHypen, character.RegEx ? s.ToCharArray() : Regex.Unescape(s).ToCharArray()), punctuationMarks);
+                                var pattern = String.Format("{0}{1}{0}{2}", patternHTML,
+                                    string.Join(patternHTML + patternSoftHypen, character.RegexAliases ? s.ToCharArray() : Regex.Unescape(s).ToCharArray()), punctuationMarks);
                                 patterns.Add(pattern);
                                 foreach (string pat in patterns)
                                 {
                                     MatchCollection matches;
-                                    if (character.MatchCase || character.RegEx)
+                                    if (character.MatchCase || character.RegexAliases)
                                         matches = Regex.Matches(node.InnerHtml, pat);
                                     else
                                         matches = Regex.Matches(node.InnerHtml, pat, RegexOptions.IgnoreCase);
@@ -564,7 +532,7 @@ namespace XRayBuilderGUI
 
                                 while ((start > -1) && (at > -1))
                                 {
-                                    at = node.InnerHtml.LastIndexOfAny(new char[] { '.', '?', '!' }, start);
+                                    at = node.InnerHtml.LastIndexOfAny(new[] { '.', '?', '!' }, start);
                                     if (at > -1)
                                     {
                                         start = at - 1;
@@ -594,7 +562,7 @@ namespace XRayBuilderGUI
                         {
                             character.Locs.Add(String.Format("[{0},{1},{2},{3}]", location + locOffset, lenQuote,
                                 locHighlight[j], lenHighlight[j])); // For old format
-                            character.Occurrences.Add(new int[] { location + locOffset + locHighlight[j], lenHighlight[j] }); // For new format
+                            character.Occurrences.Add(new[] { location + locOffset + locHighlight[j], lenHighlight[j] }); // For new format
                         }
                         List<Excerpt> exCheck = excerpts.Where(t => t.start.Equals(location + locOffset)).ToList();
                         if (exCheck.Count > 0)
@@ -614,20 +582,23 @@ namespace XRayBuilderGUI
                 // Attempt to match downloaded notable clips, not worried if no matches occur as some will be added later anyway
                 if (Properties.Settings.Default.useNewVersion && notableClips != null)
                 {
-                    foreach (Tuple<string, int> quote in notableClips)
+                    foreach (var quote in notableClips)
                     {
-                        int index = node.InnerText.IndexOf(quote.Item1);
+                        int index = node.InnerText.IndexOf(quote.Text, StringComparison.Ordinal);
                         if (index > -1)
                         {
                             // See if an excerpt already exists at this location
                             Excerpt excerpt = excerpts.FirstOrDefault(e => e.start == index);
                             if (excerpt == null)
                             {
-                                excerpt = new Excerpt(excerptId++, index, quote.Item1.Length);
+                                if (Properties.Settings.Default.skipNoLikes && quote.Likes == 0
+                                    || quote.Text.Length < Properties.Settings.Default.minClipLen)
+                                    continue;
+                                excerpt = new Excerpt(excerptId++, location + index, quote.Text.Length);
                                 excerpt.related_entities.Add(0); // Mark the excerpt as notable
                                                                  // TODO: also add other related entities
                                 excerpt.notable = true;
-                                excerpt.highlights = quote.Item2;
+                                excerpt.highlights = quote.Likes;
                                 excerpts.Add(excerpt);
                             }
                             else
@@ -636,6 +607,7 @@ namespace XRayBuilderGUI
                         }
                     }
                 }
+                progress?.Add(1);
             }
 
             timer.Stop();
@@ -644,10 +616,7 @@ namespace XRayBuilderGUI
             foreach (Term t in Terms)
             {
                 if (t.Match && t.Locs.Count == 0)
-                    Logger.Log(
-                        String.Format(
-                            "No locations were found for the term \"{0}\".\r\nYou should add aliases for this term using the book or rawml as a reference.",
-                            t.TermName));
+                    Logger.Log($"No locations were found for the term \"{t.TermName}\".\r\nYou should add aliases for this term using the book or rawml as a reference.");
             }
             return 0;
         }
@@ -657,28 +626,26 @@ namespace XRayBuilderGUI
         /// </summary>
         /// <param name="bookDoc">Book's HTML</param>
         /// <param name="rawML">Path to the book's rawML file</param>
-        private void SearchChapters(HtmlAgilityPack.HtmlDocument bookDoc, string rawML)
+        private void SearchChapters(HtmlDocument bookDoc, string rawML)
         {
-            string leadingZeros = @"^0+(?=\d)";
-            string tocHtml = "";
-            HtmlAgilityPack.HtmlDocument tocDoc = new HtmlAgilityPack.HtmlDocument();
-            HtmlNodeCollection tocNodes = null;
+            var leadingZerosRegex = new Regex(@"^0+(?=\d)", RegexOptions.Compiled);
+            string tocHtml;
+            HtmlDocument tocDoc = new HtmlDocument();
             HtmlNode toc = bookDoc.DocumentNode.SelectSingleNode(
                     "//reference[translate(@title,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='TABLE OF CONTENTS']");
             _chapters.Clear();
             //Find table of contents, using case-insensitive search
             if (toc != null)
             {
-                int tocloc = Convert.ToInt32(Regex.Replace(toc.GetAttributeValue("filepos", ""), leadingZeros, ""));
-                tocHtml = rawML.Substring(tocloc, rawML.IndexOf("<mbp:pagebreak/>", tocloc + 1) - tocloc);
-                tocDoc = new HtmlAgilityPack.HtmlDocument();
+                int tocloc = Convert.ToInt32(leadingZerosRegex.Replace(toc.GetAttributeValue("filepos", ""), ""));
+                tocHtml = rawML.Substring(tocloc, rawML.IndexOf("<mbp:pagebreak/>", tocloc + 1, StringComparison.Ordinal) - tocloc);
+                tocDoc = new HtmlDocument();
                 tocDoc.LoadHtml(tocHtml);
-                tocNodes = tocDoc.DocumentNode.SelectNodes("//a");
+                var tocNodes = tocDoc.DocumentNode.SelectNodes("//a");
                 foreach (HtmlNode chapter in tocNodes)
                 {
                     if (chapter.InnerHtml == "") continue;
-                    int filepos =
-                        Convert.ToInt32(Regex.Replace(chapter.GetAttributeValue("filepos", "0"), leadingZeros, ""));
+                    int filepos = Convert.ToInt32(leadingZerosRegex.Replace(chapter.GetAttributeValue("filepos", "0"), ""));
                     if (_chapters.Count > 0)
                     {
                         _chapters[_chapters.Count - 1].End = filepos;
@@ -701,7 +668,7 @@ namespace XRayBuilderGUI
                         breakIndex = rawML.IndexOf("div class=\"mbppagebreak\"", index);
                     tocHtml = rawML.Substring(index, breakIndex - index);
                     tocDoc.LoadHtml(tocHtml);
-                    tocNodes = tocDoc.DocumentNode.SelectNodes("//p");
+                    var tocNodes = tocDoc.DocumentNode.SelectNodes("//p");
                     // Search for each chapter heading, ignore any misses (user can go and add any that are missing if necessary)
                     foreach (HtmlNode chap in tocNodes)
                     {
@@ -716,19 +683,21 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Logger.Log("Error searching for Calibre chapters: " + ex.Message);
                 }
             }
 
             //Try a broad search for chapterish names just for fun
             if (_chapters.Count == 0)
             {
-                string chapterPattern = @"((?:chapter|book|section|part|capitulo)\s+.*)|((?:prolog|prologue|epilogue)(?:\s+|$).*)|((?:one|two|three|four|five|six|seven|eight|nine|ten)(?:\s+|$).*)";
-                string xpath = "//*[self::h1 or self::h2 or self::h3 or self::h4 or self::h5]";
-                IEnumerable<HtmlNode> chapterNodes = bookDoc.DocumentNode.SelectNodes("//a").
-                    Where(div => div.GetAttributeValue("class", "") == "chapter" || Regex.IsMatch(div.InnerText, chapterPattern, RegexOptions.IgnoreCase));
-                IEnumerable<HtmlNode> headingNodes = bookDoc.DocumentNode.SelectNodes(xpath);
-                if (headingNodes.Count() > chapterNodes.Count())
+                // TODO: Expand on the chapter matching pattern concept
+                const string chapterPattern = @"((?:chapter|book|section|part|capitulo)\s+.*)|((?:prolog|prologue|epilogue)(?:\s+|$).*)|((?:one|two|three|four|five|six|seven|eight|nine|ten)(?:\s+|$).*)";
+                const string xpath = "//*[self::h1 or self::h2 or self::h3 or self::h4 or self::h5]";
+                var chapterNodes = bookDoc.DocumentNode.SelectNodes("//a")
+                    .Where(div => div.GetAttributeValue("class", "") == "chapter" || Regex.IsMatch(div.InnerText, chapterPattern, RegexOptions.IgnoreCase))
+                    .ToList();
+                var headingNodes = bookDoc.DocumentNode.SelectNodes(xpath).ToList();
+                if (headingNodes.Count > chapterNodes.Count)
                     chapterNodes = headingNodes;
                 foreach (HtmlNode chap in chapterNodes)
                 {
@@ -743,96 +712,91 @@ namespace XRayBuilderGUI
                 }
             }
         }
-
-        public int PopulateDb(SQLiteConnection db, IProgress<Tuple<int, int>> progress, CancellationToken token)
+        
+        public int PopulateDb(SQLiteConnection db, IProgressBar progress, CancellationToken token)
         {
-            string sql = "";
-            int entity = 1;
-            int excerpt = 1;
+            StringBuilder sql = new StringBuilder(Terms.Count * 256);
             int personCount = 0;
             int termCount = 0;
-            SQLiteCommand command;
-            command = new SQLiteCommand(db);
-            command.CommandText = "update string set text=@text where id=15";
-            command.Parameters.AddWithValue("text", dataUrl);
+            var command = new SQLiteCommand($"update string set text='{dataUrl}' where id=15", db);
             command.ExecuteNonQuery();
-            command.Dispose();
+
             Logger.Log("Updating database with terms, descriptions, and excerpts...");
             //Write all entities and occurrences
-            Logger.Log(String.Format("Writing {0} terms...", Terms.Count));
-            progress.Report(new Tuple<int, int>(0, Terms.Count));
+            Logger.Log($"Writing {Terms.Count} terms...");
+            progress?.Set(0, Terms.Count);
+            command = new SQLiteCommand("insert into entity (id, label, loc_label, type, count, has_info_card) values (@id, @label, null, @type, @count, 1)", db);
+            var command2 = new SQLiteCommand("insert into entity_description (text, source_wildcard, source, entity) values (@text, @source_wildcard, @source, @entity)", db);
+            var command3 = new SQLiteCommand("insert into occurrence (entity, start, length) values (@entity, @start, @length)", db);
             foreach (Term t in Terms)
             {
-                if (main.Exiting) return 1;
                 token.ThrowIfCancellationRequested();
-                command = new SQLiteCommand(db);
                 if (t.Type == "character") personCount++;
                 else if (t.Type == "topic") termCount++;
-                command.CommandText =
-                    String.Format(
-                        "insert into entity (id, label, loc_label, type, count, has_info_card) values ({0}, @label, null, {1}, {2}, 1);",
-                        t.Id, t.Type == "character" ? 1 : 2, t.Occurrences.Count);
-                command.Parameters.AddWithValue("label", t.TermName);
+                command.Parameters.Add("@id", DbType.Int32).Value = t.Id;
+                command.Parameters.Add("@label", DbType.String).Value = t.TermName;
+                command.Parameters.Add("@type", DbType.Int32).Value = t.Type == "character" ? 1 : 2;
+                command.Parameters.Add("@count", DbType.Int32).Value = t.Occurrences.Count;
                 command.ExecuteNonQuery();
-                command.Dispose();
 
-                command = new SQLiteCommand(db);
-                command.CommandText =
-                    String.Format(
-                        "insert into entity_description (text, source_wildcard, source, entity) values (@text, @source_wildcard, {0}, {1});",
-                        t.DescSrc == "shelfari" ? 2 : 4, t.Id);
-                command.Parameters.AddWithValue("text", t.Desc == "" ? "No description available." : t.Desc);
-                command.Parameters.AddWithValue("source_wildcard", t.TermName);
-                command.ExecuteNonQuery();
-                command.Dispose();
+                command2.Parameters.Add("@text", DbType.String).Value = t.Desc == "" ? "No description available." : t.Desc;
+                command2.Parameters.Add("@source_wildcard", DbType.String).Value = t.TermName;
+                command2.Parameters.Add("@source", DbType.Int32).Value = t.DescSrc == "shelfari" ? 4 : 6;
+                command2.Parameters.Add("@entity", DbType.Int32).Value = t.Id;
+                command2.ExecuteNonQuery();
 
-                sql = "";
-                foreach (int[] loc in t.Occurrences)
-                    sql += String.Format("insert into occurrence (entity, start, length) values ({0}, {1}, {2});\n",
-                        t.Id, loc[0], loc[1]);
-                command = new SQLiteCommand(sql, db);
-                command.ExecuteNonQuery();
-                command.Dispose();
-                progress.Report(new Tuple<int, int>(entity++, Terms.Count));
+                foreach (var loc in t.Occurrences)
+                {
+                    command3.Parameters.Add("@entity", DbType.Int32).Value = t.Id;
+                    command3.Parameters.Add("@start", DbType.Int32).Value = loc[0];
+                    command3.Parameters.Add("@length", DbType.Int32).Value = loc[1];
+                    command3.ExecuteNonQuery();
+                }
+                progress?.Add(1);
             }
+
             //Write excerpts and entity_excerpt table
-            Logger.Log(String.Format("Writing {0} excerpts...", excerpts.Count));
-            sql = "";
-            command = new SQLiteCommand(db);
-            command.CommandText =
-                String.Format(
-                    "insert into excerpt (id, start, length, image, related_entities, goto) values (@id, @start, @length, @image, @rel_ent, null);");
-            progress.Report(new Tuple<int, int>(0, excerpts.Count));
-            foreach (Excerpt e in excerpts)
+            Logger.Log($"Writing {excerpts.Count} excerpts...");
+            command.CommandText = "insert into excerpt (id, start, length, image, related_entities, goto) values (@id, @start, @length, @image, @rel_ent, null);";
+            command.Parameters.Clear();
+            command2.CommandText = "insert into entity_excerpt (entity, excerpt) values (@entityId, @excerptId)";
+            command2.Parameters.Clear();
+            progress?.Set(0, excerpts.Count);
+            foreach (var e in excerpts)
             {
-                if (main.Exiting) return 1;
                 token.ThrowIfCancellationRequested();
-                command.Parameters.AddWithValue("id", e.id);
-                command.Parameters.AddWithValue("start", e.start);
-                command.Parameters.AddWithValue("length", e.length);
-                command.Parameters.AddWithValue("image", e.image);
-                command.Parameters.AddWithValue("rel_ent", String.Join(",", e.related_entities.Where(en => en != 0).ToArray())); // don't write 0 (notable flag)
+                command.Parameters.Add("id", DbType.Int32).Value = e.id;
+                command.Parameters.Add("start", DbType.Int32).Value = e.start;
+                command.Parameters.Add("length", DbType.Int32).Value = e.length;
+                command.Parameters.Add("image", DbType.String).Value = e.image;
+                command.Parameters.Add("rel_ent", DbType.String).Value = string.Join(",", e.related_entities.Where(en => en != 0).ToArray()); // don't write 0 (notable flag)
                 command.ExecuteNonQuery();
                 foreach (int ent in e.related_entities)
                 {
-                    if (ent != 0) // skip notable flag
-                        sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", ent, e.id);
+                    token.ThrowIfCancellationRequested();
+                    if (ent == 0) continue; // skip notable flag
+                    command2.Parameters.Add("@entityId", DbType.Int32).Value = ent;
+                    command2.Parameters.Add("@excerptId", DbType.Int32).Value = e.id;
+                    command2.ExecuteNonQuery();
                 }
-                progress.Report(new Tuple<int, int>(excerpt++, excerpts.Count));
+                progress?.Add(1);
             }
-            command.Dispose();
+
             // create links to notable clips in order of popularity
+            Logger.Log("Adding notable clips...");
+            command.Parameters.Clear();
             var notablesOnly = excerpts.Where(ex => ex.notable).OrderByDescending(ex => ex.highlights);
             foreach (Excerpt notable in notablesOnly)
-                sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", 0, notable.id);
-            // Populate some more notable clips if not enough were found, 
+            {
+                command.CommandText = $"insert into entity_excerpt (entity, excerpt) values (0, {notable.id})";
+                command.ExecuteNonQuery();
+            }
+
+            // Populate some more clips if not enough were found initially
             // TODO: Add a config value in settings for this amount
+            var toAdd = new List<Excerpt>(20);
             if (foundNotables <= 20 && foundNotables + excerpts.Count <= 20)
-                excerpts.ForEach(ex =>
-                    {
-                        if (!ex.notable)
-                            sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", 0, ex.id);
-                    });
+                toAdd.AddRange(excerpts);
             else if (foundNotables <= 20)
             {
                 Random rand = new Random();
@@ -840,45 +804,48 @@ namespace XRayBuilderGUI
                 while (foundNotables <= 20 && eligible.Count > 0)
                 {
                     Excerpt randEx = eligible.ElementAt(rand.Next(eligible.Count));
-                    sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", 0, randEx.id);
+                    toAdd.Add(randEx);
                     eligible.Remove(randEx);
                     foundNotables++;
                 }
             }
-            token.ThrowIfCancellationRequested();
-            Logger.Log("Writing entity excerpt table...");
-            command = new SQLiteCommand(sql, db);
-            command.ExecuteNonQuery();
+            foreach (var excerpt in toAdd)
+            {
+                command.CommandText = $"insert into entity_excerpt (entity, excerpt) values (0, {excerpt.id})";
+                command.ExecuteNonQuery();
+            }
             command.Dispose();
+            
             token.ThrowIfCancellationRequested();
             Logger.Log("Writing top mentions...");
             List<int> sorted =
-                Terms.Where<Term>(t => t.Type.Equals("character"))
+                Terms.Where(t => t.Type.Equals("character"))
                     .OrderByDescending(t => t.Locs.Count)
                     .Select(t => t.Id)
-                    .ToList<int>();
-            sql = String.Format("update type set top_mentioned_entities='{0}' where id=1;\n",
+                    .ToList();
+            sql.Clear();
+            sql.AppendFormat("update type set top_mentioned_entities='{0}' where id=1;\n",
                 String.Join(",", sorted.GetRange(0, Math.Min(10, sorted.Count))));
             sorted =
-                Terms.Where<Term>(t => t.Type.Equals("topic"))
+                Terms.Where(t => t.Type.Equals("topic"))
                     .OrderByDescending(t => t.Locs.Count)
                     .Select(t => t.Id)
-                    .ToList<int>();
-            sql += String.Format("update type set top_mentioned_entities='{0}' where id=2;",
+                    .ToList();
+            sql.AppendFormat("update type set top_mentioned_entities='{0}' where id=2;",
                 String.Join(",", sorted.GetRange(0, Math.Min(10, sorted.Count))));
-            command = new SQLiteCommand(sql, db);
+            command = new SQLiteCommand(sql.ToString(), db);
             command.ExecuteNonQuery();
             command.Dispose();
 
             token.ThrowIfCancellationRequested();
             Logger.Log("Writing metadata...");
-            
-            sql =
-                String.Format(
-                    "insert into book_metadata (srl, erl, has_images, has_excerpts, show_spoilers_default, num_people, num_terms, num_images, preview_images) "
-                    + "values ({0}, {1}, 0, 1, 0, {2}, {3}, 0, null);", _srl, _erl, personCount, termCount);
 
-            command = new SQLiteCommand(sql, db);
+            sql.Clear();
+            sql.AppendFormat(
+                "insert into book_metadata (srl, erl, has_images, has_excerpts, show_spoilers_default, num_people, num_terms, num_images, preview_images) "
+                + "values ({0}, {1}, 0, 1, 0, {2}, {3}, 0, null);", _srl, _erl, personCount, termCount);
+
+            command = new SQLiteCommand(sql.ToString(), db);
             command.ExecuteNonQuery();
             command.Dispose();
             return 0;
@@ -896,23 +863,24 @@ namespace XRayBuilderGUI
                 {
                     try
                     {
-                        string temp = streamReader.ReadLine().ToLower(); //type
+                        var temp = streamReader.ReadLine()?.ToLower(); //type
+                        if (string.IsNullOrEmpty(temp)) continue;
                         lineCount++;
-                        if (temp == "") continue;
                         if (temp != "character" && temp != "topic")
                         {
                             Logger.Log("Error: Invalid term type \"" + temp + "\" on line " + lineCount);
                             return 1;
                         }
-                        Term newTerm = new Term();
-                        newTerm.Type = temp;
-                        newTerm.TermName = streamReader.ReadLine();
-                        newTerm.Desc = streamReader.ReadLine();
+                        Terms.Add(new Term
+                        {
+                            Type = temp,
+                            TermName = streamReader.ReadLine(),
+                            Desc = streamReader.ReadLine(),
+                            MatchCase = temp == "character",
+                            DescSrc = "shelfari",
+                            Id = termId++
+                        });
                         lineCount += 2;
-                        newTerm.MatchCase = temp == "character" ? true : false;
-                        newTerm.DescSrc = "shelfari";
-                        newTerm.Id = termId++;
-                        Terms.Add(newTerm);
                     }
                     catch (Exception ex)
                     {
@@ -931,29 +899,15 @@ namespace XRayBuilderGUI
             public int length;
             public string image = "";
             public List<int> related_entities = new List<int>();
-            public int go_to = -1;
-            public int highlights = 0;
-            public bool notable = false;
+            //public int go_to = -1; unused but in the db
+            public int highlights;
+            public bool notable;
 
             public Excerpt(int id, int start, int length)
             {
                 this.id = id;
                 this.start = start;
                 this.length = length;
-            }
-
-            public string GetQuery()
-            {
-                string sql =
-                    String.Format(
-                        "insert into excerpt (id, start, length, image, related_entities, goto) values ({0}, {1}, {2}, {3}, '{4}', {5});\n",
-                        id, start, length, image == "" ? "null" : image, String.Join(",", related_entities),
-                        go_to == -1 ? "null" : go_to.ToString());
-                foreach (int i in related_entities)
-                {
-                    sql += String.Format("insert into entity_excerpt (entity, excerpt) values ({0}, {1});\n", i, id);
-                }
-                return sql;
             }
         }
 
@@ -965,16 +919,16 @@ namespace XRayBuilderGUI
 
             public Chapter()
             {
-                this.name = "";
-                this.start = 1;
-                this.End = 9999999;
+                name = "";
+                start = 1;
+                End = 9999999;
             }
 
             public Chapter(string name, long start, long end)
             {
                 this.name = name;
                 this.start = start;
-                this.End = end;
+                End = end;
             }
 
             public override string ToString()
@@ -997,21 +951,25 @@ namespace XRayBuilderGUI
             [XmlElement("url")] public string DescUrl = "";
 
             [XmlIgnore] public List<string> Aliases = new List<string>();
-            
+
             [JsonIgnore]
-            [XmlIgnore] public List<string> Locs = new List<string>();
-            
-            [XmlIgnore] public List<string> Assets = new List<string> {""};
+            [XmlIgnore]
+            public List<string> Locs = new List<string>();
+
+            [XmlIgnore] public List<string> Assets = new List<string> { "" };
 
             [XmlIgnore] public int Id = -1;
 
             [XmlIgnore] public List<int[]> Occurrences = new List<int[]>();
 
-            public bool MatchCase = false;
+            public bool MatchCase;
 
             public bool Match = true;
 
-            public bool RegEx = false;
+            /// <summary>
+            /// Determines if the aliases are in Regex format
+            /// </summary>
+            public bool RegexAliases;
 
             public Term()
             {
@@ -1019,7 +977,7 @@ namespace XRayBuilderGUI
 
             public Term(string type)
             {
-                this.Type = type;
+                Type = type;
             }
 
             public override string ToString()
@@ -1064,8 +1022,8 @@ namespace XRayBuilderGUI
             {
                 while (!streamReader.EndOfStream)
                 {
-                    string[] tmp = streamReader.ReadLine().Split('|');
-                    if (tmp.Length != 3) return false; //Malformed chapters file
+                    string[] tmp = streamReader.ReadLine()?.Split('|');
+                    if (tmp?.Length != 3) return false; //Malformed chapters file
                     if (tmp[0] == "" || tmp[0].Substring(0, 1) == "#") continue;
                     _chapters.Add(new Chapter(tmp[0], Convert.ToInt32(tmp[1]), Convert.ToInt64(tmp[2])));
                 }
@@ -1079,13 +1037,12 @@ namespace XRayBuilderGUI
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\ext\");
 
             //Try to load custom common titles from BaseSplitIgnore.txt
-            string[] CustomSplitIgnore = null;
             try
             {
                 using (StreamReader streamReader = new StreamReader(Environment.CurrentDirectory + @"\dist\BaseSplitIgnore.txt", Encoding.UTF8))
                 {
-                    CustomSplitIgnore = streamReader.ReadToEnd().Split(new string[] { "\r\n" }, StringSplitOptions.None);
-                    CustomSplitIgnore = CustomSplitIgnore.Where(r => !r.StartsWith("//")).ToArray(); //Remove commented lines
+                    var CustomSplitIgnore = streamReader.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.None)
+                        .Where(r => !r.StartsWith("//")).ToArray();
                     if (CustomSplitIgnore.Length >= 1)
                     {
                         CommonTitles = CustomSplitIgnore;
@@ -1105,73 +1062,74 @@ namespace XRayBuilderGUI
             {
                 List<string> aliasCheck = new List<string>();
                 foreach (var c in Terms)
+                {
                     if (c.Type == "character" && c.TermName.Contains(" "))
+                    {
                         try
                         {
-                        if (Properties.Settings.Default.splitAliases)
-                        {
-                            string splitName = "";
-                            string titleTrimmed = "";
-                            string[] words;
-                            List<string> aliasList = new List<string>();
-                            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
-                            
-                            string pattern = @"( ?(" + string.Join("|", CommonTitles) +
-                                ")\\.? )|(^[A-Z]\\. )|( [A-Z]\\.)|(\")|(“)|(”)|(,)|(')";
-
-                            Regex regex = new Regex(pattern);
-                            Match matchCheck = Regex.Match(c.TermName, pattern);
-                            if (matchCheck.Success)
+                            if (Properties.Settings.Default.splitAliases)
                             {
-                                titleTrimmed = c.TermName;
-                                foreach (Match match in regex.Matches(titleTrimmed))
-                                {
-                                    titleTrimmed = titleTrimmed.Replace(match.Value, String.Empty);
-                                }
-                                foreach (Match match in regex.Matches(titleTrimmed))
-                                {
-                                    titleTrimmed = titleTrimmed.Replace(match.Value, String.Empty);
-                                }
-                                aliasList.Add(titleTrimmed);
-                            }
-                            else
-                                titleTrimmed = c.TermName;
+                                string splitName = "";
+                                string titleTrimmed;
+                                List<string> aliasList = new List<string>();
+                                TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
 
-                            titleTrimmed = Regex.Replace(titleTrimmed, @"\s+", " ");
-                            titleTrimmed = Regex.Replace(titleTrimmed, @"( ?V?I{0,3}$)", String.Empty);
-                            titleTrimmed = Regex.Replace(titleTrimmed, @"(\(aka )", "(");
+                                string pattern = @"( ?(" + string.Join("|", CommonTitles) +
+                                    ")\\.? )|(^[A-Z]\\. )|( [A-Z]\\.)|(\")|(\u201C)|(\u201D)|(,)|(')";
 
-                            Match bracketedName = Regex.Match(titleTrimmed, @"(.*)(\()(.*)(\))");
-                            if (bracketedName.Success)
-                            {
-                                aliasList.Add(bracketedName.Groups[3].Value);
-                                aliasList.Add(bracketedName.Groups[1].Value.TrimEnd());
-                                titleTrimmed = titleTrimmed.Replace(bracketedName.Groups[2].Value, "")
-                                    .Replace(bracketedName.Groups[4].Value, "");
-                            }
+                                Regex regex = new Regex(pattern);
+                                Match matchCheck = Regex.Match(c.TermName, pattern);
+                                if (matchCheck.Success)
+                                {
+                                    titleTrimmed = c.TermName;
+                                    foreach (Match match in regex.Matches(titleTrimmed))
+                                    {
+                                        titleTrimmed = titleTrimmed.Replace(match.Value, String.Empty);
+                                    }
+                                    foreach (Match match in regex.Matches(titleTrimmed))
+                                    {
+                                        titleTrimmed = titleTrimmed.Replace(match.Value, String.Empty);
+                                    }
+                                    aliasList.Add(titleTrimmed);
+                                }
+                                else
+                                    titleTrimmed = c.TermName;
 
-                            if (titleTrimmed.Contains(" "))
-                            {
-                                titleTrimmed = titleTrimmed.Replace(" &amp;","").Replace(" &", "");
-                                words = titleTrimmed.Split(' ');
-                                foreach (string word in words)
+                                titleTrimmed = Regex.Replace(titleTrimmed, @"\s+", " ");
+                                titleTrimmed = Regex.Replace(titleTrimmed, @"( ?V?I{0,3}$)", String.Empty);
+                                titleTrimmed = Regex.Replace(titleTrimmed, @"(\(aka )", "(");
+
+                                Match bracketedName = Regex.Match(titleTrimmed, @"(.*)(\()(.*)(\))");
+                                if (bracketedName.Success)
                                 {
-                                    if (word.ToUpper() == word)
-                                        aliasList.Add(textInfo.ToTitleCase(word.ToLower()));
-                                    else
-                                        aliasList.Add(word);
+                                    aliasList.Add(bracketedName.Groups[3].Value);
+                                    aliasList.Add(bracketedName.Groups[1].Value.TrimEnd());
+                                    titleTrimmed = titleTrimmed.Replace(bracketedName.Groups[2].Value, "")
+                                        .Replace(bracketedName.Groups[4].Value, "");
                                 }
-                            }
-                            if (aliasList.Count > 0)
-                            {
-                                aliasList.Sort((a, b) => b.Length.CompareTo(a.Length));
-                                foreach (string word in aliasList)
+
+                                if (titleTrimmed.Contains(" "))
                                 {
-                                    if (aliasCheck.Any(str => str.Equals(word)))
-                                        continue;
-                                    aliasCheck.Add(word);
-                                    splitName += word + ",";
+                                    titleTrimmed = titleTrimmed.Replace(" &amp;", "").Replace(" &", "");
+                                    var words = titleTrimmed.Split(' ');
+                                    foreach (string word in words)
+                                    {
+                                        if (word.ToUpper() == word)
+                                            aliasList.Add(textInfo.ToTitleCase(word.ToLower()));
+                                        else
+                                            aliasList.Add(word);
+                                    }
                                 }
+                                if (aliasList.Count > 0)
+                                {
+                                    aliasList.Sort((a, b) => b.Length.CompareTo(a.Length));
+                                    foreach (string word in aliasList)
+                                    {
+                                        if (aliasCheck.Any(str => str.Equals(word)))
+                                            continue;
+                                        aliasCheck.Add(word);
+                                        splitName += word + ",";
+                                    }
                                     if (splitName.LastIndexOf(",") != -1)
                                     {
                                         streamWriter.WriteLine(c.TermName + "|" + splitName.Substring(0, splitName.LastIndexOf(",")));
@@ -1179,31 +1137,33 @@ namespace XRayBuilderGUI
                                     else
                                         streamWriter.WriteLine(c.TermName + "|");
                                 }
+                            }
+                            else
+                                streamWriter.WriteLine(c.TermName + "|");
                         }
-                        else
-                            streamWriter.WriteLine(c.TermName + "|");
-                    }
                         catch (Exception ex)
                         {
                             Logger.Log("An error occurred while splitting the aliases.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                         }
+                    }
                     else
                         streamWriter.WriteLine(c.TermName + "|");
+                }
             }
         }
 
-        public void LoadAliases(string aliasFile)
+        public void LoadAliases(string aliasFile = null)
         {
             var d = new Dictionary<string, string[]>();
+            aliasFile = aliasFile ?? AliasPath;
             if (!File.Exists(aliasFile)) return;
             using (var streamReader = new StreamReader(aliasFile, Encoding.UTF8))
             {
                 while (!streamReader.EndOfStream)
                 {
                     string input = streamReader.ReadLine();
-                    string[] temp = input.Split('|');
-                    if (temp.Length <= 1 || temp[0] == "") continue;
-                    else if (temp[0].Substring(0, 1) == "#") continue;
+                    string[] temp = input?.Split('|');
+                    if (temp == null || temp.Length <= 1 || temp[0] == "" || temp[0].StartsWith("#")) continue;
                     string[] temp2 = input.Substring(input.IndexOf('|') + 1).Split(',');
                     //Check for misplaced pipe character in aliases
                     if (temp2[0] != "" && temp2.Any(r => Regex.Match(@"\|", r).Success))
@@ -1261,11 +1221,60 @@ namespace XRayBuilderGUI
                     }
                     else if (t.Aliases[0] == "/r")
                     {
-                        t.RegEx = true;
+                        t.RegexAliases = true;
                         t.Aliases.Remove("/r");
                     }
                 }
             }
+        }
+
+        public void SaveToFileOld(string path)
+        {
+            using (var streamWriter = new StreamWriter(path, false, Encoding.UTF8))
+                streamWriter.Write(ToString());
+        }
+
+        public void SaveToFileNew(string path, IProgressBar progress, CancellationToken token)
+        {
+            SQLiteConnection.CreateFile(path);
+            using (SQLiteConnection m_dbConnection = new SQLiteConnection($"Data Source={path};Version=3;"))
+            {
+                m_dbConnection.Open();
+                string sql;
+                try
+                {
+                    using (StreamReader streamReader = new StreamReader(Environment.CurrentDirectory + @"\dist\BaseDB.sql", Encoding.UTF8))
+                    {
+                        sql = streamReader.ReadToEnd();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new IOException("An error occurred while opening the BaseDB.sql file. Ensure you extracted it to the same directory as the program.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                }
+                SQLiteCommand command = new SQLiteCommand("BEGIN; " + sql + " COMMIT;", m_dbConnection);
+                Logger.Log("Building new X-Ray database. May take a few minutes...");
+                command.ExecuteNonQuery();
+                command.Dispose();
+                command = new SQLiteCommand("PRAGMA user_version = 1; PRAGMA encoding = utf8; BEGIN;", m_dbConnection);
+                command.ExecuteNonQuery();
+                command.Dispose();
+                Logger.Log("Done building initial database. Populating with info from source X-Ray...");
+                PopulateDb(m_dbConnection, progress, token);
+                Logger.Log("Updating indices...");
+                sql = "CREATE INDEX idx_occurrence_start ON occurrence(start ASC);\n"
+                      + "CREATE INDEX idx_entity_type ON entity(type ASC);\n"
+                      + "CREATE INDEX idx_entity_excerpt ON entity_excerpt(entity ASC); COMMIT;";
+                command = new SQLiteCommand(sql, m_dbConnection);
+                command.ExecuteNonQuery();
+                command.Dispose();
+            }
+        }
+
+        public void SavePreviewToFile(string path)
+        {
+            using (var streamWriter = new StreamWriter(path, false, Encoding.UTF8))
+                streamWriter.Write(getPreviewData());
         }
     }
 
@@ -1283,17 +1292,16 @@ namespace XRayBuilderGUI
         public int erl;
     }
 
-    public static class ExtensionMethods
+    public static partial class ExtensionMethods
     {
         //http://stackoverflow.com/questions/166855/c-sharp-preg-replace
-        public static String PregReplace(this String input, string[] pattern, string[] replacements)
+        public static string PregReplace(this string input, string[] pattern, string[] replacements)
         {
             if (replacements.Length != pattern.Length)
-                throw new ArgumentException("Replacement and Pattern Arrays must be balanced");
+                throw new ArgumentException("Replacement and pattern arrays must be balanced");
 
             for (var i = 0; i < pattern.Length; i++)
             {
-                var s = Regex.IsMatch(input, "\"");
                 input = Regex.Replace(input, pattern[i], replacements[i]);
             }
             return input;

@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
 using HtmlAgilityPack;
+using XRayBuilderGUI.DataSources;
+using XRayBuilderGUI.Unpack;
 
 namespace XRayBuilderGUI
 {
@@ -12,15 +13,15 @@ namespace XRayBuilderGUI
         public string title;
         public string author;
         public string asin;
-        public string guid;
+        private string _guid;
         public string databasename;
         public string path;
         public string sidecarName;
         public string desc = "";
         public string bookImageUrl = "";
-        private System.Drawing.Bitmap _bookImage = null;
-        public float amazonRating = 0.0F;
-        public int numReviews = 0;
+        private System.Drawing.Bitmap _bookImage;
+        public double amazonRating;
+        public int numReviews;
         public string dataUrl = "";
         public string amazonUrl = "";
         public string rawmlPath = "";
@@ -28,27 +29,47 @@ namespace XRayBuilderGUI
         public string authorAsin = "";
         public string authorImageUrl = "";
         public string goodreadsID = "";
-        public string editions = "";
+        public int editions = 0;
 
         // Added StartAction info
         public string seriesName = "";
-        public string seriesPosition = "";
-        public string totalInSeries = "";
-        public string readingHours = "";
-        public string readingMinutes = "";
-        public string pagesInBook = "";
-        public BookInfo nextInSeries = null;
-        public BookInfo previousInSeries = null;
+        public string seriesPosition;
+        public int totalInSeries;
+        public int readingHours;
+        public int readingMinutes;
+        public int pagesInBook;
+        public BookInfo nextInSeries;
+        public BookInfo previousInSeries;
 
         // List of clips and their highlight/like count
-        public List<Tuple<string, int>> notableClips = null;
+        public List<NotableClip> notableClips;
+
+        private readonly Metadata _metadata;
+
+        public string Guid
+        {
+            set => Functions.ConvertGuid(value);
+            get => _guid;
+        }
+
+        public BookInfo(Metadata metadata, string dataUrl)
+        {
+            _metadata = metadata;
+            title = metadata.Title;
+            author = metadata.Author;
+            asin = metadata.ASIN;
+            _guid = metadata.UniqueID;
+            databasename = metadata.DBName;
+            sidecarName = Functions.RemoveInvalidFileChars(metadata.Title);
+            this.dataUrl = dataUrl;
+        }
 
         public BookInfo(string title, string author, string asin, string guid, string databasename, string path, string sidecarName, string dataUrl, string rawmlPath)
         {
             this.title = title;
             this.author = author;
             this.asin = asin;
-            this.guid = guid;
+            _guid = guid;
             this.databasename = databasename;
             this.path = path;
             this.sidecarName = sidecarName;
@@ -93,7 +114,7 @@ namespace XRayBuilderGUI
         public async Task GetAmazonInfo(string amazonUrl)
         {
             if (amazonUrl == "") return;
-            HtmlDocument bookDoc = new HtmlDocument() { OptionAutoCloseOnEnd = true };
+            HtmlDocument bookDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
             bookDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(amazonUrl));
             GetAmazonInfo(bookDoc);
         }
@@ -110,7 +131,9 @@ namespace XRayBuilderGUI
                 HtmlNode bookImageLoc = bookDoc.DocumentNode.SelectSingleNode("//*[@id='imgBlkFront']")
                     ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='imageBlock']")
                     ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='series-detail-product-image']")
-                    ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='ebooksImgBlkFront']"); //co.uk seems to use this id sometimes
+                    ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='ebooksImgBlkFront']") //co.uk seems to use this id sometimes
+                    // for more generic matching, such as on audiobooks (which apparently have BXXXXXXXX asins also)
+                    ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='main-image']");
                 if (bookImageLoc == null)
                     throw new HtmlWebException(String.Format(@"Error finding book image. If you want, you can report the book's Amazon URL to help with parsing.\r\n{0}", amazonUrl));
                 else
@@ -137,9 +160,8 @@ namespace XRayBuilderGUI
             }
             if (desc == "")
             {
-                HtmlNode descNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='bookDescription_feature_div']/noscript");
-                if (descNode == null)
-                    descNode = bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-size-medium series-detail-description-text']");
+                HtmlNode descNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='bookDescription_feature_div']/noscript")
+                    ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-size-medium series-detail-description-text']");
                 if (descNode != null && descNode.InnerText != "")
                 {
                     desc = descNode.InnerText.Trim();
@@ -149,7 +171,7 @@ namespace XRayBuilderGUI
                     if (desc.Length > 1000)
                     {
                         desc = desc.Substring(0, 1000);
-                        int lastPunc = desc.LastIndexOfAny(new char[] {'.', '!', '?'});
+                        int lastPunc = desc.LastIndexOfAny(new [] {'.', '!', '?'});
                         int lastSpace = desc.LastIndexOf(' ');
                         if (lastPunc > lastSpace)
                             desc = desc.Substring(0, lastPunc + 1);
@@ -157,16 +179,15 @@ namespace XRayBuilderGUI
                             desc = desc.Substring(0, lastSpace) + '\u2026';
                     }
                     desc = System.Net.WebUtility.HtmlDecode(desc);
-                    desc = desc.CleanString();
+                    desc = desc.Clean();
                 }
             }
             if (numReviews == 0)
             {
                 try
                 {
-                    HtmlNode ratingNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='acrPopover']");
-                    if (ratingNode == null)
-                        ratingNode = bookDoc.DocumentNode.SelectSingleNode("//*[@class='fl acrStars']/span");
+                    HtmlNode ratingNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='acrPopover']")
+                        ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='fl acrStars']/span");
                     if (ratingNode != null)
                     {
                         string aRating = ratingNode.GetAttributeValue("title", "0");
@@ -196,7 +217,10 @@ namespace XRayBuilderGUI
             {
                 _bookImage = Task.Run(() => HttpDownloader.GetImage(bookImageUrl)).Result;
             }
-            catch (Exception) { }
+            catch (Exception ex)
+            {
+                Logger.Log("Failed to download cover image: " + ex.Message);
+            }
             return _bookImage;
         }
     }

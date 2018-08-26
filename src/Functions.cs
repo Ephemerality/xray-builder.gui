@@ -1,25 +1,26 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data.Entity.Design.PluralizationServices;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
+using HtmlAgilityPack;
 using XRayBuilderGUI.Unpack;
 
 namespace XRayBuilderGUI
 {
     public static class Functions
     {
-        private static readonly HashSet<char> badChars = new HashSet<char> { '!', '@', '#', '$', '%', '_', '"' };
-
         //http://www.levibotelho.com/development/c-remove-diacritics-accents-from-a-string/
         public static string RemoveDiacritics(this string text)
         {
@@ -32,83 +33,24 @@ namespace XRayBuilderGUI
             return new string(chars).Normalize(NormalizationForm.FormC);
         }
 
-        public static string GetDir(string defaultFolder)
+        // TODO: Clean this up more cause it still sucks
+        public static string Clean(this string str)
         {
-            FolderBrowserDialog f = new FolderBrowserDialog();
-            f.SelectedPath = defaultFolder;
-            if (f.ShowDialog() == DialogResult.OK)
-                return f.SelectedPath;
-            else
-                return defaultFolder;
-        }
-
-        public static string GetFile(string defaultFile, string filter = "All files (*.*)|*.*")
-        {
-            OpenFileDialog f = new OpenFileDialog();
-            if (defaultFile != "") f.InitialDirectory = Path.GetDirectoryName(defaultFile);
-            f.Filter = filter;
-            f.RestoreDirectory = true;
-            if (f.ShowDialog() == DialogResult.OK)
-                return f.FileName;
-            else
-                return defaultFile;
-        }
-
-        public static string GetExe(string defaultFile)
-        {
-            OpenFileDialog f = new OpenFileDialog();
-            if (defaultFile != "") f.InitialDirectory = Path.GetDirectoryName(defaultFile);
-            f.Title = "Browse for the Kindleunpack executable";
-            f.Filter = "Application (*.exe)|*.exe";
-            f.RestoreDirectory = true;
-            if (f.ShowDialog() == DialogResult.OK)
-                return f.FileName;
-            else
-                return defaultFile;
-        }
-
-        //Addition open file dialog for books only
-        public static string GetBook(string defaultFile)
-        {
-            OpenFileDialog f = new OpenFileDialog();
-            if (defaultFile != "") f.InitialDirectory = Path.GetDirectoryName(defaultFile);
-            f.Title = "Open a Kindle book";
-            f.Filter = "Kindle Books (*.azw3, *.mobi)|*.azw3; *.mobi";
-            f.RestoreDirectory = true;
-            if (f.ShowDialog() == DialogResult.OK)
-                return f.FileName;
-            else
-                return defaultFile;
-        }
-
-        public static string CleanString(this string s)
-        {
-            StringBuilder sb = new StringBuilder(s.Length);
-            for (int i = 0; i < s.Length; i++)
+            (string[] searches, string replace)[] replacements =
             {
-                if (!badChars.Contains(s[i]))
-                    sb.Append(s[i]);
+                (new[] {"&#169;", "&amp;#169;", "&#174;", "&amp;#174;", "&mdash;", @"</?[a-z]+>" }, ""),
+                (new[] { "“", "”", "\"" }, "'"),
+                (new[] { "&#133;", "&amp;#133;", @" \. \. \." }, "…"),
+                (new[] { " - ", "--" }, "—"),
+                (new[] { @"\t|\n|\r|•", @"\s+"}, " "),
+                (new[] { @"\. …$"}, "."),
+                (new[] {"@", "#", @"\$", "%", "_", }, "")
+            };
+            foreach (var (s, r) in replacements)
+            {
+                str = Regex.Replace(str, $"({string.Join("|", s)})", r, RegexOptions.Multiline);
             }
-            string cleanedString = sb.ToString();
-            cleanedString = Regex.Replace(cleanedString, @"“|”", "'");
-            cleanedString = cleanedString.Replace("\"", "'")
-                .Replace("<br>", string.Empty)
-                .Replace("&#133;", "…")
-                .Replace("&amp;#133;", "…")
-                .Replace("&#169;", string.Empty)
-                .Replace(" . . .", "…")
-                .Replace("&amp;#169;", string.Empty)
-                .Replace("&#174;", string.Empty)
-                .Replace("&amp;#174;", string.Empty)
-                .Replace(" - ", "—")
-                .Replace("--", "—")
-                .Replace("&mdash;", string.Empty);
-            cleanedString = Regex.Replace(cleanedString, @"</?[a-z]>", string.Empty, RegexOptions.Multiline);
-            cleanedString = Regex.Replace(cleanedString, @"\t|\n|\r|•", " ", RegexOptions.Multiline);
-            cleanedString = Regex.Replace(cleanedString, @"\s+", " ", RegexOptions.Multiline);
-            cleanedString = Regex.Replace(cleanedString, @"^ | $", string.Empty, RegexOptions.Multiline);
-            cleanedString = Regex.Replace(cleanedString, @"\. …$", ".", RegexOptions.Multiline);
-            return cleanedString.Trim();
+            return str.Trim();
         }
 
         public static string ImageToBase64(Image image, ImageFormat format)
@@ -137,13 +79,13 @@ namespace XRayBuilderGUI
 
             //create the grayscale ColorMatrix
             ColorMatrix colorMatrix = new ColorMatrix(
-                new float[][]
+                new[]
                 {
-                    new float[] {.3f, .3f, .3f, 0, 0},
-                    new float[] {.59f, .59f, .59f, 0, 0},
-                    new float[] {.11f, .11f, .11f, 0, 0},
-                    new float[] {0, 0, 0, 1, 0},
-                    new float[] {0, 0, 0, 0, 1}
+                    new [] {.3f, .3f, .3f, 0, 0},
+                    new [] {.59f, .59f, .59f, 0, 0},
+                    new [] {.11f, .11f, .11f, 0, 0},
+                    new [] {0f, 0f, 0f, 1f, 0f},
+                    new [] {0f, 0f, 0f, 0f, 1f}
                 });
 
             //create some image attributes
@@ -162,29 +104,13 @@ namespace XRayBuilderGUI
             return newBitmap;
         }
 
-        public static string GetBookOutputDirectory(string author, string title)
+        public static string GetBookOutputDirectory(string author, string title, bool create)
         {
-            string path, newAuthor, newTitle;
-            newAuthor = RemoveInvalidFileChars(author);
-            newTitle = RemoveInvalidFileChars(title);
-            path = Path.Combine(Properties.Settings.Default.outDir,
-                String.Format(@"{0}\{1}", newAuthor, newTitle));
-            if (!author.Equals(newAuthor) || !title.Equals(newTitle))
-                MessageBox.Show("The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.", "Invalid Characters");
-            Directory.CreateDirectory(path);
-            return path;
-        }
-
-        public static string GetBookOutputDirectoryOnly(string author, string title)
-        {
-            string path, newAuthor, newTitle;
-            newAuthor = RemoveInvalidFileChars(author);
-            newTitle = RemoveInvalidFileChars(title);
-            path = Path.Combine(Properties.Settings.Default.outDir,
-                String.Format(@"{0}\{1}", newAuthor, newTitle));
-            if (!author.Equals(newAuthor) || !title.Equals(newTitle))
-                MessageBox.Show("The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.", "Invalid Characters");
-            //Directory.CreateDirectory(path);
+            var newAuthor = RemoveInvalidFileChars(author);
+            var newTitle = RemoveInvalidFileChars(title);
+            var path = Path.Combine(Properties.Settings.Default.outDir, $"{newAuthor}\\{newTitle}");
+            if (create)
+                Directory.CreateDirectory(path);
             return path;
         }
 
@@ -196,141 +122,64 @@ namespace XRayBuilderGUI
 
         public static bool ExtrasExist(string location, string asin)
         {
-            {
-                if (File.Exists(location + String.Format(@"\AuthorProfile.profile.{0}.asc", asin)) &&
-                    File.Exists(location + String.Format(@"\EndActions.data.{0}.asc", asin)))
-                    return true;
-            }
+            if (File.Exists(location + $"\\AuthorProfile.profile.{asin}.asc") && File.Exists(location + $"\\EndActions.data.{asin}.asc"))
+                return true;
             return false;
         }
 
-        public static bool RefreshPreview(string type)
-        {
-            return true;
-        }
-
-        public static string GetTempDirectory()
-        {
-            string path;
-            do
-            {
-                path = Path.Combine(Properties.Settings.Default.tmpDir, Path.GetRandomFileName());
-            }
-            while (Directory.Exists(path));
-            Directory.CreateDirectory(path);
-            return path;
-        }
+        //public static string GetTempDirectory()
+        //{
+        //    string path;
+        //    do
+        //    {
+        //        path = Path.Combine(Properties.Settings.Default.tmpDir, Path.GetRandomFileName());
+        //    } while (Directory.Exists(path));
+        //    Directory.CreateDirectory(path);
+        //    return path;
+        //}
 
         public static string TimeStamp()
         {
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             var time = String.Format("{0:HH:mm:ss}", DateTime.Now);
             var date = String.Format("{0:dd/MM/yyyy}", DateTime.Now);
-            return String.Format("Running X-Ray Builder GUI v{0}. Log started on {1} at {2}.\r\n",
-                version, date, time);
+            return $"Running X-Ray Builder GUI v{version}. Log started on {date} at {time}.\r\n";
         }
-
-        public static async Task<Metadata> GetMetaDataInternalAsync(string mobiFile, string outDir, bool saveRawML, string randomFile = "")
-        {
-            return await Task.Run(() => GetMetaDataInternal(mobiFile, outDir, saveRawML, randomFile));
-        }
-
-        //0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
+        
         public static Metadata GetMetaDataInternal(string mobiFile, string outDir, bool saveRawML, string randomFile = "")
         {
-            FileStream fs = new FileStream(mobiFile, FileMode.Open, FileAccess.Read);
-            if (fs == null)
-                throw new Exception("Unable to open mobi file.");
-            Metadata md = new Metadata(fs);
-            try
-            {
-                if (md.mobiHeader.exthHeader == null)
-                    throw new Exception("No EXT Header found. Ensure this book was processed with Calibre then try again.");
+            Metadata md = new Metadata(mobiFile);
+            if (md.mobiHeader.exthHeader == null)
+                throw new Exception(
+                    "No EXT Header found. Ensure this book was processed with Calibre then try again.");
 
-                if (md.mobiHeader.exthHeader.CDEType != "EBOK")
-                    if (md.mobiHeader.exthHeader.CDEType.Length == 4 &&
-                        DialogResult.Yes == MessageBox.Show("The document type is not set to EBOK. Would you like this to be updated?\r\n" +
-                            "Caution: This feature is experimental and could potentially ruin your book file.", "Incorrect Content Type", MessageBoxButtons.YesNo))
-                    {
-                        fs.Dispose();
-                        fs = new FileStream(mobiFile, FileMode.Open, FileAccess.ReadWrite);
-                        if (fs == null)
-                            throw new Exception("Unable to re-open mobi file for writing.");
-                        md.mobiHeader.exthHeader.UpdateCDEContentType(fs);
-                    }
-                    else
-                    {
-                        throw new Exception("The document type is not set to EBOK; Kindle will not display an X-Ray for this book.\r\n" +
-                            "You must either use Calibre's convert feature (Personal Doc tag under MOBI Output) or a MOBI editor (exth 501) to change this.");
-                    }
+            // Everything else checked out, grab rawml and write to the temp file
+            if (saveRawML)
+                md.SaveRawMl(randomFile + "\\" + Path.GetFileNameWithoutExtension(mobiFile) + ".rawml");
 
-                string ASIN = md.ASIN;
-                Match match = Regex.Match(ASIN, "(^B[A-Z0-9]{9})");
-                if (!match.Success && DialogResult.No == MessageBox.Show(String.Format("Incorrect ASIN detected: {0}!\n" +
-                                          "Kindle may not display an X-Ray for this book.\n" +
-                                          "Do you wish to continue?", ASIN), "Incorrect ASIN", MessageBoxButtons.YesNo))
-                {
-                    throw new Exception(String.Format("Incorrect ASIN detected: {0}!\r\n" +
-                                      "Kindle may not display an X-Ray for this book.\r\n" +
-                                      "You must either use Calibre's Quality Check plugin (Fix ASIN for Kindle Fire) " +
-                                      "or a MOBI editor (exth 113 and optionally 504) to change this.", ASIN));
-                }
-
-                if (!Properties.Settings.Default.useNewVersion && md.DBName.Length == 31)
-                {
-                    MessageBox.Show(String.Format(
-                        "WARNING: Database Name is the maximum length. If \"{0}\" is the full book title, this should not be an issue.\r\n" +
-                        "If the title is supposed to be longer than that, you may get an error on your Kindle (WG on firmware < 5.6).\r\n" +
-                        "This can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n",
-                        md.DBName));
-                }
-
-                if (saveRawML)
-                {
-                    // Everything else checked out, grab rawml and write to the temp file
-                    md.rawMLPath = randomFile + "\\" + Path.GetFileNameWithoutExtension(mobiFile) + ".rawml";
-                    byte[] rawML = md.getRawML(fs);
-                    using (FileStream rawMLFile = new FileStream(md.rawMLPath, FileMode.Create, FileAccess.Write))
-                    {
-                        rawMLFile.Write(rawML, 0, rawML.Length);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                fs.Dispose();
-            }
             return md;
         }
-
-
+        
         public static string GetPageCount(string rawML, BookInfo bookInfo)
         {
-            string output = "";
-            int lineLength = 0;
+            string output;
             double lineCount = 0;
-            int pageCount = 0;
             if (!File.Exists(rawML) || bookInfo == null)
             {
                 output = "Error: RawML could not be found, aborting.\r\nPath: " + rawML;
                 return output;
             }
-            HtmlAgilityPack.HtmlDocument bookDoc = new HtmlAgilityPack.HtmlDocument { OptionAutoCloseOnEnd = true };
+            HtmlDocument bookDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
             bookDoc.Load(rawML, Encoding.UTF8);
-            HtmlAgilityPack.HtmlNodeCollection booklineNodes = null;
-            booklineNodes = bookDoc.DocumentNode.SelectNodes("//p") ?? bookDoc.DocumentNode.SelectNodes("//div");
+            var booklineNodes = bookDoc.DocumentNode.SelectNodes("//p") ?? bookDoc.DocumentNode.SelectNodes("//div");
             if (booklineNodes == null)
             {
                 output = "An error occurred while estimating page count!";
                 return output;
             }
-            foreach (HtmlAgilityPack.HtmlNode line in booklineNodes)
+            foreach (HtmlNode line in booklineNodes)
             {
-                lineLength = line.InnerText.Length + 1;
+                var lineLength = line.InnerText.Length + 1;
                 if (lineLength < 70)
                 {
                     lineCount++;
@@ -338,7 +187,7 @@ namespace XRayBuilderGUI
                 }
                 lineCount += Math.Ceiling((double)lineLength / 70);
             }
-            pageCount = Convert.ToInt32(Math.Ceiling(lineCount / 31));
+            var pageCount = Convert.ToInt32(Math.Ceiling(lineCount / 31));
             if (pageCount == 0)
             {
                 output = "An error occurred while estimating page count!";
@@ -346,194 +195,31 @@ namespace XRayBuilderGUI
             }
             double minutes = pageCount * 1.2890625;
             TimeSpan span = TimeSpan.FromMinutes(minutes);
-            bookInfo.pagesInBook = pageCount.ToString();
-            bookInfo.readingHours = span.Hours.ToString();
-            bookInfo.readingMinutes = span.Minutes.ToString();
-            output = (String.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)"
-                , span.Hours, span.Minutes, bookInfo.pagesInBook));
-            return output;
-        }
-
-        public static async Task<List<string>> GetMetaDataAsync(string mobiFile, string outDir, string randomFile, string mobiUnpack)
-        {
-            return await Task.Run(() => GetMetaData(mobiFile, outDir, randomFile, mobiUnpack));
-        }
-
-        public static List<string> GetMetaData(string mobiFile, string outDir, string randomFile, string mobiUnpack)
-        {
-            if (mobiUnpack == null) throw new ArgumentNullException("mobiUnpack");
-            List<string> output = new List<string>();
-
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = mobiUnpack;
-            startInfo.Arguments = "-r -d \"" + mobiFile + @""" """ + randomFile + @"""";
-            startInfo.RedirectStandardOutput = true;
-            startInfo.RedirectStandardError = true;
-            startInfo.StandardOutputEncoding = Encoding.UTF8;
-            startInfo.StandardErrorEncoding = Encoding.UTF8;
-            startInfo.UseShellExecute = false;
-            // Hide console window
-            startInfo.CreateNoWindow = true;
-            string rawMl = "";
-            string unpackInfo = "";
-            try
-            {
-                using (Process process = Process.Start(startInfo))
-                {
-                    if (process != null)
-                    {
-                        process.BeginErrorReadLine();
-                        using (StreamReader reader = process.StandardOutput)
-                        {
-                            unpackInfo = reader.ReadToEnd();
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(String.Format("An error occurred while running Kindleunpack: {0}\r\n", ex.Message));
-            }
-            rawMl = Path.GetFileNameWithoutExtension(mobiFile) + ".rawml";
-            //Was the unpack successful?
-            if (!unpackInfo.Contains("Write opf\r\n") && !unpackInfo.Contains("\r\nCompleted"))
-            {
-                throw new Exception("Kindleunpack returned: " + unpackInfo + "\r\nAn error occurred during unpack. See above info for details.\r\n");
-            }
-            //Attempt to find the .rawml unpacked from the mobi
-            rawMl = randomFile + @"/mobi8/" + rawMl;
-            if (!File.Exists(rawMl))
-                rawMl = randomFile + @"/mobi7/" + Path.GetFileNameWithoutExtension(mobiFile) + ".rawml";
-            if (!File.Exists(rawMl))
-            {
-                throw new Exception("Error finding .rawml file. Path: " + rawMl);
-            }
-
-            string databaseName = "";
-            string uniqid = "";
-            string asin = "";
-            string incorrectAsin = "";
-            string author = "";
-            string title = "";
-            string image = "";
-
-            DirectoryInfo d = new DirectoryInfo(randomFile + @"/mobi7/Images");
-            if (d != null)
-            {
-                FileInfo[] Files = d.GetFiles("*.jpeg");
-                foreach (FileInfo file in Files)
-                {
-                    if (file.Name.Contains("cover"))
-                    {
-                        image = file.FullName;
-                        break;
-                    }
-                }
-            }
-
-            Match match = Regex.Match(unpackInfo, @"ASIN\s*(.*)");
-            if (match.Success && match.Groups.Count > 1)
-            {
-                incorrectAsin = match.Groups[1].Value.Replace("\r", "");
-                //Improve actual Amazon ASIN matching
-                match = Regex.Match(match.Groups[1].Value, "(^B[A-Z0-9]{9})");
-                if (!match.Success)
-                {
-                    if (DialogResult.No == MessageBox.Show(String.Format("Incorrect ASIN detected: {0}!\n" +
-                                      "Kindle may not display an X-Ray for this book.\n" +
-                                      "Do you wish to continue?", incorrectAsin), "Incorrect ASIN", MessageBoxButtons.YesNo))
-                    {
-                        throw new Exception(String.Format("Incorrect ASIN detected: {0}!\r\n" +
-                                          "Kindle may not display an X-Ray for this book.\r\n" +
-                                          "You must either use Calibre's Quality Check plugin (Fix ASIN for Kindle Fire) " +
-                                          "or a Mobi editor (exth 113 and 504) to change this.", incorrectAsin));
-                    }
-                }
-                asin = incorrectAsin;
-            }
-            match = Regex.Match(unpackInfo, @"(\d*) unique_id");
-            if (match.Success && match.Groups.Count > 1)
-                uniqid = match.Groups[1].Value;
-            match = Regex.Match(unpackInfo, @"Document Type\s*(\w*)");
-            if (match.Success && match.Groups.Count > 1)
-            {
-                if (match.Groups[1].Value != "EBOK")
-                {
-                    throw new Exception("The document type is not set to EBOK; Kindle will not display an X-Ray for this book.\r\n"
-                        + "You must either use Calibre's convert feature (Personal Doc tag under MOBI Output) or a Mobi editor (exth 501) to change this.");
-                }
-            }
-            // Find author name in Kindleunpack output
-            match = Regex.Match(unpackInfo, @" Creator\s{2,}(.*)");
-            if (match.Success && match.Groups.Count > 1)
-                author = match.Groups[1].Value.Replace("\r", "");
-
-            // Find book title in Kindleunpack output
-            match = Regex.Match(unpackInfo, @"Title in header at offset.*: '(.*)'");
-            if (!match.Success || match.Groups.Count <= 1)
-                match = Regex.Match(unpackInfo, @" Updated_Title\s*(.*)");
-            if (match.Success && match.Groups.Count > 1)
-                title = match.Groups[1].Value.Replace("\r", "");
-
-            //Attempt to get database name from the mobi file.
-            //If mobi_unpack ran successfully, then hopefully this will always be valid?
-            byte[] dbinput = new byte[32];
-            using (FileStream stream = File.Open(mobiFile, FileMode.Open, FileAccess.Read))
-            {
-                if (stream == null)
-                {
-                    throw new Exception("Error opening mobi file (stream error).");
-                }
-                int bytesRead = stream.Read(dbinput, 0, 32);
-                if (bytesRead != 32)
-                {
-                    throw new Exception("Error reading from mobi file.");
-                }
-                databaseName = Encoding.Default.GetString(dbinput).Trim('\0');
-            }
-
-            if (databaseName == "" || uniqid == "" || asin == "")
-            {
-                throw new Exception(String.Format(
-                    "Error: Missing metadata.\r\nDatabase Name: {0}\r\nASIN: {1}\r\nUniqueID: {2}", databaseName, asin,
-                    uniqid));
-            }
-            else if (!Properties.Settings.Default.useNewVersion && databaseName.Length == 31)
-            {
-                MessageBox.Show(
-                    String.Format(
-                        "WARNING: Database Name is the maximum length. If \"{0}\" is the full book title, this should not be an issue.\r\n" +
-                        "If the title is supposed to be longer than that, you may get an error WG on your Kindle.\r\n" +
-                        "This can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n",
-                        databaseName));
-            }
-
-            output.Add(asin);
-            output.Add(uniqid);
-            output.Add(databaseName);
-            output.Add(rawMl);
-            output.Add(author);
-            output.Add(title);
-            output.Add(image);
+            bookInfo.pagesInBook = pageCount;
+            bookInfo.readingHours = span.Hours;
+            bookInfo.readingMinutes = span.Minutes;
+            output = $"Typical time to read: {span.Hours} hours and {span.Minutes} minutes ({bookInfo.pagesInBook} pages)";
             return output;
         }
 
         public static void RunNotepad(string filename)
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = "notepad";
-            startInfo.Arguments = filename;
-            startInfo.UseShellExecute = false;
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                FileName = "notepad",
+                Arguments = filename,
+                UseShellExecute = false
+            };
             try
             {
                 using (Process process = Process.Start(startInfo))
                 {
-                    process.WaitForExit();
+                    process?.WaitForExit();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error trying to launch notepad: " + ex.Message + "\r\n" + ex.StackTrace);
+                throw new Exception("Error trying to launch notepad.", ex);
             }
         }
 
@@ -541,30 +227,22 @@ namespace XRayBuilderGUI
         public static string Serialize<T>(T value)
         {
             if (value == null)
-            {
                 return string.Empty;
-            }
-            try
+
+            var xmlserializer = new XmlSerializer(typeof(T));
+            var stringWriter = new StringWriter();
+            using (var writer = XmlWriter.Create(stringWriter))
             {
-                var xmlserializer = new XmlSerializer(typeof (T));
-                var stringWriter = new StringWriter();
-                using (var writer = XmlWriter.Create(stringWriter))
-                {
-                    xmlserializer.Serialize(writer, value);
-                    return stringWriter.ToString();
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("An error occurred", ex);
+                xmlserializer.Serialize(writer, value);
+                return stringWriter.ToString();
             }
         }
 
-        public static void Save<T>(T output, string fileName)
+        public static void Save<T>(T output, string fileName) where T : class
         {
             using (var writer = new StreamWriter(fileName, false, Encoding.UTF8))
             {
-                var serializer = new XmlSerializer(typeof (T));
+                var serializer = new XmlSerializer(typeof(T));
                 serializer.Serialize(writer, output);
                 writer.Flush();
             }
@@ -575,24 +253,20 @@ namespace XRayBuilderGUI
         {
             var itemList = new List<T>();
 
-            if (File.Exists(filePath))
+            if (!File.Exists(filePath)) return itemList;
+
+            var serializer = new XmlSerializer(typeof(List<T>));
+            TextReader reader = new StreamReader(filePath, Encoding.UTF8);
+            try
             {
-                var serializer = new XmlSerializer(typeof (List<T>));
-                TextReader reader = new StreamReader(filePath, Encoding.UTF8);
-                try
-                {
-                    itemList = (List<T>) serializer.Deserialize(reader);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(
-                        "Error processing XML file: " + ex.Message +
-                        "\r\nIf the error contains a (#, #), the first number is the line the error occurred on.",
-                        "XML Error");
-                    return null;
-                }
-                reader.Close();
+                itemList = (List<T>)serializer.Deserialize(reader);
             }
+            catch (Exception ex)
+            {
+                throw new InvalidDataException($"Error processing XML file: {ex.Message}"
+                                               + "\r\nIf the error contains a (#, #), the first number is the line the error occurred on.", ex);
+            }
+            reader.Close();
 
             return itemList;
         }
@@ -602,29 +276,13 @@ namespace XRayBuilderGUI
         /// </summary>
         public static string FixAuthor(string author)
         {
-            if (author.IndexOf(';') > 0)
+            if (author == null) return null;
+            if (author.Contains(';'))
                 author = author.Split(';')[0];
-            if (author.IndexOf(',') > 0)
+            if (author.Contains(','))
             {
                 string[] parts = author.Split(',');
                 author = parts[1].Trim() + " " + parts[0].Trim();
-            }
-            return author;
-        }
-
-        /// <summary>
-        /// Trim spaces in author names that contain initials (helps with searching)
-        /// </summary>
-        public static string TrimAuthor(string author)
-        {
-            Regex regex = new Regex(@"( [A-Z]\.)|( [a-z]\.)", RegexOptions.Compiled);
-            Match match = Regex.Match(author, @"( [A-Z]\.)|( [a-z]\.)", RegexOptions.Compiled);
-            if (match.Success)
-            {
-                foreach (Match m in regex.Matches(author))
-                {
-                    author = author.Replace(m.Value, m.Value.Trim());
-                }
             }
             return author;
         }
@@ -634,7 +292,7 @@ namespace XRayBuilderGUI
             StringBuilder output = new StringBuilder(input.Length);
             for (int i = 0; i < input.Length; i++)
             {
-                if (input[i] > 255)
+                if (input[i] > 127)
                 {
                     byte[] uniBytes = Encoding.Unicode.GetBytes(input.Substring(i, 1));
                     output.AppendFormat(@"\u{0:X2}{1:X2}", uniBytes[1], uniBytes[0]);
@@ -644,10 +302,11 @@ namespace XRayBuilderGUI
             }
             return output.ToString();
         }
-        
+
         // Shamelessly stolen from http://www.mobileread.com/forums/showthread.php?t=185565
         public static byte[] CheckBytes(byte[] bytesToCheck)
         {
+            if (bytesToCheck == null) return null;
             byte[] buffer = (byte[])bytesToCheck.Clone();
             if (BitConverter.IsLittleEndian)
                 Array.Reverse(buffer);
@@ -677,12 +336,78 @@ namespace XRayBuilderGUI
             return true;
         }
 
-        public static void SetPropertyThreadSafe(this Control ctrl, string name, object value)
+        /// <summary>
+        /// Process GUID. If in decimal form, convert to hex.
+        /// </summary>
+        public static string ConvertGuid(string guid)
         {
-            if (ctrl.InvokeRequired)
-                ctrl.BeginInvoke(new Action(() => SetPropertyThreadSafe(ctrl, name, value)));
+            if (Regex.IsMatch(guid, "/[a-zA-Z]/", RegexOptions.Compiled))
+                guid = guid.ToUpper();
             else
-                ctrl.GetType().InvokeMember(name, System.Reflection.BindingFlags.SetProperty, null, ctrl, new object[] { value });
+            {
+                long.TryParse(guid, out var guidDec);
+                guid = guidDec.ToString("X");
+            }
+
+            if (guid == "0")
+                throw new ArgumentException("An error occurred while converting the GUID.");
+
+            return guid;
         }
+
+        public static bool ValidateFilename(string author, string title)
+        {
+            var newAuthor = RemoveInvalidFileChars(author);
+            var newTitle = RemoveInvalidFileChars(title);
+            return author.Equals(newAuthor) && title.Equals(newTitle);
+        }
+
+        public static long UnixTimestampSeconds()
+        {
+            return (long) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
+        }
+
+        public static long UnixTimestampMilliseconds()
+        {
+            return (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+        }
+
+        public static string Pluralize(FormattableString formattable) => formattable.ToString(new PluralFormatProvider());
+    }
+
+    internal static class NativeMethods
+    {
+        [DllImport("user32.dll")]
+        internal static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+    }
+
+    public static partial class ExtensionMethods
+    {
+        public static void AddNotNull<T>(this IList<T> list, T value)
+        {
+            if (value != null) list.Add(value);
+        }
+
+        public static void AddNotNull<T>(this ConcurrentBag<T> list, T value)
+        {
+            if (value != null) list.Add(value);
+        }
+
+        public static string Plural(this string value, int count)
+        {
+            return count == 1
+                ? value
+                : PluralizationService
+                    .CreateService(new CultureInfo("en-US"))
+                    .Pluralize(value);
+        }
+    }
+
+    public class PluralFormatProvider : IFormatProvider, ICustomFormatter
+    {
+        public object GetFormat(Type formatType) => this;
+        
+        public string Format(string format, object arg, IFormatProvider formatProvider)
+            => arg + " " + format.Plural((int) arg);
     }
 }

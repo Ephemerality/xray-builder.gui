@@ -12,7 +12,7 @@ namespace XRayBuilderGUI.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.7.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -32,18 +32,6 @@ namespace XRayBuilderGUI.Properties {
             }
             set {
                 this["outDir"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string mobi_unpack {
-            get {
-                return ((string)(this["mobi_unpack"]));
-            }
-            set {
-                this["mobi_unpack"] = value;
             }
         }
         
@@ -206,18 +194,6 @@ namespace XRayBuilderGUI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool utf8 {
-            get {
-                return ((bool)(this["utf8"]));
-            }
-            set {
-                this["utf8"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool overwrite {
             get {
                 return ((bool)(this["overwrite"]));
@@ -284,18 +260,6 @@ namespace XRayBuilderGUI.Properties {
             }
             set {
                 this["overwriteAliases"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool useKindleUnpack {
-            get {
-                return ((bool)(this["useKindleUnpack"]));
-            }
-            set {
-                this["useKindleUnpack"] = value;
             }
         }
         
@@ -409,25 +373,37 @@ namespace XRayBuilderGUI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string tmpDir {
+        [global::System.Configuration.DefaultSettingValueAttribute("25")]
+        public int minClipLen {
             get {
-                return ((string)(this["tmpDir"]));
+                return ((int)(this["minClipLen"]));
             }
             set {
-                this["tmpDir"] = value;
+                this["minClipLen"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool deleteTemp {
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool skipNoLikes {
             get {
-                return ((bool)(this["deleteTemp"]));
+                return ((bool)(this["skipNoLikes"]));
             }
             set {
-                this["deleteTemp"] = value;
+                this["skipNoLikes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool downloadSA {
+            get {
+                return ((bool)(this["downloadSA"]));
+            }
+            set {
+                this["downloadSA"] = value;
             }
         }
     }

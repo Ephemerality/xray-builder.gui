@@ -5,9 +5,6 @@
     <Setting Name="outDir" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="mobi_unpack" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
     <Setting Name="Goodreads" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
@@ -47,9 +44,6 @@
     <Setting Name="useSubDirectories" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="utf8" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
     <Setting Name="overwrite" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
@@ -66,9 +60,6 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="overwriteAliases" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="useKindleUnpack" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="downloadAliases" Type="System.Boolean" Scope="User">
@@ -98,11 +89,14 @@
     <Setting Name="promptASIN" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="tmpDir" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+    <Setting Name="minClipLen" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">25</Value>
     </Setting>
-    <Setting Name="deleteTemp" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+    <Setting Name="skipNoLikes" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="downloadSA" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

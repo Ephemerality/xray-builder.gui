@@ -6,14 +6,14 @@ using System.Linq;
 
 namespace XRayBuilderGUI.Unpack
 {
-    public abstract class Decompressor
+    public interface Decompressor
     {
-        public abstract byte[] unpack(byte[] data, uint unpackedSize);
+        byte[] unpack(byte[] data);
     }
 
     class UncompressedReader : Decompressor
     {
-        public override byte[] unpack(byte[] data, uint unpackedSize)
+        public byte[] unpack(byte[] data)
         {
             return data;
         }
@@ -21,14 +21,14 @@ namespace XRayBuilderGUI.Unpack
 
     class PalmDOCReader : Decompressor
     {
-        public override byte[] unpack(byte[] data, uint unpackedSize)
+        public byte[] unpack(byte[] data)
         {
             int p = 0;
-            byte[] o = new byte[unpackedSize];
+            byte[] o = new byte[4096];
             int op = 0;
             while (p < data.Length)
             {
-                int c = (int)data[p++];
+                int c = data[p++];
                 if (c >= 1 && c <= 8)
                 {
                     for (int i = 1; i <= c; i++)
@@ -153,9 +153,9 @@ namespace XRayBuilderGUI.Unpack
             return new Slice(slice, blen & 0x8000);
         }
 
-        public override byte[] unpack(byte[] data, uint unpackedSize)
+        public byte[] unpack(byte[] data)
         {
-            byte[] o = new byte[unpackedSize];
+            byte[] o = new byte[4096];
             byte[] temp8 = new byte[8];
             int op = 0;
             int bitsleft = data.Length * 8;
@@ -173,7 +173,7 @@ namespace XRayBuilderGUI.Unpack
                     x = BitConverter.ToUInt64(Functions.CheckBytes(temp8), 0);
                     n += 32;
                 }
-                UInt64 code = ((x >> n) & ((1L << 32) - 1));
+                UInt64 code = (x >> n) & ((1L << 32) - 1);
                 DictRecord rec = _dict1[(int)(code >> 24)];
                 int codelen = (int)rec.codelen;
                 UInt64 maxcode = rec.maxcode;
@@ -191,7 +191,7 @@ namespace XRayBuilderGUI.Unpack
                 Slice slice = dictionary[r];
                 if (slice.flag == 0)
                 {
-                    byte[] newSlice = unpack(slice.slice, 4096);
+                    byte[] newSlice = unpack(slice.slice);
                     slice = new Slice(newSlice, 1);
                     dictionary[r] = slice;
                 }

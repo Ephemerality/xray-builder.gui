@@ -5,31 +5,35 @@
  */ 
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
 
 namespace XRayBuilderGUI.Unpack
 {
-    public class Metadata
+    public sealed class Metadata : IDisposable
     {
         public PDBHeader PDB;
         public PalmDOCHeader PDH;
         public MobiHead mobiHeader;
-        public Bitmap coverImage = null;
+        public Bitmap coverImage;
         private int _startRecord = 1;
-        public string rawMLPath = "";
-        private string _ASIN = "";
+        private readonly FileStream _fs;
 
-        public Metadata(FileStream fs)
+        public Metadata(string file)
+        {
+            var fs = new FileStream(file, FileMode.Open, FileAccess.Read);
+            _fs = fs;
+            Initialize(fs);
+        }
+
+        private void Initialize(FileStream fs)
         {
             fs.Seek(0, SeekOrigin.Begin);
             PDB = new PDBHeader(fs);
             PDH = new PalmDOCHeader(fs);
             mobiHeader = new MobiHead(fs, PDB.MobiHeaderSize);
             // Use ASIN of the first book in the mobi
-            _ASIN = mobiHeader.exthHeader.ASIN != "" ? mobiHeader.exthHeader.ASIN : mobiHeader.exthHeader.ASIN2;
             int coverOffset = mobiHeader.exthHeader.CoverOffset;
             int firstImage = -1;
             // Start at end of first book records, search for a second (KF8) and use it instead (for combo books)
@@ -60,6 +64,12 @@ namespace XRayBuilderGUI.Unpack
             }
         }
 
+        public void Dispose()
+        {
+            coverImage?.Dispose();
+            _fs?.Dispose();
+        }
+
         private string get_image_type(byte[] data)
         {
             if ((data[6] == 'J' && data[7] == 'F' && data[8] == 'I' && data[9] == 'F')
@@ -69,60 +79,40 @@ namespace XRayBuilderGUI.Unpack
             return "";
         }
 
-        // Temporary function to mimic old GetMetaData functionality until it can be removed
-        // 0 = asin, 1 = uniqid, 2 = databasename, 3 = rawML, 4 = author, 5 = title
-        public List<string> getResults()
-        {
-            List<string> results = new List<string>(6);
-            results.Add(ASIN);
-            results.Add(UniqueID);
-            results.Add(DBName);
-            results.Add(rawMLPath);
-            results.Add(Author);
-            results.Add(Title);
-            return results;
-        }
+        public string ASIN => mobiHeader.exthHeader.ASIN != "" ? mobiHeader.exthHeader.ASIN : mobiHeader.exthHeader.ASIN2;
 
-        public string ASIN
-        {
-            get { return _ASIN; }
-        }
+        public string DBName => PDB.DBName;
 
-        public string DBName
-        {
-            get { return PDB.DBName; }
-        }
+        public string UniqueID => mobiHeader.UniqueID.ToString();
 
-        public string UniqueID
-        {
-            get { return mobiHeader.UniqueID.ToString(); }
-        }
+        public string Author => mobiHeader.exthHeader.Author;
 
-        public string Author
-        {
-            get { return mobiHeader.exthHeader.Author; }
-        }
+        public string Title => mobiHeader.FullName != "" ? mobiHeader.FullName : mobiHeader.exthHeader.UpdatedTitle;
 
-        public string Title
-        {
-            get
-            {
-                if (mobiHeader.FullName != "")
-                    return mobiHeader.FullName;
-                else
-                    return mobiHeader.exthHeader.UpdatedTitle;
-            }
-        }
+        public long RawMlSize => PDH.TextLength;
 
-        public long rawMLSize()
-        {
-            return PDH.TextLength;
-        }
-
-        public byte[] getRawML(FileStream fs)
+        /// <summary>
+        /// Throws <see cref="EncryptedBookException"/> if DRM is enabled.
+        /// </summary>
+        public void CheckDRM()
         {
             if (PDH.EncryptionType != 0)
-                throw new Exception("This book has DRM (it is encrypted). X-Ray Builder will only work on books that do not have DRM.");
+                throw new EncryptedBookException();
+        }
+
+        public void SaveRawMl(string path)
+        {
+            File.WriteAllBytes(path, getRawML());
+        }
+
+        public MemoryStream GetRawMlStream()
+        {
+            return new MemoryStream(getRawML());
+        }
+
+        public byte[] getRawML()
+        {
+            CheckDRM();
 
             Decompressor decomp;
             switch (PDH.Compression)
@@ -139,15 +129,15 @@ namespace XRayBuilderGUI.Unpack
                     {
                         int recOffset = (int)mobiHeader.HuffmanRecordOffset;
                         byte[] huffSect = new byte[PDB._recInfo[recOffset + 1].RecordDataOffset - PDB._recInfo[recOffset].RecordDataOffset];
-                        fs.Seek(PDB._recInfo[recOffset].RecordDataOffset, SeekOrigin.Begin);
-                        fs.Read(huffSect, 0, huffSect.Length);
+                        _fs.Seek(PDB._recInfo[recOffset].RecordDataOffset, SeekOrigin.Begin);
+                        _fs.Read(huffSect, 0, huffSect.Length);
                         reader.loadHuff(huffSect);
                         int recCount = (int)mobiHeader.HuffmanRecordCount;
                         for (int i = 1; i < recCount; i++)
                         {
                             huffSect = new byte[PDB._recInfo[recOffset + i + 1].RecordDataOffset - PDB._recInfo[recOffset + i].RecordDataOffset];
-                            fs.Seek(PDB._recInfo[recOffset + i].RecordDataOffset, SeekOrigin.Begin);
-                            fs.Read(huffSect, 0, huffSect.Length);
+                            _fs.Seek(PDB._recInfo[recOffset + i].RecordDataOffset, SeekOrigin.Begin);
+                            _fs.Read(huffSect, 0, huffSect.Length);
                             reader.loadCdic(huffSect);
                         }
                     } catch (Exception ex)
@@ -164,10 +154,10 @@ namespace XRayBuilderGUI.Unpack
             for (int i = _startRecord; i <= endRecord; i++)
             {
                 byte[] buffer = new byte[PDB._recInfo[i + 1].RecordDataOffset - PDB._recInfo[i].RecordDataOffset];
-                fs.Seek(PDB._recInfo[i].RecordDataOffset, SeekOrigin.Begin);
-                fs.Read(buffer, 0, buffer.Length);
+                _fs.Seek(PDB._recInfo[i].RecordDataOffset, SeekOrigin.Begin);
+                _fs.Read(buffer, 0, buffer.Length);
                 buffer = trimTrailingDataEntries(buffer);
-                byte[] result = decomp.unpack(buffer, PDB.MobiHeaderSize);
+                byte[] result = decomp.unpack(buffer);
                 buffer = new byte[rawML.Length + result.Length];
                 Buffer.BlockCopy(rawML, 0, buffer, 0, rawML.Length);
                 Buffer.BlockCopy(result, 0, buffer, rawML.Length, result.Length);
@@ -206,5 +196,10 @@ namespace XRayBuilderGUI.Unpack
             }
             return num;
         }
+    }
+
+    public class EncryptedBookException : Exception
+    {
+        public EncryptedBookException() : base("-This book has DRM (it is encrypted). X-Ray Builder will only work on books that do not have DRM.") { }
     }
 }

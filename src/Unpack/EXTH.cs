@@ -39,7 +39,7 @@ namespace XRayBuilderGUI.Unpack
             get
             {
                 int size = 0;
-                foreach (EXTHRecord rec in this.recordList)
+                foreach (EXTHRecord rec in recordList)
                 {
                     size += rec.Size;
                 }
@@ -52,7 +52,7 @@ namespace XRayBuilderGUI.Unpack
         {
             get
             {
-                int dataSize = this.DataSize;
+                int dataSize = DataSize;
                 return 12 + dataSize + GetPaddingSize(dataSize);
             }
         }
@@ -65,55 +65,25 @@ namespace XRayBuilderGUI.Unpack
             return paddingSize;
         }
 
-        public string IdentifierAsString
-        {
-            get { return Encoding.UTF8.GetString(_identifier).Trim('\0'); }
-        }
+        public string IdentifierAsString => Encoding.UTF8.GetString(_identifier).Trim('\0');
 
-        public uint HeaderLength
-        {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(_headerLength), 0); }
-        }
+        public uint HeaderLength => BitConverter.ToUInt32(Functions.CheckBytes(_headerLength), 0);
 
-        public uint RecordCount
-        {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(_recordCount), 0); }
-        }
+        public uint RecordCount => BitConverter.ToUInt32(Functions.CheckBytes(_recordCount), 0);
 
-        public string Author
-        {
-            get { return GetRecordByType(100); }
-        }
+        public string Author => GetRecordByType(100);
 
-        public string Description
-        {
-            get { return GetRecordByType(103); }
-        }
+        public string Description => GetRecordByType(103);
 
-        public string ASIN
-        {
-            get { return GetRecordByType(113); }
-        }
+        public string ASIN => GetRecordByType(113);
 
-        public string CDEType
-        {
-            get { return GetRecordByType(501); }
-        }
+        public string CDEType => GetRecordByType(501);
 
-        public string UpdatedTitle
-        {
-            get { return GetRecordByType(503); }
-        }
+        public string UpdatedTitle => GetRecordByType(503);
 
-        public string ASIN2
-        {
-            get { return GetRecordByType(504); }
-        }
+        public string ASIN2 => GetRecordByType(504);
 
-        public int CoverOffset
-        {
-            get { return BitConverter.ToInt32(Functions.CheckBytes(GetRecordBytesByType(201)), 0); }
-        }
+        public int CoverOffset => BitConverter.ToInt32(Functions.CheckBytes(GetRecordBytesByType(201)) ?? new byte[] { 255, 255, 255, 255 }, 0);
 
         private byte[] GetRecordBytesByType(int recType)
         {
@@ -147,7 +117,7 @@ namespace XRayBuilderGUI.Unpack
         public void UpdateCDEContentType(FileStream fs)
         {
             byte[] newValue = Encoding.UTF8.GetBytes("EBOK");
-            EXTHRecord rec = recordList.First<EXTHRecord>(r => r.RecordType == 501);
+            var rec = recordList.First(r => r.RecordType == 501);
             if (rec == null)
                 throw new Exception("Could not find the CDEContentType record (EXTH 501).");
             fs.Seek(rec.recordOffset, SeekOrigin.Begin);
@@ -159,10 +129,10 @@ namespace XRayBuilderGUI.Unpack
     {
         private byte[] _recordType = new byte[4];
         private byte[] _recordLength = new byte[4];
-        private byte[] _recordData = null;
+        private byte[] _recordData;
         public long recordOffset;
 
-        public EXTHRecord(FileStream fs)
+        public EXTHRecord(Stream fs)
         {
             fs.Read(_recordType, 0, _recordType.Length);
             fs.Read(_recordLength, 0, _recordLength.Length);
@@ -175,32 +145,17 @@ namespace XRayBuilderGUI.Unpack
 
         public override string ToString()
         {
-            return System.Text.Encoding.UTF8.GetString(_recordData);
+            return Encoding.UTF8.GetString(_recordData);
         }
 
-        public int DataLength
-        {
-            get { return _recordData.Length; }
-        }
+        public int DataLength => _recordData.Length;
 
-        public int Size
-        {
-            get { return DataLength + 8; }
-        }
+        public int Size => DataLength + 8;
 
-        public uint RecordLength
-        {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(_recordLength), 0); }
-        }
+        public uint RecordLength => BitConverter.ToUInt32(Functions.CheckBytes(_recordLength), 0);
 
-        public uint RecordType
-        {
-            get { return BitConverter.ToUInt32(Functions.CheckBytes(_recordType), 0); }
-        }
+        public uint RecordType => BitConverter.ToUInt32(Functions.CheckBytes(_recordType), 0);
 
-        public byte[] RecordData
-        {
-            get { return _recordData; }
-        }
+        public byte[] RecordData => _recordData;
     }
 }

@@ -1,0 +1,27 @@
+version: 2.0.{build}
+skip_non_tags: true
+image: Visual Studio 2017
+configuration: Debug
+platform: x86
+assembly_info:
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+  assembly_informational_version: '{version}'
+before_build:
+- cmd: nuget restore
+build:
+  project: XRayBuilderGUI.sln
+  verbosity: normal
+after_build:
+- cmd: 7z a xray-builder-gui-v%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\bin\Debug\*.exe %APPVEYOR_BUILD_FOLDER%\bin\Debug\*.dll %APPVEYOR_BUILD_FOLDER%\bin\Debug\*.pdb %APPVEYOR_BUILD_FOLDER%\bin\Debug\x86 %APPVEYOR_BUILD_FOLDER%\bin\Debug\x64 %APPVEYOR_BUILD_FOLDER%\bin\Debug\dist %APPVEYOR_BUILD_FOLDER%\bin\Debug\doc
+artifacts:
+- path: '*.zip'
+  name: X-Ray Builder GUI
+deploy:
+- provider: GitHub
+  auth_token:
+    secure: A5MafI3gk/NJ0J5SmEOGGNV5wxKZKOgxjEph6LsLdvFiSV+6KLOx2G5lPfn9nECJ
+  artifact: /.*\.zip/
+  draft: true

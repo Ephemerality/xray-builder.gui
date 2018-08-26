@@ -6,47 +6,51 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
 
 namespace XRayBuilderGUI
 {
     // Taken from http://stackoverflow.com/a/2700707
     // Downloads an HTML page using appropriate encoding
+    // TODO: Review
     public class HttpDownloader
     {
         private readonly string _referer;
         private readonly string _userAgent;
         private readonly CookieContainer _cookiejar = new CookieContainer();
-        private bool encodingFoundInHeader = false;
+        private bool _encodingFoundInHeader;
 
         public Encoding Encoding { get; set; }
         public WebHeaderCollection Headers { get; set; }
         public Uri Url { get; set; }
 
-        public static string GetPageHtml(string url)
+        public static Task<string> GetPageHtmlAsync(string url)
         {
-            HttpDownloader http = new HttpDownloader(url);
-            return http.GetPage();
+            var http = new HttpDownloader(url);
+            return Task.Run(async () => await http.GetPage().ConfigureAwait(false));
         }
 
-        public static async Task<string> GetPageHtmlAsync(string url)
+        public static async Task<HtmlDocument> GetHtmlDocAsync(string url)
         {
-            HttpDownloader http = new HttpDownloader(url);
-            return await Task.Run(() => http.GetPage());
+            var http = new HttpDownloader(url);
+            var doc = new HtmlDocument();
+            doc.Load(await http.GetPage().ConfigureAwait(false));
+            return doc;
         }
 
         public static async Task<Bitmap> GetImage(string url)
         {
-            Bitmap result = null;
-            WebRequest request = WebRequest.Create(url);
+            var request = (HttpWebRequest)WebRequest.Create(url);
             request.Timeout = 2000;
-            using (WebResponse response = await request.GetResponseAsync())
+            using (var response = (HttpWebResponse) await request.GetResponseAsync())
             {
-                result = new Bitmap(response.GetResponseStream());
+                var stream = response.GetResponseStream()
+                             ?? throw new Exception($"Failed to download image ({response.StatusCode} {response.StatusDescription})");
+                return new Bitmap(stream);
             }
-            return result;
         }
 
-        public HttpDownloader(string url) : this(url, null, null, "Mozilla/5.0(Windows NT 6.1; WOW64; Trident/7.0; AS; rv:11.0) like Gecko") { }
+        public HttpDownloader(string url) : this(url, null, null, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.75 Safari/537.36") { }
 
         public HttpDownloader(string url, CookieContainer jar, string referer, string userAgent)
         {
@@ -57,7 +61,7 @@ namespace XRayBuilderGUI
             if (jar != null) _cookiejar = jar;
         }
 
-        public string GetPage()
+        public async Task<string> GetPage()
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Url);
             if (!string.IsNullOrEmpty(_referer))
@@ -66,15 +70,14 @@ namespace XRayBuilderGUI
                 request.UserAgent = _userAgent;
 
             request.CookieContainer = _cookiejar;
-            request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip,deflate");
+            request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip");
 
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponseAsync().Result)
+            using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
             {
                 Headers = response.Headers;
                 Url = response.ResponseUri;
                 return ProcessContent(response);
             }
-
         }
 
         private string ProcessContent(HttpWebResponse response)
@@ -82,10 +85,9 @@ namespace XRayBuilderGUI
             SetEncodingFromHeader(response);
 
             Stream s = response.GetResponseStream();
+            if (s == null) return null;
             if (response.ContentEncoding.ToLower().Contains("gzip"))
                 s = new GZipStream(s, CompressionMode.Decompress);
-            else if (response.ContentEncoding.ToLower().Contains("deflate"))
-                s = new DeflateStream(s, CompressionMode.Decompress);
 
             MemoryStream memStream = new MemoryStream();
             int bytesRead;
@@ -100,10 +102,10 @@ namespace XRayBuilderGUI
             using (StreamReader r = new StreamReader(memStream, Encoding))
             {
                 html = r.ReadToEnd().Trim();
-                if (!encodingFoundInHeader)
+                if (!_encodingFoundInHeader)
                     html = CheckMetaCharSetAndReEncode(memStream, html);
             }
-
+            
             return html;
         }
 
@@ -115,8 +117,8 @@ namespace XRayBuilderGUI
                 Match m = Regex.Match(response.ContentType, @";\s*charset\s*=\s*(?<charset>.*)", RegexOptions.IgnoreCase);
                 if (m.Success)
                 {
-                    charset = m.Groups["charset"].Value.Trim(new[] { '\'', '"' });
-                    encodingFoundInHeader = true;
+                    charset = m.Groups["charset"].Value.Trim('\'', '"');
+                    _encodingFoundInHeader = true;
                 }
             }
             else
@@ -138,28 +140,26 @@ namespace XRayBuilderGUI
         private string CheckMetaCharSetAndReEncode(Stream memStream, string html)
         {
             Match m = new Regex(@"<meta\s+.*?charset\s*=\s*(?<charset>[A-Za-z0-9_-]+)", RegexOptions.Singleline | RegexOptions.IgnoreCase).Match(html);
-            if (m.Success)
+            if (!m.Success) return html;
+            string charset = m.Groups["charset"].Value.ToLower();
+            if ((charset == "unicode") || (charset == "utf-16"))
             {
-                string charset = m.Groups["charset"].Value.ToLower() ?? "iso-8859-1";
-                if ((charset == "unicode") || (charset == "utf-16"))
-                {
-                    charset = "utf-8";
-                }
+                charset = "utf-8";
+            }
 
-                try
+            try
+            {
+                Encoding metaEncoding = Encoding.GetEncoding(charset);
+                if (!Encoding.Equals(metaEncoding))
                 {
-                    Encoding metaEncoding = Encoding.GetEncoding(charset);
-                    if (Encoding != metaEncoding)
-                    {
-                        memStream.Position = 0L;
-                        StreamReader recodeReader = new StreamReader(memStream, metaEncoding);
-                        html = recodeReader.ReadToEnd().Trim();
-                        recodeReader.Close();
-                    }
+                    memStream.Position = 0L;
+                    StreamReader recodeReader = new StreamReader(memStream, metaEncoding);
+                    html = recodeReader.ReadToEnd().Trim();
+                    recodeReader.Close();
                 }
-                catch (ArgumentException)
-                {
-                }
+            }
+            catch (ArgumentException)
+            {
             }
 
             return html;

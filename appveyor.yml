@@ -1,4 +1,4 @@
-version: 2.0.{build}
+version: 2.1.{build}
 skip_non_tags: true
 image: Visual Studio 2017
 configuration: Debug
@@ -24,4 +24,4 @@ deploy:
   auth_token:
     secure: A5MafI3gk/NJ0J5SmEOGGNV5wxKZKOgxjEph6LsLdvFiSV+6KLOx2G5lPfn9nECJ
   artifact: /.*\.zip/
-  draft: true
+  draft: false

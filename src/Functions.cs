@@ -153,10 +153,6 @@ namespace XRayBuilderGUI
                 throw new Exception(
                     "No EXT Header found. Ensure this book was processed with Calibre then try again.");
 
-            // Everything else checked out, grab rawml and write to the temp file
-            if (saveRawML)
-                md.SaveRawMl(randomFile + "\\" + Path.GetFileNameWithoutExtension(mobiFile) + ".rawml");
-
             return md;
         }
         

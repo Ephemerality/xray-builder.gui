@@ -193,7 +193,7 @@ namespace XRayBuilderGUI.DataSources
         /// Search Goodread for possible series info, returning the next title in the series.
         /// Modifies curBook.
         /// </summary>
-        private async Task<Dictionary<string, BookInfo>> GetNextInSeriesTitle(BookInfo curBook)
+        public async Task<Dictionary<string, BookInfo>> GetNextInSeriesTitle(BookInfo curBook)
         {
             Dictionary<string, BookInfo> results = new Dictionary<string, BookInfo>(2); 
             if (sourceHtmlDoc == null)

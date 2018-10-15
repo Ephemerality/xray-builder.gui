@@ -80,7 +80,7 @@ namespace XRayBuilderGUI.DataSources
                 properAuthor = node.GetAttributeValue("href", "");
                 results.authorAsin = AsinFromUrl(properAuthor);
             }
-            
+
             if (string.IsNullOrEmpty(properAuthor) || properAuthor.IndexOf('/', 1) < 3 || results.authorAsin == "")
             {
                 Logger.Log("Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: " + amazonAuthorSearchUrl);

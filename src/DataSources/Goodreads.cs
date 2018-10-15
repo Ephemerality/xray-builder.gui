@@ -50,7 +50,7 @@ namespace XRayBuilderGUI.DataSources
                 var coverNode = link.SelectSingleNode(".//img");
                 var titleNode = link.SelectSingleNode(".//a[@class='bookTitle']");
                 var authorNode = link.SelectSingleNode(".//a[@class='authorName']");
-                
+
                 var cleanTitle = titleNode.InnerText.Trim().Replace("&amp;", "&").Replace("%27", "'").Replace("%20", " ");
 
                 BookInfo newBook = new BookInfo(cleanTitle, authorNode.InnerText.Trim(), null);
@@ -63,7 +63,7 @@ namespace XRayBuilderGUI.DataSources
                 }
 
                 newBook.bookImageUrl = coverNode.GetAttributeValue("src", "");
-                
+
                 var ratingText = link.SelectSingleNode(".//span[@class='greyText smallText uitext']")?.InnerText.Clean();
                 if (ratingText != null)
                 {
@@ -195,7 +195,7 @@ namespace XRayBuilderGUI.DataSources
         /// </summary>
         public async Task<Dictionary<string, BookInfo>> GetNextInSeriesTitle(BookInfo curBook)
         {
-            Dictionary<string, BookInfo> results = new Dictionary<string, BookInfo>(2); 
+            Dictionary<string, BookInfo> results = new Dictionary<string, BookInfo>(2);
             if (sourceHtmlDoc == null)
             {
                 sourceHtmlDoc = new HtmlDocument();
@@ -224,17 +224,17 @@ namespace XRayBuilderGUI.DataSources
 
             HtmlDocument seriesHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
             seriesHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(goodreadsSeriesUrl));
-            
+
             seriesNode = seriesHtmlDoc.DocumentNode.SelectSingleNode("//div[contains(@class, 'responsiveSeriesHeader__subtitle')]");
             match = Regex.Match(seriesNode?.InnerText ?? "", @"([0-9]+) (?:primary )?works?");
             if (match.Success)
                 curBook.totalInSeries = int.Parse(match.Groups[1].Value);
-            
+
             int positionInt = (int)Convert.ToDouble(curBook.seriesPosition, CultureInfo.InvariantCulture.NumberFormat);
             int totalInt = (int)Convert.ToDouble(curBook.totalInSeries, CultureInfo.InvariantCulture.NumberFormat);
-            
+
             Logger.Log($"This is book {curBook.seriesPosition} of {curBook.totalInSeries} in the {curBook.seriesName} series");
-            
+
             HtmlNodeCollection bookNodes = seriesHtmlDoc.DocumentNode.SelectNodes("//div[@itemtype='http://schema.org/Book']");
             string prevSearch = curBook.seriesPosition.Contains(".")
                 ? $"book {positionInt}"
@@ -255,7 +255,7 @@ namespace XRayBuilderGUI.DataSources
                         match = Regex.Match(title.GetAttributeValue("href", ""), @"show/([0-9]+)");
                         if (match.Success)
                             prevBook.asin = await SearchBookASIN(match.Groups[1].Value, prevBook.title).ConfigureAwait(false);
-                        prevBook.author = book.SelectSingleNode(".//span[@itemprop='author']//a")?.InnerText.Trim() ?? "";                            
+                        prevBook.author = book.SelectSingleNode(".//span[@itemprop='author']//a")?.InnerText.Trim() ?? "";
                         results["Previous"] = prevBook;
                         curBook.previousInSeries = prevBook;
                         Logger.Log($"Preceded by: {prevBook.title}");
@@ -268,7 +268,7 @@ namespace XRayBuilderGUI.DataSources
                         nextBook.title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", "", RegexOptions.Compiled);
                         match = Regex.Match(title.GetAttributeValue("href", ""), @"show/([0-9]+)");
                         if (match.Success)
-                            nextBook.asin = await SearchBookASIN(match.Groups[1].Value, nextBook.title).ConfigureAwait(false);                            
+                            nextBook.asin = await SearchBookASIN(match.Groups[1].Value, nextBook.title).ConfigureAwait(false);
                         nextBook.author = book.SelectSingleNode(".//span[@itemprop='author']//a")?.InnerText.Trim() ?? "";
                         results["Next"] = nextBook;
                         curBook.nextInSeries = nextBook;
@@ -408,7 +408,7 @@ namespace XRayBuilderGUI.DataSources
             }
             return result;
         }
-        
+
         /// <summary>
         /// Gather the list of quotes & number of times they've been liked -- close enough to "x paragraphs have been highlighted y times" from Amazon
         /// </summary>
@@ -423,7 +423,7 @@ namespace XRayBuilderGUI.DataSources
             if (quoteNode == null) return null;
             string quoteURL = $"https://www.goodreads.com{quoteNode.GetAttributeValue("href", "")}?page={{0}}";
             progress?.Set(0, 1);
-            
+
             var quoteBag = new ConcurrentBag<IEnumerable<NotableClip>>();
             var initialPage = new HtmlDocument();
             initialPage.LoadHtml(await HttpDownloader.GetPageHtmlAsync(string.Format(quoteURL, 1)));
@@ -475,12 +475,12 @@ namespace XRayBuilderGUI.DataSources
                 sourceHtmlDoc = new HtmlDocument();
                 sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl));
             }
-            
+
             if (curBook.notableClips == null)
             {
                 curBook.notableClips = await GetNotableClips("", token, sourceHtmlDoc, progress).ConfigureAwait(false);
             }
-            
+
             //Add rating and reviews count if missing from Amazon book info
             HtmlNode metaNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
             if (metaNode != null && curBook.amazonRating == 0)

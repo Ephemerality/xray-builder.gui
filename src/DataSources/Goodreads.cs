@@ -71,7 +71,14 @@ namespace XRayBuilderGUI.DataSources
                     if (matchId.Success)
                     {
                         newBook.amazonRating = float.Parse(matchId.Groups[1].Value);
-                        newBook.numReviews = int.Parse(matchId.Groups[2].Value, NumberStyles.AllowThousands, CultureInfo.CurrentCulture);
+                        try
+                        {
+                            newBook.numReviews = int.Parse(matchId.Groups[2].Value, NumberStyles.AllowThousands, CultureInfo.CurrentCulture);
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Log($"Error: {e.Message} - Culture: {CultureInfo.CurrentCulture} - Value: {matchId.Groups[2].Value}");
+                        }
                         newBook.editions = int.Parse(matchId.Groups[3].Value);
                     }
                 }

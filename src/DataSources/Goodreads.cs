@@ -329,7 +329,12 @@ namespace XRayBuilderGUI.DataSources
             {
                 double minutes = int.Parse(match.Groups[1].Value, NumberStyles.AllowThousands) * 1.2890625;
                 TimeSpan span = TimeSpan.FromMinutes(minutes);
-                Logger.Log(String.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)", span.Hours, span.Minutes, match.Groups[1].Value));
+                // Functions.Pluralize($"{BookList[i].editions:edition}")
+                Logger.Log(String.Format("Typical time to read: {0}, {1}, and {2} ({3} pages)",
+                    Functions.Pluralize($"{span.Days:day}"),
+                    Functions.Pluralize($"{span.Hours:hour}"),
+                    Functions.Pluralize($"{span.Minutes:minute}"),
+                    match.Groups[1].Value));
                 curBook.pagesInBook = int.Parse(match.Groups[1].Value);
                 curBook.readingHours = span.Hours;
                 curBook.readingMinutes = span.Minutes;

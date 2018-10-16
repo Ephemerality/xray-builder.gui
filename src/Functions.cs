@@ -397,6 +397,13 @@ namespace XRayBuilderGUI
                     .CreateService(new CultureInfo("en-US"))
                     .Pluralize(value);
         }
+
+        public static int? TryParseInt(this string s, NumberStyles style, IFormatProvider provider)
+        {
+            return int.TryParse(s, style, provider, out var result)
+                ? (int?) result
+                : null;
+        }
     }
 
     public class PluralFormatProvider : IFormatProvider, ICustomFormatter

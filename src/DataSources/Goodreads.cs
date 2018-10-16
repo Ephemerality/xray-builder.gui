@@ -71,14 +71,11 @@ namespace XRayBuilderGUI.DataSources
                     if (matchId.Success)
                     {
                         newBook.amazonRating = float.Parse(matchId.Groups[1].Value);
-                        try
-                        {
-                            newBook.numReviews = int.Parse(matchId.Groups[2].Value, NumberStyles.AllowThousands, CultureInfo.CurrentCulture);
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.Log($"Error: {e.Message} - Culture: {CultureInfo.CurrentCulture} - Value: {matchId.Groups[2].Value}");
-                        }
+                        // Try with current culture, then one that uses . as a separator, then US
+                        var numReviews = matchId.Groups[2].Value.TryParseInt(NumberStyles.AllowThousands, CultureInfo.CurrentCulture)
+                                         ?? matchId.Groups[2].Value.TryParseInt(NumberStyles.AllowThousands, new CultureInfo("nl-NL"))
+                                         ?? matchId.Groups[2].Value.TryParseInt(NumberStyles.AllowThousands, new CultureInfo("en-US"));
+                        newBook.numReviews = numReviews ?? 0;
                         newBook.editions = int.Parse(matchId.Groups[3].Value);
                     }
                 }

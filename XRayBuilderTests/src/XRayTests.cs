@@ -81,24 +81,24 @@ namespace XRayBuilderTests
         };
 
         // TODO: Compare the actual contents (objects) rather than the string itself due to the order of books changing
-        [Test(), TestCaseSource(nameof(books))]
-        public async Task AuthorProfileBuildTest(BookInfo book)
-        {
-            AuthorProfile ap = new AuthorProfile(book, new AuthorProfile.Settings
-            {
-                AmazonTld = "com",
-                Android = false,
-                OutDir = Path.Combine(Environment.CurrentDirectory, "out"),
-                SaveBio = false,
-                UseNewVersion = true,
-                UseSubDirectories = false
-            });
-            if (!await ap.Generate()) return;
+        //[Test(), TestCaseSource(nameof(books))]
+        //public async Task AuthorProfileBuildTest(BookInfo book)
+        //{
+        //    AuthorProfile ap = new AuthorProfile(book, new AuthorProfile.Settings
+        //    {
+        //        AmazonTld = "com",
+        //        Android = false,
+        //        OutDir = Path.Combine(Environment.CurrentDirectory, "out"),
+        //        SaveBio = false,
+        //        UseNewVersion = true,
+        //        UseSubDirectories = false
+        //    });
+        //    if (!await ap.Generate()) return;
 
-            using (StreamReader streamReader = new StreamReader(@"out\AuthorProfile.profile.B000FBFN1U.asc", Encoding.UTF8))
-            using (StreamReader streamReader2 = new StreamReader(@"testfiles\AuthorProfile.profile.B000FBFN1U.asc", Encoding.UTF8))
-                Assert.AreEqual(streamReader.ReadToEnd(), streamReader2.ReadToEnd());
-        }
+        //    using (StreamReader streamReader = new StreamReader(@"out\AuthorProfile.profile.B000FBFN1U.asc", Encoding.UTF8))
+        //    using (StreamReader streamReader2 = new StreamReader(@"testfiles\AuthorProfile.profile.B000FBFN1U.asc", Encoding.UTF8))
+        //        Assert.AreEqual(streamReader.ReadToEnd(), streamReader2.ReadToEnd());
+        //}
 
         [Test()]
         public void AuthorProfileDeserializeTest()

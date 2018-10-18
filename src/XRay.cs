@@ -53,7 +53,7 @@ namespace XRayBuilderGUI
         private List<Excerpt> excerpts = new List<Excerpt>();
         private long _srl;
         private long _erl;
-        private bool unattended;
+        public bool unattended;
         private bool skipShelfari;
         private int locOffset;
         private List<NotableClip> notableClips;

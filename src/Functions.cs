@@ -145,7 +145,7 @@ namespace XRayBuilderGUI
             var date = String.Format("{0:dd/MM/yyyy}", DateTime.Now);
             return $"Running X-Ray Builder GUI v{version}. Log started on {date} at {time}.\r\n";
         }
-        
+
         public static Metadata GetMetaDataInternal(string mobiFile, string outDir, bool saveRawML, string randomFile = "")
         {
             Metadata md = new Metadata(mobiFile);
@@ -155,7 +155,7 @@ namespace XRayBuilderGUI
 
             return md;
         }
-        
+
         public static string GetPageCount(string rawML, BookInfo bookInfo)
         {
             string output;
@@ -409,7 +409,7 @@ namespace XRayBuilderGUI
     public class PluralFormatProvider : IFormatProvider, ICustomFormatter
     {
         public object GetFormat(Type formatType) => this;
-        
+
         public string Format(string format, object arg, IFormatProvider formatProvider)
             => arg + " " + format.Plural((int) arg);
     }

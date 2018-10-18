@@ -2,7 +2,7 @@
  * Limey for the C# Metadata reader (http://www.mobileread.com/forums/showthread.php?t=185565)
  * KindleUnpack (http://www.mobileread.com/forums/showthread.php?t=61986)
  * MobileRead Wiki (http://wiki.mobileread.com/wiki/MOBI)
- */ 
+ */
 
 using System;
 using System.Drawing;

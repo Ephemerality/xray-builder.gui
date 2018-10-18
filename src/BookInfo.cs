@@ -153,7 +153,7 @@ namespace XRayBuilderGUI
                 // cleanup to match retail file image links
                 if (bookImageUrl.Contains(@"https://images-na.ssl-images-amazon"))
                     bookImageUrl = bookImageUrl.Replace(@"https://images-na.ssl-images-amazon", @"http://ecx.images-amazon");
-                
+
                 // Use no image URL
                 if (bookImageUrl == "")
                     bookImageUrl = "http://ecx.images-amazon.com/images/G/01/x-site/icons/no-img-sm.gif";

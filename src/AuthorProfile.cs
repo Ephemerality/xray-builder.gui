@@ -26,7 +26,7 @@ namespace XRayBuilderGUI
 
         private readonly BookInfo _curBook;
         private readonly Settings _settings;
-        
+
         public AuthorProfile(BookInfo curBook, Settings settings)
         {
             _curBook = curBook;
@@ -229,7 +229,7 @@ namespace XRayBuilderGUI
             }
 
             Logger.Log("Writing Author Profile to file...");
-            
+
             var authorOtherBooks = otherBooks.Select(book => new Model.AuthorProfile.Book
             {
                 E = 1,

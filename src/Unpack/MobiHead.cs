@@ -45,7 +45,7 @@ namespace XRayBuilderGUI.Unpack
 
         public bool multibyte;
         public int trailers;
-        
+
         public MobiHead(FileStream fs, uint mobiHeaderSize)
         {
             fs.Read(identifier, 0, identifier.Length);
@@ -84,7 +84,7 @@ namespace XRayBuilderGUI.Unpack
             fs.Read(huffmanTableLength, 0, huffmanTableLength.Length);
             fs.Read(exthFlags, 0, exthFlags.Length);
 
-            //If bit 6 (0x40) is set, then there's an EXTH record 
+            //If bit 6 (0x40) is set, then there's an EXTH record
             bool exthExists = (BitConverter.ToUInt32(Functions.CheckBytes(exthFlags), 0) & 0x40) != 0;
 
             fs.Read(restOfMobiHeader, 0, restOfMobiHeader.Length);

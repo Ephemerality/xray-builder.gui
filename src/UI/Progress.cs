@@ -12,7 +12,7 @@ namespace XRayBuilderGUI
         {
             _prgBar = prgBar;
         }
-        
+
         public void Add(int value)
         {
             lock (_semaphore)

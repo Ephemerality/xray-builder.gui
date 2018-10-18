@@ -51,7 +51,7 @@ namespace XRayBuilderGUI
 
             // Search Amazon for book
             //Logger.Log(String.Format("Book's Amazon page URL: {0}", ebookLocation));
-            
+
             HtmlDocument bookHtmlDoc = new HtmlDocument {OptionAutoCloseOnEnd = true};
             try
             {
@@ -291,7 +291,7 @@ namespace XRayBuilderGUI
                     Logger.Log("An error occurred finding next book in series: " + ex.Message + "\r\n" + ex.StackTrace);
                 throw;
             }
-            
+
             // TODO: Refactor next/previous series stuff
             if (curBook.nextInSeries == null)
             {
@@ -485,7 +485,7 @@ namespace XRayBuilderGUI
             baseStartActions.Data.ReadingTime.FormattedTime.Replace("%MINUTES%", curBook.readingMinutes.ToString());
             baseStartActions.Data.PreviousBookInTheSeries = Extensions.BookInfoToBook(curBook.previousInSeries, true);
             baseStartActions.Data.ReadingPages.PagesInBook = curBook.pagesInBook;
-            
+
             try
             {
                 return Functions.ExpandUnicode(JsonConvert.SerializeObject(baseStartActions));

@@ -21,7 +21,7 @@ namespace XRayBuilderGUI
                 input = streamReader.ReadToEnd();
 
             dgvOtherBooks.Rows.Clear();
-            
+
             JObject ap = JObject.Parse(input);
             var tempData = ap["u"]?[0];
             if (tempData != null)

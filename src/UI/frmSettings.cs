@@ -222,7 +222,7 @@ namespace XRayBuilderGUI
             Properties.Settings.Default.promptASIN = chkPromptAsin.Checked;
             Properties.Settings.Default.downloadSA = chkDownloadSA.Checked;
             Properties.Settings.Default.Save();
-            
+
             Close();
         }
 
@@ -295,7 +295,7 @@ namespace XRayBuilderGUI
                 chkChapters.Checked = false;
             }
         }
-        
+
         private void btnSupport_Click(object sender, EventArgs e)
         {
             Process.Start("http://www.mobileread.com/forums/showthread.php?t=245754");

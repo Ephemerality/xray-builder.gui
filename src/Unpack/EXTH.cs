@@ -19,7 +19,7 @@ namespace XRayBuilderGUI.Unpack
         private byte[] _recordCount = new byte[4];
 
         private List<EXTHRecord> recordList = new List<EXTHRecord>();
-        
+
         public EXTHHeader(FileStream fs)
         {
             fs.Read(_identifier, 0, _identifier.Length);

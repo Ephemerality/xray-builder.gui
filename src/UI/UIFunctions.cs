@@ -40,7 +40,7 @@ namespace XRayBuilderGUI
             {Filetype.StartActions, new PreviewDef { Name = "StartActions", Form = typeof(frmPreviewSA), Validator = "StartActions"}},
             {Filetype.XRay, new PreviewDef { Name = "X-Ray", Form = typeof(frmPreviewXR), Validator = "XRAY.entities"}}
         };
-        
+
         public static async Task ShowPreview(Filetype type, string filePath, string defaultDir)
         {
             var previewData = PreviewMap[type];
@@ -57,7 +57,7 @@ namespace XRayBuilderGUI
                     return;
                 }
             }
-            
+
             try
             {
                 IPreviewForm previewForm = (IPreviewForm) Activator.CreateInstance(previewData.Form);

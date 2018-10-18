@@ -245,7 +245,7 @@ namespace XRayBuilderGUI
                     return 1;
                 }
             }
-            
+
             return 0;
         }
 
@@ -387,7 +387,7 @@ namespace XRayBuilderGUI
                 web.LoadHtml(readContents);
                 HandleChapters(rawMlStream.Length, web, readContents, safeShow);
             }
-            
+
             Logger.Log("Scanning book content...");
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
             timer.Start();
@@ -712,7 +712,7 @@ namespace XRayBuilderGUI
                 }
             }
         }
-        
+
         public int PopulateDb(SQLiteConnection db, IProgressBar progress, CancellationToken token)
         {
             StringBuilder sql = new StringBuilder(Terms.Count * 256);
@@ -815,7 +815,7 @@ namespace XRayBuilderGUI
                 command.ExecuteNonQuery();
             }
             command.Dispose();
-            
+
             token.ThrowIfCancellationRequested();
             Logger.Log("Writing top mentions...");
             List<int> sorted =

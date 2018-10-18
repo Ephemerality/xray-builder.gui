@@ -19,7 +19,7 @@ namespace XRayBuilderGUI
     public partial class frmMain : Form
     {
         public bool Exiting;
-        
+
         private string EaPath = "";
         private string SaPath = "";
         private string ApPath = "";
@@ -30,14 +30,14 @@ namespace XRayBuilderGUI
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
         }
-        
+
         private readonly ToolTip _tooltip = new ToolTip();
         private readonly Settings _settings = Settings.Default;
         private readonly string _currentLog = $@"{Environment.CurrentDirectory}\log\{DateTime.Now:HH.mm.ss.dd.MM.yyyy}.txt";
 
         // TODO: Do something else for this
         public List<string> openBook = new List<string>();
-        
+
         private readonly IProgressBar _progress;
 
         private CancellationTokenSource _cancelTokens = new CancellationTokenSource();
@@ -136,11 +136,11 @@ namespace XRayBuilderGUI
             }
 
             prgBar.Value = 0;
-            
+
             var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, _settings.saverawml));
             if (metadata == null)
                 return;
-            
+
             // Added author name to log output
             Logger.Log($"Book's {_dataSource.Name} URL: {txtGoodreads.Text}");
             if (_cancelTokens.IsCancellationRequested) return;
@@ -312,11 +312,11 @@ namespace XRayBuilderGUI
                     "Amazon Customer Details Not found");
                 return;
             }
-            
+
             var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, _settings.saverawml));
             if (metadata == null)
                 return;
-            
+
             SetDatasourceLabels(); // Reset the dataSource for the new build process
             Logger.Log($"Book's {_dataSource.Name} URL: {txtGoodreads.Text}");
             try
@@ -677,7 +677,7 @@ namespace XRayBuilderGUI
             txtGoodreads.Text = "";
             prgBar.Value = 0;
 
-            
+
             var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, false));
             if (metadata == null)
             {
@@ -721,7 +721,7 @@ namespace XRayBuilderGUI
         {
             cmsPreview.Show(btnPreview, new Point(2, btnPreview.Height));
         }
-        
+
         private async void tmiAuthorProfile_Click(object sender, EventArgs e)
         {
             await UIFunctions.ShowPreview(Filetype.AuthorProfile, ApPath, _settings.outDir);

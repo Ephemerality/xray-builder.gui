@@ -20,7 +20,7 @@ namespace XRayBuilderGUI
             else
                 ctrl.SafeAppendText(message);
         }
-        
+
         // TODO: Rely on log levels rather than strings to determine colour
         public static void SafeAppendText(this RichTextBox rtfBox, string message)
         {
@@ -28,7 +28,7 @@ namespace XRayBuilderGUI
                 rtfBox.BeginInvoke(new Action(() => SafeAppendText(rtfBox, message)));
             else
             {
-                
+
                 if (!rtfBox.Text.StartsWith("Running X-Ray Builder GUI"))
                     rtfBox.AppendText(Functions.TimeStamp());
 

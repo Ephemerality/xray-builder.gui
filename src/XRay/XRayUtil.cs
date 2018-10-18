@@ -19,7 +19,7 @@ namespace XRayBuilderGUI
         {
             if (xrayDb.State != ConnectionState.Open)
                 xrayDb.Open();
-            
+
             var command = xrayDb.CreateCommand();
             command.CommandText = "SELECT entity.id,entity.label,entity.type,entity.count,entity_description.text,string.text as sourcetxt FROM entity"
                                   + " LEFT JOIN entity_description ON entity.id = entity_description.entity"
@@ -61,7 +61,7 @@ namespace XRayBuilderGUI
             Old,
             New
         }
-        
+
         public static XRayVersion CheckXRayVersion(string path)
         {
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))

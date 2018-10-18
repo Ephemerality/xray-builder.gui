@@ -105,7 +105,7 @@ namespace XRayBuilderGUI
                 if (!_encodingFoundInHeader)
                     html = CheckMetaCharSetAndReEncode(memStream, html);
             }
-            
+
             return html;
         }
 

@@ -248,12 +248,12 @@ namespace XRayBuilderGUI.DataSources
             }
             return false;
         }
-        
+
         public override async Task<List<XRay.Term>> GetTerms(string dataUrl, IProgressBar progress, CancellationToken token)
         {
             Logger.Log("Downloading Shelfari page...");
             List<XRay.Term> terms = new List<XRay.Term>();
-            
+
             if (sourceHtmlDoc == null)
             {
                 sourceHtmlDoc = new HtmlDocument();
@@ -268,7 +268,7 @@ namespace XRayBuilderGUI.DataSources
                 {"WikiModule_Settings", "topic"},
                 {"WikiModule_Glossary", "topic"}
             };
-            
+
             foreach (string header in sections.Keys)
             {
                 HtmlNodeCollection characterNodes =

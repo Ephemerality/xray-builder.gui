@@ -45,7 +45,7 @@ namespace XRayBuilderGUI.Unpack
             }
         }
     }
-    
+
     public class RecordInfo
     {
         private byte[] _recordDataOffset = new byte[4];

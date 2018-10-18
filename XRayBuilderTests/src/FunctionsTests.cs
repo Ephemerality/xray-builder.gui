@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using XRayBuilderGUI;
-using XRayBuilderGUI.Tests;
-using XRayBuilderGUI.Unpack;
 
 namespace XRayBuilderTests
 {

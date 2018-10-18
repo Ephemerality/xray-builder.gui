@@ -1,13 +1,18 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
+using NUnit.Framework;
+using XRayBuilderGUI;
+using XRayBuilderGUI.DataSources;
+using XRayBuilderGUI.Model;
+using AuthorProfile = XRayBuilderGUI.AuthorProfile;
+using EndActions = XRayBuilderGUI.EndActions;
 
-namespace XRayBuilderGUI.Tests
+namespace XRayBuilderTests
 {
     [SetUpFixture]
     public class MySetUpClass
@@ -35,7 +40,7 @@ namespace XRayBuilderGUI.Tests
 
         private XRay CreateXRayFromXML(string path, string db, string guid, string asin)
         {
-            return new XRay(path, db, guid, asin, new DataSources.Goodreads(), 0, "") { unattended = true };
+            return new XRay(path, db, guid, asin, new Goodreads(), 0, "") { unattended = true };
         }
 
         [Test(), TestCaseSource(nameof(books))]
@@ -114,7 +119,7 @@ namespace XRayBuilderGUI.Tests
         {
             using (StreamReader streamReader = new StreamReader(@"testfiles\AuthorProfile.profile.B000FBFN1U.asc", Encoding.UTF8))
             {
-                var ap = JsonConvert.DeserializeObject<Model.AuthorProfile>(streamReader.ReadToEnd());
+                var ap = JsonConvert.DeserializeObject<AuthorProfile>(streamReader.ReadToEnd());
                 var outtxt = JsonConvert.SerializeObject(ap);
                 File.WriteAllText(@"sampleap.txt", outtxt);
             }
@@ -125,7 +130,7 @@ namespace XRayBuilderGUI.Tests
         {
             using (StreamReader streamReader = new StreamReader(@"testfiles\StartActions.data.B000FBFN1U.asc", Encoding.UTF8))
             {
-                var sa = JsonConvert.DeserializeObject<Model.StartActions>(streamReader.ReadToEnd());
+                var sa = JsonConvert.DeserializeObject<StartActions>(streamReader.ReadToEnd());
                 var outtxt = Functions.ExpandUnicode(JsonConvert.SerializeObject(sa));
                 File.WriteAllText(@"samplesa.txt", outtxt, Encoding.UTF8);
             }
@@ -136,7 +141,7 @@ namespace XRayBuilderGUI.Tests
         {
             using (StreamReader streamReader = new StreamReader(@"testfiles\EndActions.data.B000FBFN1U.asc", Encoding.UTF8))
             {
-                var ea = JsonConvert.DeserializeObject<Model.EndActions>(streamReader.ReadToEnd());
+                var ea = JsonConvert.DeserializeObject<EndActions>(streamReader.ReadToEnd());
                 var outtxt = Functions.ExpandUnicode(JsonConvert.SerializeObject(ea));
                 File.WriteAllText(@"sampleea.txt", outtxt, Encoding.UTF8);
             }

@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace XRayBuilderTests.DataSources.Tests
+namespace XRayBuilderTests.DataSources
 {
     [TestFixture()]
     public class GoodreadsTests

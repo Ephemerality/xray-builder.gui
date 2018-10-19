@@ -13,6 +13,8 @@ namespace XRayBuilderGUI.DataSources.Secondary
     {
         private HtmlDocument sourceHtmlDoc;
 
+        public string Name => "Shelfari";
+
         private string FindShelfariURL(HtmlDocument shelfariHtmlDoc, string author, string title)
         {
             // Try to find book's page from Shelfari search

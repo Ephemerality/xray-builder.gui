@@ -7,6 +7,7 @@ namespace XRayBuilderGUI.DataSources
 {
     public interface ISecondarySource
     {
+        string Name { get; }
         Task<IEnumerable<BookInfo>> SearchBookAsync(string author, string title, CancellationToken cancellationToken = default);
         Task<BookInfo> GetNextInSeriesAsync(BookInfo curBook, AuthorProfile authorProfile, string TLD, CancellationToken cancellationToken = default);
         Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default);

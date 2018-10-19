@@ -22,6 +22,8 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
         private frmASIN frmAS = new frmASIN();
 
+        public string Name => "Goodreads";
+
         public async Task<IEnumerable<BookInfo>> SearchBookAsync(string author, string title, CancellationToken cancellationToken = default)
         {
             var goodreadsSearchUrlBase = @"https://www.goodreads.com/search?q={0}%20{1}";

@@ -34,7 +34,6 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
-using XRayBuilderGUI.DataSources;
 using XRayBuilderGUI.DataSources.Secondary.Model;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 

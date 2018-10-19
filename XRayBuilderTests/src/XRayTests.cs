@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using XRayBuilderGUI;
-using XRayBuilderGUI.DataSources;
 using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.Model;
 using AuthorProfile = XRayBuilderGUI.AuthorProfile;

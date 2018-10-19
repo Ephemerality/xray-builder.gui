@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
-using XRayBuilderGUI.DataSources;
 using XRayBuilderGUI.DataSources.Secondary.Model;
 using XRayBuilderGUI.Unpack;
 

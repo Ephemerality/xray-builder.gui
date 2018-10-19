@@ -4,19 +4,14 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
-using HtmlAgilityPack;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
 
-namespace XRayBuilderGUI.DataSources
+namespace XRayBuilderGUI.DataSources.Secondary
 {
-    public class Shelfari : DataSource
+    public class Shelfari : ISecondarySource
     {
-        public override string Name => "Shelfari";
-
-        public override Task<List<BookInfo>> SearchBook(string author, string title)
-        {
-            return null;
-        }
+        private HtmlDocument sourceHtmlDoc;
 
         private string FindShelfariURL(HtmlDocument shelfariHtmlDoc, string author, string title)
         {
@@ -64,7 +59,12 @@ namespace XRayBuilderGUI.DataSources
             return "";
         }
 
-        public override async Task<BookInfo> GetNextInSeries(BookInfo curBook, AuthorProfile authorProfile, string TLD)
+        public Task<IEnumerable<BookInfo>> SearchBookAsync(string author, string title, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<BookInfo> GetNextInSeriesAsync(BookInfo curBook, AuthorProfile authorProfile, string TLD, CancellationToken cancellationToken = default)
         {
             BookInfo nextBook = null;
 
@@ -223,7 +223,7 @@ namespace XRayBuilderGUI.DataSources
             return results;
         }
 
-        public override async Task<bool> GetPageCount(BookInfo curBook)
+        public async Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
         {
             if (sourceHtmlDoc == null)
             {
@@ -249,7 +249,12 @@ namespace XRayBuilderGUI.DataSources
             return false;
         }
 
-        public override async Task<List<XRay.Term>> GetTerms(string dataUrl, IProgressBar progress, CancellationToken token)
+        public Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<XRay.Term>> GetTermsAsync(string dataUrl, IProgressBar progress, CancellationToken cancellationToken = default)
         {
             Logger.Log("Downloading Shelfari page...");
             List<XRay.Term> terms = new List<XRay.Term>();
@@ -302,7 +307,7 @@ namespace XRayBuilderGUI.DataSources
             return terms;
         }
 
-        public override async Task<List<NotableClip>> GetNotableClips(string url, CancellationToken token, HtmlDocument srcDoc = null, IProgressBar progress = null)
+        public async Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             if (srcDoc == null)
             {

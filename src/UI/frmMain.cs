@@ -42,7 +42,7 @@ namespace XRayBuilderGUI
         private readonly IProgressBar _progress;
 
         private CancellationTokenSource _cancelTokens = new CancellationTokenSource();
-        private DataSource _dataSource;
+        private ISecondarySource _dataSource;
 
         public DialogResult SafeShow(string msg, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton def)
         {
@@ -504,7 +504,7 @@ namespace XRayBuilderGUI
 
                 try
                 {
-                    List<BookInfo> books = await _dataSource.SearchBook(metadata.Author, metadata.Title);
+                    List<BookInfo> books = (await _dataSource.SearchBookAsync(metadata.Author, metadata.Title)).ToList();
                     string bookUrl;
                     if (books?.Count > 1)
                     {

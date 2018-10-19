@@ -26,12 +26,12 @@ namespace XRayBuilderGUI
 
         public BookInfo curBook;
         private readonly AuthorProfile _authorProfile;
-        private readonly DataSource _dataSource;
+        private readonly ISecondarySource _dataSource;
         private readonly long _erl;
         private readonly Settings _settings;
 
         //Requires an already-built AuthorProfile and the BaseEndActions.txt file
-        public EndActions(AuthorProfile authorProfile, BookInfo book, long erl, DataSource dataSource, Settings settings)
+        public EndActions(AuthorProfile authorProfile, BookInfo book, long erl, ISecondarySource dataSource, Settings settings)
         {
             _authorProfile = authorProfile;
             curBook = book;
@@ -186,7 +186,7 @@ namespace XRayBuilderGUI
                                 continue;
                             otherBook = result.SelectSingleNode(".//a[@class='a-size-small a-link-child']")
                                 ?? result.SelectSingleNode(".//span[@class='a-size-small a-color-base']")
-                                ?? throw new DataSource.FormatChangedException("Amazon", "Sponsored book author");
+                                ?? throw new FormatChangedException("Amazon", "Sponsored book author");
                             // TODO: Throw more format changed exceptions to make it obvious that the site changed
                             var sponsAuthor = otherBook.InnerText.Trim();
                             possibleBooks.Add(new BookInfo(sponsTitle, sponsAuthor, sponsAsin) { amazonUrl = sponsUrl });
@@ -279,8 +279,8 @@ namespace XRayBuilderGUI
         {
             try
             {
-                await _dataSource.GetExtras(curBook, token, progress);
-                curBook.nextInSeries = await _dataSource.GetNextInSeries(curBook, _authorProfile, _settings.AmazonTld);
+                await _dataSource.GetExtrasAsync(curBook, progress, token);
+                curBook.nextInSeries = await _dataSource.GetNextInSeriesAsync(curBook, _authorProfile, _settings.AmazonTld, token);
             }
             catch (Exception ex)
             {
@@ -322,7 +322,7 @@ namespace XRayBuilderGUI
 
             try
             {
-                if (!(await _dataSource.GetPageCount(curBook)))
+                if (!(await _dataSource.GetPageCountAsync(curBook, token)))
                 {
                     if (!Properties.Settings.Default.pageCount)
                         Logger.Log("No page count found on Goodreads");

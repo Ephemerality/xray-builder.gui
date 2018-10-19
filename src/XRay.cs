@@ -60,7 +60,7 @@ namespace XRayBuilderGUI
         private int foundNotables;
 
         private bool enableEdit = Properties.Settings.Default.enableEdit;
-        private readonly DataSource dataSource;
+        private readonly ISecondarySource dataSource;
 
         public delegate DialogResult SafeShowDelegate(string msg, string caption, MessageBoxButtons buttons,
             MessageBoxIcon icon, MessageBoxDefaultButton def);
@@ -94,7 +94,7 @@ namespace XRayBuilderGUI
         {
         }
 
-        public XRay(string shelfari, DataSource dataSource)
+        public XRay(string shelfari, ISecondarySource dataSource)
         {
             if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
                 shelfari = "https://" + shelfari;
@@ -102,7 +102,7 @@ namespace XRayBuilderGUI
             this.dataSource = dataSource;
         }
 
-        public XRay(string shelfari, string db, string guid, string asin, DataSource dataSource,
+        public XRay(string shelfari, string db, string guid, string asin, ISecondarySource dataSource,
             int locOffset = 0, string aliaspath = "", bool unattended = false)
         {
             if (shelfari == "" || db == "" || guid == "" || asin == "")
@@ -120,7 +120,7 @@ namespace XRayBuilderGUI
             this.dataSource = dataSource;
         }
 
-        public XRay(string xml, string db, string guid, string asin, DataSource dataSource,
+        public XRay(string xml, string db, string guid, string asin, ISecondarySource dataSource,
             int locOffset = 0, string aliaspath = "")
         {
             if (xml == "" || db == "" || guid == "" || asin == "")
@@ -152,7 +152,7 @@ namespace XRayBuilderGUI
         {
             try
             {
-                Terms = await dataSource.GetTerms(dataUrl, progress, token);
+                Terms = (await dataSource.GetTermsAsync(dataUrl, progress, token)).ToList();
             }
             catch (OperationCanceledException)
             {
@@ -231,9 +231,9 @@ namespace XRayBuilderGUI
             {
                 try
                 {
-                    Terms = await dataSource.GetTerms(dataUrl, progress, token);
+                    Terms = (await dataSource.GetTermsAsync(dataUrl, progress, token)).ToList();
                     Logger.Log("Downloading notable clips...");
-                    notableClips = await dataSource.GetNotableClips(dataUrl, token, null, progress);
+                    notableClips = (await dataSource.GetNotableClipsAsync(dataUrl, null, progress, token)).ToList();
                 }
                 catch (OperationCanceledException)
                 {

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using XRayBuilderGUI.DataSources;
+using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.Model;
 using XRayBuilderGUI.Properties;
 

@@ -2,27 +2,27 @@
 using System.Collections.Async;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
-using System.Globalization;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
-namespace XRayBuilderGUI.DataSources
+namespace XRayBuilderGUI.DataSources.Secondary
 {
-    public class Goodreads : DataSource
+    public class Goodreads : ISecondarySource
     {
         private const string BookUrl = "https://www.goodreads.com/book/show/{0}";
         private const int MaxConcurrentRequests = 10;
+        private HtmlDocument sourceHtmlDoc;
 
-        public override string Name => "Goodreads";
         private Properties.Settings settings = Properties.Settings.Default;
 
         private frmASIN frmAS = new frmASIN();
 
-        public override async Task<List<BookInfo>> SearchBook(string author, string title)
+        public async Task<IEnumerable<BookInfo>> SearchBookAsync(string author, string title, CancellationToken cancellationToken = default)
         {
             var goodreadsSearchUrlBase = @"https://www.goodreads.com/search?q={0}%20{1}";
 
@@ -36,11 +36,9 @@ namespace XRayBuilderGUI.DataSources
                 : null;
         }
 
-        private List<BookInfo> ParseSearchResults(HtmlDocument goodreadsHtmlDoc)
+        private IEnumerable<BookInfo> ParseSearchResults(HtmlDocument goodreadsHtmlDoc, CancellationToken cancellationToken = default)
         {
-            List<BookInfo> goodreadsBookList = new List<BookInfo>();
-            HtmlNodeCollection resultNodes =
-                goodreadsHtmlDoc.DocumentNode.SelectNodes("//tr[@itemtype='http://schema.org/Book']");
+            HtmlNodeCollection resultNodes = goodreadsHtmlDoc.DocumentNode.SelectNodes("//tr[@itemtype='http://schema.org/Book']");
             //Return a list of search results
             foreach (HtmlNode link in resultNodes)
             {
@@ -80,9 +78,8 @@ namespace XRayBuilderGUI.DataSources
                     }
                 }
 
-                goodreadsBookList.Add(newBook);
+                yield return newBook;
             }
-            return goodreadsBookList;
         }
 
         /// <summary>
@@ -90,7 +87,7 @@ namespace XRayBuilderGUI.DataSources
         /// Modifies curBook.previousInSeries to contain the found book info.
         /// </summary>
         /// <returns>Next book in series</returns>
-        public override async Task<BookInfo> GetNextInSeries(BookInfo curBook, AuthorProfile authorProfile, string TLD)
+        public async Task<BookInfo> GetNextInSeriesAsync(BookInfo curBook, AuthorProfile authorProfile, string TLD, CancellationToken cancellationToken = default)
         {
             BookInfo nextBook = null;
 
@@ -102,7 +99,7 @@ namespace XRayBuilderGUI.DataSources
             }
 
             // Get title of next book
-            Dictionary<string, BookInfo> seriesInfo = await GetNextInSeriesTitle(curBook);
+            Dictionary<string, BookInfo> seriesInfo = await GetNextInSeriesTitleAsync(curBook);
             if (seriesInfo.TryGetValue("Next", out var book))
             {
                 // TODO: next and previous sections are the same...
@@ -197,7 +194,7 @@ namespace XRayBuilderGUI.DataSources
         /// Search Goodread for possible series info, returning the next title in the series.
         /// Modifies curBook.
         /// </summary>
-        public async Task<Dictionary<string, BookInfo>> GetNextInSeriesTitle(BookInfo curBook)
+        public async Task<Dictionary<string, BookInfo>> GetNextInSeriesTitleAsync(BookInfo curBook, CancellationToken cancellationToken = default)
         {
             Dictionary<string, BookInfo> results = new Dictionary<string, BookInfo>(2);
             if (sourceHtmlDoc == null)
@@ -285,7 +282,7 @@ namespace XRayBuilderGUI.DataSources
         }
 
         // Search Goodread for possible kindle edition of book and return ASIN.
-        private async Task<string> SearchBookASIN(string id, string title)
+        private async Task<string> SearchBookASIN(string id, string title, CancellationToken cancellationToken = default)
         {
             string goodreadsBookUrl = String.Format("https://www.goodreads.com/book/show/{0}", id);
             try
@@ -318,7 +315,7 @@ namespace XRayBuilderGUI.DataSources
             }
         }
 
-        public override async Task<bool> GetPageCount(BookInfo curBook)
+        public async Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
         {
             if (sourceHtmlDoc == null)
             {
@@ -347,7 +344,7 @@ namespace XRayBuilderGUI.DataSources
             return false;
         }
 
-        public override async Task<List<XRay.Term>> GetTerms(string dataUrl, IProgressBar progress, CancellationToken token)
+        public async Task<IEnumerable<XRay.Term>> GetTermsAsync(string dataUrl, IProgressBar progress, CancellationToken cancellationToken)
         {
             if (sourceHtmlDoc == null)
             {
@@ -371,7 +368,7 @@ namespace XRayBuilderGUI.DataSources
             {
                 try
                 {
-                    terms.AddNotNull(await GetTerm(dataUrl, charNode.GetAttributeValue("href", "")).ConfigureAwait(false));
+                    terms.AddNotNull(await GetTermAsync(dataUrl, charNode.GetAttributeValue("href", "")).ConfigureAwait(false));
                     progress?.Add(1);
                 }
                 catch (Exception ex)
@@ -380,12 +377,12 @@ namespace XRayBuilderGUI.DataSources
                         Logger.Log("Error getting page for character. URL: " + "https://www.goodreads.com" + charNode.GetAttributeValue("href", "")
                             + "\r\nMessage: " + ex.Message + "\r\n" + ex.StackTrace);
                 }
-            }, MaxConcurrentRequests, token);
+            }, MaxConcurrentRequests, cancellationToken);
             return terms.ToList();
         }
 
         // Are there actually any goodreads pages that aren't at goodreads.com for other languages??
-        private async Task<XRay.Term> GetTerm(string baseUrl, string relativeUrl)
+        private async Task<XRay.Term> GetTermAsync(string baseUrl, string relativeUrl, CancellationToken cancellationToken = default)
         {
             XRay.Term result = new XRay.Term("character");
             Uri tempUri = new Uri(baseUrl);
@@ -416,7 +413,7 @@ namespace XRayBuilderGUI.DataSources
         /// <summary>
         /// Gather the list of quotes & number of times they've been liked -- close enough to "x paragraphs have been highlighted y times" from Amazon
         /// </summary>
-        public override async Task<List<NotableClip>> GetNotableClips(string url, CancellationToken token, HtmlDocument srcDoc = null, IProgressBar progress = null)
+        public async Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             if (srcDoc == null)
             {
@@ -463,7 +460,7 @@ namespace XRayBuilderGUI.DataSources
                 quotePage.LoadHtml(await HttpDownloader.GetPageHtmlAsync(string.Format(quoteURL, page)));
                 quoteBag.Add(ParseQuotePage(quotePage));
                 progress?.Add(1);
-            }, MaxConcurrentRequests, token);
+            }, MaxConcurrentRequests, cancellationToken);
 
             return quoteBag.Where(quotes => quotes != null && quotes.Any()).SelectMany(quotes => quotes).ToList();
         }
@@ -472,7 +469,7 @@ namespace XRayBuilderGUI.DataSources
         /// Scrape any notable quotes from Goodreads and grab ratings if missing from book info
         /// Modifies curBook.
         /// </summary>
-        public override async Task GetExtras(BookInfo curBook, CancellationToken token, IProgressBar progress = null)
+        public async Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             if (sourceHtmlDoc == null)
             {
@@ -482,7 +479,7 @@ namespace XRayBuilderGUI.DataSources
 
             if (curBook.notableClips == null)
             {
-                curBook.notableClips = await GetNotableClips("", token, sourceHtmlDoc, progress).ConfigureAwait(false);
+                curBook.notableClips = (await GetNotableClipsAsync("", sourceHtmlDoc, progress, cancellationToken).ConfigureAwait(false)).ToList();
             }
 
             //Add rating and reviews count if missing from Amazon book info

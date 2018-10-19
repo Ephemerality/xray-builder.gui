@@ -118,14 +118,14 @@ namespace XRayBuilderGUI.DataSources
         {
             return searchResults.authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-bio' and @class='a-row']/div/div/span")
                    ?? searchResults.authorHtmlDoc.DocumentNode.SelectSingleNode("//span[@id='author_biography']")
-                   ?? throw new DataSource.FormatChangedException(nameof(Amazon), "author bio");
+                   ?? throw new FormatChangedException(nameof(Amazon), "author bio");
         }
 
         public static HtmlNode GetAuthorImageNode(AuthorSearchResults searchResults, string TLD)
         {
             return searchResults.authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-image']/img")
                    ?? searchResults.authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='authorImage']/img")
-                   ?? throw new DataSource.FormatChangedException(nameof(Amazon), "author image");
+                   ?? throw new FormatChangedException(nameof(Amazon), "author image");
         }
 
         /// <summary>
@@ -142,9 +142,9 @@ namespace XRayBuilderGUI.DataSources
                 if (result.InnerHtml.Contains("a-pagination"))
                     continue;
                 var bookNodes = result.SelectNodes(".//div[@class='a-fixed-right-grid-inner']/div/div")
-                    ?? throw new DataSource.FormatChangedException(nameof(Amazon), "book results - title nodes");
+                    ?? throw new FormatChangedException(nameof(Amazon), "book results - title nodes");
                 var name = bookNodes.FirstOrDefault()?.SelectSingleNode("./a")?.InnerText.Trim()
-                    ?? throw new DataSource.FormatChangedException(nameof(Amazon), "book results - title");
+                    ?? throw new FormatChangedException(nameof(Amazon), "book results - title");
                 //Exclude the current book title
                 if (name.ContainsIgnorecase(curTitle)
                     || name.ContainsIgnorecase(@"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)"))

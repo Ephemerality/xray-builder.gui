@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 
-namespace XRayBuilderGUI.DataSources
+namespace XRayBuilderGUI.DataSources.Secondary.Model
 {
     public interface ISecondarySource
     {

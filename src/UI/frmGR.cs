@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using XRayBuilderGUI.Properties;
 
-namespace XRayBuilderGUI
+namespace XRayBuilderGUI.UI
 {
     public partial class frmGR : Form
     {

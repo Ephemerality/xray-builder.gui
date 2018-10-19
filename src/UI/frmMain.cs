@@ -10,12 +10,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
-using XRayBuilderGUI.DataSources;
+using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
+using XRayBuilderGUI.DataSources.Secondary.Model;
 using XRayBuilderGUI.Model;
 using XRayBuilderGUI.Properties;
 
-namespace XRayBuilderGUI
+namespace XRayBuilderGUI.UI
 {
     public partial class frmMain : Form
     {

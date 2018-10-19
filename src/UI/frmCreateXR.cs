@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using XRayBuilderGUI.Properties;
 
-namespace XRayBuilderGUI
+namespace XRayBuilderGUI.UI
 {
     public partial class frmCreateXR : Form
     {
@@ -256,7 +256,7 @@ namespace XRayBuilderGUI
                     if (term.Aliases.Count > 0)
                     {
                         term.Aliases.Sort((a, b) => b.Length.CompareTo(a.Length));
-                        streamWriter.WriteLine($"{term.TermName}|{string.Join(",", term.Aliases)}");
+                        streamWriter.WriteLine($"{term.TermName}|{string.Join((string) ",", (IEnumerable<string>) term.Aliases)}");
                     }
                     else
                         streamWriter.WriteLine(term.TermName + "|");

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace XRayBuilderGUI.DataSources.Model
+namespace XRayBuilderGUI.DataSources.Amazon.Model
 {
     public class NextBookResult
     {

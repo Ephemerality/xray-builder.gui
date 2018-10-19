@@ -6,9 +6,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
-using XRayBuilderGUI.DataSources.Model;
+using XRayBuilderGUI.DataSources.Amazon.Model;
 
-namespace XRayBuilderGUI.DataSources
+namespace XRayBuilderGUI.DataSources.Amazon
 {
     public class AuthorSearchResults
     {

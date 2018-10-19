@@ -46,7 +46,7 @@ namespace XRayBuilderGUI
 
                 // TODO: Should probably also confirm whether this URL exists or not
                 if (newTerm.DescSrc == "Wikipedia")
-                    newTerm.DescUrl = string.Format(@"http://en.wikipedia.org/wiki/{0}", newTerm.TermName.Replace(" ", "_"));
+                    newTerm.DescUrl = string.Format((string) @"http://en.wikipedia.org/wiki/{0}", (object) newTerm.TermName.Replace(" ", "_"));
                 yield return newTerm;
             }
 

@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
+using XRayBuilderGUI.DataSources.Amazon;
 
 namespace XRayBuilderGUI
 {
@@ -61,12 +62,12 @@ namespace XRayBuilderGUI
                 return false;
             }
 
-            DataSources.AuthorSearchResults searchResults = null;
+            AuthorSearchResults searchResults = null;
             // Attempt to download from the alternate site, if present. If it fails in some way, try .com
             // If the .com search crashes, it will crash back to the caller in frmMain
             try
             {
-                searchResults = await DataSources.Amazon.SearchAuthor(_curBook, _settings.AmazonTld);
+                searchResults = await Amazon.SearchAuthor(_curBook, _settings.AmazonTld);
             }
             catch (Exception ex)
             {
@@ -81,7 +82,7 @@ namespace XRayBuilderGUI
                     {
                         Logger.Log("Trying again with Amazon.com.");
                         _settings.AmazonTld = "com";
-                        searchResults = await DataSources.Amazon.SearchAuthor(_curBook, _settings.AmazonTld);
+                        searchResults = await Amazon.SearchAuthor(_curBook, _settings.AmazonTld);
                     }
                 }
             }
@@ -111,7 +112,7 @@ namespace XRayBuilderGUI
             if (BioTrimmed == "")
             {
                 // TODO: Let users edit bio in same style as chapters and aliases
-                HtmlNode bio = DataSources.Amazon.GetBioNode(searchResults, _settings.AmazonTld);
+                HtmlNode bio = Amazon.GetBioNode(searchResults, _settings.AmazonTld);
                 //Trim authour biography to less than 1000 characters and/or replace more problematic characters.
                 if (bio?.InnerText.Trim().Length > 0)
                 {
@@ -176,7 +177,7 @@ namespace XRayBuilderGUI
                 }
             }
             // Try to download Author image
-            HtmlNode imageXpath = DataSources.Amazon.GetAuthorImageNode(searchResults, _settings.AmazonTld);
+            HtmlNode imageXpath = Amazon.GetAuthorImageNode(searchResults, _settings.AmazonTld);
             authorImageUrl = Regex.Replace(imageXpath.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
 
             // cleanup to match retail file image links
@@ -199,8 +200,8 @@ namespace XRayBuilderGUI
             }
 
             Logger.Log("Gathering author's other books...");
-            var bookList = DataSources.Amazon.GetAuthorBooks(searchResults, _curBook.title, _curBook.author, _settings.AmazonTld)
-                ?? DataSources.Amazon.GetAuthorBooksNew(searchResults, _curBook.title, _curBook.author, _settings.AmazonTld);
+            var bookList = Amazon.GetAuthorBooks(searchResults, _curBook.title, _curBook.author, _settings.AmazonTld)
+                ?? Amazon.GetAuthorBooksNew(searchResults, _curBook.title, _curBook.author, _settings.AmazonTld);
             if (bookList != null)
             {
                 Logger.Log("Gathering metadata for other books...");

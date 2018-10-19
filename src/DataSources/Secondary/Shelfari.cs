@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using XRayBuilderGUI.DataSources.Secondary.Model;
 
 namespace XRayBuilderGUI.DataSources.Secondary
 {
@@ -87,7 +88,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
                 if (nextBook == null)
                 {
                     // Attempt to search Amazon for the book instead
-                    nextBook = await Amazon.SearchBook(title, curBook.author, TLD);
+                    nextBook = await Amazon.Amazon.SearchBook(title, curBook.author, TLD);
                     if (nextBook != null)
                         await nextBook.GetAmazonInfo(nextBook.amazonUrl); //fill in desc, imageurl, and ratings
                 }
@@ -117,7 +118,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
                 if (curBook.previousInSeries == null)
                 {
                     // Attempt to search Amazon for the book
-                    curBook.previousInSeries = await Amazon.SearchBook(title, curBook.author, TLD);
+                    curBook.previousInSeries = await Amazon.Amazon.SearchBook(title, curBook.author, TLD);
                     if (curBook.previousInSeries != null)
                         await curBook.previousInSeries.GetAmazonInfo(curBook.previousInSeries.amazonUrl); //fill in desc, imageurl, and ratings
 

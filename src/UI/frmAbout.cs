@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Windows.Forms;
 
-namespace XRayBuilderGUI
+namespace XRayBuilderGUI.UI
 {
     partial class frmAbout : Form
     {

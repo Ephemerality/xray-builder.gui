@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
-namespace XRayBuilderGUI
+namespace XRayBuilderGUI.UI
 {
     public partial class frmASIN : Form
     {

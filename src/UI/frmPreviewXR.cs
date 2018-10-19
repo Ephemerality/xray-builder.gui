@@ -3,7 +3,7 @@ using System.Data.SQLite;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace XRayBuilderGUI
+namespace XRayBuilderGUI.UI
 {
     public partial class frmPreviewXR : Form, IPreviewForm
     {
@@ -30,7 +30,7 @@ namespace XRayBuilderGUI
 
             foreach (XRay.Term t in terms)
             {
-                XRayPanel p = new XRayPanel(t.Type, t.TermName, Math.Max(t.Occurrences.Count, t.Locs.Count).ToString(), t.Desc);
+                XRayPanel p = new XRayPanel(t.Type, t.TermName, Math.Max((int) t.Occurrences.Count, (int) t.Locs.Count).ToString(), t.Desc);
                 if (t.Type == "character")
                     flpPeople.Controls.Add(p);
                 if (t.Type == "topic")

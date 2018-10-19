@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using XRayBuilderGUI.DataSources;
+using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.Unpack;
 
-namespace XRayBuilderGUI
+namespace XRayBuilderGUI.UI
 {
     public interface IPreviewForm
     {

@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 
-namespace XRayBuilderGUI
+namespace XRayBuilderGUI.UI
 {
     [System.ComponentModel.DesignerCategory("Code")]
     public partial class XRayPanel : Panel

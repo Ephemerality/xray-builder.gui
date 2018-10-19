@@ -8,6 +8,8 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using XRayBuilderGUI.DataSources.Secondary.Model;
+using XRayBuilderGUI.UI;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI.DataSources.Secondary
@@ -120,7 +122,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
                             await nextBook.GetAmazonInfo($"https://www.amazon.{TLD}/dp/{book.asin}");
                         }
                         else
-                            nextBook = await Amazon.SearchBook(book.title, book.author, TLD);
+                            nextBook = await Amazon.Amazon.SearchBook(book.title, book.author, TLD);
 
                         if (nextBook == null && settings.promptASIN)
                         {
@@ -141,7 +143,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
                     {
                         Logger.Log($"Failed to find {book.title} on Amazon.{TLD}, trying again with Amazon.com.");
                         TLD = "com";
-                        nextBook = await Amazon.SearchBook(book.title, book.author, TLD);
+                        nextBook = await Amazon.Amazon.SearchBook(book.title, book.author, TLD);
                     }
 
                     if (nextBook != null)

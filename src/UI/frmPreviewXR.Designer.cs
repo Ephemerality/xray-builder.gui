@@ -1,4 +1,4 @@
-﻿namespace XRayBuilderGUI
+﻿namespace XRayBuilderGUI.UI
 {
     partial class frmPreviewXR
     {

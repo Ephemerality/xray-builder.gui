@@ -12,6 +12,8 @@ using System.Xml;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
 using XRayBuilderGUI.DataSources;
+using XRayBuilderGUI.DataSources.Amazon;
+using XRayBuilderGUI.DataSources.Secondary.Model;
 using XRayBuilderGUI.Model;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 

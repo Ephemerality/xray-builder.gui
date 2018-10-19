@@ -203,7 +203,7 @@
     <Compile Include="src\Unpack\Uncompress.cs" />
     <Compile Include="src\XRay.cs" />
     <Compile Include="src\UI\XRayPanel.cs" />
-    <Compile Include="src\XRay\XRayUtil.cs" />
+    <Compile Include="src\XRayUtil.cs" />
     <Content Include="dist\BaseSplitIgnore.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

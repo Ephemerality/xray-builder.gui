@@ -198,7 +198,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
         /// Search Goodread for possible series info, returning the next title in the series.
         /// Modifies curBook.
         /// </summary>
-        public async Task<SeriesInfo> GetNextInSeriesTitleAsync(string dataUrl, CancellationToken cancellationToken = default)
+        public async Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
         {
             var series = new SeriesInfo();
             if (sourceHtmlDoc == null)
@@ -246,14 +246,15 @@ namespace XRayBuilderGUI.DataSources.Secondary
                 : $"book {positionInt - 1}";
             var nextSearch = $"book {positionInt + 1}";
 
-            BookInfo ParseSeriesBook(HtmlNode bookNode)
+            async Task<BookInfo> ParseSeriesBook(HtmlNode bookNode)
             {
                 BookInfo book = new BookInfo("", "", "");
                 var title = bookNode.SelectSingleNode(".//div[@class='u-paddingBottomXSmall']/a");
                 book.title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", "", RegexOptions.Compiled);
-                match = Regex.Match(title.GetAttributeValue("href", ""), @"show/([0-9]+)");
-                //if (match.Success)
-                //    book.asin = await SearchBookASIN(match.Groups[1].Value, book.title).ConfigureAwait(false);
+                book.goodreadsID = ParseBookId(title.GetAttributeValue("href", ""));
+                // TODO: move this ASIN search somewhere else
+                if (!string.IsNullOrEmpty(book.goodreadsID))
+                    book.asin = await SearchBookASIN(book.goodreadsID, book.title, cancellationToken).ConfigureAwait(false);
                 book.author = bookNode.SelectSingleNode(".//span[@itemprop='author']//a")?.InnerText.Trim() ?? "";
                 return book;
             }
@@ -264,12 +265,12 @@ namespace XRayBuilderGUI.DataSources.Secondary
                 if (bookIndex == null) continue;
                 if (bookIndex == prevSearch && series.Previous == null)
                 {
-                    series.Previous = ParseSeriesBook(bookNode);
+                    series.Previous = await ParseSeriesBook(bookNode);
                     Logger.Log($"Preceded by: {series.Previous.title}");
                 }
                 else if (bookIndex == nextSearch)
                 {
-                    series.Next = ParseSeriesBook(bookNode);
+                    series.Next = await ParseSeriesBook(bookNode);
                     Logger.Log($"Followed by: {series.Next.title}");
                 }
                 if (series.Previous != null && (series.Next != null || positionInt == totalInt))
@@ -279,14 +280,14 @@ namespace XRayBuilderGUI.DataSources.Secondary
             return series;
         }
 
-        // Search Goodread for possible kindle edition of book and return ASIN.
-        private async Task<string> SearchBookASIN(string id, string title, CancellationToken cancellationToken = default)
+        // Search Goodreads for possible kindle edition of book and return ASIN.
+        public async Task<string> SearchBookASIN(string id, string title, CancellationToken cancellationToken = default)
         {
             string goodreadsBookUrl = String.Format("https://www.goodreads.com/book/show/{0}", id);
             try
             {
                 HtmlDocument bookHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
-                bookHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(goodreadsBookUrl));
+                bookHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(BookUrl(id)));
                 HtmlNode link = bookHtmlDoc.DocumentNode.SelectSingleNode("//div[@class='otherEditionsActions']/a");
                 Match match = Regex.Match(link.GetAttributeValue("href", ""), @"editions/([0-9]*)-");
                 if (match.Success)

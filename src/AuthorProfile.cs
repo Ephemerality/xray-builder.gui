@@ -7,6 +7,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
@@ -35,7 +36,7 @@ namespace XRayBuilderGUI
         }
 
         // TODO: Review this...
-        public async Task<bool> Generate()
+        public async Task<bool> GenerateAsync(CancellationToken cancellationToken = default)
         {
             string outputDir;
             try
@@ -190,7 +191,7 @@ namespace XRayBuilderGUI
             try
             {
                 Logger.Log("Downloading author image...");
-                ApAuthorImage = await HttpDownloader.GetImage(authorImageUrl);
+                ApAuthorImage = await HttpDownloader.GetImageAsync(authorImageUrl);
                 Logger.Log("Grayscale base64-encoded author image created!");
             }
             catch (Exception ex)
@@ -213,7 +214,7 @@ namespace XRayBuilderGUI
                     {
                         //Gather book desc, image url, etc, if using new format
                         if (_settings.UseNewVersion)
-                            await book.GetAmazonInfo(book.amazonUrl);
+                            await book.GetAmazonInfo(book.amazonUrl, cancellationToken);
                         bookBag.Add(book);
                     }
                     catch (Exception ex)
@@ -221,7 +222,7 @@ namespace XRayBuilderGUI
                         Logger.Log(String.Format("An error occurred gathering metadata for other books: {0}\r\nURL: {1}\r\nBook: {2}", ex.Message, book.amazonUrl, book.title));
                         throw;
                     }
-                });
+                }, cancellationToken);
                 otherBooks.AddRange(bookBag);
             }
             else

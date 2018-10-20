@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 
@@ -24,25 +25,25 @@ namespace XRayBuilderGUI
         public WebHeaderCollection Headers { get; set; }
         public Uri Url { get; set; }
 
-        public static Task<string> GetPageHtmlAsync(string url)
+        public static Task<string> GetPageHtmlAsync(string url, CancellationToken cancellationToken = default)
         {
             var http = new HttpDownloader(url);
-            return Task.Run(async () => await http.GetPage().ConfigureAwait(false));
+            return Task.Run(async () => await http.GetPageAsync(cancellationToken).ConfigureAwait(false), cancellationToken);
         }
 
-        public static async Task<HtmlDocument> GetHtmlDocAsync(string url)
+        public static async Task<HtmlDocument> GetHtmlDocAsync(string url, CancellationToken cancellationToken = default)
         {
             var http = new HttpDownloader(url);
             var doc = new HtmlDocument();
-            doc.Load(await http.GetPage().ConfigureAwait(false));
+            doc.Load(await http.GetPageAsync(cancellationToken).ConfigureAwait(false));
             return doc;
         }
 
-        public static async Task<Bitmap> GetImage(string url)
+        public static async Task<Bitmap> GetImageAsync(string url, CancellationToken cancellationToken = default)
         {
             var request = (HttpWebRequest)WebRequest.Create(url);
             request.Timeout = 2000;
-            using (var response = (HttpWebResponse) await request.GetResponseAsync())
+            using (var response = await request.GetResponseAsync(cancellationToken))
             {
                 var stream = response.GetResponseStream()
                              ?? throw new Exception($"Failed to download image ({response.StatusCode} {response.StatusDescription})");
@@ -61,7 +62,7 @@ namespace XRayBuilderGUI
             if (jar != null) _cookiejar = jar;
         }
 
-        public async Task<string> GetPage()
+        public async Task<string> GetPageAsync(CancellationToken cancellationToken = default)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Url);
             if (!string.IsNullOrEmpty(_referer))
@@ -72,7 +73,7 @@ namespace XRayBuilderGUI
             request.CookieContainer = _cookiejar;
             request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip");
 
-            using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
+            using (HttpWebResponse response = await request.GetResponseAsync(cancellationToken))
             {
                 Headers = response.Headers;
                 Url = response.ResponseUri;

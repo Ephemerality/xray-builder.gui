@@ -8,10 +8,12 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using HtmlAgilityPack;
@@ -409,6 +411,24 @@ namespace XRayBuilderGUI
         {
             var match = regex.Match(input);
             return match.Success ? match : null;
+        }
+
+        public static async Task<HttpWebResponse> GetResponseAsync(this HttpWebRequest request, CancellationToken cancellationToken)
+        {
+            using (cancellationToken.Register(request.Abort, false))
+            {
+                try
+                {
+                    var response = await request.GetResponseAsync();
+                    return (HttpWebResponse)response;
+                }
+                catch (WebException ex)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        throw new OperationCanceledException(ex.Message, ex, cancellationToken);
+                    throw;
+                }
+            }
         }
     }
 

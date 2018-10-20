@@ -32,7 +32,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             author = Uri.EscapeDataString(Functions.FixAuthor(author));
 
             var goodreadsHtmlDoc = new HtmlDocument();
-            goodreadsHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(String.Format(goodreadsSearchUrlBase, author, title)));
+            goodreadsHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(String.Format(goodreadsSearchUrlBase, author, title), cancellationToken));
             return !goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results")
                 ? ParseSearchResults(goodreadsHtmlDoc)
                 : null;
@@ -89,7 +89,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             if (sourceHtmlDoc == null)
             {
                 sourceHtmlDoc = new HtmlDocument();
-                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(dataUrl));
+                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(dataUrl, cancellationToken));
             }
 
             //Search Goodreads for series info
@@ -109,7 +109,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             series.Position = match.Groups[2].Value;
 
             var seriesHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
-            seriesHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(series.Url));
+            seriesHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(series.Url, cancellationToken));
 
             seriesNode = seriesHtmlDoc.DocumentNode.SelectSingleNode("//div[contains(@class, 'responsiveSeriesHeader__subtitle')]");
             match = Regex.Match(seriesNode?.InnerText ?? "", @"([0-9]+) (?:primary )?works?");
@@ -163,13 +163,13 @@ namespace XRayBuilderGUI.DataSources.Secondary
             try
             {
                 HtmlDocument bookHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
-                bookHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(BookUrl(id)));
+                bookHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(BookUrl(id), cancellationToken));
                 HtmlNode link = bookHtmlDoc.DocumentNode.SelectSingleNode("//div[@class='otherEditionsActions']/a");
                 Match match = Regex.Match(link.GetAttributeValue("href", ""), @"editions/([0-9]*)-");
                 if (match.Success)
                 {
                     string kindleEditionsUrl = String.Format("https://www.goodreads.com/work/editions/{0}?utf8=%E2%9C%93&sort=num_ratings&filter_by_format=Kindle+Edition", match.Groups[1].Value);
-                    bookHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(kindleEditionsUrl));
+                    bookHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(kindleEditionsUrl, cancellationToken));
                     HtmlNodeCollection bookNodes = bookHtmlDoc.DocumentNode.SelectNodes("//div[@class='elementList clearFix']");
                     if (bookNodes != null)
                     {
@@ -191,7 +191,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             if (sourceHtmlDoc == null)
             {
                 sourceHtmlDoc = new HtmlDocument();
-                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl));
+                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl, cancellationToken));
             }
             HtmlNode pagesNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='details']");
             if (pagesNode == null)
@@ -221,7 +221,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             {
                 Logger.Log("Downloading Goodreads page...");
                 sourceHtmlDoc = new HtmlDocument();
-                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(dataUrl));
+                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(dataUrl, cancellationToken));
             }
 
             var charNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/a");
@@ -239,7 +239,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             {
                 try
                 {
-                    terms.AddNotNull(await GetTermAsync(dataUrl, charNode.GetAttributeValue("href", "")).ConfigureAwait(false));
+                    terms.AddNotNull(await GetTermAsync(dataUrl, charNode.GetAttributeValue("href", ""), cancellationToken).ConfigureAwait(false));
                     progress?.Add(1);
                 }
                 catch (Exception ex)
@@ -261,7 +261,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             result.DescSrc = "Goodreads";
             result.DescUrl = tempUri.ToString();
             HtmlDocument charDoc = new HtmlDocument();
-            charDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(tempUri.ToString()));
+            charDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(tempUri.ToString(), cancellationToken));
             HtmlNode mainNode = charDoc.DocumentNode.SelectSingleNode("//div[@class='mainContentFloat']")
                 ?? charDoc.DocumentNode.SelectSingleNode("//div[@class='mainContentFloat ']");
             result.TermName = mainNode.SelectSingleNode("./h1").InnerText;
@@ -289,7 +289,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             if (srcDoc == null)
             {
                 srcDoc = new HtmlDocument();
-                srcDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(url));
+                srcDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(url, cancellationToken));
             }
             HtmlNode quoteNode = srcDoc.DocumentNode.SelectSingleNode("//div[@class='h2Container gradientHeaderContainer']/h2/a[starts-with(.,'Quotes from')]");
             if (quoteNode == null) return null;
@@ -298,7 +298,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
             var quoteBag = new ConcurrentBag<IEnumerable<NotableClip>>();
             var initialPage = new HtmlDocument();
-            initialPage.LoadHtml(await HttpDownloader.GetPageHtmlAsync(string.Format(quoteURL, 1)));
+            initialPage.LoadHtml(await HttpDownloader.GetPageHtmlAsync(string.Format(quoteURL, 1), cancellationToken));
 
             // check how many pages there are (find previous page button, get parent div, take all children of that, 2nd last one should be the max page count
             HtmlNode maxPageNode = initialPage.DocumentNode.SelectSingleNode("//span[contains(@class,'previous_page')]/parent::div/*[last()-1]");
@@ -328,7 +328,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             await Enumerable.Range(2, maxPages).ParallelForEachAsync(async page =>
             {
                 var quotePage = new HtmlDocument();
-                quotePage.LoadHtml(await HttpDownloader.GetPageHtmlAsync(string.Format(quoteURL, page)));
+                quotePage.LoadHtml(await HttpDownloader.GetPageHtmlAsync(string.Format(quoteURL, page), cancellationToken));
                 quoteBag.Add(ParseQuotePage(quotePage));
                 progress?.Add(1);
             }, MaxConcurrentRequests, cancellationToken);
@@ -345,7 +345,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             if (sourceHtmlDoc == null)
             {
                 sourceHtmlDoc = new HtmlDocument();
-                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl));
+                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl, cancellationToken));
             }
 
             if (curBook.notableClips == null)

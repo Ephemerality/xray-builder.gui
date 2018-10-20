@@ -211,9 +211,10 @@ namespace XRayBuilderGUI
         public System.Drawing.Bitmap CoverImage()
         {
             if (bookImageUrl == "") return null;
+            if (_bookImage != null) return _bookImage;
             try
             {
-                _bookImage = Task.Run(() => HttpDownloader.GetImage(bookImageUrl)).Result;
+                _bookImage = Task.Run(() => HttpDownloader.GetImageAsync(bookImageUrl)).Result;
             }
             catch (Exception ex)
             {

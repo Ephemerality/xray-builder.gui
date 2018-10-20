@@ -337,7 +337,7 @@ namespace XRayBuilderGUI.UI
                     UseNewVersion = _settings.useNewVersion,
                     UseSubDirectories = _settings.useSubDirectories
                 });
-                if (!await ap.Generate()) return;
+                if (!await ap.GenerateAsync(_cancelTokens.Token)) return;
                 SaPath = $@"{outputDir}\StartActions.data.{bookInfo.asin}.asc";
                 ApPath = $@"{outputDir}\AuthorProfile.profile.{bookInfo.asin}.asc";
                 Logger.Log("Attempting to build Start Actions and End Actions...");

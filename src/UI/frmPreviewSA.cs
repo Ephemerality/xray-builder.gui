@@ -89,7 +89,7 @@ namespace XRayBuilderGUI.UI
             {
                 string imageUrl = tempData["imageUrl"]?.ToString() ?? "";
                 if (imageUrl != "")
-                    pbAuthorImage.Image = Functions.MakeGrayscale3(await HttpDownloader.GetImage(imageUrl));
+                    pbAuthorImage.Image = Functions.MakeGrayscale3(await HttpDownloader.GetImageAsync(imageUrl));
                 lblBiography.Text = tempData["bio"]?.ToString();
                 biographyPopup = lblBiography.Text;
             }
@@ -106,7 +106,7 @@ namespace XRayBuilderGUI.UI
                     string title = rec["title"].ToString();
                     //otherBooks.Add(new Tuple<string, string, string, string>(rec["asin"].ToString(), title, author, imageUrl));
                     if (imageUrl != "")
-                        ilOtherBooks.Images.Add(Functions.MakeGrayscale3(await HttpDownloader.GetImage(imageUrl)));
+                        ilOtherBooks.Images.Add(Functions.MakeGrayscale3(await HttpDownloader.GetImageAsync(imageUrl)));
                     dgvOtherBooks.Rows.Add(ilOtherBooks.Images[ilOtherBooks.Images.Count - 1], $"{title}\n{author}");
                 }
             }
@@ -126,7 +126,7 @@ namespace XRayBuilderGUI.UI
                 lblPreviousTitle.Text = tempData["title"].ToString();
                 string imageUrl = tempData["imageUrl"]?.ToString() ?? "";
                 if (imageUrl != "")
-                    pbPreviousCover.Image = Functions.MakeGrayscale3(await HttpDownloader.GetImage(imageUrl));
+                    pbPreviousCover.Image = Functions.MakeGrayscale3(await HttpDownloader.GetImageAsync(imageUrl));
             }
         }
 

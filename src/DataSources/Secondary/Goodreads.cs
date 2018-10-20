@@ -16,7 +16,6 @@ namespace XRayBuilderGUI.DataSources.Secondary
 {
     public class Goodreads : ISecondarySource
     {
-        private const string BookUrl = "https://www.goodreads.com/book/show/{0}";
         private const int MaxConcurrentRequests = 10;
         private HtmlDocument sourceHtmlDoc;
 
@@ -25,6 +24,10 @@ namespace XRayBuilderGUI.DataSources.Secondary
         private frmASIN frmAS = new frmASIN();
 
         public string Name => "Goodreads";
+
+        private readonly Regex _regexBookId = new Regex(@"/book/show/(?<id>[0-9]+)", RegexOptions.Compiled);
+        private string ParseBookId(string input) => _regexBookId.Match(input).Groups["id"].Value;
+        private string BookUrl(string id) => string.IsNullOrEmpty(id) ? null : $"https://www.goodreads.com/book/show/{id}";
 
         public async Task<IEnumerable<BookInfo>> SearchBookAsync(string author, string title, CancellationToken cancellationToken = default)
         {
@@ -57,19 +60,15 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
                 BookInfo newBook = new BookInfo(cleanTitle, authorNode.InnerText.Trim(), null);
 
-                Match matchId = Regex.Match(link.OuterHtml, @"./book/show/([0-9]+)");
-                if (matchId.Success)
-                {
-                    newBook.goodreadsID = matchId.Groups[1].Value;
-                    newBook.dataUrl = string.Format(BookUrl, matchId.Groups[1].Value);
-                }
+                newBook.goodreadsID = ParseBookId(link.OuterHtml);
+                newBook.dataUrl = BookUrl(newBook.goodreadsID);
 
                 newBook.bookImageUrl = coverNode.GetAttributeValue("src", "");
 
                 var ratingText = link.SelectSingleNode(".//span[@class='greyText smallText uitext']")?.InnerText.Clean();
                 if (ratingText != null)
                 {
-                    matchId = Regex.Match(ratingText, @"(\d+[\.,]?\d*) avg rating\s+(\d+(?:[\.,]?\d*)?).*\b(\d+) editions?");
+                    var matchId = Regex.Match(ratingText, @"(\d+[\.,]?\d*) avg rating\s+(\d+(?:[\.,]?\d*)?).*\b(\d+) editions?");
                     if (matchId.Success)
                     {
                         newBook.amazonRating = float.Parse(matchId.Groups[1].Value);

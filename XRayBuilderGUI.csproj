@@ -113,6 +113,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\SeriesInfo.cs" />
     <Compile Include="src\DataSources\Amazon\Amazon.cs" />
     <Compile Include="src\AuthorProfile.cs" />
     <Compile Include="src\BookInfo.cs" />

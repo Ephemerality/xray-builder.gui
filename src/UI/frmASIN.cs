@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using XRayBuilderGUI.DataSources.Amazon;
 
 namespace XRayBuilderGUI.UI
 {
@@ -32,10 +33,9 @@ namespace XRayBuilderGUI.UI
 
         private bool CheckAsin()
         {
-            Match validASIN = Regex.Match(tbAsin.Text, "(B[A-Z0-9]{9})");
-            if (validASIN.Success)
+            if (Amazon.IsAsin(tbAsin.Text))
             {
-                thisAsin = validASIN.Value;
+                thisAsin = tbAsin.Text;
                 return true;
             }
             MessageBox.Show("This does not appear to be a valid ASIN." +

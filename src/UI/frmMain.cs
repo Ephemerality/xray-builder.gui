@@ -341,6 +341,20 @@ namespace XRayBuilderGUI.UI
                 SaPath = $@"{outputDir}\StartActions.data.{bookInfo.asin}.asc";
                 ApPath = $@"{outputDir}\AuthorProfile.profile.{bookInfo.asin}.asc";
                 Logger.Log("Attempting to build Start Actions and End Actions...");
+
+                string AsinPrompt(string title, string author)
+                {
+                    var frmAsin = new frmASIN
+                    {
+                        Text = "Series Information",
+                        lblTitle = {Text = title},
+                        lblAuthor = {Text = author},
+                        tbAsin = {Text = ""}
+                    };
+                    frmAsin.ShowDialog();
+                    return frmAsin.tbAsin.Text;
+                }
+
                 EndActions ea = new EndActions(ap, bookInfo, metadata.RawMlSize, _dataSource, new EndActions.Settings
                 {
                     AmazonTld = _settings.amazonTLD,
@@ -351,7 +365,7 @@ namespace XRayBuilderGUI.UI
                     UseNewVersion = _settings.useNewVersion,
                     UseSubDirectories = _settings.useSubDirectories,
                     PromptAsin = _settings.promptASIN
-                });
+                }, AsinPrompt);
                 if (!await ea.Generate()) return;
 
                 if (_settings.useNewVersion)

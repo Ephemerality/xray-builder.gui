@@ -32,17 +32,17 @@ namespace XRayBuilderGUI
         private readonly ISecondarySource _dataSource;
         private readonly long _erl;
         private readonly Settings _settings;
-
-        private frmASIN frmAS = new frmASIN();
+        private readonly Func<string, string, string> _asinPrompt;
 
         //Requires an already-built AuthorProfile and the BaseEndActions.txt file
-        public EndActions(AuthorProfile authorProfile, BookInfo book, long erl, ISecondarySource dataSource, Settings settings)
+        public EndActions(AuthorProfile authorProfile, BookInfo book, long erl, ISecondarySource dataSource, Settings settings, Func<string, string, string> asinPrompt)
         {
             _authorProfile = authorProfile;
             curBook = book;
             _erl = erl;
             _dataSource = dataSource;
             _settings = settings;
+            _asinPrompt = asinPrompt;
         }
 
         /// <summary>
@@ -281,16 +281,14 @@ namespace XRayBuilderGUI
             {
 
                 newBook = await Amazon.SearchBook(book.title, book.author, _settings.AmazonTld, cancellationToken);
-                if (newBook == null && _settings.PromptAsin)
+                if (newBook == null && _settings.PromptAsin && _asinPrompt != null)
                 {
                     Logger.Log($"ASIN prompt for {book.title}...");
-                    newBook = new BookInfo(book.title, book.author, "");
-                    frmAS.Text = "Series Information";
-                    frmAS.lblTitle.Text = book.title;
-                    frmAS.tbAsin.Text = "";
-                    frmAS.ShowDialog();
-                    Logger.Log($"ASIN supplied: {frmAS.tbAsin.Text}");
-                    newBook.asin = frmAS.tbAsin.Text;
+                    var asin = _asinPrompt(book.title, book.author);
+                    if (string.IsNullOrWhiteSpace(asin))
+                        return null;
+                    Logger.Log($"ASIN supplied: {asin}");
+                    newBook = new BookInfo(book.title, book.author, asin);
                 }
             }
             catch

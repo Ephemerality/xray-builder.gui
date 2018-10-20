@@ -23,16 +23,15 @@ namespace XRayBuilderGUI.DataSources.Secondary
         private readonly Regex _regexBookId = new Regex(@"/book/show/(?<id>[0-9]+)", RegexOptions.Compiled);
         private string ParseBookId(string input) => _regexBookId.Match(input).Groups["id"].Value;
         private static string BookUrl(string id) => string.IsNullOrEmpty(id) ? null : $"https://www.goodreads.com/book/show/{id}";
+        private string SearchUrl(string author, string title) => $"https://www.goodreads.com/search?q={author}%20{title}";
 
         public async Task<IEnumerable<BookInfo>> SearchBookAsync(string author, string title, CancellationToken cancellationToken = default)
         {
-            var goodreadsSearchUrlBase = @"https://www.goodreads.com/search?q={0}%20{1}";
-
             title = Uri.EscapeDataString(title);
             author = Uri.EscapeDataString(Functions.FixAuthor(author));
 
             var goodreadsHtmlDoc = new HtmlDocument();
-            goodreadsHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(String.Format(goodreadsSearchUrlBase, author, title), cancellationToken));
+            goodreadsHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(SearchUrl(author, title), cancellationToken));
             return !goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results")
                 ? ParseSearchResults(goodreadsHtmlDoc)
                 : null;

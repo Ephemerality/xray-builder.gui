@@ -380,6 +380,17 @@ namespace XRayBuilderGUI
                 }
             }
 
+            if (curBook.Series != null)
+            {
+                Logger.Log($"\nSeries URL: {curBook.Series.Url}");
+                if (!string.IsNullOrEmpty(curBook.Series.Name))
+                    Logger.Log($"This is book {curBook.Series.Position} of {curBook.Series.Total} in the {curBook.Series.Name} series");
+                if (curBook.Series.Previous != null)
+                    Logger.Log($"Preceded by: {curBook.Series.Previous.title}");
+                if (curBook.Series.Next != null)
+                    Logger.Log($"Followed by: {curBook.Series.Next.title}\n");
+            }
+
             try
             {
                 if (!await _dataSource.GetPageCountAsync(curBook, token))

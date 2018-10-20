@@ -105,10 +105,8 @@ namespace XRayBuilderGUI.DataSources.Secondary
             if (!match.Success)
                 return null;
 
-            Logger.Log($"Series Goodreads Page URL: {series.Url}");
             series.Name = match.Groups[1].Value.Trim();
             series.Position = match.Groups[2].Value;
-
 
             var seriesHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
             seriesHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(series.Url));
@@ -120,8 +118,6 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
             int positionInt = (int)Convert.ToDouble(series.Position, CultureInfo.InvariantCulture.NumberFormat);
             int totalInt = (int)Convert.ToDouble(series.Total, CultureInfo.InvariantCulture.NumberFormat);
-
-            Logger.Log($"This is book {series.Position} of {series.Total} in the {series.Name} series");
 
             var bookNodes = seriesHtmlDoc.DocumentNode.SelectNodes("//div[@itemtype='http://schema.org/Book']");
             if (bookNodes == null)
@@ -148,16 +144,12 @@ namespace XRayBuilderGUI.DataSources.Secondary
             {
                 var bookIndex = bookNode.SelectSingleNode(".//div[@class='responsiveBook__header']")?.InnerText.ToLower();
                 if (bookIndex == null) continue;
+
                 if (bookIndex == prevSearch && series.Previous == null)
-                {
                     series.Previous = await ParseSeriesBook(bookNode);
-                    Logger.Log($"Preceded by: {series.Previous.title}");
-                }
                 else if (bookIndex == nextSearch)
-                {
                     series.Next = await ParseSeriesBook(bookNode);
-                    Logger.Log($"Followed by: {series.Next.title}");
-                }
+
                 if (series.Previous != null && (series.Next != null || positionInt == totalInt))
                     break; // next and prev found or prev found and latest in series
             }

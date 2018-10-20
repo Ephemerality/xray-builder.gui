@@ -235,7 +235,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
         }
 
         // TODO: All calls to Amazon should check for the captcha page (or ideally avoid it somehow)
-        public static async Task<BookInfo> SearchBook(string title, string author, string TLD)
+        public static async Task<BookInfo> SearchBook(string title, string author, string TLD, CancellationToken cancellationToken = default)
         {
             BookInfo result = null;
 

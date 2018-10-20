@@ -12,7 +12,7 @@ namespace XRayBuilderGUI
 {
     // Taken from http://stackoverflow.com/a/2700707
     // Downloads an HTML page using appropriate encoding
-    // TODO: Review
+    // TODO: Review and add cancellation tokens
     public class HttpDownloader
     {
         private readonly string _referer;

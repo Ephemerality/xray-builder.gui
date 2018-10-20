@@ -15,11 +15,12 @@ using XRayBuilderGUI.DataSources;
 using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary.Model;
 using XRayBuilderGUI.Model;
+using XRayBuilderGUI.UI;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI
 {
-    class EndActions
+    public class EndActions
     {
         private string EaPath = "";
         private string SaPath = "";
@@ -31,6 +32,8 @@ namespace XRayBuilderGUI
         private readonly ISecondarySource _dataSource;
         private readonly long _erl;
         private readonly Settings _settings;
+
+        private frmASIN frmAS = new frmASIN();
 
         //Requires an already-built AuthorProfile and the BaseEndActions.txt file
         public EndActions(AuthorProfile authorProfile, BookInfo book, long erl, ISecondarySource dataSource, Settings settings)
@@ -264,12 +267,80 @@ namespace XRayBuilderGUI
             Logger.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
         }
 
+        private async Task<BookInfo> SearchOrPrompt(BookInfo book, CancellationToken cancellationToken = default)
+        {
+            // If the asin was available from another source, use it
+            if (!string.IsNullOrEmpty(book.asin))
+            {
+                await book.GetAmazonInfo($"https://www.amazon.{_settings.AmazonTld}/dp/{book.asin}");
+                return book;
+            }
+
+            BookInfo newBook;
+            try
+            {
+
+                newBook = await Amazon.SearchBook(book.title, book.author, _settings.AmazonTld, cancellationToken);
+                if (newBook == null && _settings.PromptAsin)
+                {
+                    Logger.Log($"ASIN prompt for {book.title}...");
+                    newBook = new BookInfo(book.title, book.author, "");
+                    frmAS.Text = "Series Information";
+                    frmAS.lblTitle.Text = book.title;
+                    frmAS.tbAsin.Text = "";
+                    frmAS.ShowDialog();
+                    Logger.Log($"ASIN supplied: {frmAS.tbAsin.Text}");
+                    newBook.asin = frmAS.tbAsin.Text;
+                }
+            }
+            catch
+            {
+                Logger.Log($"Failed to find {book.title} on Amazon.{_settings.AmazonTld}, trying again with Amazon.com.");
+                newBook = await Amazon.SearchBook(book.title, book.author, "com", cancellationToken);
+            }
+
+            if (newBook != null)
+                await newBook.GetAmazonInfo(newBook.amazonUrl, cancellationToken); //fill in desc, imageurl, and ratings
+
+            return newBook;
+        }
+
+        public async Task ExpandSeriesMetadata(SeriesInfo series, CancellationToken cancellationToken)
+        {
+            // Search author's other books for the book (assumes next in series was written by the same author...)
+            // Returns the first one found, though there should probably not be more than 1 of the same name anyway
+            // If not found there, try to get it using the asin from Goodreads or by searching Amazon
+            // Swaps out the basic next/previous from Goodreads w/ full Amazon ones
+            async Task<BookInfo> FromApOrSearch(BookInfo book, CancellationToken ct)
+            {
+                return _authorProfile.otherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.title, $@"^{book.title}(?: \(.*\))?$"))
+                    ?? await SearchOrPrompt(book, ct);
+            }
+
+            // TODO: Don't juggle around bookinfos
+            series.Next = await FromApOrSearch(series.Next, cancellationToken);
+            series.Previous = await FromApOrSearch(series.Previous, cancellationToken);
+
+            if (series.Next == null)
+            {
+                Logger.Log("Book was found to be part of a series, but an error occurred finding the next book.\r\n"
+                    + "Please report this book and the Goodreads URL and output log to improve parsing (if it's a real book).");
+            }
+        }
+
         public async Task GenerateNewFormatData(IProgressBar progress, CancellationToken token)
         {
             try
             {
                 await _dataSource.GetExtrasAsync(curBook, progress, token);
-                curBook.nextInSeries = await _dataSource.GetNextInSeriesAsync(curBook, _authorProfile, _settings.AmazonTld, token);
+                curBook.Series = await _dataSource.GetSeriesInfoAsync(curBook.dataUrl, token);
+
+                if (curBook.Series == null || curBook.Series.Total == 0)
+                    Logger.Log("The book was not found to be part of a series.");
+                else if (curBook.Series.Next == null && curBook.Series.Position != curBook.Series.Total.ToString())// && !curBook.Series.Position?.Contains(".") == true)
+                    Logger.Log("An error occurred finding the next book in series. The book may not be part of a series, or it is the latest release.");
+                else
+                    await ExpandSeriesMetadata(curBook.Series, token);
             }
             catch (Exception ex)
             {
@@ -282,7 +353,7 @@ namespace XRayBuilderGUI
             }
 
             // TODO: Refactor next/previous series stuff
-            if (curBook.nextInSeries == null)
+            if (curBook.Series?.Next == null)
             {
                 try
                 {
@@ -293,13 +364,13 @@ namespace XRayBuilderGUI
                             Logger.Log("According to Amazon, this book is not part of a series.");
                             break;
                         case "ERR000":
-                            curBook.nextInSeries =
+                            if (curBook.Series == null)
+                                curBook.Series = new SeriesInfo();
+                            curBook.Series.Next =
                                 new BookInfo(seriesResult.NextBook.Title.TitleName,
                                     Functions.FixAuthor(seriesResult.NextBook.Authors.FirstOrDefault()?.AuthorName),
                                     seriesResult.NextBook.Asin);
-                            // TODO: AmazonURL should be a property on the book itself, not passed in like this, and probably generated
-                            curBook.nextInSeries.amazonUrl = $"https://www.amazon.com/dp/{curBook.nextInSeries.asin}";
-                            await curBook.nextInSeries.GetAmazonInfo(curBook.nextInSeries.amazonUrl);
+                            await curBook.Series.Next.GetAmazonInfo(curBook.Series.Next.amazonUrl);
                             break;
                     }
                 }
@@ -311,7 +382,7 @@ namespace XRayBuilderGUI
 
             try
             {
-                if (!(await _dataSource.GetPageCountAsync(curBook, token)))
+                if (!await _dataSource.GetPageCountAsync(curBook, token))
                 {
                     if (!Properties.Settings.Default.pageCount)
                         Logger.Log("No page count found on Goodreads");

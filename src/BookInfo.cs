@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using XRayBuilderGUI.DataSources.Secondary.Model;
@@ -12,6 +13,7 @@ namespace XRayBuilderGUI
     {
         public string title;
         public string author;
+        // TODO: Add TLD to go with ASIN (asin/tld class?)
         public string asin;
         private string _guid;
         public string databasename;
@@ -23,7 +25,7 @@ namespace XRayBuilderGUI
         public double amazonRating;
         public int numReviews;
         public string dataUrl = "";
-        public string amazonUrl = "";
+        public string amazonUrl => string.IsNullOrEmpty(asin) ? null : $"https://www.amazon.com/dp/{asin}";
         public string rawmlPath = "";
 
         public string authorAsin = "";
@@ -32,14 +34,10 @@ namespace XRayBuilderGUI
         public int editions = 0;
 
         // Added StartAction info
-        public string seriesName = "";
-        public string seriesPosition;
-        public int totalInSeries;
         public int readingHours;
         public int readingMinutes;
         public int pagesInBook;
-        public BookInfo nextInSeries;
-        public BookInfo previousInSeries;
+        public SeriesInfo Series { get; set; } = new SeriesInfo();
 
         // List of clips and their highlight/like count
         public List<NotableClip> notableClips;
@@ -111,7 +109,7 @@ namespace XRayBuilderGUI
         /// Retrieves the book's description, image URL, and rating from the book's Amazon URL.
         /// </summary>
         /// <param name="amazonUrl">Book's Amazon URL</param>
-        public async Task GetAmazonInfo(string amazonUrl)
+        public async Task GetAmazonInfo(string amazonUrl, CancellationToken cancellationToken = default)
         {
             if (amazonUrl == "") return;
             HtmlDocument bookDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };

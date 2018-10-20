@@ -22,7 +22,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
         private readonly Regex _regexBookId = new Regex(@"/book/show/(?<id>[0-9]+)", RegexOptions.Compiled);
         private string ParseBookId(string input) => _regexBookId.Match(input).Groups["id"].Value;
-        private string BookUrl(string id) => string.IsNullOrEmpty(id) ? null : $"https://www.goodreads.com/book/show/{id}";
+        private static string BookUrl(string id) => string.IsNullOrEmpty(id) ? null : $"https://www.goodreads.com/book/show/{id}";
 
         public async Task<IEnumerable<BookInfo>> SearchBookAsync(string author, string title, CancellationToken cancellationToken = default)
         {
@@ -82,115 +82,6 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
         /// <summary>
         /// Searches for the next and previous books in a series, if it is part of one.
-        /// Modifies curBook.previousInSeries to contain the found book info.
-        /// </summary>
-        /// <returns>Next book in series</returns>
-        public async Task<BookInfo> GetNextInSeriesAsync(BookInfo curBook, AuthorProfile authorProfile, string TLD, CancellationToken cancellationToken = default)
-        {
-            BookInfo nextBook = null;
-
-            if (curBook.dataUrl == "") return null;
-            if (sourceHtmlDoc == null)
-            {
-                sourceHtmlDoc = new HtmlDocument();
-                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl));
-            }
-
-            // Get title of next book
-            Dictionary<string, BookInfo> seriesInfo = await GetNextInSeriesTitleAsync(curBook);
-            if (seriesInfo.TryGetValue("Next", out var book))
-            {
-                // TODO: next and previous sections are the same...
-                // Search author's other books for the book (assumes next in series was written by the same author...)
-                // Returns the first one found, though there should probably not be more than 1 of the same name anyway
-                nextBook = authorProfile.otherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.title, $@"^{book.title}(?: \(.*\))?$"));
-                if (nextBook == null)
-                {
-                    // Attempt to search Amazon for the book instead
-                    // TODO: This should be elsewhere
-                    try
-                    {
-                        if (!string.IsNullOrEmpty(book.asin))
-                        {
-                            nextBook = book;
-                            await nextBook.GetAmazonInfo($"https://www.amazon.{TLD}/dp/{book.asin}");
-                        }
-                        else
-                            nextBook = await Amazon.Amazon.SearchBook(book.title, book.author, TLD);
-
-                        if (nextBook == null && settings.promptASIN)
-                        {
-                            Logger.Log($"ASIN prompt for {book.title}...");
-                            nextBook = new BookInfo(book.title, book.author, "");
-                            frmAS.Text = "Next in Series";
-                            frmAS.lblTitle.Text = book.title;
-                            frmAS.tbAsin.Text = "";
-                            frmAS.ShowDialog();
-                            Logger.Log($"ASIN supplied: {frmAS.tbAsin.Text}");
-                            string Url = $"https://www.amazon.{TLD}/dp/{frmAS.tbAsin.Text}";
-                            await nextBook.GetAmazonInfo(Url);
-                            nextBook.amazonUrl = Url;
-                            nextBook.asin = frmAS.tbAsin.Text;
-                        }
-                    }
-                    catch
-                    {
-                        Logger.Log($"Failed to find {book.title} on Amazon.{TLD}, trying again with Amazon.com.");
-                        TLD = "com";
-                        nextBook = await Amazon.Amazon.SearchBook(book.title, book.author, TLD);
-                    }
-
-                    if (nextBook != null)
-                        await nextBook.GetAmazonInfo(nextBook.amazonUrl); //fill in desc, imageurl, and ratings
-                }
-
-                if (nextBook == null)
-                {
-                    Logger.Log("Book was found to be part of a series, but an error occurred finding the next book.\r\n"
-                        + "Please report this book and the Goodreads URL and output log to improve parsing (if it's a real book).");
-                }
-            }
-            else if (curBook.totalInSeries == 0)
-                Logger.Log("The book was not found to be part of a series.");
-            else if (curBook.seriesPosition != curBook.totalInSeries.ToString() && !curBook.seriesPosition?.Contains(".") == true)
-                Logger.Log("An error occurred finding the next book in series. The book may not be part of a series, or it is the latest release.");
-
-            if (seriesInfo.TryGetValue("Previous", out book))
-            {
-                var prevBook = authorProfile.otherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.title, $@"^{book.title}(?: \(.*\))?$"));
-                if (book.asin != null)
-                {
-                    prevBook = book;
-                    await prevBook.GetAmazonInfo($"https://www.amazon.{TLD}/dp/{book.asin}");
-                }
-                else if(prevBook != null)
-                    await prevBook.GetAmazonInfo(prevBook.amazonUrl);
-                if (prevBook == null && settings.promptASIN)
-                {
-                    Logger.Log($"ASIN prompt for {book.title}...");
-                    prevBook = new BookInfo(book.title, book.author, "");
-                    frmAS.Text = "Previous in Series";
-                    frmAS.lblTitle.Text = book.title;
-                    frmAS.tbAsin.Text = "";
-                    frmAS.ShowDialog();
-                    Logger.Log($"ASIN supplied: {frmAS.tbAsin.Text}");
-                    string Url = $"https://www.amazon.{TLD}/dp/{frmAS.tbAsin.Text}";
-                    await prevBook.GetAmazonInfo(Url);
-                    prevBook.amazonUrl = Url;
-                    prevBook.asin = frmAS.tbAsin.Text;
-                }
-                if (prevBook == null)
-                {
-                    Logger.Log("Book was found to be part of a series, but an error occurred finding the previous book.\r\n" +
-                        "Please report this book and the Goodreads URL and output log to improve parsing.");
-                }
-            }
-            return nextBook;
-        }
-
-        /// <summary>
-        /// Search Goodread for possible series info, returning the next title in the series.
-        /// Modifies curBook.
         /// </summary>
         public async Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
         {

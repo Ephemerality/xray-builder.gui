@@ -422,7 +422,7 @@ namespace XRayBuilderGUI
                 }
             };
             baseEndActions.Data.AuthorSubscriptions = baseEndActions.Data.FollowSubscriptions;
-            baseEndActions.Data.NextBook = Extensions.BookInfoToBook(curBook.nextInSeries, false);
+            baseEndActions.Data.NextBook = Extensions.BookInfoToBook(curBook.Series?.Next, false);
             baseEndActions.Data.PublicSharedRating = new Model.EndActions.Rating
             {
                 Class = "publicSharedRating",
@@ -493,13 +493,13 @@ namespace XRayBuilderGUI
                 ImageUrl = curBook.bookImageUrl,
                 Erl = -1
             };
-            if (curBook.seriesPosition != null)
+            if (!string.IsNullOrEmpty(curBook.Series?.Position))
             {
                 baseStartActions.Data.SeriesPosition = new StartActions.SeriesPosition
                 {
-                    PositionInSeries = Convert.ToInt32(double.Parse(curBook.seriesPosition)),
-                    TotalInSeries = curBook.totalInSeries,
-                    SeriesName = curBook.seriesName
+                    PositionInSeries = Convert.ToInt32(double.Parse(curBook.Series.Position)),
+                    TotalInSeries = curBook.Series.Total,
+                    SeriesName = curBook.Series.Name
                 };
             }
             baseStartActions.Data.FollowSubscriptions = new StartActions.AuthorSubscriptions
@@ -543,7 +543,7 @@ namespace XRayBuilderGUI
             baseStartActions.Data.ReadingTime.Minutes = curBook.readingMinutes;
             baseStartActions.Data.ReadingTime.FormattedTime.Replace("%HOURS%", curBook.readingHours.ToString());
             baseStartActions.Data.ReadingTime.FormattedTime.Replace("%MINUTES%", curBook.readingMinutes.ToString());
-            baseStartActions.Data.PreviousBookInTheSeries = Extensions.BookInfoToBook(curBook.previousInSeries, true);
+            baseStartActions.Data.PreviousBookInTheSeries = Extensions.BookInfoToBook(curBook.Series?.Previous, true);
             baseStartActions.Data.ReadingPages.PagesInBook = curBook.pagesInBook;
 
             try

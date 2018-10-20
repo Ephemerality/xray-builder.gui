@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using XRayBuilderGUI.DataSources.Amazon.Model;
 
@@ -18,7 +20,13 @@ namespace XRayBuilderGUI.DataSources.Amazon
 
     public static class Amazon
     {
+        public static readonly Regex RegexAsin = new Regex("(?<asin>B[A-Z0-9]{9})", RegexOptions.Compiled);
+        public static readonly Regex RegexAsinUrl = new Regex("(dp/(?<asin>B[A-Z0-9]{9})/|/gp/product/(?<asin>B[A-Z0-9]{9}))", RegexOptions.Compiled);
         public static bool IsAsin(string asin) => Regex.IsMatch(asin, "^B[A-Z0-9]{9}$");
+        [CanBeNull]
+        public static string ParseAsin(string input) => RegexAsin.MatchOrNull(input)?.Groups["asin"].Value;
+        [CanBeNull]
+        public static string ParseAsinFromUrl(string input) => RegexAsinUrl.MatchOrNull(input)?.Groups["asin"].Value;
 
         public static async Task<AuthorSearchResults> SearchAuthor(BookInfo curBook, string TLD)
         {
@@ -164,10 +172,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
                 // TODO: This should be removable when the Kindle Only page is parsed instead
                 if (asin == "")
                     continue; //throw new DataSource.FormatChangedException(nameof(Amazon), "book results - kindle edition asin");
-                bookList.Add(new BookInfo(name, curAuthor, asin)
-                {
-                    amazonUrl = $"https://www.amazon.{TLD}/dp/{asin}"
-                });
+                bookList.Add(new BookInfo(name, curAuthor, asin));
             }
             return bookList;
         }
@@ -193,9 +198,9 @@ namespace XRayBuilderGUI.DataSources.Amazon
                 if (match.Success)
                     asin = match.Groups[1].Value;
                 var url = $"https://www.amazon.{TLD}/dp/{asin}";
-                if (name != "" && url != "" && asin != "")
+                if (name != "" && asin != "")
                 {
-                    BookInfo newBook = new BookInfo(name, curAuthor, asin) { amazonUrl = url };
+                    BookInfo newBook = new BookInfo(name, curAuthor, asin);
                     bookList.Add(newBook);
                 }
             }
@@ -219,10 +224,9 @@ namespace XRayBuilderGUI.DataSources.Amazon
                     Match match = Regex.Match(otherBook.OuterHtml, "dp/(B[A-Z0-9]{9})/");
                     if (match.Success)
                         asin = match.Groups[1].Value;
-                    var url = $"https://www.amazon.{TLD}/dp/{asin}";
-                    if (name != "" && url != "" && asin != "")
+                    if (name != "" && asin != "")
                     {
-                        BookInfo newBook = new BookInfo(name, curAuthor, asin) { amazonUrl = url };
+                        BookInfo newBook = new BookInfo(name, curAuthor, asin);
                         bookList.Add(newBook);
                     }
                 }
@@ -255,12 +259,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
                 Match foundASIN = Regex.Match(nodeASIN.OuterHtml, "(B[A-Z0-9]{9})");
                 node = node.SelectSingleNode(".//div/div/div/div[@class='a-fixed-left-grid-col a-col-right']/div/a");
                 if (node != null)
-                {
                     result = new BookInfo(node.InnerText, author, foundASIN.Value);
-                    string trimUrl = nodeASIN.GetAttributeValue("href", "");
-                    trimUrl = trimUrl.Substring(0, trimUrl.IndexOf(foundASIN.Value) + foundASIN.Length);
-                    result.amazonUrl = trimUrl; // Grab the true link for good measure
-                }
             }
             return result;
         }

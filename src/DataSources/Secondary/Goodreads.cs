@@ -277,7 +277,6 @@ namespace XRayBuilderGUI.DataSources.Secondary
         // Search Goodreads for possible kindle edition of book and return ASIN.
         public async Task<string> SearchBookASIN(string id, string title, CancellationToken cancellationToken = default)
         {
-            string goodreadsBookUrl = String.Format("https://www.goodreads.com/book/show/{0}", id);
             try
             {
                 HtmlDocument bookHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
@@ -292,11 +291,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
                     if (bookNodes != null)
                     {
                         foreach (HtmlNode book in bookNodes)
-                        {
-                            match = Regex.Match(book.InnerHtml, "(B[A-Z0-9]{9})");
-                            if (match.Success)
-                                return match.Value;
-                        }
+                            return Amazon.Amazon.ParseAsin(book.InnerHtml);
                     }
                 }
                 return "";

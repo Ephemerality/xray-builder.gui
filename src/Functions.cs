@@ -404,6 +404,12 @@ namespace XRayBuilderGUI
                 ? (int?) result
                 : null;
         }
+
+        public static Match MatchOrNull(this Regex regex, string input)
+        {
+            var match = regex.Match(input);
+            return match.Success ? match : null;
+        }
     }
 
     public class PluralFormatProvider : IFormatProvider, ICustomFormatter

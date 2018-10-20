@@ -103,8 +103,6 @@ namespace XRayBuilderGUI
                         HtmlNode nodeTitle = item.SelectSingleNode(".//div/a");
                         var nodeTitleCheck = nodeTitle.GetAttributeValue("title", "");
                         var nodeUrl = nodeTitle.GetAttributeValue("href", "");
-                        if (nodeUrl != "")
-                            nodeUrl = "https://www.amazon." + _settings.AmazonTld + nodeUrl;
                         if (nodeTitleCheck == "")
                         {
                             nodeTitle = item.SelectSingleNode(".//div/a");
@@ -126,7 +124,7 @@ namespace XRayBuilderGUI
                         if (match.Success)
                             continue;
                         possibleBooks.Add(new BookInfo(nodeTitleCheck, cleanAuthor,
-                            item.SelectSingleNode(".//div")?.GetAttributeValue("data-asin", null)) { amazonUrl = nodeUrl });
+                            Amazon.ParseAsin(nodeUrl)));
                     }
                     var bookBag = new ConcurrentBag<BookInfo>();
                     await possibleBooks.ParallelForEachAsync(async book =>
@@ -155,7 +153,6 @@ namespace XRayBuilderGUI
                     recList = otherItems.SelectNodes(".//li[@class='a-spacing-medium p13n-sc-list-item']");
                     if (recList != null)
                     {
-                        string sponsTitle, sponsAsin = "", sponsUrl = "";
                         var possibleBooks = new List<BookInfo>();
                         // TODO: This entire foreach is pretty much the exact same as the one above...
                         foreach (HtmlNode result in recList.Where(result => result != null))
@@ -164,25 +161,15 @@ namespace XRayBuilderGUI
                                 result.SelectSingleNode(".//div[@class='a-fixed-left-grid-col a-col-left']/a");
                             if (otherBook == null)
                                 continue;
-                            Match match = Regex.Match(otherBook.GetAttributeValue("href", ""),
-                                "dp/(B[A-Z0-9]{9})");
-                            if (!match.Success)
-                                match = Regex.Match(otherBook.GetAttributeValue("href", ""),
-                                    "gp/product/(B[A-Z0-9]{9})");
-                            if (match.Success)
-                            {
-                                sponsAsin = match.Groups[1].Value;
-                                sponsUrl = String.Format("https://www.amazon.{1}/dp/{0}", sponsAsin,
-                                    _settings.AmazonTld);
-                            }
+                            var sponsAsin = Amazon.ParseAsinFromUrl(otherBook.GetAttributeValue("href", ""));
 
                             otherBook = otherBook.SelectSingleNode(".//img");
-                            match = Regex.Match(otherBook.GetAttributeValue("alt", ""),
+                            var match = Regex.Match(otherBook.GetAttributeValue("alt", ""),
                                 @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)",
                                 RegexOptions.IgnoreCase);
                             if (match.Success)
                                 continue;
-                            sponsTitle = otherBook.GetAttributeValue("alt", "");
+                            var sponsTitle = otherBook.GetAttributeValue("alt", "");
                             //Check for duplicate by title
                             if (custAlsoBought.Any(bk => bk.title.Contains(sponsTitle)) || possibleBooks.Any(bk => bk.title.Contains(sponsTitle)))
                                 continue;
@@ -191,7 +178,7 @@ namespace XRayBuilderGUI
                                 ?? throw new FormatChangedException("Amazon", "Sponsored book author");
                             // TODO: Throw more format changed exceptions to make it obvious that the site changed
                             var sponsAuthor = otherBook.InnerText.Trim();
-                            possibleBooks.Add(new BookInfo(sponsTitle, sponsAuthor, sponsAsin) { amazonUrl = sponsUrl });
+                            possibleBooks.Add(new BookInfo(sponsTitle, sponsAuthor, sponsAsin));
                         }
 
                         var bookBag = new ConcurrentBag<BookInfo>();

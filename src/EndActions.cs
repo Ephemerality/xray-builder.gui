@@ -549,6 +549,7 @@ namespace XRayBuilderGUI
             public string AmazonTld { get; set; }
             public bool UseNewVersion { get; set; }
             public bool UseSubDirectories { get; set; }
+            public bool PromptAsin { get; set; }
         }
     }
 }

@@ -349,7 +349,8 @@ namespace XRayBuilderGUI.UI
                     PenName = _settings.penName,
                     RealName = _settings.realName,
                     UseNewVersion = _settings.useNewVersion,
-                    UseSubDirectories = _settings.useSubDirectories
+                    UseSubDirectories = _settings.useSubDirectories,
+                    PromptAsin = _settings.promptASIN
                 });
                 if (!await ea.Generate()) return;
 

@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using XRayBuilderGUI.DataSources.Secondary.Model;
-using XRayBuilderGUI.UI;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI.DataSources.Secondary
@@ -18,10 +17,6 @@ namespace XRayBuilderGUI.DataSources.Secondary
     {
         private const int MaxConcurrentRequests = 10;
         private HtmlDocument sourceHtmlDoc;
-
-        private Properties.Settings settings = Properties.Settings.Default;
-
-        private frmASIN frmAS = new frmASIN();
 
         public string Name => "Goodreads";
 

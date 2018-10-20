@@ -198,91 +198,85 @@ namespace XRayBuilderGUI.DataSources.Secondary
         /// Search Goodread for possible series info, returning the next title in the series.
         /// Modifies curBook.
         /// </summary>
-        public async Task<Dictionary<string, BookInfo>> GetNextInSeriesTitleAsync(BookInfo curBook, CancellationToken cancellationToken = default)
+        public async Task<SeriesInfo> GetNextInSeriesTitleAsync(string dataUrl, CancellationToken cancellationToken = default)
         {
-            Dictionary<string, BookInfo> results = new Dictionary<string, BookInfo>(2);
+            var series = new SeriesInfo();
             if (sourceHtmlDoc == null)
             {
                 sourceHtmlDoc = new HtmlDocument();
-                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl));
+                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(dataUrl));
             }
 
             //Search Goodreads for series info
-            string goodreadsSeriesUrl = @"https://www.goodreads.com/series/{0}";
             HtmlNode metaNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='metacol']");
             HtmlNode seriesNode = metaNode?.SelectSingleNode("//h2[@id='bookSeries']/a");
             if (seriesNode == null)
-                return results;
+                return null;
             var match = Regex.Match(seriesNode.OuterHtml, @"/series/([0-9]*)");
             if (!match.Success)
-                return results;
-            goodreadsSeriesUrl = String.Format(goodreadsSeriesUrl, match.Groups[1].Value);
+                return null;
+            series.Url = $"https://www.goodreads.com/series/{match.Groups[1].Value}";
             match = Regex.Match(seriesNode.InnerText, @"\((.*) #?([0-9]*([.,][0-9])?)\)");
-            if (match.Success)
-            {
-                Logger.Log($"Series Goodreads Page URL: {goodreadsSeriesUrl}");
-                curBook.seriesName = match.Groups[1].Value.Trim();
-                curBook.seriesPosition = match.Groups[2].Value;
-            }
-            else
-                return results;
+            if (!match.Success)
+                return null;
 
-            HtmlDocument seriesHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
-            seriesHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(goodreadsSeriesUrl));
+            Logger.Log($"Series Goodreads Page URL: {series.Url}");
+            series.Name = match.Groups[1].Value.Trim();
+            series.Position = match.Groups[2].Value;
+
+
+            var seriesHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
+            seriesHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(series.Url));
 
             seriesNode = seriesHtmlDoc.DocumentNode.SelectSingleNode("//div[contains(@class, 'responsiveSeriesHeader__subtitle')]");
             match = Regex.Match(seriesNode?.InnerText ?? "", @"([0-9]+) (?:primary )?works?");
             if (match.Success)
-                curBook.totalInSeries = int.Parse(match.Groups[1].Value);
+                series.Total = int.Parse(match.Groups[1].Value);
 
-            int positionInt = (int)Convert.ToDouble(curBook.seriesPosition, CultureInfo.InvariantCulture.NumberFormat);
-            int totalInt = (int)Convert.ToDouble(curBook.totalInSeries, CultureInfo.InvariantCulture.NumberFormat);
+            int positionInt = (int)Convert.ToDouble(series.Position, CultureInfo.InvariantCulture.NumberFormat);
+            int totalInt = (int)Convert.ToDouble(series.Total, CultureInfo.InvariantCulture.NumberFormat);
 
-            Logger.Log($"This is book {curBook.seriesPosition} of {curBook.totalInSeries} in the {curBook.seriesName} series");
+            Logger.Log($"This is book {series.Position} of {series.Total} in the {series.Name} series");
 
-            HtmlNodeCollection bookNodes = seriesHtmlDoc.DocumentNode.SelectNodes("//div[@itemtype='http://schema.org/Book']");
-            string prevSearch = curBook.seriesPosition.Contains(".")
+            var bookNodes = seriesHtmlDoc.DocumentNode.SelectNodes("//div[@itemtype='http://schema.org/Book']");
+            if (bookNodes == null)
+                return series;
+            var prevSearch = series.Position.Contains(".")
                 ? $"book {positionInt}"
                 : $"book {positionInt - 1}";
-            string nextSearch = $"book {positionInt + 1}";
-            if (bookNodes != null)
+            var nextSearch = $"book {positionInt + 1}";
+
+            BookInfo ParseSeriesBook(HtmlNode bookNode)
             {
-                foreach (HtmlNode book in bookNodes)
-                {
-                    var bookIndex = book.SelectSingleNode(".//div[@class='responsiveBook__header']")?.InnerText.ToLower();
-                    if (bookIndex == null) continue;
-                    // TODO: Combine these
-                    if (results.Count == 0 && bookIndex == prevSearch)
-                    {
-                        BookInfo prevBook = new BookInfo("", "", "");
-                        var title = book.SelectSingleNode(".//div[@class='u-paddingBottomXSmall']/a");
-                        prevBook.title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", "", RegexOptions.Compiled);
-                        match = Regex.Match(title.GetAttributeValue("href", ""), @"show/([0-9]+)");
-                        if (match.Success)
-                            prevBook.asin = await SearchBookASIN(match.Groups[1].Value, prevBook.title).ConfigureAwait(false);
-                        prevBook.author = book.SelectSingleNode(".//span[@itemprop='author']//a")?.InnerText.Trim() ?? "";
-                        results["Previous"] = prevBook;
-                        curBook.previousInSeries = prevBook;
-                        Logger.Log($"Preceded by: {prevBook.title}");
-                        continue;
-                    }
-                    if (bookIndex == nextSearch)
-                    {
-                        BookInfo nextBook = new BookInfo("", "", "");
-                        var title = book.SelectSingleNode(".//div[@class='u-paddingBottomXSmall']/a");
-                        nextBook.title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", "", RegexOptions.Compiled);
-                        match = Regex.Match(title.GetAttributeValue("href", ""), @"show/([0-9]+)");
-                        if (match.Success)
-                            nextBook.asin = await SearchBookASIN(match.Groups[1].Value, nextBook.title).ConfigureAwait(false);
-                        nextBook.author = book.SelectSingleNode(".//span[@itemprop='author']//a")?.InnerText.Trim() ?? "";
-                        results["Next"] = nextBook;
-                        curBook.nextInSeries = nextBook;
-                        Logger.Log($"Followed by: {nextBook.title}");
-                    }
-                    if (results.Count == 2 || results.Count == 1 && positionInt == totalInt) break; // next and prev found or prev found and latest in series
-                }
+                BookInfo book = new BookInfo("", "", "");
+                var title = bookNode.SelectSingleNode(".//div[@class='u-paddingBottomXSmall']/a");
+                book.title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", "", RegexOptions.Compiled);
+                match = Regex.Match(title.GetAttributeValue("href", ""), @"show/([0-9]+)");
+                //if (match.Success)
+                //    book.asin = await SearchBookASIN(match.Groups[1].Value, book.title).ConfigureAwait(false);
+                book.author = bookNode.SelectSingleNode(".//span[@itemprop='author']//a")?.InnerText.Trim() ?? "";
+                return book;
             }
-            return results;
+
+            foreach (var bookNode in bookNodes)
+            {
+                var bookIndex = bookNode.SelectSingleNode(".//div[@class='responsiveBook__header']")?.InnerText.ToLower();
+                if (bookIndex == null) continue;
+                if (bookIndex == prevSearch && series.Previous == null)
+                {
+                    series.Previous = ParseSeriesBook(bookNode);
+                    Logger.Log($"Preceded by: {series.Previous.title}");
+                }
+                else if (bookIndex == nextSearch)
+                {
+                    series.Next = ParseSeriesBook(bookNode);
+                    Logger.Log($"Followed by: {series.Next.title}");
+                }
+                if (series.Previous != null && (series.Next != null || positionInt == totalInt))
+                    break; // next and prev found or prev found and latest in series
+            }
+
+            return series;
         }
 
         // Search Goodread for possible kindle edition of book and return ASIN.

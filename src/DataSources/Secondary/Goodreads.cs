@@ -134,7 +134,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
                 book.goodreadsID = ParseBookId(title.GetAttributeValue("href", ""));
                 // TODO: move this ASIN search somewhere else
                 if (!string.IsNullOrEmpty(book.goodreadsID))
-                    book.asin = await SearchBookASIN(book.goodreadsID, book.title, cancellationToken).ConfigureAwait(false);
+                    book.asin = await SearchBookASIN(book.goodreadsID, cancellationToken).ConfigureAwait(false);
                 book.author = bookNode.SelectSingleNode(".//span[@itemprop='author']//a")?.InnerText.Trim() ?? "";
                 return book;
             }
@@ -157,7 +157,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
         }
 
         // Search Goodreads for possible kindle edition of book and return ASIN.
-        public async Task<string> SearchBookASIN(string id, string title, CancellationToken cancellationToken = default)
+        public async Task<string> SearchBookASIN(string id, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -180,11 +180,12 @@ namespace XRayBuilderGUI.DataSources.Secondary
             }
             catch (Exception ex)
             {
-                Logger.Log(String.Format("An error occurred while searching for {0}s ASIN.\r\n", title) + ex.Message + "\r\n" + ex.StackTrace);
+                Logger.Log($"An error occurred while searching for {id}'s ASIN.\r\n{ex.Message}\r\n{ex.StackTrace}");
                 return "";
             }
         }
 
+        // TODO: This shouldn't modify curbook
         public async Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
         {
             if (sourceHtmlDoc == null)
@@ -214,7 +215,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             return false;
         }
 
-        public async Task<IEnumerable<XRay.Term>> GetTermsAsync(string dataUrl, IProgressBar progress, CancellationToken cancellationToken)
+        public async Task<IEnumerable<XRay.Term>> GetTermsAsync(string dataUrl, IProgressBar progress, CancellationToken cancellationToken = default)
         {
             if (sourceHtmlDoc == null)
             {

@@ -350,7 +350,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
             if (curBook.notableClips == null)
             {
-                curBook.notableClips = (await GetNotableClipsAsync("", sourceHtmlDoc, progress, cancellationToken).ConfigureAwait(false)).ToList();
+                curBook.notableClips = (await GetNotableClipsAsync("", sourceHtmlDoc, progress, cancellationToken).ConfigureAwait(false))?.ToList();
             }
 
             //Add rating and reviews count if missing from Amazon book info

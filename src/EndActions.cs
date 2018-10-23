@@ -15,7 +15,6 @@ using XRayBuilderGUI.DataSources;
 using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary.Model;
 using XRayBuilderGUI.Model;
-using XRayBuilderGUI.UI;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI
@@ -272,7 +271,7 @@ namespace XRayBuilderGUI
             // If the asin was available from another source, use it
             if (!string.IsNullOrEmpty(book.asin))
             {
-                await book.GetAmazonInfo($"https://www.amazon.{_settings.AmazonTld}/dp/{book.asin}");
+                await book.GetAmazonInfo($"https://www.amazon.{_settings.AmazonTld}/dp/{book.asin}", cancellationToken);
                 return book;
             }
 
@@ -368,7 +367,7 @@ namespace XRayBuilderGUI
                                 new BookInfo(seriesResult.NextBook.Title.TitleName,
                                     Functions.FixAuthor(seriesResult.NextBook.Authors.FirstOrDefault()?.AuthorName),
                                     seriesResult.NextBook.Asin);
-                            await curBook.Series.Next.GetAmazonInfo(curBook.Series.Next.amazonUrl);
+                            await curBook.Series.Next.GetAmazonInfo(curBook.Series.Next.amazonUrl, token);
                             break;
                     }
                 }

@@ -233,7 +233,7 @@ namespace XRayBuilderGUI
                 {
                     Terms = (await dataSource.GetTermsAsync(dataUrl, progress, token)).ToList();
                     Logger.Log("Downloading notable clips...");
-                    notableClips = (await dataSource.GetNotableClipsAsync(dataUrl, null, progress, token)).ToList();
+                    notableClips = (await dataSource.GetNotableClipsAsync(dataUrl, null, progress, token))?.ToList();
                 }
                 catch (OperationCanceledException)
                 {

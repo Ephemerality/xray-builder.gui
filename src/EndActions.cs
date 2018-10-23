@@ -315,8 +315,10 @@ namespace XRayBuilderGUI
             }
 
             // TODO: Don't juggle around bookinfos
-            series.Next = await FromApOrSearch(series.Next, cancellationToken);
-            series.Previous = await FromApOrSearch(series.Previous, cancellationToken);
+            if (series.Next != null)
+                series.Next = await FromApOrSearch(series.Next, cancellationToken);
+            if (series.Previous != null)
+                series.Previous = await FromApOrSearch(series.Previous, cancellationToken);
 
             if (series.Next == null)
             {

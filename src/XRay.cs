@@ -148,7 +148,7 @@ namespace XRayBuilderGUI
             get => _guid;
         }
 
-        public async Task<int> SaveXml(string outfile, IProgressBar progress, CancellationToken token)
+        public async Task<int> SaveXml(string outfile, IProgressBar progress, CancellationToken token = default)
         {
             try
             {
@@ -198,7 +198,7 @@ namespace XRayBuilderGUI
             android ? $"XRAY.{asin}.{databaseName}_{Guid}.db" : $"XRAY.entities.{asin}.asc";
 
         // TODO: Change return values to exceptions instead
-        public async Task<int> CreateXray(IProgressBar progress, CancellationToken token)
+        public async Task<int> CreateXray(IProgressBar progress, CancellationToken token = default)
         {
             //Download Shelfari info if not skipping
             if (skipShelfari)

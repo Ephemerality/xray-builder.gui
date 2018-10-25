@@ -28,7 +28,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
         [CanBeNull]
         public static string ParseAsinFromUrl(string input) => RegexAsinUrl.MatchOrNull(input)?.Groups["asin"].Value;
 
-        public static async Task<AuthorSearchResults> SearchAuthor(BookInfo curBook, string TLD)
+        public static async Task<AuthorSearchResults> SearchAuthor(BookInfo curBook, string TLD, CancellationToken cancellationToken = default)
         {
             AuthorSearchResults results = new AuthorSearchResults();
             //Generate Author search URL from author's name
@@ -40,7 +40,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
 
             // Search Amazon for Author
             results.authorHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
-            results.authorHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(amazonAuthorSearchUrl));
+            results.authorHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(amazonAuthorSearchUrl, cancellationToken));
 
             if (Properties.Settings.Default.saveHtml)
             {
@@ -109,13 +109,13 @@ namespace XRayBuilderGUI.DataSources.Amazon
             string authorpageHtml;
             try
             {
-                authorpageHtml = await HttpDownloader.GetPageHtmlAsync(authorAmazonWebsiteLocation);
+                authorpageHtml = await HttpDownloader.GetPageHtmlAsync(authorAmazonWebsiteLocation, cancellationToken);
             }
             catch
             {
                 // If page not found (on co.uk at least, the long form does not seem to work) fallback to short form
                 // and pray the formatting/item display suits our needs. If short form not found, crash back to caller.
-                authorpageHtml = await HttpDownloader.GetPageHtmlAsync(authorAmazonWebsiteLocationLog);
+                authorpageHtml = await HttpDownloader.GetPageHtmlAsync(authorAmazonWebsiteLocationLog, cancellationToken);
             }
             results.authorHtmlDoc.LoadHtml(authorpageHtml);
             return results;
@@ -245,7 +245,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
             string searchUrl = String.Format(@"https://www.amazon.{0}/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords={1}",
                 TLD, Uri.EscapeDataString(title + " " + author));
             HtmlDocument searchDoc = new HtmlDocument();
-            searchDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(searchUrl));
+            searchDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(searchUrl, cancellationToken));
             HtmlNode node = searchDoc.DocumentNode.SelectSingleNode("//li[@id='result_0']");
             HtmlNode nodeASIN = node?.SelectSingleNode(".//a[@title='Kindle Edition']");
             if (nodeASIN == null)
@@ -270,12 +270,12 @@ namespace XRayBuilderGUI.DataSources.Amazon
             return asinMatch.Success ? asinMatch.Groups[1].Value : "";
         }
 
-        public static Task<string> DownloadStartActions(string asin)
-            => HttpDownloader.GetPageHtmlAsync($"https://www.revensoftware.com/amazon/sa/{asin}");
+        public static Task<string> DownloadStartActions(string asin, CancellationToken cancellationToken = default)
+            => HttpDownloader.GetPageHtmlAsync($"https://www.revensoftware.com/amazon/sa/{asin}", cancellationToken);
 
-        public static async Task<NextBookResult> DownloadNextInSeries(string asin)
+        public static async Task<NextBookResult> DownloadNextInSeries(string asin, CancellationToken cancellationToken = default)
         {
-            var response = await HttpDownloader.GetPageHtmlAsync($"https://www.revensoftware.com/amazon/next/{asin}");
+            var response = await HttpDownloader.GetPageHtmlAsync($"https://www.revensoftware.com/amazon/next/{asin}", cancellationToken);
             return JsonConvert.DeserializeObject<NextBookResult>(response);
         }
     }

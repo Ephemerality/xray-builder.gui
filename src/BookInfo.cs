@@ -113,7 +113,7 @@ namespace XRayBuilderGUI
         {
             if (amazonUrl == "") return;
             HtmlDocument bookDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
-            bookDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(amazonUrl));
+            bookDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(amazonUrl, cancellationToken));
             GetAmazonInfo(bookDoc);
         }
 

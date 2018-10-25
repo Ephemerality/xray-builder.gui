@@ -68,7 +68,7 @@ namespace XRayBuilderGUI
             // If the .com search crashes, it will crash back to the caller in frmMain
             try
             {
-                searchResults = await Amazon.SearchAuthor(_curBook, _settings.AmazonTld);
+                searchResults = await Amazon.SearchAuthor(_curBook, _settings.AmazonTld, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -83,7 +83,7 @@ namespace XRayBuilderGUI
                     {
                         Logger.Log("Trying again with Amazon.com.");
                         _settings.AmazonTld = "com";
-                        searchResults = await Amazon.SearchAuthor(_curBook, _settings.AmazonTld);
+                        searchResults = await Amazon.SearchAuthor(_curBook, _settings.AmazonTld, cancellationToken);
                     }
                 }
             }
@@ -191,7 +191,7 @@ namespace XRayBuilderGUI
             try
             {
                 Logger.Log("Downloading author image...");
-                ApAuthorImage = await HttpDownloader.GetImageAsync(authorImageUrl);
+                ApAuthorImage = await HttpDownloader.GetImageAsync(authorImageUrl, cancellationToken);
                 Logger.Log("Grayscale base64-encoded author image created!");
             }
             catch (Exception ex)

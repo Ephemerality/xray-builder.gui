@@ -37,7 +37,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
                 : null;
         }
 
-        private IEnumerable<BookInfo> ParseSearchResults(HtmlDocument goodreadsHtmlDoc, CancellationToken cancellationToken = default)
+        private IEnumerable<BookInfo> ParseSearchResults(HtmlDocument goodreadsHtmlDoc)
         {
             HtmlNodeCollection resultNodes = goodreadsHtmlDoc.DocumentNode.SelectNodes("//tr[@itemtype='http://schema.org/Book']");
             //Return a list of search results

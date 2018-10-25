@@ -75,7 +75,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             if (sourceHtmlDoc == null)
             {
                 sourceHtmlDoc = new HtmlDocument();
-                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl));
+                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl, cancellationToken));
             }
             HtmlNode pageNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_FirstEdition']");
             HtmlNode node1 = pageNode?.SelectSingleNode(".//div/div");
@@ -109,7 +109,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             if (sourceHtmlDoc == null)
             {
                 sourceHtmlDoc = new HtmlDocument();
-                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(dataUrl));
+                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(dataUrl, cancellationToken));
             }
 
             //Constants for wiki processing
@@ -159,7 +159,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             if (srcDoc == null)
             {
                 srcDoc = new HtmlDocument();
-                srcDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(url));
+                srcDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(url, cancellationToken));
             }
             List<NotableClip> result = new List<NotableClip>();
             HtmlNodeCollection quoteNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@id='WikiModule_Quotations']/div/ul[@class='li_6']/li");

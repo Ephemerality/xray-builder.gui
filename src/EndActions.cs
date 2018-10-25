@@ -47,7 +47,7 @@ namespace XRayBuilderGUI
         /// <summary>
         /// Generate the necessities for both old and new formats
         /// </summary>
-        public async Task<bool> Generate()
+        public async Task<bool> Generate(CancellationToken cancellationToken = default)
         {
             Logger.Log("Attempting to find book on Amazon...");
             //Generate Book search URL from book's ASIN
@@ -59,7 +59,7 @@ namespace XRayBuilderGUI
             HtmlDocument bookHtmlDoc = new HtmlDocument {OptionAutoCloseOnEnd = true};
             try
             {
-                bookHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(ebookLocation));
+                bookHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(ebookLocation, cancellationToken));
             }
             catch (Exception ex)
             {
@@ -137,14 +137,14 @@ namespace XRayBuilderGUI
                         {
                             //Gather book desc, image url, etc, if using new format
                             if (_settings.UseNewVersion)
-                                await book.GetAmazonInfo(book.amazonUrl);
+                                await book.GetAmazonInfo(book.amazonUrl, cancellationToken);
                             bookBag.Add(book);
                         }
                         catch (Exception ex)
                         {
                             Logger.Log($"Error: {ex}\r\n{book.amazonUrl}");
                         }
-                    });
+                    }, 5, cancellationToken);
                     custAlsoBought.AddRange(bookBag);
                 }
                 //Add sponsored related, if they exist...
@@ -190,14 +190,14 @@ namespace XRayBuilderGUI
                             try
                             {
                                 if (_settings.UseNewVersion)
-                                    await book.GetAmazonInfo(book.amazonUrl);
+                                    await book.GetAmazonInfo(book.amazonUrl, cancellationToken);
                                 bookBag.Add(book);
                             }
                             catch (Exception ex)
                             {
                                 Logger.Log($"Error: {ex.Message}\r\n{book.amazonUrl}");
                             }
-                        });
+                        }, 5, cancellationToken);
                         custAlsoBought.AddRange(bookBag);
                     }
                 }
@@ -302,7 +302,7 @@ namespace XRayBuilderGUI
             return newBook;
         }
 
-        public async Task ExpandSeriesMetadata(SeriesInfo series, CancellationToken cancellationToken)
+        public async Task ExpandSeriesMetadata(SeriesInfo series, CancellationToken cancellationToken = default)
         {
             // Search author's other books for the book (assumes next in series was written by the same author...)
             // Returns the first one found, though there should probably not be more than 1 of the same name anyway
@@ -327,7 +327,7 @@ namespace XRayBuilderGUI
             }
         }
 
-        public async Task GenerateNewFormatData(IProgressBar progress, CancellationToken token)
+        public async Task GenerateNewFormatData(IProgressBar progress, CancellationToken token = default)
         {
             try
             {
@@ -356,7 +356,7 @@ namespace XRayBuilderGUI
             {
                 try
                 {
-                    var seriesResult = await Amazon.DownloadNextInSeries(curBook.asin);
+                    var seriesResult = await Amazon.DownloadNextInSeries(curBook.asin, token);
                     switch (seriesResult?.Error?.ErrorCode)
                     {
                         case "ERR004":

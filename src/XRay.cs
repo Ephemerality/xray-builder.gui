@@ -1282,21 +1282,7 @@ namespace XRayBuilderGUI
                 streamWriter.Write(getPreviewData());
         }
     }
-
-    public class XRayJsonDef
-    {
-        public string asin;
-        public string guid;
-        public string version;
-        public string xrayversion;
-        public string created;
-        public List<XRay.Term> terms;
-        public IList<XRay.Chapter> chapters;
-        public string assets;
-        public int srl;
-        public int erl;
-    }
-
+    
     public static partial class ExtensionMethods
     {
         //http://stackoverflow.com/questions/166855/c-sharp-preg-replace

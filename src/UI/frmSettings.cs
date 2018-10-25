@@ -9,7 +9,8 @@ namespace XRayBuilderGUI.UI
 {
     public partial class frmSettings : Form
     {
-        private Dictionary<string, string> regionTLDs = new Dictionary<string, string> {
+        // TODO: Should be elsewhere maybe
+        private readonly Dictionary<string, string> regionTLDs = new Dictionary<string, string> {
             { "Australia", "com.au" }, { "Brazil", "com.br" }, { "Canada", "ca" }, { "China", "cn" },
             { "France", "fr" }, { "Germany", "de" }, { "India", "in" }, { "Italy", "it" }, { "Japan", "co.jp" },
             { "Mexico", "com.mx" }, { "Netherlands", "nl" }, { "Spain", "es" }, { "USA", "com" }, { "UK", "co.uk" }

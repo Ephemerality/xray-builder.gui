@@ -127,9 +127,8 @@ namespace XRayBuilderGUI.Unpack
 
     class EXTHRecord
     {
-        private byte[] _recordType = new byte[4];
-        private byte[] _recordLength = new byte[4];
-        private byte[] _recordData;
+        private readonly byte[] _recordType = new byte[4];
+        private readonly byte[] _recordLength = new byte[4];
         public long recordOffset;
 
         public EXTHRecord(Stream fs)
@@ -139,16 +138,16 @@ namespace XRayBuilderGUI.Unpack
 
             if (RecordLength < 8) throw new IOException("Invalid EXTH record length");
             recordOffset = fs.Position;
-            _recordData = new byte[RecordLength - 8];
-            fs.Read(_recordData, 0, _recordData.Length);
+            RecordData = new byte[RecordLength - 8];
+            fs.Read(RecordData, 0, RecordData.Length);
         }
 
         public override string ToString()
         {
-            return Encoding.UTF8.GetString(_recordData);
+            return Encoding.UTF8.GetString(RecordData);
         }
 
-        public int DataLength => _recordData.Length;
+        public int DataLength => RecordData.Length;
 
         public int Size => DataLength + 8;
 
@@ -156,6 +155,6 @@ namespace XRayBuilderGUI.Unpack
 
         public uint RecordType => BitConverter.ToUInt32(Functions.CheckBytes(_recordType), 0);
 
-        public byte[] RecordData => _recordData;
+        public byte[] RecordData { get; }
     }
 }

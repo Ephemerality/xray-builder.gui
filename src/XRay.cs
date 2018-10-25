@@ -65,8 +65,9 @@ namespace XRayBuilderGUI
         public delegate DialogResult SafeShowDelegate(string msg, string caption, MessageBoxButtons buttons,
             MessageBoxIcon icon, MessageBoxDefaultButton def);
 
+        // TODO: Do something about this
         #region CommonTitles
-        string[] CommonTitles = new[] { "Mr", "Mrs", "Ms", "Miss", "Dr", "Herr", "Monsieur", "Hr", "Frau",
+        string[] CommonTitles = { "Mr", "Mrs", "Ms", "Miss", "Dr", "Herr", "Monsieur", "Hr", "Frau",
             "A V M", "Admiraal", "Admiral", "Alderman", "Alhaji", "Ambassador", "Baron", "Barones", "Brig",
             "Brigadier", "Brother", "Canon", "Capt", "Captain", "Cardinal", "Cdr", "Chief", "Cik", "Cmdr", "Col",
             "Colonel", "Commandant", "Commander", "Commissioner", "Commodore", "Comte", "Comtessa", "Congressman",

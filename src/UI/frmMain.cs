@@ -522,14 +522,14 @@ namespace XRayBuilderGUI.UI
                 {
                     List<BookInfo> books = (await _dataSource.SearchBookAsync(metadata.Author, metadata.Title)).ToList();
                     string bookUrl;
-                    if (books?.Count > 1)
+                    if (books.Count > 1)
                     {
                         Logger.Log($"Warning: Multiple results returned from {_dataSource.Name}...");
                         var frmG = new frmGR { BookList = books };
                         frmG.ShowDialog();
                         bookUrl = books[frmG.cbResults.SelectedIndex].dataUrl;
                     }
-                    else if (books?.Count == 1)
+                    else if (books.Count == 1)
                         bookUrl = books[0].dataUrl;
                     else
                     {
@@ -653,9 +653,8 @@ namespace XRayBuilderGUI.UI
         {
             if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
             string[] filePaths = (string[])(e.Data.GetData(DataFormats.FileDrop));
-            foreach (string fileLoc in filePaths)
+            foreach (var fileLoc in filePaths.Where(File.Exists))
             {
-                if (!File.Exists(fileLoc)) continue;
                 txtMobi.Text = fileLoc;
                 return;
             }

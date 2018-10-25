@@ -40,8 +40,7 @@ namespace XRayBuilderGUI.Unpack
             {
                 if (_recInfo.Count > 1)
                     return _recInfo[1].RecordDataOffset - _recInfo[0].RecordDataOffset;
-                else
-                    return 0;
+                return 0;
             }
         }
     }

@@ -955,25 +955,32 @@ namespace XRayBuilderGUI
         {
             public string Type = "";
 
-            [XmlElement("name")] public string TermName = "";
+            [XmlElement("name")]
+            public string TermName = "";
 
             public string Desc = "";
 
-            [XmlElement("src")] public string DescSrc = "";
+            [XmlElement("src")]
+            public string DescSrc = "";
 
-            [XmlElement("url")] public string DescUrl = "";
+            [XmlElement("url")]
+            public string DescUrl = "";
 
-            [XmlIgnore] public List<string> Aliases = new List<string>();
+            [XmlIgnore]
+            public List<string> Aliases = new List<string>();
 
             [JsonIgnore]
             [XmlIgnore]
             public List<string> Locs = new List<string>();
 
-            [XmlIgnore] public List<string> Assets = new List<string> { "" };
+            [XmlIgnore]
+            public List<string> Assets = new List<string> { "" };
 
-            [XmlIgnore] public int Id = -1;
+            [XmlIgnore]
+            public int Id = -1;
 
-            [XmlIgnore] public List<int[]> Occurrences = new List<int[]>();
+            [XmlIgnore]
+            public List<int[]> Occurrences = new List<int[]>();
 
             public bool MatchCase;
 

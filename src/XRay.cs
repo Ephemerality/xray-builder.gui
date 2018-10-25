@@ -177,12 +177,12 @@ namespace XRayBuilderGUI
             //If there are no chapters built (someone only ran create X-Ray), just use the default version
             if (_chapters.Count > 0)
                 return
-                    String.Format(
+                    string.Format(
                         @"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{8}"",""created"":""{9}"",""terms"":[{4}],""chapters"":[{5}],""assets"":{{}},""srl"":{6},""erl"":{7}}}",
                         asin, databaseName, Guid, version, string.Join(",", Terms),
                         string.Join(",", _chapters), _srl, _erl, xrayversion, date);
             return
-                String.Format(
+                string.Format(
                     @"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{5}"",""created"":""{6}"",""terms"":[{4}],""chapters"":[{{""name"":null,""start"":1,""end"":9999999}}]}}",
                     asin, databaseName, Guid, version, string.Join(",", Terms), xrayversion, date);
         }
@@ -191,7 +191,7 @@ namespace XRayBuilderGUI
         public string getPreviewData()
         {
             string preview = @"{{""numImages"":0,""numTerms"":{0},""previewImages"":""[]"",""excerptIds"":[],""numPeople"":{1}}}";
-            preview = String.Format(preview, Terms.Count(t => t.Type == "topic"), Terms.Count(t => t.Type == "character"));
+            preview = string.Format(preview, Terms.Count(t => t.Type == "topic"), Terms.Count(t => t.Type == "character"));
             return preview;
         }
 
@@ -270,9 +270,9 @@ namespace XRayBuilderGUI
             }
 
             if (skipShelfari)
-                Logger.Log(String.Format("{0} {1} found in file:", Terms.Count, Terms.Count > 1 ? "Terms" : "Term"));
+                Logger.Log(string.Format("{0} {1} found in file:", Terms.Count, Terms.Count > 1 ? "Terms" : "Term"));
             else
-                Logger.Log(String.Format("{0} {1} found on {2}:", Terms.Count, Terms.Count > 1 ? "Terms" : "Term", dataSource.Name));
+                Logger.Log(string.Format("{0} {1} found on {2}:", Terms.Count, Terms.Count > 1 ? "Terms" : "Term", dataSource.Name));
             StringBuilder str = new StringBuilder(Terms.Count * 32); // Assume that most names will be less than 32 chars
             int termId = 1;
             foreach (Term t in Terms)
@@ -378,7 +378,7 @@ namespace XRayBuilderGUI
             string apostrophes = Encoding.Default.GetString(Encoding.UTF8.GetBytes("('|\u2019|\u0060|\u00B4)")); // '\u2019\u0060\u00B4
             string quotes = Encoding.Default.GetString(Encoding.UTF8.GetBytes("(\"|\u2018|\u2019|\u201A|\u201B|\u201C|\u201D|\u201E|\u201F)"));
             string dashesEllipsis = Encoding.Default.GetString(Encoding.UTF8.GetBytes("(-|\u2010|\u2011|\u2012|\u2013|\u2014|\u2015|\u2026|&#8211;|&#8212;|&#8217;|&#8218;|&#8230;)")); //U+2010 to U+2015 and U+2026
-            string punctuationMarks = String.Format(@"({0}s|{0})?{1}?[!\.?,""\);:]*{0}*{1}*{2}*", apostrophes, quotes, dashesEllipsis);
+            string punctuationMarks = string.Format(@"({0}s|{0})?{1}?[!\.?,""\);:]*{0}*{1}*{2}*", apostrophes, quotes, dashesEllipsis);
 
             int excerptId = 0;
             HtmlDocument web = new HtmlDocument();
@@ -487,7 +487,7 @@ namespace XRayBuilderGUI
                                 string patternHTML = "(?:<[^>]*>)*";
                                 //Match HTML tags -- provided there's nothing malformed
                                 string patternSoftHypen = "(\u00C2\u00AD|&shy;|&#173;|&#xad;|&#0173;|&#x00AD;)*";
-                                var pattern = String.Format("{0}{1}{0}{2}", patternHTML,
+                                var pattern = string.Format("{0}{1}{0}{2}", patternHTML,
                                     string.Join(patternHTML + patternSoftHypen, character.RegexAliases ? s.ToCharArray() : Regex.Unescape(s).ToCharArray()), punctuationMarks);
                                 patterns.Add(pattern);
                                 foreach (string pat in patterns)
@@ -510,7 +510,7 @@ namespace XRayBuilderGUI
                         if (locHighlight.Count == 0 || locHighlight.Count != lenHighlight.Count) //something went wrong
                         {
                             Logger.Log(
-                                String.Format(
+                                string.Format(
                                     "An error occurred while searching for start of highlight.\r\nWas looking for (or one of the aliases of): {0}\r\nSearching in: {1}",
                                     character.TermName, node.InnerHtml));
                             continue;
@@ -551,7 +551,7 @@ namespace XRayBuilderGUI
                                 //Only add new locs if shorter excerpt was found
                                 if (newLoc >= 0)
                                 {
-                                    character.Locs.Add(String.Format("[{0},{1},{2},{3}]", newLoc + locOffset, newLenQuote,
+                                    character.Locs.Add(string.Format("[{0},{1},{2},{3}]", newLoc + locOffset, newLenQuote,
                                         newLocHighlight, lenHighlight[j]));
                                     locHighlight.RemoveAt(j);
                                     lenHighlight.RemoveAt(j--);
@@ -561,7 +561,7 @@ namespace XRayBuilderGUI
 
                         for (int j = 0; j < locHighlight.Count; j++)
                         {
-                            character.Locs.Add(String.Format("[{0},{1},{2},{3}]", location + locOffset, lenQuote,
+                            character.Locs.Add(string.Format("[{0},{1},{2},{3}]", location + locOffset, lenQuote,
                                 locHighlight[j], lenHighlight[j])); // For old format
                             character.Occurrences.Add(new[] { location + locOffset + locHighlight[j], lenHighlight[j] }); // For new format
                         }
@@ -837,14 +837,14 @@ namespace XRayBuilderGUI
                     .ToList();
             sql.Clear();
             sql.AppendFormat("update type set top_mentioned_entities='{0}' where id=1;\n",
-                String.Join(",", sorted.GetRange(0, Math.Min(10, sorted.Count))));
+                string.Join(",", sorted.GetRange(0, Math.Min(10, sorted.Count))));
             sorted =
                 Terms.Where(t => t.Type.Equals("topic"))
                     .OrderByDescending(t => t.Locs.Count)
                     .Select(t => t.Id)
                     .ToList();
             sql.AppendFormat("update type set top_mentioned_entities='{0}' where id=2;",
-                String.Join(",", sorted.GetRange(0, Math.Min(10, sorted.Count))));
+                string.Join(",", sorted.GetRange(0, Math.Min(10, sorted.Count))));
             command = new SQLiteCommand(sql.ToString(), db);
             command.ExecuteNonQuery();
             command.Dispose();
@@ -938,7 +938,7 @@ namespace XRayBuilderGUI
 
             public override string ToString()
             {
-                return String.Format(@"{{""name"":{0},""start"":{1},""end"":{2}}}",
+                return string.Format(@"{{""name"":{0},""start"":{1},""end"":{2}}}",
                     (name == "" ? "null" : "\"" + name + "\""), start, End);
             }
         }
@@ -990,13 +990,13 @@ namespace XRayBuilderGUI
                 //Note that the Amazon X-Ray files declare an "assets" var for each term, but I have not seen one that actually uses them to contain anything
                 if (Locs.Count > 0)
                     return
-                        String.Format(
+                        string.Format(
                             @"{{""type"":""{0}"",""term"":""{1}"",""desc"":""{2}"",""descSrc"":""{3}"",""descUrl"":""{4}"",""locs"":[{5}]}}",
                             Type, TermName, Desc, DescSrc, DescUrl, string.Join(",", Locs));
                 else
                 {
                     return
-                        String.Format(
+                        string.Format(
                             @"{{""type"":""{0}"",""term"":""{1}"",""desc"":""{2}"",""descSrc"":""{3}"",""descUrl"":""{4}"",""locs"":[[100,100,100,6]]}}",
                             Type, TermName, Desc, DescSrc, DescUrl);
                 }
@@ -1089,11 +1089,11 @@ namespace XRayBuilderGUI
                                     titleTrimmed = c.TermName;
                                     foreach (Match match in regex.Matches(titleTrimmed))
                                     {
-                                        titleTrimmed = titleTrimmed.Replace(match.Value, String.Empty);
+                                        titleTrimmed = titleTrimmed.Replace(match.Value, string.Empty);
                                     }
                                     foreach (Match match in regex.Matches(titleTrimmed))
                                     {
-                                        titleTrimmed = titleTrimmed.Replace(match.Value, String.Empty);
+                                        titleTrimmed = titleTrimmed.Replace(match.Value, string.Empty);
                                     }
                                     aliasList.Add(titleTrimmed);
                                 }
@@ -1101,7 +1101,7 @@ namespace XRayBuilderGUI
                                     titleTrimmed = c.TermName;
 
                                 titleTrimmed = Regex.Replace(titleTrimmed, @"\s+", " ");
-                                titleTrimmed = Regex.Replace(titleTrimmed, @"( ?V?I{0,3}$)", String.Empty);
+                                titleTrimmed = Regex.Replace(titleTrimmed, @"( ?V?I{0,3}$)", string.Empty);
                                 titleTrimmed = Regex.Replace(titleTrimmed, @"(\(aka )", "(");
 
                                 Match bracketedName = Regex.Match(titleTrimmed, @"(.*)(\()(.*)(\))");
@@ -1282,7 +1282,7 @@ namespace XRayBuilderGUI
                 streamWriter.Write(getPreviewData());
         }
     }
-    
+
     public static partial class ExtensionMethods
     {
         //http://stackoverflow.com/questions/166855/c-sharp-preg-replace

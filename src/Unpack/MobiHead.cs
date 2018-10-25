@@ -162,7 +162,7 @@ namespace XRayBuilderGUI.Unpack
                     case 517: return "TEXT";
                     case 518: return "HTML";
                     default:
-                        return String.Format("Unknown {0}", MobiType);
+                        return string.Format("Unknown {0}", MobiType);
                 }
             }
         }

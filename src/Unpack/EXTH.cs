@@ -102,7 +102,7 @@ namespace XRayBuilderGUI.Unpack
 
         private string GetRecordByType(int recType)
         {
-            string record = String.Empty;
+            string record = string.Empty;
             foreach (EXTHRecord rec in recordList)
             {
                 if (rec.RecordType == recType)

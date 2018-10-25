@@ -167,7 +167,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
                 Match match = Regex.Match(link.GetAttributeValue("href", ""), @"editions/([0-9]*)-");
                 if (match.Success)
                 {
-                    string kindleEditionsUrl = String.Format("https://www.goodreads.com/work/editions/{0}?utf8=%E2%9C%93&sort=num_ratings&filter_by_format=Kindle+Edition", match.Groups[1].Value);
+                    string kindleEditionsUrl = string.Format("https://www.goodreads.com/work/editions/{0}?utf8=%E2%9C%93&sort=num_ratings&filter_by_format=Kindle+Edition", match.Groups[1].Value);
                     bookHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(kindleEditionsUrl, cancellationToken));
                     HtmlNodeCollection bookNodes = bookHtmlDoc.DocumentNode.SelectNodes("//div[@class='elementList clearFix']");
                     if (bookNodes != null)
@@ -202,7 +202,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
                 double minutes = int.Parse(match.Groups[1].Value, NumberStyles.AllowThousands) * 1.2890625;
                 TimeSpan span = TimeSpan.FromMinutes(minutes);
                 // Functions.Pluralize($"{BookList[i].editions:edition}")
-                Logger.Log(String.Format("Typical time to read: {0}, {1}, and {2} ({3} pages)",
+                Logger.Log(string.Format("Typical time to read: {0}, {1}, and {2} ({3} pages)",
                     Functions.Pluralize($"{span.Days:day}"),
                     Functions.Pluralize($"{span.Hours:hour}"),
                     Functions.Pluralize($"{span.Minutes:minute}"),

@@ -255,7 +255,7 @@ namespace XRayBuilderGUI.UI
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(String.Format("An error occurred saving the previewData file: {0}\r\n{1}", ex.Message, ex.StackTrace));
+                    Logger.Log(string.Format("An error occurred saving the previewData file: {0}\r\n{1}", ex.Message, ex.StackTrace));
                 }
             }
             else

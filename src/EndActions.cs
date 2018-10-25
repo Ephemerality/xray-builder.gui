@@ -51,7 +51,7 @@ namespace XRayBuilderGUI
         {
             Logger.Log("Attempting to find book on Amazon...");
             //Generate Book search URL from book's ASIN
-            string ebookLocation = String.Format(@"https://www.amazon.{0}/dp/{1}", _settings.AmazonTld, curBook.asin);
+            string ebookLocation = string.Format(@"https://www.amazon.{0}/dp/{1}", _settings.AmazonTld, curBook.asin);
 
             // Search Amazon for book
             //Logger.Log(String.Format("Book's Amazon page URL: {0}", ebookLocation));
@@ -63,7 +63,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Logger.Log(String.Format("An error ocurred while downloading book's Amazon page: {0}\r\nYour ASIN may not be correct.", ex.Message));
+                Logger.Log(string.Format("An error ocurred while downloading book's Amazon page: {0}\r\nYour ASIN may not be correct.", ex.Message));
                 return false;
             }
             Logger.Log("Book found on Amazon!");
@@ -73,12 +73,12 @@ namespace XRayBuilderGUI
                 {
                     Logger.Log("Saving book's Amazon webpage...");
                     File.WriteAllText(Environment.CurrentDirectory +
-                                      String.Format(@"\dmp\{0}.bookpageHtml.txt", curBook.asin),
+                                      string.Format(@"\dmp\{0}.bookpageHtml.txt", curBook.asin),
                         bookHtmlDoc.DocumentNode.InnerHtml);
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(String.Format("An error ocurred saving bookpageHtml.txt: {0}", ex.Message));
+                    Logger.Log(string.Format("An error ocurred saving bookpageHtml.txt: {0}", ex.Message));
                 }
             }
 
@@ -88,7 +88,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Logger.Log(String.Format("An error ocurred parsing Amazon info: {0}", ex.Message));
+                Logger.Log(string.Format("An error ocurred parsing Amazon info: {0}", ex.Message));
                 return false;
             }
 

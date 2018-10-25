@@ -52,7 +52,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(String.Format("An error ocurred saving authorsearchHtml.txt: {0}", ex.Message));
+                    Logger.Log(string.Format("An error ocurred saving authorsearchHtml.txt: {0}", ex.Message));
                 }
             }
 
@@ -242,7 +242,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
             if (title.IndexOf(" (") >= 0)
                 title = title.Substring(0, title.IndexOf(" ("));
             //Search "all" Amazon
-            string searchUrl = String.Format(@"https://www.amazon.{0}/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords={1}",
+            string searchUrl = string.Format(@"https://www.amazon.{0}/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords={1}",
                 TLD, Uri.EscapeDataString(title + " " + author));
             HtmlDocument searchDoc = new HtmlDocument();
             searchDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(searchUrl, cancellationToken));

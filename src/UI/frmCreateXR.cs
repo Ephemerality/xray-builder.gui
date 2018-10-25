@@ -195,7 +195,7 @@ namespace XRayBuilderGUI.UI
             }
             catch (Exception ex)
             {
-                MessageBox.Show(String.Format("An error occurred saving the files: {0}\r\n{1}", ex.Message, ex.StackTrace),
+                MessageBox.Show(string.Format("An error occurred saving the files: {0}\r\n{1}", ex.Message, ex.StackTrace),
                     "Save XML", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }

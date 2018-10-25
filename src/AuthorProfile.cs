@@ -78,7 +78,7 @@ namespace XRayBuilderGUI
             {
                 if (searchResults == null)
                 {
-                    Logger.Log(String.Format("Failed to find {0} on Amazon." + _settings.AmazonTld, _curBook.author));
+                    Logger.Log(string.Format("Failed to find {0} on Amazon." + _settings.AmazonTld, _curBook.author));
                     if (_settings.AmazonTld != "com")
                     {
                         Logger.Log("Trying again with Amazon.com.");
@@ -95,12 +95,12 @@ namespace XRayBuilderGUI
                 try
                 {
                     Logger.Log("Saving author's Amazon webpage...");
-                    File.WriteAllText(Environment.CurrentDirectory + String.Format(@"\dmp\{0}.authorpageHtml.txt", _curBook.asin),
+                    File.WriteAllText(Environment.CurrentDirectory + string.Format(@"\dmp\{0}.authorpageHtml.txt", _curBook.asin),
                         searchResults.authorHtmlDoc.DocumentNode.InnerHtml);
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(String.Format("An error occurred saving authorpageHtml.txt: {0}", ex.Message));
+                    Logger.Log(string.Format("An error occurred saving authorpageHtml.txt: {0}", ex.Message));
                 }
             }
 
@@ -136,7 +136,7 @@ namespace XRayBuilderGUI
             }
             else
             {
-                File.WriteAllText(bioFile, String.Empty);
+                File.WriteAllText(bioFile, string.Empty);
                 if (System.Windows.Forms.DialogResult.Yes ==
                     System.Windows.Forms.MessageBox.Show(
                         "No author biography found on Amazon!\r\nWould you like to create a biography?", "Biography",
@@ -196,7 +196,7 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Logger.Log(String.Format("An error occurred downloading the author image: {0}", ex.Message));
+                Logger.Log(string.Format("An error occurred downloading the author image: {0}", ex.Message));
                 return false;
             }
 
@@ -219,7 +219,7 @@ namespace XRayBuilderGUI
                     }
                     catch (Exception ex)
                     {
-                        Logger.Log(String.Format("An error occurred gathering metadata for other books: {0}\r\nURL: {1}\r\nBook: {2}", ex.Message, book.amazonUrl, book.title));
+                        Logger.Log(string.Format("An error occurred gathering metadata for other books: {0}\r\nURL: {1}\r\nBook: {2}", ex.Message, book.amazonUrl, book.title));
                         throw;
                     }
                 }, cancellationToken);
@@ -280,7 +280,7 @@ namespace XRayBuilderGUI
         public string ToJSON()
         {
             string template = @"{{""class"":""authorBio"",""asin"":""{0}"",""name"":""{1}"",""bio"":""{2}"",""imageUrl"":""{3}""}}";
-            return Functions.ExpandUnicode(String.Format(template, authorAsin, _curBook.author, BioTrimmed, authorImageUrl));
+            return Functions.ExpandUnicode(string.Format(template, authorAsin, _curBook.author, BioTrimmed, authorImageUrl));
         }
 
         private bool readBio(string bioFile)

@@ -143,8 +143,8 @@ namespace XRayBuilderGUI
         public static string TimeStamp()
         {
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            var time = String.Format("{0:HH:mm:ss}", DateTime.Now);
-            var date = String.Format("{0:dd/MM/yyyy}", DateTime.Now);
+            var time = string.Format("{0:HH:mm:ss}", DateTime.Now);
+            var date = string.Format("{0:dd/MM/yyyy}", DateTime.Now);
             return $"Running X-Ray Builder GUI v{version}. Log started on {date} at {time}.\r\n";
         }
 

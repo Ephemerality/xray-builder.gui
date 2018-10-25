@@ -87,7 +87,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             {
                 double minutes = int.Parse(match1.Groups[1].Value, NumberStyles.AllowThousands) * 1.2890625;
                 TimeSpan span = TimeSpan.FromMinutes(minutes);
-                Logger.Log(String.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)", span.Hours, span.Minutes, match1.Groups[1].Value));
+                Logger.Log(string.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)", span.Hours, span.Minutes, match1.Groups[1].Value));
                 curBook.pagesInBook = int.Parse(match1.Groups[1].Value);
                 curBook.readingHours = span.Hours;
                 curBook.readingMinutes = span.Minutes;

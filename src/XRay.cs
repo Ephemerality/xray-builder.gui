@@ -565,16 +565,21 @@ namespace XRayBuilderGUI
                                 locHighlight[j], lenHighlight[j])); // For old format
                             character.Occurrences.Add(new[] { location + locOffset + locHighlight[j], lenHighlight[j] }); // For new format
                         }
-                        List<Excerpt> exCheck = excerpts.Where(t => t.start.Equals(location + locOffset)).ToList();
-                        if (exCheck.Count > 0)
+                        var exCheck = excerpts.Where(t => t.Start.Equals(location + locOffset)).ToArray();
+                        if (exCheck.Length > 0)
                         {
-                            if (!exCheck[0].related_entities.Contains(character.Id))
-                                exCheck[0].related_entities.Add(character.Id);
+                            if (!exCheck[0].RelatedEntities.Contains(character.Id))
+                                exCheck[0].RelatedEntities.Add(character.Id);
                         }
                         else
                         {
-                            Excerpt newExcerpt = new Excerpt(excerptId++, location + locOffset, lenQuote);
-                            newExcerpt.related_entities.Add(character.Id);
+                            var newExcerpt = new Excerpt
+                            {
+                                Id = excerptId++,
+                                Start = location + locOffset,
+                                Length = lenQuote
+                            };
+                            newExcerpt.RelatedEntities.Add(character.Id);
                             excerpts.Add(newExcerpt);
                         }
                     }
@@ -589,21 +594,27 @@ namespace XRayBuilderGUI
                         if (index > -1)
                         {
                             // See if an excerpt already exists at this location
-                            Excerpt excerpt = excerpts.FirstOrDefault(e => e.start == index);
+                            Excerpt excerpt = excerpts.FirstOrDefault(e => e.Start == index);
                             if (excerpt == null)
                             {
                                 if (Properties.Settings.Default.skipNoLikes && quote.Likes == 0
                                     || quote.Text.Length < Properties.Settings.Default.minClipLen)
                                     continue;
-                                excerpt = new Excerpt(excerptId++, location, node.InnerHtml.Length);
-                                excerpt.related_entities.Add(0); // Mark the excerpt as notable
+                                excerpt = new Excerpt
+                                {
+                                    Id = excerptId++,
+                                    Start = location,
+                                    Length = node.InnerHtml.Length,
+                                    Notable = true,
+                                    Highlights = quote.Likes
+                                };
+                                excerpt.RelatedEntities.Add(0); // Mark the excerpt as notable
                                                                  // TODO: also add other related entities
-                                excerpt.notable = true;
-                                excerpt.highlights = quote.Likes;
                                 excerpts.Add(excerpt);
                             }
                             else
-                                excerpt.related_entities.Add(0);
+                                excerpt.RelatedEntities.Add(0);
+
                             foundNotables++;
                         }
                     }
@@ -766,18 +777,18 @@ namespace XRayBuilderGUI
             foreach (var e in excerpts)
             {
                 token.ThrowIfCancellationRequested();
-                command.Parameters.Add("id", DbType.Int32).Value = e.id;
-                command.Parameters.Add("start", DbType.Int32).Value = e.start;
-                command.Parameters.Add("length", DbType.Int32).Value = e.length;
-                command.Parameters.Add("image", DbType.String).Value = e.image;
-                command.Parameters.Add("rel_ent", DbType.String).Value = string.Join(",", e.related_entities.Where(en => en != 0).ToArray()); // don't write 0 (notable flag)
+                command.Parameters.Add("id", DbType.Int32).Value = e.Id;
+                command.Parameters.Add("start", DbType.Int32).Value = e.Start;
+                command.Parameters.Add("length", DbType.Int32).Value = e.Length;
+                command.Parameters.Add("image", DbType.String).Value = e.Image;
+                command.Parameters.Add("rel_ent", DbType.String).Value = string.Join(",", e.RelatedEntities.Where(en => en != 0).ToArray()); // don't write 0 (notable flag)
                 command.ExecuteNonQuery();
-                foreach (int ent in e.related_entities)
+                foreach (int ent in e.RelatedEntities)
                 {
                     token.ThrowIfCancellationRequested();
                     if (ent == 0) continue; // skip notable flag
                     command2.Parameters.Add("@entityId", DbType.Int32).Value = ent;
-                    command2.Parameters.Add("@excerptId", DbType.Int32).Value = e.id;
+                    command2.Parameters.Add("@excerptId", DbType.Int32).Value = e.Id;
                     command2.ExecuteNonQuery();
                 }
                 progress?.Add(1);
@@ -786,10 +797,10 @@ namespace XRayBuilderGUI
             // create links to notable clips in order of popularity
             Logger.Log("Adding notable clips...");
             command.Parameters.Clear();
-            var notablesOnly = excerpts.Where(ex => ex.notable).OrderByDescending(ex => ex.highlights);
+            var notablesOnly = excerpts.Where(ex => ex.Notable).OrderByDescending(ex => ex.Highlights);
             foreach (Excerpt notable in notablesOnly)
             {
-                command.CommandText = $"insert into entity_excerpt (entity, excerpt) values (0, {notable.id})";
+                command.CommandText = $"insert into entity_excerpt (entity, excerpt) values (0, {notable.Id})";
                 command.ExecuteNonQuery();
             }
 
@@ -801,7 +812,7 @@ namespace XRayBuilderGUI
             else if (foundNotables <= 20)
             {
                 Random rand = new Random();
-                List<Excerpt> eligible = excerpts.Where(ex => !ex.notable).ToList();
+                List<Excerpt> eligible = excerpts.Where(ex => !ex.Notable).ToList();
                 while (foundNotables <= 20 && eligible.Count > 0)
                 {
                     Excerpt randEx = eligible.ElementAt(rand.Next(eligible.Count));
@@ -812,7 +823,7 @@ namespace XRayBuilderGUI
             }
             foreach (var excerpt in toAdd)
             {
-                command.CommandText = $"insert into entity_excerpt (entity, excerpt) values (0, {excerpt.id})";
+                command.CommandText = $"insert into entity_excerpt (entity, excerpt) values (0, {excerpt.Id})";
                 command.ExecuteNonQuery();
             }
             command.Dispose();
@@ -893,23 +904,16 @@ namespace XRayBuilderGUI
             return 0;
         }
 
-        private class Excerpt
+        public class Excerpt
         {
-            public int id;
-            public int start;
-            public int length;
-            public string image = "";
-            public List<int> related_entities = new List<int>();
+            public int Id { get; set; }
+            public int Start { get; set; }
+            public int Length { get; set; }
+            public string Image { get; set; } = "";
+            public List<int> RelatedEntities = new List<int>();
             //public int go_to = -1; unused but in the db
-            public int highlights;
-            public bool notable;
-
-            public Excerpt(int id, int start, int length)
-            {
-                this.id = id;
-                this.start = start;
-                this.length = length;
-            }
+            public int Highlights { get; set; }
+            public bool Notable { get; set; }
         }
 
         public class Chapter

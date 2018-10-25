@@ -39,6 +39,7 @@ using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI
 {
+    // TODO: Anywhere JSON is used, serialization should be done rather than text formatting...
     public class XRay
     {
         private string dataUrl = "";
@@ -353,7 +354,12 @@ namespace XRayBuilderGUI
             //Define srl and erl so "progress bar" shows up correctly
             if (_chapters.Count == 0)
             {
-                _chapters.Add(new Chapter("", 1, mlLen));
+                _chapters.Add(new Chapter
+                {
+                    Name = "",
+                    Start = 1,
+                    End = mlLen
+                });
                 _srl = 1;
                 _erl = mlLen;
             }
@@ -361,12 +367,12 @@ namespace XRayBuilderGUI
             {
                 //Run through all chapters and take the highest value, in case some chapters can be defined in individual chapters and parts.
                 //EG. Part 1 includes chapters 1-6, Part 2 includes chapters 7-12.
-                _srl = _chapters[0].start;
+                _srl = _chapters[0].Start;
                 Logger.Log("Found chapters:");
                 foreach (Chapter c in _chapters)
                 {
                     if (c.End > _erl) _erl = c.End;
-                    Logger.Log($"{c.name} | start: {c.start} | end: {c.End}");
+                    Logger.Log($"{c.Name} | start: {c.Start} | end: {c.End}");
                 }
             }
         }
@@ -661,10 +667,15 @@ namespace XRayBuilderGUI
                     if (_chapters.Count > 0)
                     {
                         _chapters[_chapters.Count - 1].End = filepos;
-                        if (_chapters[_chapters.Count - 1].start > filepos)
+                        if (_chapters[_chapters.Count - 1].Start > filepos)
                             _chapters.RemoveAt(_chapters.Count - 1); //remove broken chapters
                     }
-                    _chapters.Add(new Chapter(chapter.InnerText, filepos, rawML.Length));
+                    _chapters.Add(new Chapter
+                    {
+                        Name = chapter.InnerText,
+                        Start = filepos,
+                        End = rawML.Length
+                    });
                 }
             }
 
@@ -689,7 +700,12 @@ namespace XRayBuilderGUI
                         {
                             if (_chapters.Count > 0)
                                 _chapters[_chapters.Count - 1].End = index;
-                            _chapters.Add(new Chapter(chap.InnerText, index, rawML.Length));
+                            _chapters.Add(new Chapter
+                            {
+                                Name = chap.InnerText,
+                                Start = index,
+                                End = rawML.Length
+                            });
                         }
                     }
                 }
@@ -719,7 +735,12 @@ namespace XRayBuilderGUI
                     {
                         if (_chapters.Count > 0)
                             _chapters[_chapters.Count - 1].End = index;
-                        _chapters.Add(new Chapter(chap.InnerText, index, rawML.Length));
+                        _chapters.Add(new Chapter
+                        {
+                            Name = chap.InnerText,
+                            Start = index,
+                            End = rawML.Length
+                        });
                     }
                 }
             }
@@ -918,28 +939,15 @@ namespace XRayBuilderGUI
 
         public class Chapter
         {
-            public string name;
-            public long start;
-            public long End;
+            public string Name { get; set; }
+            public long Start { get; set; }
+            public long End { get; set; }
 
-            public Chapter()
-            {
-                name = "";
-                start = 1;
-                End = 9999999;
-            }
-
-            public Chapter(string name, long start, long end)
-            {
-                this.name = name;
-                this.start = start;
-                End = end;
-            }
-
+            // TODO: Replace w/ serialization
             public override string ToString()
             {
                 return string.Format(@"{{""name"":{0},""start"":{1},""end"":{2}}}",
-                    (name == "" ? "null" : "\"" + name + "\""), start, End);
+                    (Name == "" ? "null" : "\"" + Name + "\""), Start, End);
             }
         }
 
@@ -1013,7 +1021,7 @@ namespace XRayBuilderGUI
                         Encoding.UTF8))
             {
                 foreach (Chapter c in _chapters)
-                    streamWriter.WriteLine(c.name + "|" + c.start + "|" + c.End);
+                    streamWriter.WriteLine(c.Name + "|" + c.Start + "|" + c.End);
             }
         }
 
@@ -1030,7 +1038,12 @@ namespace XRayBuilderGUI
                     string[] tmp = streamReader.ReadLine()?.Split('|');
                     if (tmp?.Length != 3) return false; //Malformed chapters file
                     if (tmp[0] == "" || tmp[0].Substring(0, 1) == "#") continue;
-                    _chapters.Add(new Chapter(tmp[0], Convert.ToInt32(tmp[1]), Convert.ToInt64(tmp[2])));
+                    _chapters.Add(new Chapter
+                    {
+                        Name = tmp[0],
+                        Start = Convert.ToInt32(tmp[1]),
+                        End = Convert.ToInt64(tmp[2])
+                    });
                 }
             }
             return true;

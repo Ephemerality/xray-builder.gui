@@ -82,24 +82,6 @@ namespace XRayBuilderGUI
             this.asin = asin;
         }
 
-        public string ToJSON(string nClass, bool includeDescRatings)
-        {
-            string template = string.Format(@"{{""class"":""{0}"",""asin"":""{1}"",""title"":""{2}"",""authors"":[""{3}""],""imageUrl"":""{4}"",""hasSample"":false",
-                                            nClass, asin, title, author, bookImageUrl);
-            if (includeDescRatings)
-                template += string.Format(@",""description"":""{0}"",""amazonRating"":{1},""numberOfReviews"":{2}", desc, amazonRating, numReviews);
-            template += "}";
-            return Functions.ExpandUnicode(template);
-        }
-
-        public string ToExtraJSON(string nClass)
-        {
-            string template = string.Format(@"{{""class"":""{0}"",""asin"":""{1}"",""title"":""{2}"",""description"":""{3}"",""authors"":[""{4}""],""imageUrl"":""{5}"",""hasSample"":false,""amazonRating"":{6},""numberOfReviews"":{7}}}",
-                nClass, asin, title, desc, author, bookImageUrl, amazonRating, numReviews);
-            return Functions.ExpandUnicode(template);
-        }
-
-
         public override string ToString()
         {
             return title + " - " + author;

@@ -120,12 +120,13 @@ namespace XRayBuilderGUI.UI
         }
 
         public static string RawMlPath(string filename) => Path.Combine(Environment.CurrentDirectory, "dmp", filename + ".rawml");
-        public static Metadata GetAndValidateMetadata(string mobiFile, string outDir, bool saveRawML)
+
+        public static Metadata GetAndValidateMetadata(string mobiFile, bool saveRawML)
         {
             Logger.Log("Extracting metadata...");
             try
             {
-                var metadata = Functions.GetMetaDataInternal(mobiFile, outDir, saveRawML);
+                var metadata = new Metadata(mobiFile);
                 EbokTagPromptOrThrow(metadata, mobiFile);
                 IncorrectAsinPromptOrThrow(metadata.ASIN);
                 if (!Properties.Settings.Default.useNewVersion && metadata.DBName.Length == 31)

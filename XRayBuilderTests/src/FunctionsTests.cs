@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using XRayBuilderGUI;
+using XRayBuilderGUI.Unpack;
 
 namespace XRayBuilderTests
 {
@@ -39,10 +40,10 @@ namespace XRayBuilderTests
             return s.RemoveDiacritics();
         }
 
-        [TestCase(@"testfiles\A Storm of Swords - George R. R. Martin.mobi", "out", false, "")]
-        public void GetMetaDataInternal(string mobiFile, string outDir, bool saveRawML, string randomFile)
+        [TestCase(@"testfiles\A Storm of Swords - George R. R. Martin.mobi")]
+        public void GetMetaDataInternal(string mobiFile)
         {
-            var md = Functions.GetMetaDataInternal(mobiFile, outDir, saveRawML, randomFile);
+            var md = new Metadata(mobiFile);
             Assert.AreEqual(md.ASIN, "B000FBFN1U");
             Assert.AreEqual(md.UniqueID, "171927873");
             Assert.AreEqual(md.DBName, "A_Storm_of_Swords");

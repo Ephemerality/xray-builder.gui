@@ -11,7 +11,7 @@ namespace XRayBuilderGUI.Unpack
         byte[] unpack(byte[] data);
     }
 
-    class UncompressedReader : Decompressor
+    public class UncompressedReader : Decompressor
     {
         public byte[] unpack(byte[] data)
         {
@@ -19,7 +19,7 @@ namespace XRayBuilderGUI.Unpack
         }
     }
 
-    class PalmDOCReader : Decompressor
+    public class PalmDOCReader : Decompressor
     {
         public byte[] unpack(byte[] data)
         {

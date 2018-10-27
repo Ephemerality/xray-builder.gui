@@ -24,7 +24,7 @@ namespace XRayBuilderGUI.Unpack
         {
             fs.Read(_identifier, 0, _identifier.Length);
             if (IdentifierAsString != "EXTH")
-                throw new IOException("Expected to find EXTH header identifier EXTH but got something else instead");
+                throw new UnpackException("Expected to find EXTH header identifier EXTH but got something else instead");
             fs.Read(_headerLength, 0, _headerLength.Length);
             fs.Read(_recordCount, 0, _recordCount.Length);
             for (int i = 0; i < RecordCount; i++)
@@ -119,7 +119,7 @@ namespace XRayBuilderGUI.Unpack
             byte[] newValue = Encoding.UTF8.GetBytes("EBOK");
             var rec = recordList.First(r => r.RecordType == 501);
             if (rec == null)
-                throw new Exception("Could not find the CDEContentType record (EXTH 501).");
+                throw new UnpackException("Could not find the CDEContentType record (EXTH 501).");
             fs.Seek(rec.recordOffset, SeekOrigin.Begin);
             fs.Write(newValue, 0, newValue.Length);
         }
@@ -136,7 +136,7 @@ namespace XRayBuilderGUI.Unpack
             fs.Read(_recordType, 0, _recordType.Length);
             fs.Read(_recordLength, 0, _recordLength.Length);
 
-            if (RecordLength < 8) throw new IOException("Invalid EXTH record length");
+            if (RecordLength < 8) throw new UnpackException("Invalid EXTH record length");
             recordOffset = fs.Position;
             RecordData = new byte[RecordLength - 8];
             fs.Read(RecordData, 0, RecordData.Length);

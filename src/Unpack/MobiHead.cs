@@ -50,7 +50,7 @@ namespace XRayBuilderGUI.Unpack
         {
             fs.Read(identifier, 0, identifier.Length);
             if (IdentifierAsString != "MOBI")
-                throw new IOException("Did not get expected MOBI identifier");
+                throw new UnpackException("Did not get expected MOBI identifier");
 
             fs.Read(headerLength, 0, headerLength.Length);
             restOfMobiHeader = new byte[HeaderLength + 16 - 132];
@@ -91,6 +91,8 @@ namespace XRayBuilderGUI.Unpack
 
             if (exthExists)
                 exthHeader = new EXTHHeader(fs);
+            else
+                throw new UnpackException("No EXT Header found. Ensure this book was processed with Calibre then try again.");
 
             // If applicable, read mbh flags regarding trailing bytes in record data
             if (MinVersion >= 5 && HeaderLength >= 228)

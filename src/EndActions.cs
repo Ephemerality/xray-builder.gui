@@ -407,7 +407,7 @@ namespace XRayBuilderGUI
             }
         }
 
-        public async Task GenerateEndActionsFromBase(Model.EndActions baseEndActions, IProgressBar progress, CancellationToken token)
+        public async Task GenerateEndActionsFromBase(Model.EndActions baseEndActions)
         {
             baseEndActions.BookInfo = new Model.EndActions.EndActionsBookInfo
             {

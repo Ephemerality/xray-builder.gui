@@ -15,6 +15,7 @@ using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.DataSources.Secondary.Model;
 using XRayBuilderGUI.Model;
 using XRayBuilderGUI.Properties;
+using XRayBuilderGUI.Unpack;
 
 namespace XRayBuilderGUI.UI
 {
@@ -139,7 +140,7 @@ namespace XRayBuilderGUI.UI
 
             prgBar.Value = 0;
 
-            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, _settings.saverawml));
+            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.saverawml));
             if (metadata == null)
                 return;
 
@@ -315,7 +316,7 @@ namespace XRayBuilderGUI.UI
                 return;
             }
 
-            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, _settings.saverawml));
+            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.saverawml));
             if (metadata == null)
                 return;
 
@@ -390,7 +391,7 @@ namespace XRayBuilderGUI.UI
                         return;
                     }
 
-                    await ea.GenerateEndActionsFromBase(eaBase, _progress, _cancelTokens.Token);
+                    await ea.GenerateEndActionsFromBase(eaBase);
 
                     StartActions sa;
                     try
@@ -513,7 +514,7 @@ namespace XRayBuilderGUI.UI
             }
 
             //this.TopMost = true;
-            using (var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, false)))
+            using (var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, false)))
             {
                 if (metadata == null)
                     return;
@@ -694,7 +695,7 @@ namespace XRayBuilderGUI.UI
             prgBar.Value = 0;
 
 
-            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.outDir, false));
+            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, false));
             if (metadata == null)
             {
                 txtMobi.Text = "";
@@ -771,7 +772,7 @@ namespace XRayBuilderGUI.UI
                 MessageBox.Show(@"Specified output directory does not exist.\r\nPlease review the settings page.", @"Output Directory Not found");
                 return;
             }
-            var metadata = await Task.Run(() => Functions.GetMetaDataInternal(txtMobi.Text, _settings.outDir, _settings.saverawml)).ConfigureAwait(false);
+            var metadata = await Task.Run(() => new Metadata(txtMobi.Text)).ConfigureAwait(false);
             if (metadata != null)
             {
                 Logger.Log("Extracted rawml successfully!\r\n");

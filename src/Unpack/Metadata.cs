@@ -142,12 +142,12 @@ namespace XRayBuilderGUI.Unpack
                         }
                     } catch (Exception ex)
                     {
-                        throw new Exception("Error in HUFF/CDIC decompression: " + ex.Message + "\r\n" + ex.StackTrace);
+                        throw new UnpackException("Error in HUFF/CDIC decompression: " + ex.Message + "\r\n" + ex.StackTrace);
                     }
                     decomp = reader;
                     break;
                 default:
-                    throw new Exception("Unknown compression type " + PDH.Compression + ".");
+                    throw new UnpackException("Unknown compression type " + PDH.Compression + ".");
             }
             byte[] rawML = new byte[0];
             int endRecord = _startRecord + PDH.RecordCount -1;
@@ -201,5 +201,10 @@ namespace XRayBuilderGUI.Unpack
     public class EncryptedBookException : Exception
     {
         public EncryptedBookException() : base("-This book has DRM (it is encrypted). X-Ray Builder will only work on books that do not have DRM.") { }
+    }
+
+    public class UnpackException : Exception
+    {
+        public UnpackException(string message) : base(message) { }
     }
 }

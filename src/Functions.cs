@@ -17,7 +17,6 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using HtmlAgilityPack;
-using XRayBuilderGUI.Unpack;
 
 namespace XRayBuilderGUI
 {
@@ -146,16 +145,6 @@ namespace XRayBuilderGUI
             var time = string.Format("{0:HH:mm:ss}", DateTime.Now);
             var date = string.Format("{0:dd/MM/yyyy}", DateTime.Now);
             return $"Running X-Ray Builder GUI v{version}. Log started on {date} at {time}.\r\n";
-        }
-
-        public static Metadata GetMetaDataInternal(string mobiFile, string outDir, bool saveRawML, string randomFile = "")
-        {
-            Metadata md = new Metadata(mobiFile);
-            if (md.mobiHeader.exthHeader == null)
-                throw new Exception(
-                    "No EXT Header found. Ensure this book was processed with Calibre then try again.");
-
-            return md;
         }
 
         public static string GetPageCount(string rawML, BookInfo bookInfo)

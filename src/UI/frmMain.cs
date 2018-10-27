@@ -99,7 +99,7 @@ namespace XRayBuilderGUI.UI
 
         private void btnBrowseXML_Click(object sender, EventArgs e)
         {
-            txtXMLFile.Text = UIFunctions.GetFile(txtXMLFile.Text, "XML files (*.xml)|*.xml|TXT files (*.txt)|*.txt");
+            txtXMLFile.Text = UIFunctions.GetFile(txtXMLFile.Text, "",  "XML files (*.xml)|*.xml|TXT files (*.txt)|*.txt");
         }
 
         private async void btnBuild_Click(object sender, EventArgs e)

@@ -50,7 +50,7 @@ namespace XRayBuilderGUI.UI
                 selPath = filePath;
             else
             {
-                selPath = GetFile($"Open a Kindle {previewData.Name} file...", null, "ASC files|*.asc", defaultDir);
+                selPath = GetFile($"Open a Kindle {previewData.Name} file...", "", "ASC files|*.asc", defaultDir);
                 if (!selPath.Contains(previewData.Validator))
                 {
                     Logger.Log($"Invalid {previewData.Name} file.");
@@ -80,13 +80,18 @@ namespace XRayBuilderGUI.UI
 
         public static string GetFile(string title, string defaultFile, string filter = "All files (*.*)|*.*", string initialDir = "")
         {
-            OpenFileDialog f = new OpenFileDialog();
+            var f = new OpenFileDialog
+            {
+                Title = title,
+                Filter = filter,
+                RestoreDirectory = true
+            };
+
             if (!string.IsNullOrEmpty(initialDir))
                 f.InitialDirectory = initialDir;
             else if (!string.IsNullOrEmpty(defaultFile))
                 f.InitialDirectory = Path.GetDirectoryName(defaultFile);
-            f.Filter = filter;
-            f.RestoreDirectory = true;
+
             return f.ShowDialog() == DialogResult.OK ? f.FileName : defaultFile;
         }
         public static string GetBook(string defaultFile) => GetFile("Open a Kindle book", defaultFile, "Kindle Books (*.azw3, *.mobi)|*.azw3; *.mobi");

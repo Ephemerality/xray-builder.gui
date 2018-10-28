@@ -19,14 +19,10 @@ namespace XRayBuilderGUI
     {
         private readonly ILogger _logger;
 
-        public string ApTitle;
-        public string ApSubTitle;
         public string BioTrimmed = "";
         public List<BookInfo> otherBooks = new List<BookInfo>();
         public string authorImageUrl = "";
         public string authorAsin = "";
-
-        public string EaSubTitle;
 
         private BookInfo _curBook;
         private Settings _settings;
@@ -275,16 +271,7 @@ namespace XRayBuilderGUI
                 return false;
             }
 
-            ApTitle = "About " + _curBook.author;
-            ApSubTitle = "Kindle Books By " + _curBook.author;
-            EaSubTitle = "More Books By " + _curBook.author;
             return true;
-        }
-
-        public string ToJSON()
-        {
-            string template = @"{{""class"":""authorBio"",""asin"":""{0}"",""name"":""{1}"",""bio"":""{2}"",""imageUrl"":""{3}""}}";
-            return Functions.ExpandUnicode(string.Format(template, authorAsin, _curBook.author, BioTrimmed, authorImageUrl));
         }
 
         private bool readBio(string bioFile)

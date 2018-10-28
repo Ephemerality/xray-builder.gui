@@ -129,10 +129,10 @@
     <Compile Include="src\DataSources\Amazon\Model\AmazonNextBookResult.cs" />
     <Compile Include="src\DataSources\Secondary\Shelfari.cs" />
     <Compile Include="src\EndActions.cs" />
-    <Compile Include="src\Model\AuthorProfile.cs" />
-    <Compile Include="src\Model\EndActions.cs" />
-    <Compile Include="src\Model\Shared.cs" />
-    <Compile Include="src\Model\StartActions.cs" />
+    <Compile Include="src\Model\Artifacts\AuthorProfile.cs" />
+    <Compile Include="src\Model\Artifacts\EndActions.cs" />
+    <Compile Include="src\Model\Artifacts\Shared.cs" />
+    <Compile Include="src\Model\Artifacts\StartActions.cs" />
     <Compile Include="src\UI\frmAbout.cs">
       <SubType>Form</SubType>
     </Compile>

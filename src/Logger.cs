@@ -6,21 +6,65 @@ using System.Windows.Forms;
 
 namespace XRayBuilderGUI
 {
-    public static class Logger
-    {
-        public static RichTextBox ctrl;
-        public static bool enabled = true;
+    public delegate void LogEventHandler(LogEventArgs e);
 
-        public static void Log(string message)
+    public sealed class LogEventArgs : EventArgs
+    {
+        public string Message { get; set; }
+        public LogLevel Level { get; set; }
+    }
+
+    public sealed class Logger : ILogger
+    {
+        public event LogEventHandler LogEvent;
+
+        public void Log(string message, LogLevel level = LogLevel.Auto)
         {
-            if (!enabled) return;
-            if (!message.EndsWith("\r\n")) message += "\r\n";
-            if (ctrl == null)
-                Console.WriteLine(message);
-            else
-                ctrl.SafeAppendText(message);
+            LogEvent?.Invoke(new LogEventArgs
+            {
+                Message = message,
+                Level = level
+            });
+        }
+    }
+
+    public interface ILogger
+    {
+        event LogEventHandler LogEvent;
+        void Log(string message, LogLevel level = LogLevel.Auto);
+    }
+
+    public enum LogLevel
+    {
+        Auto = 1,
+        Info,
+        Warn,
+        Error
+    }
+
+    public class RtfLogger
+    {
+        private readonly RichTextBox _ctrl;
+        public bool Enabled = true;
+
+        public RtfLogger(RichTextBox ctrl)
+        {
+            _ctrl = ctrl;
         }
 
+        public void Log(LogEventArgs e)
+        {
+            if (!Enabled) return;
+            if (!e.Message.EndsWith("\r\n")) e.Message += "\r\n";
+            if (_ctrl == null)
+                Console.WriteLine(e.Message);
+            else
+                _ctrl.SafeAppendText(e.Message);
+        }
+    }
+
+    public static class RtfExtensions
+    {
         // TODO: Rely on log levels rather than strings to determine colour
         public static void SafeAppendText(this RichTextBox rtfBox, string message)
         {
@@ -38,19 +82,22 @@ namespace XRayBuilderGUI
                     rtfBox.SelectionLength = 0;
                     rtfBox.SelectionColor = Color.Green;
                 }
-                List<string> redFlags = new List<string> { "error", "failed", "problem", "skipping", "unable" };
+
+                List<string> redFlags = new List<string> {"error", "failed", "problem", "skipping", "unable"};
                 if (redFlags.Any(message.ContainsIgnorecase))
                 {
                     rtfBox.SelectionStart = rtfBox.TextLength;
                     rtfBox.SelectionLength = 0;
                     rtfBox.SelectionColor = Color.Red;
                 }
+
                 if (message.ContainsIgnorecase("warning"))
                 {
                     rtfBox.SelectionStart = rtfBox.TextLength;
                     rtfBox.SelectionLength = 0;
                     rtfBox.SelectionColor = Color.DarkOrange;
                 }
+
                 rtfBox.AppendText(message);
                 rtfBox.SelectionColor = rtfBox.ForeColor;
                 rtfBox.Refresh();
@@ -59,7 +106,7 @@ namespace XRayBuilderGUI
 
         public static void SafeClearText(this RichTextBox rtfBox)
         {
-            rtfBox.BeginInvoke((Action)rtfBox.Clear);
+            rtfBox.BeginInvoke((Action) rtfBox.Clear);
         }
     }
 }

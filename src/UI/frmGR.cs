@@ -8,11 +8,14 @@ namespace XRayBuilderGUI.UI
 {
     public partial class frmGR : Form
     {
+        private readonly ILogger _logger;
+
         public List<BookInfo> BookList = new List<BookInfo>();
 
-        public frmGR()
+        public frmGR(ILogger logger)
         {
             InitializeComponent();
+            _logger = logger;
         }
 
         private readonly ToolTip _toolTip1 = new ToolTip();
@@ -35,7 +38,14 @@ namespace XRayBuilderGUI.UI
         private void cbResults_SelectedIndexChanged(object sender, EventArgs e)
         {
             int i = cbResults.SelectedIndex == -1 ? 0 : cbResults.SelectedIndex;
-            pbCover.Image = BookList[i].CoverImage() ?? Resources.missing_image;
+            try
+            {
+                pbCover.Image = BookList[i].CoverImage() ?? Resources.missing_image;
+            }
+            catch (Exception ex)
+            {
+                _logger.Log("Failed to download cover image: " + ex.Message);
+            }
             lblTitle.Text = BookList[i].title;
             lblAuthor.Text = "by " + BookList[i].author;
             lblRating.Text = $"{BookList[i].amazonRating:#.#} average rating " + Functions.Pluralize($"({BookList[i].numReviews:rating})");

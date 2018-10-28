@@ -41,7 +41,7 @@ namespace XRayBuilderGUI.UI
             {Filetype.XRay, new PreviewDef { Name = "X-Ray", Form = typeof(frmPreviewXR), Validator = "XRAY.entities"}}
         };
 
-        public static async Task ShowPreview(Filetype type, string filePath, string defaultDir)
+        public static async Task ShowPreview(Filetype type, string filePath, string defaultDir, ILogger _logger)
         {
             var previewData = PreviewMap[type];
 
@@ -53,13 +53,14 @@ namespace XRayBuilderGUI.UI
                 selPath = GetFile($"Open a Kindle {previewData.Name} file...", "", "ASC files|*.asc", defaultDir);
                 if (!selPath.Contains(previewData.Validator))
                 {
-                    Logger.Log($"Invalid {previewData.Name} file.");
+                    _logger.Log($"Invalid {previewData.Name} file.");
                     return;
                 }
             }
 
             try
             {
+                // TODO: Use DI somehow for this
                 IPreviewForm previewForm = (IPreviewForm) Activator.CreateInstance(previewData.Form);
                 await previewForm.Populate(selPath);
                 //.Location = new Point(Left, Top);
@@ -121,9 +122,9 @@ namespace XRayBuilderGUI.UI
 
         public static string RawMlPath(string filename) => Path.Combine(Environment.CurrentDirectory, "dmp", filename + ".rawml");
 
-        public static Metadata GetAndValidateMetadata(string mobiFile, bool saveRawML)
+        public static Metadata GetAndValidateMetadata(string mobiFile, bool saveRawML, ILogger _logger)
         {
-            Logger.Log("Extracting metadata...");
+            _logger.Log("Extracting metadata...");
             try
             {
                 var metadata = new Metadata(mobiFile);
@@ -139,16 +140,16 @@ namespace XRayBuilderGUI.UI
 
                 if (saveRawML)
                 {
-                    Logger.Log("Saving rawML to dmp directory...");
+                    _logger.Log("Saving rawML to dmp directory...");
                     metadata.SaveRawMl(RawMlPath(Path.GetFileNameWithoutExtension(mobiFile)));
                 }
-                Logger.Log($"Got metadata!\r\nDatabase Name: {metadata.DBName}\r\nUniqueID: {metadata.UniqueID}");
+                _logger.Log($"Got metadata!\r\nDatabase Name: {metadata.DBName}\r\nUniqueID: {metadata.UniqueID}");
 
                 return metadata;
             }
             catch (Exception ex)
             {
-                Logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
+                _logger.Log("An error occurred extracting metadata: " + ex.Message + "\r\n" + ex.StackTrace);
             }
 
             return null;

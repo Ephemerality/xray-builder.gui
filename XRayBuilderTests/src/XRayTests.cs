@@ -26,7 +26,7 @@ namespace XRayBuilderTests
 
         private XRay CreateXRayFromXML(string path, string db, string guid, string asin)
         {
-            return new XRay(path, db, guid, asin, new Goodreads(), 0, "") { unattended = true };
+            return new XRay(path, db, guid, asin, new Goodreads(new Logger()), new Logger(), 0, "") { unattended = true };
         }
 
         [Test(), TestCaseSource(nameof(books))]

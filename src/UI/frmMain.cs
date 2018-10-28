@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
+using SimpleInjector;
 using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.DataSources.Secondary.Model;
@@ -21,6 +22,11 @@ namespace XRayBuilderGUI.UI
 {
     public partial class frmMain : Form
     {
+        // TODO: Remove logging from classes that shouldn't have it
+        private readonly Logger _logger;
+        // TODO: Find a better way to create new forms w/o requiring container outside composition root
+        private readonly Container _diContainer;
+
         public bool Exiting;
 
         private string EaPath = "";
@@ -28,10 +34,14 @@ namespace XRayBuilderGUI.UI
         private string ApPath = "";
         private string XrPath = "";
 
-        public frmMain()
+        public frmMain(Logger logger, Container diContainer)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
+            var rtfLogger = new RtfLogger(txtOutput);
+            _logger = logger;
+            _diContainer = diContainer;
+            _logger.LogEvent += rtfLogger.Log;
         }
 
         private readonly ToolTip _tooltip = new ToolTip();
@@ -55,7 +65,7 @@ namespace XRayBuilderGUI.UI
         {
             if (!_settings.useSubDirectories) return _settings.outDir;
             if (!Functions.ValidateFilename(author, title))
-                Logger.Log("Warning: The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.");
+                _logger.Log("Warning: The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.");
             return Functions.GetBookOutputDirectory(author, title, create);
         }
 
@@ -140,18 +150,18 @@ namespace XRayBuilderGUI.UI
 
             prgBar.Value = 0;
 
-            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.saverawml));
+            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.saverawml, _logger));
             if (metadata == null)
                 return;
 
             // Added author name to log output
-            Logger.Log($"Book's {_dataSource.Name} URL: {txtGoodreads.Text}");
+            _logger.Log($"Book's {_dataSource.Name} URL: {txtGoodreads.Text}");
             if (_cancelTokens.IsCancellationRequested) return;
-            Logger.Log("Attempting to build X-Ray...");
+            _logger.Log("Attempting to build X-Ray...");
 
             //If AZW3 file use AZW3 offset, if checked. Checked by default.
             bool AZW3 = Path.GetExtension(txtMobi.Text) == ".azw3" && _settings.overrideOffset;
-            Logger.Log("Offset: " + (AZW3 ? $"{_settings.offsetAZW3} (AZW3)" : _settings.offset.ToString()));
+            _logger.Log("Offset: " + (AZW3 ? $"{_settings.offsetAZW3} (AZW3)" : _settings.offset.ToString()));
 
             //Create X-Ray and attempt to create the base file (essentially the same as the site)
             XRay xray;
@@ -159,10 +169,10 @@ namespace XRayBuilderGUI.UI
             try
             {
                 if (rdoGoodreads.Checked)
-                    xray = new XRay(txtGoodreads.Text, metadata.DBName, metadata.UniqueID, metadata.ASIN, _dataSource,
+                    xray = new XRay(txtGoodreads.Text, metadata.DBName, metadata.UniqueID, metadata.ASIN, _dataSource, _logger,
                         AZW3 ? _settings.offsetAZW3 : _settings.offset, "", false);
                 else
-                    xray = new XRay(txtXMLFile.Text, metadata.DBName, metadata.UniqueID, metadata.ASIN, _dataSource,
+                    xray = new XRay(txtXMLFile.Text, metadata.DBName, metadata.UniqueID, metadata.ASIN, _dataSource, _logger,
                         AZW3 ? _settings.offsetAZW3 : _settings.offset, "");
 
                 await Task.Run(() => xray.CreateXray(_progress, _cancelTokens.Token)).ConfigureAwait(false);
@@ -181,33 +191,33 @@ namespace XRayBuilderGUI.UI
                     Functions.RunNotepad(xray.AliasPath);
                 }
                 if (!File.Exists(xray.AliasPath))
-                    Logger.Log("Aliases file not found.");
+                    _logger.Log("Aliases file not found.");
                 else
                 {
                     xray.LoadAliases();
-                    Logger.Log($"Character aliases read from {xray.AliasPath}.");
+                    _logger.Log($"Character aliases read from {xray.AliasPath}.");
                 }
 
-                Logger.Log("Initial X-Ray built, adding locations and chapters...");
+                _logger.Log("Initial X-Ray built, adding locations and chapters...");
                 //Expand the X-Ray file from the unpacked mobi
                 if (await Task.Run(() => xray.ExpandFromRawMl(metadata.GetRawMlStream(), SafeShow, _progress, _cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion)).ConfigureAwait(false) > 0)
                 {
-                    Logger.Log("Build canceled or error occurred while processing locations and chapters.");
+                    _logger.Log("Build canceled or error occurred while processing locations and chapters.");
                     return;
                 }
             }
             catch (OperationCanceledException)
             {
-                Logger.Log("Build canceled.");
+                _logger.Log("Build canceled.");
                 return;
             }
             catch (Exception ex)
             {
-                Logger.Log("An error occurred while building the X-Ray:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                _logger.Log("An error occurred while building the X-Ray:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                 return;
             }
 
-            Logger.Log("Saving X-Ray to file...");
+            _logger.Log("Saving X-Ray to file...");
             string outFolder;
             try
             {
@@ -223,7 +233,7 @@ namespace XRayBuilderGUI.UI
             }
             catch (Exception ex)
             {
-                Logger.Log("Failed to create output directory: " + ex.Message + "\r\n" + ex.StackTrace + "\r\nFiles will be placed in the default output directory.");
+                _logger.Log("Failed to create output directory: " + ex.Message + "\r\n" + ex.StackTrace + "\r\nFiles will be placed in the default output directory.");
                 outFolder = _settings.outDir;
             }
             var newPath = outFolder + "\\" + xray.XRayName(_settings.android);
@@ -236,13 +246,13 @@ namespace XRayBuilderGUI.UI
                 }
                 catch (OperationCanceledException)
                 {
-                    Logger.Log("Building canceled.");
+                    _logger.Log("Building canceled.");
                     return;
                 }
                 catch (Exception ex)
                 {
                     // TODO: Add option to retry maybe?
-                    Logger.Log($"An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n{ex.Message}");
+                    _logger.Log($"An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n{ex.Message}");
                     return;
                 }
                 XrPath = outFolder + @"\XRAY.entities." + metadata.ASIN;
@@ -252,18 +262,18 @@ namespace XRayBuilderGUI.UI
                 {
                     string PdPath = outFolder + @"\XRAY." + metadata.ASIN + ".previewData";
                     xray.SavePreviewToFile(PdPath);
-                    Logger.Log($"X-Ray previewData file created successfully!\r\nSaved to {PdPath}");
+                    _logger.Log($"X-Ray previewData file created successfully!\r\nSaved to {PdPath}");
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(string.Format("An error occurred saving the previewData file: {0}\r\n{1}", ex.Message, ex.StackTrace));
+                    _logger.Log(string.Format("An error occurred saving the previewData file: {0}\r\n{1}", ex.Message, ex.StackTrace));
                 }
             }
             else
             {
                 xray.SaveToFileOld(newPath);
             }
-            Logger.Log($"X-Ray file created successfully!\r\nSaved to {newPath}");
+            _logger.Log($"X-Ray file created successfully!\r\nSaved to {newPath}");
 
             checkFiles(metadata.Author, metadata.Title, metadata.ASIN);
 
@@ -316,20 +326,21 @@ namespace XRayBuilderGUI.UI
                 return;
             }
 
-            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.saverawml));
+            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.saverawml, _logger));
             if (metadata == null)
                 return;
 
             SetDatasourceLabels(); // Reset the dataSource for the new build process
-            Logger.Log($"Book's {_dataSource.Name} URL: {txtGoodreads.Text}");
+            _logger.Log($"Book's {_dataSource.Name} URL: {txtGoodreads.Text}");
             try
             {
                 BookInfo bookInfo = new BookInfo(metadata, txtGoodreads.Text);
 
                 string outputDir = OutputDirectory(bookInfo.author, bookInfo.sidecarName, true);
 
-                Logger.Log("Attempting to build Author Profile...");
-                AuthorProfile ap = new AuthorProfile(bookInfo, new AuthorProfile.Settings
+                _logger.Log("Attempting to build Author Profile...");
+                AuthorProfile ap = new AuthorProfile(_logger);
+                if (!await ap.GenerateAsync(bookInfo, new AuthorProfile.Settings
                 {
                     AmazonTld = _settings.amazonTLD,
                     Android = _settings.android,
@@ -337,11 +348,10 @@ namespace XRayBuilderGUI.UI
                     SaveBio = _settings.saveBio,
                     UseNewVersion = _settings.useNewVersion,
                     UseSubDirectories = _settings.useSubDirectories
-                });
-                if (!await ap.GenerateAsync(_cancelTokens.Token)) return;
+                }, _cancelTokens.Token)) return;
                 SaPath = $@"{outputDir}\StartActions.data.{bookInfo.asin}.asc";
                 ApPath = $@"{outputDir}\AuthorProfile.profile.{bookInfo.asin}.asc";
-                Logger.Log("Attempting to build Start Actions and End Actions...");
+                _logger.Log("Attempting to build Start Actions and End Actions...");
 
                 string AsinPrompt(string title, string author)
                 {
@@ -366,7 +376,7 @@ namespace XRayBuilderGUI.UI
                     UseNewVersion = _settings.useNewVersion,
                     UseSubDirectories = _settings.useSubDirectories,
                     PromptAsin = _settings.promptASIN
-                }, AsinPrompt);
+                }, AsinPrompt, _logger);
                 if (!await ea.Generate()) return;
 
                 if (_settings.useNewVersion)
@@ -382,12 +392,12 @@ namespace XRayBuilderGUI.UI
                     }
                     catch (FileNotFoundException)
                     {
-                        Logger.Log(@"Unable to find dist\BaseEndActions.json, make sure it has been extracted!");
+                        _logger.Log(@"Unable to find dist\BaseEndActions.json, make sure it has been extracted!");
                         return;
                     }
                     catch (Exception e)
                     {
-                        Logger.Log($@"An error occurred while loading dist\BaseEndActions.json (make sure any new versions have been extracted!)\r\n{e.Message}\r\n{e.StackTrace}");
+                        _logger.Log($@"An error occurred while loading dist\BaseEndActions.json (make sure any new versions have been extracted!)\r\n{e.Message}\r\n{e.StackTrace}");
                         return;
                     }
 
@@ -401,12 +411,12 @@ namespace XRayBuilderGUI.UI
                     }
                     catch (FileNotFoundException)
                     {
-                        Logger.Log(@"Unable to find dist\BaseStartActions.json, make sure it has been extracted!");
+                        _logger.Log(@"Unable to find dist\BaseStartActions.json, make sure it has been extracted!");
                         return;
                     }
                     catch (Exception e)
                     {
-                        Logger.Log($@"An error occurred while loading dist\BaseStartActions.json (make sure any new versions have been extracted!)\r\n{e.Message}\r\n{e.StackTrace}");
+                        _logger.Log($@"An error occurred while loading dist\BaseStartActions.json (make sure any new versions have been extracted!)\r\n{e.Message}\r\n{e.StackTrace}");
                         return;
                     }
 
@@ -414,14 +424,14 @@ namespace XRayBuilderGUI.UI
                     string saContent = null;
                     if (_settings.downloadSA)
                     {
-                        Logger.Log("Attempting to download Start Actions...");
+                        _logger.Log("Attempting to download Start Actions...");
                         try
                         {
                             saContent = await Amazon.DownloadStartActions(metadata.ASIN);
                         }
                         catch
                         {
-                            Logger.Log("No pre-made Start Actions available, building...");
+                            _logger.Log("No pre-made Start Actions available, building...");
                         }
                     }
                     if (string.IsNullOrEmpty(saContent))
@@ -445,7 +455,7 @@ namespace XRayBuilderGUI.UI
             }
             catch (Exception ex)
             {
-                Logger.Log("An error occurred while creating the new Author Profile, Start Actions, and/or End Actions files:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                _logger.Log("An error occurred while creating the new Author Profile, Start Actions, and/or End Actions files:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
             }
             finally
             {
@@ -473,18 +483,18 @@ namespace XRayBuilderGUI.UI
             {
                 txtXMLFile.Text = path;
 
-                XRay xray = new XRay(txtGoodreads.Text, _dataSource);
+                XRay xray = new XRay(txtGoodreads.Text, _dataSource, _logger);
                 int result = await Task.Run(() => xray.SaveXml(path, _progress, _cancelTokens.Token));
                 if (result == 1)
-                    Logger.Log("Warning: Unable to download character data as no character data found on Goodreads.");
+                    _logger.Log("Warning: Unable to download character data as no character data found on Goodreads.");
                 else if (result == 2)
-                    Logger.Log("Download cancelled.");
+                    _logger.Log("Download cancelled.");
                 else
-                    Logger.Log("Character data has been successfully saved to: " + path);
+                    _logger.Log("Character data has been successfully saved to: " + path);
             }
             catch (Exception ex)
             {
-                Logger.Log($"An error occurred while saving character data to XML: {ex.Message}\r\nPath was: {path}");
+                _logger.Log($"An error occurred while saving character data to XML: {ex.Message}\r\nPath was: {path}");
             }
             finally
             {
@@ -514,7 +524,7 @@ namespace XRayBuilderGUI.UI
             }
 
             //this.TopMost = true;
-            using (var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, false)))
+            using (var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, false, _logger)))
             {
                 if (metadata == null)
                     return;
@@ -525,8 +535,8 @@ namespace XRayBuilderGUI.UI
                     string bookUrl;
                     if (books.Count > 1)
                     {
-                        Logger.Log($"Warning: Multiple results returned from {_dataSource.Name}...");
-                        var frmG = new frmGR { BookList = books };
+                        _logger.Log($"Warning: Multiple results returned from {_dataSource.Name}...");
+                        var frmG = new frmGR(_logger) { BookList = books };
                         frmG.ShowDialog();
                         bookUrl = books[frmG.cbResults.SelectedIndex].dataUrl;
                     }
@@ -534,7 +544,7 @@ namespace XRayBuilderGUI.UI
                         bookUrl = books[0].dataUrl;
                     else
                     {
-                        Logger.Log($"Unable to find this book on {_dataSource.Name}!");
+                        _logger.Log($"Unable to find this book on {_dataSource.Name}!");
                         return;
                     }
 
@@ -542,14 +552,14 @@ namespace XRayBuilderGUI.UI
                     {
                         txtGoodreads.Text = bookUrl;
                         txtGoodreads.Refresh();
-                        Logger.Log(
+                        _logger.Log(
                             $"Book found on {_dataSource.Name}!\r\n{metadata.Title} by {metadata.Author}\r\n{_dataSource.Name} URL: {bookUrl}\r\n"
                             + "You may want to visit the URL to ensure it is correct.");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log("An error occurred while searching: " + ex.Message + "\r\n" + ex.StackTrace);
+                    _logger.Log("An error occurred while searching: " + ex.Message + "\r\n" + ex.StackTrace);
                 }
             }
         }
@@ -579,7 +589,6 @@ namespace XRayBuilderGUI.UI
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Logger.ctrl = txtOutput;
             //this.WindowState = FormWindowState.Maximized;
             ActiveControl = lblGoodreads;
             _tooltip.SetToolTip(btnBrowseMobi, "Open a Kindle book.");
@@ -631,7 +640,7 @@ namespace XRayBuilderGUI.UI
             if (_settings.dataSource == "Goodreads")
             {
                 btnSearchGoodreads.Enabled = true;
-                _dataSource = new Goodreads();
+                _dataSource = new Goodreads(_logger);
                 rdoGoodreads.Text = "Goodreads";
                 lblGoodreads.Text = "Goodreads URL:";
                 lblGoodreads.Left = 134;
@@ -641,7 +650,7 @@ namespace XRayBuilderGUI.UI
             else
             {
                 btnSearchGoodreads.Enabled = false;
-                _dataSource = new Shelfari();
+                _dataSource = new Shelfari(_logger);
                 rdoGoodreads.Text = "Shelfari";
                 lblGoodreads.Text = "Shelfari URL:";
                 lblGoodreads.Left = 150;
@@ -695,7 +704,7 @@ namespace XRayBuilderGUI.UI
             prgBar.Value = 0;
 
 
-            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, false));
+            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, false, _logger));
             if (metadata == null)
             {
                 txtMobi.Text = "";
@@ -729,7 +738,7 @@ namespace XRayBuilderGUI.UI
             }
             catch (Exception ex)
             {
-                Logger.Log($"An error occurred while trying to delete temporary files: {ex.Message}\r\n{ex.StackTrace}\r\n"
+                _logger.Log($"An error occurred while trying to delete temporary files: {ex.Message}\r\n{ex.StackTrace}\r\n"
                     + "Try deleting these files manually.");
             }
         }
@@ -741,22 +750,22 @@ namespace XRayBuilderGUI.UI
 
         private async void tmiAuthorProfile_Click(object sender, EventArgs e)
         {
-            await UIFunctions.ShowPreview(Filetype.AuthorProfile, ApPath, _settings.outDir);
+            await UIFunctions.ShowPreview(Filetype.AuthorProfile, ApPath, _settings.outDir, _logger);
         }
 
         private async void tmiStartAction_Click(object sender, EventArgs e)
         {
-            await UIFunctions.ShowPreview(Filetype.StartActions, ApPath, _settings.outDir);
+            await UIFunctions.ShowPreview(Filetype.StartActions, ApPath, _settings.outDir, _logger);
         }
 
         private async void tmiEndAction_Click(object sender, EventArgs e)
         {
-            await UIFunctions.ShowPreview(Filetype.EndActions, ApPath, _settings.outDir);
+            await UIFunctions.ShowPreview(Filetype.EndActions, ApPath, _settings.outDir, _logger);
         }
 
         private async void tmiXray_Click(object sender, EventArgs e)
         {
-            await UIFunctions.ShowPreview(Filetype.XRay, ApPath, _settings.outDir);
+            await UIFunctions.ShowPreview(Filetype.XRay, ApPath, _settings.outDir, _logger);
         }
 
         private async void btnUnpack_Click(object sender, EventArgs e)
@@ -775,7 +784,7 @@ namespace XRayBuilderGUI.UI
             var metadata = await Task.Run(() => new Metadata(txtMobi.Text)).ConfigureAwait(false);
             if (metadata != null)
             {
-                Logger.Log("Extracted rawml successfully!\r\n");
+                _logger.Log("Extracted rawml successfully!\r\n");
                 metadata.Dispose();
             }
         }
@@ -803,13 +812,13 @@ namespace XRayBuilderGUI.UI
             string selPath = UIFunctions.GetFile("Open a Kindle X-Ray file...", "", "ASC files|*.asc", _settings.outDir);
             if (selPath == "" || !selPath.Contains("XRAY.entities"))
             {
-                Logger.Log("Invalid or no file selected.");
+                _logger.Log("Invalid or no file selected.");
                 return;
             }
             var newVer = XRayUtil.CheckXRayVersion(selPath);
             if (newVer == XRayUtil.XRayVersion.Invalid)
             {
-                Logger.Log("Invalid X-Ray file.");
+                _logger.Log("Invalid X-Ray file.");
                 return;
             }
             try
@@ -821,11 +830,11 @@ namespace XRayBuilderGUI.UI
                     Directory.CreateDirectory(Environment.CurrentDirectory + @"\xml\");
                 string outfile = Environment.CurrentDirectory + @"\xml\" + Path.GetFileNameWithoutExtension(selPath) + ".xml";
                 Functions.Save(terms.ToList(), outfile);
-                Logger.Log("Character data has been successfully extracted and saved to: " + outfile);
+                _logger.Log("Character data has been successfully extracted and saved to: " + outfile);
             }
             catch (Exception ex)
             {
-                Logger.Log("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                _logger.Log("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
             }
         }
 
@@ -886,7 +895,7 @@ namespace XRayBuilderGUI.UI
         {
             if (!_cancelTokens.IsCancellationRequested)
             {
-                Logger.Log("Canceling...");
+                _logger.Log("Canceling...");
                 _cancelTokens.Cancel();
             }
         }

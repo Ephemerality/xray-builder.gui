@@ -17,6 +17,8 @@ namespace XRayBuilderGUI
 {
     public class AuthorProfile
     {
+        private readonly ILogger _logger;
+
         public string ApTitle;
         public string ApSubTitle;
         public string BioTrimmed = "";
@@ -26,18 +28,20 @@ namespace XRayBuilderGUI
 
         public string EaSubTitle;
 
-        private readonly BookInfo _curBook;
-        private readonly Settings _settings;
+        private BookInfo _curBook;
+        private Settings _settings;
 
-        public AuthorProfile(BookInfo curBook, Settings settings)
+        public AuthorProfile(ILogger logger)
         {
-            _curBook = curBook;
-            _settings = settings;
+            _logger = logger;
         }
 
         // TODO: Review this...
-        public async Task<bool> GenerateAsync(CancellationToken cancellationToken = default)
+        // TODO: Remove json serialize function and make this generate static and return a authorprofile poco
+        public async Task<bool> GenerateAsync(BookInfo curBook, Settings settings, CancellationToken cancellationToken = default)
         {
+            _curBook = curBook;
+            _settings = settings;
             string outputDir;
             try
             {
@@ -51,14 +55,14 @@ namespace XRayBuilderGUI
             }
             catch (Exception ex)
             {
-                Logger.Log("An error occurred creating output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
+                _logger.Log("An error occurred creating output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
                 outputDir = _settings.OutDir;
             }
             string ApPath = outputDir + @"\AuthorProfile.profile." + _curBook.asin + ".asc";
 
             if (!Properties.Settings.Default.overwrite && File.Exists(ApPath))
             {
-                Logger.Log("AuthorProfile file already exists... Skipping!\r\n" +
+                _logger.Log("AuthorProfile file already exists... Skipping!\r\n" +
                          "Please review the settings page if you want to overwite any existing files.");
                 return false;
             }
@@ -68,22 +72,22 @@ namespace XRayBuilderGUI
             // If the .com search crashes, it will crash back to the caller in frmMain
             try
             {
-                searchResults = await Amazon.SearchAuthor(_curBook, _settings.AmazonTld, cancellationToken);
+                searchResults = await Amazon.SearchAuthor(_curBook, _settings.AmazonTld, _logger, cancellationToken);
             }
             catch (Exception ex)
             {
-                Logger.Log("Error searching Amazon." + _settings.AmazonTld + ": " + ex.Message + "\r\n" + ex.StackTrace);
+                _logger.Log("Error searching Amazon." + _settings.AmazonTld + ": " + ex.Message + "\r\n" + ex.StackTrace);
             }
             finally
             {
                 if (searchResults == null)
                 {
-                    Logger.Log(string.Format("Failed to find {0} on Amazon." + _settings.AmazonTld, _curBook.author));
+                    _logger.Log(string.Format("Failed to find {0} on Amazon." + _settings.AmazonTld, _curBook.author));
                     if (_settings.AmazonTld != "com")
                     {
-                        Logger.Log("Trying again with Amazon.com.");
+                        _logger.Log("Trying again with Amazon.com.");
                         _settings.AmazonTld = "com";
-                        searchResults = await Amazon.SearchAuthor(_curBook, _settings.AmazonTld, cancellationToken);
+                        searchResults = await Amazon.SearchAuthor(_curBook, _settings.AmazonTld, _logger, cancellationToken);
                     }
                 }
             }
@@ -94,13 +98,13 @@ namespace XRayBuilderGUI
             {
                 try
                 {
-                    Logger.Log("Saving author's Amazon webpage...");
+                    _logger.Log("Saving author's Amazon webpage...");
                     File.WriteAllText(Environment.CurrentDirectory + string.Format(@"\dmp\{0}.authorpageHtml.txt", _curBook.asin),
                         searchResults.authorHtmlDoc.DocumentNode.InnerHtml);
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(string.Format("An error occurred saving authorpageHtml.txt: {0}", ex.Message));
+                    _logger.Log(string.Format("An error occurred saving authorpageHtml.txt: {0}", ex.Message));
                 }
             }
 
@@ -131,7 +135,7 @@ namespace XRayBuilderGUI
                         BioTrimmed = bio.InnerText;
                     }
                     BioTrimmed = BioTrimmed.Clean();
-                    Logger.Log("Author biography found on Amazon!");
+                    _logger.Log("Author biography found on Amazon!");
                 }
             }
             else
@@ -149,7 +153,7 @@ namespace XRayBuilderGUI
                 else
                 {
                     BioTrimmed = "No author biography found on Amazon!";
-                    Logger.Log("An error occurred finding the author biography on Amazon.");
+                    _logger.Log("An error occurred finding the author biography on Amazon.");
                 }
             }
             if (_settings.SaveBio)
@@ -158,7 +162,7 @@ namespace XRayBuilderGUI
                 {
                     try
                     {
-                        Logger.Log("Saving biography to " + bioFile);
+                        _logger.Log("Saving biography to " + bioFile);
                         using (var streamWriter = new StreamWriter(bioFile, false, System.Text.Encoding.UTF8))
                         {
                             streamWriter.Write(BioTrimmed);
@@ -166,7 +170,7 @@ namespace XRayBuilderGUI
                     }
                     catch (Exception ex)
                     {
-                        Logger.Log("An error occurred while writing biography.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                        _logger.Log("An error occurred while writing biography.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                         return false;
                     }
                 }
@@ -190,22 +194,22 @@ namespace XRayBuilderGUI
             Bitmap ApAuthorImage;
             try
             {
-                Logger.Log("Downloading author image...");
+                _logger.Log("Downloading author image...");
                 ApAuthorImage = await HttpDownloader.GetImageAsync(authorImageUrl, cancellationToken);
-                Logger.Log("Grayscale base64-encoded author image created!");
+                _logger.Log("Grayscale base64-encoded author image created!");
             }
             catch (Exception ex)
             {
-                Logger.Log(string.Format("An error occurred downloading the author image: {0}", ex.Message));
+                _logger.Log(string.Format("An error occurred downloading the author image: {0}", ex.Message));
                 return false;
             }
 
-            Logger.Log("Gathering author's other books...");
+            _logger.Log("Gathering author's other books...");
             var bookList = Amazon.GetAuthorBooks(searchResults, _curBook.title, _curBook.author, _settings.AmazonTld)
                 ?? Amazon.GetAuthorBooksNew(searchResults, _curBook.title, _curBook.author, _settings.AmazonTld);
             if (bookList != null)
             {
-                Logger.Log("Gathering metadata for other books...");
+                _logger.Log("Gathering metadata for other books...");
                 var bookBag = new ConcurrentBag<BookInfo>();
                 await bookList.ParallelForEachAsync(async book =>
                 {
@@ -219,7 +223,7 @@ namespace XRayBuilderGUI
                     }
                     catch (Exception ex)
                     {
-                        Logger.Log(string.Format("An error occurred gathering metadata for other books: {0}\r\nURL: {1}\r\nBook: {2}", ex.Message, book.amazonUrl, book.title));
+                        _logger.Log(string.Format("An error occurred gathering metadata for other books: {0}\r\nURL: {1}\r\nBook: {2}", ex.Message, book.amazonUrl, book.title));
                         throw;
                     }
                 }, cancellationToken);
@@ -227,10 +231,10 @@ namespace XRayBuilderGUI
             }
             else
             {
-                Logger.Log("Unable to find other books by this author. If there should be some, check the Amazon URL to ensure it is correct.");
+                _logger.Log("Unable to find other books by this author. If there should be some, check the Amazon URL to ensure it is correct.");
             }
 
-            Logger.Log("Writing Author Profile to file...");
+            _logger.Log("Writing Author Profile to file...");
 
             var authorOtherBooks = otherBooks.Select(book => new Model.AuthorProfile.Book
             {
@@ -263,11 +267,11 @@ namespace XRayBuilderGUI
             try
             {
                 File.WriteAllText(ApPath, authorProfileOutput);
-                Logger.Log("Author Profile file created successfully!\r\nSaved to " + ApPath);
+                _logger.Log("Author Profile file created successfully!\r\nSaved to " + ApPath);
             }
             catch (Exception ex)
             {
-                Logger.Log("An error occurred while writing the Author Profile file: " + ex.Message + "\r\n" + ex.StackTrace);
+                _logger.Log("An error occurred while writing the Author Profile file: " + ex.Message + "\r\n" + ex.StackTrace);
                 return false;
             }
 
@@ -291,14 +295,14 @@ namespace XRayBuilderGUI
                 {
                     BioTrimmed = streamReader.ReadToEnd();
                     if (BioTrimmed == "")
-                        Logger.Log("Found biography file, but it is empty!\r\n" + bioFile);
+                        _logger.Log("Found biography file, but it is empty!\r\n" + bioFile);
                     else
-                        Logger.Log("Using biography from " + bioFile + ".");
+                        _logger.Log("Using biography from " + bioFile + ".");
                 }
             }
             catch (Exception ex)
             {
-                Logger.Log("An error occurred while opening " + bioFile + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                _logger.Log("An error occurred while opening " + bioFile + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                 return false;
             }
             return true;

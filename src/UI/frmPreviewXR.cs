@@ -17,10 +17,8 @@ namespace XRayBuilderGUI.UI
         {
             var ver = XRayUtil.CheckXRayVersion(filePath);
             if (ver == XRayUtil.XRayVersion.Invalid)
-            {
-                Logger.Log("Invalid X-Ray file.");
-                return Task.Delay(1);
-            }
+                throw new Exception("Invalid X-Ray file.");
+
             var terms = ver == XRayUtil.XRayVersion.New
                 ? XRayUtil.ExtractTermsNew(new SQLiteConnection($"Data Source={filePath}; Version=3;"), true)
                 : XRayUtil.ExtractTermsOld(filePath);

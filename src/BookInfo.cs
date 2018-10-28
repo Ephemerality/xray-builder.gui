@@ -9,6 +9,7 @@ using XRayBuilderGUI.Unpack;
 
 namespace XRayBuilderGUI
 {
+    // TODO: Properties
     public class BookInfo
     {
         public string title;
@@ -194,14 +195,7 @@ namespace XRayBuilderGUI
         {
             if (bookImageUrl == "") return null;
             if (_bookImage != null) return _bookImage;
-            try
-            {
-                _bookImage = Task.Run(() => HttpDownloader.GetImageAsync(bookImageUrl)).Result;
-            }
-            catch (Exception ex)
-            {
-                Logger.Log("Failed to download cover image: " + ex.Message);
-            }
+            _bookImage = Task.Run(() => HttpDownloader.GetImageAsync(bookImageUrl)).Result;
             return _bookImage;
         }
     }

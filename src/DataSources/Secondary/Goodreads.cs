@@ -15,12 +15,20 @@ namespace XRayBuilderGUI.DataSources.Secondary
 {
     public class Goodreads : ISecondarySource
     {
+        private readonly ILogger _logger;
+
         private const int MaxConcurrentRequests = 10;
         private HtmlDocument sourceHtmlDoc;
 
         public string Name => "Goodreads";
 
         private readonly Regex _regexBookId = new Regex(@"/book/show/(?<id>[0-9]+)", RegexOptions.Compiled);
+
+        public Goodreads(ILogger logger)
+        {
+            _logger = logger;
+        }
+
         private string ParseBookId(string input) => _regexBookId.Match(input).Groups["id"].Value;
         private static string BookUrl(string id) => string.IsNullOrEmpty(id) ? null : $"https://www.goodreads.com/book/show/{id}";
         private string SearchUrl(string author, string title) => $"https://www.goodreads.com/search?q={author}%20{title}";
@@ -180,7 +188,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             }
             catch (Exception ex)
             {
-                Logger.Log($"An error occurred while searching for {id}'s ASIN.\r\n{ex.Message}\r\n{ex.StackTrace}");
+                _logger.Log($"An error occurred while searching for {id}'s ASIN.\r\n{ex.Message}\r\n{ex.StackTrace}");
                 return "";
             }
         }
@@ -202,7 +210,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
                 double minutes = int.Parse(match.Groups[1].Value, NumberStyles.AllowThousands) * 1.2890625;
                 TimeSpan span = TimeSpan.FromMinutes(minutes);
                 // Functions.Pluralize($"{BookList[i].editions:edition}")
-                Logger.Log(string.Format("Typical time to read: {0}, {1}, and {2} ({3} pages)",
+                _logger.Log(string.Format("Typical time to read: {0}, {1}, and {2} ({3} pages)",
                     Functions.Pluralize($"{span.Days:day}"),
                     Functions.Pluralize($"{span.Hours:hour}"),
                     Functions.Pluralize($"{span.Minutes:minute}"),
@@ -219,7 +227,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
         {
             if (sourceHtmlDoc == null)
             {
-                Logger.Log("Downloading Goodreads page...");
+                _logger.Log("Downloading Goodreads page...");
                 sourceHtmlDoc = new HtmlDocument();
                 sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(dataUrl, cancellationToken));
             }
@@ -230,10 +238,10 @@ namespace XRayBuilderGUI.DataSources.Secondary
             var moreCharNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/span[@class='toggleContent']/a");
             var allChars = moreCharNodes == null ? charNodes : charNodes.Concat(moreCharNodes);
             var termCount = moreCharNodes == null ? charNodes.Count : charNodes.Count + moreCharNodes.Count;
-            Logger.Log($"Gathering term information from Goodreads... ({termCount})");
+            _logger.Log($"Gathering term information from Goodreads... ({termCount})");
             progress?.Set(0, termCount);
             if (termCount > 20)
-                Logger.Log("More than 20 characters found. Consider using the 'download to XML' option if you need to build repeatedly.");
+                _logger.Log("More than 20 characters found. Consider using the 'download to XML' option if you need to build repeatedly.");
             var terms = new ConcurrentBag<XRay.Term>();
             await allChars.ParallelForEachAsync(async charNode =>
             {
@@ -245,7 +253,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
                 catch (Exception ex)
                 {
                     if (ex.Message.Contains("(404)"))
-                        Logger.Log("Error getting page for character. URL: " + "https://www.goodreads.com" + charNode.GetAttributeValue("href", "")
+                        _logger.Log("Error getting page for character. URL: " + "https://www.goodreads.com" + charNode.GetAttributeValue("href", "")
                             + "\r\nMessage: " + ex.Message + "\r\n" + ex.StackTrace);
                 }
             }, MaxConcurrentRequests, cancellationToken);

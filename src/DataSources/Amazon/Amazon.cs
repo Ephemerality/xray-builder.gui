@@ -28,7 +28,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
         [CanBeNull]
         public static string ParseAsinFromUrl(string input) => RegexAsinUrl.MatchOrNull(input)?.Groups["asin"].Value;
 
-        public static async Task<AuthorSearchResults> SearchAuthor(BookInfo curBook, string TLD, CancellationToken cancellationToken = default)
+        public static async Task<AuthorSearchResults> SearchAuthor(BookInfo curBook, string TLD, ILogger _logger, CancellationToken cancellationToken = default)
         {
             AuthorSearchResults results = new AuthorSearchResults();
             //Generate Author search URL from author's name
@@ -36,7 +36,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
             string plusAuthorName = newAuthor.Replace(" ", "+");
             //Updated to match Search "all" Amazon
             string amazonAuthorSearchUrl = $"https://www.amazon.{TLD}/s/ref=nb_sb_noss_2?url=search-alias%3Dstripbooks&field-keywords={plusAuthorName}";
-            Logger.Log($"Searching for author's page on Amazon.{TLD}...");
+            _logger.Log($"Searching for author's page on Amazon.{TLD}...");
 
             // Search Amazon for Author
             results.authorHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
@@ -46,13 +46,13 @@ namespace XRayBuilderGUI.DataSources.Amazon
             {
                 try
                 {
-                    Logger.Log("Saving Amazon's author search webpage...");
+                    _logger.Log("Saving Amazon's author search webpage...");
                     File.WriteAllText(Environment.CurrentDirectory + $"\\dmp\\{curBook.asin}.authorsearchHtml.txt",
                         results.authorHtmlDoc.DocumentNode.InnerHtml);
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(string.Format("An error ocurred saving authorsearchHtml.txt: {0}", ex.Message));
+                    _logger.Log(string.Format("An error ocurred saving authorsearchHtml.txt: {0}", ex.Message));
                 }
             }
 
@@ -60,14 +60,14 @@ namespace XRayBuilderGUI.DataSources.Amazon
             // TODO: Try to prompt for captcha and have user complete it to continue
             if (results.authorHtmlDoc.DocumentNode.InnerText.Contains("Robot Check"))
             {
-                Logger.Log($"Warning: Amazon.{TLD} is requesting a captcha."
+                _logger.Log($"Warning: Amazon.{TLD} is requesting a captcha."
                     + $"You can try visiting Amazon.{TLD} in a real browser first, try another region, or try again later.");
             }
             // Try to find Author's page from Amazon search
             HtmlNode node = results.authorHtmlDoc.DocumentNode.SelectSingleNode("//*[@id='result_1']");
             if (node == null || !node.OuterHtml.Contains("/e/B"))
             {
-                Logger.Log($"An error occurred finding author's page on Amazon.{TLD}." +
+                _logger.Log($"An error occurred finding author's page on Amazon.{TLD}." +
                                   "\r\nUnable to create Author Profile." +
                                   "\r\nEnsure the author metadata field matches the author's name exactly." +
                                   $"\r\nSearch results can be viewed at {amazonAuthorSearchUrl}");
@@ -91,7 +91,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
 
             if (string.IsNullOrEmpty(properAuthor) || properAuthor.IndexOf('/', 1) < 3 || results.authorAsin == "")
             {
-                Logger.Log("Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: " + amazonAuthorSearchUrl);
+                _logger.Log("Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: " + amazonAuthorSearchUrl);
                 return null;
             }
             properAuthor = properAuthor.Substring(1, properAuthor.IndexOf('/', 1) - 1);
@@ -103,7 +103,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
                                               "%2Cp_n_feature_browse-bin%3A618073011&bbn=283155&ie=UTF8&qid=1432378570&rnid=618072011";
 
             curBook.authorAsin = results.authorAsin;
-            Logger.Log($"Author page found on Amazon!\r\nAuthor's Amazon Page URL: {authorAmazonWebsiteLocationLog}");
+            _logger.Log($"Author page found on Amazon!\r\nAuthor's Amazon Page URL: {authorAmazonWebsiteLocationLog}");
 
             // Load Author's Amazon page
             string authorpageHtml;

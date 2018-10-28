@@ -12,7 +12,14 @@ namespace XRayBuilderGUI.DataSources.Secondary
 {
     public class Shelfari : ISecondarySource
     {
+        private readonly Logger _logger;
+
         private HtmlDocument sourceHtmlDoc;
+
+        public Shelfari(Logger logger)
+        {
+            _logger = logger;
+        }
 
         public string Name => "Shelfari";
 
@@ -87,7 +94,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             {
                 double minutes = int.Parse(match1.Groups[1].Value, NumberStyles.AllowThousands) * 1.2890625;
                 TimeSpan span = TimeSpan.FromMinutes(minutes);
-                Logger.Log(string.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)", span.Hours, span.Minutes, match1.Groups[1].Value));
+                _logger.Log(string.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)", span.Hours, span.Minutes, match1.Groups[1].Value));
                 curBook.pagesInBook = int.Parse(match1.Groups[1].Value);
                 curBook.readingHours = span.Hours;
                 curBook.readingMinutes = span.Minutes;
@@ -103,7 +110,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
         public async Task<IEnumerable<XRay.Term>> GetTermsAsync(string dataUrl, IProgressBar progress, CancellationToken cancellationToken = default)
         {
-            Logger.Log("Downloading Shelfari page...");
+            _logger.Log("Downloading Shelfari page...");
             List<XRay.Term> terms = new List<XRay.Term>();
 
             if (sourceHtmlDoc == null)
@@ -146,7 +153,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
                         newTerm.MatchCase = false;
                     //Default glossary terms to be case insensitive when searching through book
                     if (terms.Select(t => t.TermName).Contains(newTerm.TermName))
-                        Logger.Log("Duplicate term \"" + newTerm.TermName + "\" found. Ignoring this duplicate.");
+                        _logger.Log("Duplicate term \"" + newTerm.TermName + "\" found. Ignoring this duplicate.");
                     else
                         terms.Add(newTerm);
                 }

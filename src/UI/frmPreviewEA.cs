@@ -46,6 +46,7 @@ namespace XRayBuilderGUI.UI
 
         #endregion
 
+        // TODO: Deserialize properly
         public async Task Populate(string inputFile)
         {
             string input;

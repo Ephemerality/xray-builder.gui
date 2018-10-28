@@ -42,6 +42,8 @@ namespace XRayBuilderGUI
     // TODO: Anywhere JSON is used, serialization should be done rather than text formatting...
     public class XRay
     {
+        private readonly Logger _logger;
+
         private string dataUrl = "";
         private string xmlFile = "";
         private string databaseName = "";
@@ -92,20 +94,22 @@ namespace XRayBuilderGUI
             "Viscount", "Viscountess", "Wg Cdr", "Jr", "Sr", "Sheriff", "Special Agent", "Detective", "Lt" };
         #endregion
 
-        public XRay()
+        // TODO: Remove all of the constructors
+        public XRay(Logger logger)
         {
+            _logger = logger;
         }
 
-        public XRay(string shelfari, ISecondarySource dataSource)
+        public XRay(string shelfari, ISecondarySource dataSource, Logger logger)
         {
             if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
                 shelfari = "https://" + shelfari;
             dataUrl = shelfari;
             this.dataSource = dataSource;
+            _logger = logger;
         }
 
-        public XRay(string shelfari, string db, string guid, string asin, ISecondarySource dataSource,
-            int locOffset = 0, string aliaspath = "", bool unattended = false)
+        public XRay(string shelfari, string db, string guid, string asin, ISecondarySource dataSource, Logger logger, int locOffset = 0, string aliaspath = "", bool unattended = false)
         {
             if (shelfari == "" || db == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
@@ -120,10 +124,10 @@ namespace XRayBuilderGUI
             _aliasPath = aliaspath;
             this.unattended = unattended;
             this.dataSource = dataSource;
+            _logger = logger;
         }
 
-        public XRay(string xml, string db, string guid, string asin, ISecondarySource dataSource,
-            int locOffset = 0, string aliaspath = "")
+        public XRay(string xml, string db, string guid, string asin, ISecondarySource dataSource, Logger logger, int locOffset = 0, string aliaspath = "")
         {
             if (xml == "" || db == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
@@ -135,6 +139,7 @@ namespace XRayBuilderGUI
             _aliasPath = aliaspath;
             unattended = false;
             this.dataSource = dataSource;
+            _logger = logger;
             skipShelfari = true;
         }
 
@@ -162,7 +167,7 @@ namespace XRayBuilderGUI
             }
             if (Terms.Count == 0)
                 return 1;
-            Logger.Log(@"Exporting terms...");
+            _logger.Log(@"Exporting terms...");
             Functions.Save(Terms, outfile);
             return 0;
         }
@@ -207,10 +212,10 @@ namespace XRayBuilderGUI
             {
                 if (!File.Exists(xmlFile))
                 {
-                    Logger.Log("An error occurred opening file (" + xmlFile + ")");
+                    _logger.Log("An error occurred opening file (" + xmlFile + ")");
                     return 1;
                 }
-                Logger.Log("Loading terms from file...");
+                _logger.Log("Loading terms from file...");
                 string filetype = Path.GetExtension(xmlFile);
                 if (filetype == ".xml")
                     Terms = Functions.DeserializeList<Term>(xmlFile);
@@ -218,13 +223,13 @@ namespace XRayBuilderGUI
                 {
                     if (LoadTermsFromTxt(xmlFile) > 0)
                     {
-                        Logger.Log("An error occurred loading from text file.");
+                        _logger.Log("An error occurred loading from text file.");
                         return 1;
                     }
                 }
                 else
                 {
-                    Logger.Log("Error: Bad file type \"" + filetype + "\"");
+                    _logger.Log("Error: Bad file type \"" + filetype + "\"");
                     return 1;
                 }
                 if (Terms == null || Terms.Count == 0) return 1;
@@ -234,7 +239,7 @@ namespace XRayBuilderGUI
                 try
                 {
                     Terms = (await dataSource.GetTermsAsync(dataUrl, progress, token)).ToList();
-                    Logger.Log("Downloading notable clips...");
+                    _logger.Log("Downloading notable clips...");
                     notableClips = (await dataSource.GetNotableClipsAsync(dataUrl, null, progress, token))?.ToList();
                 }
                 catch (OperationCanceledException)
@@ -243,7 +248,7 @@ namespace XRayBuilderGUI
                 }
                 if (Terms.Count == 0)
                 {
-                    Logger.Log("Error: No terms found on " + dataSource.Name + ".");
+                    _logger.Log("Error: No terms found on " + dataSource.Name + ".");
                     return 1;
                 }
             }
@@ -267,13 +272,13 @@ namespace XRayBuilderGUI
             if (!aliasesDownloaded && (!File.Exists(AliasPath) || Properties.Settings.Default.overwriteAliases))
             {
                 SaveCharacters(AliasPath);
-                Logger.Log($"Characters exported to {AliasPath} for adding aliases.");
+                _logger.Log($"Characters exported to {AliasPath} for adding aliases.");
             }
 
             if (skipShelfari)
-                Logger.Log(string.Format("{0} {1} found in file:", Terms.Count, Terms.Count > 1 ? "Terms" : "Term"));
+                _logger.Log(string.Format("{0} {1} found in file:", Terms.Count, Terms.Count > 1 ? "Terms" : "Term"));
             else
-                Logger.Log(string.Format("{0} {1} found on {2}:", Terms.Count, Terms.Count > 1 ? "Terms" : "Term", dataSource.Name));
+                _logger.Log(string.Format("{0} {1} found on {2}:", Terms.Count, Terms.Count > 1 ? "Terms" : "Term", dataSource.Name));
             StringBuilder str = new StringBuilder(Terms.Count * 32); // Assume that most names will be less than 32 chars
             int termId = 1;
             foreach (Term t in Terms)
@@ -281,7 +286,7 @@ namespace XRayBuilderGUI
                 str.Append(t.TermName).Append(", ");
                 t.Id = termId++;
             }
-            Logger.Log(str.ToString());
+            _logger.Log(str.ToString());
         }
 
         //public async Task<bool> AttemptAliasDownload()
@@ -292,15 +297,15 @@ namespace XRayBuilderGUI
         //        StreamWriter fs = new StreamWriter(AliasPath, false, Encoding.UTF8);
         //        fs.Write(aliases);
         //        fs.Close();
-        //        Logger.Log("Found and downloaded pre-made aliases file.");
+        //        _logger.Log("Found and downloaded pre-made aliases file.");
         //        return true;
         //    }
         //    catch (Exception ex)
         //    {
         //        if (!ex.Message.Contains("(404) Not Found"))
-        //            Logger.Log("No pre-made aliases available for this book.");
+        //            _logger.Log("No pre-made aliases available for this book.");
         //        else
-        //            Logger.Log("An error occurred downloading aliases: " + ex.Message + "\r\n" + ex.StackTrace);
+        //            _logger.Log("An error occurred downloading aliases: " + ex.Message + "\r\n" + ex.StackTrace);
         //    }
 
         //    return false;
@@ -313,9 +318,9 @@ namespace XRayBuilderGUI
             if (File.Exists(chapterFile) && !Properties.Settings.Default.overwriteChapters)
             {
                 if (LoadChapters())
-                    Logger.Log($"Chapters read from {chapterFile}.\r\nDelete this file if you want chapters built automatically.");
+                    _logger.Log($"Chapters read from {chapterFile}.\r\nDelete this file if you want chapters built automatically.");
                 else
-                    Logger.Log($"An error occurred reading chapters from {chapterFile}.\r\nFile is missing or not formatted correctly.");
+                    _logger.Log($"An error occurred reading chapters from {chapterFile}.\r\nFile is missing or not formatted correctly.");
             }
             else
             {
@@ -325,16 +330,16 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log("Error searching for chapters: " + ex.Message);
+                    _logger.Log("Error searching for chapters: " + ex.Message);
                 }
                 //Built chapters list is saved for manual editing
                 if (_chapters.Count > 0)
                 {
                     SaveChapters();
-                    Logger.Log($"Chapters exported to {chapterFile} for manual editing.");
+                    _logger.Log($"Chapters exported to {chapterFile} for manual editing.");
                 }
                 else
-                    Logger.Log($"No chapters detected.\r\nYou can create a file at {chapterFile} if you want to define chapters manually.");
+                    _logger.Log($"No chapters detected.\r\nYou can create a file at {chapterFile} if you want to define chapters manually.");
             }
 
             if (!unattended && enableEdit)
@@ -345,9 +350,9 @@ namespace XRayBuilderGUI
                     Functions.RunNotepad(chapterFile);
                     _chapters.Clear();
                     if (LoadChapters())
-                        Logger.Log("Reloaded chapters from edited file.");
+                        _logger.Log("Reloaded chapters from edited file.");
                     else
-                        Logger.Log($"An error occurred reloading chapters from {chapterFile}.\r\nFile is missing or not formatted correctly.");
+                        _logger.Log($"An error occurred reloading chapters from {chapterFile}.\r\nFile is missing or not formatted correctly.");
                 }
 
             //If no chapters were found, add a default chapter that spans the entire book
@@ -368,11 +373,11 @@ namespace XRayBuilderGUI
                 //Run through all chapters and take the highest value, in case some chapters can be defined in individual chapters and parts.
                 //EG. Part 1 includes chapters 1-6, Part 2 includes chapters 7-12.
                 _srl = _chapters[0].Start;
-                Logger.Log("Found chapters:");
+                _logger.Log("Found chapters:");
                 foreach (Chapter c in _chapters)
                 {
                     if (c.End > _erl) _erl = c.End;
-                    Logger.Log($"{c.Name} | start: {c.Start} | end: {c.End}");
+                    _logger.Log($"{c.Name} | start: {c.Start} | end: {c.End}");
                 }
             }
         }
@@ -395,7 +400,7 @@ namespace XRayBuilderGUI
                 HandleChapters(rawMlStream.Length, web, readContents, safeShow);
             }
 
-            Logger.Log("Scanning book content...");
+            _logger.Log("Scanning book content...");
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
             timer.Start();
             //Iterate over all paragraphs in book
@@ -405,7 +410,7 @@ namespace XRayBuilderGUI
             if (nodes == null)
             {
                 nodes = web.DocumentNode.SelectNodes("//div");
-                Logger.Log("Warning: Could not locate paragraphs normally (p elements or divs of class 'paragraph').\r\n" +
+                _logger.Log("Warning: Could not locate paragraphs normally (p elements or divs of class 'paragraph').\r\n" +
                     "Searching all book contents (all divs), which may produce odd results.");
             }
             if (nodes == null)
@@ -421,7 +426,7 @@ namespace XRayBuilderGUI
                 int location = node.FirstChild.StreamPosition;
                 if (location < 0)
                 {
-                    Logger.Log("An error occurred locating the paragraph within the book content.");
+                    _logger.Log("An error occurred locating the paragraph within the book content.");
                     return 1;
                 }
                 if (location < _srl || location > _erl) continue; //Skip paragraph if outside chapter range
@@ -515,7 +520,7 @@ namespace XRayBuilderGUI
                         }
                         if (locHighlight.Count == 0 || locHighlight.Count != lenHighlight.Count) //something went wrong
                         {
-                            Logger.Log(
+                            _logger.Log(
                                 string.Format(
                                     "An error occurred while searching for start of highlight.\r\nWas looking for (or one of the aliases of): {0}\r\nSearching in: {1}",
                                     character.TermName, node.InnerHtml));
@@ -629,12 +634,12 @@ namespace XRayBuilderGUI
             }
 
             timer.Stop();
-            Logger.Log("Scan time: " + timer.Elapsed);
+            _logger.Log("Scan time: " + timer.Elapsed);
             //output list of terms with no locs
             foreach (Term t in Terms)
             {
                 if (t.Match && t.Locs.Count == 0)
-                    Logger.Log($"No locations were found for the term \"{t.TermName}\".\r\nYou should add aliases for this term using the book or rawml as a reference.");
+                    _logger.Log($"No locations were found for the term \"{t.TermName}\".\r\nYou should add aliases for this term using the book or rawml as a reference.");
             }
             return 0;
         }
@@ -711,7 +716,7 @@ namespace XRayBuilderGUI
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log("Error searching for Calibre chapters: " + ex.Message);
+                    _logger.Log("Error searching for Calibre chapters: " + ex.Message);
                 }
             }
 
@@ -754,9 +759,9 @@ namespace XRayBuilderGUI
             var command = new SQLiteCommand($"update string set text='{dataUrl}' where id=15", db);
             command.ExecuteNonQuery();
 
-            Logger.Log("Updating database with terms, descriptions, and excerpts...");
+            _logger.Log("Updating database with terms, descriptions, and excerpts...");
             //Write all entities and occurrences
-            Logger.Log($"Writing {Terms.Count} terms...");
+            _logger.Log($"Writing {Terms.Count} terms...");
             progress?.Set(0, Terms.Count);
             command = new SQLiteCommand("insert into entity (id, label, loc_label, type, count, has_info_card) values (@id, @label, null, @type, @count, 1)", db);
             var command2 = new SQLiteCommand("insert into entity_description (text, source_wildcard, source, entity) values (@text, @source_wildcard, @source, @entity)", db);
@@ -789,7 +794,7 @@ namespace XRayBuilderGUI
             }
 
             //Write excerpts and entity_excerpt table
-            Logger.Log($"Writing {excerpts.Count} excerpts...");
+            _logger.Log($"Writing {excerpts.Count} excerpts...");
             command.CommandText = "insert into excerpt (id, start, length, image, related_entities, goto) values (@id, @start, @length, @image, @rel_ent, null);";
             command.Parameters.Clear();
             command2.CommandText = "insert into entity_excerpt (entity, excerpt) values (@entityId, @excerptId)";
@@ -816,7 +821,7 @@ namespace XRayBuilderGUI
             }
 
             // create links to notable clips in order of popularity
-            Logger.Log("Adding notable clips...");
+            _logger.Log("Adding notable clips...");
             command.Parameters.Clear();
             var notablesOnly = excerpts.Where(ex => ex.Notable).OrderByDescending(ex => ex.Highlights);
             foreach (Excerpt notable in notablesOnly)
@@ -850,7 +855,7 @@ namespace XRayBuilderGUI
             command.Dispose();
 
             token.ThrowIfCancellationRequested();
-            Logger.Log("Writing top mentions...");
+            _logger.Log("Writing top mentions...");
             List<int> sorted =
                 Terms.Where(t => t.Type.Equals("character"))
                     .OrderByDescending(t => t.Locs.Count)
@@ -871,7 +876,7 @@ namespace XRayBuilderGUI
             command.Dispose();
 
             token.ThrowIfCancellationRequested();
-            Logger.Log("Writing metadata...");
+            _logger.Log("Writing metadata...");
 
             sql.Clear();
             sql.AppendFormat(
@@ -901,7 +906,7 @@ namespace XRayBuilderGUI
                         lineCount++;
                         if (temp != "character" && temp != "topic")
                         {
-                            Logger.Log("Error: Invalid term type \"" + temp + "\" on line " + lineCount);
+                            _logger.Log("Error: Invalid term type \"" + temp + "\" on line " + lineCount);
                             return 1;
                         }
                         Terms.Add(new Term
@@ -917,7 +922,7 @@ namespace XRayBuilderGUI
                     }
                     catch (Exception ex)
                     {
-                        Logger.Log("An error occurred reading from txt file: " + ex.Message + "\r\n" + ex.StackTrace);
+                        _logger.Log("An error occurred reading from txt file: " + ex.Message + "\r\n" + ex.StackTrace);
                         return 1;
                     }
                 }
@@ -1072,12 +1077,12 @@ namespace XRayBuilderGUI
                     {
                         CommonTitles = CustomSplitIgnore;
                     }
-                    Logger.Log("Splitting aliases using custom common titles file...");
+                    _logger.Log("Splitting aliases using custom common titles file...");
                 }
             }
             catch (Exception ex)
             {
-                Logger.Log("An error occurred while opening the BaseSplitIgnore.txt file.\r\n" +
+                _logger.Log("An error occurred while opening the BaseSplitIgnore.txt file.\r\n" +
                     "Ensure you extracted it to the same directory as the program.\r\n" +
                     ex.Message + "\r\nUsing built in default terms...");
             }
@@ -1168,7 +1173,7 @@ namespace XRayBuilderGUI
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log("An error occurred while splitting the aliases.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                            _logger.Log("An error occurred while splitting the aliases.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                         }
                     }
                     else
@@ -1193,12 +1198,12 @@ namespace XRayBuilderGUI
                     //Check for misplaced pipe character in aliases
                     if (temp2[0] != "" && temp2.Any(r => Regex.Match(@"\|", r).Success))
                     {
-                        Logger.Log("An error occurred parsing the alias file. Ignoring term: " + temp[0] + " aliases.\r\nCheck the file is in the correct format: Character Name|Alias1,Alias2,Etc");
+                        _logger.Log("An error occurred parsing the alias file. Ignoring term: " + temp[0] + " aliases.\r\nCheck the file is in the correct format: Character Name|Alias1,Alias2,Etc");
                         continue;
                     }
                     if (temp2.Length == 0 || temp2[0] == "") continue;
                     if (d.ContainsKey(temp[0]))
-                        Logger.Log("Duplicate alias of " + temp[0] + " found. Ignoring the duplicate.");
+                        _logger.Log("Duplicate alias of " + temp[0] + " found. Ignoring the duplicate.");
                     else
                         d.Add(temp[0], temp2);
                 }
@@ -1278,15 +1283,15 @@ namespace XRayBuilderGUI
                     throw new IOException("An error occurred while opening the BaseDB.sql file. Ensure you extracted it to the same directory as the program.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
                 }
                 SQLiteCommand command = new SQLiteCommand("BEGIN; " + sql + " COMMIT;", m_dbConnection);
-                Logger.Log("Building new X-Ray database. May take a few minutes...");
+                _logger.Log("Building new X-Ray database. May take a few minutes...");
                 command.ExecuteNonQuery();
                 command.Dispose();
                 command = new SQLiteCommand("PRAGMA user_version = 1; PRAGMA encoding = utf8; BEGIN;", m_dbConnection);
                 command.ExecuteNonQuery();
                 command.Dispose();
-                Logger.Log("Done building initial database. Populating with info from source X-Ray...");
+                _logger.Log("Done building initial database. Populating with info from source X-Ray...");
                 PopulateDb(m_dbConnection, progress, token);
-                Logger.Log("Updating indices...");
+                _logger.Log("Updating indices...");
                 sql = "CREATE INDEX idx_occurrence_start ON occurrence(start ASC);\n"
                       + "CREATE INDEX idx_entity_type ON entity(type ASC);\n"
                       + "CREATE INDEX idx_entity_excerpt ON entity_excerpt(entity ASC); COMMIT;";

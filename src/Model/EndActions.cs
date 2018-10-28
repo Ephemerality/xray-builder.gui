@@ -5,7 +5,7 @@ namespace XRayBuilderGUI.Model
     public class EndActions
     {
         [JsonProperty("bookInfo")]
-        public EndActionsBookInfo BookInfo { get; set; }
+        public BookInformation BookInfo { get; set; }
 
         [JsonProperty("widgets")]
         public Widget[] Widgets { get; set; }
@@ -16,7 +16,7 @@ namespace XRayBuilderGUI.Model
         [JsonProperty("data")]
         public DataJson Data { get; set; }
 
-        public class EndActionsBookInfo
+        public class BookInformation
         {
             [JsonProperty("class")]
             public string Class { get; set; } = "bookInfo";

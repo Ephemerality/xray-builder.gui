@@ -412,7 +412,7 @@ namespace XRayBuilderGUI
 
         public async Task GenerateEndActionsFromBase(Model.EndActions baseEndActions)
         {
-            baseEndActions.BookInfo = new Model.EndActions.EndActionsBookInfo
+            baseEndActions.BookInfo = new Model.EndActions.BookInformation
             {
                 Asin = curBook.asin,
                 ContentType = "EBOK",
@@ -497,7 +497,7 @@ namespace XRayBuilderGUI
 
         public string GenerateStartActionsFromBase(StartActions baseStartActions)
         {
-            baseStartActions.BookInfo = new StartActions.StartActionsBookInfo
+            baseStartActions.BookInfo = new StartActions.BookInformation
             {
                 Asin = curBook.asin,
                 ContentType = "EBOK",

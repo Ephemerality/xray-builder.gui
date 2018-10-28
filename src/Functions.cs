@@ -22,6 +22,12 @@ namespace XRayBuilderGUI
 {
     public static class Functions
     {
+        public static string ReadFromFile(string file)
+        {
+            using (var streamReader = new StreamReader(file, Encoding.UTF8))
+                return  streamReader.ReadToEnd();
+        }
+
         //http://www.levibotelho.com/development/c-remove-diacritics-accents-from-a-string/
         public static string RemoveDiacritics(this string text)
         {

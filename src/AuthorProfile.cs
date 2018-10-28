@@ -105,10 +105,29 @@ namespace XRayBuilderGUI
             }
 
             // Try to find author's biography
+
+            bool ReadBio(string file)
+            {
+                try
+                {
+                    BioTrimmed = Functions.ReadFromFile(file);
+                    if (BioTrimmed == "")
+                        _logger.Log("Found biography file, but it is empty!\r\n" + file);
+                    else
+                        _logger.Log("Using biography from " + file + ".");
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log("An error occurred while opening " + file + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                    return false;
+                }
+                return true;
+            }
+
             string bioFile = Environment.CurrentDirectory + @"\ext\" + authorAsin + ".bio";
             if (_settings.SaveBio && File.Exists(bioFile))
             {
-                if (!readBio(bioFile)) return false;
+                if (!ReadBio(bioFile)) return false;
             }
             if (BioTrimmed == "")
             {
@@ -144,7 +163,7 @@ namespace XRayBuilderGUI
                         System.Windows.Forms.MessageBoxDefaultButton.Button2))
                 {
                     Functions.RunNotepad(bioFile);
-                    if (!readBio(bioFile)) return false;
+                    if (!ReadBio(bioFile)) return false;
                 }
                 else
                 {
@@ -174,7 +193,7 @@ namespace XRayBuilderGUI
                    System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question, System.Windows.Forms.MessageBoxDefaultButton.Button2))
                 {
                     Functions.RunNotepad(bioFile);
-                    if (!readBio(bioFile)) return false;
+                    if (!ReadBio(bioFile)) return false;
                 }
             }
             // Try to download Author image
@@ -271,27 +290,6 @@ namespace XRayBuilderGUI
                 return false;
             }
 
-            return true;
-        }
-
-        private bool readBio(string bioFile)
-        {
-            try
-            {
-                using (StreamReader streamReader = new StreamReader(bioFile, System.Text.Encoding.UTF8))
-                {
-                    BioTrimmed = streamReader.ReadToEnd();
-                    if (BioTrimmed == "")
-                        _logger.Log("Found biography file, but it is empty!\r\n" + bioFile);
-                    else
-                        _logger.Log("Using biography from " + bioFile + ".");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Log("An error occurred while opening " + bioFile + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                return false;
-            }
             return true;
         }
 

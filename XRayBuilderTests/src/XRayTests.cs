@@ -69,7 +69,7 @@ namespace XRayBuilderTests
     }
 
     [TestFixture()]
-    public class AuthorProfileTests
+    public class DeserializeTests
     {
         private static List<BookInfo> books = new List<BookInfo>
         {

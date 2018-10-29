@@ -1307,31 +1307,4 @@ namespace XRayBuilderGUI
                 streamWriter.Write(getPreviewData());
         }
     }
-
-    public static partial class ExtensionMethods
-    {
-        //http://stackoverflow.com/questions/166855/c-sharp-preg-replace
-        public static string PregReplace(this string input, string[] pattern, string[] replacements)
-        {
-            if (replacements.Length != pattern.Length)
-                throw new ArgumentException("Replacement and pattern arrays must be balanced");
-
-            for (var i = 0; i < pattern.Length; i++)
-            {
-                input = Regex.Replace(input, pattern[i], replacements[i]);
-            }
-            return input;
-        }
-
-        //http://stackoverflow.com/questions/444798/case-insensitive-containsstring
-        public static bool Contains(this string source, string toCheck, StringComparison comp)
-        {
-            return source.IndexOf(toCheck, comp) >= 0;
-        }
-
-        public static bool ContainsIgnorecase(this string source, string toCheck)
-        {
-            return source.IndexOf(toCheck, StringComparison.OrdinalIgnoreCase) >= 0;
-        }
-    }
 }

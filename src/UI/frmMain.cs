@@ -61,12 +61,32 @@ namespace XRayBuilderGUI.UI
             return (DialogResult)Invoke(new Func<DialogResult>(() => MessageBox.Show(this, msg, caption, buttons, icon, def)));
         }
 
-        public string OutputDirectory(string author, string title, bool create)
+        public string OutputDirectory(string author, string title, string asin, bool create)
         {
-            if (!_settings.useSubDirectories) return _settings.outDir;
+            string outputDir = "";
+
+            if (_settings.android)
+                outputDir = $@"{_settings.outDir}\Android\{asin}";
+            else if (!_settings.useSubDirectories)
+                outputDir = _settings.outDir;
+
             if (!Functions.ValidateFilename(author, title))
                 _logger.Log("Warning: The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.");
-            return Functions.GetBookOutputDirectory(author, title, create);
+
+            if (string.IsNullOrEmpty(outputDir))
+                outputDir = Functions.GetBookOutputDirectory(author, title, create);
+
+            try
+            {
+                Directory.CreateDirectory(outputDir);
+            }
+            catch (Exception ex)
+            {
+                _logger.Log("An error occurred creating output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
+                outputDir = _settings.outDir;
+            }
+
+            return outputDir;
         }
 
         public string AmazonUrl(string asin) => $"https://www.amazon.{_settings.amazonTLD}/dp/{asin}";
@@ -228,7 +248,7 @@ namespace XRayBuilderGUI.UI
                 }
                 else
                 {
-                    outFolder = OutputDirectory(metadata.Author, metadata.Title, true);
+                    outFolder = OutputDirectory(metadata.Author, metadata.Title, metadata.ASIN, true);
                 }
             }
             catch (Exception ex)

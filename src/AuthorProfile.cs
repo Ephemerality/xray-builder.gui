@@ -226,7 +226,8 @@ namespace XRayBuilderGUI
                 OtherBooks = bookBag.ToArray(),
                 Biography = biography,
                 Image = ApAuthorImage,
-                ImageUrl = authorImageUrl
+                ImageUrl = authorImageUrl,
+                AmazonTld = request.Settings.AmazonTld
             };
         }
 
@@ -252,6 +253,7 @@ namespace XRayBuilderGUI
             public Bitmap Image { get; set; }
             public string ImageUrl { get; set; }
             public BookInfo[] OtherBooks { get; set; }
+            public string AmazonTld { get; set; }
         }
 
         public static Model.Artifacts.AuthorProfile CreateAp(Response response, string bookAsin)

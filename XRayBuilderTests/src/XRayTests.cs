@@ -8,8 +8,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using XRayBuilderGUI;
 using XRayBuilderGUI.DataSources.Secondary;
-using XRayBuilderGUI.Model;
-using AuthorProfile = XRayBuilderGUI.AuthorProfile;
+using XRayBuilderGUI.Model.Artifacts;
 using EndActions = XRayBuilderGUI.EndActions;
 
 namespace XRayBuilderTests
@@ -17,7 +16,7 @@ namespace XRayBuilderTests
     [TestFixture()]
     public class XRayTests
     {
-        private static CancellationTokenSource tokens = new CancellationTokenSource();
+        private static readonly CancellationTokenSource tokens = new CancellationTokenSource();
 
         private static List<Book> books = new List<Book>
         {
@@ -105,7 +104,7 @@ namespace XRayBuilderTests
         {
             using (StreamReader streamReader = new StreamReader(@"testfiles\AuthorProfile.profile.B000FBFN1U.asc", Encoding.UTF8))
             {
-                var ap = JsonConvert.DeserializeObject<XRayBuilderGUI.Model.AuthorProfile>(streamReader.ReadToEnd());
+                var ap = JsonConvert.DeserializeObject<XRayBuilderGUI.Model.Artifacts.AuthorProfile>(streamReader.ReadToEnd());
                 var outtxt = JsonConvert.SerializeObject(ap);
                 File.WriteAllText(@"sampleap.txt", outtxt);
             }

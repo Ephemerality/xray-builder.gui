@@ -254,23 +254,23 @@ namespace XRayBuilderGUI
             public BookInfo[] OtherBooks { get; set; }
         }
 
-        public static Model.AuthorProfile CreateAp(Response response, string bookAsin)
+        public static Model.Artifacts.AuthorProfile CreateAp(Response response, string bookAsin)
         {
-            var authorOtherBooks = response.OtherBooks.Select(book => new Model.AuthorProfile.Book
+            var authorOtherBooks = response.OtherBooks.Select(book => new Model.Artifacts.AuthorProfile.Book
             {
                 E = 1,
                 Asin = book.asin,
                 Title = book.title
             }).ToArray();
 
-            return new Model.AuthorProfile
+            return new Model.Artifacts.AuthorProfile
             {
                 Asin = bookAsin,
                 CreationDate = Functions.UnixTimestampSeconds(),
                 OtherBooks = authorOtherBooks,
                 Authors = new[]
                 {
-                    new Model.AuthorProfile.Author
+                    new Model.Artifacts.AuthorProfile.Author
                     {
                         Asin = response.Asin,
                         Bio = response.Biography,

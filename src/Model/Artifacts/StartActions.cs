@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace XRayBuilderGUI.Model
+namespace XRayBuilderGUI.Model.Artifacts
 {
     public class StartActions
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace XRayBuilderGUI.Model
+namespace XRayBuilderGUI.Model.Artifacts
 {
     public static class Extensions
     {

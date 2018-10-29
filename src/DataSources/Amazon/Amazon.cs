@@ -70,7 +70,8 @@ namespace XRayBuilderGUI.DataSources.Amazon
                 _logger.Log($"An error occurred finding author's page on Amazon.{TLD}." +
                                   "\r\nUnable to create Author Profile." +
                                   "\r\nEnsure the author metadata field matches the author's name exactly." +
-                                  $"\r\nSearch results can be viewed at {amazonAuthorSearchUrl}");
+                                  $"\r\nSearch results can be viewed at {amazonAuthorSearchUrl}" +
+                                  "\r\nSometimes Amazon just doesn't return the author and trying a few times will work.");
                 return null;
             }
 

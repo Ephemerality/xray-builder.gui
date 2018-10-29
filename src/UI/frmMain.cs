@@ -29,6 +29,7 @@ namespace XRayBuilderGUI.UI
 
         public bool Exiting;
 
+        // TODO: Fix up these paths
         private string EaPath = "";
         private string SaPath = "";
         private string ApPath = "";
@@ -356,21 +357,48 @@ namespace XRayBuilderGUI.UI
             {
                 BookInfo bookInfo = new BookInfo(metadata, txtGoodreads.Text);
 
-                string outputDir = OutputDirectory(bookInfo.author, bookInfo.sidecarName, true);
+                string outputDir = OutputDirectory(bookInfo.author, bookInfo.sidecarName, bookInfo.asin, true);
 
                 _logger.Log("Attempting to build Author Profile...");
-                AuthorProfile ap = new AuthorProfile(_logger);
-                if (!await ap.GenerateAsync(bookInfo, new AuthorProfile.Settings
-                {
-                    AmazonTld = _settings.amazonTLD,
-                    Android = _settings.android,
-                    OutDir = _settings.outDir,
-                    SaveBio = _settings.saveBio,
-                    UseNewVersion = _settings.useNewVersion,
-                    UseSubDirectories = _settings.useSubDirectories
-                }, _cancelTokens.Token)) return;
-                SaPath = $@"{outputDir}\StartActions.data.{bookInfo.asin}.asc";
+
                 ApPath = $@"{outputDir}\AuthorProfile.profile.{bookInfo.asin}.asc";
+
+                // TODO: Load existing ap to use for end actions / start actions
+                if (!Settings.Default.overwrite && File.Exists(ApPath))
+                {
+                    _logger.Log("AuthorProfile file already exists... Skipping!\r\n" +
+                                "Please review the settings page if you want to overwite any existing files.");
+                    return;
+                }
+
+                var response = await AuthorProfile.GenerateAsync(new AuthorProfile.Request
+                {
+                    Book = bookInfo,
+                    Settings = new AuthorProfile.Settings
+                    {
+                        AmazonTld = _settings.amazonTLD,
+                        SaveBio = _settings.saveBio,
+                        UseNewVersion = _settings.useNewVersion
+                    }
+                }, _logger, _cancelTokens.Token);
+
+                if (response == null)
+                    return;
+
+                var authorProfileOutput = JsonConvert.SerializeObject(AuthorProfile.CreateAp(response, bookInfo.asin));
+
+                try
+                {
+                    File.WriteAllText(ApPath, authorProfileOutput);
+                    _logger.Log("Author Profile file created successfully!\r\nSaved to " + ApPath);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log("An error occurred while writing the Author Profile file: " + ex.Message + "\r\n" + ex.StackTrace);
+                    return;
+                }
+
+                SaPath = $@"{outputDir}\StartActions.data.{bookInfo.asin}.asc";
                 _logger.Log("Attempting to build Start Actions and End Actions...");
 
                 string AsinPrompt(string title, string author)
@@ -386,7 +414,7 @@ namespace XRayBuilderGUI.UI
                     return frmAsin.tbAsin.Text;
                 }
 
-                EndActions ea = new EndActions(ap, bookInfo, metadata.RawMlSize, _dataSource, new EndActions.Settings
+                EndActions ea = new EndActions(response, bookInfo, metadata.RawMlSize, _dataSource, new EndActions.Settings
                 {
                     AmazonTld = _settings.amazonTLD,
                     Android = _settings.android,
@@ -890,7 +918,7 @@ namespace XRayBuilderGUI.UI
         // TODO: Fix this mess
         private void checkFiles(string author, string title, string asin)
         {
-            string bookOutputDir = OutputDirectory(author, Functions.RemoveInvalidFileChars(title), false);
+            string bookOutputDir = OutputDirectory(author, Functions.RemoveInvalidFileChars(title), asin, false);
 
             if (File.Exists(bookOutputDir + @"\StartActions.data." + asin + ".asc"))
                 pbFile1.Image = Resources.file_on;

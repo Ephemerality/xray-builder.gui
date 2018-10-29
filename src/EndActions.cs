@@ -29,14 +29,14 @@ namespace XRayBuilderGUI
         public List<BookInfo> custAlsoBought = new List<BookInfo>();
 
         public BookInfo curBook;
-        private readonly AuthorProfile _authorProfile;
+        private readonly AuthorProfile.Response _authorProfile;
         private readonly ISecondarySource _dataSource;
         private readonly long _erl;
         private readonly Settings _settings;
         private readonly Func<string, string, string> _asinPrompt;
 
         //Requires an already-built AuthorProfile and the BaseEndActions.txt file
-        public EndActions(AuthorProfile authorProfile, BookInfo book, long erl, ISecondarySource dataSource, Settings settings, Func<string, string, string> asinPrompt, ILogger logger)
+        public EndActions(AuthorProfile.Response authorProfile, BookInfo book, long erl, ISecondarySource dataSource, Settings settings, Func<string, string, string> asinPrompt, ILogger logger)
         {
             _authorProfile = authorProfile;
             curBook = book;
@@ -240,12 +240,12 @@ namespace XRayBuilderGUI
             writer.WriteEndElement();
             writer.WriteStartElement("recs");
             writer.WriteAttributeString("type", "author");
-            for (int i = 0; i < Math.Min(_authorProfile.otherBooks.Count, 5); i++)
+            for (int i = 0; i < Math.Min(_authorProfile.OtherBooks.Length, 5); i++)
             {
                 writer.WriteStartElement("rec");
                 writer.WriteAttributeString("hasSample", "false");
-                writer.WriteAttributeString("asin", _authorProfile.otherBooks[i].asin);
-                writer.WriteElementString("title", _authorProfile.otherBooks[i].title);
+                writer.WriteAttributeString("asin", _authorProfile.OtherBooks[i].asin);
+                writer.WriteElementString("title", _authorProfile.OtherBooks[i].title);
                 writer.WriteElementString("author", curBook.author);
                 writer.WriteEndElement();
             }
@@ -313,7 +313,7 @@ namespace XRayBuilderGUI
             // Swaps out the basic next/previous from Goodreads w/ full Amazon ones
             async Task<BookInfo> FromApOrSearch(BookInfo book, CancellationToken ct)
             {
-                return _authorProfile.otherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.title, $@"^{book.title}(?: \(.*\))?$"))
+                return _authorProfile.OtherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.title, $@"^{book.title}(?: \(.*\))?$"))
                     ?? await SearchOrPrompt(book, ct);
             }
 
@@ -455,17 +455,17 @@ namespace XRayBuilderGUI
                     new Author
                     {
                         // TODO: Check mismatched fields from curbook and authorprofile
-                        Asin = _authorProfile.authorAsin,
+                        Asin = _authorProfile.Asin,
                         Name = curBook.author,
-                        Bio = _authorProfile.BioTrimmed,
-                        ImageUrl = _authorProfile.authorImageUrl
+                        Bio = _authorProfile.Biography,
+                        ImageUrl = _authorProfile.ImageUrl
                     }
                 }
             };
             baseEndActions.Data.AuthorRecs = new Recs
             {
                 Class = "featuredRecommendationList",
-                Recommendations = _authorProfile.otherBooks.Select(bk => Extensions.BookInfoToBook(bk, true)).ToArray()
+                Recommendations = _authorProfile.OtherBooks.Select(bk => Extensions.BookInfoToBook(bk, true)).ToArray()
             };
             baseEndActions.Data.CustomersWhoBoughtRecs = new Recs
             {
@@ -540,17 +540,17 @@ namespace XRayBuilderGUI
                     new Author
                     {
                         // TODO: Check mismatched fields from curbook and authorprofile
-                        Asin = _authorProfile.authorAsin,
+                        Asin = _authorProfile.Asin,
                         Name = curBook.author,
-                        Bio = _authorProfile.BioTrimmed,
-                        ImageUrl = _authorProfile.authorImageUrl
+                        Bio = _authorProfile.Biography,
+                        ImageUrl = _authorProfile.ImageUrl
                     }
                 }
             };
             baseStartActions.Data.AuthorRecs = new Recs
             {
                 Class = "recommendationList",
-                Recommendations = _authorProfile.otherBooks.Select(bk => Extensions.BookInfoToBook(bk, false)).ToArray()
+                Recommendations = _authorProfile.OtherBooks.Select(bk => Extensions.BookInfoToBook(bk, false)).ToArray()
             };
             baseStartActions.Data.ReadingTime.Hours = curBook.readingHours;
             baseStartActions.Data.ReadingTime.Minutes = curBook.readingMinutes;

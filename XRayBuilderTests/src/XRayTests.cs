@@ -105,7 +105,7 @@ namespace XRayBuilderTests
         {
             using (StreamReader streamReader = new StreamReader(@"testfiles\AuthorProfile.profile.B000FBFN1U.asc", Encoding.UTF8))
             {
-                var ap = JsonConvert.DeserializeObject<AuthorProfile>(streamReader.ReadToEnd());
+                var ap = JsonConvert.DeserializeObject<XRayBuilderGUI.Model.AuthorProfile>(streamReader.ReadToEnd());
                 var outtxt = JsonConvert.SerializeObject(ap);
                 File.WriteAllText(@"sampleap.txt", outtxt);
             }

@@ -47,7 +47,7 @@ namespace XRayBuilderGUI
 
         public string Guid
         {
-            set => Functions.ConvertGuid(value);
+            private set => _guid = Functions.ConvertGuid(value);
             get => _guid;
         }
 
@@ -57,7 +57,7 @@ namespace XRayBuilderGUI
             title = metadata.Title;
             author = metadata.Author;
             asin = metadata.ASIN;
-            _guid = metadata.UniqueID;
+            Guid = metadata.UniqueID;
             databasename = metadata.DBName;
             sidecarName = Functions.RemoveInvalidFileChars(metadata.Title);
             this.dataUrl = dataUrl;
@@ -68,7 +68,7 @@ namespace XRayBuilderGUI
             this.title = title;
             this.author = author;
             this.asin = asin;
-            _guid = guid;
+            Guid = guid;
             this.databasename = databasename;
             this.path = path;
             this.sidecarName = sidecarName;

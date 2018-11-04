@@ -151,7 +151,7 @@ namespace XRayBuilderGUI
 
         public string Guid
         {
-            set => Functions.ConvertGuid(value);
+            private set => _guid = Functions.ConvertGuid(value);
             get => _guid;
         }
 

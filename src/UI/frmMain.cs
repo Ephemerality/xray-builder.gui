@@ -579,21 +579,22 @@ namespace XRayBuilderGUI.UI
 
                 try
                 {
-                    List<BookInfo> books = (await _dataSource.SearchBookAsync(metadata.Author, metadata.Title)).ToList();
+                    var books = (await _dataSource.SearchBookAsync(metadata.Author, metadata.Title))?.ToList();
                     string bookUrl;
-                    if (books.Count > 1)
+                    if (books == null || books.Count <= 0)
+                    {
+                        _logger.Log($"Unable to find this book on {_dataSource.Name}!\nEnsure the book's title ({metadata.Title}) is accurate!");
+                        return;
+                    }
+
+                    if (books.Count == 1)
+                        bookUrl = books[0].dataUrl;
+                    else
                     {
                         _logger.Log($"Warning: Multiple results returned from {_dataSource.Name}...");
                         var frmG = new frmGR(_logger) { BookList = books };
                         frmG.ShowDialog();
                         bookUrl = books[frmG.cbResults.SelectedIndex].dataUrl;
-                    }
-                    else if (books.Count == 1)
-                        bookUrl = books[0].dataUrl;
-                    else
-                    {
-                        _logger.Log($"Unable to find this book on {_dataSource.Name}!");
-                        return;
                     }
 
                     if (!string.IsNullOrEmpty(bookUrl))

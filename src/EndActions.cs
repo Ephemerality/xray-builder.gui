@@ -54,7 +54,7 @@ namespace XRayBuilderGUI
         {
             _logger.Log("Attempting to find book on Amazon...");
             //Generate Book search URL from book's ASIN
-            string ebookLocation = string.Format(@"https://www.amazon.{0}/dp/{1}", _settings.AmazonTld, curBook.asin);
+            string ebookLocation = string.Format(@"https://www.amazon.{0}/dp/{1}", _settings.AmazonTld, curBook.Asin);
 
             // Search Amazon for book
             //_logger.Log(String.Format("Book's Amazon page URL: {0}", ebookLocation));
@@ -76,7 +76,7 @@ namespace XRayBuilderGUI
                 {
                     _logger.Log("Saving book's Amazon webpage...");
                     File.WriteAllText(Environment.CurrentDirectory +
-                                      string.Format(@"\dmp\{0}.bookpageHtml.txt", curBook.asin),
+                                      string.Format(@"\dmp\{0}.bookpageHtml.txt", curBook.Asin),
                         bookHtmlDoc.DocumentNode.InnerHtml);
                 }
                 catch (Exception ex)
@@ -115,12 +115,12 @@ namespace XRayBuilderGUI
                             nodeTitleCheck = nodeTitle.InnerText.Clean();
                         }
                         //Check for duplicate by title
-                        if (possibleBooks.Any(bk => bk.title.Contains(nodeTitleCheck)))
+                        if (possibleBooks.Any(bk => bk.Title.Contains(nodeTitleCheck)))
                             continue;
 
                         var cleanAuthor = item.SelectSingleNode(".//div/div").InnerText.Clean();
                         //Exclude the current book title from other books search
-                        Match match = Regex.Match(nodeTitleCheck, curBook.title, RegexOptions.IgnoreCase);
+                        Match match = Regex.Match(nodeTitleCheck, curBook.Title, RegexOptions.IgnoreCase);
                         if (match.Success)
                             continue;
                         match = Regex.Match(nodeTitleCheck,
@@ -140,12 +140,12 @@ namespace XRayBuilderGUI
                         {
                             //Gather book desc, image url, etc, if using new format
                             if (_settings.UseNewVersion)
-                                await book.GetAmazonInfo(book.amazonUrl, cancellationToken);
+                                await book.GetAmazonInfo(book.AmazonUrl, cancellationToken);
                             bookBag.Add(book);
                         }
                         catch (Exception ex)
                         {
-                            _logger.Log($"Error: {ex}\r\n{book.amazonUrl}");
+                            _logger.Log($"Error: {ex}\r\n{book.AmazonUrl}");
                         }
                     }, 5, cancellationToken);
                     custAlsoBought.AddRange(bookBag);
@@ -176,7 +176,7 @@ namespace XRayBuilderGUI
                                 continue;
                             var sponsTitle = otherBook.GetAttributeValue("alt", "");
                             //Check for duplicate by title
-                            if (custAlsoBought.Any(bk => bk.title.Contains(sponsTitle)) || possibleBooks.Any(bk => bk.title.Contains(sponsTitle)))
+                            if (custAlsoBought.Any(bk => bk.Title.Contains(sponsTitle)) || possibleBooks.Any(bk => bk.Title.Contains(sponsTitle)))
                                 continue;
                             otherBook = result.SelectSingleNode(".//a[@class='a-size-small a-link-child']")
                                 ?? result.SelectSingleNode(".//span[@class='a-size-small a-color-base']")
@@ -193,12 +193,12 @@ namespace XRayBuilderGUI
                             try
                             {
                                 if (_settings.UseNewVersion)
-                                    await book.GetAmazonInfo(book.amazonUrl, cancellationToken);
+                                    await book.GetAmazonInfo(book.AmazonUrl, cancellationToken);
                                 bookBag.Add(book);
                             }
                             catch (Exception ex)
                             {
-                                _logger.Log($"Error: {ex.Message}\r\n{book.amazonUrl}");
+                                _logger.Log($"Error: {ex.Message}\r\n{book.AmazonUrl}");
                             }
                         }, 5, cancellationToken);
                         custAlsoBought.AddRange(bookBag);
@@ -224,14 +224,14 @@ namespace XRayBuilderGUI
             writer.WriteProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"");
             writer.WriteStartElement("endaction");
             writer.WriteAttributeString("version", "0");
-            writer.WriteAttributeString("guid", $"{curBook.databasename}:{curBook.Guid}");
-            writer.WriteAttributeString("key", curBook.asin);
+            writer.WriteAttributeString("guid", $"{curBook.Databasename}:{curBook.Guid}");
+            writer.WriteAttributeString("key", curBook.Asin);
             writer.WriteAttributeString("type", "EBOK");
             writer.WriteAttributeString("timestamp", dt + tz);
             writer.WriteElementString("treatment", "d");
             writer.WriteStartElement("currentBook");
-            writer.WriteElementString("imageUrl", curBook.bookImageUrl);
-            writer.WriteElementString("asin", curBook.asin);
+            writer.WriteElementString("imageUrl", curBook.ImageUrl);
+            writer.WriteElementString("asin", curBook.Asin);
             writer.WriteElementString("hasSample", "false");
             writer.WriteEndElement();
             writer.WriteStartElement("customerProfile");
@@ -244,9 +244,9 @@ namespace XRayBuilderGUI
             {
                 writer.WriteStartElement("rec");
                 writer.WriteAttributeString("hasSample", "false");
-                writer.WriteAttributeString("asin", _authorProfile.OtherBooks[i].asin);
-                writer.WriteElementString("title", _authorProfile.OtherBooks[i].title);
-                writer.WriteElementString("author", curBook.author);
+                writer.WriteAttributeString("asin", _authorProfile.OtherBooks[i].Asin);
+                writer.WriteElementString("title", _authorProfile.OtherBooks[i].Title);
+                writer.WriteElementString("author", curBook.Author);
                 writer.WriteEndElement();
             }
             writer.WriteEndElement();
@@ -256,9 +256,9 @@ namespace XRayBuilderGUI
             {
                 writer.WriteStartElement("rec");
                 writer.WriteAttributeString("hasSample", "false");
-                writer.WriteAttributeString("asin", custAlsoBought[i].asin);
-                writer.WriteElementString("title", custAlsoBought[i].title);
-                writer.WriteElementString("author", custAlsoBought[i].author);
+                writer.WriteAttributeString("asin", custAlsoBought[i].Asin);
+                writer.WriteElementString("title", custAlsoBought[i].Title);
+                writer.WriteElementString("author", custAlsoBought[i].Author);
                 writer.WriteEndElement();
             }
             writer.WriteEndElement();
@@ -272,9 +272,9 @@ namespace XRayBuilderGUI
         private async Task<BookInfo> SearchOrPrompt(BookInfo book, CancellationToken cancellationToken = default)
         {
             // If the asin was available from another source, use it
-            if (!string.IsNullOrEmpty(book.asin))
+            if (!string.IsNullOrEmpty(book.Asin))
             {
-                await book.GetAmazonInfo($"https://www.amazon.{_settings.AmazonTld}/dp/{book.asin}", cancellationToken);
+                await book.GetAmazonInfo($"https://www.amazon.{_settings.AmazonTld}/dp/{book.Asin}", cancellationToken);
                 return book;
             }
 
@@ -282,25 +282,25 @@ namespace XRayBuilderGUI
             try
             {
 
-                newBook = await Amazon.SearchBook(book.title, book.author, _settings.AmazonTld, cancellationToken);
+                newBook = await Amazon.SearchBook(book.Title, book.Author, _settings.AmazonTld, cancellationToken);
                 if (newBook == null && _settings.PromptAsin && _asinPrompt != null)
                 {
-                    _logger.Log($"ASIN prompt for {book.title}...");
-                    var asin = _asinPrompt(book.title, book.author);
+                    _logger.Log($"ASIN prompt for {book.Title}...");
+                    var asin = _asinPrompt(book.Title, book.Author);
                     if (string.IsNullOrWhiteSpace(asin))
                         return null;
                     _logger.Log($"ASIN supplied: {asin}");
-                    newBook = new BookInfo(book.title, book.author, asin);
+                    newBook = new BookInfo(book.Title, book.Author, asin);
                 }
             }
             catch
             {
-                _logger.Log($"Failed to find {book.title} on Amazon.{_settings.AmazonTld}, trying again with Amazon.com.");
-                newBook = await Amazon.SearchBook(book.title, book.author, "com", cancellationToken);
+                _logger.Log($"Failed to find {book.Title} on Amazon.{_settings.AmazonTld}, trying again with Amazon.com.");
+                newBook = await Amazon.SearchBook(book.Title, book.Author, "com", cancellationToken);
             }
 
             if (newBook != null)
-                await newBook.GetAmazonInfo(newBook.amazonUrl, cancellationToken); //fill in desc, imageurl, and ratings
+                await newBook.GetAmazonInfo(newBook.AmazonUrl, cancellationToken); //fill in desc, imageurl, and ratings
 
             return newBook;
         }
@@ -313,7 +313,7 @@ namespace XRayBuilderGUI
             // Swaps out the basic next/previous from Goodreads w/ full Amazon ones
             async Task<BookInfo> FromApOrSearch(BookInfo book, CancellationToken ct)
             {
-                return _authorProfile.OtherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.title, $@"^{book.title}(?: \(.*\))?$"))
+                return _authorProfile.OtherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.Title, $@"^{book.Title}(?: \(.*\))?$"))
                     ?? await SearchOrPrompt(book, ct);
             }
 
@@ -335,7 +335,7 @@ namespace XRayBuilderGUI
             try
             {
                 await _dataSource.GetExtrasAsync(curBook, progress, token);
-                curBook.Series = await _dataSource.GetSeriesInfoAsync(curBook.dataUrl, token);
+                curBook.Series = await _dataSource.GetSeriesInfoAsync(curBook.DataUrl, token);
 
                 if (curBook.Series == null || curBook.Series.Total == 0)
                     _logger.Log("The book was not found to be part of a series.");
@@ -359,7 +359,7 @@ namespace XRayBuilderGUI
             {
                 try
                 {
-                    var seriesResult = await Amazon.DownloadNextInSeries(curBook.asin, token);
+                    var seriesResult = await Amazon.DownloadNextInSeries(curBook.Asin, token);
                     switch (seriesResult?.Error?.ErrorCode)
                     {
                         case "ERR004":
@@ -372,7 +372,7 @@ namespace XRayBuilderGUI
                                 new BookInfo(seriesResult.NextBook.Title.TitleName,
                                     Functions.FixAuthor(seriesResult.NextBook.Authors.FirstOrDefault()?.AuthorName),
                                     seriesResult.NextBook.Asin);
-                            await curBook.Series.Next.GetAmazonInfo(curBook.Series.Next.amazonUrl, token);
+                            await curBook.Series.Next.GetAmazonInfo(curBook.Series.Next.AmazonUrl, token);
                             break;
                     }
                 }
@@ -388,9 +388,9 @@ namespace XRayBuilderGUI
                 if (!string.IsNullOrEmpty(curBook.Series.Name))
                     _logger.Log($"This is book {curBook.Series.Position} of {curBook.Series.Total} in the {curBook.Series.Name} series");
                 if (curBook.Series.Previous != null)
-                    _logger.Log($"Preceded by: {curBook.Series.Previous.title}");
+                    _logger.Log($"Preceded by: {curBook.Series.Previous.Title}");
                 if (curBook.Series.Next != null)
-                    _logger.Log($"Followed by: {curBook.Series.Next.title}\n");
+                    _logger.Log($"Followed by: {curBook.Series.Next.Title}\n");
             }
 
             try
@@ -400,7 +400,7 @@ namespace XRayBuilderGUI
                     if (!Properties.Settings.Default.pageCount)
                         _logger.Log("No page count found on Goodreads");
                     _logger.Log("Attempting to estimate page count...");
-                    _logger.Log(Functions.GetPageCount(curBook.rawmlPath, curBook));
+                    _logger.Log(Functions.GetPageCount(curBook.RawmlPath, curBook));
                 }
             }
             catch (Exception ex)
@@ -414,12 +414,12 @@ namespace XRayBuilderGUI
         {
             baseEndActions.BookInfo = new Model.Artifacts.EndActions.BookInformation
             {
-                Asin = curBook.asin,
+                Asin = curBook.Asin,
                 ContentType = "EBOK",
                 Timestamp = Functions.UnixTimestampMilliseconds(),
                 RefTagSuffix = "AAATAAB",
-                ImageUrl = curBook.bookImageUrl,
-                EmbeddedID = $"{curBook.databasename}:{curBook.Guid}",
+                ImageUrl = curBook.ImageUrl,
+                EmbeddedID = $"{curBook.Databasename}:{curBook.Guid}",
                 Erl = _erl
             };
             baseEndActions.Data.FollowSubscriptions = new Model.Artifacts.EndActions.AuthorSubscriptions
@@ -428,9 +428,9 @@ namespace XRayBuilderGUI
                 {
                     new Subscription
                     {
-                        Asin = curBook.authorAsin,
-                        Name = curBook.author,
-                        ImageUrl = curBook.authorImageUrl
+                        Asin = curBook.AuthorAsin,
+                        Name = curBook.Author,
+                        ImageUrl = curBook.AuthorImageUrl
                     }
                 }
             };
@@ -440,7 +440,7 @@ namespace XRayBuilderGUI
             {
                 Class = "publicSharedRating",
                 Timestamp = Functions.UnixTimestampMilliseconds(),
-                Value = Math.Round(curBook.amazonRating, 1)
+                Value = Math.Round(curBook.AmazonRating, 1)
             };
             baseEndActions.Data.CustomerProfile = new Model.Artifacts.EndActions.CustomerProfile
             {
@@ -456,7 +456,7 @@ namespace XRayBuilderGUI
                     {
                         // TODO: Check mismatched fields from curbook and authorprofile
                         Asin = _authorProfile.Asin,
-                        Name = curBook.author,
+                        Name = curBook.Author,
                         Bio = _authorProfile.Biography,
                         ImageUrl = _authorProfile.ImageUrl
                     }
@@ -499,11 +499,11 @@ namespace XRayBuilderGUI
         {
             baseStartActions.BookInfo = new StartActions.BookInformation
             {
-                Asin = curBook.asin,
+                Asin = curBook.Asin,
                 ContentType = "EBOK",
                 Timestamp = Functions.UnixTimestampMilliseconds(),
                 RefTagSuffix = "AAAgAAA",
-                ImageUrl = curBook.bookImageUrl,
+                ImageUrl = curBook.ImageUrl,
                 Erl = -1
             };
             if (!string.IsNullOrEmpty(curBook.Series?.Position))
@@ -521,16 +521,16 @@ namespace XRayBuilderGUI
                 {
                     new Subscription
                     {
-                        Asin = curBook.authorAsin,
-                        Name = curBook.author,
-                        ImageUrl = curBook.authorImageUrl
+                        Asin = curBook.AuthorAsin,
+                        Name = curBook.Author,
+                        ImageUrl = curBook.AuthorImageUrl
                     }
                 }
             };
             baseStartActions.Data.AuthorSubscriptions = baseStartActions.Data.FollowSubscriptions;
             baseStartActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMPASSAGES%", curBook.notableClips.Count.ToString());
             baseStartActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMHIGHLIGHTS%", curBook.notableClips.Sum(c => c.Likes).ToString());
-            baseStartActions.Data.GrokShelfInfo.Asin = curBook.asin;
+            baseStartActions.Data.GrokShelfInfo.Asin = curBook.Asin;
             baseStartActions.Data.BookDescription = Extensions.BookInfoToBook(curBook, true);
             baseStartActions.Data.CurrentBook = baseStartActions.Data.BookDescription;
             baseStartActions.Data.AuthorBios = new AuthorBios
@@ -541,7 +541,7 @@ namespace XRayBuilderGUI
                     {
                         // TODO: Check mismatched fields from curbook and authorprofile
                         Asin = _authorProfile.Asin,
-                        Name = curBook.author,
+                        Name = curBook.Author,
                         Bio = _authorProfile.Biography,
                         ImageUrl = _authorProfile.ImageUrl
                     }
@@ -552,12 +552,12 @@ namespace XRayBuilderGUI
                 Class = "recommendationList",
                 Recommendations = _authorProfile.OtherBooks.Select(bk => Extensions.BookInfoToBook(bk, false)).ToArray()
             };
-            baseStartActions.Data.ReadingTime.Hours = curBook.readingHours;
-            baseStartActions.Data.ReadingTime.Minutes = curBook.readingMinutes;
-            baseStartActions.Data.ReadingTime.FormattedTime.Replace("%HOURS%", curBook.readingHours.ToString());
-            baseStartActions.Data.ReadingTime.FormattedTime.Replace("%MINUTES%", curBook.readingMinutes.ToString());
+            baseStartActions.Data.ReadingTime.Hours = curBook.ReadingHours;
+            baseStartActions.Data.ReadingTime.Minutes = curBook.ReadingMinutes;
+            baseStartActions.Data.ReadingTime.FormattedTime.Replace("%HOURS%", curBook.ReadingHours.ToString());
+            baseStartActions.Data.ReadingTime.FormattedTime.Replace("%MINUTES%", curBook.ReadingMinutes.ToString());
             baseStartActions.Data.PreviousBookInTheSeries = Extensions.BookInfoToBook(curBook.Series?.Previous, true);
-            baseStartActions.Data.ReadingPages.PagesInBook = curBook.pagesInBook;
+            baseStartActions.Data.ReadingPages.PagesInBook = curBook.PagesInBook;
 
             try
             {
@@ -590,19 +590,19 @@ namespace XRayBuilderGUI
             {
                 if (_settings.Android)
                 {
-                    outputDir = _settings.OutDir + @"\Android\" + curBook.asin;
+                    outputDir = _settings.OutDir + @"\Android\" + curBook.Asin;
                     Directory.CreateDirectory(outputDir);
                 }
                 else
-                    outputDir = _settings.UseSubDirectories ? Functions.GetBookOutputDirectory(curBook.author, curBook.sidecarName, true) : _settings.OutDir;
+                    outputDir = _settings.UseSubDirectories ? Functions.GetBookOutputDirectory(curBook.Author, curBook.SidecarName, true) : _settings.OutDir;
             }
             catch (Exception ex)
             {
                 _logger.Log("An error occurred creating the output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
                 outputDir = _settings.OutDir;
             }
-            EaPath = outputDir + @"\EndActions.data." + curBook.asin + ".asc";
-            SaPath = outputDir + @"\StartActions.data." + curBook.asin + ".asc";
+            EaPath = outputDir + @"\EndActions.data." + curBook.Asin + ".asc";
+            SaPath = outputDir + @"\StartActions.data." + curBook.Asin + ".asc";
 
             if (!Properties.Settings.Default.overwrite && File.Exists(EaPath))
             {

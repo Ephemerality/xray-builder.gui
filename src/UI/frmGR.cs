@@ -46,11 +46,11 @@ namespace XRayBuilderGUI.UI
             {
                 _logger.Log("Failed to download cover image: " + ex.Message);
             }
-            lblTitle.Text = BookList[i].title;
-            lblAuthor.Text = "by " + BookList[i].author;
-            lblRating.Text = $"{BookList[i].amazonRating:#.#} average rating " + Functions.Pluralize($"({BookList[i].numReviews:rating})");
-            lblEditions.Text = Functions.Pluralize($"{BookList[i].editions:edition}");
-            linkID.Text = BookList[i].goodreadsID;
+            lblTitle.Text = BookList[i].Title;
+            lblAuthor.Text = "by " + BookList[i].Author;
+            lblRating.Text = $"{BookList[i].AmazonRating:#.#} average rating " + Functions.Pluralize($"({BookList[i].Reviews:rating})");
+            lblEditions.Text = Functions.Pluralize($"{BookList[i].Editions:edition}");
+            linkID.Text = BookList[i].GoodreadsId;
             _toolTip1.SetToolTip(linkID, $"http://www.goodreads.com/book/show/{linkID.Text}");
         }
 
@@ -64,7 +64,7 @@ namespace XRayBuilderGUI.UI
             lblMessage1.Text = $"{BookList.Count} matches for this book were found on Goodreads.";
             cbResults.Items.Clear();
             foreach (BookInfo book in BookList)
-                cbResults.Items.Add(book.title);
+                cbResults.Items.Add(book.Title);
             cbResults.SelectedIndex = 0;
         }
     }

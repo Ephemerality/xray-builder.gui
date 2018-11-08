@@ -187,10 +187,10 @@ namespace XRayBuilderGUI
             }
             double minutes = pageCount * 1.2890625;
             TimeSpan span = TimeSpan.FromMinutes(minutes);
-            bookInfo.pagesInBook = pageCount;
-            bookInfo.readingHours = span.Hours;
-            bookInfo.readingMinutes = span.Minutes;
-            output = $"Typical time to read: {span.Hours} hours and {span.Minutes} minutes ({bookInfo.pagesInBook} pages)";
+            bookInfo.PagesInBook = pageCount;
+            bookInfo.ReadingHours = span.Hours;
+            bookInfo.ReadingMinutes = span.Minutes;
+            output = $"Typical time to read: {span.Hours} hours and {span.Minutes} minutes ({bookInfo.PagesInBook} pages)";
             return output;
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,41 +10,44 @@ using XRayBuilderGUI.Unpack;
 
 namespace XRayBuilderGUI
 {
-    // TODO: Properties
+    // TODO: Remove defaults and privates, move logic
     public class BookInfo
     {
-        public string title;
-        public string author;
+        public string Title { get; set; }
+        public string Author { get; set; }
         // TODO: Add TLD to go with ASIN (asin/tld class?)
-        public string asin;
-        private string _guid;
-        public string databasename;
-        public string path;
-        public string sidecarName;
-        public string desc = "";
-        public string bookImageUrl = "";
-        private System.Drawing.Bitmap _bookImage;
-        public double amazonRating;
-        public int numReviews;
-        public string dataUrl = "";
-        public string amazonUrl => string.IsNullOrEmpty(asin) ? null : $"https://www.amazon.com/dp/{asin}";
-        public string rawmlPath = "";
+        public string Asin { get; set; }
+        public string Databasename { get; set; }
+        public string Path { get; set; }
+        public string SidecarName { get; set; }
+        public string Description { get; set; } = "";
+        public string ImageUrl { get; set; } = "";
+        public double AmazonRating { get; set; }
+        public int Reviews { get; set; }
+        public string DataUrl { get; set; } = "";
+        public string AmazonUrl => string.IsNullOrEmpty(Asin) ? null : $"https://www.amazon.com/dp/{Asin}";
+        // TODO: Shouldn't be here?
+        public string RawmlPath { get; set; } = "";
 
-        public string authorAsin = "";
-        public string authorImageUrl = "";
-        public string goodreadsID = "";
-        public int editions = 0;
+        // TODO: Author class
+        public string AuthorAsin { get; set; } = "";
+        public string AuthorImageUrl { get; set; } = "";
+
+        public string GoodreadsId { get; set; } = "";
+        public int Editions { get; set; } = 0;
 
         // Added StartAction info
-        public int readingHours;
-        public int readingMinutes;
-        public int pagesInBook;
+        public int ReadingHours { get; set; }
+        public int ReadingMinutes { get; set; }
+        public int PagesInBook { get; set; }
         public SeriesInfo Series { get; set; } = new SeriesInfo();
 
         // List of clips and their highlight/like count
         public List<NotableClip> notableClips;
 
         private readonly Metadata _metadata;
+        private string _guid;
+        private Bitmap _bookImage;
 
         public string Guid
         {
@@ -54,38 +58,38 @@ namespace XRayBuilderGUI
         public BookInfo(Metadata metadata, string dataUrl)
         {
             _metadata = metadata;
-            title = metadata.Title;
-            author = metadata.Author;
-            asin = metadata.ASIN;
+            Title = metadata.Title;
+            Author = metadata.Author;
+            Asin = metadata.ASIN;
             Guid = metadata.UniqueID;
-            databasename = metadata.DBName;
-            sidecarName = Functions.RemoveInvalidFileChars(metadata.Title);
-            this.dataUrl = dataUrl;
+            Databasename = metadata.DBName;
+            SidecarName = Functions.RemoveInvalidFileChars(metadata.Title);
+            DataUrl = dataUrl;
         }
 
         public BookInfo(string title, string author, string asin, string guid, string databasename, string path, string sidecarName, string dataUrl, string rawmlPath)
         {
-            this.title = title;
-            this.author = author;
-            this.asin = asin;
+            Title = title;
+            Author = author;
+            Asin = asin;
             Guid = guid;
-            this.databasename = databasename;
-            this.path = path;
-            this.sidecarName = sidecarName;
-            this.dataUrl = dataUrl;
-            this.rawmlPath = rawmlPath;
+            Databasename = databasename;
+            Path = path;
+            this.SidecarName = sidecarName;
+            DataUrl = dataUrl;
+            RawmlPath = rawmlPath;
         }
 
         public BookInfo(string title, string author, string asin)
         {
-            this.title = title;
-            this.author = author;
-            this.asin = asin;
+            Title = title;
+            Author = author;
+            Asin = asin;
         }
 
         public override string ToString()
         {
-            return title + " - " + author;
+            return Title + " - " + Author;
         }
 
         /// <summary>
@@ -106,7 +110,7 @@ namespace XRayBuilderGUI
         /// <param name="bookDoc">Book's Amazon page, pre-downloaded</param>
         public void GetAmazonInfo(HtmlDocument bookDoc)
         {
-            if (bookImageUrl == "")
+            if (ImageUrl == "")
             {
                 // Parse Book image URL
                 HtmlNode bookImageLoc = bookDoc.DocumentNode.SelectSingleNode("//*[@id='imgBlkFront']")
@@ -116,54 +120,54 @@ namespace XRayBuilderGUI
                     // for more generic matching, such as on audiobooks (which apparently have BXXXXXXXX asins also)
                     ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='main-image']");
                 if (bookImageLoc == null)
-                    throw new HtmlWebException(string.Format(@"Error finding book image. If you want, you can report the book's Amazon URL to help with parsing.\r\n{0}", amazonUrl));
+                    throw new HtmlWebException(string.Format(@"Error finding book image. If you want, you can report the book's Amazon URL to help with parsing.\r\n{0}", AmazonUrl));
                 else
-                    bookImageUrl = Regex.Replace(bookImageLoc.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
-                if (bookImageUrl.Contains("base64"))
+                    ImageUrl = Regex.Replace(bookImageLoc.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
+                if (ImageUrl.Contains("base64"))
                 {
-                    bookImageUrl = bookImageLoc.GetAttributeValue("data-a-dynamic-image", "");
-                    Match match = Regex.Match(bookImageUrl, @"(https://.*?_\.(jpg|jpeg|gif|png))");
+                    ImageUrl = bookImageLoc.GetAttributeValue("data-a-dynamic-image", "");
+                    Match match = Regex.Match(ImageUrl, @"(https://.*?_\.(jpg|jpeg|gif|png))");
                     if (match.Success)
                     {
-                        bookImageUrl = match.Groups[1].Value;
-                        if (!bookImageUrl.EndsWith(".png"))
-                            bookImageUrl = Regex.Replace(bookImageUrl, @"_.*?_\.", string.Empty);
+                        ImageUrl = match.Groups[1].Value;
+                        if (!ImageUrl.EndsWith(".png"))
+                            ImageUrl = Regex.Replace(ImageUrl, @"_.*?_\.", string.Empty);
                     }
                 }
 
                 // cleanup to match retail file image links
-                if (bookImageUrl.Contains(@"https://images-na.ssl-images-amazon"))
-                    bookImageUrl = bookImageUrl.Replace(@"https://images-na.ssl-images-amazon", @"http://ecx.images-amazon");
+                if (ImageUrl.Contains(@"https://images-na.ssl-images-amazon"))
+                    ImageUrl = ImageUrl.Replace(@"https://images-na.ssl-images-amazon", @"http://ecx.images-amazon");
 
                 // Use no image URL
-                if (bookImageUrl == "")
-                    bookImageUrl = "http://ecx.images-amazon.com/images/G/01/x-site/icons/no-img-sm.gif";
+                if (ImageUrl == "")
+                    ImageUrl = "http://ecx.images-amazon.com/images/G/01/x-site/icons/no-img-sm.gif";
             }
-            if (desc == "")
+            if (Description == "")
             {
                 HtmlNode descNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='bookDescription_feature_div']/noscript")
                     ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-size-medium series-detail-description-text']");
                 if (descNode != null && descNode.InnerText != "")
                 {
-                    desc = descNode.InnerText.Trim();
+                    Description = descNode.InnerText.Trim();
                     // Following the example of Amazon, cut off desc around 1000 characters.
                     // If conveniently trimmed at the end of the sentence, let it end with the punctuation.
                     // If the sentence continues, cut it off and replace the space with an ellipsis
-                    if (desc.Length > 1000)
+                    if (Description.Length > 1000)
                     {
-                        desc = desc.Substring(0, 1000);
-                        int lastPunc = desc.LastIndexOfAny(new [] {'.', '!', '?'});
-                        int lastSpace = desc.LastIndexOf(' ');
+                        Description = Description.Substring(0, 1000);
+                        int lastPunc = Description.LastIndexOfAny(new [] {'.', '!', '?'});
+                        int lastSpace = Description.LastIndexOf(' ');
                         if (lastPunc > lastSpace)
-                            desc = desc.Substring(0, lastPunc + 1);
+                            Description = Description.Substring(0, lastPunc + 1);
                         else
-                            desc = desc.Substring(0, lastSpace) + '\u2026';
+                            Description = Description.Substring(0, lastSpace) + '\u2026';
                     }
-                    desc = System.Net.WebUtility.HtmlDecode(desc);
-                    desc = desc.Clean();
+                    Description = System.Net.WebUtility.HtmlDecode(Description);
+                    Description = Description.Clean();
                 }
             }
-            if (numReviews == 0)
+            if (Reviews == 0)
             {
                 try
                 {
@@ -172,14 +176,14 @@ namespace XRayBuilderGUI
                     if (ratingNode != null)
                     {
                         string aRating = ratingNode.GetAttributeValue("title", "0");
-                        amazonRating = float.Parse(ratingNode.GetAttributeValue("title", "0").Substring(0, aRating.IndexOf(' ')));
+                        AmazonRating = float.Parse(ratingNode.GetAttributeValue("title", "0").Substring(0, aRating.IndexOf(' ')));
                         HtmlNode reviewsNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='acrCustomerReviewText']")
                             ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-link-normal']");
                         if (reviewsNode != null)
                         {
                             Match match = Regex.Match(reviewsNode.InnerText, @"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)");
                             if (match.Success)
-                                numReviews = int.Parse(match.Value.Replace(".", "").Replace(",", ""));
+                                Reviews = int.Parse(match.Value.Replace(".", "").Replace(",", ""));
                         }
                     }
                 }
@@ -191,11 +195,11 @@ namespace XRayBuilderGUI
             }
         }
 
-        public System.Drawing.Bitmap CoverImage()
+        public Bitmap CoverImage()
         {
-            if (bookImageUrl == "") return null;
+            if (ImageUrl == "") return null;
             if (_bookImage != null) return _bookImage;
-            _bookImage = Task.Run(() => HttpDownloader.GetImageAsync(bookImageUrl)).Result;
+            _bookImage = Task.Run(() => HttpDownloader.GetImageAsync(ImageUrl)).Result;
             return _bookImage;
         }
     }

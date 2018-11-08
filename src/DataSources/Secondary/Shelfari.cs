@@ -82,7 +82,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             if (sourceHtmlDoc == null)
             {
                 sourceHtmlDoc = new HtmlDocument();
-                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl, cancellationToken));
+                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.DataUrl, cancellationToken));
             }
             HtmlNode pageNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_FirstEdition']");
             HtmlNode node1 = pageNode?.SelectSingleNode(".//div/div");
@@ -95,9 +95,9 @@ namespace XRayBuilderGUI.DataSources.Secondary
                 double minutes = int.Parse(match1.Groups[1].Value, NumberStyles.AllowThousands) * 1.2890625;
                 TimeSpan span = TimeSpan.FromMinutes(minutes);
                 _logger.Log(string.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)", span.Hours, span.Minutes, match1.Groups[1].Value));
-                curBook.pagesInBook = int.Parse(match1.Groups[1].Value);
-                curBook.readingHours = span.Hours;
-                curBook.readingMinutes = span.Minutes;
+                curBook.PagesInBook = int.Parse(match1.Groups[1].Value);
+                curBook.ReadingHours = span.Hours;
+                curBook.ReadingMinutes = span.Minutes;
                 return true;
             }
             return false;

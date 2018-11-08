@@ -357,11 +357,11 @@ namespace XRayBuilderGUI.UI
             {
                 BookInfo bookInfo = new BookInfo(metadata, txtGoodreads.Text);
 
-                string outputDir = OutputDirectory(bookInfo.author, bookInfo.sidecarName, bookInfo.asin, true);
+                string outputDir = OutputDirectory(bookInfo.Author, bookInfo.SidecarName, bookInfo.Asin, true);
 
                 _logger.Log("Attempting to build Author Profile...");
 
-                ApPath = $@"{outputDir}\AuthorProfile.profile.{bookInfo.asin}.asc";
+                ApPath = $@"{outputDir}\AuthorProfile.profile.{bookInfo.Asin}.asc";
 
                 // TODO: Load existing ap to use for end actions / start actions
                 if (!Settings.Default.overwrite && File.Exists(ApPath))
@@ -385,7 +385,7 @@ namespace XRayBuilderGUI.UI
                 if (response == null)
                     return;
 
-                var authorProfileOutput = JsonConvert.SerializeObject(AuthorProfile.CreateAp(response, bookInfo.asin));
+                var authorProfileOutput = JsonConvert.SerializeObject(AuthorProfile.CreateAp(response, bookInfo.Asin));
 
                 try
                 {
@@ -398,7 +398,7 @@ namespace XRayBuilderGUI.UI
                     return;
                 }
 
-                SaPath = $@"{outputDir}\StartActions.data.{bookInfo.asin}.asc";
+                SaPath = $@"{outputDir}\StartActions.data.{bookInfo.Asin}.asc";
                 _logger.Log("Attempting to build Start Actions and End Actions...");
 
                 string AsinPrompt(string title, string author)
@@ -487,14 +487,14 @@ namespace XRayBuilderGUI.UI
                     ea.WriteStartActions(saContent);
 
                     cmsPreview.Items[3].Enabled = true;
-                    EaPath = $@"{outputDir}\EndActions.data.{bookInfo.asin}.asc";
+                    EaPath = $@"{outputDir}\EndActions.data.{bookInfo.Asin}.asc";
                 }
                 else
                     ea.GenerateOld();
 
                 cmsPreview.Items[1].Enabled = true;
 
-                checkFiles(bookInfo.author, bookInfo.title, bookInfo.asin);
+                checkFiles(bookInfo.Author, bookInfo.Title, bookInfo.Asin);
                 if (_settings.playSound)
                 {
                     System.Media.SoundPlayer player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
@@ -588,13 +588,13 @@ namespace XRayBuilderGUI.UI
                     }
 
                     if (books.Count == 1)
-                        bookUrl = books[0].dataUrl;
+                        bookUrl = books[0].DataUrl;
                     else
                     {
                         _logger.Log($"Warning: Multiple results returned from {_dataSource.Name}...");
                         var frmG = new frmGR(_logger) { BookList = books };
                         frmG.ShowDialog();
-                        bookUrl = books[frmG.cbResults.SelectedIndex].dataUrl;
+                        bookUrl = books[frmG.cbResults.SelectedIndex].DataUrl;
                     }
 
                     if (!string.IsNullOrEmpty(bookUrl))

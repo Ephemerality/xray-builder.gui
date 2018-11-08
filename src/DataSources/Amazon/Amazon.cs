@@ -32,7 +32,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
         {
             AuthorSearchResults results = new AuthorSearchResults();
             //Generate Author search URL from author's name
-            string newAuthor = Functions.FixAuthor(curBook.author);
+            string newAuthor = Functions.FixAuthor(curBook.Author);
             string plusAuthorName = newAuthor.Replace(" ", "+");
             //Updated to match Search "all" Amazon
             string amazonAuthorSearchUrl = $"https://www.amazon.{TLD}/s/ref=nb_sb_noss_2?url=search-alias%3Dstripbooks&field-keywords={plusAuthorName}";
@@ -47,7 +47,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
                 try
                 {
                     _logger.Log("Saving Amazon's author search webpage...");
-                    File.WriteAllText(Environment.CurrentDirectory + $"\\dmp\\{curBook.asin}.authorsearchHtml.txt",
+                    File.WriteAllText(Environment.CurrentDirectory + $"\\dmp\\{curBook.Asin}.authorsearchHtml.txt",
                         results.authorHtmlDoc.DocumentNode.InnerHtml);
                 }
                 catch (Exception ex)
@@ -103,7 +103,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
                                               results.authorAsin +
                                               "%2Cp_n_feature_browse-bin%3A618073011&bbn=283155&ie=UTF8&qid=1432378570&rnid=618072011";
 
-            curBook.authorAsin = results.authorAsin;
+            curBook.AuthorAsin = results.authorAsin;
             _logger.Log($"Author page found on Amazon!\r\nAuthor's Amazon Page URL: {authorAmazonWebsiteLocationLog}");
 
             // Load Author's Amazon page

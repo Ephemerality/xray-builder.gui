@@ -62,10 +62,10 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
                 BookInfo newBook = new BookInfo(cleanTitle, authorNode.InnerText.Trim(), null);
 
-                newBook.goodreadsID = ParseBookId(link.OuterHtml);
-                newBook.dataUrl = BookUrl(newBook.goodreadsID);
+                newBook.GoodreadsId = ParseBookId(link.OuterHtml);
+                newBook.DataUrl = BookUrl(newBook.GoodreadsId);
 
-                newBook.bookImageUrl = coverNode.GetAttributeValue("src", "");
+                newBook.ImageUrl = coverNode.GetAttributeValue("src", "");
 
                 var ratingText = link.SelectSingleNode(".//span[@class='greyText smallText uitext']")?.InnerText.Clean();
                 if (ratingText != null)
@@ -73,13 +73,13 @@ namespace XRayBuilderGUI.DataSources.Secondary
                     var matchId = Regex.Match(ratingText, @"(\d+[\.,]?\d*) avg rating\s+(\d+(?:[\.,]?\d*)?).*\b(\d+) editions?");
                     if (matchId.Success)
                     {
-                        newBook.amazonRating = float.Parse(matchId.Groups[1].Value);
+                        newBook.AmazonRating = float.Parse(matchId.Groups[1].Value);
                         // Try with current culture, then one that uses . as a separator, then US
                         var numReviews = matchId.Groups[2].Value.TryParseInt(NumberStyles.AllowThousands, CultureInfo.CurrentCulture)
                                          ?? matchId.Groups[2].Value.TryParseInt(NumberStyles.AllowThousands, new CultureInfo("nl-NL"))
                                          ?? matchId.Groups[2].Value.TryParseInt(NumberStyles.AllowThousands, new CultureInfo("en-US"));
-                        newBook.numReviews = numReviews ?? 0;
-                        newBook.editions = int.Parse(matchId.Groups[3].Value);
+                        newBook.Reviews = numReviews ?? 0;
+                        newBook.Editions = int.Parse(matchId.Groups[3].Value);
                     }
                 }
 
@@ -138,12 +138,12 @@ namespace XRayBuilderGUI.DataSources.Secondary
             {
                 BookInfo book = new BookInfo("", "", "");
                 var title = bookNode.SelectSingleNode(".//div[@class='u-paddingBottomXSmall']/a");
-                book.title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", "", RegexOptions.Compiled);
-                book.goodreadsID = ParseBookId(title.GetAttributeValue("href", ""));
+                book.Title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", "", RegexOptions.Compiled);
+                book.GoodreadsId = ParseBookId(title.GetAttributeValue("href", ""));
                 // TODO: move this ASIN search somewhere else
-                if (!string.IsNullOrEmpty(book.goodreadsID))
-                    book.asin = await SearchBookASIN(book.goodreadsID, cancellationToken).ConfigureAwait(false);
-                book.author = bookNode.SelectSingleNode(".//span[@itemprop='author']//a")?.InnerText.Trim() ?? "";
+                if (!string.IsNullOrEmpty(book.GoodreadsId))
+                    book.Asin = await SearchBookASIN(book.GoodreadsId, cancellationToken).ConfigureAwait(false);
+                book.Author = bookNode.SelectSingleNode(".//span[@itemprop='author']//a")?.InnerText.Trim() ?? "";
                 return book;
             }
 
@@ -199,7 +199,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             if (sourceHtmlDoc == null)
             {
                 sourceHtmlDoc = new HtmlDocument();
-                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl, cancellationToken));
+                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.DataUrl, cancellationToken));
             }
             HtmlNode pagesNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='details']");
             if (pagesNode == null)
@@ -215,9 +215,9 @@ namespace XRayBuilderGUI.DataSources.Secondary
                     Functions.Pluralize($"{span.Hours:hour}"),
                     Functions.Pluralize($"{span.Minutes:minute}"),
                     match.Groups[1].Value));
-                curBook.pagesInBook = int.Parse(match.Groups[1].Value);
-                curBook.readingHours = span.Hours;
-                curBook.readingMinutes = span.Minutes;
+                curBook.PagesInBook = int.Parse(match.Groups[1].Value);
+                curBook.ReadingHours = span.Hours;
+                curBook.ReadingMinutes = span.Minutes;
                 return true;
             }
             return false;
@@ -353,7 +353,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             if (sourceHtmlDoc == null)
             {
                 sourceHtmlDoc = new HtmlDocument();
-                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.dataUrl, cancellationToken));
+                sourceHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(curBook.DataUrl, cancellationToken));
             }
 
             if (curBook.notableClips == null)
@@ -363,18 +363,18 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
             //Add rating and reviews count if missing from Amazon book info
             HtmlNode metaNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
-            if (metaNode != null && curBook.amazonRating == 0)
+            if (metaNode != null && curBook.AmazonRating == 0)
             {
                 HtmlNode goodreadsRating = metaNode.SelectSingleNode("//span[@class='value rating']");
                 if (goodreadsRating != null)
-                    curBook.amazonRating = float.Parse(goodreadsRating.InnerText);
+                    curBook.AmazonRating = float.Parse(goodreadsRating.InnerText);
                 HtmlNode passagesNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite votes' and @href='#other_reviews']")
                     ?? metaNode.SelectSingleNode(".//span[@class='count value-title']");
                 if (passagesNode != null)
                 {
                     Match match = Regex.Match(passagesNode.InnerText, @"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)");
                     if (match.Success)
-                        curBook.numReviews = int.Parse(match.Value.Replace(",", "").Replace(".", ""));
+                        curBook.Reviews = int.Parse(match.Value.Replace(",", "").Replace(".", ""));
                 }
             }
         }

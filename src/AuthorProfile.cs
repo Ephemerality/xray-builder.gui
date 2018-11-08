@@ -33,7 +33,7 @@ namespace XRayBuilderGUI
             {
                 if (searchResults == null)
                 {
-                    logger.Log(string.Format("Failed to find {0} on Amazon." + request.Settings.AmazonTld, request.Book.author));
+                    logger.Log(string.Format("Failed to find {0} on Amazon." + request.Settings.AmazonTld, request.Book.Author));
                     if (request.Settings.AmazonTld != "com")
                     {
                         logger.Log("Trying again with Amazon.com.");
@@ -52,7 +52,7 @@ namespace XRayBuilderGUI
                 try
                 {
                     logger.Log("Saving author's Amazon webpage...");
-                    File.WriteAllText(Environment.CurrentDirectory + string.Format(@"\dmp\{0}.authorpageHtml.txt", request.Book.asin),
+                    File.WriteAllText(Environment.CurrentDirectory + string.Format(@"\dmp\{0}.authorpageHtml.txt", request.Book.Asin),
                         searchResults.authorHtmlDoc.DocumentNode.InnerHtml);
                 }
                 catch (Exception ex)
@@ -173,7 +173,7 @@ namespace XRayBuilderGUI
             if (authorImageUrl.Contains(@"https://images-na.ssl-images-amazon"))
                 authorImageUrl = authorImageUrl.Replace(@"https://images-na.ssl-images-amazon", @"http://ecx.images-amazon");
 
-            request.Book.authorImageUrl = authorImageUrl;
+            request.Book.AuthorImageUrl = authorImageUrl;
 
             Bitmap ApAuthorImage = null;
             try
@@ -189,8 +189,8 @@ namespace XRayBuilderGUI
 
             logger.Log("Gathering author's other books...");
 
-            var bookList = Amazon.GetAuthorBooks(searchResults, request.Book.title, request.Book.author, request.Settings.AmazonTld)
-                ?? Amazon.GetAuthorBooksNew(searchResults, request.Book.title, request.Book.author, request.Settings.AmazonTld);
+            var bookList = Amazon.GetAuthorBooks(searchResults, request.Book.Title, request.Book.Author, request.Settings.AmazonTld)
+                ?? Amazon.GetAuthorBooksNew(searchResults, request.Book.Title, request.Book.Author, request.Settings.AmazonTld);
             var bookBag = new ConcurrentBag<BookInfo>();
             if (bookList != null)
             {
@@ -202,12 +202,12 @@ namespace XRayBuilderGUI
                     {
                         //Gather book desc, image url, etc, if using new format
                         if (request.Settings.UseNewVersion)
-                            await book.GetAmazonInfo(book.amazonUrl, cancellationToken);
+                            await book.GetAmazonInfo(book.AmazonUrl, cancellationToken);
                         bookBag.Add(book);
                     }
                     catch (Exception ex)
                     {
-                        logger.Log(string.Format("An error occurred gathering metadata for other books: {0}\r\nURL: {1}\r\nBook: {2}", ex.Message, book.amazonUrl, book.title));
+                        logger.Log(string.Format("An error occurred gathering metadata for other books: {0}\r\nURL: {1}\r\nBook: {2}", ex.Message, book.AmazonUrl, book.Title));
                         throw;
                     }
                 }, cancellationToken);
@@ -222,7 +222,7 @@ namespace XRayBuilderGUI
             return new Response
             {
                 Asin = authorAsin,
-                Name = request.Book.author,
+                Name = request.Book.Author,
                 OtherBooks = bookBag.ToArray(),
                 Biography = biography,
                 Image = ApAuthorImage,
@@ -261,8 +261,8 @@ namespace XRayBuilderGUI
             var authorOtherBooks = response.OtherBooks.Select(book => new Model.Artifacts.AuthorProfile.Book
             {
                 E = 1,
-                Asin = book.asin,
-                Title = book.title
+                Asin = book.Asin,
+                Title = book.Title
             }).ToArray();
 
             return new Model.Artifacts.AuthorProfile
@@ -278,7 +278,7 @@ namespace XRayBuilderGUI
                         Bio = response.Biography,
                         ImageHeight = response.Image.Height,
                         Name = response.Name,
-                        OtherBookAsins = response.OtherBooks.Select(book => book.asin).ToArray(),
+                        OtherBookAsins = response.OtherBooks.Select(book => book.Asin).ToArray(),
                         Picture = Functions.ImageToBase64(response.Image, ImageFormat.Jpeg)
                     }
                 }

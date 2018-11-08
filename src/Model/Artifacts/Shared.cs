@@ -22,13 +22,13 @@ namespace XRayBuilderGUI.Model.Artifacts
             return new Book
             {
                 Class = featured ? "featuredRecommendation" : "recommendation",
-                Asin = bookInfo.asin,
-                Title = bookInfo.title,
-                Authors = new[] { bookInfo.author },
-                ImageUrl = bookInfo.bookImageUrl,
-                Description = featured ? bookInfo.desc : null,
-                AmazonRating = featured ? (double?)bookInfo.amazonRating : null,
-                NumberOfReviews = featured ? (int?)bookInfo.numReviews : null
+                Asin = bookInfo.Asin,
+                Title = bookInfo.Title,
+                Authors = new[] { bookInfo.Author },
+                ImageUrl = bookInfo.ImageUrl,
+                Description = featured ? bookInfo.Description : null,
+                AmazonRating = featured ? (double?)bookInfo.AmazonRating : null,
+                NumberOfReviews = featured ? (int?)bookInfo.Reviews : null
             };
         }
     }

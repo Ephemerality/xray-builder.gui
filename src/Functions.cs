@@ -8,12 +8,10 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using HtmlAgilityPack;
@@ -25,7 +23,7 @@ namespace XRayBuilderGUI
         public static string ReadFromFile(string file)
         {
             using (var streamReader = new StreamReader(file, Encoding.UTF8))
-                return  streamReader.ReadToEnd();
+                return streamReader.ReadToEnd();
         }
 
         //http://www.levibotelho.com/development/c-remove-diacritics-accents-from-a-string/
@@ -35,8 +33,9 @@ namespace XRayBuilderGUI
                 return text;
 
             text = text.Normalize(NormalizationForm.FormD);
-            var chars = text.Where(c => System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) !=
-                System.Globalization.UnicodeCategory.NonSpacingMark).ToArray();
+            var chars = text.Where(c => CharUnicodeInfo.GetUnicodeCategory(c) !=
+                UnicodeCategory.NonSpacingMark).ToArray();
+
             return new string(chars).Normalize(NormalizationForm.FormC);
         }
 
@@ -374,7 +373,7 @@ namespace XRayBuilderGUI
         internal static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
     }
 
-    public static class ExtensionMethods
+    public static partial class ExtensionMethods
     {
         //http://stackoverflow.com/questions/166855/c-sharp-preg-replace
         public static string PregReplace(this string input, string[] pattern, string[] replacements)
@@ -424,26 +423,11 @@ namespace XRayBuilderGUI
 
         public static Match MatchOrNull(this Regex regex, string input)
         {
+            if (input == null)
+                return null;
+
             var match = regex.Match(input);
             return match.Success ? match : null;
-        }
-
-        public static async Task<HttpWebResponse> GetResponseAsync(this HttpWebRequest request, CancellationToken cancellationToken)
-        {
-            using (cancellationToken.Register(request.Abort, false))
-            {
-                try
-                {
-                    var response = await request.GetResponseAsync();
-                    return (HttpWebResponse)response;
-                }
-                catch (WebException ex)
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        throw new OperationCanceledException(ex.Message, ex, cancellationToken);
-                    throw;
-                }
-            }
         }
     }
 

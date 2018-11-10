@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.SQLite;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -13,7 +14,7 @@ namespace XRayBuilderGUI.UI
         }
 
         // TODO: Add notable clips
-        public Task Populate(string filePath)
+        public Task Populate(string filePath, CancellationToken cancellationToken = default)
         {
             var ver = XRayUtil.CheckXRayVersion(filePath);
             if (ver == XRayUtil.XRayVersion.Invalid)
@@ -35,7 +36,7 @@ namespace XRayBuilderGUI.UI
                     flpTerms.Controls.Add(p);
             }
             tcXray.SelectedIndex = 0;
-            return Task.Delay(1);
+            return Task.Delay(1, cancellationToken);
         }
 
         public new void ShowDialog()

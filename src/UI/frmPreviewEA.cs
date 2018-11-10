@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
@@ -47,7 +48,7 @@ namespace XRayBuilderGUI.UI
         #endregion
 
         // TODO: Deserialize properly
-        public async Task Populate(string inputFile)
+        public async Task Populate(string inputFile, CancellationToken cancellationToken = default)
         {
             string input;
             using (StreamReader streamReader = new StreamReader(inputFile, Encoding.UTF8))

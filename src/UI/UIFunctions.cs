@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilderGUI.DataSources.Amazon;
@@ -11,7 +12,7 @@ namespace XRayBuilderGUI.UI
 {
     public interface IPreviewForm
     {
-        Task Populate(string filePath);
+        Task Populate(string filePath, CancellationToken cancellationToken);
         void ShowDialog();
     }
 
@@ -41,7 +42,7 @@ namespace XRayBuilderGUI.UI
             {Filetype.XRay, new PreviewDef { Name = "X-Ray", Form = typeof(frmPreviewXR), Validator = "XRAY.entities"}}
         };
 
-        public static async Task ShowPreview(Filetype type, string filePath, string defaultDir, ILogger _logger)
+        public static async Task ShowPreview(Filetype type, string filePath, string defaultDir, ILogger _logger, CancellationToken cancellationToken = default)
         {
             var previewData = PreviewMap[type];
 
@@ -62,7 +63,7 @@ namespace XRayBuilderGUI.UI
             {
                 // TODO: Use DI somehow for this
                 IPreviewForm previewForm = (IPreviewForm) Activator.CreateInstance(previewData.Form);
-                await previewForm.Populate(selPath);
+                await previewForm.Populate(selPath, cancellationToken);
                 //.Location = new Point(Left, Top);
                 previewForm.ShowDialog();
 

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
@@ -14,7 +15,7 @@ namespace XRayBuilderGUI.UI
             InitializeComponent();
         }
 
-        public Task Populate(string inputFile)
+        public Task Populate(string inputFile, CancellationToken cancellationToken = default)
         {
             string input;
             using (StreamReader streamReader = new StreamReader(inputFile, Encoding.UTF8))
@@ -41,7 +42,7 @@ namespace XRayBuilderGUI.UI
                     dgvOtherBooks.Rows.Add(" " + rec["t"], Resources.arrow_right);
             }
 
-            return Task.Delay(1);
+            return Task.Delay(1, cancellationToken);
         }
 
         public new void ShowDialog()

@@ -799,22 +799,22 @@ namespace XRayBuilderGUI.UI
 
         private async void tmiAuthorProfile_Click(object sender, EventArgs e)
         {
-            await UIFunctions.ShowPreview(Filetype.AuthorProfile, ApPath, _settings.outDir, _logger);
+            await UIFunctions.ShowPreview(Filetype.AuthorProfile, ApPath, _settings.outDir, _logger, _cancelTokens.Token);
         }
 
         private async void tmiStartAction_Click(object sender, EventArgs e)
         {
-            await UIFunctions.ShowPreview(Filetype.StartActions, ApPath, _settings.outDir, _logger);
+            await UIFunctions.ShowPreview(Filetype.StartActions, ApPath, _settings.outDir, _logger, _cancelTokens.Token);
         }
 
         private async void tmiEndAction_Click(object sender, EventArgs e)
         {
-            await UIFunctions.ShowPreview(Filetype.EndActions, ApPath, _settings.outDir, _logger);
+            await UIFunctions.ShowPreview(Filetype.EndActions, ApPath, _settings.outDir, _logger, _cancelTokens.Token);
         }
 
         private async void tmiXray_Click(object sender, EventArgs e)
         {
-            await UIFunctions.ShowPreview(Filetype.XRay, ApPath, _settings.outDir, _logger);
+            await UIFunctions.ShowPreview(Filetype.XRay, ApPath, _settings.outDir, _logger, _cancelTokens.Token);
         }
 
         private async void btnUnpack_Click(object sender, EventArgs e)

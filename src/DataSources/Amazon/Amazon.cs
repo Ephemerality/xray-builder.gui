@@ -39,8 +39,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
             _logger.Log($"Searching for author's page on Amazon.{TLD}...");
 
             // Search Amazon for Author
-            results.authorHtmlDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
-            results.authorHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(amazonAuthorSearchUrl, cancellationToken));
+            results.authorHtmlDoc = await HttpClient.GetPageAsync(amazonAuthorSearchUrl, cancellationToken);
 
             if (Properties.Settings.Default.saveHtml)
             {
@@ -107,18 +106,18 @@ namespace XRayBuilderGUI.DataSources.Amazon
             _logger.Log($"Author page found on Amazon!\r\nAuthor's Amazon Page URL: {authorAmazonWebsiteLocationLog}");
 
             // Load Author's Amazon page
-            string authorpageHtml;
+            Stream authorPage;
             try
             {
-                authorpageHtml = await HttpDownloader.GetPageHtmlAsync(authorAmazonWebsiteLocation, cancellationToken);
+                authorPage = await HttpClient.GetStreamAsync(authorAmazonWebsiteLocation, cancellationToken);
             }
             catch
             {
                 // If page not found (on co.uk at least, the long form does not seem to work) fallback to short form
                 // and pray the formatting/item display suits our needs. If short form not found, crash back to caller.
-                authorpageHtml = await HttpDownloader.GetPageHtmlAsync(authorAmazonWebsiteLocationLog, cancellationToken);
+                authorPage = await HttpClient.GetStreamAsync(authorAmazonWebsiteLocationLog, cancellationToken);
             }
-            results.authorHtmlDoc.LoadHtml(authorpageHtml);
+            results.authorHtmlDoc.Load(authorPage);
             return results;
         }
 
@@ -245,8 +244,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
             //Search "all" Amazon
             string searchUrl = string.Format(@"https://www.amazon.{0}/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords={1}",
                 TLD, Uri.EscapeDataString(title + " " + author));
-            HtmlDocument searchDoc = new HtmlDocument();
-            searchDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(searchUrl, cancellationToken));
+            var searchDoc = await HttpClient.GetPageAsync(searchUrl, cancellationToken);
             HtmlNode node = searchDoc.DocumentNode.SelectSingleNode("//li[@id='result_0']");
             HtmlNode nodeASIN = node?.SelectSingleNode(".//a[@title='Kindle Edition']");
             if (nodeASIN == null)
@@ -272,11 +270,11 @@ namespace XRayBuilderGUI.DataSources.Amazon
         }
 
         public static Task<string> DownloadStartActions(string asin, CancellationToken cancellationToken = default)
-            => HttpDownloader.GetPageHtmlAsync($"https://www.revensoftware.com/amazon/sa/{asin}", cancellationToken);
+            => HttpClient.GetStringAsync($"https://www.revensoftware.com/amazon/sa/{asin}", cancellationToken);
 
         public static async Task<NextBookResult> DownloadNextInSeries(string asin, CancellationToken cancellationToken = default)
         {
-            var response = await HttpDownloader.GetPageHtmlAsync($"https://www.revensoftware.com/amazon/next/{asin}", cancellationToken);
+            var response = await HttpClient.GetStringAsync($"https://www.revensoftware.com/amazon/next/{asin}", cancellationToken);
             return JsonConvert.DeserializeObject<NextBookResult>(response);
         }
     }

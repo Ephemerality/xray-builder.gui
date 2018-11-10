@@ -65,7 +65,7 @@ namespace XRayBuilderGUI.UI
                 lblNextAuthor.Text = tempData["authors"][0].ToString();
                 string imageUrl = tempData["imageUrl"]?.ToString();
                 if (!string.IsNullOrEmpty(imageUrl))
-                    pbNextCover.Image = Functions.MakeGrayscale3(await HttpDownloader.GetImageAsync(imageUrl));
+                    pbNextCover.Image = Functions.MakeGrayscale3(await HttpClient.GetImageAsync(imageUrl, cancellationToken));
             }
             else
             {
@@ -82,7 +82,7 @@ namespace XRayBuilderGUI.UI
                 {
                     string imageUrl = rec["imageUrl"]?.ToString();
                     if (!string.IsNullOrEmpty(imageUrl))
-                        ilauthorRecs.Images.Add(Functions.MakeGrayscale3(await HttpDownloader.GetImageAsync(imageUrl)));
+                        ilauthorRecs.Images.Add(Functions.MakeGrayscale3(await HttpClient.GetImageAsync(imageUrl, cancellationToken)));
                 }
                 ListViewItem_SetSpacing(lvAuthorRecs, 60 + 7, 90 + 7);
                 for (int i = 0; i < ilauthorRecs.Images.Count; i++)
@@ -99,7 +99,7 @@ namespace XRayBuilderGUI.UI
                 {
                     var imageUrl = rec["imageUrl"]?.ToString();
                     if (!string.IsNullOrEmpty(imageUrl))
-                        ilcustomersWhoBoughtRecs.Images.Add(Functions.MakeGrayscale3(await HttpDownloader.GetImageAsync(imageUrl)));
+                        ilcustomersWhoBoughtRecs.Images.Add(Functions.MakeGrayscale3(await HttpClient.GetImageAsync(imageUrl, cancellationToken)));
                 }
                 ListViewItem_SetSpacing(lvCustomersWhoBoughtRecs, 60 + 7, 90 + 7);
                 for (int i = 0; i < ilcustomersWhoBoughtRecs.Images.Count; i++)

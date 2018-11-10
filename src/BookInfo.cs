@@ -99,9 +99,7 @@ namespace XRayBuilderGUI
         public async Task GetAmazonInfo(string amazonUrl, CancellationToken cancellationToken = default)
         {
             if (amazonUrl == "") return;
-            HtmlDocument bookDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
-            bookDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(amazonUrl, cancellationToken));
-            GetAmazonInfo(bookDoc);
+            GetAmazonInfo(await HttpClient.GetPageAsync(amazonUrl, cancellationToken));
         }
 
         /// <summary>
@@ -199,7 +197,7 @@ namespace XRayBuilderGUI
         {
             if (ImageUrl == "") return null;
             if (_bookImage != null) return _bookImage;
-            _bookImage = Task.Run(() => HttpDownloader.GetImageAsync(ImageUrl)).Result;
+            _bookImage = Task.Run(() => HttpClient.GetImageAsync(ImageUrl)).Result;
             return _bookImage;
         }
     }

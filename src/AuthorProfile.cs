@@ -179,7 +179,7 @@ namespace XRayBuilderGUI
             try
             {
                 logger.Log("Downloading author image...");
-                ApAuthorImage = await HttpDownloader.GetImageAsync(authorImageUrl, cancellationToken);
+                ApAuthorImage = await HttpClient.GetImageAsync(authorImageUrl, cancellationToken);
                 logger.Log("Grayscale base64-encoded author image created!");
             }
             catch (Exception ex)

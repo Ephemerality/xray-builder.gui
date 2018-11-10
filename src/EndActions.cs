@@ -59,10 +59,10 @@ namespace XRayBuilderGUI
             // Search Amazon for book
             //_logger.Log(String.Format("Book's Amazon page URL: {0}", ebookLocation));
 
-            HtmlDocument bookHtmlDoc = new HtmlDocument {OptionAutoCloseOnEnd = true};
+            HtmlDocument bookHtmlDoc;
             try
             {
-                bookHtmlDoc.LoadHtml(await HttpDownloader.GetPageHtmlAsync(ebookLocation, cancellationToken));
+                bookHtmlDoc = await HttpClient.GetPageAsync(ebookLocation, cancellationToken);
             }
             catch (Exception ex)
             {

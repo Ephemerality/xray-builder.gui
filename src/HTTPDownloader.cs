@@ -26,7 +26,7 @@ namespace XRayBuilderGUI
         public Uri Url { get; set; }
 
         private readonly Regex _headerCharsetRegex = new Regex(@";\s*charset\s*=\s*(?<charset>.*)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-        private readonly Regex _metaCharsetRegex = new Regex(@"<meta\s+.*?charset\s*=\s*(?<charset>[A-Za-z0-9_-]+)", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private readonly Regex _metaCharsetRegex = new Regex(@"<meta\s+.*?charset\s*=\s*""?(?<charset>[A-Za-z0-9_-]+)""?", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         public static Task<string> GetPageHtmlAsync(string url, CancellationToken cancellationToken = default)
         {

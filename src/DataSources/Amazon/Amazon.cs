@@ -20,11 +20,15 @@ namespace XRayBuilderGUI.DataSources.Amazon
 
     public static class Amazon
     {
-        public static readonly Regex RegexAsin = new Regex("(?<asin>B[A-Z0-9]{9})", RegexOptions.Compiled);
-        public static readonly Regex RegexAsinUrl = new Regex("(dp/(?<asin>B[A-Z0-9]{9})/|/gp/product/(?<asin>B[A-Z0-9]{9}))", RegexOptions.Compiled);
+        private static readonly Regex RegexAsin = new Regex("(?<asin>B[A-Z0-9]{9})", RegexOptions.Compiled);
+        private static readonly Regex RegexAsinUrl = new Regex("(/e/(?<asin>B\\w+)/|dp/(?<asin>B[A-Z0-9]{9})/|/gp/product/(?<asin>B[A-Z0-9]{9}))", RegexOptions.Compiled);
+        private static readonly Regex RegexIgnoreHeaders = new Regex(@"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
         public static bool IsAsin(string asin) => Regex.IsMatch(asin, "^B[A-Z0-9]{9}$");
+
         [CanBeNull]
         public static string ParseAsin(string input) => RegexAsin.MatchOrNull(input)?.Groups["asin"].Value;
+
         [CanBeNull]
         public static string ParseAsinFromUrl(string input) => RegexAsinUrl.MatchOrNull(input)?.Groups["asin"].Value;
 
@@ -80,22 +84,22 @@ namespace XRayBuilderGUI.DataSources.Amazon
             {
                 properAuthor = node.GetAttributeValue("href", "");
                 results.authorAsin = node.GetAttributeValue("data-asin", null)
-                    ?? AsinFromUrl(properAuthor);
+                    ?? ParseAsinFromUrl(properAuthor);
             }
             // otherwise check for "by so-and-so" text beneath the titles for a possible match
             else if ((node = results.authorHtmlDoc.DocumentNode.SelectSingleNode($"//div[@id='resultsCol']//li[@class='s-result-item celwidget  ']//a[text()=\"{newAuthor}\"]")) != null)
             {
                 properAuthor = node.GetAttributeValue("href", "");
-                results.authorAsin = AsinFromUrl(properAuthor);
+                results.authorAsin = ParseAsinFromUrl(properAuthor);
             }
 
-            if (string.IsNullOrEmpty(properAuthor) || properAuthor.IndexOf('/', 1) < 3 || results.authorAsin == "")
+            if (string.IsNullOrEmpty(properAuthor) || properAuthor.IndexOf('/', 1) < 3 || string.IsNullOrEmpty(results.authorAsin))
             {
                 _logger.Log("Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: " + amazonAuthorSearchUrl);
                 return null;
             }
             properAuthor = properAuthor.Substring(1, properAuthor.IndexOf('/', 1) - 1);
-            string authorAmazonWebsiteLocationLog = @"https://www.amazon." + TLD + "/" + properAuthor + "/e/" + results.authorAsin;
+            string authorAmazonWebsiteLocationLog = $"https://www.amazon.{TLD}/{properAuthor}/e/{results.authorAsin}";
             string authorAmazonWebsiteLocation = @"https://www.amazon." + TLD + "/" + properAuthor + "/e/" + results.authorAsin +
                                               "/ref=la_" + results.authorAsin +
                                               "_rf_p_n_feature_browse-b_2?fst=as%3Aoff&rh=n%3A283155%2Cp_82%3A" +
@@ -155,14 +159,14 @@ namespace XRayBuilderGUI.DataSources.Amazon
                     ?? throw new FormatChangedException(nameof(Amazon), "book results - title");
                 //Exclude the current book title
                 if (name.ContainsIgnorecase(curTitle)
-                    || name.ContainsIgnorecase(@"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)"))
+                    || RegexIgnoreHeaders.IsMatch(name))
                     continue;
 
-                // Get Kindle ASIN
+                // Get first Kindle ASIN
                 var asin = "";
                 foreach (var bookNode in bookNodes)
                 {
-                    var match = Regex.Match(bookNode.OuterHtml, "(dp/(?<asin>B[A-Z0-9]{9})/|/gp/product/(?<asin>B[A-Z0-9]{9}))", RegexOptions.Compiled);
+                    var match = RegexAsinUrl.Match(bookNode.OuterHtml);
                     if (!match.Success)
                         continue;
                     asin = match.Groups["asin"].Value;
@@ -189,15 +193,14 @@ namespace XRayBuilderGUI.DataSources.Amazon
                 HtmlNode otherBook = result.SelectSingleNode(".//div[@class='a-row a-spacing-small']/a/h2");
                 if (otherBook == null) continue;
                 //Exclude the current book title from other books search
-                if (Regex.Match(otherBook.InnerText, curTitle, RegexOptions.IgnoreCase).Success
-                    || Regex.Match(otherBook.InnerText, @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase).Success)
+                if (otherBook.InnerText.ContainsIgnorecase(curTitle)
+                    || RegexIgnoreHeaders.IsMatch(otherBook.InnerText))
                     continue;
                 var name = otherBook.InnerText.Trim();
                 otherBook = result.SelectSingleNode(".//*[@title='Kindle Edition']");
-                Match match = Regex.Match(otherBook.OuterHtml, "dp/(B[A-Z0-9]{9})/");
+                var match = RegexAsinUrl.Match(otherBook.OuterHtml);
                 if (match.Success)
-                    asin = match.Groups[1].Value;
-                var url = $"https://www.amazon.{TLD}/dp/{asin}";
+                    asin = match.Groups["asin"].Value;
                 if (name != "" && asin != "")
                 {
                     BookInfo newBook = new BookInfo(name, curAuthor, asin);
@@ -211,20 +214,17 @@ namespace XRayBuilderGUI.DataSources.Amazon
                 if (resultsNodes == null) return null;
                 foreach (HtmlNode result in resultsNodes)
                 {
-                    string asin = "";
                     HtmlNode otherBook = result.SelectSingleNode(".//a/img");
                     if (otherBook == null) continue;
                     var name = otherBook.GetAttributeValue("alt", "");
                     //Exclude the current book title from other books search
-                    if (Regex.Match(name, curTitle, RegexOptions.IgnoreCase).Success
-                        || Regex.Match(name, @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase).Success)
+                    if (name.ContainsIgnorecase(curTitle)
+                        || RegexIgnoreHeaders.IsMatch(name))
                         continue;
                     otherBook = result.SelectSingleNode(".//a");
                     if (otherBook == null) continue;
-                    Match match = Regex.Match(otherBook.OuterHtml, "dp/(B[A-Z0-9]{9})/");
-                    if (match.Success)
-                        asin = match.Groups[1].Value;
-                    if (name != "" && asin != "")
+                    var asin = ParseAsinFromUrl(otherBook.OuterHtml);
+                    if (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(asin))
                     {
                         BookInfo newBook = new BookInfo(name, curAuthor, asin);
                         bookList.Add(newBook);
@@ -255,18 +255,12 @@ namespace XRayBuilderGUI.DataSources.Amazon
             //At least attempt to verify it might be the same book?
             if (node != null && nodeASIN != null && node.InnerText.IndexOf(title, StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                Match foundASIN = Regex.Match(nodeASIN.OuterHtml, "(B[A-Z0-9]{9})");
+                var foundASIN = ParseAsinFromUrl(nodeASIN.OuterHtml);
                 node = node.SelectSingleNode(".//div/div/div/div[@class='a-fixed-left-grid-col a-col-right']/div/a");
                 if (node != null)
-                    result = new BookInfo(node.InnerText, author, foundASIN.Value);
+                    result = new BookInfo(node.InnerText, author, foundASIN);
             }
             return result;
-        }
-
-        private static string AsinFromUrl(string url)
-        {
-            var asinMatch = Regex.Match(url, @"/e/(B\w+)/", RegexOptions.Compiled);
-            return asinMatch.Success ? asinMatch.Groups[1].Value : "";
         }
 
         public static Task<string> DownloadStartActions(string asin, CancellationToken cancellationToken = default)

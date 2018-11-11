@@ -45,7 +45,7 @@ namespace XRayBuilderGUI
             if (searchResults == null)
                 return null; // Already logged error in search function
 
-            var authorAsin = searchResults.authorAsin;
+            var authorAsin = searchResults.AuthorAsin;
 
             if (Properties.Settings.Default.saveHtml)
             {
@@ -53,7 +53,7 @@ namespace XRayBuilderGUI
                 {
                     logger.Log("Saving author's Amazon webpage...");
                     File.WriteAllText(Environment.CurrentDirectory + string.Format(@"\dmp\{0}.authorpageHtml.txt", request.Book.Asin),
-                        searchResults.authorHtmlDoc.DocumentNode.InnerHtml);
+                        searchResults.AuthorHtmlDoc.DocumentNode.InnerHtml);
                 }
                 catch (Exception ex)
                 {

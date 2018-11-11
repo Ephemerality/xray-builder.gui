@@ -43,6 +43,8 @@ namespace XRayBuilderGUI.UI
             _logger = logger;
             _diContainer = diContainer;
             _logger.LogEvent += rtfLogger.Log;
+            // TODO: Remove when logger can be DI'd
+            HttpClient.Instance = new HttpClient(_logger);
         }
 
         private readonly ToolTip _tooltip = new ToolTip();

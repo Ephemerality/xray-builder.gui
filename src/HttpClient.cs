@@ -12,17 +12,18 @@ namespace XRayBuilderGUI
 {
     // TODO: DI for this instead of static instance
     // TODO: Investigate if a caching layer is worthwhile
-    public class HttpClient : System.Net.Http.HttpClient
+    public sealed class HttpClient : System.Net.Http.HttpClient
     {
-        public static readonly HttpClient Instance = new HttpClient();
+        public static HttpClient Instance = null;
 
-        public HttpClient() : base(
+        public HttpClient(ILogger logger) : base(
             new HttpClientHandler
             {
                 UseCookies = false,
                 AutomaticDecompression = DecompressionMethods.GZip
             }.DecorateWith(new TimeoutHandler())
-            .DecorateWith(new RetryHandler()))
+            .DecorateWith(new RetryHandler())
+            .DecorateWith(new AmazonHandler(logger)))
         {
             Timeout = System.Threading.Timeout.InfiniteTimeSpan;
         }
@@ -53,16 +54,6 @@ namespace XRayBuilderGUI
             SetDefaultSettings(request);
             var response = await Instance.SendAsync(request, cancellationToken);
             return await response.Content.ReadAsStreamAsync();
-        }
-
-        public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            var response = await base.SendAsync(request, cancellationToken);
-            if (!response.IsSuccessStatusCode)
-                // TODO: Full exception params
-                throw new WebException();
-
-            return response;
         }
 
         private static void SetDefaultSettings(HttpRequestMessage request)
@@ -107,7 +98,7 @@ namespace XRayBuilderGUI
         }
     }
 
-    public class TimeoutHandler : DelegatingHandler
+    public sealed class TimeoutHandler : DelegatingHandler
     {
         public TimeSpan DefaultTimeout { get; set; } = TimeSpan.FromSeconds(30);
 
@@ -141,7 +132,7 @@ namespace XRayBuilderGUI
     }
 
     // https://www.thomaslevesque.com/2016/12/08/fun-with-the-httpclient-pipeline/
-    public class RetryHandler : DelegatingHandler
+    public sealed class RetryHandler : DelegatingHandler
     {
         public int MaxRetries { get; set; } = 3;
 
@@ -176,5 +167,58 @@ namespace XRayBuilderGUI
                 }
             }
         }
+    }
+
+    public sealed class AmazonHandler : DelegatingLoggingHandler
+    {
+        public AmazonHandler(ILogger logger) : base(logger)
+        {
+        }
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var response = await base.SendAsync(request, cancellationToken);
+                if (!response.IsSuccessStatusCode)
+                    throw new HttpClientException(response.StatusCode.ToString())
+                    {
+                        Response = response
+                    };
+                return response;
+            }
+            catch (HttpClientException ex) when (ex.Response.StatusCode == HttpStatusCode.NotFound
+                && request.RequestUri.Host.Contains(".amazon.")
+                && !request.RequestUri.Host.EndsWith(".com"))
+            {
+                var originalHost = request.RequestUri.Host;
+                var builder = new UriBuilder(request.RequestUri)
+                {
+                    Host = "www.amazon.com"
+                };
+                request.RequestUri = builder.Uri;
+                var response = await base.SendAsync(request, cancellationToken);
+                Logger?.Log($"Not available from {originalHost}, but found on Amazon US ({request.RequestUri})");
+                return response;
+            }
+        }
+    }
+
+    public class DelegatingLoggingHandler : DelegatingHandler
+    {
+        protected readonly ILogger Logger;
+
+        protected DelegatingLoggingHandler(ILogger logger = null)
+        {
+            Logger = logger;
+        }
+    }
+
+    public class HttpClientException : Exception
+    {
+        public HttpClientException(string message, Exception previous = null) : base(message, previous) { }
+
+        public HttpResponseMessage Response { get; set; }
+
     }
 }

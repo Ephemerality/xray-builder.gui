@@ -18,7 +18,6 @@ namespace XRayBuilderGUI.DataSources.Secondary
         private readonly ILogger _logger;
 
         private const int MaxConcurrentRequests = 10;
-        private HtmlDocument sourceHtmlDoc;
 
         public string Name => "Goodreads";
 
@@ -92,13 +91,9 @@ namespace XRayBuilderGUI.DataSources.Secondary
         public async Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
         {
             var series = new SeriesInfo();
-            if (sourceHtmlDoc == null)
-            {
-                sourceHtmlDoc = await HttpClient.GetPageAsync(dataUrl, cancellationToken);
-            }
-
             //Search Goodreads for series info
-            HtmlNode metaNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='metacol']");
+            var seriesPage = await HttpClient.GetPageAsync(dataUrl, cancellationToken);
+            HtmlNode metaNode = seriesPage.DocumentNode.SelectSingleNode("//div[@id='metacol']");
             HtmlNode seriesNode = metaNode?.SelectSingleNode("//h2[@id='bookSeries']/a");
             if (seriesNode == null)
                 return null;
@@ -192,11 +187,8 @@ namespace XRayBuilderGUI.DataSources.Secondary
         // TODO: This shouldn't modify curbook
         public async Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
         {
-            if (sourceHtmlDoc == null)
-            {
-                sourceHtmlDoc = await HttpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
-            }
-            HtmlNode pagesNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='details']");
+            var bookPage = await HttpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
+            var pagesNode = bookPage.DocumentNode.SelectSingleNode("//div[@id='details']");
             if (pagesNode == null)
                 return false;
             Match match = Regex.Match(pagesNode.InnerText, @"((\d+)|(\d+,\d+)) pages");
@@ -220,16 +212,12 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
         public async Task<IEnumerable<XRay.Term>> GetTermsAsync(string dataUrl, IProgressBar progress, CancellationToken cancellationToken = default)
         {
-            if (sourceHtmlDoc == null)
-            {
-                _logger.Log("Downloading Goodreads page...");
-                sourceHtmlDoc = await HttpClient.GetPageAsync(dataUrl, cancellationToken);
-            }
-
-            var charNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/a");
+            _logger.Log("Downloading Goodreads page...");
+            var grDoc = await HttpClient.GetPageAsync(dataUrl, cancellationToken);
+            var charNodes = grDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/a");
             if (charNodes == null) return new List<XRay.Term>();
             // Check if ...more link exists on Goodreads page
-            var moreCharNodes = sourceHtmlDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/span[@class='toggleContent']/a");
+            var moreCharNodes = grDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/span[@class='toggleContent']/a");
             var allChars = moreCharNodes == null ? charNodes : charNodes.Concat(moreCharNodes);
             var termCount = moreCharNodes == null ? charNodes.Count : charNodes.Count + moreCharNodes.Count;
             _logger.Log($"Gathering term information from Goodreads... ({termCount})");
@@ -340,18 +328,14 @@ namespace XRayBuilderGUI.DataSources.Secondary
         /// </summary>
         public async Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
-            if (sourceHtmlDoc == null)
-            {
-                sourceHtmlDoc = await HttpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
-            }
-
+            var grDoc = await HttpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
             if (curBook.notableClips == null)
             {
-                curBook.notableClips = (await GetNotableClipsAsync("", sourceHtmlDoc, progress, cancellationToken).ConfigureAwait(false))?.ToList();
+                curBook.notableClips = (await GetNotableClipsAsync("", grDoc, progress, cancellationToken).ConfigureAwait(false))?.ToList();
             }
 
             //Add rating and reviews count if missing from Amazon book info
-            HtmlNode metaNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
+            HtmlNode metaNode = grDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
             if (metaNode != null && curBook.AmazonRating == 0)
             {
                 HtmlNode goodreadsRating = metaNode.SelectSingleNode("//span[@class='value rating']");

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.Drawing;
@@ -27,8 +26,6 @@ namespace XRayBuilderGUI.UI
         // TODO: Find a better way to create new forms w/o requiring container outside composition root
         private readonly Container _diContainer;
 
-        public bool Exiting;
-
         // TODO: Fix up these paths
         private string EaPath = "";
         private string SaPath = "";
@@ -50,9 +47,6 @@ namespace XRayBuilderGUI.UI
         private readonly ToolTip _tooltip = new ToolTip();
         private readonly Settings _settings = Settings.Default;
         private readonly string _currentLog = $@"{Environment.CurrentDirectory}\log\{DateTime.Now:HH.mm.ss.dd.MM.yyyy}.txt";
-
-        // TODO: Do something else for this
-        public List<string> openBook = new List<string>();
 
         private readonly IProgressBar _progress;
 
@@ -91,8 +85,6 @@ namespace XRayBuilderGUI.UI
 
             return outputDir;
         }
-
-        public string AmazonUrl(string asin) => $"https://www.amazon.{_settings.amazonTLD}/dp/{asin}";
 
         private void ToggleInterface(bool enabled)
         {
@@ -634,7 +626,6 @@ namespace XRayBuilderGUI.UI
             _settings.Save();
             if (txtOutput.Text.Trim().Length != 0)
                 File.WriteAllText(_currentLog, txtOutput.Text);
-            Exiting = true;
             Application.Exit();
         }
 
@@ -774,12 +765,7 @@ namespace XRayBuilderGUI.UI
             txtAuthor.Text = metadata.Author;
             txtTitle.Text = metadata.Title;
             txtAsin.Text = metadata.ASIN;
-            _tooltip.SetToolTip(txtAsin, AmazonUrl(txtAsin.Text));
-
-            openBook.Clear();
-            openBook.Add(metadata.Author);
-            openBook.Add(metadata.Title);
-            openBook.Add(metadata.ASIN);
+            _tooltip.SetToolTip(txtAsin, Amazon.Url(_settings.amazonTLD, txtAsin.Text));
 
             checkFiles(metadata.Author, metadata.Title, metadata.ASIN);
 
@@ -855,7 +841,7 @@ namespace XRayBuilderGUI.UI
 
         private void txtAsin_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start(AmazonUrl(txtAsin.Text));
+            Process.Start(Amazon.Url(_settings.amazonTLD, txtAsin.Text));
         }
 
         private void btnExtractTerms_Click(object sender, EventArgs e)
@@ -906,14 +892,15 @@ namespace XRayBuilderGUI.UI
             new frmAbout().ShowDialog();
         }
 
-        private void btnCreate_Click(object sender, EventArgs e)
+        private async void btnCreate_Click(object sender, EventArgs e)
         {
             var frmCreateXr = new frmCreateXR();
-            if (openBook.Count == 3)
+            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, false, _logger));
+            if (metadata != null)
             {
-                frmCreateXr.txtAuthor.Text = openBook[0];
-                frmCreateXr.txtTitle.Text = openBook[1];
-                frmCreateXr.txtAsin.Text = openBook[2];
+                frmCreateXr.txtAuthor.Text = metadata.Author;
+                frmCreateXr.txtTitle.Text = metadata.Title;
+                frmCreateXr.txtAsin.Text = metadata.ASIN;
             }
             frmCreateXr.ShowDialog();
         }

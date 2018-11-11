@@ -33,6 +33,8 @@ namespace XRayBuilderGUI.DataSources.Amazon
         [CanBeNull]
         public static string ParseAsinFromUrl(string input) => RegexAsinUrl.MatchOrNull(input)?.Groups["asin"].Value;
 
+        public static string Url(string tld, string asin) => $"https://www.amazon.{tld}/dp/{asin}";
+
         public static async Task<AuthorSearchResults> SearchAuthor(BookInfo curBook, string TLD, ILogger _logger, CancellationToken cancellationToken = default)
         {
             var results = new AuthorSearchResults();

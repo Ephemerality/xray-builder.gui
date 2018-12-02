@@ -1,0 +1,3 @@
+[submodule "IonDotnet"]
+	path = IonDotnet
+	url = https://github.com/dhhoang/IonDotnet.git

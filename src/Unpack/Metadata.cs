@@ -11,7 +11,7 @@ using System.Text;
 
 namespace XRayBuilderGUI.Unpack
 {
-    public sealed class Metadata : IDisposable
+    public sealed class Metadata : IDisposable, IMetadata
     {
         private PDBHeader _pdb;
         private PalmDOCHeader _pdh;
@@ -92,7 +92,7 @@ namespace XRayBuilderGUI.Unpack
 
         public long RawMlSize => _pdh.TextLength;
 
-        public Bitmap CoverImage { get; private set; }
+        public Image CoverImage { get; private set; }
 
         public string CdeContentType => _mobiHeader.exthHeader.CDEType;
 
@@ -112,7 +112,7 @@ namespace XRayBuilderGUI.Unpack
             File.WriteAllBytes(path, GetRawMl());
         }
 
-        public MemoryStream GetRawMlStream()
+        public Stream GetRawMlStream()
         {
             return new MemoryStream(GetRawMl());
         }

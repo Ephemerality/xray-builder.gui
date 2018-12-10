@@ -9,7 +9,7 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 
-namespace XRayBuilderGUI.Unpack
+namespace XRayBuilderGUI.Unpack.Mobi
 {
     public sealed class Metadata : IDisposable, IMetadata
     {

@@ -6,11 +6,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Text;
 
-namespace XRayBuilderGUI.Unpack
+namespace XRayBuilderGUI.Unpack.Mobi
 {
     public class EXTHHeader
     {

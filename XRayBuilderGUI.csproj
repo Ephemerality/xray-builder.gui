@@ -353,6 +353,12 @@
     <None Include="Resources\AI.png" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="IonDotnet\IonDotnet\IonDotnet.csproj">
+      <Project>{e99b7735-94e4-46de-85e3-ee72178261b9}</Project>
+      <Name>IonDotnet</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

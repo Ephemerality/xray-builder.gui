@@ -80,6 +80,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\IonDotnet\IonDotnet\IonDotnet.csproj">
+      <Project>{e99b7735-94e4-46de-85e3-ee72178261b9}</Project>
+      <Name>IonDotnet</Name>
+    </ProjectReference>
     <ProjectReference Include="..\XRayBuilderGUI.csproj">
       <Project>{8aa950e7-5fee-4130-9d30-18b8397e1dd8}</Project>
       <Name>XRayBuilderGUI</Name>

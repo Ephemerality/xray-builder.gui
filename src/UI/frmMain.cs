@@ -16,7 +16,6 @@ using XRayBuilderGUI.DataSources.Secondary.Model;
 using XRayBuilderGUI.Model.Artifacts;
 using XRayBuilderGUI.Properties;
 using XRayBuilderGUI.Unpack;
-using XRayBuilderGUI.Unpack.Mobi;
 
 namespace XRayBuilderGUI.UI
 {

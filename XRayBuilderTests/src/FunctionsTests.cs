@@ -1,6 +1,11 @@
-﻿using NUnit.Framework;
+﻿using System.IO;
+using System.Linq;
+using System.Text;
+using IonDotnet.Tree;
+using NUnit.Framework;
 using XRayBuilderGUI;
 using XRayBuilderGUI.Unpack;
+using XRayBuilderGUI.Unpack.KFX;
 
 namespace XRayBuilderTests
 {
@@ -43,10 +48,10 @@ namespace XRayBuilderTests
         [TestCase(@"testfiles\A Storm of Swords - George R. R. Martin.mobi")]
         public void GetMetaDataInternal(string mobiFile)
         {
-            var md = new Metadata(mobiFile);
-            Assert.AreEqual(md.ASIN, "B000FBFN1U");
-            Assert.AreEqual(md.UniqueID, "171927873");
-            Assert.AreEqual(md.DBName, "A_Storm_of_Swords");
+            var md = MetadataLoader.Load(mobiFile);
+            Assert.AreEqual(md.Asin, "B000FBFN1U");
+            Assert.AreEqual(md.UniqueId, "171927873");
+            Assert.AreEqual(md.DbName, "A_Storm_of_Swords");
             Assert.AreEqual(md.Author, "George R. R. Martin");
             Assert.AreEqual(md.Title, "A Storm of Swords");
         }

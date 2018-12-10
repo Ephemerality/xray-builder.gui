@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using XRayBuilderGUI.DataSources.Secondary.Model;
 using XRayBuilderGUI.Unpack;
-using XRayBuilderGUI.Unpack.Mobi;
 
 namespace XRayBuilderGUI
 {
@@ -46,7 +45,7 @@ namespace XRayBuilderGUI
         // List of clips and their highlight/like count
         public List<NotableClip> notableClips;
 
-        private readonly Metadata _metadata;
+        private readonly IMetadata _metadata;
         private string _guid;
         private Bitmap _bookImage;
 
@@ -56,7 +55,7 @@ namespace XRayBuilderGUI
             get => _guid;
         }
 
-        public BookInfo(Metadata metadata, string dataUrl)
+        public BookInfo(IMetadata metadata, string dataUrl)
         {
             _metadata = metadata;
             Title = metadata.Title;

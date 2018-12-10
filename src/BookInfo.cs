@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using XRayBuilderGUI.DataSources.Secondary.Model;
 using XRayBuilderGUI.Unpack;
+using XRayBuilderGUI.Unpack.Mobi;
 
 namespace XRayBuilderGUI
 {

@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilderGUI.DataSources.Amazon;
-using XRayBuilderGUI.Unpack;
+using XRayBuilderGUI.Unpack.Mobi;
 
 namespace XRayBuilderGUI.UI
 {
@@ -113,7 +113,7 @@ namespace XRayBuilderGUI.UI
                 + "Caution: This feature is experimental and could potentially ruin your book file.", "Incorrect Content Type", MessageBoxButtons.YesNo))
             {
                 using (var fs = new FileStream(bookPath, FileMode.Open, FileAccess.ReadWrite))
-                    md.MobiHeader.exthHeader.UpdateCDEContentType(fs);
+                    md.UpdateCdeContentType(fs);
             }
             else
             {

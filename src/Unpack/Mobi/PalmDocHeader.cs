@@ -7,7 +7,7 @@
 using System;
 using System.IO;
 
-namespace XRayBuilderGUI.Unpack
+namespace XRayBuilderGUI.Unpack.Mobi
 {
     public class PalmDOCHeader
     {

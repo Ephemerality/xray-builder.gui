@@ -15,7 +15,6 @@ namespace XRayBuilderGUI.Unpack
         string UniqueId { get; }
 
         void CheckDrm();
-        void Dispose();
         byte[] GetRawMl();
         Stream GetRawMlStream();
         void SaveRawMl(string path);

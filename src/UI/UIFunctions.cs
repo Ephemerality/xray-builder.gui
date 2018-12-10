@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilderGUI.DataSources.Amazon;
+using XRayBuilderGUI.Unpack;
 using XRayBuilderGUI.Unpack.Mobi;
 
 namespace XRayBuilderGUI.UI
@@ -104,7 +105,7 @@ namespace XRayBuilderGUI.UI
             return new string(filename.Where(x => !fileChars.Contains(x)).ToArray());
         }
 
-        public static void EbokTagPromptOrThrow(Metadata md, string bookPath)
+        public static void EbokTagPromptOrThrow(IMetadata md, string bookPath)
         {
             if (md.CdeContentType == "EBOK")
                 return;
@@ -124,12 +125,12 @@ namespace XRayBuilderGUI.UI
 
         public static string RawMlPath(string filename) => Path.Combine(Environment.CurrentDirectory, "dmp", filename + ".rawml");
 
-        public static Metadata GetAndValidateMetadata(string mobiFile, bool saveRawML, ILogger _logger)
+        public static IMetadata GetAndValidateMetadata(string mobiFile, bool saveRawML, ILogger _logger)
         {
             _logger.Log("Extracting metadata...");
             try
             {
-                var metadata = new Metadata(mobiFile);
+                var metadata = MetadataLoader.Load(mobiFile);
                 EbokTagPromptOrThrow(metadata, mobiFile);
                 IncorrectAsinPromptOrThrow(metadata.Asin);
                 if (!Properties.Settings.Default.useNewVersion && metadata.DbName.Length == 31)

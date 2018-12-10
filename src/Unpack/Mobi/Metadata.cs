@@ -19,9 +19,8 @@ namespace XRayBuilderGUI.Unpack.Mobi
         private int _startRecord = 1;
         private readonly FileStream _fs;
 
-        public Metadata(string file)
+        public Metadata(FileStream fs)
         {
-            var fs = new FileStream(file, FileMode.Open, FileAccess.Read);
             _fs = fs;
             Initialize(fs);
         }

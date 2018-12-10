@@ -216,6 +216,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\UI\RtfLogger.cs" />
     <Compile Include="src\UI\UIFunctions.cs" />
+    <Compile Include="src\Unpack\MetadataLoader.cs" />
     <Compile Include="src\Unpack\Mobi\EXTH.cs" />
     <Compile Include="src\Unpack\IMetadata.cs" />
     <Compile Include="src\Unpack\KFX\KfxContainer.cs" />

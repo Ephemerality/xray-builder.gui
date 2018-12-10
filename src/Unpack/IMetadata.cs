@@ -1,9 +1,10 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.IO;
 
 namespace XRayBuilderGUI.Unpack
 {
-    public interface IMetadata
+    public interface IMetadata : IDisposable
     {
         string Asin { get; }
         string Author { get; }

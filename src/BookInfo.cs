@@ -60,9 +60,9 @@ namespace XRayBuilderGUI
             _metadata = metadata;
             Title = metadata.Title;
             Author = metadata.Author;
-            Asin = metadata.ASIN;
-            Guid = metadata.UniqueID;
-            Databasename = metadata.DBName;
+            Asin = metadata.Asin;
+            Guid = metadata.UniqueId;
+            Databasename = metadata.DbName;
             SidecarName = Functions.RemoveInvalidFileChars(metadata.Title);
             DataUrl = dataUrl;
         }

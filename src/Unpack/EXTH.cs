@@ -114,7 +114,7 @@ namespace XRayBuilderGUI.Unpack
             return record;
         }
 
-        public void UpdateCDEContentType(FileStream fs)
+        public void UpdateCdeContentType(FileStream fs)
         {
             byte[] newValue = Encoding.UTF8.GetBytes("EBOK");
             var rec = recordList.First(r => r.RecordType == 501);

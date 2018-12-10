@@ -106,13 +106,14 @@ namespace XRayBuilderGUI.UI
 
         public static void EbokTagPromptOrThrow(Metadata md, string bookPath)
         {
-            if (md.mobiHeader.exthHeader.CDEType == "EBOK") return;
-            if (md.mobiHeader.exthHeader.CDEType.Length == 4
+            if (md.CdeContentType == "EBOK")
+                return;
+            if (md.CdeContentType.Length == 4
                 && DialogResult.Yes == MessageBox.Show("The document type is not set to EBOK. Would you like this to be updated?\r\n"
                 + "Caution: This feature is experimental and could potentially ruin your book file.", "Incorrect Content Type", MessageBoxButtons.YesNo))
             {
                 using (var fs = new FileStream(bookPath, FileMode.Open, FileAccess.ReadWrite))
-                    md.mobiHeader.exthHeader.UpdateCDEContentType(fs);
+                    md.MobiHeader.exthHeader.UpdateCDEContentType(fs);
             }
             else
             {
@@ -130,11 +131,11 @@ namespace XRayBuilderGUI.UI
             {
                 var metadata = new Metadata(mobiFile);
                 EbokTagPromptOrThrow(metadata, mobiFile);
-                IncorrectAsinPromptOrThrow(metadata.ASIN);
-                if (!Properties.Settings.Default.useNewVersion && metadata.DBName.Length == 31)
+                IncorrectAsinPromptOrThrow(metadata.Asin);
+                if (!Properties.Settings.Default.useNewVersion && metadata.DbName.Length == 31)
                 {
                     MessageBox.Show(
-                        $"WARNING: Database Name is the maximum length. If \"{metadata.DBName}\" is the full book title, this should not be an issue.\r\n" +
+                        $"WARNING: Database Name is the maximum length. If \"{metadata.DbName}\" is the full book title, this should not be an issue.\r\n" +
                         "If the title is supposed to be longer than that, you may get an error on your Kindle (WG on firmware < 5.6).\r\n" +
                         "This can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n");
                 }
@@ -144,7 +145,7 @@ namespace XRayBuilderGUI.UI
                     _logger.Log("Saving rawML to dmp directory...");
                     metadata.SaveRawMl(RawMlPath(Path.GetFileNameWithoutExtension(mobiFile)));
                 }
-                _logger.Log($"Got metadata!\r\nDatabase Name: {metadata.DBName}\r\nUniqueID: {metadata.UniqueID}");
+                _logger.Log($"Got metadata!\r\nDatabase Name: {metadata.DbName}\r\nUniqueID: {metadata.UniqueId}");
 
                 return metadata;
             }

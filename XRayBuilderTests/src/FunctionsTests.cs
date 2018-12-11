@@ -1,11 +1,6 @@
-﻿using System.IO;
-using System.Linq;
-using System.Text;
-using IonDotnet.Tree;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using XRayBuilderGUI;
 using XRayBuilderGUI.Unpack;
-using XRayBuilderGUI.Unpack.KFX;
 
 namespace XRayBuilderTests
 {

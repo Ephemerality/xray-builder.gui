@@ -72,6 +72,7 @@
     <Compile Include="src\DataSources\AmazonTests.cs" />
     <Compile Include="src\DataSources\GoodreadsTests.cs" />
     <Compile Include="src\FunctionsTests.cs" />
+    <Compile Include="src\KfxTests.cs" />
     <Compile Include="src\TestSetup.cs" />
     <Compile Include="src\XRayTests.cs" />
   </ItemGroup>

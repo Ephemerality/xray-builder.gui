@@ -37,7 +37,7 @@ namespace XRayBuilderGUI.Unpack.KFX
             });
 
             var header = new KfxHeader(fs);
-            var containerInfoData = new SubStream(fs, header.ContainerInfoOffset, header.ContainerInfoLength);
+            var containerInfoData = new MemoryStream(fs.ReadBytes((int) header.ContainerInfoOffset, (int) header.ContainerInfoLength, SeekOrigin.Begin));
 
             var containerInfo = loader.LoadSingle<IonStruct>(containerInfoData);
             if (containerInfo == null)
@@ -58,7 +58,7 @@ namespace XRayBuilderGUI.Unpack.KFX
             ISymbolTable docSymbols = null;
             if (docSymbolLength.LongValue > 0)
             {
-                var docSymbolData = new SubStream(fs, docSymbolOffset.LongValue, docSymbolLength.LongValue);
+                var docSymbolData = new MemoryStream(fs.ReadBytes(docSymbolOffset.IntValue, docSymbolLength.IntValue, SeekOrigin.Begin));
                 loader.Load(docSymbolData, out docSymbols);
             }
 
@@ -68,11 +68,11 @@ namespace XRayBuilderGUI.Unpack.KFX
 
             if (header.Version > 1)
             {
-                var formatCapabilitiesOffset = containerInfo.GetById<IonInt>(594).LongValue;
-                var formatCapabilitiesLength = containerInfo.GetById<IonInt>(595).LongValue;
+                var formatCapabilitiesOffset = containerInfo.GetById<IonInt>(594).IntValue;
+                var formatCapabilitiesLength = containerInfo.GetById<IonInt>(595).IntValue;
                 if (formatCapabilitiesLength > 0)
                 {
-                    var formatCapabilitiesData = new SubStream(fs, formatCapabilitiesOffset, formatCapabilitiesLength);
+                    var formatCapabilitiesData = new MemoryStream(fs.ReadBytes(formatCapabilitiesOffset, formatCapabilitiesLength, SeekOrigin.Begin));
                     FormatCapabilities = loader.Load(formatCapabilitiesData).Single() as IonList;
                 }
             }

@@ -11,7 +11,7 @@ using System.Text;
 
 namespace XRayBuilderGUI.Unpack.Mobi
 {
-    public sealed class Metadata : IDisposable, IMetadata
+    public sealed class Metadata : IMetadata
     {
         private PDBHeader _pdb;
         private PalmDOCHeader _pdh;

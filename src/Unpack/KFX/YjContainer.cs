@@ -786,20 +786,23 @@ namespace XRayBuilderGUI.Unpack.KFX
         public string Asin => Metadata.Asin;
         public string Author => Metadata.Author;
         public string CdeContentType => Metadata.CdeContentType;
-        public string DbName => Metadata.DbName;
+        public string DbName => null;
         public string Title => Metadata.Title;
-        public string UniqueId => Metadata.UniqueId;
+        public string UniqueId => Metadata.AssetId;
 
         private KfxMetadata Metadata { get; set; }
         private class KfxMetadata
         {
             public string Asin { get; set; }
+            public string AssetId { get; set; }
             public string Author { get; set; }
             public string CdeContentType { get; set; }
+            public string ContentId { get; set; }
             public string CoverImage { get; set; }
-            public string DbName { get; set; }
+            public string IssueDate { get; set; }
+            public string Language { get; set; }
+            public string Publisher { get; set; }
             public string Title { get; set; }
-            public string UniqueId { get; set; }
         }
 
         protected void SetMetadata()
@@ -820,12 +823,15 @@ namespace XRayBuilderGUI.Unpack.KFX
             Metadata = new KfxMetadata
             {
                 Asin = metadata.GetOrDefault("ASIN"),
+                AssetId = metadata.GetOrDefault("asset_id"),
                 Author = metadata.GetOrDefault("author"),
                 CdeContentType = metadata.GetOrDefault("cde_content_type"),
+                ContentId = metadata.GetOrDefault("content_id"),
                 CoverImage = metadata.GetOrDefault("cover_image"),
-                DbName = null,
-                Title = metadata.GetOrDefault("title"),
-                UniqueId = null
+                IssueDate = metadata.GetOrDefault("issue_date"),
+                Language = metadata.GetOrDefault("language"),
+                Publisher = metadata.GetOrDefault("publisher"),
+                Title = metadata.GetOrDefault("title")
             };
         }
 

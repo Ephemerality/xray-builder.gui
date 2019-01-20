@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
-using XRayBuilderGUI.Unpack.Mobi;
+using XRayBuilderGUI.Unpack.KFX;
+using Metadata = XRayBuilderGUI.Unpack.Mobi.Metadata;
 
 namespace XRayBuilderGUI.Unpack
 {
@@ -10,7 +11,7 @@ namespace XRayBuilderGUI.Unpack
         {
             var fs = new FileStream(file, FileMode.Open, FileAccess.Read);
 
-            IMetadata metadata = null;
+            IMetadata metadata;
             switch (Path.GetExtension(file))
             {
                 case ".azw3":
@@ -18,6 +19,7 @@ namespace XRayBuilderGUI.Unpack
                     metadata = new Metadata(fs);
                     break;
                 case ".kfx":
+                    metadata = new KfxContainer(fs);
                     break;
                 default:
                     throw new NotSupportedException("Unsupported book format");

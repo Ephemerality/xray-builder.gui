@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -860,12 +861,68 @@ namespace XRayBuilderGUI.Unpack.KFX
             throw new NotSupportedException();
         }
 
+        public void GetBookNavigation()
+        {
+            var bookNav = Entities.ValueOrDefault<IonList>("$389");
+            var readingOrderId = GetReadingOrderIds().Single();
+            if (bookNav != null)
+            {
+                foreach (var nav in bookNav.OfType<IonStruct>())
+                {
+                    if (nav.GetSymbolIdById(178) != readingOrderId)
+                        continue;
+                    var navContainers = nav.GetById<IonList>(392);
+                    if (navContainers == null)
+                        continue;
+
+                    //if isinstance(nav_container, IonSymbol):
+                    //  nav_container = self.fragments[YJFragmentKey(ftype = "$391", fid = nav_container)].value
+                    //  inline_nav_containers = False
+
+                    foreach (var navContainer in navContainers.OfType<IonStruct>())
+                    {
+                        if (navContainer.GetSymbolIdById(235) != 212)
+                            continue;
+                        //var containerName = navContainer.GetById<IonSymbol>(239);
+                        var chapterList = navContainer.GetById<IonList>(247);
+
+                    }
+                }
+
+
+            }
+
+            throw new Exception($"Unable to locate book navigation for reading order {readingOrderId}");
+        }
+
+        public IEnumerable<int> GetReadingOrderIds()
+        {
+            var orders = GetReadingOrders();
+            return orders.OfType<IonStruct>()
+                .Select(order => order.GetById<IonSymbol>(178)?.SymbolValue.Sid)
+                .Where(id => id != null)
+                .Cast<int>();
+        }
+
+        public IonList GetReadingOrders()
+        {
+            var docData = Entities.SingleOrDefault("$538");
+            if (docData?.Value is IonStruct docStruct)
+                return docStruct.GetById<IonList>(169);
+
+            throw new NotImplementedException();
+
+            //metadata = self.fragments.get("$258", first = True)
+            //return [] if metadata is None else metadata.value.get("$169", [])
+        }
+
         public void Dispose()
         {
             CoverImage?.Dispose();
         }
     }
 
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class Entity
     {
         public string FragmentId { get; set; }
@@ -880,6 +937,8 @@ namespace XRayBuilderGUI.Unpack.KFX
         private readonly int[] _allowedVersions = { 1 };
 
         public string[] RawFragmentTypes = { "$417", "$418" };
+
+        private string DebuggerDisplay => $"{FragmentType} - {FragmentId}";
 
         public Entity(Stream stream, int id, int type, ISymbolTable symbolTable, IonDotnet.Systems.IonLoader loader)
         {

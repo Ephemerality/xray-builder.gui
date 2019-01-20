@@ -10,11 +10,12 @@ namespace XRayBuilderTests
     public class KfxTests
     {
         [TestCase(@"C:\Users\nick\Documents\Calibre Library\Mary W. Shelley\Frankenstein (484)\Frankenstein - Mary W. Shelley.kfx")]
+        //[TestCase(@"C:\Users\nick\Desktop\Kindle\DRM'd\CR!0S6WXAFV0N6C1BYMGMBMR8048VHJ.kfx")]
         public void GetKfxContainer(string kfxFile)
         {
             var fs = new FileStream(kfxFile, FileMode.Open, FileAccess.Read);
             var kfx = new KfxContainer(fs);
-            Assert.AreEqual(kfx.ContainerInfo.ContainerId, "CR!4FFEXVUEF2DOQB7ZQ087FJG4J8WE");
+            //Assert.AreEqual(kfx.ContainerInfo.ContainerId, "CR!4FFEXVUEF2DOQB7ZQ087FJG4J8WE");
 
             // TODO: Python handles 146 and 176 when getting content too
             var content1 = kfx.Entities.Where(fragment => fragment.FragmentType == "$145");
@@ -24,6 +25,9 @@ namespace XRayBuilderTests
                 .SelectMany(para => para).OfType<IonString>()
                 .Select(para => para.StringValue)
                 .ToArray();
+
+            var yj = (YjContainer) kfx;
+            yj.GetBookNavigation();
 
             var offset = 0;
             foreach (var (content, index) in content2.Select((c, i) => (c, i)))

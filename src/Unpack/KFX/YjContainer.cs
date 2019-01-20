@@ -769,7 +769,7 @@ namespace XRayBuilderGUI.Unpack.KFX
         };
         public static ISymbolTable YjSymbolTable { get; } = SharedSymbolTable.NewSharedSymbolTable("YJ_symbols", 10, null, YjSymbols.Select(sym => sym.Replace("?", "")));
 
-        public List<Entity> Entities { get; set; } = new List<Entity>();
+        public EntityCollection Entities { get; set; } = new EntityCollection();
 
         public enum ContainerFormat
         {

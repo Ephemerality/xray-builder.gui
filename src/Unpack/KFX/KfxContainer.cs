@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Based on KFX handling from jhowell's KFX in/output plugins (https://www.mobileread.com/forums/showthread.php?t=272407)
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.Unpack;
-using XRayBuilderGUI.Unpack.Mobi;
 
 namespace XRayBuilderGUI.UI
 {
@@ -97,7 +96,7 @@ namespace XRayBuilderGUI.UI
 
             return f.ShowDialog() == DialogResult.OK ? f.FileName : defaultFile;
         }
-        public static string GetBook(string defaultFile) => GetFile("Open a Kindle book", defaultFile, "Kindle Books (*.azw3, *.mobi)|*.azw3; *.mobi");
+        public static string GetBook(string defaultFile) => GetFile("Open a Kindle book", defaultFile, "Kindle Books (*.azw3, *.mobi, *.kfx)|*.azw3; *.mobi; *.kfx");
 
         public static string RemoveInvalidFileChars(string filename)
         {

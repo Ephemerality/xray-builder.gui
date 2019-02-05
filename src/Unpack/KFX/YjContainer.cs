@@ -848,10 +848,7 @@ namespace XRayBuilderGUI.Unpack.KFX
             throw new NotSupportedException();
         }
 
-        public Stream GetRawMlStream()
-        {
-            throw new NotSupportedException();
-        }
+        public Stream GetRawMlStream() => new MemoryStream(new byte[0]);
 
         public void SaveRawMl(string path)
         {

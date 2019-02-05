@@ -84,7 +84,7 @@ namespace XRayBuilderTests.DataSources
         {
             var gr = new Goodreads(new Logger());
             var results = (await gr.GetNotableClipsAsync("https://www.goodreads.com/book/show/13497.A_Feast_for_Crows")).ToArray();
-            Assert.AreEqual(results.Length, 538);
+            Assert.GreaterOrEqual(results.Length, 500);
         }
 
         [Test]
@@ -94,7 +94,7 @@ namespace XRayBuilderTests.DataSources
             var book = new BookInfo("", "", "") { DataUrl = "https://www.goodreads.com/book/show/13497.A_Feast_for_Crows" };
             await gr.GetExtrasAsync(book);
             Assert.Greater(book.AmazonRating, 0);
-            Assert.AreEqual(book.notableClips.Count, 538);
+            Assert.GreaterOrEqual(book.notableClips.Count, 500);
             Assert.GreaterOrEqual(book.Reviews, 1);
         }
     }

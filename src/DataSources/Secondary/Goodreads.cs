@@ -340,9 +340,10 @@ namespace XRayBuilderGUI.DataSources.Secondary
             HtmlNode metaNode = grDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
             if (metaNode != null && curBook.AmazonRating == 0)
             {
-                HtmlNode goodreadsRating = metaNode.SelectSingleNode("//span[@class='value rating']");
+                HtmlNode goodreadsRating = metaNode.SelectSingleNode("//span[@class='value rating']")
+                    ?? metaNode.SelectSingleNode(".//span[@itemprop='ratingValue']");
                 if (goodreadsRating != null)
-                    curBook.AmazonRating = float.Parse(goodreadsRating.InnerText);
+                    curBook.AmazonRating = Math.Round(float.Parse(goodreadsRating.InnerText), 2);
                 HtmlNode passagesNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite votes' and @href='#other_reviews']")
                     ?? metaNode.SelectSingleNode(".//span[@class='count value-title']");
                 if (passagesNode != null)
@@ -350,6 +351,11 @@ namespace XRayBuilderGUI.DataSources.Secondary
                     Match match = Regex.Match(passagesNode.InnerText, @"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)");
                     if (match.Success)
                         curBook.Reviews = int.Parse(match.Value.Replace(",", "").Replace(".", ""));
+                }
+                passagesNode = metaNode.SelectSingleNode(".//meta[@itemprop='reviewCount']");
+                if (passagesNode != null && int.TryParse(passagesNode.GetAttributeValue("content", null), out var reviews))
+                {
+                    curBook.Reviews = reviews;
                 }
             }
         }

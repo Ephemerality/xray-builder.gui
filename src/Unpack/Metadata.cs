@@ -45,6 +45,7 @@ namespace XRayBuilderGUI.Unpack
                 fs.Seek(PDB._recInfo[i].RecordDataOffset, SeekOrigin.Begin);
                 fs.Read(buffer, 0, buffer.Length);
                 string imgtype = coverOffset == -1 ? "" : get_image_type(buffer);
+                var test = Encoding.ASCII.GetString(buffer);
                 if (imgtype != "")
                 {
                     if (firstImage == -1) firstImage = i;
@@ -76,6 +77,8 @@ namespace XRayBuilderGUI.Unpack
                 || (data[6] == 'E' && data[7] == 'x' && data[8] == 'i' && data[9] == 'f')
                 || (data[0] == 0xFF && data[1] == 0xD8 && data[data.Length - 2] == 0xFF && data[data.Length - 1] == 0xD9))
                 return "jpeg";
+            if (data[0] == 0x89 && data[1] == 'P' && data[2] == 'N' && data[3] == 'G')
+                return "png";
             return "";
         }
 

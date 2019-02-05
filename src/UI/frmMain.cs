@@ -742,14 +742,13 @@ namespace XRayBuilderGUI.UI
                 lblGoodreads.Left = 134;
         }
 
-        private async void txtMobi_TextChanged(object sender, EventArgs e)
+        private void txtMobi_TextChanged(object sender, EventArgs e)
         {
             if (txtMobi.Text == "" || !File.Exists(txtMobi.Text)) return;
             txtGoodreads.Text = "";
             prgBar.Value = 0;
 
-
-            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, false, _logger));
+            var metadata = UIFunctions.GetAndValidateMetadata(txtMobi.Text, false, _logger);
             if (metadata == null)
             {
                 txtMobi.Text = "";

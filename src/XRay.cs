@@ -690,27 +690,30 @@ namespace XRayBuilderGUI
                 try
                 {
                     int index = rawML.LastIndexOf(">Table of Contents<");
-                    index = rawML.IndexOf("<p ", index);
-                    int breakIndex = rawML.IndexOf("<div class=\"mbp_pagebreak\"", index);
-                    if (breakIndex == -1)
-                        breakIndex = rawML.IndexOf("div class=\"mbppagebreak\"", index);
-                    tocHtml = rawML.Substring(index, breakIndex - index);
-                    tocDoc.LoadHtml(tocHtml);
-                    var tocNodes = tocDoc.DocumentNode.SelectNodes("//p");
-                    // Search for each chapter heading, ignore any misses (user can go and add any that are missing if necessary)
-                    foreach (HtmlNode chap in tocNodes)
+                    if (index >= 0)
                     {
-                        index = rawML.IndexOf(chap.InnerText);
-                        if (index > -1)
+                        index = rawML.IndexOf("<p ", index);
+                        int breakIndex = rawML.IndexOf("<div class=\"mbp_pagebreak\"", index);
+                        if (breakIndex == -1)
+                            breakIndex = rawML.IndexOf("div class=\"mbppagebreak\"", index);
+                        tocHtml = rawML.Substring(index, breakIndex - index);
+                        tocDoc.LoadHtml(tocHtml);
+                        var tocNodes = tocDoc.DocumentNode.SelectNodes("//p");
+                        // Search for each chapter heading, ignore any misses (user can go and add any that are missing if necessary)
+                        foreach (HtmlNode chap in tocNodes)
                         {
-                            if (_chapters.Count > 0)
-                                _chapters[_chapters.Count - 1].End = index;
-                            _chapters.Add(new Chapter
+                            index = rawML.IndexOf(chap.InnerText);
+                            if (index > -1)
                             {
-                                Name = chap.InnerText,
-                                Start = index,
-                                End = rawML.Length
-                            });
+                                if (_chapters.Count > 0)
+                                    _chapters[_chapters.Count - 1].End = index;
+                                _chapters.Add(new Chapter
+                                {
+                                    Name = chap.InnerText,
+                                    Start = index,
+                                    End = rawML.Length
+                                });
+                            }
                         }
                     }
                 }

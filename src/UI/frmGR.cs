@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 using XRayBuilderGUI.Properties;
@@ -10,7 +9,7 @@ namespace XRayBuilderGUI.UI
     {
         private readonly ILogger _logger;
 
-        public List<BookInfo> BookList = new List<BookInfo>();
+        public BookInfo[] BookList { get; set; }
 
         public frmGR(ILogger logger)
         {
@@ -61,9 +60,9 @@ namespace XRayBuilderGUI.UI
 
         private void frmGR_Load(object sender, EventArgs e)
         {
-            lblMessage1.Text = $"{BookList.Count} matches for this book were found on Goodreads.";
+            lblMessage1.Text = $"{BookList.Length} matches for this book were found on Goodreads.";
             cbResults.Items.Clear();
-            foreach (BookInfo book in BookList)
+            foreach (var book in BookList)
                 cbResults.Items.Add(book.Title);
             cbResults.SelectedIndex = 0;
         }

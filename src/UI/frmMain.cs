@@ -573,18 +573,21 @@ namespace XRayBuilderGUI.UI
 
                 try
                 {
-                    var books = (await _dataSource.SearchBookAsync(metadata.Author, metadata.Title))?.ToList();
+                    var books = (await _dataSource.SearchBookAsync(metadata.Author, metadata.Title))?.ToArray();
                     string bookUrl;
-                    if (books == null || books.Count <= 0)
+                    if (books == null || books.Length <= 0)
                     {
                         _logger.Log($"Unable to find this book on {_dataSource.Name}!\nEnsure the book's title ({metadata.Title}) is accurate!");
                         return;
                     }
 
-                    if (books.Count == 1)
+                    if (books.Length == 1)
                         bookUrl = books[0].DataUrl;
                     else
                     {
+                        books = books.OrderByDescending(book => book.Reviews)
+                            .ThenByDescending(book => book.Editions)
+                            .ToArray();
                         _logger.Log($"Warning: Multiple results returned from {_dataSource.Name}...");
                         var frmG = new frmGR(_logger) { BookList = books };
                         frmG.ShowDialog();

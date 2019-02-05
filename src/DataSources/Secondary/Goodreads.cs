@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -131,6 +132,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
                 BookInfo book = new BookInfo("", "", "");
                 var title = bookNode.SelectSingleNode(".//div[@class='u-paddingBottomXSmall']/a");
                 book.Title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", "", RegexOptions.Compiled);
+                book.Title = WebUtility.HtmlDecode(book.Title);
                 book.GoodreadsId = ParseBookId(title.GetAttributeValue("href", ""));
                 // TODO: move this ASIN search somewhere else
                 if (!string.IsNullOrEmpty(book.GoodreadsId))

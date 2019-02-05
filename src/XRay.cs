@@ -392,12 +392,17 @@ namespace XRayBuilderGUI
             string punctuationMarks = string.Format(@"({0}s|{0})?{1}?[!\.?,""\);:]*{0}*{1}*{2}*", apostrophes, quotes, dashesEllipsis);
 
             int excerptId = 0;
-            HtmlDocument web = new HtmlDocument();
-            using (var streamReader = new StreamReader(rawMlStream, Encoding.Default))
+            var web = new HtmlDocument();
+            web.Load(rawMlStream, Encoding.Default);
+
+            rawMlStream.Seek(0, SeekOrigin.Begin);
+            // TODO: passing stream, doc, and contents probably not necessary)
+            using (var streamReader = new StreamReader(rawMlStream, Encoding.UTF8))
             {
                 var readContents = streamReader.ReadToEnd();
-                web.LoadHtml(readContents);
-                HandleChapters(rawMlStream.Length, web, readContents, safeShow);
+                var utf8Doc = new HtmlDocument();
+                utf8Doc.LoadHtml(readContents);
+                HandleChapters(rawMlStream.Length, utf8Doc, readContents, safeShow);
             }
 
             _logger.Log("Scanning book content...");
@@ -653,8 +658,8 @@ namespace XRayBuilderGUI
         {
             var leadingZerosRegex = new Regex(@"^0+(?=\d)", RegexOptions.Compiled);
             string tocHtml;
-            HtmlDocument tocDoc = new HtmlDocument();
-            HtmlNode toc = bookDoc.DocumentNode.SelectSingleNode(
+            var tocDoc = new HtmlDocument();
+            var toc = bookDoc.DocumentNode.SelectSingleNode(
                     "//reference[translate(@title,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='TABLE OF CONTENTS']");
             _chapters.Clear();
             //Find table of contents, using case-insensitive search
@@ -720,6 +725,24 @@ namespace XRayBuilderGUI
                 catch (Exception ex)
                 {
                     _logger.Log("Error searching for Calibre chapters: " + ex.Message);
+                }
+            }
+
+            // Try searching for Calibre's toc2 nodes
+            if (_chapters.Count == 0)
+            {
+                var tocNodes = bookDoc.DocumentNode.SelectNodes("//p[@class='toc2']");
+                foreach (var node in tocNodes)
+                {
+                    var position = node.StreamPosition;
+                    if (_chapters.Count > 0)
+                        _chapters[_chapters.Count - 1].End = position;
+                    _chapters.Add(new Chapter
+                    {
+                        Name = node.InnerText,
+                        Start = position,
+                        End = rawML.Length
+                    });
                 }
             }
 

@@ -96,35 +96,47 @@ namespace XRayBuilderGUI.DataSources.Amazon
                 results.AuthorAsin = ParseAsinFromUrl(properAuthor);
             }
 
-            if (string.IsNullOrEmpty(properAuthor) || properAuthor.IndexOf('/', 1) < 3 || string.IsNullOrEmpty(results.AuthorAsin))
+            if (node == null || string.IsNullOrEmpty(properAuthor) || properAuthor.IndexOf('/', 1) < 3 || string.IsNullOrEmpty(results.AuthorAsin))
             {
                 _logger.Log("Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: " + amazonAuthorSearchUrl);
                 return null;
             }
             properAuthor = properAuthor.Substring(1, properAuthor.IndexOf('/', 1) - 1);
             var authorAmazonWebsiteLocationLog = $"https://www.amazon.{TLD}/{properAuthor}/e/{results.AuthorAsin}";
-            var authorAmazonWebsiteLocation = @"https://www.amazon." + TLD + "/" + properAuthor + "/e/" + results.AuthorAsin +
-                                              "/ref=la_" + results.AuthorAsin +
-                                              "_rf_p_n_feature_browse-b_2?fst=as%3Aoff&rh=n%3A283155%2Cp_82%3A" +
-                                              results.AuthorAsin +
-                                              "%2Cp_n_feature_browse-bin%3A618073011&bbn=283155&ie=UTF8&qid=1432378570&rnid=618072011";
+            var authorAmazonWebsiteLocation = $"https://www.amazon.{TLD}{node.GetAttributeValue("href", "")}";
 
             curBook.AuthorAsin = results.AuthorAsin;
             _logger.Log($"Author page found on Amazon!\r\nAuthor's Amazon Page URL: {authorAmazonWebsiteLocationLog}");
 
             // Load Author's Amazon page
-            Stream authorPage;
-            try
+            var tempDoc = new HtmlDocument();
+            var authorPage = await HttpClient.GetStreamAsync(authorAmazonWebsiteLocation, cancellationToken);
+            tempDoc.Load(authorPage);
+
+            // Try to find the Kindle Edition link
+            // TODO: don't handle individual regions here...
+            if (TLD == "com")
             {
-                authorPage = await HttpClient.GetStreamAsync(authorAmazonWebsiteLocation, cancellationToken);
+                var kindleNode = tempDoc.DocumentNode.SelectSingleNode(".//a[@class='a-link-normal formatSelector']");
+                if (kindleNode != null && kindleNode.InnerText.Trim() == "Kindle Edition")
+                {
+                    authorPage = await HttpClient.GetStreamAsync($"https://www.amazon.com{kindleNode.GetAttributeValue("href", "")}", cancellationToken);
+                    tempDoc.Load(authorPage);
+                }
             }
-            catch
+            else if (TLD == "co.uk")
             {
-                // If page not found (on co.uk at least, the long form does not seem to work) fallback to short form
-                // and pray the formatting/item display suits our needs. If short form not found, crash back to caller.
-                authorPage = await HttpClient.GetStreamAsync(authorAmazonWebsiteLocationLog, cancellationToken);
+                var kindleNode = tempDoc.DocumentNode.SelectSingleNode(".//a[@class='a-link-normal']");
+                if (kindleNode != null && kindleNode.InnerText.Trim() == "Kindle Books")
+                {
+                    authorPage = await HttpClient.GetStreamAsync($"https://www.amazon.co.uk{kindleNode.GetAttributeValue("href", "")}", cancellationToken);
+                    tempDoc.Load(authorPage);
+                }
             }
-            results.AuthorHtmlDoc.Load(authorPage);
+
+            // Either use the new one w/ only Kindle editions or the original
+            results.AuthorHtmlDoc = tempDoc;
+
             return results;
         }
 
@@ -145,7 +157,6 @@ namespace XRayBuilderGUI.DataSources.Amazon
 
         /// <summary>
         /// As of 2018-07-31, format changed. For some amount of time, keep both just in case.
-        /// TODO: Switch to Kindle section and grab only those instead
         /// </summary>
         public static List<BookInfo> GetAuthorBooksNew(AuthorSearchResults searchResults, string curTitle, string curAuthor, string TLD)
         {
@@ -193,7 +204,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
             foreach (var result in resultsNodes)
             {
                 if (!result.Id.StartsWith("result_")) continue;
-                var otherBook = result.SelectSingleNode(".//div[@class='a-row a-spacing-small']/a/h2");
+                var otherBook = result.SelectSingleNode(".//div[@class='a-row a-spacing-small']/div/a/h2");
                 if (otherBook == null) continue;
                 //Exclude the current book title from other books search
                 if (otherBook.InnerText.ContainsIgnorecase(curTitle) || RegexIgnoreHeaders.IsMatch(otherBook.InnerText))
@@ -201,7 +212,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
                 var name = otherBook.InnerText.Trim();
                 otherBook = result.SelectSingleNode(".//*[@title='Kindle Edition']");
                 var asin = ParseAsinFromUrl(otherBook.OuterHtml);
-                if (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(asin))
+                if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(asin))
                     bookList.Add(new BookInfo(name, curAuthor, asin));
             }
             // If no kindle books returned, try the top carousel

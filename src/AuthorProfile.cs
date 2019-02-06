@@ -189,8 +189,9 @@ namespace XRayBuilderGUI
 
             logger.Log("Gathering author's other books...");
 
-            var bookList = Amazon.GetAuthorBooks(searchResults, request.Book.Title, request.Book.Author, request.Settings.AmazonTld)
-                ?? Amazon.GetAuthorBooksNew(searchResults, request.Book.Title, request.Book.Author, request.Settings.AmazonTld);
+            var bookList = Amazon.GetAuthorBooks(searchResults, request.Book.Title, request.Book.Author, request.Settings.AmazonTld);
+            if (bookList == null || !bookList.Any())
+                bookList = Amazon.GetAuthorBooksNew(searchResults, request.Book.Title, request.Book.Author, request.Settings.AmazonTld);
             var bookBag = new ConcurrentBag<BookInfo>();
             if (bookList != null)
             {

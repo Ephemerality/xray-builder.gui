@@ -45,7 +45,6 @@ namespace XRayBuilderGUI.Unpack
                 fs.Seek(PDB._recInfo[i].RecordDataOffset, SeekOrigin.Begin);
                 fs.Read(buffer, 0, buffer.Length);
                 string imgtype = coverOffset == -1 ? "" : get_image_type(buffer);
-                var test = Encoding.ASCII.GetString(buffer);
                 if (imgtype != "")
                 {
                     if (firstImage == -1) firstImage = i;

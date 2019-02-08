@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using XRayBuilderGUI.DataSources;
 using XRayBuilderGUI.DataSources.Amazon;
 
 namespace XRayBuilderGUI
@@ -86,17 +87,26 @@ namespace XRayBuilderGUI
             // TODO: Separate out biography stuff
             string biography = null;
             var bioFile = Environment.CurrentDirectory + @"\ext\" + authorAsin + ".bio";
+            var readFromFile = false;
             if (request.Settings.SaveBio && File.Exists(bioFile))
             {
                 biography = ReadBio(bioFile);
                 if (string.IsNullOrEmpty(biography))
                     return null;
+                readFromFile = true;
             }
 
             if (string.IsNullOrEmpty(biography))
             {
-                // TODO: Let users edit bio in same style as chapters and aliases
-                HtmlNode bio = Amazon.GetBioNode(searchResults, request.Settings.AmazonTld);
+                HtmlNode bio = null;
+                try
+                {
+                    bio = Amazon.GetBioNode(searchResults, request.Settings.AmazonTld);
+                }
+                catch (FormatChangedException)
+                {
+                    logger.Log("Warning: Amazon biography format changed or no biography available for this author.", LogLevel.Warn);
+                }
                 //Trim authour biography to less than 1000 characters and/or replace more problematic characters.
                 if (bio?.InnerText.Trim().Length > 0)
                 {
@@ -113,30 +123,38 @@ namespace XRayBuilderGUI
                         biography = bio.InnerText;
 
                     biography = biography.Clean();
+                    if (request.Settings.SaveBio)
+                        File.WriteAllText(bioFile, biography);
                     logger.Log("Author biography found on Amazon!");
                 }
             }
-            else
+
+            var message = biography == null
+                ? "No author biography found on Amazon!\r\nWould you like to create one?"
+                : readFromFile
+                    ? "Would you like to edit the existing biography?"
+                    : "Author biography found on Amazon! Would you like to edit it?";
+
+            // TODO: No dialogs here
+
+            if (System.Windows.Forms.DialogResult.Yes ==
+                System.Windows.Forms.MessageBox.Show(
+                    message, "Biography",
+                    System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question,
+                    System.Windows.Forms.MessageBoxDefaultButton.Button2))
             {
-                // TODO: No dialogs here
-                File.WriteAllText(bioFile, string.Empty);
-                if (System.Windows.Forms.DialogResult.Yes ==
-                    System.Windows.Forms.MessageBox.Show(
-                        "No author biography found on Amazon!\r\nWould you like to create a biography?", "Biography",
-                        System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question,
-                        System.Windows.Forms.MessageBoxDefaultButton.Button2))
-                {
-                    Functions.RunNotepad(bioFile);
-                    biography = ReadBio(bioFile);
-                    if (string.IsNullOrEmpty(biography))
-                        return null;
-                }
-                else
-                {
-                    biography = "No author biography found on Amazon!";
-                    logger.Log("An error occurred finding the author biography on Amazon.");
-                }
+                if (!File.Exists(bioFile))
+                    File.WriteAllText(bioFile, string.Empty);
+                Functions.RunNotepad(bioFile);
+                biography = ReadBio(bioFile);
             }
+
+            if (string.IsNullOrEmpty(biography))
+            {
+                biography = "No author biography found locally or on Amazon!";
+                logger.Log("An error occurred finding the author biography.");
+            }
+
             if (request.Settings.SaveBio)
             {
                 if (!File.Exists(bioFile))

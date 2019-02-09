@@ -22,6 +22,7 @@ namespace XRayBuilderTests
                         EditBiography = false
                     }
                 }, new Logger());
+            Assert.NotNull(response);
             Assert.AreEqual(response.Asin, "B000APIGH4");
             Assert.AreEqual(response.Name, "George R. R. Martin");
             Assert.NotNull(response.Image);

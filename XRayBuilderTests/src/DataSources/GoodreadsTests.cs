@@ -55,7 +55,7 @@ namespace XRayBuilderTests.DataSources
         public async Task SearchBookAsinTest()
         {
             var gr = new Goodreads(new Logger());
-            var result = await gr.SearchBookASIN("13497");
+            var result = await gr.SearchBookASINById("13497");
             Assert.AreEqual(result, "B000FCKGPC");
         }
 

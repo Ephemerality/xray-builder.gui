@@ -29,8 +29,8 @@ namespace XRayBuilderGUI.DataSources.Secondary
             _logger = logger;
         }
 
-        private string ParseBookId(string input) => _regexBookId.Match(input).Groups["id"].Value;
-        private static string BookUrl(string id) => string.IsNullOrEmpty(id) ? null : $"https://www.goodreads.com/book/show/{id}";
+        public string ParseBookIdFromUrl(string input) => _regexBookId.Match(input).Groups["id"].Value;
+        public static string BookUrl(string id) => string.IsNullOrEmpty(id) ? null : $"https://www.goodreads.com/book/show/{id}";
         private string SearchUrl(string author, string title) => $"https://www.goodreads.com/search?q={author}%20{title}";
 
         public async Task<IEnumerable<BookInfo>> SearchBookAsync(string author, string title, CancellationToken cancellationToken = default)
@@ -61,7 +61,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
                 BookInfo newBook = new BookInfo(cleanTitle, authorNode.InnerText.Trim(), null);
 
-                newBook.GoodreadsId = ParseBookId(link.OuterHtml);
+                newBook.GoodreadsId = ParseBookIdFromUrl(link.OuterHtml);
                 newBook.DataUrl = BookUrl(newBook.GoodreadsId);
 
                 newBook.ImageUrl = coverNode.GetAttributeValue("src", "");
@@ -133,10 +133,10 @@ namespace XRayBuilderGUI.DataSources.Secondary
                 var title = bookNode.SelectSingleNode(".//div[@class='u-paddingBottomXSmall']/a");
                 book.Title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", "", RegexOptions.Compiled);
                 book.Title = WebUtility.HtmlDecode(book.Title);
-                book.GoodreadsId = ParseBookId(title.GetAttributeValue("href", ""));
+                book.GoodreadsId = ParseBookIdFromUrl(title.GetAttributeValue("href", ""));
                 // TODO: move this ASIN search somewhere else
                 if (!string.IsNullOrEmpty(book.GoodreadsId))
-                    book.Asin = await SearchBookASIN(book.GoodreadsId, cancellationToken).ConfigureAwait(false);
+                    book.Asin = await SearchBookASINById(book.GoodreadsId, cancellationToken).ConfigureAwait(false);
                 book.Author = bookNode.SelectSingleNode(".//span[@itemprop='author']//a")?.InnerText.Trim() ?? "";
                 return book;
             }
@@ -159,7 +159,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
         }
 
         // Search Goodreads for possible kindle edition of book and return ASIN.
-        public async Task<string> SearchBookASIN(string id, CancellationToken cancellationToken = default)
+        public async Task<string> SearchBookASINById(string id, CancellationToken cancellationToken = default)
         {
             try
             {

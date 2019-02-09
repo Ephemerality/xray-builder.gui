@@ -674,7 +674,9 @@ namespace XRayBuilderGUI.UI
 
             if (txtXMLFile.Text == "") txtXMLFile.Text = _settings.xmlFile;
 
-            foreach (var dir in new [] { "out", "log", "dmp", "tmp" })
+            // TODO: Maybe do something about these paths
+            // TODO: ExtLoader or something?
+            foreach (var dir in new [] { "out", "log", "dmp", "tmp", "ext" })
                 Directory.CreateDirectory(Environment.CurrentDirectory + $"\\{dir}");
 
             if (_settings.outDir == "")

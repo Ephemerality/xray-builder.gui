@@ -73,12 +73,18 @@ namespace XRayBuilderGUI.DataSources.Amazon
             var node = results.AuthorHtmlDoc.DocumentNode.SelectSingleNode("//*[@id='result_1']");
             if (node == null || !node.OuterHtml.Contains("/e/B"))
             {
-                _logger.Log($"An error occurred finding author's page on Amazon.{TLD}." +
-                                  "\r\nUnable to create Author Profile." +
-                                  "\r\nEnsure the author metadata field matches the author's name exactly." +
-                                  $"\r\nSearch results can be viewed at {amazonAuthorSearchUrl}" +
-                                  "\r\nSometimes Amazon just doesn't return the author and trying a few times will work.");
-                return null;
+                // If the wrong format of search page is returned, try to find author in the small links under book titles
+                var possibleNodes = results.AuthorHtmlDoc.DocumentNode.SelectNodes(".//a[@class='a-size-base a-link-normal']")
+                    ?.Where(possibleNode => possibleNode.InnerText != null && possibleNode.InnerText.Trim().Equals(newAuthor, StringComparison.InvariantCultureIgnoreCase));
+                if (possibleNodes == null || (node = possibleNodes.FirstOrDefault()) == null)
+                {
+                    _logger.Log($"An error occurred finding author's page on Amazon.{TLD}." +
+                                "\r\nUnable to create Author Profile." +
+                                "\r\nEnsure the author metadata field matches the author's name exactly." +
+                                $"\r\nSearch results can be viewed at {amazonAuthorSearchUrl}" +
+                                "\r\nSometimes Amazon just doesn't return the author and trying a few times will work.");
+                    return null;
+                }
             }
 
             var properAuthor = "";

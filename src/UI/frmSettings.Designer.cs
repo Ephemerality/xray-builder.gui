@@ -78,6 +78,7 @@
             this.chkEnableEdit = new System.Windows.Forms.CheckBox();
             this.tabPgAmazon = new System.Windows.Forms.TabPage();
             this.gbAmazonPrefs = new System.Windows.Forms.GroupBox();
+            this.chkDownloadSA = new System.Windows.Forms.CheckBox();
             this.chkPromptAsin = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.cmbRegion = new System.Windows.Forms.ComboBox();
@@ -88,7 +89,8 @@
             this.txtPen = new System.Windows.Forms.TextBox();
             this.lblPen = new System.Windows.Forms.Label();
             this.listSettings = new System.Windows.Forms.ListBox();
-            this.chkDownloadSA = new System.Windows.Forms.CheckBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.chkKindleSearch = new System.Windows.Forms.CheckBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.gbProcess.SuspendLayout();
@@ -108,6 +110,7 @@
             this.tabPgAmazon.SuspendLayout();
             this.gbAmazonPrefs.SuspendLayout();
             this.gbDetails.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSupport
@@ -177,6 +180,7 @@
             // 
             // tabPgGeneral
             // 
+            this.tabPgGeneral.Controls.Add(this.groupBox1);
             this.tabPgGeneral.Controls.Add(this.gbProcess);
             this.tabPgGeneral.Controls.Add(this.gbUnpack);
             this.tabPgGeneral.Controls.Add(this.gbGeneral);
@@ -633,6 +637,16 @@
             this.gbAmazonPrefs.TabStop = false;
             this.gbAmazonPrefs.Text = "Preferences";
             // 
+            // chkDownloadSA
+            // 
+            this.chkDownloadSA.AutoSize = true;
+            this.chkDownloadSA.Location = new System.Drawing.Point(14, 68);
+            this.chkDownloadSA.Name = "chkDownloadSA";
+            this.chkDownloadSA.Size = new System.Drawing.Size(137, 17);
+            this.chkDownloadSA.TabIndex = 28;
+            this.chkDownloadSA.Text = "Download Start Actions";
+            this.chkDownloadSA.UseVisualStyleBackColor = true;
+            // 
             // chkPromptAsin
             // 
             this.chkPromptAsin.AutoSize = true;
@@ -739,15 +753,25 @@
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
             // 
-            // chkDownloadSA
+            // groupBox1
             // 
-            this.chkDownloadSA.AutoSize = true;
-            this.chkDownloadSA.Location = new System.Drawing.Point(14, 68);
-            this.chkDownloadSA.Name = "chkDownloadSA";
-            this.chkDownloadSA.Size = new System.Drawing.Size(137, 17);
-            this.chkDownloadSA.TabIndex = 28;
-            this.chkDownloadSA.Text = "Download Start Actions";
-            this.chkDownloadSA.UseVisualStyleBackColor = true;
+            this.groupBox1.Controls.Add(this.chkKindleSearch);
+            this.groupBox1.Location = new System.Drawing.Point(6, 208);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(378, 48);
+            this.groupBox1.TabIndex = 39;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Data Provider";
+            // 
+            // chkKindleSearch
+            // 
+            this.chkKindleSearch.AutoSize = true;
+            this.chkKindleSearch.Location = new System.Drawing.Point(14, 19);
+            this.chkKindleSearch.Name = "chkKindleSearch";
+            this.chkKindleSearch.Size = new System.Drawing.Size(164, 17);
+            this.chkKindleSearch.TabIndex = 34;
+            this.chkKindleSearch.Text = "Only search for Kindle Edition";
+            this.chkKindleSearch.UseVisualStyleBackColor = true;
             // 
             // frmSettings
             // 
@@ -802,6 +826,8 @@
             this.gbAmazonPrefs.PerformLayout();
             this.gbDetails.ResumeLayout(false);
             this.gbDetails.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -867,5 +893,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtMinClipLen;
         private System.Windows.Forms.CheckBox chkDownloadSA;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.CheckBox chkKindleSearch;
     }
 }

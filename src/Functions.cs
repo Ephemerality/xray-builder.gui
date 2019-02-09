@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using HtmlAgilityPack;
@@ -428,6 +429,13 @@ namespace XRayBuilderGUI
 
             var match = regex.Match(input);
             return match.Success ? match : null;
+        }
+
+        // https://stackoverflow.com/a/50244393
+        public static async Task<IEnumerable<T>> Where<T>(this IEnumerable<T> source, Func<T, Task<bool>> predicate)
+        {
+            var results = await Task.WhenAll(source.Select(async x => (x, await predicate(x))));
+            return results.Where(x => x.Item2).Select(x => x.Item1);
         }
     }
 

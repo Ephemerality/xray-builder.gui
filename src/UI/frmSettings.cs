@@ -160,6 +160,8 @@ namespace XRayBuilderGUI.UI
                                                "in a series cannot automatically be found.\r\n" +
                                                "This is useful if you have the metadata available\r\n" +
                                                "in Calibre, and may help file creation.");
+            toolTip1.SetToolTip(chkKindleSearch, "If enabled, search results will be filtered so that non-Kindle Edition books are removed");
+            toolTip1.SetToolTip(chkEditBiography, "If enabled, allows editing the Author's biography before it's used.");
 
             IList <AmazonRegion> regions = new List<AmazonRegion>(regionTLDs.Count);
             foreach (KeyValuePair<string, string> r in regionTLDs)

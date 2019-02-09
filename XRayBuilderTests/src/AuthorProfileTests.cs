@@ -18,7 +18,8 @@ namespace XRayBuilderTests
                     {
                         AmazonTld = "com",
                         SaveBio = false,
-                        UseNewVersion = true
+                        UseNewVersion = true,
+                        EditBiography = false
                     }
                 }, new Logger());
             Assert.AreEqual(response.Asin, "B000APIGH4");
@@ -40,7 +41,8 @@ namespace XRayBuilderTests
                     {
                         AmazonTld = "co.uk",
                         SaveBio = false,
-                        UseNewVersion = true
+                        UseNewVersion = true,
+                        EditBiography = false
                     }
                 }, new Logger());
             Assert.AreEqual(response.Asin, "B000APIGH4");

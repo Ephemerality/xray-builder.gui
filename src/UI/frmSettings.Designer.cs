@@ -36,6 +36,8 @@
             this.lblSeperator = new System.Windows.Forms.Label();
             this.tabSettings = new System.Windows.Forms.TabControl();
             this.tabPgGeneral = new System.Windows.Forms.TabPage();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.chkKindleSearch = new System.Windows.Forms.CheckBox();
             this.gbProcess = new System.Windows.Forms.GroupBox();
             this.chkPageCount = new System.Windows.Forms.CheckBox();
             this.gbUnpack = new System.Windows.Forms.GroupBox();
@@ -89,10 +91,10 @@
             this.txtPen = new System.Windows.Forms.TextBox();
             this.lblPen = new System.Windows.Forms.Label();
             this.listSettings = new System.Windows.Forms.ListBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.chkKindleSearch = new System.Windows.Forms.CheckBox();
+            this.chkEditBiography = new System.Windows.Forms.CheckBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.gbProcess.SuspendLayout();
             this.gbUnpack.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -110,7 +112,6 @@
             this.tabPgAmazon.SuspendLayout();
             this.gbAmazonPrefs.SuspendLayout();
             this.gbDetails.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSupport
@@ -191,6 +192,26 @@
             this.tabPgGeneral.TabIndex = 0;
             this.tabPgGeneral.Text = "tabPage1";
             this.tabPgGeneral.UseVisualStyleBackColor = true;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.chkKindleSearch);
+            this.groupBox1.Location = new System.Drawing.Point(6, 208);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(378, 48);
+            this.groupBox1.TabIndex = 39;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Data Provider";
+            // 
+            // chkKindleSearch
+            // 
+            this.chkKindleSearch.AutoSize = true;
+            this.chkKindleSearch.Location = new System.Drawing.Point(14, 19);
+            this.chkKindleSearch.Name = "chkKindleSearch";
+            this.chkKindleSearch.Size = new System.Drawing.Size(164, 17);
+            this.chkKindleSearch.TabIndex = 34;
+            this.chkKindleSearch.Text = "Only search for Kindle Edition";
+            this.chkKindleSearch.UseVisualStyleBackColor = true;
             // 
             // gbProcess
             // 
@@ -625,6 +646,7 @@
             // 
             // gbAmazonPrefs
             // 
+            this.gbAmazonPrefs.Controls.Add(this.chkEditBiography);
             this.gbAmazonPrefs.Controls.Add(this.chkDownloadSA);
             this.gbAmazonPrefs.Controls.Add(this.chkPromptAsin);
             this.gbAmazonPrefs.Controls.Add(this.label1);
@@ -753,25 +775,15 @@
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
             // 
-            // groupBox1
+            // chkEditBiography
             // 
-            this.groupBox1.Controls.Add(this.chkKindleSearch);
-            this.groupBox1.Location = new System.Drawing.Point(6, 208);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(378, 48);
-            this.groupBox1.TabIndex = 39;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Data Provider";
-            // 
-            // chkKindleSearch
-            // 
-            this.chkKindleSearch.AutoSize = true;
-            this.chkKindleSearch.Location = new System.Drawing.Point(14, 19);
-            this.chkKindleSearch.Name = "chkKindleSearch";
-            this.chkKindleSearch.Size = new System.Drawing.Size(164, 17);
-            this.chkKindleSearch.TabIndex = 34;
-            this.chkKindleSearch.Text = "Only search for Kindle Edition";
-            this.chkKindleSearch.UseVisualStyleBackColor = true;
+            this.chkEditBiography.AutoSize = true;
+            this.chkEditBiography.Location = new System.Drawing.Point(153, 45);
+            this.chkEditBiography.Name = "chkEditBiography";
+            this.chkEditBiography.Size = new System.Drawing.Size(126, 17);
+            this.chkEditBiography.TabIndex = 29;
+            this.chkEditBiography.Text = "Edit author biography";
+            this.chkEditBiography.UseVisualStyleBackColor = true;
             // 
             // frmSettings
             // 
@@ -797,6 +809,8 @@
             this.Load += new System.EventHandler(this.frmSettingsNew_Load);
             this.tabSettings.ResumeLayout(false);
             this.tabPgGeneral.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.gbProcess.ResumeLayout(false);
             this.gbProcess.PerformLayout();
             this.gbUnpack.ResumeLayout(false);
@@ -826,8 +840,6 @@
             this.gbAmazonPrefs.PerformLayout();
             this.gbDetails.ResumeLayout(false);
             this.gbDetails.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -895,5 +907,6 @@
         private System.Windows.Forms.CheckBox chkDownloadSA;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox chkKindleSearch;
+        private System.Windows.Forms.CheckBox chkEditBiography;
     }
 }

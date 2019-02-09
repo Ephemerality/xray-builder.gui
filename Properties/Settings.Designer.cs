@@ -418,5 +418,17 @@ namespace XRayBuilderGUI.Properties {
                 this["filterKindleEdition"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool editBiography {
+            get {
+                return ((bool)(this["editBiography"]));
+            }
+            set {
+                this["editBiography"] = value;
+            }
+        }
     }
 }

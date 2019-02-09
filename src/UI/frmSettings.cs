@@ -90,6 +90,7 @@ namespace XRayBuilderGUI.UI
             chkPromptAsin.Checked = Properties.Settings.Default.promptASIN;
             chkDownloadSA.Checked = Properties.Settings.Default.downloadSA;
             chkKindleSearch.Checked = Properties.Settings.Default.filterKindleEdition;
+            chkEditBiography.Checked = Properties.Settings.Default.editBiography;
 
             // Added \r\n to show smaller tooltips
             ToolTip toolTip1 = new ToolTip();
@@ -224,6 +225,7 @@ namespace XRayBuilderGUI.UI
             Properties.Settings.Default.promptASIN = chkPromptAsin.Checked;
             Properties.Settings.Default.downloadSA = chkDownloadSA.Checked;
             Properties.Settings.Default.filterKindleEdition = chkKindleSearch.Checked;
+            Properties.Settings.Default.editBiography = chkEditBiography.Checked;
             Properties.Settings.Default.Save();
 
             Close();

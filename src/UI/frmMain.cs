@@ -372,7 +372,8 @@ namespace XRayBuilderGUI.UI
                     {
                         AmazonTld = _settings.amazonTLD,
                         SaveBio = _settings.saveBio,
-                        UseNewVersion = _settings.useNewVersion
+                        UseNewVersion = _settings.useNewVersion,
+                        EditBiography = _settings.editBiography
                     }
                 }, _logger, _cancelTokens.Token);
 

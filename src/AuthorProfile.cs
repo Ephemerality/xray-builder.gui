@@ -137,7 +137,8 @@ namespace XRayBuilderGUI
 
             // TODO: No dialogs here
 
-            if (System.Windows.Forms.DialogResult.Yes ==
+            if (request.Settings.EditBiography
+                && System.Windows.Forms.DialogResult.Yes ==
                 System.Windows.Forms.MessageBox.Show(
                     message, "Biography",
                     System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question,
@@ -255,6 +256,7 @@ namespace XRayBuilderGUI
             public string AmazonTld { get; set; }
             public bool UseNewVersion { get; set; }
             public bool SaveBio { get; set; }
+            public bool EditBiography { get; set; }
         }
 
         public class Request

@@ -89,7 +89,7 @@ namespace XRayBuilderGUI.UI
                 rdoShelfari.Checked = true;
             chkPromptAsin.Checked = Properties.Settings.Default.promptASIN;
             chkDownloadSA.Checked = Properties.Settings.Default.downloadSA;
-            chkKindleSearch.Checked = Properties.Settings.Default.filterKindleEdition;
+            chkSearchAsin.Checked = Properties.Settings.Default.searchByAsin;
             chkEditBiography.Checked = Properties.Settings.Default.editBiography;
 
             // Added \r\n to show smaller tooltips
@@ -160,7 +160,7 @@ namespace XRayBuilderGUI.UI
                                                "in a series cannot automatically be found.\r\n" +
                                                "This is useful if you have the metadata available\r\n" +
                                                "in Calibre, and may help file creation.");
-            toolTip1.SetToolTip(chkKindleSearch, "If enabled, search results will be filtered so that non-Kindle Edition books are removed");
+            toolTip1.SetToolTip(chkSearchAsin, "If enabled, search results will be filtered so that non-Kindle Edition books are removed");
             toolTip1.SetToolTip(chkEditBiography, "If enabled, allows editing the Author's biography before it's used.");
 
             IList <AmazonRegion> regions = new List<AmazonRegion>(regionTLDs.Count);
@@ -226,7 +226,7 @@ namespace XRayBuilderGUI.UI
             Properties.Settings.Default.dataSource = rdoGoodreads.Checked ? "Goodreads" : "Shelfari";
             Properties.Settings.Default.promptASIN = chkPromptAsin.Checked;
             Properties.Settings.Default.downloadSA = chkDownloadSA.Checked;
-            Properties.Settings.Default.filterKindleEdition = chkKindleSearch.Checked;
+            Properties.Settings.Default.searchByAsin = chkSearchAsin.Checked;
             Properties.Settings.Default.editBiography = chkEditBiography.Checked;
             Properties.Settings.Default.Save();
 

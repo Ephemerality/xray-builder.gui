@@ -183,7 +183,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             return result;
         }
 
-        public Task<string> SearchBookASINById(string id, CancellationToken cancellationToken = default)
-            => Task.FromResult("");
+        public Task<IEnumerable<BookInfo>> SearchBookByAsinAsync(string asin, CancellationToken cancellationToken = default)
+            => Task.FromResult(Enumerable.Empty<BookInfo>());
     }
 }

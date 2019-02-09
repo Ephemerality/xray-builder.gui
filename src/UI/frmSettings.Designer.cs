@@ -37,7 +37,7 @@
             this.tabSettings = new System.Windows.Forms.TabControl();
             this.tabPgGeneral = new System.Windows.Forms.TabPage();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.chkKindleSearch = new System.Windows.Forms.CheckBox();
+            this.chkSearchAsin = new System.Windows.Forms.CheckBox();
             this.gbProcess = new System.Windows.Forms.GroupBox();
             this.chkPageCount = new System.Windows.Forms.CheckBox();
             this.gbUnpack = new System.Windows.Forms.GroupBox();
@@ -195,7 +195,7 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.chkKindleSearch);
+            this.groupBox1.Controls.Add(this.chkSearchAsin);
             this.groupBox1.Location = new System.Drawing.Point(6, 208);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(378, 48);
@@ -203,15 +203,15 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Data Provider";
             // 
-            // chkKindleSearch
+            // chkSearchAsin
             // 
-            this.chkKindleSearch.AutoSize = true;
-            this.chkKindleSearch.Location = new System.Drawing.Point(14, 19);
-            this.chkKindleSearch.Name = "chkKindleSearch";
-            this.chkKindleSearch.Size = new System.Drawing.Size(164, 17);
-            this.chkKindleSearch.TabIndex = 34;
-            this.chkKindleSearch.Text = "Only search for Kindle Edition";
-            this.chkKindleSearch.UseVisualStyleBackColor = true;
+            this.chkSearchAsin.AutoSize = true;
+            this.chkSearchAsin.Location = new System.Drawing.Point(14, 19);
+            this.chkSearchAsin.Name = "chkSearchAsin";
+            this.chkSearchAsin.Size = new System.Drawing.Size(222, 17);
+            this.chkSearchAsin.TabIndex = 34;
+            this.chkSearchAsin.Text = "Allow search by ASIN before author + title";
+            this.chkSearchAsin.UseVisualStyleBackColor = true;
             // 
             // gbProcess
             // 
@@ -906,7 +906,7 @@
         private System.Windows.Forms.TextBox txtMinClipLen;
         private System.Windows.Forms.CheckBox chkDownloadSA;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.CheckBox chkKindleSearch;
+        private System.Windows.Forms.CheckBox chkSearchAsin;
         private System.Windows.Forms.CheckBox chkEditBiography;
     }
 }

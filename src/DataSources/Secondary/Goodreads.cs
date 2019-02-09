@@ -32,6 +32,15 @@ namespace XRayBuilderGUI.DataSources.Secondary
         public string ParseBookIdFromUrl(string input) => _regexBookId.Match(input).Groups["id"].Value;
         public static string BookUrl(string id) => string.IsNullOrEmpty(id) ? null : $"https://www.goodreads.com/book/show/{id}";
         private string SearchUrl(string author, string title) => $"https://www.goodreads.com/search?q={author}%20{title}";
+        private string SearchUrlAsin(string asin) => $"https://www.goodreads.com/search?q={asin}";
+
+        public async Task<IEnumerable<BookInfo>> SearchBookByAsinAsync(string asin, CancellationToken cancellationToken = default)
+        {
+            asin = Uri.EscapeDataString(asin);
+
+            var goodreadsHtmlDoc = await HttpClient.GetPageAsync(SearchUrlAsin(asin), cancellationToken);
+            return ParseSearchResults(goodreadsHtmlDoc);
+        }
 
         public async Task<IEnumerable<BookInfo>> SearchBookAsync(string author, string title, CancellationToken cancellationToken = default)
         {
@@ -39,13 +48,14 @@ namespace XRayBuilderGUI.DataSources.Secondary
             author = Uri.EscapeDataString(Functions.FixAuthor(author));
 
             var goodreadsHtmlDoc = await HttpClient.GetPageAsync(SearchUrl(author, title), cancellationToken);
-            return !goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results")
-                ? ParseSearchResults(goodreadsHtmlDoc)
-                : null;
+            return ParseSearchResults(goodreadsHtmlDoc);
         }
 
         private IEnumerable<BookInfo> ParseSearchResults(HtmlDocument goodreadsHtmlDoc)
         {
+            if (goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results"))
+                yield break;
+
             HtmlNodeCollection resultNodes = goodreadsHtmlDoc.DocumentNode.SelectNodes("//tr[@itemtype='http://schema.org/Book']");
             //Return a list of search results
             foreach (HtmlNode link in resultNodes)

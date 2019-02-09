@@ -409,13 +409,13 @@ namespace XRayBuilderGUI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool filterKindleEdition {
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool searchByAsin {
             get {
-                return ((bool)(this["filterKindleEdition"]));
+                return ((bool)(this["searchByAsin"]));
             }
             set {
-                this["filterKindleEdition"] = value;
+                this["searchByAsin"] = value;
             }
         }
         

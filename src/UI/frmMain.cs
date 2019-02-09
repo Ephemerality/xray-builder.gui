@@ -574,30 +574,25 @@ namespace XRayBuilderGUI.UI
 
                 try
                 {
-                    var books = (await _dataSource.SearchBookAsync(metadata.Author, metadata.Title))?.ToArray();
-                    string bookUrl;
-                    if (books == null || books.Length <= 0)
+                    BookInfo[] books = new BookInfo[0];
+                    if (_settings.searchByAsin)
+                        books = (await _dataSource.SearchBookByAsinAsync(metadata.ASIN)).ToArray();
+
+                    if (books.Length <= 0)
                     {
-                        _logger.Log($"Unable to find this book on {_dataSource.Name}!\nEnsure the book's title ({metadata.Title}) is accurate!");
-                        return;
+                        books = (await _dataSource.SearchBookAsync(metadata.Author, metadata.Title)).ToArray();
+                        if (books.Length <= 0)
+                        {
+                            _logger.Log($"Unable to find this book on {_dataSource.Name}!\nEnsure the book's title ({metadata.Title}) is accurate!");
+                            return;
+                        }
                     }
 
+                    string bookUrl;
                     if (books.Length == 1)
                         bookUrl = books[0].DataUrl;
                     else
                     {
-                        if (_settings.filterKindleEdition)
-                        {
-                            books = (await books.Where(async book =>
-                            {
-                                if (string.IsNullOrEmpty(book.GoodreadsId))
-                                    return false;
-
-                                var result = await _dataSource.SearchBookASINById(book.GoodreadsId);
-                                return !string.IsNullOrEmpty(result);
-                            })).ToArray();
-                        }
-
                         books = books.OrderByDescending(book => book.Reviews)
                             .ThenByDescending(book => book.Editions)
                             .ToArray();

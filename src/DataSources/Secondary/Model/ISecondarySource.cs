@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using JetBrains.Annotations;
 
 namespace XRayBuilderGUI.DataSources.Secondary.Model
 {
@@ -14,7 +15,7 @@ namespace XRayBuilderGUI.DataSources.Secondary.Model
         Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default);
         Task<IEnumerable<XRay.Term>> GetTermsAsync(string dataUrl, IProgressBar progress, CancellationToken cancellationToken = default);
         Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default);
-        Task<string> SearchBookASINById(string id, CancellationToken cancellationToken = default);
+        [ItemNotNull] Task<IEnumerable<BookInfo>> SearchBookByAsinAsync(string asin, CancellationToken cancellationToken = default);
     }
 
     public class NotableClip

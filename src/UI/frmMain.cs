@@ -585,6 +585,18 @@ namespace XRayBuilderGUI.UI
                         bookUrl = books[0].DataUrl;
                     else
                     {
+                        if (_settings.filterKindleEdition)
+                        {
+                            books = (await books.Where(async book =>
+                            {
+                                if (string.IsNullOrEmpty(book.GoodreadsId))
+                                    return false;
+
+                                var result = await _dataSource.SearchBookASINById(book.GoodreadsId);
+                                return !string.IsNullOrEmpty(result);
+                            })).ToArray();
+                        }
+
                         books = books.OrderByDescending(book => book.Reviews)
                             .ThenByDescending(book => book.Editions)
                             .ToArray();

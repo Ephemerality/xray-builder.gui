@@ -830,11 +830,13 @@ namespace XRayBuilderGUI.UI
                 MessageBox.Show(@"Specified output directory does not exist.\r\nPlease review the settings page.", @"Output Directory Not found");
                 return;
             }
-            var metadata = await Task.Run(() => new Metadata(txtMobi.Text)).ConfigureAwait(false);
-            if (metadata != null)
+
+            _logger.Log("Extracting raw markup...");
+            using (var metadata = new Metadata(txtMobi.Text))
             {
-                _logger.Log("Extracted rawml successfully!\r\n");
-                metadata.Dispose();
+                var rawMlPath = UIFunctions.RawMlPath(Path.GetFileNameWithoutExtension(txtMobi.Text));
+                metadata.SaveRawMl(rawMlPath);
+                _logger.Log($"Extracted to {rawMlPath}!\r\n");
             }
         }
 

@@ -731,7 +731,7 @@ namespace XRayBuilderGUI
             // Try searching for Calibre's toc2 nodes
             if (_chapters.Count == 0)
             {
-                var tocNodes = bookDoc.DocumentNode.SelectNodes("//p[@class='toc2']");
+                var tocNodes = bookDoc.DocumentNode.SelectNodes("//p[@class='toc2']")?.ToArray() ?? new HtmlNode[0];
                 foreach (var node in tocNodes)
                 {
                     var position = node.StreamPosition;

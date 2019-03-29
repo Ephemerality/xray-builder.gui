@@ -7,13 +7,14 @@ namespace XRayBuilderTests
     [TestFixture]
     public class AuthorProfileTests
     {
-        [Test]
-        public async Task GenerateAsyncTest()
+        [TestCase(@"A Game of Thrones", "George R. R. Martin", "B000QCS8TW", "B000APIGH4", "George R. R. Martin")]
+        [TestCase(@"Tiamat's Wrath", "James S. A. Corey", "B07BVNVWL6", "B004AQ1W8Y", "James S. A. Corey")]
+        public async Task GenerateAsyncTest(string bookTitle, string authorName, string asin, string expectedAuthorAsin, string expectedAuthorName)
         {
             var response = await AuthorProfile.GenerateAsync(
                 new AuthorProfile.Request
                 {
-                    Book = new BookInfo("A Game of Thrones", "George R. R. Martin", "B000QCS8TW"),
+                    Book = new BookInfo(bookTitle, authorName, asin),
                     Settings = new AuthorProfile.Settings
                     {
                         AmazonTld = "com",
@@ -23,8 +24,8 @@ namespace XRayBuilderTests
                     }
                 }, new Logger());
             Assert.NotNull(response);
-            Assert.AreEqual(response.Asin, "B000APIGH4");
-            Assert.AreEqual(response.Name, "George R. R. Martin");
+            Assert.AreEqual(expectedAuthorAsin, response.Asin);
+            Assert.AreEqual(expectedAuthorName, response.Name);
             Assert.NotNull(response.Image);
             Assert.IsFalse(string.IsNullOrEmpty(response.ImageUrl));
             Assert.IsFalse(string.IsNullOrEmpty(response.Biography));

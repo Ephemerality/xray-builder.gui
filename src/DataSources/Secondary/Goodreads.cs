@@ -153,12 +153,15 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
             foreach (var bookNode in bookNodes)
             {
-                var bookIndex = bookNode.SelectSingleNode(".//div[@class='responsiveBook__header']")?.InnerText.ToLower();
+                var bookIndex = bookNode.SelectSingleNode(".//div[@class='responsiveBook__header']")
+                    ?? bookNode.ParentNode.FirstChild;
                 if (bookIndex == null) continue;
 
-                if (bookIndex == prevSearch && series.Previous == null)
+                var bookIndexText = bookIndex.InnerText.ToLower();
+
+                if (bookIndexText == prevSearch && series.Previous == null)
                     series.Previous = await ParseSeriesBook(bookNode);
-                else if (bookIndex == nextSearch)
+                else if (bookIndexText == nextSearch)
                     series.Next = await ParseSeriesBook(bookNode);
 
                 if (series.Previous != null && (series.Next != null || positionInt == totalInt))

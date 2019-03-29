@@ -22,7 +22,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
     public static class Amazon
     {
         private static readonly Regex RegexAsin = new Regex("(?<asin>B[A-Z0-9]{9})", RegexOptions.Compiled);
-        private static readonly Regex RegexAsinUrl = new Regex("(/e/(?<asin>B\\w+)/|dp/(?<asin>B[A-Z0-9]{9})/|/gp/product/(?<asin>B[A-Z0-9]{9}))", RegexOptions.Compiled);
+        private static readonly Regex RegexAsinUrl = new Regex("(/e/(?<asin>B\\w+)[/?]|dp/(?<asin>B[A-Z0-9]{9})/|/gp/product/(?<asin>B[A-Z0-9]{9}))", RegexOptions.Compiled);
         private static readonly Regex RegexIgnoreHeaders = new Regex(@"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         public static bool IsAsin(string asin) => Regex.IsMatch(asin, "^B[A-Z0-9]{9}$");
@@ -70,12 +70,15 @@ namespace XRayBuilderGUI.DataSources.Amazon
                     + $"You can try visiting Amazon.{TLD} in a real browser first, try another region, or try again later.");
             }
             // Try to find Author's page from Amazon search
+            var properAuthor = "";
+            HtmlNode[] possibleNodes = null;
             var node = results.AuthorHtmlDoc.DocumentNode.SelectSingleNode("//*[@id='result_1']");
             if (node == null || !node.OuterHtml.Contains("/e/B"))
             {
                 // If the wrong format of search page is returned, try to find author in the small links under book titles
-                var possibleNodes = results.AuthorHtmlDoc.DocumentNode.SelectNodes(".//a[@class='a-size-base a-link-normal']")
-                    ?.Where(possibleNode => possibleNode.InnerText != null && possibleNode.InnerText.Trim().Equals(newAuthor, StringComparison.InvariantCultureIgnoreCase));
+                possibleNodes = results.AuthorHtmlDoc.DocumentNode.SelectNodes(".//a[@class='a-size-base a-link-normal']")
+                    ?.Where(possibleNode => possibleNode.InnerText != null && possibleNode.InnerText.Trim().Equals(newAuthor, StringComparison.InvariantCultureIgnoreCase))
+                    .ToArray();
                 if (possibleNodes == null || (node = possibleNodes.FirstOrDefault()) == null)
                 {
                     _logger.Log($"An error occurred finding author's page on Amazon.{TLD}." +
@@ -87,9 +90,15 @@ namespace XRayBuilderGUI.DataSources.Amazon
                 }
             }
 
-            var properAuthor = "";
+            if (possibleNodes != null && possibleNodes.Any())
+            {
+                // TODO Present a list of these to choose from
+                node = possibleNodes.First();
+                properAuthor = node.GetAttributeValue("href", "");
+                results.AuthorAsin = ParseAsinFromUrl(properAuthor);
+            }
             // Check for typical search results, second item is the author page
-            if ((node = node.SelectSingleNode("//*[@id='result_1']/div/div/div/div/a")) != null)
+            else if ((node = node.SelectSingleNode("//*[@id='result_1']/div/div/div/div/a")) != null)
             {
                 properAuthor = node.GetAttributeValue("href", "");
                 results.AuthorAsin = node.GetAttributeValue("data-asin", null)

@@ -576,7 +576,7 @@ namespace XRayBuilderGUI.UI
                 {
                     BookInfo[] books = new BookInfo[0];
                     if (_settings.searchByAsin)
-                        books = (await _dataSource.SearchBookByAsinAsync(metadata.ASIN)).ToArray();
+                        books = (await _dataSource.SearchBookByAsinAsync(metadata.Asin)).ToArray();
 
                     if (books.Length <= 0)
                     {
@@ -832,7 +832,7 @@ namespace XRayBuilderGUI.UI
             }
 
             _logger.Log("Extracting raw markup...");
-            using (var metadata = new Metadata(txtMobi.Text))
+            using (var metadata = MetadataLoader.Load(txtMobi.Text))
             {
                 var rawMlPath = UIFunctions.RawMlPath(Path.GetFileNameWithoutExtension(txtMobi.Text));
                 metadata.SaveRawMl(rawMlPath);

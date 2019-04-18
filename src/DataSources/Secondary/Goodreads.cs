@@ -304,8 +304,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
             // check how many pages there are (find previous page button, get parent div, take all children of that, 2nd last one should be the max page count
             HtmlNode maxPageNode = initialPage.DocumentNode.SelectSingleNode("//span[contains(@class,'previous_page')]/parent::div/*[last()-1]");
-            if (maxPageNode == null) return null;
-            if (!int.TryParse(maxPageNode.InnerHtml, out var maxPages))
+            if (!int.TryParse(maxPageNode?.InnerHtml, out var maxPages))
                 maxPages = 1;
 
             IEnumerable<NotableClip> ParseQuotePage(HtmlDocument quoteDoc)
@@ -327,7 +326,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
             quoteBag.Add(ParseQuotePage(initialPage));
             progress?.Set(1, maxPages);
-            await Enumerable.Range(2, maxPages).ParallelForEachAsync(async page =>
+            await Enumerable.Range(2, maxPages - 1).ParallelForEachAsync(async page =>
             {
                 var quotePage = await HttpClient.GetPageAsync(string.Format(quoteURL, page), cancellationToken);
                 quoteBag.Add(ParseQuotePage(quotePage));

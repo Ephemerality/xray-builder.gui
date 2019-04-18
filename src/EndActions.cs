@@ -528,8 +528,8 @@ namespace XRayBuilderGUI
                 }
             };
             baseStartActions.Data.AuthorSubscriptions = baseStartActions.Data.FollowSubscriptions;
-            baseStartActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMPASSAGES%", curBook.notableClips.Count.ToString());
-            baseStartActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMHIGHLIGHTS%", curBook.notableClips.Sum(c => c.Likes).ToString());
+            baseStartActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMPASSAGES%", $"{curBook.notableClips?.Count ?? 0}");
+            baseStartActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMHIGHLIGHTS%", $"{curBook.notableClips?.Sum(c => c.Likes) ?? 0}");
             baseStartActions.Data.GrokShelfInfo.Asin = curBook.Asin;
             baseStartActions.Data.BookDescription = Extensions.BookInfoToBook(curBook, true);
             baseStartActions.Data.CurrentBook = baseStartActions.Data.BookDescription;

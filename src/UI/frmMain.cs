@@ -780,6 +780,8 @@ namespace XRayBuilderGUI.UI
             _tooltip.SetToolTip(txtAsin, Amazon.Url(_settings.amazonTLD, txtAsin.Text));
 
             checkFiles(metadata.Author, metadata.Title, metadata.Asin);
+            btnBuild.Enabled = metadata.RawMlSupported;
+            btnOneClick.Enabled = metadata.RawMlSupported;
 
             try
             {

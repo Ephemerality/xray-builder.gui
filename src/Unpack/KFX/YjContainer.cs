@@ -860,6 +860,8 @@ namespace XRayBuilderGUI.Unpack.KFX
             throw new NotSupportedException();
         }
 
+        public bool RawMlSupported { get; } = false;
+
         public void GetBookNavigation()
         {
             var bookNav = Entities.ValueOrDefault<IonList>("$389");

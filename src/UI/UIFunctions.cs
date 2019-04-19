@@ -140,7 +140,7 @@ namespace XRayBuilderGUI.UI
                         "This can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n");
                 }
 
-                if (saveRawML)
+                if (saveRawML && metadata.RawMlSupported)
                 {
                     _logger.Log("Saving rawML to dmp directory...");
                     metadata.SaveRawMl(RawMlPath(Path.GetFileNameWithoutExtension(mobiFile)));

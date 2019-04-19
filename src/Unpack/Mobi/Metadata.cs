@@ -96,6 +96,7 @@ namespace XRayBuilderGUI.Unpack.Mobi
         public string CdeContentType => _mobiHeader.exthHeader.CDEType;
 
         public void UpdateCdeContentType(FileStream fs) => _mobiHeader.exthHeader.UpdateCdeContentType(fs);
+        public bool RawMlSupported { get; } = true;
 
         /// <summary>
         /// Throws <see cref="EncryptedBookException"/> if DRM is enabled.

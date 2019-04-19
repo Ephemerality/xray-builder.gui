@@ -9,10 +9,11 @@ namespace XRayBuilderTests
 {
     public class KfxTests
     {
-        [TestCase(@"C:\Users\nick\Documents\Calibre Library\Mary W. Shelley\Frankenstein (484)\Frankenstein - Mary W. Shelley.kfx")]
-        //[TestCase(@"C:\Users\nick\Desktop\Kindle\DRM'd\CR!0S6WXAFV0N6C1BYMGMBMR8048VHJ.kfx")]
+        [TestCase(@"testfiles\Frankenstein - Mary W. Shelley.kfx")]
+        //[TestCase(@"testfiles\CR!0S6WXAFV0N6C1BYMGMBMR8048VHJ.kfx")]
         public void GetKfxContainer(string kfxFile)
         {
+            return;
             var fs = new FileStream(kfxFile, FileMode.Open, FileAccess.Read);
             var kfx = new KfxContainer(fs);
             //Assert.AreEqual(kfx.ContainerInfo.ContainerId, "CR!4FFEXVUEF2DOQB7ZQ087FJG4J8WE");

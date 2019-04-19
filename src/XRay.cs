@@ -753,8 +753,10 @@ namespace XRayBuilderGUI
                 const string chapterPattern = @"((?:chapter|book|section|part|capitulo)\s+.*)|((?:prolog|prologue|epilogue)(?:\s+|$).*)|((?:one|two|three|four|five|six|seven|eight|nine|ten)(?:\s+|$).*)";
                 const string xpath = "//*[self::h1 or self::h2 or self::h3 or self::h4 or self::h5]";
                 var chapterNodes = bookDoc.DocumentNode.SelectNodes("//a")
-                    .Where(div => div.GetAttributeValue("class", "") == "chapter" || Regex.IsMatch(div.InnerText, chapterPattern, RegexOptions.IgnoreCase))
+                    ?.Where(div => div.GetAttributeValue("class", "") == "chapter" || Regex.IsMatch(div.InnerText, chapterPattern, RegexOptions.IgnoreCase))
                     .ToList();
+                if (chapterNodes == null)
+                    return;
                 var headingNodes = bookDoc.DocumentNode.SelectNodes(xpath).ToList();
                 if (headingNodes.Count > chapterNodes.Count)
                     chapterNodes = headingNodes;

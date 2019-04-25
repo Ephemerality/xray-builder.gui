@@ -338,8 +338,11 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>; Move all assemblies and related files to lib folder
+ROBOCOPY "$(TargetDir) " "$(TargetDir)lib\ " *.dll *.xml *.pdb /IS /MOV
+ROBOCOPY "$(TargetDir)\x86 " "$(TargetDir)lib\x86 " /E /IS /MOVE
+ROBOCOPY "$(TargetDir)\x64 " "$(TargetDir)lib\x64 " /E /IS /MOVE
+if %25errorlevel%25 leq 4 exit 0 else exit %25errorlevel%25</PostBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

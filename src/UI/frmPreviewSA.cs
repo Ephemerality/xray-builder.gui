@@ -10,7 +10,7 @@ using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI.UI
 {
-    public partial class frmPreviewSA : Form
+    public partial class frmPreviewSA : Form, IPreviewForm
     {
         public frmPreviewSA()
         {

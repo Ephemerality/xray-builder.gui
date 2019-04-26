@@ -59,7 +59,9 @@ namespace XRayBuilderGUI.UI
             lvCustomersWhoBoughtRecs.Items.Clear();
 
             JObject ea = JObject.Parse(input);
-            var tempData = ea["data"]["nextBook"];
+            var data = ea["data"]
+                       ?? throw new Exception("Invalid EndActions file!");
+            var tempData = data["nextBook"];
             if (tempData != null)
             {
                 lblNextTitle.Text = tempData["title"].ToString();

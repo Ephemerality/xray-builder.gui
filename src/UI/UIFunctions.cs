@@ -70,7 +70,7 @@ namespace XRayBuilderGUI.UI
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                _logger.Log("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
             }
         }
 

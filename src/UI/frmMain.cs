@@ -804,17 +804,17 @@ namespace XRayBuilderGUI.UI
 
         private async void tmiStartAction_Click(object sender, EventArgs e)
         {
-            await UIFunctions.ShowPreview(Filetype.StartActions, ApPath, _settings.outDir, _logger, _cancelTokens.Token);
+            await UIFunctions.ShowPreview(Filetype.StartActions, SaPath, _settings.outDir, _logger, _cancelTokens.Token);
         }
 
         private async void tmiEndAction_Click(object sender, EventArgs e)
         {
-            await UIFunctions.ShowPreview(Filetype.EndActions, ApPath, _settings.outDir, _logger, _cancelTokens.Token);
+            await UIFunctions.ShowPreview(Filetype.EndActions, EaPath, _settings.outDir, _logger, _cancelTokens.Token);
         }
 
         private async void tmiXray_Click(object sender, EventArgs e)
         {
-            await UIFunctions.ShowPreview(Filetype.XRay, ApPath, _settings.outDir, _logger, _cancelTokens.Token);
+            await UIFunctions.ShowPreview(Filetype.XRay, XrPath, _settings.outDir, _logger, _cancelTokens.Token);
         }
 
         private void btnUnpack_Click(object sender, EventArgs e)

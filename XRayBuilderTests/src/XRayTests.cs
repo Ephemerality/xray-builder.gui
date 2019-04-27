@@ -75,7 +75,7 @@ namespace XRayBuilderTests
         {
             new BookInfo("A Storm of Swords", "George R. R. Martin",
                 "B000FBFN1U", "171927873", "A_Storm_of_Swords", Path.Combine(Environment.CurrentDirectory, "out"),
-                "A Storm of Swords", "https://www.goodreads.com/book/show/62291",
+                "A Storm of Swords.sdr", "https://www.goodreads.com/book/show/62291",
                 @"testfiles\A Storm of Swords - George R. R. Martin.rawml")
         };
 

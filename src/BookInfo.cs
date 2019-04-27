@@ -63,7 +63,7 @@ namespace XRayBuilderGUI
             Asin = metadata.ASIN;
             Guid = metadata.UniqueID;
             Databasename = metadata.DBName;
-            SidecarName = Functions.RemoveInvalidFileChars(metadata.Title);
+            SidecarName = $"{Functions.RemoveInvalidFileChars(metadata.Title)}.sdr";
             DataUrl = dataUrl;
         }
 

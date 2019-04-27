@@ -789,9 +789,9 @@ namespace XRayBuilderGUI.Unpack.KFX
         public string Asin => Metadata.Asin;
         public string Author => Metadata.Author;
         public string CdeContentType => Metadata.CdeContentType;
-        public string DbName => null;
+        public string DbName => Metadata.AssetId;
         public string Title => Metadata.Title;
-        public string UniqueId => Metadata.AssetId;
+        public string UniqueId => null;
 
         private KfxMetadata Metadata { get; set; }
         private class KfxMetadata

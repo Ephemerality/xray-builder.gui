@@ -1,23 +1,12 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="packages\NUnit.3.11.0\build\NUnit.props" Condition="Exists('packages\NUnit.3.11.0\build\NUnit.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8AA950E7-5FEE-4130-9D30-18B8397E1DD8}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>XRayBuilderGUI</RootNamespace>
     <AssemblyName>X-Ray Builder GUI</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <FileAlignment>512</FileAlignment>
+    <TargetFramework>net462</TargetFramework>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -32,57 +21,48 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <AssemblyTitle>X-Ray Builder GUI</AssemblyTitle>
+    <Company>X-Ray Builder GUI</Company>
+    <Product>X-Ray Builder GUI</Product>
+    <Description>Generate X-Ray, Start Action, Author Profile and End Action files for use on your Amazon Kindle.</Description>
+    <Copyright>Copyright © 2018</Copyright>
+    <AssemblyVersion>2.1.1.0</AssemblyVersion>
+    <FileVersion>2.1.1.0</FileVersion>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <Prefer32Bit>true</Prefer32Bit>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="AsyncEnumerator" Version="2.2.1" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.8.9" />
+    <PackageReference Include="JetBrains.Annotations" Version="2018.2.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="SimpleInjector" Version="4.3.0" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.110" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="AsyncEnumerable, Version=2.2.1.0, Culture=neutral, PublicKeyToken=0426b068161bd1d1, processorArchitecture=MSIL">
       <HintPath>packages\AsyncEnumerator.2.2.1\lib\net45\AsyncEnumerable.dll</HintPath>
@@ -96,144 +76,84 @@
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=3.11.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>packages\NUnit.3.11.0\lib\net45\nunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="SimpleInjector, Version=4.3.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
       <HintPath>packages\SimpleInjector.4.3.0\lib\net45\SimpleInjector.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
-    </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity.Design" />
-    <Reference Include="System.Data.SQLite, Version=1.0.109.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>packages\System.Data.SQLite.Core.1.0.109.2\lib\net46\System.Data.SQLite.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Memory, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Memory.4.5.1\lib\netstandard2.0\System.Memory.dll</HintPath>
-    </Reference>
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>packages\System.Numerics.Vectors.4.4.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>packages\System.Runtime.CompilerServices.Unsafe.4.5.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="src\HttpClient.cs" />
-    <Compile Include="src\SeriesInfo.cs" />
-    <Compile Include="src\DataSources\Amazon\Amazon.cs" />
-    <Compile Include="src\AuthorProfile.cs" />
-    <Compile Include="src\BookInfo.cs" />
-    <Compile Include="src\DataSources\DataSourceExceptions.cs" />
-    <Compile Include="src\DataSources\Secondary\Model\ISecondarySource.cs" />
-    <Compile Include="src\DataSources\Secondary\Goodreads.cs" />
-    <Compile Include="src\DataSources\Amazon\Model\AmazonNextBookResult.cs" />
-    <Compile Include="src\DataSources\Secondary\Shelfari.cs" />
-    <Compile Include="src\EndActions.cs" />
-    <Compile Include="src\Model\Artifacts\AuthorProfile.cs" />
-    <Compile Include="src\Model\Artifacts\EndActions.cs" />
-    <Compile Include="src\Model\Artifacts\Shared.cs" />
-    <Compile Include="src\Model\Artifacts\StartActions.cs" />
-    <Compile Include="src\UI\frmAbout.cs">
+    <Compile Update="src\UI\frmAbout.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\UI\frmAbout.designer.cs">
+    <Compile Update="src\UI\frmAbout.designer.cs">
       <DependentUpon>frmAbout.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\UI\frmASIN.cs">
+    <Compile Update="src\UI\frmASIN.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\UI\frmASIN.Designer.cs">
+    <Compile Update="src\UI\frmASIN.Designer.cs">
       <DependentUpon>frmASIN.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\UI\frmCreateXR.cs">
+    <Compile Update="src\UI\frmCreateXR.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\UI\frmCreateXR.designer.cs">
+    <Compile Update="src\UI\frmCreateXR.designer.cs">
       <DependentUpon>frmCreateXR.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\UI\frmGR.cs">
+    <Compile Update="src\UI\frmGR.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\UI\frmGR.Designer.cs">
+    <Compile Update="src\UI\frmGR.Designer.cs">
       <DependentUpon>frmGR.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\UI\frmPreviewAP.cs">
+    <Compile Update="src\UI\frmPreviewAP.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\UI\frmPreviewAP.Designer.cs">
+    <Compile Update="src\UI\frmPreviewAP.Designer.cs">
       <DependentUpon>frmPreviewAP.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\UI\frmPreviewEA.cs">
+    <Compile Update="src\UI\frmPreviewEA.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\UI\frmPreviewEA.Designer.cs">
+    <Compile Update="src\UI\frmPreviewEA.Designer.cs">
       <DependentUpon>frmPreviewEA.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\UI\frmPreviewSA.cs">
+    <Compile Update="src\UI\frmPreviewSA.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\UI\frmPreviewSA.Designer.cs">
+    <Compile Update="src\UI\frmPreviewSA.Designer.cs">
       <DependentUpon>frmPreviewSA.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\UI\frmPreviewXR.cs">
+    <Compile Update="src\UI\frmPreviewXR.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\UI\frmPreviewXR.Designer.cs">
+    <Compile Update="src\UI\frmPreviewXR.Designer.cs">
       <DependentUpon>frmPreviewXR.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\UI\frmSettings.cs">
+    <Compile Update="src\UI\frmSettings.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\UI\frmSettings.Designer.cs">
+    <Compile Update="src\UI\frmSettings.Designer.cs">
       <DependentUpon>frmSettings.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\Functions.cs" />
-    <Compile Include="src\UI\frmMain.cs">
+    <Compile Update="src\UI\frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\UI\frmMain.Designer.cs">
+    <Compile Update="src\UI\frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\IProgressBar.cs" />
-    <Compile Include="src\UI\Progress.cs" />
-    <Compile Include="src\Logger.cs" />
-    <Compile Include="src\Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\UI\RtfLogger.cs" />
-    <Compile Include="src\UI\UIFunctions.cs" />
-    <Compile Include="src\Unpack\KFX\EntityCollection.cs" />
-    <Compile Include="src\Unpack\MetadataLoader.cs" />
-    <Compile Include="src\Unpack\Mobi\EXTH.cs" />
-    <Compile Include="src\Unpack\IMetadata.cs" />
-    <Compile Include="src\Unpack\KFX\KfxContainer.cs" />
-    <Compile Include="src\Unpack\KFX\YjContainer.cs" />
-    <Compile Include="src\Unpack\Mobi\MobiHead.cs" />
-    <Compile Include="Properties\Settings.cs" />
-    <Compile Include="src\Unpack\Mobi\Metadata.cs" />
-    <Compile Include="src\Unpack\Mobi\PalmDocHeader.cs" />
-    <Compile Include="src\Unpack\Mobi\PDBHeader.cs" />
-    <Compile Include="src\Unpack\Mobi\Uncompress.cs" />
-    <Compile Include="src\XRay.cs" />
-    <Compile Include="src\UI\XRayPanel.cs" />
-    <Compile Include="src\XRayUtil.cs" />
     <Content Include="dist\BaseSplitIgnore.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -248,7 +168,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\cancel.png" />
-    <None Include="packages.config" />
     <None Include="Resources\file-on.png" />
     <None Include="Resources\file-off.png" />
     <None Include="doc\Help.pdf">
@@ -267,48 +186,47 @@
     <None Include="Resources\STAR2.png" />
     <None Include="Resources\STAR1.png" />
     <None Include="Resources\STAR0.png" />
-    <EmbeddedResource Include="src\UI\frmAbout.resx">
+    <EmbeddedResource Update="src\UI\frmAbout.resx">
       <DependentUpon>frmAbout.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\UI\frmASIN.resx">
+    <EmbeddedResource Update="src\UI\frmASIN.resx">
       <DependentUpon>frmASIN.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\UI\frmCreateXR.resx">
+    <EmbeddedResource Update="src\UI\frmCreateXR.resx">
       <DependentUpon>frmCreateXR.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\UI\frmGR.resx">
+    <EmbeddedResource Update="src\UI\frmGR.resx">
       <DependentUpon>frmGR.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\UI\frmMain.resx">
+    <EmbeddedResource Update="src\UI\frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\UI\frmPreviewAP.resx">
+    <EmbeddedResource Update="src\UI\frmPreviewAP.resx">
       <DependentUpon>frmPreviewAP.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\UI\frmPreviewEA.resx">
+    <EmbeddedResource Update="src\UI\frmPreviewEA.resx">
       <DependentUpon>frmPreviewEA.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\UI\frmPreviewSA.resx">
+    <EmbeddedResource Update="src\UI\frmPreviewSA.resx">
       <DependentUpon>frmPreviewSA.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\UI\frmPreviewXR.resx">
+    <EmbeddedResource Update="src\UI\frmPreviewXR.resx">
       <DependentUpon>frmPreviewXR.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\UI\frmSettings.resx">
+    <EmbeddedResource Update="src\UI\frmSettings.resx">
       <DependentUpon>frmSettings.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
+    <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
+    <Compile Update="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="app.config" />
     <Content Include="dist\BaseDB.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -316,33 +234,11 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Compile Include="Properties\Settings.Designer.cs">
+    <Compile Update="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4 Client Profile %28x86 and x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.4.5">
-      <Visible>False</Visible>
-      <ProductName>Windows Installer 4.5</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
     <Content Include="doc\GNU General Public License.txt">
@@ -356,34 +252,401 @@
     </Content>
     <None Include="Resources\AI.png" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="IonDotnet\IonDotnet\IonDotnet.csproj">
-      <Project>{e99b7735-94e4-46de-85e3-ee72178261b9}</Project>
-      <Name>IonDotnet</Name>
-    </ProjectReference>
+    <ProjectReference Include="IonDotnet\IonDotnet\IonDotnet.csproj" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>; Move all assemblies and related files to lib folder
-ROBOCOPY "$(TargetDir) " "$(TargetDir)lib\ " *.dll *.xml *.pdb /IS /MOV
-ROBOCOPY "$(TargetDir)\x86 " "$(TargetDir)lib\x86 " /E /IS /MOVE
-ROBOCOPY "$(TargetDir)\x64 " "$(TargetDir)lib\x64 " /E /IS /MOVE
-if %25errorlevel%25 leq 4 exit 0 else exit %25errorlevel%25</PostBuildEvent>
-  </PropertyGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('packages\NUnit.3.11.0\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\NUnit.3.11.0\build\NUnit.props'))" />
-    <Error Condition="!Exists('packages\System.Data.SQLite.Core.1.0.109.2\build\net46\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\System.Data.SQLite.Core.1.0.109.2\build\net46\System.Data.SQLite.Core.targets'))" />
-  </Target>
-  <Import Project="packages\System.Data.SQLite.Core.1.0.109.2\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('packages\System.Data.SQLite.Core.1.0.109.2\build\net46\System.Data.SQLite.Core.targets')" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <Compile Remove="src\HTTPDownloader.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\BigDecimal.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Compatibility.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\ContainedValueException.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\ICatalog.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\IIonReader.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\IIonWriter.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\IntegerSize.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\IonException.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\IonType.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\ISymbolTable.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\IValueWriter.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\NullValueException.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\SymbolToken.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\SystemSymbols.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Timestamp.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\UnknownSymbolException.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\UnsupportedIonVersionException.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\BinaryWriterGround.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\DirStructure.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\Experiment.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\ExpressionExp.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\IonExpressionBinary.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\IonExpressionText.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\IonSerializerExpression.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\IRunable.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\Program.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\SerializerGround.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\WriteGround.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\WriterBenchmark.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\IonBinarySerializer.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\IonSerialization.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\IonSerializationPrivate.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\IonSerializationPrivate.deserializer.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\IonTextSerializer.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\IScalarWriter.cs" />
+    <Compile Remove="XRayBuilder.Test\Properties\AssemblyInfo.cs" />
+    <Compile Remove="XRayBuilder.Test\src\AuthorProfileTests.cs" />
+    <Compile Remove="XRayBuilder.Test\src\BookInfoTests.cs" />
+    <Compile Remove="XRayBuilder.Test\src\FunctionsTests.cs" />
+    <Compile Remove="XRayBuilder.Test\src\KfxTests.cs" />
+    <Compile Remove="XRayBuilder.Test\src\TestSetup.cs" />
+    <Compile Remove="XRayBuilder.Test\src\XRayTests.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Conversions\IReaderRoutine.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Conversions\ValueVariant.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\IonSystemWriter.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\IonTreeWriter.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\IPrivateWriter.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\ISymbolTableProvider.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\IWriterBuffer.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\PagedWriterBuffer.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\PrivateIonWriterBase.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\ReaderLocalTable.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\SharedSymbolTable.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\SubstituteSymbolTable.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Properties\Properties.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Systems\IMutableCatalog.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Systems\IonBinaryWriterBuilder.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Systems\IonLoader.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Systems\IonReaderBuilder.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Systems\IonTextOptions.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Systems\IonTextWriterBuilder.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Systems\SimpleCatalog.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Systems\UnexpectedEofException.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonBlob.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonBool.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonClob.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonContainer.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonDatagram.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonDecimal.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonFloat.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonInt.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonList.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonLob.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonNull.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonSequence.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonSexp.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonString.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonStruct.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonSymbol.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonText.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonTimestamp.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonValue.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Utils\Characters.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Utils\DecimalHelper.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Utils\PrivateHelper.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Utils\StreamExtension.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Utils\Symbols.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Common\DirStructure.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Common\NoSeekMemStream.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Common\ReaderTestCommon.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Common\ReaderTimestampCommon.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Common\ReadUtils.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Common\SymTabUtils.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Integration\BooleanTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Integration\FieldNameTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Integration\IntegrationTestBase.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Integration\NumberTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Integration\Vector.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Integration\VectorBad.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Internals\BigDecimalTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Internals\BinaryReaderTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Internals\BinaryReaderTimestampTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Internals\BinaryWriterBufferTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Internals\BinaryWriterTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Internals\ReaderLocalTableTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Internals\SharedSymbolTableTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Internals\SymbolTokenTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Internals\TextReaderTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Internals\TextReaderTimestampTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Systems\LoaderTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Systems\ReaderWriterCatalogTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Systems\SimpleCatalogTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonBlobTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonBoolTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonClobTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonContainerTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonFloatTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonIntTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonListTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonLobTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonSequenceTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonSexpTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonStringTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonStructTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\TreeTestBase.cs" />
+    <Compile Remove="XRayBuilder.Test\obj\Debug\XRayBuilder.Test.AssemblyInfo.cs" />
+    <Compile Remove="XRayBuilder.Test\obj\Debug\XRayBuilder.Tests.AssemblyInfo.cs" />
+    <Compile Remove="XRayBuilder.Test\src\DataSources\AmazonTests.cs" />
+    <Compile Remove="XRayBuilder.Test\src\DataSources\GoodreadsTests.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Binary\AbstractSymbolTable.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Binary\BinaryConstants.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Binary\ManagedBinaryWriter.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Binary\RawBinaryReader.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Binary\RawBinaryWriter.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Binary\SymbolTableReader.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Binary\SystemBinaryReader.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Binary\UserBinaryReader.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\CharSequenceStream.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\InvalidTokenException.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\IonTextRawWriter.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\IonTextWriter.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\Radix.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\RawTextReader.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\SystemTextReader.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\TextConstants.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\TextScanner.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\TextStream.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\UnicodeStream.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\UserTextReader.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\net45\IonDotnet.AssemblyInfo.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\net45\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\net45\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\net45\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\netcoreapp2.1\IonDotnet.AssemblyInfo.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\netcoreapp2.1\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\netcoreapp2.1\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\netcoreapp2.1\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\netstandard1.3\IonDotnet.AssemblyInfo.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\netstandard1.3\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\netstandard1.3\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\netstandard1.3\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\netstandard2.0\IonDotnet.AssemblyInfo.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\net45\IonDotnet.Serialization.AssemblyInfo.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\net45\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\net45\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\net45\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\netcoreapp2.1\IonDotnet.Serialization.AssemblyInfo.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\netcoreapp2.1\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\netcoreapp2.1\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\netcoreapp2.1\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\netstandard1.3\IonDotnet.Serialization.AssemblyInfo.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\netstandard1.3\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\netstandard1.3\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\netstandard1.3\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\netstandard2.0\IonDotnet.Serialization.AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+    <Compile Remove="Properties\Settings.cs" />
+    <Compile Remove="src\AuthorProfile.cs" />
+    <Compile Remove="src\BookInfo.cs" />
+    <Compile Remove="src\EndActions.cs" />
+    <Compile Remove="src\Functions.cs" />
+    <Compile Remove="src\HttpClient.cs" />
+    <Compile Remove="src\HTTPDownloader.cs" />
+    <Compile Remove="src\IProgressBar.cs" />
+    <Compile Remove="src\Logger.cs" />
+    <Compile Remove="src\Program.cs" />
+    <Compile Remove="src\SeriesInfo.cs" />
+    <Compile Remove="src\XRay.cs" />
+    <Compile Remove="src\XRayUtil.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\BigDecimal.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Compatibility.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\ContainedValueException.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\ICatalog.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\IIonReader.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\IIonWriter.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\IntegerSize.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\IonException.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\IonType.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\ISymbolTable.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\IValueWriter.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\NullValueException.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\SymbolToken.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\SystemSymbols.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Timestamp.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\UnknownSymbolException.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\UnsupportedIonVersionException.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\BinaryWriterGround.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\DirStructure.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\Experiment.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\ExpressionExp.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\IonExpressionBinary.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\IonExpressionText.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\IonSerializerExpression.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\IRunable.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\Program.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\SerializerGround.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\WriteGround.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Bench\WriterBenchmark.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\IonBinarySerializer.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\IonSerialization.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\IonSerializationPrivate.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\IonSerializationPrivate.deserializer.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\IonTextSerializer.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\IScalarWriter.cs" />
+    <Compile Remove="src\DataSources\DataSourceExceptions.cs" />
+    <Compile Remove="src\UI\Progress.cs" />
+    <Compile Remove="src\UI\RtfLogger.cs" />
+    <Compile Remove="src\UI\UIFunctions.cs" />
+    <Compile Remove="src\UI\XRayPanel.cs" />
+    <Compile Remove="src\Unpack\IMetadata.cs" />
+    <Compile Remove="src\Unpack\MetadataLoader.cs" />
+    <Compile Remove="XRayBuilder.Test\Properties\AssemblyInfo.cs" />
+    <Compile Remove="XRayBuilder.Test\src\AuthorProfileTests.cs" />
+    <Compile Remove="XRayBuilder.Test\src\BookInfoTests.cs" />
+    <Compile Remove="XRayBuilder.Test\src\FunctionsTests.cs" />
+    <Compile Remove="XRayBuilder.Test\src\KfxTests.cs" />
+    <Compile Remove="XRayBuilder.Test\src\TestSetup.cs" />
+    <Compile Remove="XRayBuilder.Test\src\XRayTests.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Conversions\IReaderRoutine.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Conversions\ValueVariant.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\IonSystemWriter.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\IonTreeWriter.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\IPrivateWriter.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\ISymbolTableProvider.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\IWriterBuffer.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\PagedWriterBuffer.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\PrivateIonWriterBase.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\ReaderLocalTable.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\SharedSymbolTable.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\SubstituteSymbolTable.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Properties\Properties.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Systems\IMutableCatalog.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Systems\IonBinaryWriterBuilder.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Systems\IonLoader.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Systems\IonReaderBuilder.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Systems\IonTextOptions.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Systems\IonTextWriterBuilder.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Systems\SimpleCatalog.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Systems\UnexpectedEofException.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonBlob.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonBool.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonClob.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonContainer.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonDatagram.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonDecimal.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonFloat.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonInt.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonList.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonLob.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonNull.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonSequence.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonSexp.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonString.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonStruct.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonSymbol.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonText.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonTimestamp.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Tree\IonValue.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Utils\Characters.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Utils\DecimalHelper.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Utils\PrivateHelper.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Utils\StreamExtension.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Utils\Symbols.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Common\DirStructure.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Common\NoSeekMemStream.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Common\ReaderTestCommon.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Common\ReaderTimestampCommon.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Common\ReadUtils.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Common\SymTabUtils.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Integration\BooleanTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Integration\FieldNameTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Integration\IntegrationTestBase.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Integration\NumberTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Integration\Vector.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Integration\VectorBad.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Internals\BigDecimalTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Internals\BinaryReaderTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Internals\BinaryReaderTimestampTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Internals\BinaryWriterBufferTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Internals\BinaryWriterTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Internals\ReaderLocalTableTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Internals\SharedSymbolTableTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Internals\SymbolTokenTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Internals\TextReaderTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Internals\TextReaderTimestampTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Systems\LoaderTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Systems\ReaderWriterCatalogTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Systems\SimpleCatalogTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonBlobTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonBoolTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonClobTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonContainerTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonFloatTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonIntTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonListTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonLobTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonSequenceTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonSexpTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonStringTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\IonStructTest.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Tests\Tree\TreeTestBase.cs" />
+    <Compile Remove="src\DataSources\Amazon\Amazon.cs" />
+    <Compile Remove="src\DataSources\Secondary\Goodreads.cs" />
+    <Compile Remove="src\DataSources\Secondary\Shelfari.cs" />
+    <Compile Remove="src\Model\Artifacts\AuthorProfile.cs" />
+    <Compile Remove="src\Model\Artifacts\EndActions.cs" />
+    <Compile Remove="src\Model\Artifacts\Shared.cs" />
+    <Compile Remove="src\Model\Artifacts\StartActions.cs" />
+    <Compile Remove="src\Unpack\KFX\EntityCollection.cs" />
+    <Compile Remove="src\Unpack\KFX\KfxContainer.cs" />
+    <Compile Remove="src\Unpack\KFX\YjContainer.cs" />
+    <Compile Remove="src\Unpack\Mobi\EXTH.cs" />
+    <Compile Remove="src\Unpack\Mobi\Metadata.cs" />
+    <Compile Remove="src\Unpack\Mobi\MobiHead.cs" />
+    <Compile Remove="src\Unpack\Mobi\PalmDocHeader.cs" />
+    <Compile Remove="src\Unpack\Mobi\PDBHeader.cs" />
+    <Compile Remove="src\Unpack\Mobi\Uncompress.cs" />
+    <Compile Remove="XRayBuilder.Test\obj\Debug\XRayBuilder.Test.AssemblyInfo.cs" />
+    <Compile Remove="XRayBuilder.Test\obj\Debug\XRayBuilder.Tests.AssemblyInfo.cs" />
+    <Compile Remove="XRayBuilder.Test\src\DataSources\AmazonTests.cs" />
+    <Compile Remove="XRayBuilder.Test\src\DataSources\GoodreadsTests.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Binary\AbstractSymbolTable.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Binary\BinaryConstants.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Binary\ManagedBinaryWriter.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Binary\RawBinaryReader.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Binary\RawBinaryWriter.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Binary\SymbolTableReader.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Binary\SystemBinaryReader.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Binary\UserBinaryReader.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\CharSequenceStream.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\InvalidTokenException.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\IonTextRawWriter.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\IonTextWriter.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\Radix.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\RawTextReader.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\SystemTextReader.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\TextConstants.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\TextScanner.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\TextStream.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\UnicodeStream.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\Internals\Text\UserTextReader.cs" />
+    <Compile Remove="src\DataSources\Amazon\Model\AmazonNextBookResult.cs" />
+    <Compile Remove="src\DataSources\Secondary\Model\ISecondarySource.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\net45\IonDotnet.AssemblyInfo.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\net45\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\net45\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\net45\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\netcoreapp2.1\IonDotnet.AssemblyInfo.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\netcoreapp2.1\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\netcoreapp2.1\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\netcoreapp2.1\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\netstandard1.3\IonDotnet.AssemblyInfo.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\netstandard1.3\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\netstandard1.3\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\netstandard1.3\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Remove="IonDotnet\IonDotnet\obj\Debug\netstandard2.0\IonDotnet.AssemblyInfo.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\net45\IonDotnet.Serialization.AssemblyInfo.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\net45\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\net45\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\net45\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\netcoreapp2.1\IonDotnet.Serialization.AssemblyInfo.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\netcoreapp2.1\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\netcoreapp2.1\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\netcoreapp2.1\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\netstandard1.3\IonDotnet.Serialization.AssemblyInfo.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\netstandard1.3\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\netstandard1.3\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\netstandard1.3\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Remove="IonDotnet\IonDotnet.Serialization\obj\Debug\netstandard2.0\IonDotnet.Serialization.AssemblyInfo.cs" />
+  </ItemGroup>
 </Project>

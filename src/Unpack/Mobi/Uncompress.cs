@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace XRayBuilderGUI.Unpack
+namespace XRayBuilderGUI.Unpack.Mobi
 {
     public interface Decompressor
     {

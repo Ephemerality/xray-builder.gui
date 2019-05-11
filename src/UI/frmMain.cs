@@ -184,10 +184,10 @@ namespace XRayBuilderGUI.UI
             try
             {
                 if (rdoGoodreads.Checked)
-                    xray = new XRay(txtGoodreads.Text, metadata.DBName, metadata.UniqueID, metadata.ASIN, _dataSource, _logger,
+                    xray = new XRay(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _dataSource, _logger,
                         AZW3 ? _settings.offsetAZW3 : _settings.offset, "", false);
                 else
-                    xray = new XRay(txtXMLFile.Text, metadata.DBName, metadata.UniqueID, metadata.ASIN, _dataSource, _logger,
+                    xray = new XRay(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _dataSource, _logger,
                         AZW3 ? _settings.offsetAZW3 : _settings.offset, "");
 
                 await Task.Run(() => xray.CreateXray(_progress, _cancelTokens.Token)).ConfigureAwait(false);
@@ -238,12 +238,12 @@ namespace XRayBuilderGUI.UI
             {
                 if (_settings.android)
                 {
-                    outFolder = _settings.outDir + @"\Android\" + metadata.ASIN;
+                    outFolder = _settings.outDir + @"\Android\" + metadata.Asin;
                     Directory.CreateDirectory(outFolder);
                 }
                 else
                 {
-                    outFolder = OutputDirectory(metadata.Author, metadata.Title, metadata.ASIN, true);
+                    outFolder = OutputDirectory(metadata.Author, metadata.Title, metadata.Asin, true);
                 }
             }
             catch (Exception ex)
@@ -270,12 +270,12 @@ namespace XRayBuilderGUI.UI
                     _logger.Log($"An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n{ex.Message}");
                     return;
                 }
-                XrPath = outFolder + @"\XRAY.entities." + metadata.ASIN;
+                XrPath = outFolder + @"\XRAY.entities." + metadata.Asin;
 
                 //Save the new XRAY.ASIN.previewData file
                 try
                 {
-                    string PdPath = outFolder + @"\XRAY." + metadata.ASIN + ".previewData";
+                    string PdPath = outFolder + @"\XRAY." + metadata.Asin + ".previewData";
                     xray.SavePreviewToFile(PdPath);
                     _logger.Log($"X-Ray previewData file created successfully!\r\nSaved to {PdPath}");
                 }
@@ -290,7 +290,7 @@ namespace XRayBuilderGUI.UI
             }
             _logger.Log($"X-Ray file created successfully!\r\nSaved to {newPath}");
 
-            checkFiles(metadata.Author, metadata.Title, metadata.ASIN);
+            checkFiles(metadata.Author, metadata.Title, metadata.Asin);
 
             if (_settings.playSound)
             {
@@ -470,7 +470,7 @@ namespace XRayBuilderGUI.UI
                         _logger.Log("Attempting to download Start Actions...");
                         try
                         {
-                            saContent = await Amazon.DownloadStartActions(metadata.ASIN);
+                            saContent = await Amazon.DownloadStartActions(metadata.Asin);
                         }
                         catch
                         {
@@ -576,7 +576,7 @@ namespace XRayBuilderGUI.UI
                 {
                     BookInfo[] books = new BookInfo[0];
                     if (_settings.searchByAsin)
-                        books = (await _dataSource.SearchBookByAsinAsync(metadata.ASIN)).ToArray();
+                        books = (await _dataSource.SearchBookByAsinAsync(metadata.Asin)).ToArray();
 
                     if (books.Length <= 0)
                     {
@@ -764,8 +764,8 @@ namespace XRayBuilderGUI.UI
                 txtMobi.Text = "";
                 return;
             }
-            metadata.CheckDRM();
-            pbCover.Image = (Image) metadata.coverImage?.Clone();
+            metadata.CheckDrm();
+            pbCover.Image = (Image) metadata.CoverImage?.Clone();
 
             lblTitle.Visible = true;
             lblAuthor.Visible = true;
@@ -776,10 +776,12 @@ namespace XRayBuilderGUI.UI
 
             txtAuthor.Text = metadata.Author;
             txtTitle.Text = metadata.Title;
-            txtAsin.Text = metadata.ASIN;
+            txtAsin.Text = metadata.Asin;
             _tooltip.SetToolTip(txtAsin, Amazon.Url(_settings.amazonTLD, txtAsin.Text));
 
-            checkFiles(metadata.Author, metadata.Title, metadata.ASIN);
+            checkFiles(metadata.Author, metadata.Title, metadata.Asin);
+            btnBuild.Enabled = metadata.RawMlSupported;
+            btnOneClick.Enabled = metadata.RawMlSupported;
 
             try
             {
@@ -832,7 +834,7 @@ namespace XRayBuilderGUI.UI
             }
 
             _logger.Log("Extracting raw markup...");
-            using (var metadata = new Metadata(txtMobi.Text))
+            using (var metadata = MetadataLoader.Load(txtMobi.Text))
             {
                 var rawMlPath = UIFunctions.RawMlPath(Path.GetFileNameWithoutExtension(txtMobi.Text));
                 metadata.SaveRawMl(rawMlPath);
@@ -914,7 +916,7 @@ namespace XRayBuilderGUI.UI
             {
                 frmCreateXr.txtAuthor.Text = metadata.Author;
                 frmCreateXr.txtTitle.Text = metadata.Title;
-                frmCreateXr.txtAsin.Text = metadata.ASIN;
+                frmCreateXr.txtAsin.Text = metadata.Asin;
             }
             frmCreateXr.ShowDialog();
         }

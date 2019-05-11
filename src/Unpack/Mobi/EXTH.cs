@@ -6,11 +6,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Text;
 
-namespace XRayBuilderGUI.Unpack
+namespace XRayBuilderGUI.Unpack.Mobi
 {
     public class EXTHHeader
     {
@@ -114,7 +114,7 @@ namespace XRayBuilderGUI.Unpack
             return record;
         }
 
-        public void UpdateCDEContentType(FileStream fs)
+        public void UpdateCdeContentType(FileStream fs)
         {
             byte[] newValue = Encoding.UTF8.GetBytes("EBOK");
             var rec = recordList.First(r => r.RecordType == 501);

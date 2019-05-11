@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace XRayBuilderGUI.Unpack
+namespace XRayBuilderGUI.Unpack.Mobi
 {
     public class MobiHead
     {

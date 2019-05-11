@@ -9,6 +9,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -362,10 +363,35 @@ namespace XRayBuilderGUI
 
         public static long UnixTimestampMilliseconds()
         {
-            return (long)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+            return (long) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
         }
 
         public static string Pluralize(FormattableString formattable) => formattable.ToString(new PluralFormatProvider());
+
+        // https://stackoverflow.com/questions/311165/how-do-you-convert-a-byte-array-to-a-hexadecimal-string-and-vice-versa/14333437#14333437
+        /// <summary>
+        /// Convert a byte array to hex string quickly
+        /// </summary>
+        public static string ByteToHexString(byte[] bytes)
+        {
+            var c = new char[bytes.Length * 2];
+            int b;
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                b = bytes[i] >> 4;
+                c[i * 2] = (char)(55 + b + (((b - 10) >> 31) & -7));
+                b = bytes[i] & 0xF;
+                c[i * 2 + 1] = (char)(55 + b + (((b - 10) >> 31) & -7));
+            }
+
+            return new string(c);
+        }
+
+        public static byte[] Sha1(byte[] bytes)
+        {
+            using (var sha1 = new SHA1Managed())
+                return sha1.ComputeHash(bytes);
+        }
     }
 
     internal static class NativeMethods
@@ -436,6 +462,56 @@ namespace XRayBuilderGUI
         {
             var results = await Task.WhenAll(source.Select(async x => (x, await predicate(x))));
             return results.Where(x => x.Item2).Select(x => x.Item1);
+        }
+
+        public static TValue GetOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key)
+            => dic.TryGetValue(key, out var val) ? val : default;
+
+        public static TValue GetOrThrow<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key)
+        {
+            if (dic.TryGetValue(key, out var val))
+                return val;
+
+            throw new ArgumentException("Key not found", nameof(key));
+        }
+
+        public static void Deconstruct<T1, T2>(this KeyValuePair<T1, T2> tuple, out T1 key, out T2 value)
+        {
+            key = tuple.Key;
+            value = tuple.Value;
+        }
+
+        /// <summary>
+        /// Read <paramref name="count"/> bytes from <paramref name="stream"/> after seeking to <paramref name="offset"/> from <paramref name="origin"/>
+        /// </summary>
+        public static byte[] ReadBytes(this Stream stream, int offset, int count, SeekOrigin origin)
+        {
+            stream.Seek(offset, origin);
+            return stream.ReadBytes(count);
+        }
+
+        public static byte[] ReadBytes(this Stream stream, int count)
+        {
+            var buffer = new byte[count];
+
+            int offset = 0;
+            while (offset < count)
+            {
+                var read = stream.Read(buffer, offset, count - offset);
+                if (read == 0)
+                    throw new EndOfStreamException();
+
+                offset += read;
+            }
+
+            return buffer;
+        }
+
+        public static byte[] ReadToEnd(this Stream stream)
+        {
+            var ms = new MemoryStream();
+            stream.CopyTo(ms);
+            return ms.ToArray();
         }
     }
 

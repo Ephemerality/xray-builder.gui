@@ -118,7 +118,8 @@ namespace XRayBuilderGUI
                 shelfari = "https://" + shelfari;
             dataUrl = shelfari;
             databaseName = db;
-            Guid = guid;
+            if (guid != null)
+                Guid = guid;
             this.asin = asin;
             this.locOffset = locOffset;
             _aliasPath = aliaspath;
@@ -202,7 +203,9 @@ namespace XRayBuilderGUI
         }
 
         public string XRayName(bool android = false) =>
-            android ? $"XRAY.{asin}.{databaseName}_{Guid}.db" : $"XRAY.entities.{asin}.asc";
+            android
+                ? $"XRAY.{asin}.{(databaseName == null ? "" : $"{databaseName}_")}{Guid ?? ""}.db"
+                : $"XRAY.entities.{asin}.asc";
 
         // TODO: Change return values to exceptions instead
         public async Task<int> CreateXray(IProgressBar progress, CancellationToken token = default)

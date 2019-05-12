@@ -11,7 +11,7 @@ using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.Model.Artifacts;
 using EndActions = XRayBuilderGUI.EndActions;
 
-namespace XRayBuilderTests
+namespace XRayBuilder.Test
 {
     [TestFixture()]
     public class XRayTests

@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // Setting ComVisible to false makes the types in this assembly not visible
@@ -11,4 +10,4 @@ using System.Runtime.InteropServices;
 [assembly: Guid("55a9e9b9-405f-446e-8d5c-833ed1979bc1")]
 
 // Make internals visible to test project
-[assembly: InternalsVisibleTo("XRayBuilderTests")]
+[assembly: InternalsVisibleTo("XRayBuilder.Test")]

@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace XRayBuilderTests.DataSources
+namespace XRayBuilder.Test.DataSources
 {
     [TestFixture()]
     public class AmazonTests

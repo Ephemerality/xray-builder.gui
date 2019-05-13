@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Data.Entity.Design.PluralizationServices;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -17,6 +16,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using HtmlAgilityPack;
+using Pluralize.NET.Core;
 
 namespace XRayBuilderGUI
 {
@@ -436,9 +436,7 @@ namespace XRayBuilderGUI
         {
             return count == 1
                 ? value
-                : PluralizationService
-                    .CreateService(new CultureInfo("en-US"))
-                    .Pluralize(value);
+                : new Pluralizer().Pluralize(value);
         }
 
         public static int? TryParseInt(this string s, NumberStyles style, IFormatProvider provider)

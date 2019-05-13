@@ -1,12 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <ProjectGuid>{8AA950E7-5FEE-4130-9D30-18B8397E1DD8}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AssemblyName>X-Ray Builder GUI</AssemblyName>
-    <TargetFramework>net462</TargetFramework>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <TargetFrameworks>net462;netcoreapp3.0</TargetFrameworks>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -62,19 +61,34 @@
     <PackageReference Include="HtmlAgilityPack" Version="1.11.4" />
     <PackageReference Include="JetBrains.Annotations" Version="2019.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="Pluralize.NET.Core" Version="1.0.0" />
+    <PackageReference Include="Pluralize.NET" Version="0.1.84" />
     <PackageReference Include="SimpleInjector" Version="4.6.0" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.110" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Data.Entity.Design" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
+  
+  <Choose>
+    <When Condition="$(TargetFramework.StartsWith('net4'))">
+      <ItemGroup>
+        <Reference Include="System.ComponentModel.DataAnnotations" />
+        <Reference Include="System.Data.Entity.Design" />
+        <Reference Include="System.Net.Http" />
+        <Reference Include="System.Data.DataSetExtensions" />
+        <Reference Include="Microsoft.CSharp" />
+        <Reference Include="System.Deployment" />
+        <Reference Include="System.Windows.Forms" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <UseWindowsForms>true</UseWindowsForms>
+      </PropertyGroup>
+      <ItemGroup>
+        <PackageReference Include="Microsoft.Windows.Compatibility" Version="2.0.1" />
+        <PackageReference Include="Pluralize.NET.Core" Version="1.0.0" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+
   <ItemGroup>
     <Compile Update="src\UI\frmAbout.cs">
       <SubType>Form</SubType>

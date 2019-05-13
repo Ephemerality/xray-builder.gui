@@ -16,7 +16,11 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using HtmlAgilityPack;
+#if NETFRAMEWORK
+using Pluralize.NET;
+#else
 using Pluralize.NET.Core;
+#endif
 
 namespace XRayBuilderGUI
 {

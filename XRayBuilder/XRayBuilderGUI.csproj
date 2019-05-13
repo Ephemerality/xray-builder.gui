@@ -55,6 +55,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <RootNamespace>XRayBuilderGUI</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AsyncEnumerator" Version="2.2.2" />

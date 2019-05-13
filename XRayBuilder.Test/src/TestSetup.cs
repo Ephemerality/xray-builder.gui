@@ -3,10 +3,10 @@ using System.IO;
 using NUnit.Framework;
 using XRayBuilderGUI;
 
-namespace XRayBuilderTests
+namespace XRayBuilder.Test
 {
     [SetUpFixture]
-    public class MySetUpClass
+    public class XRayBuilderTests
     {
         [OneTimeSetUp]
         public void RunBeforeAnyTests()

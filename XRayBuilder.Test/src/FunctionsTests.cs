@@ -2,7 +2,7 @@
 using XRayBuilderGUI;
 using XRayBuilderGUI.Unpack;
 
-namespace XRayBuilderTests
+namespace XRayBuilder.Test
 {
     [TestFixture]
     public class FunctionsTests

@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using XRayBuilderGUI;
 
-namespace XRayBuilderTests
+namespace XRayBuilder.Test
 {
     [TestFixture]
     public class AuthorProfileTests

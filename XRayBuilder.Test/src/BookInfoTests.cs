@@ -2,7 +2,7 @@
 using XRayBuilderGUI;
 using System.Threading.Tasks;
 
-namespace XRayBuilderTests
+namespace XRayBuilder.Test
 {
     [TestFixture()]
     public class BookInfoTests

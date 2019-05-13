@@ -4,7 +4,7 @@ using NUnit.Framework;
 using XRayBuilderGUI;
 using XRayBuilderGUI.DataSources.Secondary;
 
-namespace XRayBuilderTests.DataSources
+namespace XRayBuilder.Test.DataSources
 {
     [TestFixture]
     public class GoodreadsTests

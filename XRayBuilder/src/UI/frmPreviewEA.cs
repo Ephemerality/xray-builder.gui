@@ -51,14 +51,14 @@ namespace XRayBuilderGUI.UI
         public async Task Populate(string inputFile, CancellationToken cancellationToken = default)
         {
             string input;
-            using (StreamReader streamReader = new StreamReader(inputFile, Encoding.UTF8))
+            using (var streamReader = new StreamReader(inputFile, Encoding.UTF8))
                 input = streamReader.ReadToEnd();
             ilauthorRecs.Images.Clear();
             lvAuthorRecs.Items.Clear();
             ilcustomersWhoBoughtRecs.Images.Clear();
             lvCustomersWhoBoughtRecs.Items.Clear();
 
-            JObject ea = JObject.Parse(input);
+            var ea = JObject.Parse(input);
             var data = ea["data"]
                        ?? throw new Exception("Invalid EndActions file!");
             var tempData = data["nextBook"];
@@ -66,7 +66,7 @@ namespace XRayBuilderGUI.UI
             {
                 lblNextTitle.Text = tempData["title"].ToString();
                 lblNextAuthor.Text = tempData["authors"][0].ToString();
-                string imageUrl = tempData["imageUrl"]?.ToString();
+                var imageUrl = tempData["imageUrl"]?.ToString();
                 if (!string.IsNullOrEmpty(imageUrl))
                     pbNextCover.Image = Functions.MakeGrayscale3(await HttpClient.GetImageAsync(imageUrl, cancellationToken));
             }
@@ -83,14 +83,14 @@ namespace XRayBuilderGUI.UI
             {
                 foreach (var rec in tempData)
                 {
-                    string imageUrl = rec["imageUrl"]?.ToString();
+                    var imageUrl = rec["imageUrl"]?.ToString();
                     if (!string.IsNullOrEmpty(imageUrl))
                         ilauthorRecs.Images.Add(Functions.MakeGrayscale3(await HttpClient.GetImageAsync(imageUrl, cancellationToken)));
                 }
                 ListViewItem_SetSpacing(lvAuthorRecs, 60 + 7, 90 + 7);
-                for (int i = 0; i < ilauthorRecs.Images.Count; i++)
+                for (var i = 0; i < ilauthorRecs.Images.Count; i++)
                 {
-                    ListViewItem item = new ListViewItem { ImageIndex = i };
+                    var item = new ListViewItem { ImageIndex = i };
                     lvAuthorRecs.Items.Add(item);
                 }
             }
@@ -105,7 +105,7 @@ namespace XRayBuilderGUI.UI
                         ilcustomersWhoBoughtRecs.Images.Add(Functions.MakeGrayscale3(await HttpClient.GetImageAsync(imageUrl, cancellationToken)));
                 }
                 ListViewItem_SetSpacing(lvCustomersWhoBoughtRecs, 60 + 7, 90 + 7);
-                for (int i = 0; i < ilcustomersWhoBoughtRecs.Images.Count; i++)
+                for (var i = 0; i < ilcustomersWhoBoughtRecs.Images.Count; i++)
                 {
                     var item = new ListViewItem { ImageIndex = i };
                     lvCustomersWhoBoughtRecs.Items.Add(item);

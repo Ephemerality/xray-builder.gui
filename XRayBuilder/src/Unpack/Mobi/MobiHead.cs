@@ -85,7 +85,7 @@ namespace XRayBuilderGUI.Unpack.Mobi
             fs.Read(exthFlags, 0, exthFlags.Length);
 
             //If bit 6 (0x40) is set, then there's an EXTH record
-            bool exthExists = (BitConverter.ToUInt32(Functions.CheckBytes(exthFlags), 0) & 0x40) != 0;
+            var exthExists = (BitConverter.ToUInt32(Functions.CheckBytes(exthFlags), 0) & 0x40) != 0;
 
             fs.Read(restOfMobiHeader, 0, restOfMobiHeader.Length);
 
@@ -97,9 +97,9 @@ namespace XRayBuilderGUI.Unpack.Mobi
             // If applicable, read mbh flags regarding trailing bytes in record data
             if (MinVersion >= 5 && HeaderLength >= 228)
             {
-                byte[] tempFlags = new byte[2];
+                var tempFlags = new byte[2];
                 Array.Copy(restOfMobiHeader, 110, tempFlags, 0, 2);
-                ushort mbhFlags = BitConverter.ToUInt16(Functions.CheckBytes(tempFlags), 0);
+                var mbhFlags = BitConverter.ToUInt16(Functions.CheckBytes(tempFlags), 0);
                 multibyte = Convert.ToBoolean(mbhFlags & 1);
                 while (mbhFlags > 1)
                 {
@@ -109,12 +109,12 @@ namespace XRayBuilderGUI.Unpack.Mobi
                 }
             }
 
-            int currentOffset = 132 + restOfMobiHeader.Length + ExthHeaderSize;
+            var currentOffset = 132 + restOfMobiHeader.Length + ExthHeaderSize;
             remainder = new byte[(int)(mobiHeaderSize - currentOffset)];
             fs.Read(remainder, 0, remainder.Length);
 
-            int fullNameIndexInRemainder = BitConverter.ToInt32(Functions.CheckBytes(fullNameOffset), 0) - currentOffset;
-            int fullNameLen = BitConverter.ToInt32(Functions.CheckBytes(fullNameLength), 0);
+            var fullNameIndexInRemainder = BitConverter.ToInt32(Functions.CheckBytes(fullNameOffset), 0) - currentOffset;
+            var fullNameLen = BitConverter.ToInt32(Functions.CheckBytes(fullNameLength), 0);
             fullName = new byte[fullNameLen];
 
             if (fullNameIndexInRemainder >= 0 &&

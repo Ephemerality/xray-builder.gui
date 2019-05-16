@@ -27,9 +27,9 @@ namespace XRayBuilderGUI.UI
             flpPeople.Controls.Clear();
             flpTerms.Controls.Clear();
 
-            foreach (XRay.Term t in terms)
+            foreach (var t in terms)
             {
-                XRayPanel p = new XRayPanel(t.Type, t.TermName, Math.Max((int) t.Occurrences.Count, (int) t.Locs.Count).ToString(), t.Desc);
+                var p = new XRayPanel(t.Type, t.TermName, Math.Max((int) t.Occurrences.Count, (int) t.Locs.Count).ToString(), t.Desc);
                 if (t.Type == "character")
                     flpPeople.Controls.Add(p);
                 if (t.Type == "topic")

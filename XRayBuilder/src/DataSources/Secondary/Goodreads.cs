@@ -56,9 +56,9 @@ namespace XRayBuilderGUI.DataSources.Secondary
             if (goodreadsHtmlDoc.DocumentNode.InnerText.Contains("No results"))
                 yield break;
 
-            HtmlNodeCollection resultNodes = goodreadsHtmlDoc.DocumentNode.SelectNodes("//tr[@itemtype='http://schema.org/Book']");
+            var resultNodes = goodreadsHtmlDoc.DocumentNode.SelectNodes("//tr[@itemtype='http://schema.org/Book']");
             //Return a list of search results
-            foreach (HtmlNode link in resultNodes)
+            foreach (var link in resultNodes)
             {
                 //Skip audiobook results
                 if (link.SelectSingleNode(".//span[@class='authorName greyText smallText role']")?.InnerText.Contains("Audiobook") ?? false)
@@ -69,7 +69,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
                 var cleanTitle = titleNode.InnerText.Trim().Replace("&amp;", "&").Replace("%27", "'").Replace("%20", " ");
 
-                BookInfo newBook = new BookInfo(cleanTitle, authorNode.InnerText.Trim(), null);
+                var newBook = new BookInfo(cleanTitle, authorNode.InnerText.Trim(), null);
 
                 newBook.GoodreadsId = ParseBookIdFromUrl(link.OuterHtml);
                 newBook.DataUrl = BookUrl(newBook.GoodreadsId);
@@ -104,8 +104,8 @@ namespace XRayBuilderGUI.DataSources.Secondary
             var series = new SeriesInfo();
             //Search Goodreads for series info
             var seriesPage = await HttpClient.GetPageAsync(dataUrl, cancellationToken);
-            HtmlNode metaNode = seriesPage.DocumentNode.SelectSingleNode("//div[@id='metacol']");
-            HtmlNode seriesNode = metaNode?.SelectSingleNode("//h2[@id='bookSeries']/a");
+            var metaNode = seriesPage.DocumentNode.SelectSingleNode("//div[@id='metacol']");
+            var seriesNode = metaNode?.SelectSingleNode("//h2[@id='bookSeries']/a");
             if (seriesNode == null)
                 return null;
             var match = Regex.Match(seriesNode.OuterHtml, @"/series/([0-9]*)");
@@ -126,8 +126,8 @@ namespace XRayBuilderGUI.DataSources.Secondary
             if (match.Success)
                 series.Total = int.Parse(match.Groups[1].Value);
 
-            int positionInt = (int)Convert.ToDouble(series.Position, CultureInfo.InvariantCulture.NumberFormat);
-            int totalInt = (int)Convert.ToDouble(series.Total, CultureInfo.InvariantCulture.NumberFormat);
+            var positionInt = (int)Convert.ToDouble(series.Position, CultureInfo.InvariantCulture.NumberFormat);
+            var totalInt = (int)Convert.ToDouble(series.Total, CultureInfo.InvariantCulture.NumberFormat);
 
             var bookNodes = seriesHtmlDoc.DocumentNode.SelectNodes("//div[@itemtype='http://schema.org/Book']");
             if (bookNodes == null)
@@ -139,7 +139,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
             async Task<BookInfo> ParseSeriesBook(HtmlNode bookNode)
             {
-                BookInfo book = new BookInfo("", "", "");
+                var book = new BookInfo("", "", "");
                 var title = bookNode.SelectSingleNode(".//div[@class='u-paddingBottomXSmall']/a");
                 book.Title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", "", RegexOptions.Compiled);
                 book.Title = WebUtility.HtmlDecode(book.Title);
@@ -177,16 +177,16 @@ namespace XRayBuilderGUI.DataSources.Secondary
             try
             {
                 var bookHtmlDoc = await HttpClient.GetPageAsync(BookUrl(id), cancellationToken);
-                HtmlNode link = bookHtmlDoc.DocumentNode.SelectSingleNode("//div[@class='otherEditionsActions']/a");
-                Match match = Regex.Match(link.GetAttributeValue("href", ""), @"editions/([0-9]*)-");
+                var link = bookHtmlDoc.DocumentNode.SelectSingleNode("//div[@class='otherEditionsActions']/a");
+                var match = Regex.Match(link.GetAttributeValue("href", ""), @"editions/([0-9]*)-");
                 if (match.Success)
                 {
-                    string kindleEditionsUrl = string.Format("https://www.goodreads.com/work/editions/{0}?utf8=%E2%9C%93&sort=num_ratings&filter_by_format=Kindle+Edition", match.Groups[1].Value);
+                    var kindleEditionsUrl = string.Format("https://www.goodreads.com/work/editions/{0}?utf8=%E2%9C%93&sort=num_ratings&filter_by_format=Kindle+Edition", match.Groups[1].Value);
                     bookHtmlDoc = await HttpClient.GetPageAsync(kindleEditionsUrl, cancellationToken);
-                    HtmlNodeCollection bookNodes = bookHtmlDoc.DocumentNode.SelectNodes("//div[@class='elementList clearFix']");
+                    var bookNodes = bookHtmlDoc.DocumentNode.SelectNodes("//div[@class='elementList clearFix']");
                     if (bookNodes != null)
                     {
-                        foreach (HtmlNode book in bookNodes)
+                        foreach (var book in bookNodes)
                             return Amazon.Amazon.ParseAsin(book.InnerHtml);
                     }
                 }
@@ -206,11 +206,11 @@ namespace XRayBuilderGUI.DataSources.Secondary
             var pagesNode = bookPage.DocumentNode.SelectSingleNode("//div[@id='details']");
             if (pagesNode == null)
                 return false;
-            Match match = Regex.Match(pagesNode.InnerText, @"((\d+)|(\d+,\d+)) pages");
+            var match = Regex.Match(pagesNode.InnerText, @"((\d+)|(\d+,\d+)) pages");
             if (match.Success)
             {
-                double minutes = int.Parse(match.Groups[1].Value, NumberStyles.AllowThousands) * 1.2890625;
-                TimeSpan span = TimeSpan.FromMinutes(minutes);
+                var minutes = int.Parse(match.Groups[1].Value, NumberStyles.AllowThousands) * 1.2890625;
+                var span = TimeSpan.FromMinutes(minutes);
                 // Functions.Pluralize($"{BookList[i].editions:edition}")
                 _logger.Log(string.Format("Typical time to read: {0}, {1}, and {2} ({3} pages)",
                     Functions.Pluralize($"{span.Days:day}"),
@@ -260,23 +260,23 @@ namespace XRayBuilderGUI.DataSources.Secondary
         // Are there actually any goodreads pages that aren't at goodreads.com for other languages??
         private async Task<XRay.Term> GetTermAsync(string baseUrl, string relativeUrl, CancellationToken cancellationToken = default)
         {
-            XRay.Term result = new XRay.Term("character");
-            Uri tempUri = new Uri(baseUrl);
+            var result = new XRay.Term("character");
+            var tempUri = new Uri(baseUrl);
             tempUri = new Uri(new Uri(tempUri.GetLeftPart(UriPartial.Authority)), relativeUrl);
             result.DescSrc = "Goodreads";
             result.DescUrl = tempUri.ToString();
-            HtmlDocument charDoc = await HttpClient.GetPageAsync(tempUri.ToString(), cancellationToken);
-            HtmlNode mainNode = charDoc.DocumentNode.SelectSingleNode("//div[@class='mainContentFloat']")
+            var charDoc = await HttpClient.GetPageAsync(tempUri.ToString(), cancellationToken);
+            var mainNode = charDoc.DocumentNode.SelectSingleNode("//div[@class='mainContentFloat']")
                 ?? charDoc.DocumentNode.SelectSingleNode("//div[@class='mainContentFloat ']");
             result.TermName = mainNode.SelectSingleNode("./h1").InnerText;
             mainNode = mainNode.SelectSingleNode("//div[@class='grey500BoxContent']");
-            HtmlNodeCollection tempNodes = mainNode.SelectNodes("//div[@class='floatingBox']");
+            var tempNodes = mainNode.SelectNodes("//div[@class='floatingBox']");
             if (tempNodes == null) return result;
-            foreach (HtmlNode tempNode in tempNodes)
+            foreach (var tempNode in tempNodes)
             {
                 if (tempNode.Id.Contains("_aliases")) // If present, add any aliases found
                 {
-                    string aliasStr = tempNode.InnerText.Replace("[close]", "").Trim();
+                    var aliasStr = tempNode.InnerText.Replace("[close]", "").Trim();
                     result.Aliases.AddRange(aliasStr.Split(new [] { ", " }, StringSplitOptions.RemoveEmptyEntries));
                 }
                 else
@@ -294,22 +294,22 @@ namespace XRayBuilderGUI.DataSources.Secondary
             {
                 srcDoc = await HttpClient.GetPageAsync(url, cancellationToken);
             }
-            HtmlNode quoteNode = srcDoc.DocumentNode.SelectSingleNode("//div[@class='h2Container gradientHeaderContainer']/h2/a[starts-with(.,'Quotes from')]");
+            var quoteNode = srcDoc.DocumentNode.SelectSingleNode("//div[@class='h2Container gradientHeaderContainer']/h2/a[starts-with(.,'Quotes from')]");
             if (quoteNode == null) return null;
-            string quoteURL = $"https://www.goodreads.com{quoteNode.GetAttributeValue("href", "")}?page={{0}}";
+            var quoteURL = $"https://www.goodreads.com{quoteNode.GetAttributeValue("href", "")}?page={{0}}";
             progress?.Set(0, 1);
 
             var quoteBag = new ConcurrentBag<IEnumerable<NotableClip>>();
             var initialPage = await HttpClient.GetPageAsync(string.Format(quoteURL, 1), cancellationToken);
 
             // check how many pages there are (find previous page button, get parent div, take all children of that, 2nd last one should be the max page count
-            HtmlNode maxPageNode = initialPage.DocumentNode.SelectSingleNode("//span[contains(@class,'previous_page')]/parent::div/*[last()-1]");
+            var maxPageNode = initialPage.DocumentNode.SelectSingleNode("//span[contains(@class,'previous_page')]/parent::div/*[last()-1]");
             if (!int.TryParse(maxPageNode?.InnerHtml, out var maxPages))
                 maxPages = 1;
 
             IEnumerable<NotableClip> ParseQuotePage(HtmlDocument quoteDoc)
             {
-                HtmlNodeCollection tempNodes = quoteDoc.DocumentNode.SelectNodes("//div[@class='quotes']/div[@class='quote']");
+                var tempNodes = quoteDoc.DocumentNode.SelectNodes("//div[@class='quotes']/div[@class='quote']");
                 return tempNodes?.Select(node =>
                 {
                     var quoteMatch = Regex.Match(node.InnerText, "&ldquo;(.*?)&rdquo;", RegexOptions.Compiled);
@@ -349,18 +349,18 @@ namespace XRayBuilderGUI.DataSources.Secondary
             }
 
             //Add rating and reviews count if missing from Amazon book info
-            HtmlNode metaNode = grDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
+            var metaNode = grDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
             if (metaNode != null && curBook.AmazonRating == 0)
             {
-                HtmlNode goodreadsRating = metaNode.SelectSingleNode("//span[@class='value rating']")
+                var goodreadsRating = metaNode.SelectSingleNode("//span[@class='value rating']")
                     ?? metaNode.SelectSingleNode(".//span[@itemprop='ratingValue']");
                 if (goodreadsRating != null)
                     curBook.AmazonRating = Math.Round(float.Parse(goodreadsRating.InnerText), 2);
-                HtmlNode passagesNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite votes' and @href='#other_reviews']")
+                var passagesNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite votes' and @href='#other_reviews']")
                     ?? metaNode.SelectSingleNode(".//span[@class='count value-title']");
                 if (passagesNode != null)
                 {
-                    Match match = Regex.Match(passagesNode.InnerText, @"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)");
+                    var match = Regex.Match(passagesNode.InnerText, @"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)");
                     if (match.Success)
                         curBook.Reviews = int.Parse(match.Value.Replace(",", "").Replace(".", ""));
                 }

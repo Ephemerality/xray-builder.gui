@@ -64,7 +64,7 @@ namespace XRayBuilderGUI
 
         public static XRayVersion CheckXRayVersion(string path)
         {
-            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 var c = fs.ReadByte();
                 switch (c)
@@ -82,7 +82,7 @@ namespace XRayBuilderGUI
         public static IEnumerable<XRay.Term> ExtractTermsOld(string path)
         {
             string readContents;
-            using (StreamReader streamReader = new StreamReader(path, Encoding.UTF8))
+            using (var streamReader = new StreamReader(path, Encoding.UTF8))
                 readContents = streamReader.ReadToEnd();
 
             var xray = JObject.Parse(readContents);

@@ -54,7 +54,7 @@ namespace XRayBuilderGUI
         {
             _logger.Log("Attempting to find book on Amazon...");
             //Generate Book search URL from book's ASIN
-            string ebookLocation = string.Format(@"https://www.amazon.{0}/dp/{1}", _settings.AmazonTld, curBook.Asin);
+            var ebookLocation = string.Format(@"https://www.amazon.{0}/dp/{1}", _settings.AmazonTld, curBook.Asin);
 
             // Search Amazon for book
             //_logger.Log(String.Format("Book's Amazon page URL: {0}", ebookLocation));
@@ -103,9 +103,9 @@ namespace XRayBuilderGUI
                 if (recList != null)
                 {
                     var possibleBooks = new List<BookInfo>();
-                    foreach (HtmlNode item in recList.Where(item => item != null))
+                    foreach (var item in recList.Where(item => item != null))
                     {
-                        HtmlNode nodeTitle = item.SelectSingleNode(".//div/a");
+                        var nodeTitle = item.SelectSingleNode(".//div/a");
                         var nodeTitleCheck = nodeTitle.GetAttributeValue("title", "");
                         var nodeUrl = nodeTitle.GetAttributeValue("href", "");
                         if (nodeTitleCheck == "")
@@ -120,7 +120,7 @@ namespace XRayBuilderGUI
 
                         var cleanAuthor = item.SelectSingleNode(".//div/div").InnerText.Clean();
                         //Exclude the current book title from other books search
-                        Match match = Regex.Match(nodeTitleCheck, curBook.Title, RegexOptions.IgnoreCase);
+                        var match = Regex.Match(nodeTitleCheck, curBook.Title, RegexOptions.IgnoreCase);
                         if (match.Success)
                             continue;
                         match = Regex.Match(nodeTitleCheck,
@@ -151,7 +151,7 @@ namespace XRayBuilderGUI
                     custAlsoBought.AddRange(bookBag);
                 }
                 //Add sponsored related, if they exist...
-                HtmlNode otherItems =
+                var otherItems =
                     bookHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='view_to_purchase-sims-feature']");
                 if (otherItems != null)
                 {
@@ -160,9 +160,9 @@ namespace XRayBuilderGUI
                     {
                         var possibleBooks = new List<BookInfo>();
                         // TODO: This entire foreach is pretty much the exact same as the one above...
-                        foreach (HtmlNode result in recList.Where(result => result != null))
+                        foreach (var result in recList.Where(result => result != null))
                         {
-                            HtmlNode otherBook =
+                            var otherBook =
                                 result.SelectSingleNode(".//div[@class='a-fixed-left-grid-col a-col-left']/a");
                             if (otherBook == null)
                                 continue;
@@ -217,9 +217,9 @@ namespace XRayBuilderGUI
         public void GenerateOld()
         {
             //Create final EndActions.data.ASIN.asc
-            string dt = DateTime.Now.ToString("s");
-            string tz = DateTime.Now.ToString("zzz");
-            XmlTextWriter writer = new XmlTextWriter(EaPath, Encoding.UTF8);
+            var dt = DateTime.Now.ToString("s");
+            var tz = DateTime.Now.ToString("zzz");
+            var writer = new XmlTextWriter(EaPath, Encoding.UTF8);
             _logger.Log("Writing EndActions to file...");
             writer.WriteProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"");
             writer.WriteStartElement("endaction");
@@ -240,7 +240,7 @@ namespace XRayBuilderGUI
             writer.WriteEndElement();
             writer.WriteStartElement("recs");
             writer.WriteAttributeString("type", "author");
-            for (int i = 0; i < Math.Min(_authorProfile.OtherBooks.Length, 5); i++)
+            for (var i = 0; i < Math.Min(_authorProfile.OtherBooks.Length, 5); i++)
             {
                 writer.WriteStartElement("rec");
                 writer.WriteAttributeString("hasSample", "false");
@@ -252,7 +252,7 @@ namespace XRayBuilderGUI
             writer.WriteEndElement();
             writer.WriteStartElement("recs");
             writer.WriteAttributeString("type", "purchase");
-            for (int i = 0; i < Math.Min(custAlsoBought.Count, 5); i++)
+            for (var i = 0; i < Math.Min(custAlsoBought.Count, 5); i++)
             {
                 writer.WriteStartElement("rec");
                 writer.WriteAttributeString("hasSample", "false");
@@ -487,7 +487,7 @@ namespace XRayBuilderGUI
             }
 
             _logger.Log("Writing EndActions to file...");
-            using (StreamWriter streamWriter = new StreamWriter(EaPath, false))
+            using (var streamWriter = new StreamWriter(EaPath, false))
             {
                 await streamWriter.WriteAsync(finalOutput);
                 streamWriter.Flush();

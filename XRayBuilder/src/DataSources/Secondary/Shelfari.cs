@@ -26,14 +26,14 @@ namespace XRayBuilderGUI.DataSources.Secondary
         private string FindShelfariURL(HtmlDocument shelfariHtmlDoc, string author, string title)
         {
             // Try to find book's page from Shelfari search
-            List<string> listofthings = new List<string>();
-            List<string> listoflinks = new List<string>();
-            Dictionary<string, string> retData = new Dictionary<string, string>();
+            var listofthings = new List<string>();
+            var listoflinks = new List<string>();
+            var retData = new Dictionary<string, string>();
 
-            HtmlNode nodeResultCheck = shelfariHtmlDoc.DocumentNode.SelectSingleNode("//li[@class='item']/div[@class='text']");
+            var nodeResultCheck = shelfariHtmlDoc.DocumentNode.SelectSingleNode("//li[@class='item']/div[@class='text']");
             if (nodeResultCheck == null)
                 return "";
-            foreach (HtmlNode bookItems in shelfariHtmlDoc.DocumentNode.SelectNodes("//li[@class='item']/div[@class='text']"))
+            foreach (var bookItems in shelfariHtmlDoc.DocumentNode.SelectNodes("//li[@class='item']/div[@class='text']"))
             {
                 if (bookItems == null) continue;
                 listofthings.Clear();
@@ -45,7 +45,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
                     listoflinks.Add(bookItems.ChildNodes[i].InnerHtml);
                 }
                 var index = 0;
-                foreach (string line in listofthings)
+                foreach (var line in listofthings)
                 {
                     // Search for author with spaces removed to avoid situations like "J.R.R. Tolkien" / "J. R. R. Tolkien"
                     // Ignore Collective Work search result.
@@ -83,16 +83,16 @@ namespace XRayBuilderGUI.DataSources.Secondary
             {
                 sourceHtmlDoc = await HttpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
             }
-            HtmlNode pageNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_FirstEdition']");
-            HtmlNode node1 = pageNode?.SelectSingleNode(".//div/div");
+            var pageNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_FirstEdition']");
+            var node1 = pageNode?.SelectSingleNode(".//div/div");
             if (node1 == null)
                 return false;
             //Parse page count and multiply by average reading time
-            Match match1 = Regex.Match(node1.InnerText, @"Page Count: ((\d+)|(\d+,\d+))");
+            var match1 = Regex.Match(node1.InnerText, @"Page Count: ((\d+)|(\d+,\d+))");
             if (match1.Success)
             {
-                double minutes = int.Parse(match1.Groups[1].Value, NumberStyles.AllowThousands) * 1.2890625;
-                TimeSpan span = TimeSpan.FromMinutes(minutes);
+                var minutes = int.Parse(match1.Groups[1].Value, NumberStyles.AllowThousands) * 1.2890625;
+                var span = TimeSpan.FromMinutes(minutes);
                 _logger.Log(string.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)", span.Hours, span.Minutes, match1.Groups[1].Value));
                 curBook.PagesInBook = int.Parse(match1.Groups[1].Value);
                 curBook.ReadingHours = span.Hours;
@@ -110,7 +110,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
         public async Task<IEnumerable<XRay.Term>> GetTermsAsync(string dataUrl, IProgressBar progress, CancellationToken cancellationToken = default)
         {
             _logger.Log("Downloading Shelfari page...");
-            List<XRay.Term> terms = new List<XRay.Term>();
+            var terms = new List<XRay.Term>();
 
             if (sourceHtmlDoc == null)
             {
@@ -118,7 +118,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             }
 
             //Constants for wiki processing
-            Dictionary<string, string> sections = new Dictionary<string, string>
+            var sections = new Dictionary<string, string>
             {
                 {"WikiModule_Characters", "character"},
                 {"WikiModule_Organizations", "topic"},
@@ -126,15 +126,15 @@ namespace XRayBuilderGUI.DataSources.Secondary
                 {"WikiModule_Glossary", "topic"}
             };
 
-            foreach (string header in sections.Keys)
+            foreach (var header in sections.Keys)
             {
-                HtmlNodeCollection characterNodes =
+                var characterNodes =
                     sourceHtmlDoc.DocumentNode.SelectNodes("//div[@id='" + header + "']//ul[@class='li_6']/li");
                 if (characterNodes == null) continue; //Skip section if not found on page
-                foreach (HtmlNode li in characterNodes)
+                foreach (var li in characterNodes)
                 {
-                    string tmpString = li.InnerText;
-                    XRay.Term newTerm = new XRay.Term(sections[header]); //Create term as either character/topic
+                    var tmpString = li.InnerText;
+                    var newTerm = new XRay.Term(sections[header]); //Create term as either character/topic
                     if (tmpString.Contains(":"))
                     {
                         newTerm.TermName = tmpString.Substring(0, tmpString.IndexOf(":"));
@@ -165,15 +165,15 @@ namespace XRayBuilderGUI.DataSources.Secondary
             {
                 srcDoc = await HttpClient.GetPageAsync(url, cancellationToken);
             }
-            List<NotableClip> result = new List<NotableClip>();
-            HtmlNodeCollection quoteNodes = srcDoc.DocumentNode.SelectNodes("//div[@id='WikiModule_Quotations']/div/ul[@class='li_6']/li");
+            var result = new List<NotableClip>();
+            var quoteNodes = srcDoc.DocumentNode.SelectNodes("//div[@id='WikiModule_Quotations']/div/ul[@class='li_6']/li");
             if (quoteNodes != null)
             {
-                foreach (HtmlNode quoteNode in quoteNodes)
+                foreach (var quoteNode in quoteNodes)
                 {
-                    HtmlNode node = quoteNode.SelectSingleNode(".//blockquote");
+                    var node = quoteNode.SelectSingleNode(".//blockquote");
                     if (node == null) continue;
-                    string quote = node.InnerText;
+                    var quote = node.InnerText;
                     // Remove quotes (sometimes people put unnecessary quotes in the quote as well)
                     quote = Regex.Replace(quote, "^(&ldquo;){1,2}", "");
                     quote = Regex.Replace(quote, "(&rdquo;){1,2}$", "");

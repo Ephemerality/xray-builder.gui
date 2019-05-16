@@ -38,7 +38,7 @@ namespace XRayBuilderGUI.UI
         {
             get
             {
-                CreateParams cp = base.CreateParams;
+                var cp = base.CreateParams;
                 cp.ExStyle |= 0x02000000;  // Turn on WS_EX_COMPOSITED
                 return cp;
             }
@@ -50,7 +50,7 @@ namespace XRayBuilderGUI.UI
 
             if (Directory.Exists(Environment.CurrentDirectory + @"\log"))
             {
-                int fileCount = Directory.GetFiles(Environment.CurrentDirectory + @"\log").Length;
+                var fileCount = Directory.GetFiles(Environment.CurrentDirectory + @"\log").Length;
                 if (fileCount > 0)
                 {
                     btnClearLogs.Text = string.Format("Clear Logs ({0})", fileCount);
@@ -93,7 +93,7 @@ namespace XRayBuilderGUI.UI
             chkEditBiography.Checked = Properties.Settings.Default.editBiography;
 
             // Added \r\n to show smaller tooltips
-            ToolTip toolTip1 = new ToolTip();
+            var toolTip1 = new ToolTip();
             toolTip1.SetToolTip(chkRaw,
                 "Save the rawML (raw markup) of the book\r\nin the output directory so you can review it.");
             toolTip1.SetToolTip(txtOffset,
@@ -164,7 +164,7 @@ namespace XRayBuilderGUI.UI
             toolTip1.SetToolTip(chkEditBiography, "If enabled, allows editing the Author's biography before it's used.");
 
             IList <AmazonRegion> regions = new List<AmazonRegion>(regionTLDs.Count);
-            foreach (KeyValuePair<string, string> r in regionTLDs)
+            foreach (var r in regionTLDs)
                 regions.Add(new AmazonRegion(r.Key, r.Value));
             cmbRegion.DataSource = regions;
             cmbRegion.DisplayMember = "Name";

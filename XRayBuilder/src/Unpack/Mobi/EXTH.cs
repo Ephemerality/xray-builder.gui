@@ -27,7 +27,7 @@ namespace XRayBuilderGUI.Unpack.Mobi
                 throw new UnpackException("Expected to find EXTH header identifier EXTH but got something else instead");
             fs.Read(_headerLength, 0, _headerLength.Length);
             fs.Read(_recordCount, 0, _recordCount.Length);
-            for (int i = 0; i < RecordCount; i++)
+            for (var i = 0; i < RecordCount; i++)
             {
                 recordList.Add(new EXTHRecord(fs));
             }
@@ -38,8 +38,8 @@ namespace XRayBuilderGUI.Unpack.Mobi
         {
             get
             {
-                int size = 0;
-                foreach (EXTHRecord rec in recordList)
+                var size = 0;
+                foreach (var rec in recordList)
                 {
                     size += rec.Size;
                 }
@@ -52,14 +52,14 @@ namespace XRayBuilderGUI.Unpack.Mobi
         {
             get
             {
-                int dataSize = DataSize;
+                var dataSize = DataSize;
                 return 12 + dataSize + GetPaddingSize(dataSize);
             }
         }
 
         protected int GetPaddingSize(int dataSize)
         {
-            int paddingSize = dataSize % 4;
+            var paddingSize = dataSize % 4;
             if (paddingSize != 0) paddingSize = 4 - paddingSize;
 
             return paddingSize;
@@ -88,7 +88,7 @@ namespace XRayBuilderGUI.Unpack.Mobi
         private byte[] GetRecordBytesByType(int recType)
         {
             byte[] record = null;
-            foreach (EXTHRecord rec in recordList)
+            foreach (var rec in recordList)
             {
                 if (rec.RecordType == recType)
                 {
@@ -102,8 +102,8 @@ namespace XRayBuilderGUI.Unpack.Mobi
 
         private string GetRecordByType(int recType)
         {
-            string record = string.Empty;
-            foreach (EXTHRecord rec in recordList)
+            var record = string.Empty;
+            foreach (var rec in recordList)
             {
                 if (rec.RecordType == recType)
                 {
@@ -116,7 +116,7 @@ namespace XRayBuilderGUI.Unpack.Mobi
 
         public void UpdateCdeContentType(FileStream fs)
         {
-            byte[] newValue = Encoding.UTF8.GetBytes("EBOK");
+            var newValue = Encoding.UTF8.GetBytes("EBOK");
             var rec = recordList.First(r => r.RecordType == 501);
             if (rec == null)
                 throw new UnpackException("Could not find the CDEContentType record (EXTH 501).");

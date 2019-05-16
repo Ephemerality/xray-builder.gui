@@ -22,8 +22,8 @@ namespace XRayBuilderGUI.Unpack.Mobi
             fs.Read(_dbName, 0, 32);
             fs.Seek(44, SeekOrigin.Current);
             fs.Read(_numRecords, 0, 2);
-            int numRecords = NumRecords;
-            for (int i = 0; i < numRecords; i++)
+            var numRecords = NumRecords;
+            for (var i = 0; i < numRecords; i++)
             {
                 _recInfo.Add(new RecordInfo(fs));
             }

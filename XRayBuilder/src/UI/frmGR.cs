@@ -36,7 +36,7 @@ namespace XRayBuilderGUI.UI
 
         private void cbResults_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int i = cbResults.SelectedIndex == -1 ? 0 : cbResults.SelectedIndex;
+            var i = cbResults.SelectedIndex == -1 ? 0 : cbResults.SelectedIndex;
             try
             {
                 pbCover.Image = BookList[i].CoverImage() ?? Resources.missing_image;

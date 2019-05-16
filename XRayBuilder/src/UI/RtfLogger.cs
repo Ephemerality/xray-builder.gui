@@ -47,7 +47,7 @@ namespace XRayBuilderGUI.UI
                     rtfBox.SelectionColor = Color.Green;
                 }
 
-                List<string> redFlags = new List<string> { "error", "failed", "problem", "skipping", "unable" };
+                var redFlags = new List<string> { "error", "failed", "problem", "skipping", "unable" };
                 if (redFlags.Any(message.ContainsIgnorecase))
                 {
                     rtfBox.SelectionStart = rtfBox.TextLength;

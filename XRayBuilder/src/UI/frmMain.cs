@@ -60,7 +60,7 @@ namespace XRayBuilderGUI.UI
 
         public string OutputDirectory(string author, string title, string asin, bool create)
         {
-            string outputDir = "";
+            var outputDir = "";
 
             if (_settings.android)
                 outputDir = $@"{_settings.outDir}\Android\{asin}";
@@ -175,7 +175,7 @@ namespace XRayBuilderGUI.UI
             _logger.Log("Attempting to build X-Ray...");
 
             //If AZW3 file use AZW3 offset, if checked. Checked by default.
-            bool AZW3 = Path.GetExtension(txtMobi.Text) == ".azw3" && _settings.overrideOffset;
+            var AZW3 = Path.GetExtension(txtMobi.Text) == ".azw3" && _settings.overrideOffset;
             _logger.Log("Offset: " + (AZW3 ? $"{_settings.offsetAZW3} (AZW3)" : _settings.offset.ToString()));
 
             //Create X-Ray and attempt to create the base file (essentially the same as the site)
@@ -275,7 +275,7 @@ namespace XRayBuilderGUI.UI
                 //Save the new XRAY.ASIN.previewData file
                 try
                 {
-                    string PdPath = outFolder + @"\XRAY." + metadata.Asin + ".previewData";
+                    var PdPath = outFolder + @"\XRAY." + metadata.Asin + ".previewData";
                     xray.SavePreviewToFile(PdPath);
                     _logger.Log($"X-Ray previewData file created successfully!\r\nSaved to {PdPath}");
                 }
@@ -294,7 +294,7 @@ namespace XRayBuilderGUI.UI
 
             if (_settings.playSound)
             {
-                System.Media.SoundPlayer player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
+                var player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
                 player.Play();
             }
 
@@ -349,9 +349,9 @@ namespace XRayBuilderGUI.UI
             _logger.Log($"Book's {_dataSource.Name} URL: {txtGoodreads.Text}");
             try
             {
-                BookInfo bookInfo = new BookInfo(metadata, txtGoodreads.Text);
+                var bookInfo = new BookInfo(metadata, txtGoodreads.Text);
 
-                string outputDir = OutputDirectory(bookInfo.Author, bookInfo.SidecarName, bookInfo.Asin, true);
+                var outputDir = OutputDirectory(bookInfo.Author, bookInfo.SidecarName, bookInfo.Asin, true);
 
                 _logger.Log("Attempting to build Author Profile...");
 
@@ -409,7 +409,7 @@ namespace XRayBuilderGUI.UI
                     return frmAsin.tbAsin.Text;
                 }
 
-                EndActions ea = new EndActions(response, bookInfo, metadata.RawMlSize, _dataSource, new EndActions.Settings
+                var ea = new EndActions(response, bookInfo, metadata.RawMlSize, _dataSource, new EndActions.Settings
                 {
                     AmazonTld = _settings.amazonTLD,
                     Android = _settings.android,
@@ -492,7 +492,7 @@ namespace XRayBuilderGUI.UI
                 checkFiles(bookInfo.Author, bookInfo.Title, bookInfo.Asin);
                 if (_settings.playSound)
                 {
-                    System.Media.SoundPlayer player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
+                    var player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
                     player.Play();
                 }
             }
@@ -521,13 +521,13 @@ namespace XRayBuilderGUI.UI
             ToggleInterface(false);
             if (!Directory.Exists(Environment.CurrentDirectory + @"\xml\"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\xml\");
-            string path = Environment.CurrentDirectory + @"\xml\" + Path.GetFileNameWithoutExtension(txtMobi.Text) + ".xml";
+            var path = Environment.CurrentDirectory + @"\xml\" + Path.GetFileNameWithoutExtension(txtMobi.Text) + ".xml";
             try
             {
                 txtXMLFile.Text = path;
 
-                XRay xray = new XRay(txtGoodreads.Text, _dataSource, _logger);
-                int result = await Task.Run(() => xray.SaveXml(path, _progress, _cancelTokens.Token));
+                var xray = new XRay(txtGoodreads.Text, _dataSource, _logger);
+                var result = await Task.Run(() => xray.SaveXml(path, _progress, _cancelTokens.Token));
                 if (result == 1)
                     _logger.Log("Warning: Unable to download character data as no character data found on Goodreads.");
                 else if (result == 2)
@@ -574,7 +574,7 @@ namespace XRayBuilderGUI.UI
 
                 try
                 {
-                    BookInfo[] books = new BookInfo[0];
+                    var books = new BookInfo[0];
                     if (_settings.searchByAsin)
                         books = (await _dataSource.SearchBookByAsinAsync(metadata.Asin)).ToArray();
 
@@ -620,7 +620,7 @@ namespace XRayBuilderGUI.UI
 
         private void btnSettings_Click(object sender, EventArgs e)
         {
-            frmSettings frmSet = new frmSettings();
+            var frmSet = new frmSettings();
             frmSet.ShowDialog();
             SetDatasourceLabels();
 
@@ -667,7 +667,7 @@ namespace XRayBuilderGUI.UI
             DragEnter += frmMain_DragEnter;
             DragDrop += frmMain_DragDrop;
 
-            string[] args = Environment.GetCommandLineArgs();
+            var args = Environment.GetCommandLineArgs();
 
             txtMobi.Text = args.Skip(1).Where(File.Exists).Select(Path.GetFullPath).FirstOrDefault()
                            ?? _settings.mobiFile;
@@ -717,7 +717,7 @@ namespace XRayBuilderGUI.UI
         private void frmMain_DragDrop(object sender, DragEventArgs e)
         {
             if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
-            string[] filePaths = (string[])(e.Data.GetData(DataFormats.FileDrop));
+            var filePaths = (string[])(e.Data.GetData(DataFormats.FileDrop));
             foreach (var fileLoc in filePaths.Where(File.Exists))
             {
                 txtMobi.Text = fileLoc;
@@ -862,7 +862,7 @@ namespace XRayBuilderGUI.UI
 
         private void btnExtractTerms_Click(object sender, EventArgs e)
         {
-            string selPath = UIFunctions.GetFile("Open a Kindle X-Ray file...", "", "ASC files|*.asc", _settings.outDir);
+            var selPath = UIFunctions.GetFile("Open a Kindle X-Ray file...", "", "ASC files|*.asc", _settings.outDir);
             if (selPath == "" || !selPath.Contains("XRAY.entities"))
             {
                 _logger.Log("Invalid or no file selected.");
@@ -881,7 +881,7 @@ namespace XRayBuilderGUI.UI
                     : XRayUtil.ExtractTermsOld(selPath);
                 if (!Directory.Exists(Environment.CurrentDirectory + @"\xml\"))
                     Directory.CreateDirectory(Environment.CurrentDirectory + @"\xml\");
-                string outfile = Environment.CurrentDirectory + @"\xml\" + Path.GetFileNameWithoutExtension(selPath) + ".xml";
+                var outfile = Environment.CurrentDirectory + @"\xml\" + Path.GetFileNameWithoutExtension(selPath) + ".xml";
                 Functions.Save(terms.ToList(), outfile);
                 _logger.Log("Character data has been successfully extracted and saved to: " + outfile);
             }
@@ -924,7 +924,7 @@ namespace XRayBuilderGUI.UI
         // TODO: Fix this mess
         private void checkFiles(string author, string title, string asin)
         {
-            string bookOutputDir = OutputDirectory(author, Functions.RemoveInvalidFileChars(title), asin, false);
+            var bookOutputDir = OutputDirectory(author, Functions.RemoveInvalidFileChars(title), asin, false);
 
             if (File.Exists(bookOutputDir + @"\StartActions.data." + asin + ".asc"))
                 pbFile1.Image = Resources.file_on;

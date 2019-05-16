@@ -89,19 +89,19 @@ namespace XRayBuilderGUI.UI
 
         private void btnOpenXml_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFile = new OpenFileDialog
+            var openFile = new OpenFileDialog
             {
                 Title = "Open XML or TXT file",
                 Filter = "XML files (*.xml)|*.xml|TXT files (*.txt)|*.txt",
                 InitialDirectory = Environment.CurrentDirectory + @"\xml\"
             };
             if (openFile.ShowDialog() != DialogResult.OK) return;
-            string filetype = Path.GetExtension(openFile.FileName);
-            string file = openFile.FileName;
-            Match match = Regex.Match(file, "(B[A-Z0-9]{9})", RegexOptions.Compiled);
+            var filetype = Path.GetExtension(openFile.FileName);
+            var file = openFile.FileName;
+            var match = Regex.Match(file, "(B[A-Z0-9]{9})", RegexOptions.Compiled);
             if (match.Success)
                 txtAsin.Text = match.Value;
-            string aliasFile = Environment.CurrentDirectory + @"\ext\" + txtAsin.Text + ".aliases";
+            var aliasFile = Environment.CurrentDirectory + @"\ext\" + txtAsin.Text + ".aliases";
             var d = new Dictionary<string, string>();
             dgvTerms.Rows.Clear();
             txtName.Text = "";
@@ -116,7 +116,7 @@ namespace XRayBuilderGUI.UI
                     Terms = LoadTermsFromTxt<XRay.Term>(file);
                 else
                     MessageBox.Show("Error: Bad file type \"" + filetype + "\"");
-                foreach (XRay.Term t in Terms)
+                foreach (var t in Terms)
                 {
                     Image typeImage = t.Type == "character" ? Resources.character : Resources.setting;
                     dgvTerms.Rows.Add(
@@ -138,17 +138,17 @@ namespace XRayBuilderGUI.UI
                 {
                     while (!streamReader.EndOfStream)
                     {
-                        string input = streamReader.ReadLine();
-                        string[] temp = input?.Split('|') ?? throw new IOException("Empty or invalid file.");
+                        var input = streamReader.ReadLine();
+                        var temp = input?.Split('|') ?? throw new IOException("Empty or invalid file.");
                         if (temp.Length <= 1 || temp[0] == "" || temp[0].Substring(0, 1) == "#") continue;
-                        string temp2 = input.Substring(input.IndexOf('|') + 1);
+                        var temp2 = input.Substring(input.IndexOf('|') + 1);
                         if (!d.ContainsKey(temp[0]))
                             d.Add(temp[0], temp2);
                     }
                 }
                 foreach (DataGridViewRow row in dgvTerms.Rows)
                 {
-                    string name = row.Cells[1].Value.ToString();
+                    var name = row.Cells[1].Value.ToString();
                     if (d.TryGetValue(name, out var aliases))
                         row.Cells[2].Value = aliases;
                 }
@@ -209,7 +209,7 @@ namespace XRayBuilderGUI.UI
         {
             if (e.RowIndex != -1 && e.ColumnIndex != -1 && e.Button == MouseButtons.Right)
             {
-                Point relativeMousePosition = dgvTerms.PointToClient(Cursor.Position);
+                var relativeMousePosition = dgvTerms.PointToClient(Cursor.Position);
                 cmsTerms.Show(dgvTerms, relativeMousePosition);
             }
         }
@@ -247,7 +247,7 @@ namespace XRayBuilderGUI.UI
 
         private void CreateAliases()
         {
-            string aliasFile = Environment.CurrentDirectory + @"\ext\" + txtAsin.Text + ".aliases";
+            var aliasFile = Environment.CurrentDirectory + @"\ext\" + txtAsin.Text + ".aliases";
             Directory.CreateDirectory(Environment.CurrentDirectory + @"\ext\");
             using (var streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8))
             {
@@ -268,12 +268,12 @@ namespace XRayBuilderGUI.UI
         {
             if (!Directory.Exists(Environment.CurrentDirectory + @"\xml\"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\xml\");
-            string outfile = Environment.CurrentDirectory + $@"\xml\{txtAsin.Text}.entities.xml";
+            var outfile = Environment.CurrentDirectory + $@"\xml\{txtAsin.Text}.entities.xml";
             Terms.Clear();
             var termId = 1;
             foreach (DataGridViewRow row in dgvTerms.Rows)
             {
-                XRay.Term newTerm = new XRay.Term
+                var newTerm = new XRay.Term
                 {
                     Id = termId++,
                     Type = CompareImages((Bitmap) row.Cells[0].Value, Resources.character) ? "character" : "topic",
@@ -296,8 +296,8 @@ namespace XRayBuilderGUI.UI
         private static bool CompareImages(Bitmap image1, Bitmap image2)
         {
             if (image1.Width != image2.Width || image1.Height != image2.Height) return false;
-            for (int i = 0; i < image1.Width; i++)
-                for (int j = 0; j < image1.Height; j++)
+            for (var i = 0; i < image1.Width; i++)
+                for (var j = 0; j < image1.Height; j++)
                     if (image1.GetPixel(i, j) != image2.GetPixel(i, j))
                         return false;
             return true;
@@ -306,17 +306,17 @@ namespace XRayBuilderGUI.UI
 
         private List<T> LoadTermsFromTxt<T>(string txtfile)
         {
-            List<T> itemList = new List<T>();
-            using (StreamReader streamReader = new StreamReader(txtfile, Encoding.UTF8))
+            var itemList = new List<T>();
+            using (var streamReader = new StreamReader(txtfile, Encoding.UTF8))
             {
-                int termId = 1;
-                int lineCount = 1;
+                var termId = 1;
+                var lineCount = 1;
                 Terms.Clear();
                 while (!streamReader.EndOfStream)
                 {
                     try
                     {
-                        string temp = streamReader.ReadLine()?.ToLower();
+                        var temp = streamReader.ReadLine()?.ToLower();
                         if (string.IsNullOrEmpty(temp)) continue;
                         lineCount++;
                         if (temp != "character" && temp != "topic")
@@ -324,7 +324,7 @@ namespace XRayBuilderGUI.UI
                             MessageBox.Show("Error: Invalid term type \"" + temp + "\" on line " + lineCount);
                             return null;
                         }
-                        XRay.Term newTerm = new XRay.Term
+                        var newTerm = new XRay.Term
                         {
                             Type = temp,
                             TermName = streamReader.ReadLine(),

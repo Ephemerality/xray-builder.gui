@@ -112,8 +112,8 @@ namespace XRayBuilderGUI
                 {
                     if (bio.InnerText.Length > 1000)
                     {
-                        int lastPunc = bio.InnerText.LastIndexOfAny(new [] { '.', '!', '?' });
-                        int lastSpace = bio.InnerText.LastIndexOf(' ');
+                        var lastPunc = bio.InnerText.LastIndexOfAny(new [] { '.', '!', '?' });
+                        var lastSpace = bio.InnerText.LastIndexOf(' ');
                         if (lastPunc > lastSpace)
                             biography = bio.InnerText.Substring(0, lastPunc + 1);
                         else

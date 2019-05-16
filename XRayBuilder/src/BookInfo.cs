@@ -112,7 +112,7 @@ namespace XRayBuilderGUI
             if (ImageUrl == "")
             {
                 // Parse Book image URL
-                HtmlNode bookImageLoc = bookDoc.DocumentNode.SelectSingleNode("//*[@id='imgBlkFront']")
+                var bookImageLoc = bookDoc.DocumentNode.SelectSingleNode("//*[@id='imgBlkFront']")
                     ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='imageBlock']")
                     ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='series-detail-product-image']")
                     ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='ebooksImgBlkFront']") //co.uk seems to use this id sometimes
@@ -125,7 +125,7 @@ namespace XRayBuilderGUI
                 if (ImageUrl.Contains("base64"))
                 {
                     ImageUrl = bookImageLoc.GetAttributeValue("data-a-dynamic-image", "");
-                    Match match = Regex.Match(ImageUrl, @"(https://.*?_\.(jpg|jpeg|gif|png))");
+                    var match = Regex.Match(ImageUrl, @"(https://.*?_\.(jpg|jpeg|gif|png))");
                     if (match.Success)
                     {
                         ImageUrl = match.Groups[1].Value;
@@ -144,7 +144,7 @@ namespace XRayBuilderGUI
             }
             if (Description == "")
             {
-                HtmlNode descNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='bookDescription_feature_div']/noscript")
+                var descNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='bookDescription_feature_div']/noscript")
                     ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-size-medium series-detail-description-text']");
                 if (descNode != null && descNode.InnerText != "")
                 {
@@ -155,8 +155,8 @@ namespace XRayBuilderGUI
                     if (Description.Length > 1000)
                     {
                         Description = Description.Substring(0, 1000);
-                        int lastPunc = Description.LastIndexOfAny(new [] {'.', '!', '?'});
-                        int lastSpace = Description.LastIndexOf(' ');
+                        var lastPunc = Description.LastIndexOfAny(new [] {'.', '!', '?'});
+                        var lastSpace = Description.LastIndexOf(' ');
                         if (lastPunc > lastSpace)
                             Description = Description.Substring(0, lastPunc + 1);
                         else
@@ -170,17 +170,17 @@ namespace XRayBuilderGUI
             {
                 try
                 {
-                    HtmlNode ratingNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='acrPopover']")
+                    var ratingNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='acrPopover']")
                         ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='fl acrStars']/span");
                     if (ratingNode != null)
                     {
-                        string aRating = ratingNode.GetAttributeValue("title", "0");
+                        var aRating = ratingNode.GetAttributeValue("title", "0");
                         AmazonRating = float.Parse(ratingNode.GetAttributeValue("title", "0").Substring(0, aRating.IndexOf(' ')));
-                        HtmlNode reviewsNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='acrCustomerReviewText']")
+                        var reviewsNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='acrCustomerReviewText']")
                             ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-link-normal']");
                         if (reviewsNode != null)
                         {
-                            Match match = Regex.Match(reviewsNode.InnerText, @"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)");
+                            var match = Regex.Match(reviewsNode.InnerText, @"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)");
                             if (match.Success)
                                 Reviews = int.Parse(match.Value.Replace(".", "").Replace(",", ""));
                         }

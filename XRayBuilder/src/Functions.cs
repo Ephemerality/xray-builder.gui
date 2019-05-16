@@ -67,7 +67,7 @@ namespace XRayBuilderGUI
 
         public static string ImageToBase64(Image image, ImageFormat format)
         {
-            using (MemoryStream ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
                 image.Save(ms, format);
                 return Convert.ToBase64String(ms.ToArray());
@@ -76,21 +76,21 @@ namespace XRayBuilderGUI
 
         public static Bitmap Base64ToImage(string base64String)
         {
-            byte[] imageBytes = Convert.FromBase64String(base64String);
-            using (MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
+            var imageBytes = Convert.FromBase64String(base64String);
+            using (var ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
                 return new Bitmap(ms);
         }
 
         public static Bitmap MakeGrayscale3(Bitmap original)
         {
             //create a blank bitmap the same size as original
-            Bitmap newBitmap = new Bitmap(original.Width, original.Height);
+            var newBitmap = new Bitmap(original.Width, original.Height);
 
             //get a graphics object from the new image
-            Graphics g = Graphics.FromImage(newBitmap);
+            var g = Graphics.FromImage(newBitmap);
 
             //create the grayscale ColorMatrix
-            ColorMatrix colorMatrix = new ColorMatrix(
+            var colorMatrix = new ColorMatrix(
                 new[]
                 {
                     new [] {.3f, .3f, .3f, 0, 0},
@@ -101,7 +101,7 @@ namespace XRayBuilderGUI
                 });
 
             //create some image attributes
-            ImageAttributes attributes = new ImageAttributes();
+            var attributes = new ImageAttributes();
 
             //set the color matrix attribute
             attributes.SetColorMatrix(colorMatrix);
@@ -128,7 +128,7 @@ namespace XRayBuilderGUI
 
         public static string RemoveInvalidFileChars(string filename)
         {
-            char[] fileChars = Path.GetInvalidFileNameChars();
+            var fileChars = Path.GetInvalidFileNameChars();
             return new string(filename.Where(x => !fileChars.Contains(x)).ToArray());
         }
 
@@ -167,7 +167,7 @@ namespace XRayBuilderGUI
                 output = "Error: RawML could not be found, aborting.\r\nPath: " + rawML;
                 return output;
             }
-            HtmlDocument bookDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
+            var bookDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
             bookDoc.Load(rawML, Encoding.UTF8);
             var booklineNodes = bookDoc.DocumentNode.SelectNodes("//p") ?? bookDoc.DocumentNode.SelectNodes("//div");
             if (booklineNodes == null)
@@ -175,7 +175,7 @@ namespace XRayBuilderGUI
                 output = "An error occurred while estimating page count!";
                 return output;
             }
-            foreach (HtmlNode line in booklineNodes)
+            foreach (var line in booklineNodes)
             {
                 var lineLength = line.InnerText.Length + 1;
                 if (lineLength < 70)
@@ -191,8 +191,8 @@ namespace XRayBuilderGUI
                 output = "An error occurred while estimating page count!";
                 return output;
             }
-            double minutes = pageCount * 1.2890625;
-            TimeSpan span = TimeSpan.FromMinutes(minutes);
+            var minutes = pageCount * 1.2890625;
+            var span = TimeSpan.FromMinutes(minutes);
             bookInfo.PagesInBook = pageCount;
             bookInfo.ReadingHours = span.Hours;
             bookInfo.ReadingMinutes = span.Minutes;
@@ -202,7 +202,7 @@ namespace XRayBuilderGUI
 
         public static void RunNotepad(string filename)
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo
+            var startInfo = new ProcessStartInfo
             {
                 FileName = "notepad",
                 Arguments = filename,
@@ -210,7 +210,7 @@ namespace XRayBuilderGUI
             };
             try
             {
-                using (Process process = Process.Start(startInfo))
+                using (var process = Process.Start(startInfo))
                 {
                     process?.WaitForExit();
                 }
@@ -279,7 +279,7 @@ namespace XRayBuilderGUI
                 author = author.Split(';')[0];
             if (author.Contains(','))
             {
-                string[] parts = author.Split(',');
+                var parts = author.Split(',');
                 author = parts[1].Trim() + " " + parts[0].Trim();
             }
             return author;
@@ -287,12 +287,12 @@ namespace XRayBuilderGUI
 
         public static string ExpandUnicode(string input)
         {
-            StringBuilder output = new StringBuilder(input.Length);
-            for (int i = 0; i < input.Length; i++)
+            var output = new StringBuilder(input.Length);
+            for (var i = 0; i < input.Length; i++)
             {
                 if (input[i] > 127)
                 {
-                    byte[] uniBytes = Encoding.Unicode.GetBytes(input.Substring(i, 1));
+                    var uniBytes = Encoding.Unicode.GetBytes(input.Substring(i, 1));
                     output.AppendFormat(@"\u{0:X2}{1:X2}", uniBytes[1], uniBytes[0]);
                 }
                 else
@@ -305,7 +305,7 @@ namespace XRayBuilderGUI
         public static byte[] CheckBytes(byte[] bytesToCheck)
         {
             if (bytesToCheck == null) return null;
-            byte[] buffer = (byte[])bytesToCheck.Clone();
+            var buffer = (byte[])bytesToCheck.Clone();
             if (BitConverter.IsLittleEndian)
                 Array.Reverse(buffer);
             return buffer;
@@ -316,16 +316,16 @@ namespace XRayBuilderGUI
             if (!Directory.Exists(folderPath))
                 return false;
 
-            string[] files = Directory.GetFiles(folderPath, "*", SearchOption.AllDirectories);
-            string[] dirs = Directory.GetDirectories(folderPath, "*", SearchOption.AllDirectories);
+            var files = Directory.GetFiles(folderPath, "*", SearchOption.AllDirectories);
+            var dirs = Directory.GetDirectories(folderPath, "*", SearchOption.AllDirectories);
 
-            foreach (string file in files)
+            foreach (var file in files)
             {
                 File.SetAttributes(file, FileAttributes.Normal);
                 File.Delete(file);
             }
 
-            foreach (string dir in dirs)
+            foreach (var dir in dirs)
             {
                 CleanUp(dir);
             }
@@ -380,7 +380,7 @@ namespace XRayBuilderGUI
         {
             var c = new char[bytes.Length * 2];
             int b;
-            for (int i = 0; i < bytes.Length; i++)
+            for (var i = 0; i < bytes.Length; i++)
             {
                 b = bytes[i] >> 4;
                 c[i * 2] = (char)(55 + b + (((b - 10) >> 31) & -7));
@@ -496,7 +496,7 @@ namespace XRayBuilderGUI
         {
             var buffer = new byte[count];
 
-            int offset = 0;
+            var offset = 0;
             while (offset < count)
             {
                 var read = stream.Read(buffer, offset, count - offset);

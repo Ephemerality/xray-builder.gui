@@ -62,7 +62,7 @@ namespace XRayBuilderGUI.UI
             try
             {
                 // TODO: Use DI somehow for this
-                IPreviewForm previewForm = (IPreviewForm) Activator.CreateInstance(previewData.Form);
+                var previewForm = (IPreviewForm) Activator.CreateInstance(previewData.Form);
                 await previewForm.Populate(selPath, cancellationToken);
                 //.Location = new Point(Left, Top);
                 previewForm.ShowDialog();
@@ -76,7 +76,7 @@ namespace XRayBuilderGUI.UI
 
         public static string GetDir(string defaultFolder)
         {
-            FolderBrowserDialog f = new FolderBrowserDialog { SelectedPath = defaultFolder };
+            var f = new FolderBrowserDialog { SelectedPath = defaultFolder };
             return f.ShowDialog() == DialogResult.OK ? f.SelectedPath : defaultFolder;
         }
 
@@ -100,7 +100,7 @@ namespace XRayBuilderGUI.UI
 
         public static string RemoveInvalidFileChars(string filename)
         {
-            char[] fileChars = Path.GetInvalidFileNameChars();
+            var fileChars = Path.GetInvalidFileNameChars();
             return new string(filename.Where(x => !fileChars.Contains(x)).ToArray());
         }
 

@@ -12,9 +12,12 @@ namespace XRayBuilderGUI.UI
 {
     public partial class frmPreviewSA : Form, IPreviewForm
     {
-        public frmPreviewSA()
+        private readonly IHttpClient _httpClient;
+
+        public frmPreviewSA(IHttpClient httpClient)
         {
             InitializeComponent();
+            _httpClient = httpClient;
         }
 
         public string titlePopup = "";
@@ -90,7 +93,7 @@ namespace XRayBuilderGUI.UI
             {
                 var imageUrl = tempData["imageUrl"]?.ToString() ?? "";
                 if (imageUrl != "")
-                    pbAuthorImage.Image = Functions.MakeGrayscale3(await HttpClient.GetImageAsync(imageUrl, cancellationToken));
+                    pbAuthorImage.Image = Functions.MakeGrayscale3(await _httpClient.GetImageAsync(imageUrl, cancellationToken));
                 lblBiography.Text = tempData["bio"]?.ToString();
                 biographyPopup = lblBiography.Text;
             }
@@ -107,7 +110,7 @@ namespace XRayBuilderGUI.UI
                     var title = rec["title"].ToString();
                     //otherBooks.Add(new Tuple<string, string, string, string>(rec["asin"].ToString(), title, author, imageUrl));
                     if (imageUrl != "")
-                        ilOtherBooks.Images.Add(Functions.MakeGrayscale3(await HttpClient.GetImageAsync(imageUrl, cancellationToken)));
+                        ilOtherBooks.Images.Add(Functions.MakeGrayscale3(await _httpClient.GetImageAsync(imageUrl, cancellationToken)));
                     dgvOtherBooks.Rows.Add(ilOtherBooks.Images[ilOtherBooks.Images.Count - 1], $"{title}\n{author}");
                 }
             }
@@ -127,7 +130,7 @@ namespace XRayBuilderGUI.UI
                 lblPreviousTitle.Text = tempData["title"].ToString();
                 var imageUrl = tempData["imageUrl"]?.ToString() ?? "";
                 if (imageUrl != "")
-                    pbPreviousCover.Image = Functions.MakeGrayscale3(await HttpClient.GetImageAsync(imageUrl, cancellationToken));
+                    pbPreviousCover.Image = Functions.MakeGrayscale3(await _httpClient.GetImageAsync(imageUrl, cancellationToken));
             }
         }
 

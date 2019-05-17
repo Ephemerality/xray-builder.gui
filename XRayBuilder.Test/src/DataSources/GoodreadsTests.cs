@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
 using XRayBuilderGUI;
+using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
 
 namespace XRayBuilder.Test.DataSources
@@ -9,17 +10,30 @@ namespace XRayBuilder.Test.DataSources
     [TestFixture]
     public class GoodreadsTests
     {
+        private ILogger _logger;
+        private IHttpClient _httpClient;
+        private IAmazonClient _amazonClient;
+        private Goodreads _goodreads;
+
+        [SetUp]
+        public void Setup()
+        {
+            _logger = new Logger();
+            _httpClient = new HttpClient(_logger);
+            _amazonClient = new AmazonClient(_httpClient);
+            _goodreads = new Goodreads(_logger, _httpClient, _amazonClient);
+        }
+
         [Test]
         public void NameTest()
         {
-            Assert.AreEqual(new Goodreads(new Logger()).Name, nameof(Goodreads));
+            Assert.AreEqual(_goodreads.Name, nameof(Goodreads));
         }
 
         [Test]
         public async Task SearchBookTest()
         {
-            var gr = new Goodreads(new Logger());
-            var results = (await gr.SearchBookAsync("George R. R. Martin", "A Feast for Crows")).ToArray();
+            var results = (await _goodreads.SearchBookAsync("George R. R. Martin", "A Feast for Crows")).ToArray();
             Assert.GreaterOrEqual(results.Length, 1);
             var first = results.First();
             Assert.AreEqual(first.Author, "George R.R. Martin");
@@ -32,8 +46,7 @@ namespace XRayBuilder.Test.DataSources
         [Test]
         public async Task GetSeriesInfoTest()
         {
-            var gr = new Goodreads(new Logger());
-            var result = await gr.GetSeriesInfoAsync("https://www.goodreads.com/book/show/13497");
+            var result = await _goodreads.GetSeriesInfoAsync("https://www.goodreads.com/book/show/13497");
             Assert.IsNotNull(result);
             Assert.AreEqual(result.Name, "A Song of Ice and Fire");
             Assert.False(string.IsNullOrEmpty(result.Url));
@@ -54,17 +67,15 @@ namespace XRayBuilder.Test.DataSources
         [Test]
         public async Task SearchBookAsinTest()
         {
-            var gr = new Goodreads(new Logger());
-            var result = await gr.SearchBookASINById("13497");
+            var result = await _goodreads.SearchBookASINById("13497");
             Assert.AreEqual(result, "B000FCKGPC");
         }
 
         [Test]
         public async Task GetPageCountTest()
         {
-            var gr = new Goodreads(new Logger());
-            var book = new BookInfo("", "", "") { DataUrl = "https://www.goodreads.com/book/show/13497.A_Feast_for_Crows" };
-            var result = await gr.GetPageCountAsync(book);
+            var book = new BookInfo("", "", "", _httpClient) { DataUrl = "https://www.goodreads.com/book/show/13497.A_Feast_for_Crows" };
+            var result = await _goodreads.GetPageCountAsync(book);
             Assert.True(result);
             Assert.AreEqual(book.PagesInBook, 1061);
             Assert.AreEqual(book.ReadingHours, 22);
@@ -74,25 +85,22 @@ namespace XRayBuilder.Test.DataSources
         [Test]
         public async Task GetTermsTest()
         {
-            var gr = new Goodreads(new Logger());
-            var results = (await gr.GetTermsAsync("https://www.goodreads.com/book/show/13497.A_Feast_for_Crows", null)).ToArray();
+            var results = (await _goodreads.GetTermsAsync("https://www.goodreads.com/book/show/13497.A_Feast_for_Crows", null)).ToArray();
             Assert.AreEqual(results.Length, 15);
         }
 
         [Test]
         public async Task GetNotableClipsTest()
         {
-            var gr = new Goodreads(new Logger());
-            var results = (await gr.GetNotableClipsAsync("https://www.goodreads.com/book/show/13497.A_Feast_for_Crows")).ToArray();
+            var results = (await _goodreads.GetNotableClipsAsync("https://www.goodreads.com/book/show/13497.A_Feast_for_Crows")).ToArray();
             Assert.GreaterOrEqual(results.Length, 500);
         }
 
         [Test]
         public async Task GetExtrasTest()
         {
-            var gr = new Goodreads(new Logger());
-            var book = new BookInfo("", "", "") { DataUrl = "https://www.goodreads.com/book/show/13497.A_Feast_for_Crows" };
-            await gr.GetExtrasAsync(book);
+            var book = new BookInfo("", "", "", _httpClient) { DataUrl = "https://www.goodreads.com/book/show/13497.A_Feast_for_Crows" };
+            await _goodreads.GetExtrasAsync(book);
             Assert.Greater(book.AmazonRating, 0);
             Assert.GreaterOrEqual(book.notableClips.Count, 500);
             Assert.GreaterOrEqual(book.Reviews, 1);

@@ -8,7 +8,7 @@ namespace XRayBuilderGUI.UI
     {
         public string thisAsin = "";
 
-        public frmASIN()
+        public frmASIN(IAmazonClient amazonClient)
         {
             InitializeComponent();
         }
@@ -32,7 +32,7 @@ namespace XRayBuilderGUI.UI
 
         private bool CheckAsin()
         {
-            if (Amazon.IsAsin(tbAsin.Text))
+            if (AmazonClient.IsAsin(tbAsin.Text))
             {
                 thisAsin = tbAsin.Text;
                 return true;

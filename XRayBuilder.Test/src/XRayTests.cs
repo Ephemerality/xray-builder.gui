@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using XRayBuilderGUI;
+using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.Model.Artifacts;
 using EndActions = XRayBuilderGUI.EndActions;
@@ -16,6 +17,20 @@ namespace XRayBuilder.Test
     [TestFixture()]
     public class XRayTests
     {
+        private ILogger _logger;
+        private IHttpClient _httpClient;
+        private IAmazonClient _amazonClient;
+        private Goodreads _goodreads;
+
+        [SetUp]
+        public void Setup()
+        {
+            _logger = new Logger();
+            _httpClient = new HttpClient(_logger);
+            _amazonClient = new AmazonClient(_httpClient);
+            _goodreads = new Goodreads(_logger, _httpClient, _amazonClient);
+        }
+
         private static readonly CancellationTokenSource tokens = new CancellationTokenSource();
 
         private static List<Book> books = new List<Book>
@@ -25,7 +40,7 @@ namespace XRayBuilder.Test
 
         private XRay CreateXRayFromXML(string path, string db, string guid, string asin)
         {
-            return new XRay(path, db, guid, asin, new Goodreads(new Logger()), new Logger(), 0, "") { unattended = true };
+            return new XRay(path, db, guid, asin, _goodreads, _logger, 0, "") { unattended = true };
         }
 
         [Test(), TestCaseSource(nameof(books))]
@@ -76,7 +91,8 @@ namespace XRayBuilder.Test
             new BookInfo("A Storm of Swords", "George R. R. Martin",
                 "B000FBFN1U", "171927873", "A_Storm_of_Swords", Path.Combine(Environment.CurrentDirectory, "out"),
                 "A Storm of Swords.sdr", "https://www.goodreads.com/book/show/62291",
-                @"testfiles\A Storm of Swords - George R. R. Martin.rawml")
+                @"testfiles\A Storm of Swords - George R. R. Martin.rawml",
+                new HttpClient(new Logger()))
         };
 
         // TODO: Compare the actual contents (objects) rather than the string itself due to the order of books changing

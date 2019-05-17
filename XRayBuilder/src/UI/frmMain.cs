@@ -23,6 +23,9 @@ namespace XRayBuilderGUI.UI
     {
         // TODO: Remove logging from classes that shouldn't have it
         private readonly ILogger _logger;
+        private readonly IHttpClient _httpClient;
+        private readonly IAmazonClient _amazonClient;
+        private readonly IAuthorProfileGenerator _authorProfileGenerator;
         private readonly Container _diContainer;
 
         // TODO: Fix up these paths
@@ -31,16 +34,17 @@ namespace XRayBuilderGUI.UI
         private string ApPath = "";
         private string XrPath = "";
 
-        public frmMain(ILogger logger, IHttpClient httpClient, Container diContainer)
+        public frmMain(ILogger logger, IHttpClient httpClient, Container diContainer, IAuthorProfileGenerator authorProfileGenerator, IAmazonClient amazonClient)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
             var rtfLogger = new RtfLogger(txtOutput);
             _logger = logger;
             _diContainer = diContainer;
+            _authorProfileGenerator = authorProfileGenerator;
+            _amazonClient = amazonClient;
             _logger.LogEvent += rtfLogger.Log;
-            // TODO: Remove when logger can be DI'd
-            HttpClient.Instance = new HttpClient(_logger);
+            _httpClient = httpClient;
         }
 
         private readonly ToolTip _tooltip = new ToolTip();
@@ -348,7 +352,7 @@ namespace XRayBuilderGUI.UI
             _logger.Log($"Book's {_dataSource.Name} URL: {txtGoodreads.Text}");
             try
             {
-                var bookInfo = new BookInfo(metadata, txtGoodreads.Text);
+                var bookInfo = new BookInfo(metadata, txtGoodreads.Text, _httpClient);
 
                 var outputDir = OutputDirectory(bookInfo.Author, bookInfo.SidecarName, bookInfo.Asin, true);
 
@@ -364,22 +368,22 @@ namespace XRayBuilderGUI.UI
                     return;
                 }
 
-                var response = await AuthorProfile.GenerateAsync(new AuthorProfile.Request
+                var response = await _authorProfileGenerator.GenerateAsync(new AuthorProfileGenerator.Request
                 {
                     Book = bookInfo,
-                    Settings = new AuthorProfile.Settings
+                    Settings = new AuthorProfileGenerator.Settings
                     {
                         AmazonTld = _settings.amazonTLD,
                         SaveBio = _settings.saveBio,
                         UseNewVersion = _settings.useNewVersion,
                         EditBiography = _settings.editBiography
                     }
-                }, _logger, _cancelTokens.Token);
+                }, _cancelTokens.Token);
 
                 if (response == null)
                     return;
 
-                var authorProfileOutput = JsonConvert.SerializeObject(AuthorProfile.CreateAp(response, bookInfo.Asin));
+                var authorProfileOutput = JsonConvert.SerializeObject(AuthorProfileGenerator.CreateAp(response, bookInfo.Asin));
 
                 try
                 {
@@ -397,13 +401,11 @@ namespace XRayBuilderGUI.UI
 
                 string AsinPrompt(string title, string author)
                 {
-                    var frmAsin = new frmASIN
-                    {
-                        Text = "Series Information",
-                        lblTitle = {Text = title},
-                        lblAuthor = {Text = author},
-                        tbAsin = {Text = ""}
-                    };
+                    var frmAsin = _diContainer.GetInstance<frmASIN>();
+                    frmAsin.Text = "Series Information";
+                    frmAsin.lblTitle.Text = title;
+                    frmAsin.lblAuthor.Text = author;
+                    frmAsin.tbAsin.Text = "";
                     frmAsin.ShowDialog();
                     return frmAsin.tbAsin.Text;
                 }
@@ -418,7 +420,7 @@ namespace XRayBuilderGUI.UI
                     UseNewVersion = _settings.useNewVersion,
                     UseSubDirectories = _settings.useSubDirectories,
                     PromptAsin = _settings.promptASIN
-                }, AsinPrompt, _logger);
+                }, AsinPrompt, _logger, _httpClient, _amazonClient);
                 if (!await ea.Generate()) return;
 
                 if (_settings.useNewVersion)
@@ -469,7 +471,7 @@ namespace XRayBuilderGUI.UI
                         _logger.Log("Attempting to download Start Actions...");
                         try
                         {
-                            saContent = await Amazon.DownloadStartActions(metadata.Asin);
+                            saContent = await _amazonClient.DownloadStartActions(metadata.Asin);
                         }
                         catch
                         {
@@ -694,7 +696,7 @@ namespace XRayBuilderGUI.UI
             if (_settings.dataSource == "Goodreads")
             {
                 btnSearchGoodreads.Enabled = true;
-                _dataSource = new Goodreads(_logger);
+                _dataSource = new Goodreads(_logger, _httpClient, _amazonClient);
                 rdoGoodreads.Text = "Goodreads";
                 lblGoodreads.Text = "Goodreads URL:";
                 lblGoodreads.Left = 134;
@@ -704,7 +706,7 @@ namespace XRayBuilderGUI.UI
             else
             {
                 btnSearchGoodreads.Enabled = false;
-                _dataSource = new Shelfari(_logger);
+                _dataSource = new Shelfari(_logger, _httpClient);
                 rdoGoodreads.Text = "Shelfari";
                 lblGoodreads.Text = "Shelfari URL:";
                 lblGoodreads.Left = 150;
@@ -776,7 +778,7 @@ namespace XRayBuilderGUI.UI
             txtAuthor.Text = metadata.Author;
             txtTitle.Text = metadata.Title;
             txtAsin.Text = metadata.Asin;
-            _tooltip.SetToolTip(txtAsin, Amazon.Url(_settings.amazonTLD, txtAsin.Text));
+            _tooltip.SetToolTip(txtAsin, _amazonClient.Url(_settings.amazonTLD, txtAsin.Text));
 
             checkFiles(metadata.Author, metadata.Title, metadata.Asin);
             btnBuild.Enabled = metadata.RawMlSupported;
@@ -856,7 +858,7 @@ namespace XRayBuilderGUI.UI
 
         private void txtAsin_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start(Amazon.Url(_settings.amazonTLD, txtAsin.Text));
+            Process.Start(_amazonClient.Url(_settings.amazonTLD, txtAsin.Text));
         }
 
         private void btnExtractTerms_Click(object sender, EventArgs e)

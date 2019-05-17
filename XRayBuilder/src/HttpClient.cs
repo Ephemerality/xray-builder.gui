@@ -12,10 +12,8 @@ namespace XRayBuilderGUI
 {
     // TODO: DI for this instead of static instance
     // TODO: Investigate if a caching layer is worthwhile
-    public sealed class HttpClient : System.Net.Http.HttpClient
+    public sealed class HttpClient : System.Net.Http.HttpClient, IHttpClient
     {
-        public static HttpClient Instance = null;
-
         public HttpClient(ILogger logger) : base(
             new HttpClientHandler
             {
@@ -28,13 +26,13 @@ namespace XRayBuilderGUI
             Timeout = System.Threading.Timeout.InfiniteTimeSpan;
         }
 
-        public static async Task<string> GetStringAsync(string url, CancellationToken cancellationToken = default)
+        public async Task<string> GetStringAsync(string url, CancellationToken cancellationToken = default)
         {
             var response = await GetStreamAsync(url, cancellationToken);
             return new StreamReader(response, Encoding.UTF8).ReadToEnd();
         }
 
-        public static async Task<HtmlDocument> GetPageAsync(string url, CancellationToken cancellationToken = default)
+        public async Task<HtmlDocument> GetPageAsync(string url, CancellationToken cancellationToken = default)
         {
             var htmlDoc = new HtmlDocument {OptionAutoCloseOnEnd = true};
             var stream = await GetStreamAsync(url, cancellationToken);
@@ -42,17 +40,17 @@ namespace XRayBuilderGUI
             return htmlDoc;
         }
 
-        public static async Task<Bitmap> GetImageAsync(string url, CancellationToken cancellationToken = default)
+        public async Task<Bitmap> GetImageAsync(string url, CancellationToken cancellationToken = default)
         {
             var response = await GetStreamAsync(url, cancellationToken);
             return new Bitmap(response);
         }
 
-        public static async Task<Stream> GetStreamAsync(string url, CancellationToken cancellationToken = default)
+        public async Task<Stream> GetStreamAsync(string url, CancellationToken cancellationToken = default)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, url);
             SetDefaultSettings(request);
-            var response = await Instance.SendAsync(request, cancellationToken);
+            var response = await SendAsync(request, cancellationToken);
             return await response.Content.ReadAsStreamAsync();
         }
 

@@ -19,23 +19,30 @@ namespace XRayBuilderGUI.DataSources.Amazon
     }
 
     // TODO: Calling SearchAuthor then using the search results for all subsequent calls is kinda weird
-    public static class Amazon
+    public class AmazonClient : IAmazonClient
     {
-        private static readonly Regex RegexAsin = new Regex("(?<asin>B[A-Z0-9]{9})", RegexOptions.Compiled);
-        private static readonly Regex RegexAsinUrl = new Regex("(/e/(?<asin>B\\w+)[/?]|dp/(?<asin>B[A-Z0-9]{9})/|/gp/product/(?<asin>B[A-Z0-9]{9}))", RegexOptions.Compiled);
-        private static readonly Regex RegexIgnoreHeaders = new Regex(@"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private readonly IHttpClient _httpClient;
+
+        private readonly Regex _regexAsin = new Regex("(?<asin>B[A-Z0-9]{9})", RegexOptions.Compiled);
+        private readonly Regex _regexAsinUrl = new Regex("(/e/(?<asin>B\\w+)[/?]|dp/(?<asin>B[A-Z0-9]{9})/|/gp/product/(?<asin>B[A-Z0-9]{9}))", RegexOptions.Compiled);
+        private readonly Regex _regexIgnoreHeaders = new Regex(@"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        public AmazonClient(IHttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
 
         public static bool IsAsin(string asin) => Regex.IsMatch(asin, "^B[A-Z0-9]{9}$");
 
         [CanBeNull]
-        public static string ParseAsin(string input) => RegexAsin.MatchOrNull(input)?.Groups["asin"].Value;
+        public string ParseAsin(string input) => _regexAsin.MatchOrNull(input)?.Groups["asin"].Value;
 
         [CanBeNull]
-        public static string ParseAsinFromUrl(string input) => RegexAsinUrl.MatchOrNull(input)?.Groups["asin"].Value;
+        public string ParseAsinFromUrl(string input) => _regexAsinUrl.MatchOrNull(input)?.Groups["asin"].Value;
 
-        public static string Url(string tld, string asin) => $"https://www.amazon.{tld}/dp/{asin}";
+        public string Url(string tld, string asin) => $"https://www.amazon.{tld}/dp/{asin}";
 
-        public static async Task<AuthorSearchResults> SearchAuthor(BookInfo curBook, string TLD, ILogger _logger, CancellationToken cancellationToken = default)
+        public async Task<AuthorSearchResults> SearchAuthor(BookInfo curBook, string TLD, ILogger _logger, CancellationToken cancellationToken = default)
         {
             var results = new AuthorSearchResults();
             //Generate Author search URL from author's name
@@ -46,7 +53,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
             _logger.Log($"Searching for author's page on Amazon.{TLD}...");
 
             // Search Amazon for Author
-            results.AuthorHtmlDoc = await HttpClient.GetPageAsync(amazonAuthorSearchUrl, cancellationToken);
+            results.AuthorHtmlDoc = await _httpClient.GetPageAsync(amazonAuthorSearchUrl, cancellationToken);
 
             if (Properties.Settings.Default.saveHtml)
             {
@@ -125,7 +132,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
 
             // Load Author's Amazon page
             var tempDoc = new HtmlDocument();
-            var authorPage = await HttpClient.GetStreamAsync(authorAmazonWebsiteLocation, cancellationToken);
+            var authorPage = await _httpClient.GetStreamAsync(authorAmazonWebsiteLocation, cancellationToken);
             tempDoc.Load(authorPage);
 
             // Try to find the Kindle Edition link
@@ -135,7 +142,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
                 var kindleNode = tempDoc.DocumentNode.SelectSingleNode(".//a[@class='a-link-normal formatSelector']");
                 if (kindleNode != null && kindleNode.InnerText.Trim() == "Kindle Edition")
                 {
-                    authorPage = await HttpClient.GetStreamAsync($"https://www.amazon.com{kindleNode.GetAttributeValue("href", "")}", cancellationToken);
+                    authorPage = await _httpClient.GetStreamAsync($"https://www.amazon.com{kindleNode.GetAttributeValue("href", "")}", cancellationToken);
                     tempDoc.Load(authorPage);
                 }
             }
@@ -144,7 +151,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
                 var kindleNode = tempDoc.DocumentNode.SelectSingleNode(".//a[@class='a-link-normal']");
                 if (kindleNode != null && kindleNode.InnerText.Trim() == "Kindle Books")
                 {
-                    authorPage = await HttpClient.GetStreamAsync($"https://www.amazon.co.uk{kindleNode.GetAttributeValue("href", "")}", cancellationToken);
+                    authorPage = await _httpClient.GetStreamAsync($"https://www.amazon.co.uk{kindleNode.GetAttributeValue("href", "")}", cancellationToken);
                     tempDoc.Load(authorPage);
                 }
             }
@@ -156,24 +163,24 @@ namespace XRayBuilderGUI.DataSources.Amazon
         }
 
         // Get biography from results page; TLD included in case different Amazon sites have different formatting
-        public static HtmlNode GetBioNode(AuthorSearchResults searchResults, string TLD)
+        public HtmlNode GetBioNode(AuthorSearchResults searchResults, string TLD)
         {
             return searchResults.AuthorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-bio' and @class='a-row']/div/div/span")
                    ?? searchResults.AuthorHtmlDoc.DocumentNode.SelectSingleNode("//span[@id='author_biography']")
-                   ?? throw new FormatChangedException(nameof(Amazon), "author bio");
+                   ?? throw new FormatChangedException(nameof(AmazonClient), "author bio");
         }
 
-        public static HtmlNode GetAuthorImageNode(AuthorSearchResults searchResults, string TLD)
+        public HtmlNode GetAuthorImageNode(AuthorSearchResults searchResults, string TLD)
         {
             return searchResults.AuthorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-image']/img")
                    ?? searchResults.AuthorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='authorImage']/img")
-                   ?? throw new FormatChangedException(nameof(Amazon), "author image");
+                   ?? throw new FormatChangedException(nameof(AmazonClient), "author image");
         }
 
         /// <summary>
         /// As of 2018-07-31, format changed. For some amount of time, keep both just in case.
         /// </summary>
-        public static List<BookInfo> GetAuthorBooksNew(AuthorSearchResults searchResults, string curTitle, string curAuthor, string TLD)
+        public List<BookInfo> GetAuthorBooksNew(AuthorSearchResults searchResults, string curTitle, string curAuthor, string TLD)
         {
             var resultsNodes = searchResults.AuthorHtmlDoc.DocumentNode.SelectNodes("//div[@id='searchWidget']/div");
             if (resultsNodes == null) return null;
@@ -183,19 +190,19 @@ namespace XRayBuilderGUI.DataSources.Amazon
                 if (result.InnerHtml.Contains("a-pagination"))
                     continue;
                 var bookNodes = result.SelectNodes(".//div[@class='a-fixed-right-grid-inner']/div/div")
-                    ?? throw new FormatChangedException(nameof(Amazon), "book results - title nodes");
+                    ?? throw new FormatChangedException(nameof(AmazonClient), "book results - title nodes");
                 var name = bookNodes.FirstOrDefault()?.SelectSingleNode("./a")?.InnerText.Trim()
-                    ?? throw new FormatChangedException(nameof(Amazon), "book results - title");
+                    ?? throw new FormatChangedException(nameof(AmazonClient), "book results - title");
                 //Exclude the current book title
                 if (name.ContainsIgnorecase(curTitle)
-                    || RegexIgnoreHeaders.IsMatch(name))
+                    || _regexIgnoreHeaders.IsMatch(name))
                     continue;
 
                 // Get first Kindle ASIN
                 var asin = "";
                 foreach (var bookNode in bookNodes)
                 {
-                    var match = RegexAsinUrl.Match(bookNode.OuterHtml);
+                    var match = _regexAsinUrl.Match(bookNode.OuterHtml);
                     if (!match.Success)
                         continue;
                     asin = match.Groups["asin"].Value;
@@ -205,12 +212,12 @@ namespace XRayBuilderGUI.DataSources.Amazon
                 // TODO: This should be removable when the Kindle Only page is parsed instead
                 if (asin == "")
                     continue; //throw new DataSource.FormatChangedException(nameof(Amazon), "book results - kindle edition asin");
-                bookList.Add(new BookInfo(name, curAuthor, asin));
+                bookList.Add(new BookInfo(name, curAuthor, asin, _httpClient));
             }
             return bookList;
         }
 
-        public static List<BookInfo> GetAuthorBooks(AuthorSearchResults searchResults, string curTitle, string curAuthor, string TLD)
+        public List<BookInfo> GetAuthorBooks(AuthorSearchResults searchResults, string curTitle, string curAuthor, string TLD)
         {
             var resultsNodes = searchResults.AuthorHtmlDoc.DocumentNode.SelectNodes("//div[@id='mainResults']/ul/li");
             if (resultsNodes == null) return null;
@@ -222,13 +229,13 @@ namespace XRayBuilderGUI.DataSources.Amazon
                 var otherBook = result.SelectSingleNode(".//div[@class='a-row a-spacing-small']/div/a/h2");
                 if (otherBook == null) continue;
                 //Exclude the current book title from other books search
-                if (otherBook.InnerText.ContainsIgnorecase(curTitle) || RegexIgnoreHeaders.IsMatch(otherBook.InnerText))
+                if (otherBook.InnerText.ContainsIgnorecase(curTitle) || _regexIgnoreHeaders.IsMatch(otherBook.InnerText))
                     continue;
                 var name = otherBook.InnerText.Trim();
                 otherBook = result.SelectSingleNode(".//*[@title='Kindle Edition']");
                 var asin = ParseAsinFromUrl(otherBook.OuterHtml);
                 if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(asin))
-                    bookList.Add(new BookInfo(name, curAuthor, asin));
+                    bookList.Add(new BookInfo(name, curAuthor, asin, _httpClient));
             }
             // If no kindle books returned, try the top carousel
             if (bookList.Count == 0)
@@ -241,20 +248,20 @@ namespace XRayBuilderGUI.DataSources.Amazon
                     if (otherBook == null) continue;
                     var name = otherBook.GetAttributeValue("alt", "");
                     //Exclude the current book title from other books search
-                    if (name.ContainsIgnorecase(curTitle) || RegexIgnoreHeaders.IsMatch(name))
+                    if (name.ContainsIgnorecase(curTitle) || _regexIgnoreHeaders.IsMatch(name))
                         continue;
                     otherBook = result.SelectSingleNode(".//a");
                     if (otherBook == null) continue;
                     var asin = ParseAsinFromUrl(otherBook.OuterHtml);
                     if (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(asin))
-                        bookList.Add(new BookInfo(name, curAuthor, asin));
+                        bookList.Add(new BookInfo(name, curAuthor, asin, _httpClient));
                 }
             }
             return bookList;
         }
 
         // TODO: All calls to Amazon should check for the captcha page (or ideally avoid it somehow)
-        public static async Task<BookInfo> SearchBook(string title, string author, string TLD, CancellationToken cancellationToken = default)
+        public async Task<BookInfo> SearchBook(string title, string author, string TLD, CancellationToken cancellationToken = default)
         {
             BookInfo result = null;
 
@@ -263,7 +270,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
             //Search "all" Amazon
             var searchUrl = string.Format(@"https://www.amazon.{0}/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords={1}",
                 TLD, Uri.EscapeDataString(title + " " + author));
-            var searchDoc = await HttpClient.GetPageAsync(searchUrl, cancellationToken);
+            var searchDoc = await _httpClient.GetPageAsync(searchUrl, cancellationToken);
             var node = searchDoc.DocumentNode.SelectSingleNode("//li[@id='result_0']");
             var nodeASIN = node?.SelectSingleNode(".//a[@title='Kindle Edition']");
             if (nodeASIN == null)
@@ -277,17 +284,17 @@ namespace XRayBuilderGUI.DataSources.Amazon
                 var foundAsin = ParseAsinFromUrl(nodeASIN.OuterHtml);
                 node = node.SelectSingleNode(".//div/div/div/div[@class='a-fixed-left-grid-col a-col-right']/div/a");
                 if (node != null)
-                    result = new BookInfo(node.InnerText, author, foundAsin);
+                    result = new BookInfo(node.InnerText, author, foundAsin, _httpClient);
             }
             return result;
         }
 
-        public static Task<string> DownloadStartActions(string asin, CancellationToken cancellationToken = default)
-            => HttpClient.GetStringAsync($"https://www.revensoftware.com/amazon/sa/{asin}", cancellationToken);
+        public Task<string> DownloadStartActions(string asin, CancellationToken cancellationToken = default)
+            => _httpClient.GetStringAsync($"https://www.revensoftware.com/amazon/sa/{asin}", cancellationToken);
 
-        public static async Task<NextBookResult> DownloadNextInSeries(string asin, CancellationToken cancellationToken = default)
+        public async Task<NextBookResult> DownloadNextInSeries(string asin, CancellationToken cancellationToken = default)
         {
-            var response = await HttpClient.GetStringAsync($"https://www.revensoftware.com/amazon/next/{asin}", cancellationToken);
+            var response = await _httpClient.GetStringAsync($"https://www.revensoftware.com/amazon/next/{asin}", cancellationToken);
             return JsonConvert.DeserializeObject<NextBookResult>(response);
         }
     }

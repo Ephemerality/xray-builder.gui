@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using SimpleInjector;
+using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.UI;
 
 namespace XRayBuilderGUI
@@ -27,6 +28,9 @@ namespace XRayBuilderGUI
 
             _container.Register<ILogger, Logger>(Lifestyle.Singleton);
             _container.Register<frmMain>(Lifestyle.Singleton);
+            _container.Register<IHttpClient, HttpClient>(Lifestyle.Singleton);
+            _container.Register<IAmazonClient, AmazonClient>(Lifestyle.Singleton);
+            _container.Register<IAuthorProfileGenerator, AuthorProfileGenerator>(Lifestyle.Singleton);
 
             _container.Verify();
         }

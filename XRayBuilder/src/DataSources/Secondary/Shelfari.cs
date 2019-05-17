@@ -13,12 +13,14 @@ namespace XRayBuilderGUI.DataSources.Secondary
     public class Shelfari : ISecondarySource
     {
         private readonly ILogger _logger;
+        private readonly IHttpClient _httpClient;
 
         private HtmlDocument sourceHtmlDoc;
 
-        public Shelfari(ILogger logger)
+        public Shelfari(ILogger logger, IHttpClient httpClient)
         {
             _logger = logger;
+            _httpClient = httpClient;
         }
 
         public string Name => "Shelfari";
@@ -81,7 +83,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
         {
             if (sourceHtmlDoc == null)
             {
-                sourceHtmlDoc = await HttpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
+                sourceHtmlDoc = await _httpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
             }
             var pageNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_FirstEdition']");
             var node1 = pageNode?.SelectSingleNode(".//div/div");
@@ -114,7 +116,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
             if (sourceHtmlDoc == null)
             {
-                sourceHtmlDoc = await HttpClient.GetPageAsync(dataUrl, cancellationToken);
+                sourceHtmlDoc = await _httpClient.GetPageAsync(dataUrl, cancellationToken);
             }
 
             //Constants for wiki processing
@@ -163,7 +165,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
         {
             if (srcDoc == null)
             {
-                srcDoc = await HttpClient.GetPageAsync(url, cancellationToken);
+                srcDoc = await _httpClient.GetPageAsync(url, cancellationToken);
             }
             var result = new List<NotableClip>();
             var quoteNodes = srcDoc.DocumentNode.SelectNodes("//div[@id='WikiModule_Quotations']/div/ul[@class='li_6']/li");

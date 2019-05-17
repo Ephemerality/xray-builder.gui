@@ -9,14 +9,18 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary.Model;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI.DataSources.Secondary
 {
+    //todo: use factory + full di
     public class Goodreads : ISecondarySource
     {
         private readonly ILogger _logger;
+        private readonly IHttpClient _httpClient;
+        private readonly IAmazonClient _amazonClient;
 
         private const int MaxConcurrentRequests = 10;
 
@@ -24,9 +28,11 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
         private readonly Regex _regexBookId = new Regex(@"/book/show/(?<id>[0-9]+)", RegexOptions.Compiled);
 
-        public Goodreads(ILogger logger)
+        public Goodreads(ILogger logger, IHttpClient httpClient, IAmazonClient amazonClient)
         {
             _logger = logger;
+            _httpClient = httpClient;
+            _amazonClient = amazonClient;
         }
 
         public string ParseBookIdFromUrl(string input) => _regexBookId.Match(input).Groups["id"].Value;
@@ -38,7 +44,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
         {
             asin = Uri.EscapeDataString(asin);
 
-            var goodreadsHtmlDoc = await HttpClient.GetPageAsync(SearchUrlAsin(asin), cancellationToken);
+            var goodreadsHtmlDoc = await _httpClient.GetPageAsync(SearchUrlAsin(asin), cancellationToken);
             return ParseSearchResults(goodreadsHtmlDoc);
         }
 
@@ -47,7 +53,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             title = Uri.EscapeDataString(title);
             author = Uri.EscapeDataString(Functions.FixAuthor(author));
 
-            var goodreadsHtmlDoc = await HttpClient.GetPageAsync(SearchUrl(author, title), cancellationToken);
+            var goodreadsHtmlDoc = await _httpClient.GetPageAsync(SearchUrl(author, title), cancellationToken);
             return ParseSearchResults(goodreadsHtmlDoc);
         }
 
@@ -69,7 +75,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
                 var cleanTitle = titleNode.InnerText.Trim().Replace("&amp;", "&").Replace("%27", "'").Replace("%20", " ");
 
-                var newBook = new BookInfo(cleanTitle, authorNode.InnerText.Trim(), null);
+                var newBook = new BookInfo(cleanTitle, authorNode.InnerText.Trim(), null, _httpClient);
 
                 newBook.GoodreadsId = ParseBookIdFromUrl(link.OuterHtml);
                 newBook.DataUrl = BookUrl(newBook.GoodreadsId);
@@ -103,7 +109,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
         {
             var series = new SeriesInfo();
             //Search Goodreads for series info
-            var seriesPage = await HttpClient.GetPageAsync(dataUrl, cancellationToken);
+            var seriesPage = await _httpClient.GetPageAsync(dataUrl, cancellationToken);
             var metaNode = seriesPage.DocumentNode.SelectSingleNode("//div[@id='metacol']");
             var seriesNode = metaNode?.SelectSingleNode("//h2[@id='bookSeries']/a");
             if (seriesNode == null)
@@ -119,7 +125,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             series.Name = match.Groups[1].Value.Trim();
             series.Position = match.Groups[2].Value;
 
-            var seriesHtmlDoc = await HttpClient.GetPageAsync(series.Url, cancellationToken);
+            var seriesHtmlDoc = await _httpClient.GetPageAsync(series.Url, cancellationToken);
 
             seriesNode = seriesHtmlDoc.DocumentNode.SelectSingleNode("//div[contains(@class, 'responsiveSeriesHeader__subtitle')]");
             match = Regex.Match(seriesNode?.InnerText ?? "", @"([0-9]+) (?:primary )?works?");
@@ -139,7 +145,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
             async Task<BookInfo> ParseSeriesBook(HtmlNode bookNode)
             {
-                var book = new BookInfo("", "", "");
+                var book = new BookInfo("", "", "", _httpClient);
                 var title = bookNode.SelectSingleNode(".//div[@class='u-paddingBottomXSmall']/a");
                 book.Title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", "", RegexOptions.Compiled);
                 book.Title = WebUtility.HtmlDecode(book.Title);
@@ -176,18 +182,18 @@ namespace XRayBuilderGUI.DataSources.Secondary
         {
             try
             {
-                var bookHtmlDoc = await HttpClient.GetPageAsync(BookUrl(id), cancellationToken);
+                var bookHtmlDoc = await _httpClient.GetPageAsync(BookUrl(id), cancellationToken);
                 var link = bookHtmlDoc.DocumentNode.SelectSingleNode("//div[@class='otherEditionsActions']/a");
                 var match = Regex.Match(link.GetAttributeValue("href", ""), @"editions/([0-9]*)-");
                 if (match.Success)
                 {
                     var kindleEditionsUrl = string.Format("https://www.goodreads.com/work/editions/{0}?utf8=%E2%9C%93&sort=num_ratings&filter_by_format=Kindle+Edition", match.Groups[1].Value);
-                    bookHtmlDoc = await HttpClient.GetPageAsync(kindleEditionsUrl, cancellationToken);
+                    bookHtmlDoc = await _httpClient.GetPageAsync(kindleEditionsUrl, cancellationToken);
                     var bookNodes = bookHtmlDoc.DocumentNode.SelectNodes("//div[@class='elementList clearFix']");
                     if (bookNodes != null)
                     {
                         foreach (var book in bookNodes)
-                            return Amazon.Amazon.ParseAsin(book.InnerHtml);
+                            return _amazonClient.ParseAsin(book.InnerHtml);
                     }
                 }
                 return "";
@@ -202,7 +208,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
         // TODO: This shouldn't modify curbook
         public async Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
         {
-            var bookPage = await HttpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
+            var bookPage = await _httpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
             var pagesNode = bookPage.DocumentNode.SelectSingleNode("//div[@id='details']");
             if (pagesNode == null)
                 return false;
@@ -228,7 +234,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
         public async Task<IEnumerable<XRay.Term>> GetTermsAsync(string dataUrl, IProgressBar progress, CancellationToken cancellationToken = default)
         {
             _logger.Log("Downloading Goodreads page...");
-            var grDoc = await HttpClient.GetPageAsync(dataUrl, cancellationToken);
+            var grDoc = await _httpClient.GetPageAsync(dataUrl, cancellationToken);
             var charNodes = grDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/a");
             if (charNodes == null) return new List<XRay.Term>();
             // Check if ...more link exists on Goodreads page
@@ -265,7 +271,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             tempUri = new Uri(new Uri(tempUri.GetLeftPart(UriPartial.Authority)), relativeUrl);
             result.DescSrc = "Goodreads";
             result.DescUrl = tempUri.ToString();
-            var charDoc = await HttpClient.GetPageAsync(tempUri.ToString(), cancellationToken);
+            var charDoc = await _httpClient.GetPageAsync(tempUri.ToString(), cancellationToken);
             var mainNode = charDoc.DocumentNode.SelectSingleNode("//div[@class='mainContentFloat']")
                 ?? charDoc.DocumentNode.SelectSingleNode("//div[@class='mainContentFloat ']");
             result.TermName = mainNode.SelectSingleNode("./h1").InnerText;
@@ -292,7 +298,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
         {
             if (srcDoc == null)
             {
-                srcDoc = await HttpClient.GetPageAsync(url, cancellationToken);
+                srcDoc = await _httpClient.GetPageAsync(url, cancellationToken);
             }
             var quoteNode = srcDoc.DocumentNode.SelectSingleNode("//div[@class='h2Container gradientHeaderContainer']/h2/a[starts-with(.,'Quotes from')]");
             if (quoteNode == null) return null;
@@ -300,7 +306,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             progress?.Set(0, 1);
 
             var quoteBag = new ConcurrentBag<IEnumerable<NotableClip>>();
-            var initialPage = await HttpClient.GetPageAsync(string.Format(quoteURL, 1), cancellationToken);
+            var initialPage = await _httpClient.GetPageAsync(string.Format(quoteURL, 1), cancellationToken);
 
             // check how many pages there are (find previous page button, get parent div, take all children of that, 2nd last one should be the max page count
             var maxPageNode = initialPage.DocumentNode.SelectSingleNode("//span[contains(@class,'previous_page')]/parent::div/*[last()-1]");
@@ -328,7 +334,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             progress?.Set(1, maxPages);
             await Enumerable.Range(2, maxPages - 1).ParallelForEachAsync(async page =>
             {
-                var quotePage = await HttpClient.GetPageAsync(string.Format(quoteURL, page), cancellationToken);
+                var quotePage = await _httpClient.GetPageAsync(string.Format(quoteURL, page), cancellationToken);
                 quoteBag.Add(ParseQuotePage(quotePage));
                 progress?.Add(1);
             }, MaxConcurrentRequests, cancellationToken);
@@ -342,7 +348,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
         /// </summary>
         public async Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
-            var grDoc = await HttpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
+            var grDoc = await _httpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
             if (curBook.notableClips == null)
             {
                 curBook.notableClips = (await GetNotableClipsAsync("", grDoc, progress, cancellationToken).ConfigureAwait(false))?.ToList();

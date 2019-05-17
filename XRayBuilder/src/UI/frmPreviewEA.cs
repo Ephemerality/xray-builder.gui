@@ -10,6 +10,7 @@ namespace XRayBuilderGUI.UI
 {
     public partial class frmPreviewEA : Form, IPreviewForm
     {
+        private readonly IHttpClient _httpClient;
 
         #region SET LISTVIEW ICON SPACING
 
@@ -28,9 +29,10 @@ namespace XRayBuilderGUI.UI
 
         #endregion
 
-        public frmPreviewEA()
+        public frmPreviewEA(IHttpClient httpClient)
         {
             InitializeComponent();
+            _httpClient = httpClient;
         }
 
         #region PREVENT LISTVIEW ICON SELECTION
@@ -68,7 +70,7 @@ namespace XRayBuilderGUI.UI
                 lblNextAuthor.Text = tempData["authors"][0].ToString();
                 var imageUrl = tempData["imageUrl"]?.ToString();
                 if (!string.IsNullOrEmpty(imageUrl))
-                    pbNextCover.Image = Functions.MakeGrayscale3(await HttpClient.GetImageAsync(imageUrl, cancellationToken));
+                    pbNextCover.Image = Functions.MakeGrayscale3(await _httpClient.GetImageAsync(imageUrl, cancellationToken));
             }
             else
             {
@@ -85,7 +87,7 @@ namespace XRayBuilderGUI.UI
                 {
                     var imageUrl = rec["imageUrl"]?.ToString();
                     if (!string.IsNullOrEmpty(imageUrl))
-                        ilauthorRecs.Images.Add(Functions.MakeGrayscale3(await HttpClient.GetImageAsync(imageUrl, cancellationToken)));
+                        ilauthorRecs.Images.Add(Functions.MakeGrayscale3(await _httpClient.GetImageAsync(imageUrl, cancellationToken)));
                 }
                 ListViewItem_SetSpacing(lvAuthorRecs, 60 + 7, 90 + 7);
                 for (var i = 0; i < ilauthorRecs.Images.Count; i++)
@@ -102,7 +104,7 @@ namespace XRayBuilderGUI.UI
                 {
                     var imageUrl = rec["imageUrl"]?.ToString();
                     if (!string.IsNullOrEmpty(imageUrl))
-                        ilcustomersWhoBoughtRecs.Images.Add(Functions.MakeGrayscale3(await HttpClient.GetImageAsync(imageUrl, cancellationToken)));
+                        ilcustomersWhoBoughtRecs.Images.Add(Functions.MakeGrayscale3(await _httpClient.GetImageAsync(imageUrl, cancellationToken)));
                 }
                 ListViewItem_SetSpacing(lvCustomersWhoBoughtRecs, 60 + 7, 90 + 7);
                 for (var i = 0; i < ilcustomersWhoBoughtRecs.Images.Count; i++)

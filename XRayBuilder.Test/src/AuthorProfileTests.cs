@@ -1,28 +1,43 @@
 ﻿using System.Threading.Tasks;
 using NUnit.Framework;
 using XRayBuilderGUI;
+using XRayBuilderGUI.DataSources.Amazon;
 
 namespace XRayBuilder.Test
 {
     [TestFixture]
     public class AuthorProfileTests
     {
+        private IAuthorProfileGenerator _authorProfileGenerator;
+        private IHttpClient _httpClient;
+        private ILogger _logger;
+        private IAmazonClient _amazonClient;
+
+        [SetUp]
+        public void Setup()
+        {
+            _logger = new Logger();
+            _httpClient = new HttpClient(_logger);
+            _amazonClient = new AmazonClient(_httpClient);
+            _authorProfileGenerator = new AuthorProfileGenerator(_httpClient, _logger, _amazonClient);
+        }
+
         [TestCase(@"A Game of Thrones", "George R. R. Martin", "B000QCS8TW", "B000APIGH4", "George R. R. Martin")]
         [TestCase(@"Tiamat's Wrath", "James S. A. Corey", "B07BVNVWL6", "B004AQ1W8Y", "James S. A. Corey")]
         public async Task GenerateAsyncTest(string bookTitle, string authorName, string asin, string expectedAuthorAsin, string expectedAuthorName)
         {
-            var response = await AuthorProfile.GenerateAsync(
-                new AuthorProfile.Request
+            var response = await _authorProfileGenerator.GenerateAsync(
+                new AuthorProfileGenerator.Request
                 {
-                    Book = new BookInfo(bookTitle, authorName, asin),
-                    Settings = new AuthorProfile.Settings
+                    Book = new BookInfo(bookTitle, authorName, asin, _httpClient),
+                    Settings = new AuthorProfileGenerator.Settings
                     {
                         AmazonTld = "com",
                         SaveBio = false,
                         UseNewVersion = true,
                         EditBiography = false
                     }
-                }, new Logger());
+                });
             Assert.NotNull(response);
             Assert.AreEqual(expectedAuthorAsin, response.Asin);
             Assert.AreEqual(expectedAuthorName, response.Name);
@@ -35,18 +50,18 @@ namespace XRayBuilder.Test
         [Test]
         public async Task GenerateAsyncTest_Uk()
         {
-            var response = await AuthorProfile.GenerateAsync(
-                new AuthorProfile.Request
+            var response = await _authorProfileGenerator.GenerateAsync(
+                new AuthorProfileGenerator.Request
                 {
-                    Book = new BookInfo("A Game of Thrones", "George R. R. Martin", "B004GJXQ20"),
-                    Settings = new AuthorProfile.Settings
+                    Book = new BookInfo("A Game of Thrones", "George R. R. Martin", "B004GJXQ20", _httpClient),
+                    Settings = new AuthorProfileGenerator.Settings
                     {
                         AmazonTld = "co.uk",
                         SaveBio = false,
                         UseNewVersion = true,
                         EditBiography = false
                     }
-                }, new Logger());
+                });
             Assert.AreEqual(response.Asin, "B000APIGH4");
             Assert.AreEqual(response.Name, "George R. R. Martin");
             Assert.NotNull(response.Image);

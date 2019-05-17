@@ -11,8 +11,11 @@ using XRayBuilderGUI.Unpack;
 namespace XRayBuilderGUI
 {
     // TODO: Remove defaults and privates, move logic
+    // todo: remove httpclient
     public class BookInfo
     {
+        private readonly IHttpClient _httpClient;
+
         public string Title { get; set; }
         public string Author { get; set; }
         // TODO: Add TLD to go with ASIN (asin/tld class?)
@@ -55,7 +58,7 @@ namespace XRayBuilderGUI
             get => _guid;
         }
 
-        public BookInfo(IMetadata metadata, string dataUrl)
+        public BookInfo(IMetadata metadata, string dataUrl, IHttpClient httpClient)
         {
             _metadata = metadata;
             Title = metadata.Title;
@@ -66,9 +69,10 @@ namespace XRayBuilderGUI
             Databasename = metadata.DbName;
             SidecarName = $"{Functions.RemoveInvalidFileChars(metadata.Title)}.sdr";
             DataUrl = dataUrl;
+            _httpClient = httpClient;
         }
 
-        public BookInfo(string title, string author, string asin, string guid, string databasename, string path, string sidecarName, string dataUrl, string rawmlPath)
+        public BookInfo(string title, string author, string asin, string guid, string databasename, string path, string sidecarName, string dataUrl, string rawmlPath, IHttpClient httpClient)
         {
             Title = title;
             Author = author;
@@ -79,13 +83,15 @@ namespace XRayBuilderGUI
             this.SidecarName = sidecarName;
             DataUrl = dataUrl;
             RawmlPath = rawmlPath;
+            _httpClient = httpClient;
         }
 
-        public BookInfo(string title, string author, string asin)
+        public BookInfo(string title, string author, string asin, IHttpClient httpClient)
         {
             Title = title;
             Author = author;
             Asin = asin;
+            _httpClient = httpClient;
         }
 
         public override string ToString()
@@ -100,7 +106,7 @@ namespace XRayBuilderGUI
         public async Task GetAmazonInfo(string amazonUrl, CancellationToken cancellationToken = default)
         {
             if (amazonUrl == "") return;
-            GetAmazonInfo(await HttpClient.GetPageAsync(amazonUrl, cancellationToken));
+            GetAmazonInfo(await _httpClient.GetPageAsync(amazonUrl, cancellationToken));
         }
 
         /// <summary>
@@ -198,7 +204,7 @@ namespace XRayBuilderGUI
         {
             if (ImageUrl == "") return null;
             if (_bookImage != null) return _bookImage;
-            _bookImage = Task.Run(() => HttpClient.GetImageAsync(ImageUrl)).Result;
+            _bookImage = Task.Run(() => _httpClient.GetImageAsync(ImageUrl)).Result;
             return _bookImage;
         }
     }

@@ -42,7 +42,7 @@ namespace XRayBuilderGUI
     // TODO: Anywhere JSON is used, serialization should be done rather than text formatting...
     public class XRay
     {
-        private readonly Logger _logger;
+        private readonly ILogger _logger;
 
         private string dataUrl = "";
         private string xmlFile = "";
@@ -95,12 +95,12 @@ namespace XRayBuilderGUI
         #endregion
 
         // TODO: Remove all of the constructors
-        public XRay(Logger logger)
+        public XRay(ILogger logger)
         {
             _logger = logger;
         }
 
-        public XRay(string shelfari, ISecondarySource dataSource, Logger logger)
+        public XRay(string shelfari, ISecondarySource dataSource, ILogger logger)
         {
             if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
                 shelfari = "https://" + shelfari;
@@ -109,7 +109,7 @@ namespace XRayBuilderGUI
             _logger = logger;
         }
 
-        public XRay(string shelfari, string db, string guid, string asin, ISecondarySource dataSource, Logger logger, int locOffset = 0, string aliaspath = "", bool unattended = false)
+        public XRay(string shelfari, string db, string guid, string asin, ISecondarySource dataSource, ILogger logger, int locOffset = 0, string aliaspath = "", bool unattended = false)
         {
             if (shelfari == "" || db == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");

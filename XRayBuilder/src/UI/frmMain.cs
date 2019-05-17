@@ -22,8 +22,7 @@ namespace XRayBuilderGUI.UI
     public partial class frmMain : Form
     {
         // TODO: Remove logging from classes that shouldn't have it
-        private readonly Logger _logger;
-        // TODO: Find a better way to create new forms w/o requiring container outside composition root
+        private readonly ILogger _logger;
         private readonly Container _diContainer;
 
         // TODO: Fix up these paths
@@ -32,7 +31,7 @@ namespace XRayBuilderGUI.UI
         private string ApPath = "";
         private string XrPath = "";
 
-        public frmMain(Logger logger, Container diContainer)
+        public frmMain(ILogger logger, IHttpClient httpClient, Container diContainer)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);

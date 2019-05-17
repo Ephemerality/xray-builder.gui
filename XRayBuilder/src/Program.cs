@@ -25,7 +25,7 @@ namespace XRayBuilderGUI
         {
             _container = new Container();
 
-            _container.Register<Logger>(Lifestyle.Singleton);
+            _container.Register<ILogger, Logger>(Lifestyle.Singleton);
             _container.Register<frmMain>(Lifestyle.Singleton);
 
             _container.Verify();

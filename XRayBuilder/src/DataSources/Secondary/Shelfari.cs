@@ -12,11 +12,11 @@ namespace XRayBuilderGUI.DataSources.Secondary
 {
     public class Shelfari : ISecondarySource
     {
-        private readonly Logger _logger;
+        private readonly ILogger _logger;
 
         private HtmlDocument sourceHtmlDoc;
 
-        public Shelfari(Logger logger)
+        public Shelfari(ILogger logger)
         {
             _logger = logger;
         }

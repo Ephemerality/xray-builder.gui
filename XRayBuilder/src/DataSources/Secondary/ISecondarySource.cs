@@ -3,8 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using JetBrains.Annotations;
+using XRayBuilderGUI.DataSources.Secondary.Model;
 
-namespace XRayBuilderGUI.DataSources.Secondary.Model
+namespace XRayBuilderGUI.DataSources.Secondary
 {
     public interface ISecondarySource
     {
@@ -18,11 +19,5 @@ namespace XRayBuilderGUI.DataSources.Secondary.Model
         Task<IEnumerable<XRay.Term>> GetTermsAsync(string dataUrl, IProgressBar progress, CancellationToken cancellationToken = default);
         Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default);
         [ItemNotNull] Task<IEnumerable<BookInfo>> SearchBookByAsinAsync(string asin, CancellationToken cancellationToken = default);
-    }
-
-    public class NotableClip
-    {
-        public string Text { get; set; }
-        public int Likes { get; set; }
     }
 }

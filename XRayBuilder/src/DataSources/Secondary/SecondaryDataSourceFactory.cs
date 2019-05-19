@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using XRayBuilderGUI.DataSources.Secondary.Model;
 
 namespace XRayBuilderGUI.DataSources.Secondary
 {

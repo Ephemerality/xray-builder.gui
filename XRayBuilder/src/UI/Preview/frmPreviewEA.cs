@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
 
-namespace XRayBuilderGUI.UI
+namespace XRayBuilderGUI.UI.Preview
 {
     public partial class frmPreviewEA : Form, IPreviewForm
     {

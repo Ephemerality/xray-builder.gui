@@ -6,16 +6,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilderGUI.DataSources.Amazon;
+using XRayBuilderGUI.UI.Preview;
 using XRayBuilderGUI.Unpack;
 
 namespace XRayBuilderGUI.UI
 {
-    public interface IPreviewForm
-    {
-        Task Populate(string filePath, CancellationToken cancellationToken);
-        void ShowDialog();
-    }
-
     public enum Filetype
     {
         AuthorProfile,

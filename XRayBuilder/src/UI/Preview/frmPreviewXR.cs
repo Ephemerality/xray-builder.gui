@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace XRayBuilderGUI.UI
+namespace XRayBuilderGUI.UI.Preview
 {
     public partial class frmPreviewXR : Form, IPreviewForm
     {

@@ -117,28 +117,28 @@
     <Compile Update="src\UI\frmGR.Designer.cs">
       <DependentUpon>frmGR.cs</DependentUpon>
     </Compile>
-    <Compile Update="src\UI\frmPreviewAP.cs">
+    <Compile Update="src\UI\Preview\frmPreviewAP.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="src\UI\frmPreviewAP.Designer.cs">
+    <Compile Update="src\UI\Preview\frmPreviewAP.Designer.cs">
       <DependentUpon>frmPreviewAP.cs</DependentUpon>
     </Compile>
-    <Compile Update="src\UI\frmPreviewEA.cs">
+    <Compile Update="src\UI\Preview\frmPreviewEA.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="src\UI\frmPreviewEA.Designer.cs">
+    <Compile Update="src\UI\Preview\frmPreviewEA.Designer.cs">
       <DependentUpon>frmPreviewEA.cs</DependentUpon>
     </Compile>
-    <Compile Update="src\UI\frmPreviewSA.cs">
+    <Compile Update="src\UI\Preview\frmPreviewSA.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="src\UI\frmPreviewSA.Designer.cs">
+    <Compile Update="src\UI\Preview\frmPreviewSA.Designer.cs">
       <DependentUpon>frmPreviewSA.cs</DependentUpon>
     </Compile>
-    <Compile Update="src\UI\frmPreviewXR.cs">
+    <Compile Update="src\UI\Preview\frmPreviewXR.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="src\UI\frmPreviewXR.Designer.cs">
+    <Compile Update="src\UI\Preview\frmPreviewXR.Designer.cs">
       <DependentUpon>frmPreviewXR.cs</DependentUpon>
     </Compile>
     <Compile Update="src\UI\frmSettings.cs">
@@ -201,16 +201,16 @@
       <DependentUpon>frmMain.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Update="src\UI\frmPreviewAP.resx">
+    <EmbeddedResource Update="src\UI\Preview\frmPreviewAP.resx">
       <DependentUpon>frmPreviewAP.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Update="src\UI\frmPreviewEA.resx">
+    <EmbeddedResource Update="src\UI\Preview\frmPreviewEA.resx">
       <DependentUpon>frmPreviewEA.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Update="src\UI\frmPreviewSA.resx">
+    <EmbeddedResource Update="src\UI\Preview\frmPreviewSA.resx">
       <DependentUpon>frmPreviewSA.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Update="src\UI\frmPreviewXR.resx">
+    <EmbeddedResource Update="src\UI\Preview\frmPreviewXR.resx">
       <DependentUpon>frmPreviewXR.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Update="src\UI\frmSettings.resx">

@@ -693,26 +693,18 @@ namespace XRayBuilderGUI.UI
 
         private void SetDatasourceLabels()
         {
-            if (_settings.dataSource == "Goodreads")
-            {
-                btnSearchGoodreads.Enabled = true;
-                _dataSource = new Goodreads(_logger, _httpClient, _amazonClient);
-                rdoGoodreads.Text = "Goodreads";
-                lblGoodreads.Text = "Goodreads URL:";
-                lblGoodreads.Left = 134;
-                _tooltip.SetToolTip(btnDownloadTerms, "Save Goodreads info to an XML file.");
-                _tooltip.SetToolTip(btnSearchGoodreads, "Try to search for this book on Goodreads.");
-            }
-            else
-            {
-                btnSearchGoodreads.Enabled = false;
-                _dataSource = new Shelfari(_logger, _httpClient);
-                rdoGoodreads.Text = "Shelfari";
-                lblGoodreads.Text = "Shelfari URL:";
-                lblGoodreads.Left = 150;
-                _tooltip.SetToolTip(btnDownloadTerms, "Save Shelfari info to an XML file.");
-                _tooltip.SetToolTip(btnSearchGoodreads, "Search is disabled when Shelfari is selected as a data source.");
-            }
+            // todo: use enum directly for setting - consider passing enum vs datasource
+            var datasource = (SecondaryDataSourceFactory.Enum) Enum.Parse(typeof(SecondaryDataSourceFactory.Enum), _settings.dataSource);
+
+            _dataSource = _diContainer.GetInstance<SecondaryDataSourceFactory>().Get(datasource);
+            btnSearchGoodreads.Enabled = _dataSource.SearchEnabled;
+            lblGoodreads.Left = _dataSource.UrlLabelPosition;
+            rdoGoodreads.Text = _dataSource.Name;
+            lblGoodreads.Text = $"{_dataSource.Name} URL:";
+            _tooltip.SetToolTip(btnDownloadTerms, $"Save {_dataSource.Name} info to an XML file.");
+            _tooltip.SetToolTip(btnSearchGoodreads, _dataSource.SearchEnabled
+                ? $"Try to search for this book on {_dataSource.Name}."
+                : $"Search is disabled when {_dataSource.Name} is selected as a data source.");
         }
 
         private void frmMain_DragDrop(object sender, DragEventArgs e)
@@ -802,22 +794,22 @@ namespace XRayBuilderGUI.UI
 
         private async void tmiAuthorProfile_Click(object sender, EventArgs e)
         {
-            await UIFunctions.ShowPreview(Filetype.AuthorProfile, ApPath, _settings.outDir, _logger, _cancelTokens.Token);
+            await UIFunctions.ShowPreview(Filetype.AuthorProfile, ApPath, _settings.outDir, _logger, _httpClient, _cancelTokens.Token);
         }
 
         private async void tmiStartAction_Click(object sender, EventArgs e)
         {
-            await UIFunctions.ShowPreview(Filetype.StartActions, SaPath, _settings.outDir, _logger, _cancelTokens.Token);
+            await UIFunctions.ShowPreview(Filetype.StartActions, SaPath, _settings.outDir, _logger, _httpClient, _cancelTokens.Token);
         }
 
         private async void tmiEndAction_Click(object sender, EventArgs e)
         {
-            await UIFunctions.ShowPreview(Filetype.EndActions, EaPath, _settings.outDir, _logger, _cancelTokens.Token);
+            await UIFunctions.ShowPreview(Filetype.EndActions, EaPath, _settings.outDir, _logger, _httpClient, _cancelTokens.Token);
         }
 
         private async void tmiXray_Click(object sender, EventArgs e)
         {
-            await UIFunctions.ShowPreview(Filetype.XRay, XrPath, _settings.outDir, _logger, _cancelTokens.Token);
+            await UIFunctions.ShowPreview(Filetype.XRay, XrPath, _settings.outDir, _logger, _httpClient, _cancelTokens.Token);
         }
 
         private void btnUnpack_Click(object sender, EventArgs e)

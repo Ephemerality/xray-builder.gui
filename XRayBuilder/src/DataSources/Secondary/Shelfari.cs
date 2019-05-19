@@ -24,6 +24,8 @@ namespace XRayBuilderGUI.DataSources.Secondary
         }
 
         public string Name => "Shelfari";
+        public bool SearchEnabled { get; } = false;
+        public int UrlLabelPosition { get; } = 150;
 
         private string FindShelfariURL(HtmlDocument shelfariHtmlDoc, string author, string title)
         {

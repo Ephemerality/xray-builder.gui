@@ -15,7 +15,6 @@ using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI.DataSources.Secondary
 {
-    //todo: use factory + full di
     public class Goodreads : ISecondarySource
     {
         private readonly ILogger _logger;
@@ -25,6 +24,8 @@ namespace XRayBuilderGUI.DataSources.Secondary
         private const int MaxConcurrentRequests = 10;
 
         public string Name => "Goodreads";
+        public bool SearchEnabled { get; } = true;
+        public int UrlLabelPosition { get; } = 134;
 
         private readonly Regex _regexBookId = new Regex(@"/book/show/(?<id>[0-9]+)", RegexOptions.Compiled);
 

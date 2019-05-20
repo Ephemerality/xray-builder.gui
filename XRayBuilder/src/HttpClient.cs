@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Async;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -10,7 +13,6 @@ using HtmlAgilityPack;
 
 namespace XRayBuilderGUI
 {
-    // TODO: DI for this instead of static instance
     // TODO: Investigate if a caching layer is worthwhile
     public sealed class HttpClient : System.Net.Http.HttpClient, IHttpClient
     {
@@ -45,6 +47,21 @@ namespace XRayBuilderGUI
             var response = await GetStreamAsync(url, cancellationToken);
             return new Bitmap(response);
         }
+
+        public IAsyncEnumerable<Bitmap> GetImages(IEnumerable<string> urls, bool greyscale = false)
+            => new AsyncEnumerable<Bitmap>(async yield =>
+            {
+                foreach (var url in urls.Where(url => !string.IsNullOrEmpty(url)))
+                {
+                    var image = await GetImageAsync(url, yield.CancellationToken);
+
+                    image = greyscale
+                        ? Functions.MakeGrayscale3(image)
+                        : image;
+
+                    await yield.ReturnAsync(image);
+                }
+            });
 
         public async Task<Stream> GetStreamAsync(string url, CancellationToken cancellationToken = default)
         {

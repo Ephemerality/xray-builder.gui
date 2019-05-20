@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Async;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Net.Http;
@@ -21,6 +23,7 @@ namespace XRayBuilderGUI
         Task<Stream> GetStreamAsync(string url, CancellationToken cancellationToken);
         Task<HtmlDocument> GetPageAsync(string url, CancellationToken cancellationToken = default);
         Task<Bitmap> GetImageAsync(string url, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<Bitmap> GetImages(IEnumerable<string> urls, bool greyscale = false);
         Task<HttpResponseMessage> GetAsync(string requestUri);
         Task<HttpResponseMessage> GetAsync(Uri requestUri);
         Task<HttpResponseMessage> GetAsync(string requestUri, HttpCompletionOption completionOption);

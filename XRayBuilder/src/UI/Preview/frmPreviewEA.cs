@@ -1,10 +1,12 @@
 ﻿using System;
-using System.IO;
-using System.Text;
+using System.Collections.Async;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using XRayBuilderGUI.Model.Artifacts;
 
 namespace XRayBuilderGUI.UI.Preview
 {
@@ -49,69 +51,62 @@ namespace XRayBuilderGUI.UI.Preview
 
         #endregion
 
-        // TODO: Deserialize properly
         public async Task Populate(string inputFile, CancellationToken cancellationToken = default)
         {
-            string input;
-            using (var streamReader = new StreamReader(inputFile, Encoding.UTF8))
-                input = streamReader.ReadToEnd();
-            ilauthorRecs.Images.Clear();
-            lvAuthorRecs.Items.Clear();
-            ilcustomersWhoBoughtRecs.Images.Clear();
-            lvCustomersWhoBoughtRecs.Items.Clear();
+            try
+            {
+                var endActions = JsonConvert.DeserializeObject<Model.Artifacts.EndActions>(Functions.ReadFromFile(inputFile), new JsonSerializerSettings
+                {
+                    MissingMemberHandling = MissingMemberHandling.Error
+                });
 
-            var ea = JObject.Parse(input);
-            var data = ea["data"]
-                       ?? throw new Exception("Invalid EndActions file!");
-            var tempData = data["nextBook"];
-            if (tempData != null)
-            {
-                lblNextTitle.Text = tempData["title"].ToString();
-                lblNextAuthor.Text = tempData["authors"][0].ToString();
-                var imageUrl = tempData["imageUrl"]?.ToString();
-                if (!string.IsNullOrEmpty(imageUrl))
-                    pbNextCover.Image = Functions.MakeGrayscale3(await _httpClient.GetImageAsync(imageUrl, cancellationToken));
-            }
-            else
-            {
-                pbNextCover.Visible = false;
-                lblNextTitle.Visible = false;
-                lblNextAuthor.Visible = false;
-                lblNotInSeries.Visible = true;
-            }
+                ilauthorRecs.Images.Clear();
+                lvAuthorRecs.Items.Clear();
+                ilcustomersWhoBoughtRecs.Images.Clear();
+                lvCustomersWhoBoughtRecs.Items.Clear();
 
-            tempData = ea["data"]["authorRecs"]["recommendations"];
-            if (tempData != null)
-            {
-                foreach (var rec in tempData)
+                if (endActions.Data.NextBook != null)
                 {
-                    var imageUrl = rec["imageUrl"]?.ToString();
-                    if (!string.IsNullOrEmpty(imageUrl))
-                        ilauthorRecs.Images.Add(Functions.MakeGrayscale3(await _httpClient.GetImageAsync(imageUrl, cancellationToken)));
+                    var nextBook = endActions.Data.NextBook;
+                    lblNextTitle.Text = nextBook.Title;
+                    lblNextAuthor.Text = nextBook.Authors.FirstOrDefault() ?? "";
+                    if (!string.IsNullOrEmpty(nextBook.ImageUrl))
+                        pbNextCover.Image = Functions.MakeGrayscale3(await _httpClient.GetImageAsync(nextBook.ImageUrl, cancellationToken));
                 }
-                ListViewItem_SetSpacing(lvAuthorRecs, 60 + 7, 90 + 7);
-                for (var i = 0; i < ilauthorRecs.Images.Count; i++)
+                else
                 {
-                    var item = new ListViewItem { ImageIndex = i };
-                    lvAuthorRecs.Items.Add(item);
+                    pbNextCover.Visible = false;
+                    lblNextTitle.Visible = false;
+                    lblNextAuthor.Visible = false;
+                    lblNotInSeries.Visible = true;
                 }
-            }
 
-            tempData = ea["data"]["customersWhoBoughtRecs"]["recommendations"];
-            if (tempData != null)
+                await PopulateImagesFromBooks(lvAuthorRecs, ilauthorRecs, endActions.Data.AuthorRecs.Recommendations, cancellationToken);
+                await PopulateImagesFromBooks(lvAuthorRecs, ilauthorRecs, endActions.Data.CustomersWhoBoughtRecs.Recommendations, cancellationToken);
+            }
+            catch (Exception ex)
             {
-                foreach (var rec in tempData)
+                throw new AggregateException("Invalid EndActions file!", ex);
+            }
+        }
+
+        private async Task PopulateImagesFromBooks(ListView listView, ImageList imageList, IEnumerable<Book> books, CancellationToken cancellationToken = default)
+        {
+            ListViewItem_SetSpacing(listView, 60 + 7, 90 + 7);
+
+            var urls = books.Select(book => book.ImageUrl);
+            var greyscaleImages = await _httpClient.GetImages(urls, true).ToArrayAsync(cancellationToken);
+
+            var i = 0;
+            foreach (var greyscaleImage in greyscaleImages)
+            {
+                var item = new ListViewItem
                 {
-                    var imageUrl = rec["imageUrl"]?.ToString();
-                    if (!string.IsNullOrEmpty(imageUrl))
-                        ilcustomersWhoBoughtRecs.Images.Add(Functions.MakeGrayscale3(await _httpClient.GetImageAsync(imageUrl, cancellationToken)));
-                }
-                ListViewItem_SetSpacing(lvCustomersWhoBoughtRecs, 60 + 7, 90 + 7);
-                for (var i = 0; i < ilcustomersWhoBoughtRecs.Images.Count; i++)
-                {
-                    var item = new ListViewItem { ImageIndex = i };
-                    lvCustomersWhoBoughtRecs.Items.Add(item);
-                }
+                    ImageIndex = i++
+                };
+
+                listView.Items.Add(item);
+                imageList.Images.Add(greyscaleImage);
             }
         }
 

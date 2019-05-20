@@ -14,6 +14,7 @@ using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.Model.Artifacts;
 using XRayBuilderGUI.Properties;
+using XRayBuilderGUI.UI.Preview.Logic;
 using XRayBuilderGUI.Unpack;
 
 namespace XRayBuilderGUI.UI
@@ -25,6 +26,7 @@ namespace XRayBuilderGUI.UI
         private readonly IHttpClient _httpClient;
         private readonly IAmazonClient _amazonClient;
         private readonly IAuthorProfileGenerator _authorProfileGenerator;
+        private readonly PreviewProviderFactory _previewProviderFactory;
         private readonly Container _diContainer;
 
         // TODO: Fix up these paths
@@ -33,7 +35,13 @@ namespace XRayBuilderGUI.UI
         private string ApPath = "";
         private string XrPath = "";
 
-        public frmMain(ILogger logger, IHttpClient httpClient, Container diContainer, IAuthorProfileGenerator authorProfileGenerator, IAmazonClient amazonClient)
+        public frmMain(
+            ILogger logger,
+            IHttpClient httpClient,
+            Container diContainer,
+            IAuthorProfileGenerator authorProfileGenerator,
+            IAmazonClient amazonClient,
+            PreviewProviderFactory previewProviderFactory)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
@@ -42,6 +50,7 @@ namespace XRayBuilderGUI.UI
             _diContainer = diContainer;
             _authorProfileGenerator = authorProfileGenerator;
             _amazonClient = amazonClient;
+            _previewProviderFactory = previewProviderFactory;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
         }
@@ -793,22 +802,22 @@ namespace XRayBuilderGUI.UI
 
         private async void tmiAuthorProfile_Click(object sender, EventArgs e)
         {
-            await UIFunctions.ShowPreview(Filetype.AuthorProfile, ApPath, _settings.outDir, _logger, _httpClient, _cancelTokens.Token);
+            await ShowPreview(PreviewProviderFactory.PreviewType.AuthorProfile, ApPath);
         }
 
         private async void tmiStartAction_Click(object sender, EventArgs e)
         {
-            await UIFunctions.ShowPreview(Filetype.StartActions, SaPath, _settings.outDir, _logger, _httpClient, _cancelTokens.Token);
+            await ShowPreview(PreviewProviderFactory.PreviewType.StartActions, SaPath);
         }
 
         private async void tmiEndAction_Click(object sender, EventArgs e)
         {
-            await UIFunctions.ShowPreview(Filetype.EndActions, EaPath, _settings.outDir, _logger, _httpClient, _cancelTokens.Token);
+            await ShowPreview(PreviewProviderFactory.PreviewType.EndActions, EaPath);
         }
 
         private async void tmiXray_Click(object sender, EventArgs e)
         {
-            await UIFunctions.ShowPreview(Filetype.XRay, XrPath, _settings.outDir, _logger, _httpClient, _cancelTokens.Token);
+            await ShowPreview(PreviewProviderFactory.PreviewType.XRay, XrPath);
         }
 
         private void btnUnpack_Click(object sender, EventArgs e)
@@ -943,6 +952,36 @@ namespace XRayBuilderGUI.UI
             {
                 _logger.Log("Canceling...");
                 _cancelTokens.Cancel();
+            }
+        }
+
+        private async Task ShowPreview(PreviewProviderFactory.PreviewType type, string filePath)
+        {
+            var previewProvider = _previewProviderFactory.Get(type);
+
+            string selPath;
+            if (File.Exists(filePath))
+                selPath = filePath;
+            else
+            {
+                selPath = UIFunctions.GetFile($"Open a Kindle {previewProvider.Name} file...", "", "ASC files|*.asc", _settings.outDir);
+                if (!selPath.Contains(previewProvider.FilenameValidator))
+                {
+                    _logger.Log($"Invalid {previewProvider.Name} file.");
+                    return;
+                }
+            }
+
+            try
+            {
+                var previewForm = previewProvider.GenForm();
+                await previewForm.Populate(selPath, _cancelTokens.Token);
+                previewForm.ShowDialog();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.Log("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
             }
         }
     }

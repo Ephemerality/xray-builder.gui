@@ -118,6 +118,7 @@ namespace XRayBuilderGUI.UI.Preview
         public new void ShowDialog()
         {
             base.ShowDialog();
+            Dispose(true);
         }
     }
 }

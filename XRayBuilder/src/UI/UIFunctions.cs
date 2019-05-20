@@ -1,77 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilderGUI.DataSources.Amazon;
-using XRayBuilderGUI.UI.Preview;
 using XRayBuilderGUI.Unpack;
 
 namespace XRayBuilderGUI.UI
 {
-    public enum Filetype
-    {
-        AuthorProfile,
-        EndActions,
-        StartActions,
-        XRay
-    }
-
-    public class PreviewDef
-    {
-        public string Name { get; set; }
-        public string Validator { get; set; }
-        public Type Form { get; set; }
-        public bool NeedsHttpClient { get; set; }
-    }
-
     // ReSharper disable once InconsistentNaming
     public static class UIFunctions
     {
-        public static Dictionary<Filetype, PreviewDef> PreviewMap = new Dictionary<Filetype, PreviewDef>
-        {
-            {Filetype.AuthorProfile, new PreviewDef { Name = "AuthorProfile", Form = typeof(frmPreviewAP), Validator = "AuthorProfile", NeedsHttpClient = false}},
-            {Filetype.EndActions, new PreviewDef { Name = "EndActions", Form = typeof(frmPreviewEA), Validator = "EndActions", NeedsHttpClient = true}},
-            {Filetype.StartActions, new PreviewDef { Name = "StartActions", Form = typeof(frmPreviewSA), Validator = "StartActions", NeedsHttpClient = true}},
-            {Filetype.XRay, new PreviewDef { Name = "X-Ray", Form = typeof(frmPreviewXR), Validator = "XRAY.entities", NeedsHttpClient = false}}
-        };
-
-        public static async Task ShowPreview(Filetype type, string filePath, string defaultDir, ILogger logger, IHttpClient httpClient, CancellationToken cancellationToken = default)
-        {
-            var previewData = PreviewMap[type];
-
-            string selPath;
-            if (File.Exists(filePath))
-                selPath = filePath;
-            else
-            {
-                selPath = GetFile($"Open a Kindle {previewData.Name} file...", "", "ASC files|*.asc", defaultDir);
-                if (!selPath.Contains(previewData.Validator))
-                {
-                    logger.Log($"Invalid {previewData.Name} file.");
-                    return;
-                }
-            }
-
-            try
-            {
-                // TODO: Use DI somehow for this - use factory/enums!!
-                var previewForm = previewData.NeedsHttpClient
-                    ? (IPreviewForm)Activator.CreateInstance(previewData.Form, httpClient)
-                    : (IPreviewForm) Activator.CreateInstance(previewData.Form);
-                await previewForm.Populate(selPath, cancellationToken);
-                //.Location = new Point(Left, Top);
-                previewForm.ShowDialog();
-
-            }
-            catch (Exception ex)
-            {
-                logger.Log("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-            }
-        }
-
         public static string GetDir(string defaultFolder)
         {
             var f = new FolderBrowserDialog { SelectedPath = defaultFolder };

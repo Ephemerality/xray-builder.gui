@@ -129,7 +129,7 @@ namespace XRayBuilderGUI
             _logger = logger;
         }
 
-        public XRay(string xml, string db, string guid, string asin, ISecondarySource dataSource, Logger logger, int locOffset = 0, string aliaspath = "")
+        public XRay(string xml, string db, string guid, string asin, ISecondarySource dataSource, ILogger logger, int locOffset = 0, string aliaspath = "")
         {
             if (xml == "" || db == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");

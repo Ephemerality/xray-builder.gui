@@ -22,7 +22,7 @@ namespace XRayBuilderGUI
         Task<string> GetStringAsync(string url, CancellationToken cancellationToken);
         Task<Stream> GetStreamAsync(string url, CancellationToken cancellationToken);
         Task<HtmlDocument> GetPageAsync(string url, CancellationToken cancellationToken = default);
-        Task<Bitmap> GetImageAsync(string url, CancellationToken cancellationToken = default);
+        Task<Bitmap> GetImageAsync(string url, bool greyscale = false, CancellationToken cancellationToken = default);
         IAsyncEnumerable<Bitmap> GetImages(IEnumerable<string> urls, bool greyscale = false);
         Task<HttpResponseMessage> GetAsync(string requestUri);
         Task<HttpResponseMessage> GetAsync(Uri requestUri);

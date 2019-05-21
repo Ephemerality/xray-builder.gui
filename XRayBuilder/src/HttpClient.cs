@@ -42,10 +42,16 @@ namespace XRayBuilderGUI
             return htmlDoc;
         }
 
-        public async Task<Bitmap> GetImageAsync(string url, CancellationToken cancellationToken = default)
+        public async Task<Bitmap> GetImageAsync(string url, bool greyscale = false, CancellationToken cancellationToken = default)
         {
             var response = await GetStreamAsync(url, cancellationToken);
-            return new Bitmap(response);
+            var image = new Bitmap(response);
+
+            image = greyscale
+                ? Functions.MakeGrayscale3(image)
+                : image;
+
+            return image;
         }
 
         public IAsyncEnumerable<Bitmap> GetImages(IEnumerable<string> urls, bool greyscale = false)
@@ -53,13 +59,7 @@ namespace XRayBuilderGUI
             {
                 foreach (var url in urls.Where(url => !string.IsNullOrEmpty(url)))
                 {
-                    var image = await GetImageAsync(url, yield.CancellationToken);
-
-                    image = greyscale
-                        ? Functions.MakeGrayscale3(image)
-                        : image;
-
-                    await yield.ReturnAsync(image);
+                    await yield.ReturnAsync(await GetImageAsync(url, greyscale, yield.CancellationToken));
                 }
             });
 

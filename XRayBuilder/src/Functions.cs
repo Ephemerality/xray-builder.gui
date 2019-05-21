@@ -476,6 +476,12 @@ namespace XRayBuilderGUI
             return results.Where(x => x.Item2).Select(x => x.Item1);
         }
 
+        public static void Replace<TKey>(this Dictionary<TKey, string> dic, string needle, string replacement)
+        {
+            foreach (var (key, value) in dic)
+                dic[key] = value.Replace(needle, replacement);
+        }
+
         public static TValue GetOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key)
             => dic.TryGetValue(key, out var val) ? val : default;
 

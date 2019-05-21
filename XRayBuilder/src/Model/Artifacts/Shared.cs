@@ -5,16 +5,6 @@ namespace XRayBuilderGUI.Model.Artifacts
 {
     public static class Extensions
     {
-        public static void Replace(this LocalizedText text, string toReplace, string replacement)
-        {
-            var props = text.GetType().GetProperties();
-            foreach (var prop in props)
-            {
-                var curVal = prop.GetValue(text).ToString();
-                prop.SetValue(text, curVal.Replace(toReplace, replacement));
-            }
-        }
-
         public static Book BookInfoToBook(BookInfo bookInfo, bool featured)
         {
             if (bookInfo == null)
@@ -121,41 +111,5 @@ namespace XRayBuilderGUI.Model.Artifacts
 
         [JsonProperty("imageUrl")]
         public string ImageUrl { get; set; }
-    }
-
-    public class LocalizedText
-    {
-        [JsonProperty("de")]
-        public string De { get; set; }
-
-        [JsonProperty("en")]
-        public string En { get; set; }
-
-        [JsonProperty("en-US")]
-        public string EnUS { get; set; }
-
-        [JsonProperty("es")]
-        public string Es { get; set; }
-
-        [JsonProperty("fr")]
-        public string Fr { get; set; }
-
-        [JsonProperty("it")]
-        public string It { get; set; }
-
-        [JsonProperty("ja")]
-        public string Ja { get; set; }
-
-        [JsonProperty("nl")]
-        public string Nl { get; set; }
-
-        [JsonProperty("pt-BR")]
-        public string PtBR { get; set; }
-
-        [JsonProperty("ru")]
-        public string Ru { get; set; }
-
-        [JsonProperty("zh-CN")]
-        public string ZhCN { get; set; }
     }
 }

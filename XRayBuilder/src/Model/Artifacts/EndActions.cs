@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace XRayBuilderGUI.Model.Artifacts
 {
@@ -82,10 +83,10 @@ namespace XRayBuilderGUI.Model.Artifacts
         public class Strings
         {
             [JsonProperty("title")]
-            public LocalizedText Title { get; set; }
+            public Dictionary<string, string> Title { get; set; }
 
             [JsonProperty("buttonText", NullValueHandling = NullValueHandling.Ignore)]
-            public LocalizedText ButtonText { get; set; }
+            public Dictionary<string, string> ButtonText { get; set; }
         }
 
         public class Widget

@@ -1,11 +1,10 @@
 ﻿using System.Drawing;
-using System.IO;
-using System.Text;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Newtonsoft.Json.Linq;
+using XRayBuilderGUI.Model.Artifacts;
 using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI.UI.Preview
@@ -13,6 +12,8 @@ namespace XRayBuilderGUI.UI.Preview
     public partial class frmPreviewSA : Form, IPreviewForm
     {
         private readonly IHttpClient _httpClient;
+
+        private readonly Regex _regexHighlights = new Regex(@"(?<text>(?<num>[\d,.]+) passages have been highlighted (?<total>[\d,.]+) times)", RegexOptions.Compiled);
 
         public frmPreviewSA(IHttpClient httpClient)
         {
@@ -26,21 +27,16 @@ namespace XRayBuilderGUI.UI.Preview
 
         public async Task Populate(string inputFile, CancellationToken cancellationToken = default)
         {
-            string input;
-            using (var streamReader = new StreamReader(inputFile, Encoding.UTF8))
-                input = streamReader.ReadToEnd();
+            var startActions = Functions.JsonDeserializeFile<StartActions>(inputFile);
+
             ilOtherBooks.Images.Clear();
             dgvOtherBooks.Rows.Clear();
 
-            var sa = JObject.Parse(input);
-            var tempData = sa["data"]["seriesPosition"];
-            if (tempData != null)
+            if (startActions.Data.SeriesPosition != null)
             {
-                var position = tempData["positionInSeries"].ToString();
-                var total = tempData["totalInSeries"].ToString();
-                var name = tempData["seriesName"].ToString();
-                lblSeries.Text = $"This is book {position} of {total} in {name}";
-                if (position == "1")
+                var seriesInfo = startActions.Data.SeriesPosition;
+                lblSeries.Text = $"This is book {seriesInfo.PositionInSeries} of {seriesInfo.TotalInSeries} in {seriesInfo.SeriesName}";
+                if (seriesInfo.PositionInSeries == 1)
                 {
                     pbPreviousCover.Visible = false;
                     lblPreviousHeading.Visible = false;
@@ -65,72 +61,62 @@ namespace XRayBuilderGUI.UI.Preview
                 lblPreviousTitle.Visible = false;
             }
 
-            tempData = sa["data"]["popularHighlightsText"]?["localizedText"]?["en-US"];
-            if (tempData != null)
+            // TODO: Enums or something for language
+            var highlights = startActions.Data.PopularHighlightsText?.LocalizedText?.GetOrDefault("en-US");
+            if (highlights != null)
             {
-                var popularHighlightsText = Regex.Match(tempData.ToString(),
-                    @"((\d+) passages have been highlighted (\d+) times)");
+                var popularHighlightsText = _regexHighlights.Match(highlights);
                 if (popularHighlightsText.Success)
-                    lblHighlights.Text = popularHighlightsText.Groups[1].Value;
+                    lblHighlights.Text = popularHighlightsText.Groups["text"].Value;
             }
 
-            tempData = sa["data"]["bookDescription"];
-            if (tempData != null)
+            if (startActions.Data.BookDescription != null)
             {
-                lblTitle.Text = tempData["title"].ToString();
-                lblAuthor.Text = tempData["authors"][0].ToString();
+                var bookDescription = startActions.Data.BookDescription;
+                lblTitle.Text = bookDescription.Title;
+                lblAuthor.Text = bookDescription.Authors.FirstOrDefault() ?? "";
                 titlePopup = lblAuthor.Text;
-                lblDescription.Text = tempData["description"].ToString();
+                lblDescription.Text = bookDescription.Description;
                 descriptionPopup = lblDescription.Text;
-                var rating = Regex.Match(tempData["amazonRating"].ToString(), @"(\d+)");
-                if (rating.Success)
-                    pbRating.Image = (Image)Resources.ResourceManager.GetObject($"STAR{rating.Groups[1].Value}");
-                lblVotes.Text = $"({tempData["numberOfReviews"]} votes)";
+                if (bookDescription.AmazonRating.HasValue)
+                    pbRating.Image = (Image)Resources.ResourceManager.GetObject($"STAR{bookDescription.AmazonRating}");
+                lblVotes.Text = $"({bookDescription.NumberOfReviews ?? 0} {Functions.Pluralize($"{bookDescription.NumberOfReviews ?? 0:vote}")})";
             }
 
-            tempData = sa["data"]["authorBios"]?["authors"]?[0];
-            if (tempData != null)
+            var author = startActions.Data.AuthorBios?.Authors?.FirstOrDefault();
+            if (author != null)
             {
-                var imageUrl = tempData["imageUrl"]?.ToString() ?? "";
-                if (imageUrl != "")
-                    pbAuthorImage.Image = Functions.MakeGrayscale3(await _httpClient.GetImageAsync(imageUrl, cancellationToken));
-                lblBiography.Text = tempData["bio"]?.ToString();
+                var imageUrl = author.ImageUrl;
+                if (!string.IsNullOrEmpty(imageUrl))
+                    pbAuthorImage.Image = await _httpClient.GetImageAsync(imageUrl, true, cancellationToken);
+                lblBiography.Text = author.Bio;
                 biographyPopup = lblBiography.Text;
             }
 
-            tempData = sa["data"]["authorRecs"]?["recommendations"];
-            if (tempData != null)
+            if (startActions.Data.AuthorRecs?.Recommendations != null)
             {
-                // TODO: Figure out why otherBooks is here but not used
-                //var otherBooks = new List<Tuple<string, string, string, string>>();
-                foreach (var rec in tempData)
+                foreach (var rec in startActions.Data.AuthorRecs.Recommendations)
                 {
-                    var imageUrl = rec["imageUrl"]?.ToString() ?? "";
-                    var author = rec["authors"][0].ToString();
-                    var title = rec["title"].ToString();
-                    //otherBooks.Add(new Tuple<string, string, string, string>(rec["asin"].ToString(), title, author, imageUrl));
-                    if (imageUrl != "")
-                        ilOtherBooks.Images.Add(Functions.MakeGrayscale3(await _httpClient.GetImageAsync(imageUrl, cancellationToken)));
-                    dgvOtherBooks.Rows.Add(ilOtherBooks.Images[ilOtherBooks.Images.Count - 1], $"{title}\n{author}");
+                    var imageUrl = rec.ImageUrl;
+                    if (!string.IsNullOrEmpty(imageUrl))
+                        ilOtherBooks.Images.Add(await _httpClient.GetImageAsync(imageUrl, true, cancellationToken));
+                    dgvOtherBooks.Rows.Add(ilOtherBooks.Images[ilOtherBooks.Images.Count - 1], $"{rec.Title}\n{rec.Authors.FirstOrDefault() ?? ""}");
                 }
             }
 
-            tempData = sa["data"]["readingTime"];
-            if (tempData != null)
+            if (startActions.Data.ReadingTime != null)
             {
-                lblReadingTime.Text = $"{tempData["hours"]} hours and {tempData["minutes"]} minutes to read";
-                tempData = sa["data"]["readingPages"];
-                if (tempData != null)
-                    lblReadingTime.Text = $"{lblReadingTime.Text} ({tempData["pagesInBook"]} pages)";
+                lblReadingTime.Text = $"{startActions.Data.ReadingTime.Hours} hours and {startActions.Data.ReadingTime.Minutes} minutes to read";
+                if (startActions.Data.ReadingPages != null)
+                    lblReadingTime.Text = $"{lblReadingTime.Text} ({startActions.Data.ReadingPages.PagesInBook} pages)";
             }
 
-            tempData = sa["data"]["previousBookInTheSeries"];
-            if (tempData != null)
+            if (startActions.Data.PreviousBookInTheSeries != null)
             {
-                lblPreviousTitle.Text = tempData["title"].ToString();
-                var imageUrl = tempData["imageUrl"]?.ToString() ?? "";
-                if (imageUrl != "")
-                    pbPreviousCover.Image = Functions.MakeGrayscale3(await _httpClient.GetImageAsync(imageUrl, cancellationToken));
+                lblPreviousTitle.Text = startActions.Data.PreviousBookInTheSeries.Title;
+                var imageUrl = startActions.Data.PreviousBookInTheSeries.ImageUrl;
+                if (!string.IsNullOrEmpty(imageUrl))
+                    pbPreviousCover.Image = await _httpClient.GetImageAsync(imageUrl, true, cancellationToken);
             }
         }
 

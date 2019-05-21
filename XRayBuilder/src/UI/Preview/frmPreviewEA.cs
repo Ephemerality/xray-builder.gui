@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Newtonsoft.Json;
 using XRayBuilderGUI.Model.Artifacts;
 
 namespace XRayBuilderGUI.UI.Preview
@@ -55,10 +54,7 @@ namespace XRayBuilderGUI.UI.Preview
         {
             try
             {
-                var endActions = JsonConvert.DeserializeObject<Model.Artifacts.EndActions>(Functions.ReadFromFile(inputFile), new JsonSerializerSettings
-                {
-                    MissingMemberHandling = MissingMemberHandling.Error
-                });
+                var endActions = Functions.JsonDeserializeFile<Model.Artifacts.EndActions>(inputFile);
 
                 ilauthorRecs.Images.Clear();
                 lvAuthorRecs.Items.Clear();

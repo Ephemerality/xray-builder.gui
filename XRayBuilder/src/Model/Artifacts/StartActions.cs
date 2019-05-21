@@ -109,25 +109,25 @@ namespace XRayBuilderGUI.Model.Artifacts
         public class WidgetStrings
         {
             [JsonProperty("imagesDescription", NullValueHandling = NullValueHandling.Ignore)]
-            public LocalizedText ImagesDescription { get; set; }
+            public Dictionary<string, string> ImagesDescription { get; set; }
 
             [JsonProperty("imagesButtonText", NullValueHandling = NullValueHandling.Ignore)]
-            public LocalizedText ImagesButtonText { get; set; }
+            public Dictionary<string, string> ImagesButtonText { get; set; }
 
             [JsonProperty("entitiesButtonText", NullValueHandling = NullValueHandling.Ignore)]
-            public LocalizedText EntitiesButtonText { get; set; }
+            public Dictionary<string, string> EntitiesButtonText { get; set; }
 
             [JsonProperty("entitiesDescription", NullValueHandling = NullValueHandling.Ignore)]
-            public LocalizedText EntitiesDescription { get; set; }
+            public Dictionary<string, string> EntitiesDescription { get; set; }
 
             [JsonProperty("text", NullValueHandling = NullValueHandling.Ignore)]
-            public LocalizedText Text { get; set; }
+            public Dictionary<string, string> Text { get; set; }
 
             [JsonProperty("title", NullValueHandling = NullValueHandling.Ignore)]
-            public LocalizedText Title { get; set; }
+            public Dictionary<string, string> Title { get; set; }
 
             [JsonProperty("panelRowTitle", NullValueHandling = NullValueHandling.Ignore)]
-            public LocalizedText PanelRowTitle { get; set; }
+            public Dictionary<string, string> PanelRowTitle { get; set; }
         }
 
         public class Widget
@@ -178,36 +178,6 @@ namespace XRayBuilderGUI.Model.Artifacts
             public bool? ProvidesHeaderInfo { get; set; }
         }
 
-        public class LayoutStrings
-        {
-            [JsonProperty("seriesGroup", NullValueHandling = NullValueHandling.Ignore)]
-            public LocalizedText SeriesGroup { get; set; }
-
-            [JsonProperty("xrayGroup", NullValueHandling = NullValueHandling.Ignore)]
-            public LocalizedText XrayGroup { get; set; }
-
-            [JsonProperty("bookDescriptionEInkGroup", NullValueHandling = NullValueHandling.Ignore)]
-            public LocalizedText BookDescriptionEInkGroup { get; set; }
-
-            [JsonProperty("authorsGroupWithSingleAuthor", NullValueHandling = NullValueHandling.Ignore)]
-            public LocalizedText AuthorsGroupWithSingleAuthor { get; set; }
-
-            [JsonProperty("readingTimeGroup", NullValueHandling = NullValueHandling.Ignore)]
-            public LocalizedText ReadingTimeGroup { get; set; }
-
-            [JsonProperty("popularHighlightsGroup", NullValueHandling = NullValueHandling.Ignore)]
-            public LocalizedText PopularHighlightsGroup { get; set; }
-
-            [JsonProperty("citationsGroup", NullValueHandling = NullValueHandling.Ignore)]
-            public LocalizedText CitationsGroup { get; set; }
-
-            [JsonProperty("welcomeGroup", NullValueHandling = NullValueHandling.Ignore)]
-            public LocalizedText WelcomeGroup { get; set; }
-
-            [JsonProperty("audibleGroup", NullValueHandling = NullValueHandling.Ignore)]
-            public LocalizedText AudibleGroup { get; set; }
-        }
-
         public class Layout
         {
             [JsonProperty("metricsTag")]
@@ -220,7 +190,7 @@ namespace XRayBuilderGUI.Model.Artifacts
             public string Class { get; set; }
 
             [JsonProperty("strings")]
-            public LayoutStrings Strings { get; set; }
+            public Dictionary<string, Dictionary<string, string>> Strings { get; set; }
 
             [JsonProperty("widgetPlacements")]
             public WidgetPlacements WidgetPlacements { get; set; }
@@ -259,10 +229,10 @@ namespace XRayBuilderGUI.Model.Artifacts
             public string Class { get; set; }
 
             [JsonProperty("localizedText")]
-            public LocalizedText LocalizedText { get; set; }
+            public Dictionary<string, string> LocalizedText { get; set; }
 
             [JsonProperty("localizedSubtext")]
-            public LocalizedText LocalizedSubtext { get; set; }
+            public Dictionary<string, string> LocalizedSubtext { get; set; }
         }
 
         public class PopularHighlightsText
@@ -271,7 +241,7 @@ namespace XRayBuilderGUI.Model.Artifacts
             public string Class { get; set; }
 
             [JsonProperty("localizedText")]
-            public LocalizedText LocalizedText { get; set; }
+            public Dictionary<string, string> LocalizedText { get; set; }
         }
 
         public class GrokShelfInfo
@@ -304,7 +274,7 @@ namespace XRayBuilderGUI.Model.Artifacts
             public int Minutes { get; set; }
 
             [JsonProperty("formattedTime")]
-            public LocalizedText FormattedTime { get; set; }
+            public Dictionary<string, string> FormattedTime { get; set; }
         }
 
         public class ReadingPages

@@ -71,7 +71,7 @@ namespace XRayBuilderGUI.UI.Preview
                     lblNextTitle.Text = nextBook.Title;
                     lblNextAuthor.Text = nextBook.Authors.FirstOrDefault() ?? "";
                     if (!string.IsNullOrEmpty(nextBook.ImageUrl))
-                        pbNextCover.Image = Functions.MakeGrayscale3(await _httpClient.GetImageAsync(nextBook.ImageUrl, cancellationToken));
+                        pbNextCover.Image = await _httpClient.GetImageAsync(nextBook.ImageUrl, true, cancellationToken);
                 }
                 else
                 {

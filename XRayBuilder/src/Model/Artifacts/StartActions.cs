@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace XRayBuilderGUI.Model.Artifacts
 {
@@ -35,6 +36,12 @@ namespace XRayBuilderGUI.Model.Artifacts
 
             [JsonProperty("imageUrl")]
             public string ImageUrl { get; set; }
+
+            [JsonProperty("bisacCodes")]
+            public string[] BisacCodes { get; set; }
+
+            [JsonProperty("fictionStatus")]
+            public string FictionStatus { get; set; }
 
             [JsonProperty("erl")]
             public int Erl { get; set; }
@@ -104,6 +111,18 @@ namespace XRayBuilderGUI.Model.Artifacts
 
             [JsonProperty("buyButtonVisible", NullValueHandling = NullValueHandling.Ignore)]
             public bool? BuyButtonVisible { get; set; }
+
+            [JsonProperty("oneClickBorrowSupported", NullValueHandling = NullValueHandling.Ignore)]
+            public bool? OneClickBorrowSupported { get; set; }
+
+            [JsonProperty("showShareButton", NullValueHandling = NullValueHandling.Ignore)]
+            public bool? ShowShareButton { get; set; }
+
+            [JsonProperty("showWishListButton", NullValueHandling = NullValueHandling.Ignore)]
+            public bool? ShowWishListButton { get; set; }
+
+            [JsonProperty("showBadges", NullValueHandling = NullValueHandling.Ignore)]
+            public bool? ShowBadges { get; set; }
         }
 
         public class WidgetStrings
@@ -311,6 +330,9 @@ namespace XRayBuilderGUI.Model.Artifacts
 
             [JsonProperty("authorRecs")]
             public Recs AuthorRecs { get; set; }
+
+            [JsonProperty("authorFeaturedRecs", NullValueHandling = NullValueHandling.Ignore)]
+            public Recs AuthorFeaturedRecs { get; set; }
 
             [JsonProperty("currentBook")]
             public Book CurrentBook { get; set; }

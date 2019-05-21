@@ -605,8 +605,22 @@ namespace XRayBuilderGUI.UI
                         books = books.OrderByDescending(book => book.Reviews)
                             .ThenByDescending(book => book.Editions)
                             .ToArray();
+
+                        // Pre-load cover images
+                        foreach (var book in books.Where(book => !string.IsNullOrEmpty(book.ImageUrl)))
+                        {
+                            try
+                            {
+                                book.CoverImage = await _httpClient.GetImageAsync(book.ImageUrl, cancellationToken: _cancelTokens.Token);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.Log("Failed to download cover image: " + ex.Message);
+                            }
+                        }
+
                         _logger.Log($"Warning: Multiple results returned from {_dataSource.Name}...");
-                        var frmG = new frmGR(_logger) { BookList = books };
+                        var frmG = new frmGR(books);
                         frmG.ShowDialog();
                         bookUrl = books[frmG.cbResults.SelectedIndex].DataUrl;
                     }

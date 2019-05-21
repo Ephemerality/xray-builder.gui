@@ -7,14 +7,12 @@ namespace XRayBuilderGUI.UI
 {
     public partial class frmGR : Form
     {
-        private readonly ILogger _logger;
+        private readonly BookInfo[] _bookList;
 
-        public BookInfo[] BookList { get; set; }
-
-        public frmGR(ILogger logger)
+        public frmGR(BookInfo[] bookList)
         {
             InitializeComponent();
-            _logger = logger;
+            _bookList = bookList;
         }
 
         private readonly ToolTip _toolTip1 = new ToolTip();
@@ -37,19 +35,12 @@ namespace XRayBuilderGUI.UI
         private void cbResults_SelectedIndexChanged(object sender, EventArgs e)
         {
             var i = cbResults.SelectedIndex == -1 ? 0 : cbResults.SelectedIndex;
-            try
-            {
-                pbCover.Image = BookList[i].CoverImage() ?? Resources.missing_image;
-            }
-            catch (Exception ex)
-            {
-                _logger.Log("Failed to download cover image: " + ex.Message);
-            }
-            lblTitle.Text = BookList[i].Title;
-            lblAuthor.Text = "by " + BookList[i].Author;
-            lblRating.Text = $"{BookList[i].AmazonRating:#.#} average rating " + Functions.Pluralize($"({BookList[i].Reviews:rating})");
-            lblEditions.Text = Functions.Pluralize($"{BookList[i].Editions:edition}");
-            linkID.Text = BookList[i].GoodreadsId;
+            pbCover.Image = _bookList[i].CoverImage ?? Resources.missing_image;
+            lblTitle.Text = _bookList[i].Title;
+            lblAuthor.Text = "by " + _bookList[i].Author;
+            lblRating.Text = $"{_bookList[i].AmazonRating:#.#} average rating " + Functions.Pluralize($"({_bookList[i].Reviews:rating})");
+            lblEditions.Text = Functions.Pluralize($"{_bookList[i].Editions:edition}");
+            linkID.Text = _bookList[i].GoodreadsId;
             _toolTip1.SetToolTip(linkID, $"http://www.goodreads.com/book/show/{linkID.Text}");
         }
 
@@ -60,9 +51,9 @@ namespace XRayBuilderGUI.UI
 
         private void frmGR_Load(object sender, EventArgs e)
         {
-            lblMessage1.Text = $"{BookList.Length} matches for this book were found on Goodreads.";
+            lblMessage1.Text = $"{_bookList.Length} matches for this book were found on Goodreads.";
             cbResults.Items.Clear();
-            foreach (var book in BookList)
+            foreach (var book in _bookList)
                 cbResults.Items.Add(book.Title);
             cbResults.SelectedIndex = 0;
         }

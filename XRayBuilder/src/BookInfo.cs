@@ -45,12 +45,16 @@ namespace XRayBuilderGUI
         public int PagesInBook { get; set; }
         public SeriesInfo Series { get; set; } = new SeriesInfo();
 
+        /// <summary>
+        /// Used to store the cover image once downloaded (manually)
+        /// </summary>
+        public Bitmap CoverImage { get; set; }
+
         // List of clips and their highlight/like count
         public List<NotableClip> notableClips;
 
         private readonly IMetadata _metadata;
         private string _guid;
-        private Bitmap _bookImage;
 
         public string Guid
         {
@@ -198,14 +202,6 @@ namespace XRayBuilderGUI
                         "Error: " + ex.Message + "\r\n" + ex.StackTrace);
                 }
             }
-        }
-
-        public Bitmap CoverImage()
-        {
-            if (ImageUrl == "") return null;
-            if (_bookImage != null) return _bookImage;
-            _bookImage = Task.Run(() => _httpClient.GetImageAsync(ImageUrl)).Result;
-            return _bookImage;
         }
     }
 }

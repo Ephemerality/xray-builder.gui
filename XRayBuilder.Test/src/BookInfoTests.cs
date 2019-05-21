@@ -30,7 +30,7 @@ namespace XRayBuilder.Test
         {
             BookInfo bk = new BookInfo("A Game of Thrones", "George R. R. Martin", "B000QCS8TW", _httpClient);
             await bk.GetAmazonInfo("https://www.amazon.ca/Game-Thrones-Song-Fire-Book-ebook/dp/B000QCS8TW/");
-            Assert.IsNotNull(bk.CoverImage());
+            Assert.IsNotNull(await _httpClient.GetImageAsync(bk.ImageUrl));
         }
     }
 }

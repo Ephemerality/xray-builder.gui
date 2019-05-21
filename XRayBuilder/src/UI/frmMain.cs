@@ -27,6 +27,7 @@ namespace XRayBuilderGUI.UI
         private readonly IAmazonClient _amazonClient;
         private readonly IAuthorProfileGenerator _authorProfileGenerator;
         private readonly PreviewProviderFactory _previewProviderFactory;
+        private readonly IAmazonInfoParser _amazonInfoParser;
         private readonly Container _diContainer;
 
         // TODO: Fix up these paths
@@ -41,7 +42,8 @@ namespace XRayBuilderGUI.UI
             Container diContainer,
             IAuthorProfileGenerator authorProfileGenerator,
             IAmazonClient amazonClient,
-            PreviewProviderFactory previewProviderFactory)
+            PreviewProviderFactory previewProviderFactory,
+            IAmazonInfoParser amazonInfoParser)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
@@ -51,6 +53,7 @@ namespace XRayBuilderGUI.UI
             _authorProfileGenerator = authorProfileGenerator;
             _amazonClient = amazonClient;
             _previewProviderFactory = previewProviderFactory;
+            _amazonInfoParser = amazonInfoParser;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
         }
@@ -428,7 +431,7 @@ namespace XRayBuilderGUI.UI
                     UseNewVersion = _settings.useNewVersion,
                     UseSubDirectories = _settings.useSubDirectories,
                     PromptAsin = _settings.promptASIN
-                }, AsinPrompt, _logger, _httpClient, _amazonClient);
+                }, AsinPrompt, _logger, _httpClient, _amazonClient, _amazonInfoParser);
                 if (!await ea.Generate()) return;
 
                 if (_settings.useNewVersion)

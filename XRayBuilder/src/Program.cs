@@ -44,6 +44,8 @@ namespace XRayBuilderGUI
             _container.AutoregisterConcreteFromAbstract<PreviewProvider>(Lifestyle.Singleton);
             _container.AutoregisterDisposableTransientConcreteFromInterface<IPreviewForm>("Manually disposed");
 
+            _container.Register<IAmazonInfoParser, AmazonInfoParser>(Lifestyle.Singleton);
+
             _container.Verify();
         }
     }

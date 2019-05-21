@@ -14,13 +14,15 @@ namespace XRayBuilder.Test.DataSources
         private IHttpClient _httpClient;
         private IAmazonClient _amazonClient;
         private Goodreads _goodreads;
+        private IAmazonInfoParser _amazonInfoParser;
 
         [SetUp]
         public void Setup()
         {
             _logger = new Logger();
             _httpClient = new HttpClient(_logger);
-            _amazonClient = new AmazonClient(_httpClient);
+            _amazonInfoParser = new AmazonInfoParser(_logger, _httpClient);
+            _amazonClient = new AmazonClient(_httpClient, _amazonInfoParser, _logger);
             _goodreads = new Goodreads(_logger, _httpClient, _amazonClient);
         }
 

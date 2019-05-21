@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Async;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,14 +23,19 @@ namespace XRayBuilderGUI.DataSources.Amazon
     public class AmazonClient : IAmazonClient
     {
         private readonly IHttpClient _httpClient;
+        private readonly IAmazonInfoParser _amazonInfoParser;
+        private readonly ILogger _logger;
 
+        private const int MaxParallelism = 5;
         private readonly Regex _regexAsin = new Regex("(?<asin>B[A-Z0-9]{9})", RegexOptions.Compiled);
         private readonly Regex _regexAsinUrl = new Regex("(/e/(?<asin>B\\w+)[/?]|dp/(?<asin>B[A-Z0-9]{9})/|/gp/product/(?<asin>B[A-Z0-9]{9}))", RegexOptions.Compiled);
         private readonly Regex _regexIgnoreHeaders = new Regex(@"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-        public AmazonClient(IHttpClient httpClient)
+        public AmazonClient(IHttpClient httpClient, IAmazonInfoParser amazonInfoParser, ILogger logger)
         {
             _httpClient = httpClient;
+            _amazonInfoParser = amazonInfoParser;
+            _logger = logger;
         }
 
         public static bool IsAsin(string asin) => Regex.IsMatch(asin, "^B[A-Z0-9]{9}$");
@@ -288,6 +294,24 @@ namespace XRayBuilderGUI.DataSources.Amazon
             }
             return result;
         }
+
+        public IAsyncEnumerable<BookInfo> EnhanceBookInfos(IEnumerable<BookInfo> books) => new AsyncEnumerable<BookInfo>(async yield =>
+        {
+            foreach (var book in books.Where(book => book != null))
+            {
+                try
+                {
+                    var infoResponse = await _amazonInfoParser.GetAndParseAmazonDocument(book.AmazonUrl, yield.CancellationToken);
+                    infoResponse.ApplyToBookInfo(book);
+
+                    await yield.ReturnAsync(book);
+                }
+                catch (Exception ex)
+                {
+                    throw new AggregateException($"Book: {book.Title}\r\nURL: {book.AmazonUrl}\r\nError: {ex.Message}", ex);
+                }
+            }
+        });
 
         public Task<string> DownloadStartActions(string asin, CancellationToken cancellationToken = default)
             => _httpClient.GetStringAsync($"https://www.revensoftware.com/amazon/sa/{asin}", cancellationToken);

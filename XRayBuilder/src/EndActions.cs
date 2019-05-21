@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Async;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -23,6 +22,7 @@ namespace XRayBuilderGUI
         private readonly ILogger _logger;
         private readonly IHttpClient _httpClient;
         private readonly IAmazonClient _amazonClient;
+        private readonly IAmazonInfoParser _amazonInfoParser;
 
         private string EaPath = "";
         private string SaPath = "";
@@ -37,7 +37,17 @@ namespace XRayBuilderGUI
         private readonly Func<string, string, string> _asinPrompt;
 
         //Requires an already-built AuthorProfile and the BaseEndActions.txt file
-        public EndActions(AuthorProfileGenerator.Response authorProfile, BookInfo book, long erl, ISecondarySource dataSource, Settings settings, Func<string, string, string> asinPrompt, ILogger logger, IHttpClient httpClient, IAmazonClient amazonClient)
+        public EndActions(
+            AuthorProfileGenerator.Response authorProfile,
+            BookInfo book,
+            long erl,
+            ISecondarySource dataSource,
+            Settings settings,
+            Func<string, string, string> asinPrompt,
+            ILogger logger,
+            IHttpClient httpClient,
+            IAmazonClient amazonClient,
+            IAmazonInfoParser amazonInfoParser)
         {
             _authorProfile = authorProfile;
             curBook = book;
@@ -48,6 +58,7 @@ namespace XRayBuilderGUI
             _logger = logger;
             _httpClient = httpClient;
             _amazonClient = amazonClient;
+            _amazonInfoParser = amazonInfoParser;
         }
 
         /// <summary>
@@ -90,7 +101,8 @@ namespace XRayBuilderGUI
 
             try
             {
-                curBook.GetAmazonInfo(bookHtmlDoc);
+                var response = _amazonInfoParser.ParseAmazonDocument(bookHtmlDoc);
+                response.ApplyToBookInfo(curBook);
             }
             catch (Exception ex)
             {
@@ -134,24 +146,16 @@ namespace XRayBuilderGUI
                         possibleBooks.Add(new BookInfo(nodeTitleCheck, cleanAuthor,
                             _amazonClient.ParseAsin(nodeUrl), _httpClient));
                     }
-                    var bookBag = new ConcurrentBag<BookInfo>();
-                    await possibleBooks.ParallelForEachAsync(async book =>
+
+                    if (_settings.UseNewVersion)
                     {
-                        if (book == null) return;
-                        // TODO: Make a separate function for this, duplicate here and AuthorProfile
-                        try
+                        await _amazonClient.EnhanceBookInfos(possibleBooks).ForEachAsync(book =>
                         {
-                            //Gather book desc, image url, etc, if using new format
-                            if (_settings.UseNewVersion)
-                                await book.GetAmazonInfo(book.AmazonUrl, cancellationToken);
-                            bookBag.Add(book);
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.Log($"Error: {ex}\r\n{book.AmazonUrl}");
-                        }
-                    }, 5, cancellationToken);
-                    custAlsoBought.AddRange(bookBag);
+                            // todo progress
+                        }, cancellationToken);
+                    }
+
+                    custAlsoBought.AddRange(possibleBooks);
                 }
                 //Add sponsored related, if they exist...
                 var otherItems =
@@ -189,22 +193,12 @@ namespace XRayBuilderGUI
                             possibleBooks.Add(new BookInfo(sponsTitle, sponsAuthor, sponsAsin, _httpClient));
                         }
 
-                        var bookBag = new ConcurrentBag<BookInfo>();
-                        await possibleBooks.ParallelForEachAsync(async book =>
+                        await _amazonClient.EnhanceBookInfos(possibleBooks).ForEachAsync(book =>
                         {
-                            //Gather book desc, image url, etc, if using new format
-                            try
-                            {
-                                if (_settings.UseNewVersion)
-                                    await book.GetAmazonInfo(book.AmazonUrl, cancellationToken);
-                                bookBag.Add(book);
-                            }
-                            catch (Exception ex)
-                            {
-                                _logger.Log($"Error: {ex.Message}\r\n{book.AmazonUrl}");
-                            }
-                        }, 5, cancellationToken);
-                        custAlsoBought.AddRange(bookBag);
+                            // todo progress
+                        }, cancellationToken);
+
+                        custAlsoBought.AddRange(possibleBooks);
                     }
                 }
             }
@@ -277,7 +271,9 @@ namespace XRayBuilderGUI
             // If the asin was available from another source, use it
             if (!string.IsNullOrEmpty(book.Asin))
             {
-                await book.GetAmazonInfo($"https://www.amazon.{_settings.AmazonTld}/dp/{book.Asin}", cancellationToken);
+                var response = await _amazonInfoParser.GetAndParseAmazonDocument($"https://www.amazon.{_settings.AmazonTld}/dp/{book.Asin}", cancellationToken);
+                response.ApplyToBookInfo(book);
+
                 return book;
             }
 
@@ -303,7 +299,10 @@ namespace XRayBuilderGUI
             }
 
             if (newBook != null)
-                await newBook.GetAmazonInfo(newBook.AmazonUrl, cancellationToken); //fill in desc, imageurl, and ratings
+            {
+                var response = await _amazonInfoParser.GetAndParseAmazonDocument(newBook.AmazonUrl, cancellationToken);
+                response.ApplyToBookInfo(newBook);
+            }
 
             return newBook;
         }
@@ -376,7 +375,8 @@ namespace XRayBuilderGUI
                                     Functions.FixAuthor(seriesResult.NextBook.Authors.FirstOrDefault()?.AuthorName),
                                     seriesResult.NextBook.Asin,
                                     _httpClient);
-                            await curBook.Series.Next.GetAmazonInfo(curBook.Series.Next.AmazonUrl, token);
+                            var response = await _amazonInfoParser.GetAndParseAmazonDocument(curBook.Series.Next.AmazonUrl, token);
+                            response.ApplyToBookInfo(curBook.Series.Next);
                             break;
                     }
                 }

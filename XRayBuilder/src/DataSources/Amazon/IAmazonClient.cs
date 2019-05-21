@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Async;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
@@ -6,6 +7,7 @@ using XRayBuilderGUI.DataSources.Amazon.Model;
 
 namespace XRayBuilderGUI.DataSources.Amazon
 {
+    // todo: client should be http stuff, parser should parse
     public interface IAmazonClient
     {
         string ParseAsin(string input);
@@ -22,6 +24,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
 
         List<BookInfo> GetAuthorBooks(AuthorSearchResults searchResults, string curTitle, string curAuthor, string TLD);
         Task<BookInfo> SearchBook(string title, string author, string TLD, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<BookInfo> EnhanceBookInfos(IEnumerable<BookInfo> books);
         Task<string> DownloadStartActions(string asin, CancellationToken cancellationToken = default);
         Task<NextBookResult> DownloadNextInSeries(string asin, CancellationToken cancellationToken = default);
     }

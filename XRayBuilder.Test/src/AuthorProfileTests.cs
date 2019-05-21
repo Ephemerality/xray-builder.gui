@@ -12,13 +12,15 @@ namespace XRayBuilder.Test
         private IHttpClient _httpClient;
         private ILogger _logger;
         private IAmazonClient _amazonClient;
+        private IAmazonInfoParser _amazonInfoParser;
 
         [SetUp]
         public void Setup()
         {
             _logger = new Logger();
             _httpClient = new HttpClient(_logger);
-            _amazonClient = new AmazonClient(_httpClient);
+            _amazonInfoParser = new AmazonInfoParser(_logger, _httpClient);
+            _amazonClient = new AmazonClient(_httpClient, _amazonInfoParser, _logger);
             _authorProfileGenerator = new AuthorProfileGenerator(_httpClient, _logger, _amazonClient);
         }
 

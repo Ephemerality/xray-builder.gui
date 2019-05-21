@@ -222,26 +222,24 @@ namespace XRayBuilderGUI
             var bookList = _amazonClient.GetAuthorBooks(searchResults, request.Book.Title, request.Book.Author, request.Settings.AmazonTld);
             if (bookList == null || !bookList.Any())
                 bookList = _amazonClient.GetAuthorBooksNew(searchResults, request.Book.Title, request.Book.Author, request.Settings.AmazonTld);
+
             var bookBag = new ConcurrentBag<BookInfo>();
-            if (bookList != null)
+            if (bookList != null && request.Settings.UseNewVersion)
             {
                 _logger.Log("Gathering metadata for other books...");
-                await bookList.ParallelForEachAsync(async book =>
+                try
                 {
-                    // TODO: retry a couple times if one fails maybe
-                    try
+                    await _amazonClient.EnhanceBookInfos(bookList).ForEachAsync(book =>
                     {
-                        //Gather book desc, image url, etc, if using new format
-                        if (request.Settings.UseNewVersion)
-                            await book.GetAmazonInfo(book.AmazonUrl, cancellationToken);
+                        // todo progress
                         bookBag.Add(book);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Log(string.Format("An error occurred gathering metadata for other books: {0}\r\nURL: {1}\r\nBook: {2}", ex.Message, book.AmazonUrl, book.Title));
-                        throw;
-                    }
-                }, cancellationToken);
+                    }, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log($"An error occurred gathering metadata for other books: {ex.Message}");
+                    throw;
+                }
             }
             else
             {

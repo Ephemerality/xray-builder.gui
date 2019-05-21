@@ -107,101 +107,10 @@ namespace XRayBuilderGUI
         /// Retrieves the book's description, image URL, and rating from the book's Amazon URL.
         /// </summary>
         /// <param name="amazonUrl">Book's Amazon URL</param>
-        public async Task GetAmazonInfo(string amazonUrl, CancellationToken cancellationToken = default)
-        {
-            if (amazonUrl == "") return;
-            GetAmazonInfo(await _httpClient.GetPageAsync(amazonUrl, cancellationToken));
-        }
 
         /// <summary>
         /// Retrieves the book's description, image URL, and rating from the book's Amazon page.
         /// </summary>
         /// <param name="bookDoc">Book's Amazon page, pre-downloaded</param>
-        public void GetAmazonInfo(HtmlDocument bookDoc)
-        {
-            if (ImageUrl == "")
-            {
-                // Parse Book image URL
-                var bookImageLoc = bookDoc.DocumentNode.SelectSingleNode("//*[@id='imgBlkFront']")
-                    ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='imageBlock']")
-                    ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='series-detail-product-image']")
-                    ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='ebooksImgBlkFront']") //co.uk seems to use this id sometimes
-                    // for more generic matching, such as on audiobooks (which apparently have BXXXXXXXX asins also)
-                    ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='main-image']");
-                if (bookImageLoc == null)
-                    throw new HtmlWebException(string.Format(@"Error finding book image. If you want, you can report the book's Amazon URL to help with parsing.\r\n{0}", AmazonUrl));
-                else
-                    ImageUrl = Regex.Replace(bookImageLoc.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
-                if (ImageUrl.Contains("base64"))
-                {
-                    ImageUrl = bookImageLoc.GetAttributeValue("data-a-dynamic-image", "");
-                    var match = Regex.Match(ImageUrl, @"(https://.*?_\.(jpg|jpeg|gif|png))");
-                    if (match.Success)
-                    {
-                        ImageUrl = match.Groups[1].Value;
-                        if (!ImageUrl.EndsWith(".png"))
-                            ImageUrl = Regex.Replace(ImageUrl, @"_.*?_\.", string.Empty);
-                    }
-                }
-
-                // cleanup to match retail file image links
-                if (ImageUrl.Contains(@"https://images-na.ssl-images-amazon"))
-                    ImageUrl = ImageUrl.Replace(@"https://images-na.ssl-images-amazon", @"http://ecx.images-amazon");
-
-                // Use no image URL
-                if (ImageUrl == "")
-                    ImageUrl = "http://ecx.images-amazon.com/images/G/01/x-site/icons/no-img-sm.gif";
-            }
-            if (Description == "")
-            {
-                var descNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='bookDescription_feature_div']/noscript")
-                    ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-size-medium series-detail-description-text']");
-                if (descNode != null && descNode.InnerText != "")
-                {
-                    Description = descNode.InnerText.Trim();
-                    // Following the example of Amazon, cut off desc around 1000 characters.
-                    // If conveniently trimmed at the end of the sentence, let it end with the punctuation.
-                    // If the sentence continues, cut it off and replace the space with an ellipsis
-                    if (Description.Length > 1000)
-                    {
-                        Description = Description.Substring(0, 1000);
-                        var lastPunc = Description.LastIndexOfAny(new [] {'.', '!', '?'});
-                        var lastSpace = Description.LastIndexOf(' ');
-                        if (lastPunc > lastSpace)
-                            Description = Description.Substring(0, lastPunc + 1);
-                        else
-                            Description = Description.Substring(0, lastSpace) + '\u2026';
-                    }
-                    Description = System.Net.WebUtility.HtmlDecode(Description);
-                    Description = Description.Clean();
-                }
-            }
-            if (Reviews == 0)
-            {
-                try
-                {
-                    var ratingNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='acrPopover']")
-                        ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='fl acrStars']/span");
-                    if (ratingNode != null)
-                    {
-                        var aRating = ratingNode.GetAttributeValue("title", "0");
-                        AmazonRating = float.Parse(ratingNode.GetAttributeValue("title", "0").Substring(0, aRating.IndexOf(' ')));
-                        var reviewsNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='acrCustomerReviewText']")
-                            ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-link-normal']");
-                        if (reviewsNode != null)
-                        {
-                            var match = Regex.Match(reviewsNode.InnerText, @"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)");
-                            if (match.Success)
-                                Reviews = int.Parse(match.Value.Replace(".", "").Replace(",", ""));
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new HtmlWebException("Error finding book ratings. If you want, you can report the book's Amazon URL to help with parsing.\r\n" +
-                        "Error: " + ex.Message + "\r\n" + ex.StackTrace);
-                }
-            }
-        }
     }
 }

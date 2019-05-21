@@ -93,9 +93,10 @@ namespace XRayBuilderGUI.UI.Preview
                 biographyPopup = lblBiography.Text;
             }
 
-            if (startActions.Data.AuthorRecs?.Recommendations != null)
+            if (startActions.Data.AuthorRecs != null || startActions.Data.AuthorFeaturedRecs != null)
             {
-                foreach (var rec in startActions.Data.AuthorRecs.Recommendations)
+                var recommendations = startActions.Data.AuthorRecs ?? startActions.Data.AuthorFeaturedRecs;
+                foreach (var rec in recommendations.Recommendations)
                 {
                     var imageUrl = rec.ImageUrl;
                     if (!string.IsNullOrEmpty(imageUrl))

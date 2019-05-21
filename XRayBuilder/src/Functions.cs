@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using HtmlAgilityPack;
+using Newtonsoft.Json;
 #if NETFRAMEWORK
 using Pluralize.NET;
 #else
@@ -26,6 +27,15 @@ namespace XRayBuilderGUI
 {
     public static class Functions
     {
+        public static TObject JsonDeserialize<TObject>(string value, bool strict = true)
+            => JsonConvert.DeserializeObject<TObject>(value, new JsonSerializerSettings
+            {
+                MissingMemberHandling = strict ? MissingMemberHandling.Error : MissingMemberHandling.Ignore
+            });
+
+        public static TObject JsonDeserializeFile<TObject>(string filename, bool strict = true)
+            => JsonDeserialize<TObject>(ReadFromFile(filename), strict);
+
         public static string ReadFromFile(string file)
         {
             using (var streamReader = new StreamReader(file, Encoding.UTF8))

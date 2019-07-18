@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using HtmlAgilityPack;
 using XRayBuilderGUI.DataSources.Secondary.Model;
 using XRayBuilderGUI.Unpack;
 

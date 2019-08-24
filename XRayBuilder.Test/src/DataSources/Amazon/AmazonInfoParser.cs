@@ -23,7 +23,7 @@ namespace XRayBuilder.Test.DataSources.Amazon
         [Test()]
         public async Task GetAmazonInfoTest()
         {
-            BookInfo bk = new BookInfo("A Game of Thrones", "George R. R. Martin", "B000QCS8TW", _httpClient);
+            BookInfo bk = new BookInfo("A Game of Thrones", "George R. R. Martin", "B000QCS8TW");
             var response = await _amazonInfoParser.GetAndParseAmazonDocument("https://www.amazon.ca/Game-Thrones-Song-Fire-Book-ebook/dp/B000QCS8TW/");
             Assert.Greater(response.Reviews, 0);
             Assert.Greater(response.Rating, 0);
@@ -34,7 +34,7 @@ namespace XRayBuilder.Test.DataSources.Amazon
         [Test()]
         public async Task CoverImageTest()
         {
-            BookInfo bk = new BookInfo("A Game of Thrones", "George R. R. Martin", "B000QCS8TW", _httpClient);
+            BookInfo bk = new BookInfo("A Game of Thrones", "George R. R. Martin", "B000QCS8TW");
             var response = await _amazonInfoParser.GetAndParseAmazonDocument("https://www.amazon.ca/Game-Thrones-Song-Fire-Book-ebook/dp/B000QCS8TW/");
             Assert.IsNotNull(response.ImageUrl);
             Assert.IsNotNull(await _httpClient.GetImageAsync(response.ImageUrl));

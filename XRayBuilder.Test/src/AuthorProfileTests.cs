@@ -31,7 +31,7 @@ namespace XRayBuilder.Test
             var response = await _authorProfileGenerator.GenerateAsync(
                 new AuthorProfileGenerator.Request
                 {
-                    Book = new BookInfo(bookTitle, authorName, asin, _httpClient),
+                    Book = new BookInfo(bookTitle, authorName, asin),
                     Settings = new AuthorProfileGenerator.Settings
                     {
                         AmazonTld = "com",
@@ -55,7 +55,7 @@ namespace XRayBuilder.Test
             var response = await _authorProfileGenerator.GenerateAsync(
                 new AuthorProfileGenerator.Request
                 {
-                    Book = new BookInfo("A Game of Thrones", "George R. R. Martin", "B004GJXQ20", _httpClient),
+                    Book = new BookInfo("A Game of Thrones", "George R. R. Martin", "B004GJXQ20"),
                     Settings = new AuthorProfileGenerator.Settings
                     {
                         AmazonTld = "co.uk",

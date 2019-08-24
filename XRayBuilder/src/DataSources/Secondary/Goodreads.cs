@@ -76,7 +76,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
                 var cleanTitle = titleNode.InnerText.Trim().Replace("&amp;", "&").Replace("%27", "'").Replace("%20", " ");
 
-                var newBook = new BookInfo(cleanTitle, authorNode.InnerText.Trim(), null, _httpClient);
+                var newBook = new BookInfo(cleanTitle, authorNode.InnerText.Trim(), null);
 
                 newBook.GoodreadsId = ParseBookIdFromUrl(link.OuterHtml);
                 newBook.DataUrl = BookUrl(newBook.GoodreadsId);
@@ -146,7 +146,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
             async Task<BookInfo> ParseSeriesBook(HtmlNode bookNode)
             {
-                var book = new BookInfo("", "", "", _httpClient);
+                var book = new BookInfo("", "", "");
                 var title = bookNode.SelectSingleNode(".//div[@class='u-paddingBottomXSmall']/a");
                 book.Title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", "", RegexOptions.Compiled);
                 book.Title = WebUtility.HtmlDecode(book.Title);

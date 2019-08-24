@@ -144,7 +144,7 @@ namespace XRayBuilderGUI
                         if (match.Success)
                             continue;
                         possibleBooks.Add(new BookInfo(nodeTitleCheck, cleanAuthor,
-                            _amazonClient.ParseAsin(nodeUrl), _httpClient));
+                            _amazonClient.ParseAsin(nodeUrl)));
                     }
 
                     if (_settings.UseNewVersion)
@@ -190,7 +190,7 @@ namespace XRayBuilderGUI
                                 ?? throw new FormatChangedException("Amazon", "Sponsored book author");
                             // TODO: Throw more format changed exceptions to make it obvious that the site changed
                             var sponsAuthor = otherBook.InnerText.Trim();
-                            possibleBooks.Add(new BookInfo(sponsTitle, sponsAuthor, sponsAsin, _httpClient));
+                            possibleBooks.Add(new BookInfo(sponsTitle, sponsAuthor, sponsAsin));
                         }
 
                         await _amazonClient.EnhanceBookInfos(possibleBooks).ForEachAsync(book =>
@@ -289,7 +289,7 @@ namespace XRayBuilderGUI
                     if (string.IsNullOrWhiteSpace(asin))
                         return null;
                     _logger.Log($"ASIN supplied: {asin}");
-                    newBook = new BookInfo(book.Title, book.Author, asin, _httpClient);
+                    newBook = new BookInfo(book.Title, book.Author, asin);
                 }
             }
             catch
@@ -373,8 +373,7 @@ namespace XRayBuilderGUI
                             curBook.Series.Next =
                                 new BookInfo(seriesResult.NextBook.Title.TitleName,
                                     Functions.FixAuthor(seriesResult.NextBook.Authors.FirstOrDefault()?.AuthorName),
-                                    seriesResult.NextBook.Asin,
-                                    _httpClient);
+                                    seriesResult.NextBook.Asin);
                             var response = await _amazonInfoParser.GetAndParseAmazonDocument(curBook.Series.Next.AmazonUrl, token);
                             response.ApplyToBookInfo(curBook.Series.Next);
                             break;

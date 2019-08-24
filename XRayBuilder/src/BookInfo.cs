@@ -6,11 +6,8 @@ using XRayBuilderGUI.Unpack;
 namespace XRayBuilderGUI
 {
     // TODO: Remove defaults and privates, move logic
-    // todo: remove httpclient
     public class BookInfo
     {
-        private readonly IHttpClient _httpClient;
-
         public string Title { get; set; }
         public string Author { get; set; }
         // TODO: Add TLD to go with ASIN (asin/tld class?)
@@ -57,7 +54,7 @@ namespace XRayBuilderGUI
             get => _guid;
         }
 
-        public BookInfo(IMetadata metadata, string dataUrl, IHttpClient httpClient)
+        public BookInfo(IMetadata metadata, string dataUrl)
         {
             _metadata = metadata;
             Title = metadata.Title;
@@ -68,10 +65,9 @@ namespace XRayBuilderGUI
             Databasename = metadata.DbName;
             SidecarName = $"{Functions.RemoveInvalidFileChars(metadata.Title)}.sdr";
             DataUrl = dataUrl;
-            _httpClient = httpClient;
         }
 
-        public BookInfo(string title, string author, string asin, string guid, string databasename, string path, string sidecarName, string dataUrl, string rawmlPath, IHttpClient httpClient)
+        public BookInfo(string title, string author, string asin, string guid, string databasename, string path, string sidecarName, string dataUrl, string rawmlPath)
         {
             Title = title;
             Author = author;
@@ -79,18 +75,16 @@ namespace XRayBuilderGUI
             Guid = guid;
             Databasename = databasename;
             Path = path;
-            this.SidecarName = sidecarName;
+            SidecarName = sidecarName;
             DataUrl = dataUrl;
             RawmlPath = rawmlPath;
-            _httpClient = httpClient;
         }
 
-        public BookInfo(string title, string author, string asin, IHttpClient httpClient)
+        public BookInfo(string title, string author, string asin)
         {
             Title = title;
             Author = author;
             Asin = asin;
-            _httpClient = httpClient;
         }
 
         public override string ToString()

@@ -218,7 +218,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
                 // TODO: This should be removable when the Kindle Only page is parsed instead
                 if (asin == "")
                     continue; //throw new DataSource.FormatChangedException(nameof(Amazon), "book results - kindle edition asin");
-                bookList.Add(new BookInfo(name, curAuthor, asin, _httpClient));
+                bookList.Add(new BookInfo(name, curAuthor, asin));
             }
             return bookList;
         }
@@ -241,7 +241,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
                 otherBook = result.SelectSingleNode(".//*[@title='Kindle Edition']");
                 var asin = ParseAsinFromUrl(otherBook.OuterHtml);
                 if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(asin))
-                    bookList.Add(new BookInfo(name, curAuthor, asin, _httpClient));
+                    bookList.Add(new BookInfo(name, curAuthor, asin));
             }
             // If no kindle books returned, try the top carousel
             if (bookList.Count == 0)
@@ -260,7 +260,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
                     if (otherBook == null) continue;
                     var asin = ParseAsinFromUrl(otherBook.OuterHtml);
                     if (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(asin))
-                        bookList.Add(new BookInfo(name, curAuthor, asin, _httpClient));
+                        bookList.Add(new BookInfo(name, curAuthor, asin));
                 }
             }
             return bookList;
@@ -290,7 +290,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
                 var foundAsin = ParseAsinFromUrl(nodeASIN.OuterHtml);
                 node = node.SelectSingleNode(".//div/div/div/div[@class='a-fixed-left-grid-col a-col-right']/div/a");
                 if (node != null)
-                    result = new BookInfo(node.InnerText, author, foundAsin, _httpClient);
+                    result = new BookInfo(node.InnerText, author, foundAsin);
             }
             return result;
         }

@@ -93,8 +93,7 @@ namespace XRayBuilder.Test
             new BookInfo("A Storm of Swords", "George R. R. Martin",
                 "B000FBFN1U", "171927873", "A_Storm_of_Swords", Path.Combine(Environment.CurrentDirectory, "out"),
                 "A Storm of Swords.sdr", "https://www.goodreads.com/book/show/62291",
-                @"testfiles\A Storm of Swords - George R. R. Martin.rawml",
-                new HttpClient(new Logger()))
+                @"testfiles\A Storm of Swords - George R. R. Martin.rawml")
         };
 
         // TODO: Compare the actual contents (objects) rather than the string itself due to the order of books changing

@@ -363,7 +363,7 @@ namespace XRayBuilderGUI.UI
             _logger.Log($"Book's {_dataSource.Name} URL: {txtGoodreads.Text}");
             try
             {
-                var bookInfo = new BookInfo(metadata, txtGoodreads.Text, _httpClient);
+                var bookInfo = new BookInfo(metadata, txtGoodreads.Text);
 
                 var outputDir = OutputDirectory(bookInfo.Author, bookInfo.SidecarName, bookInfo.Asin, true);
 

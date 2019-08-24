@@ -91,6 +91,7 @@ namespace XRayBuilderGUI.UI
             chkDownloadSA.Checked = Properties.Settings.Default.downloadSA;
             chkSearchAsin.Checked = Properties.Settings.Default.searchByAsin;
             chkEditBiography.Checked = Properties.Settings.Default.editBiography;
+            chkUseSidecar.Checked = Properties.Settings.Default.outputToSidecar;
 
             // Added \r\n to show smaller tooltips
             var toolTip1 = new ToolTip();
@@ -125,6 +126,7 @@ namespace XRayBuilderGUI.UI
             toolTip1.SetToolTip(chkEnableEdit,
                 "Open Notepad to enable editing of detected Chapters\r\nand Aliases before final X-Ray creation.");
             toolTip1.SetToolTip(chkSubDirectories, "Save generated files to an\r\n\"Author\\Filename\" subdirectory.");
+            toolTip1.SetToolTip(chkUseSidecar, "Save generated files to a sidecar subdirectory based on the filename.");
             toolTip1.SetToolTip(btnLogs, "Open the log files directory.");
             toolTip1.SetToolTip(chkOverwrite, "Overwrite existing Author Profile,\r\nStart and End Actions files.");
             toolTip1.SetToolTip(chkAlias, "Overwrite existing alias files.");
@@ -228,6 +230,7 @@ namespace XRayBuilderGUI.UI
             Properties.Settings.Default.downloadSA = chkDownloadSA.Checked;
             Properties.Settings.Default.searchByAsin = chkSearchAsin.Checked;
             Properties.Settings.Default.editBiography = chkEditBiography.Checked;
+            Properties.Settings.Default.outputToSidecar = chkUseSidecar.Checked;
             Properties.Settings.Default.Save();
 
             Close();

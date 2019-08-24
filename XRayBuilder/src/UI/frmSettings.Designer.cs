@@ -49,6 +49,7 @@
             this.chkSound = new System.Windows.Forms.CheckBox();
             this.tabPgDirectories = new System.Windows.Forms.TabPage();
             this.gbDirectories = new System.Windows.Forms.GroupBox();
+            this.chkUseSidecar = new System.Windows.Forms.CheckBox();
             this.chkSubDirectories = new System.Windows.Forms.CheckBox();
             this.txtOut = new System.Windows.Forms.TextBox();
             this.btnBrowseOut = new System.Windows.Forms.Button();
@@ -80,6 +81,7 @@
             this.chkEnableEdit = new System.Windows.Forms.CheckBox();
             this.tabPgAmazon = new System.Windows.Forms.TabPage();
             this.gbAmazonPrefs = new System.Windows.Forms.GroupBox();
+            this.chkEditBiography = new System.Windows.Forms.CheckBox();
             this.chkDownloadSA = new System.Windows.Forms.CheckBox();
             this.chkPromptAsin = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -91,7 +93,6 @@
             this.txtPen = new System.Windows.Forms.TextBox();
             this.lblPen = new System.Windows.Forms.Label();
             this.listSettings = new System.Windows.Forms.ListBox();
-            this.chkEditBiography = new System.Windows.Forms.CheckBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -319,6 +320,7 @@
             // 
             // gbDirectories
             // 
+            this.gbDirectories.Controls.Add(this.chkUseSidecar);
             this.gbDirectories.Controls.Add(this.chkSubDirectories);
             this.gbDirectories.Controls.Add(this.txtOut);
             this.gbDirectories.Controls.Add(this.btnBrowseOut);
@@ -328,6 +330,16 @@
             this.gbDirectories.TabIndex = 39;
             this.gbDirectories.TabStop = false;
             this.gbDirectories.Text = "Output Directory";
+            // 
+            // chkUseSidecar
+            // 
+            this.chkUseSidecar.AutoSize = true;
+            this.chkUseSidecar.Location = new System.Drawing.Point(133, 52);
+            this.chkUseSidecar.Name = "chkUseSidecar";
+            this.chkUseSidecar.Size = new System.Drawing.Size(125, 17);
+            this.chkUseSidecar.TabIndex = 27;
+            this.chkUseSidecar.Text = "Use sidecar directory";
+            this.chkUseSidecar.UseVisualStyleBackColor = true;
             // 
             // chkSubDirectories
             // 
@@ -659,6 +671,16 @@
             this.gbAmazonPrefs.TabStop = false;
             this.gbAmazonPrefs.Text = "Preferences";
             // 
+            // chkEditBiography
+            // 
+            this.chkEditBiography.AutoSize = true;
+            this.chkEditBiography.Location = new System.Drawing.Point(153, 45);
+            this.chkEditBiography.Name = "chkEditBiography";
+            this.chkEditBiography.Size = new System.Drawing.Size(126, 17);
+            this.chkEditBiography.TabIndex = 29;
+            this.chkEditBiography.Text = "Edit author biography";
+            this.chkEditBiography.UseVisualStyleBackColor = true;
+            // 
             // chkDownloadSA
             // 
             this.chkDownloadSA.AutoSize = true;
@@ -774,16 +796,6 @@
             this.listSettings.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listSettings_DrawItem);
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
-            // 
-            // chkEditBiography
-            // 
-            this.chkEditBiography.AutoSize = true;
-            this.chkEditBiography.Location = new System.Drawing.Point(153, 45);
-            this.chkEditBiography.Name = "chkEditBiography";
-            this.chkEditBiography.Size = new System.Drawing.Size(126, 17);
-            this.chkEditBiography.TabIndex = 29;
-            this.chkEditBiography.Text = "Edit author biography";
-            this.chkEditBiography.UseVisualStyleBackColor = true;
             // 
             // frmSettings
             // 
@@ -908,5 +920,6 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox chkSearchAsin;
         private System.Windows.Forms.CheckBox chkEditBiography;
+        private System.Windows.Forms.CheckBox chkUseSidecar;
     }
 }

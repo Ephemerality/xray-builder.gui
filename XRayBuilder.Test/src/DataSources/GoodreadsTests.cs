@@ -79,9 +79,9 @@ namespace XRayBuilder.Test.DataSources
             var book = new BookInfo("", "", "") { DataUrl = "https://www.goodreads.com/book/show/13497.A_Feast_for_Crows" };
             var result = await _goodreads.GetPageCountAsync(book);
             Assert.True(result);
-            Assert.AreEqual(book.PagesInBook, 978);
-            Assert.AreEqual(book.ReadingHours, 21);
-            Assert.AreEqual(book.ReadingMinutes, 0);
+            Assert.AreEqual(book.PagesInBook, 1061);
+            Assert.AreEqual(book.ReadingHours, 22);
+            Assert.AreEqual(book.ReadingMinutes, 47);
         }
 
         [Test]

@@ -13,8 +13,7 @@ namespace XRayBuilderGUI
         // TODO: Add TLD to go with ASIN (asin/tld class?)
         public string Asin { get; set; }
         public string Databasename { get; set; }
-        public string Path { get; set; }
-        public string SidecarName { get; set; }
+        public string FileName { get; set; }
         public string Description { get; set; } = "";
         public string ImageUrl { get; set; } = "";
         public double AmazonRating { get; set; }
@@ -54,7 +53,7 @@ namespace XRayBuilderGUI
             get => _guid;
         }
 
-        public BookInfo(IMetadata metadata, string dataUrl)
+        public BookInfo(IMetadata metadata, string dataUrl, string fileName)
         {
             _metadata = metadata;
             Title = metadata.Title;
@@ -63,19 +62,18 @@ namespace XRayBuilderGUI
             if (metadata.UniqueId != null)
                 Guid = metadata.UniqueId;
             Databasename = metadata.DbName;
-            SidecarName = $"{Functions.RemoveInvalidFileChars(metadata.Title)}.sdr";
+            FileName = fileName;
             DataUrl = dataUrl;
         }
 
-        public BookInfo(string title, string author, string asin, string guid, string databasename, string path, string sidecarName, string dataUrl, string rawmlPath)
+        public BookInfo(string title, string author, string asin, string guid, string databasename, string fileName, string dataUrl, string rawmlPath)
         {
             Title = title;
             Author = author;
             Asin = asin;
             Guid = guid;
             Databasename = databasename;
-            Path = path;
-            SidecarName = sidecarName;
+            FileName = fileName;
             DataUrl = dataUrl;
             RawmlPath = rawmlPath;
         }

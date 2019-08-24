@@ -72,7 +72,8 @@ namespace XRayBuilderGUI.UI
             return (DialogResult)Invoke(new Func<DialogResult>(() => MessageBox.Show(this, msg, caption, buttons, icon, def)));
         }
 
-        public string OutputDirectory(string author, string title, string asin, bool create)
+        // todo consolidate output path building
+        public string OutputDirectory(string author, string title, string asin, string fileName, bool create)
         {
             var outputDir = "";
 
@@ -87,14 +88,20 @@ namespace XRayBuilderGUI.UI
             if (string.IsNullOrEmpty(outputDir))
                 outputDir = Functions.GetBookOutputDirectory(author, title, create);
 
-            try
+            if (_settings.outputToSidecar)
+                outputDir = Path.Combine(outputDir, $"{fileName}.sdr");
+
+            if (create)
             {
-                Directory.CreateDirectory(outputDir);
-            }
-            catch (Exception ex)
-            {
-                _logger.Log("An error occurred creating output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
-                outputDir = _settings.outDir;
+                try
+                {
+                    Directory.CreateDirectory(outputDir);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log("An error occurred creating output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
+                    outputDir = _settings.outDir;
+                }
             }
 
             return outputDir;
@@ -179,6 +186,7 @@ namespace XRayBuilderGUI.UI
 
             prgBar.Value = 0;
 
+            // todo this is crap
             var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.saverawml, _logger));
             if (metadata == null)
                 return;
@@ -257,7 +265,7 @@ namespace XRayBuilderGUI.UI
                 }
                 else
                 {
-                    outFolder = OutputDirectory(metadata.Author, metadata.Title, metadata.Asin, true);
+                    outFolder = OutputDirectory(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text), true);
                 }
             }
             catch (Exception ex)
@@ -304,7 +312,7 @@ namespace XRayBuilderGUI.UI
             }
             _logger.Log($"X-Ray file created successfully!\r\nSaved to {newPath}");
 
-            checkFiles(metadata.Author, metadata.Title, metadata.Asin);
+            checkFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));
 
             if (_settings.playSound)
             {
@@ -363,9 +371,9 @@ namespace XRayBuilderGUI.UI
             _logger.Log($"Book's {_dataSource.Name} URL: {txtGoodreads.Text}");
             try
             {
-                var bookInfo = new BookInfo(metadata, txtGoodreads.Text);
+                var bookInfo = new BookInfo(metadata, txtGoodreads.Text, txtMobi.Text);
 
-                var outputDir = OutputDirectory(bookInfo.Author, bookInfo.SidecarName, bookInfo.Asin, true);
+                var outputDir = OutputDirectory(bookInfo.Author, bookInfo.Title, bookInfo.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text), true);
 
                 _logger.Log("Attempting to build Author Profile...");
 
@@ -426,6 +434,7 @@ namespace XRayBuilderGUI.UI
                     AmazonTld = _settings.amazonTLD,
                     Android = _settings.android,
                     OutDir = _settings.outDir,
+                    OutputToSidecar = _settings.outputToSidecar,
                     PenName = _settings.penName,
                     RealName = _settings.realName,
                     UseNewVersion = _settings.useNewVersion,
@@ -501,7 +510,7 @@ namespace XRayBuilderGUI.UI
 
                 cmsPreview.Items[1].Enabled = true;
 
-                checkFiles(bookInfo.Author, bookInfo.Title, bookInfo.Asin);
+                checkFiles(bookInfo.Author, bookInfo.Title, bookInfo.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));
                 if (_settings.playSound)
                 {
                     var player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
@@ -797,7 +806,7 @@ namespace XRayBuilderGUI.UI
             txtAsin.Text = metadata.Asin;
             _tooltip.SetToolTip(txtAsin, _amazonClient.Url(_settings.amazonTLD, txtAsin.Text));
 
-            checkFiles(metadata.Author, metadata.Title, metadata.Asin);
+            checkFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));
             btnBuild.Enabled = metadata.RawMlSupported;
             btnOneClick.Enabled = metadata.RawMlSupported;
 
@@ -940,9 +949,9 @@ namespace XRayBuilderGUI.UI
         }
 
         // TODO: Fix this mess
-        private void checkFiles(string author, string title, string asin)
+        private void checkFiles(string author, string title, string fileName, string asin)
         {
-            var bookOutputDir = OutputDirectory(author, Functions.RemoveInvalidFileChars(title), asin, false);
+            var bookOutputDir = OutputDirectory(author, Functions.RemoveInvalidFileChars(title), asin, fileName, false);
 
             if (File.Exists(bookOutputDir + @"\StartActions.data." + asin + ".asc"))
                 pbFile1.Image = Resources.file_on;

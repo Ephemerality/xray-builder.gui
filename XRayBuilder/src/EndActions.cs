@@ -586,6 +586,7 @@ namespace XRayBuilderGUI
             _logger.Log("StartActions file created successfully!\r\nSaved to " + SaPath);
         }
 
+        // todo output directory logic should be the same as frmmain uses
         private void SetPaths()
         {
             string outputDir;
@@ -597,13 +598,19 @@ namespace XRayBuilderGUI
                     Directory.CreateDirectory(outputDir);
                 }
                 else
-                    outputDir = _settings.UseSubDirectories ? Functions.GetBookOutputDirectory(curBook.Author, curBook.SidecarName, true) : _settings.OutDir;
+                    outputDir = _settings.UseSubDirectories
+                        ? Functions.GetBookOutputDirectory(curBook.Author, curBook.Title, true)
+                        : _settings.OutDir;
             }
             catch (Exception ex)
             {
                 _logger.Log("An error occurred creating the output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
                 outputDir = _settings.OutDir;
             }
+
+            if (_settings.OutputToSidecar)
+                outputDir = Path.Combine(outputDir, $"{Path.GetFileNameWithoutExtension(curBook.FileName)}.sdr");
+
             EaPath = outputDir + @"\EndActions.data." + curBook.Asin + ".asc";
             SaPath = outputDir + @"\StartActions.data." + curBook.Asin + ".asc";
 
@@ -614,9 +621,14 @@ namespace XRayBuilderGUI
             }
         }
 
+        /// <summary>
+        /// Settings required to generate an EndActions file
+        /// TODO: Move to a JSON config
+        /// </summary>
         public class Settings
         {
             public string OutDir { get; set; }
+            public bool OutputToSidecar { get; set; }
             public bool Android { get; set; }
             public string PenName { get; set; }
             public string RealName { get; set; }

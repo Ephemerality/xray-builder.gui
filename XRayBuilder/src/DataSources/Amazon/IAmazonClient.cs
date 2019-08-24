@@ -13,7 +13,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
         string ParseAsin(string input);
         string ParseAsinFromUrl(string input);
         string Url(string tld, string asin);
-        Task<AuthorSearchResults> SearchAuthor(BookInfo curBook, string TLD, ILogger _logger, CancellationToken cancellationToken = default);
+        Task<AuthorSearchResults> SearchAuthor(BookInfo curBook, string TLD, CancellationToken cancellationToken = default);
         HtmlNode GetBioNode(AuthorSearchResults searchResults, string TLD);
         HtmlNode GetAuthorImageNode(AuthorSearchResults searchResults, string TLD);
 

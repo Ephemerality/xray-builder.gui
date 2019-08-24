@@ -48,7 +48,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
 
         public string Url(string tld, string asin) => $"https://www.amazon.{tld}/dp/{asin}";
 
-        public async Task<AuthorSearchResults> SearchAuthor(BookInfo curBook, string TLD, ILogger _logger, CancellationToken cancellationToken = default)
+        public async Task<AuthorSearchResults> SearchAuthor(BookInfo curBook, string TLD, CancellationToken cancellationToken = default)
         {
             var results = new AuthorSearchResults();
             //Generate Author search URL from author's name

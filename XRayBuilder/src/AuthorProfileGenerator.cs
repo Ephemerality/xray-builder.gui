@@ -35,7 +35,7 @@ namespace XRayBuilderGUI
             // If the .com search crashes, it will crash back to the caller in frmMain
             try
             {
-                searchResults = await _amazonClient.SearchAuthor(request.Book, request.Settings.AmazonTld, _logger, cancellationToken);
+                searchResults = await _amazonClient.SearchAuthor(request.Book, request.Settings.AmazonTld, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -50,7 +50,7 @@ namespace XRayBuilderGUI
                     {
                         _logger.Log("Trying again with Amazon.com.");
                         request.Settings.AmazonTld = "com";
-                        searchResults = await _amazonClient.SearchAuthor(request.Book, request.Settings.AmazonTld, _logger, cancellationToken);
+                        searchResults = await _amazonClient.SearchAuthor(request.Book, request.Settings.AmazonTld, cancellationToken);
                     }
                 }
             }

@@ -5,11 +5,8 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using HtmlAgilityPack;
-using XRayBuilderGUI.DataSources;
 using XRayBuilderGUI.DataSources.Amazon;
 
 namespace XRayBuilderGUI
@@ -35,7 +32,7 @@ namespace XRayBuilderGUI
             // If the .com search crashes, it will crash back to the caller in frmMain
             try
             {
-                searchResults = await _amazonClient.SearchAuthor(request.Book, request.Settings.AmazonTld, cancellationToken);
+                searchResults = await _amazonClient.SearchAuthor(request.Book.Author, request.Book.Asin, request.Settings.AmazonTld, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -50,28 +47,29 @@ namespace XRayBuilderGUI
                     {
                         _logger.Log("Trying again with Amazon.com.");
                         request.Settings.AmazonTld = "com";
-                        searchResults = await _amazonClient.SearchAuthor(request.Book, request.Settings.AmazonTld, cancellationToken);
+                        searchResults = await _amazonClient.SearchAuthor(request.Book.Author, request.Book.Asin, request.Settings.AmazonTld, cancellationToken);
                     }
                 }
             }
             if (searchResults == null)
                 return null; // Already logged error in search function
 
-            var authorAsin = searchResults.AuthorAsin;
+            var authorAsin = searchResults.Asin;
 
-            if (Properties.Settings.Default.saveHtml)
-            {
-                try
-                {
-                    _logger.Log("Saving author's Amazon webpage...");
-                    File.WriteAllText(Environment.CurrentDirectory + string.Format(@"\dmp\{0}.authorpageHtml.txt", request.Book.Asin),
-                        searchResults.AuthorHtmlDoc.DocumentNode.InnerHtml);
-                }
-                catch (Exception ex)
-                {
-                    _logger.Log(string.Format("An error occurred saving authorpageHtml.txt: {0}", ex.Message));
-                }
-            }
+            //todo re-implement saving in a nicer way
+//            if (Properties.Settings.Default.saveHtml)
+//            {
+//                try
+//                {
+//                    _logger.Log("Saving author's Amazon webpage...");
+//                    File.WriteAllText(Environment.CurrentDirectory + string.Format(@"\dmp\{0}.authorpageHtml.txt", request.Book.Asin),
+//                        searchResults.AuthorHtmlDoc.DocumentNode.InnerHtml);
+//                }
+//                catch (Exception ex)
+//                {
+//                    _logger.Log(string.Format("An error occurred saving authorpageHtml.txt: {0}", ex.Message));
+//                }
+//            }
 
             // Try to find author's biography
 
@@ -107,31 +105,23 @@ namespace XRayBuilderGUI
                 readFromFile = true;
             }
 
-            if (string.IsNullOrEmpty(biography))
+            if (string.IsNullOrEmpty(biography) && !string.IsNullOrEmpty(searchResults.Biography))
             {
-                HtmlNode bio = null;
-                try
-                {
-                    bio = _amazonClient.GetBioNode(searchResults, request.Settings.AmazonTld);
-                }
-                catch (FormatChangedException)
-                {
-                    _logger.Log("Warning: Amazon biography format changed or no biography available for this author.", LogLevel.Warn);
-                }
                 //Trim authour biography to less than 1000 characters and/or replace more problematic characters.
-                if (bio?.InnerText.Trim().Length > 0)
+                if (searchResults.Biography.Trim().Length > 0)
                 {
-                    if (bio.InnerText.Length > 1000)
+                    if (searchResults.Biography.Length > 1000)
                     {
-                        var lastPunc = bio.InnerText.LastIndexOfAny(new [] { '.', '!', '?' });
-                        var lastSpace = bio.InnerText.LastIndexOf(' ');
+                        var lastPunc = searchResults.Biography.LastIndexOfAny(new [] { '.', '!', '?' });
+                        var lastSpace = searchResults.Biography.LastIndexOf(' ');
+
                         if (lastPunc > lastSpace)
-                            biography = bio.InnerText.Substring(0, lastPunc + 1);
+                            biography = searchResults.Biography.Substring(0, lastPunc + 1);
                         else
-                            biography = bio.InnerText.Substring(0, lastSpace) + '\u2026';
+                            biography = searchResults.Biography.Substring(0, lastSpace) + '\u2026';
                     }
                     else
-                        biography = bio.InnerText;
+                        biography = searchResults.Biography;
 
                     biography = biography.Clean();
                     if (request.Settings.SaveBio)
@@ -196,20 +186,13 @@ namespace XRayBuilderGUI
             }
 
             // Try to download Author image
-            var imageXpath = _amazonClient.GetAuthorImageNode(searchResults, request.Settings.AmazonTld);
-            var authorImageUrl = Regex.Replace(imageXpath.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
-
-            // cleanup to match retail file image links
-            if (authorImageUrl.Contains(@"https://images-na.ssl-images-amazon"))
-                authorImageUrl = authorImageUrl.Replace(@"https://images-na.ssl-images-amazon", @"http://ecx.images-amazon");
-
-            request.Book.AuthorImageUrl = authorImageUrl;
+            request.Book.AuthorImageUrl = searchResults.ImageUrl;
 
             Bitmap ApAuthorImage = null;
             try
             {
                 _logger.Log("Downloading author image...");
-                ApAuthorImage = await _httpClient.GetImageAsync(authorImageUrl, cancellationToken: cancellationToken);
+                ApAuthorImage = await _httpClient.GetImageAsync(request.Book.AuthorImageUrl, cancellationToken: cancellationToken);
                 _logger.Log("Grayscale base64-encoded author image created!");
             }
             catch (Exception ex)
@@ -217,19 +200,13 @@ namespace XRayBuilderGUI
                 _logger.Log(string.Format("An error occurred downloading the author image: {0}", ex.Message));
             }
 
-            _logger.Log("Gathering author's other books...");
-
-            var bookList = _amazonClient.GetAuthorBooks(searchResults, request.Book.Title, request.Book.Author, request.Settings.AmazonTld);
-            if (bookList == null || !bookList.Any())
-                bookList = _amazonClient.GetAuthorBooksNew(searchResults, request.Book.Title, request.Book.Author, request.Settings.AmazonTld);
-
             var bookBag = new ConcurrentBag<BookInfo>();
-            if (bookList != null && request.Settings.UseNewVersion)
+            if (searchResults.Books != null && request.Settings.UseNewVersion)
             {
-                _logger.Log("Gathering metadata for other books...");
+                _logger.Log("Gathering metadata for author's other books...");
                 try
                 {
-                    await _amazonClient.EnhanceBookInfos(bookList).ForEachAsync(book =>
+                    await _amazonClient.EnhanceBookInfos(searchResults.Books).ForEachAsync(book =>
                     {
                         // todo progress
                         bookBag.Add(book);
@@ -255,7 +232,7 @@ namespace XRayBuilderGUI
                 OtherBooks = bookBag.ToArray(),
                 Biography = biography,
                 Image = ApAuthorImage,
-                ImageUrl = authorImageUrl,
+                ImageUrl = searchResults.ImageUrl,
                 AmazonTld = request.Settings.AmazonTld
             };
         }

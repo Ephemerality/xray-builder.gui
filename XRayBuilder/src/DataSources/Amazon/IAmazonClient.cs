@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using HtmlAgilityPack;
 using XRayBuilderGUI.DataSources.Amazon.Model;
 
 namespace XRayBuilderGUI.DataSources.Amazon
@@ -13,16 +12,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
         string ParseAsin(string input);
         string ParseAsinFromUrl(string input);
         string Url(string tld, string asin);
-        Task<AuthorSearchResults> SearchAuthor(BookInfo curBook, string TLD, CancellationToken cancellationToken = default);
-        HtmlNode GetBioNode(AuthorSearchResults searchResults, string TLD);
-        HtmlNode GetAuthorImageNode(AuthorSearchResults searchResults, string TLD);
-
-        /// <summary>
-        /// As of 2018-07-31, format changed. For some amount of time, keep both just in case.
-        /// </summary>
-        List<BookInfo> GetAuthorBooksNew(AuthorSearchResults searchResults, string curTitle, string curAuthor, string TLD);
-
-        List<BookInfo> GetAuthorBooks(AuthorSearchResults searchResults, string curTitle, string curAuthor, string TLD);
+        Task<AuthorSearchResults> SearchAuthor(string author, string bookAsin, string TLD, CancellationToken cancellationToken = default);
         Task<BookInfo> SearchBook(string title, string author, string TLD, CancellationToken cancellationToken = default);
         IAsyncEnumerable<BookInfo> EnhanceBookInfos(IEnumerable<BookInfo> books);
         Task<string> DownloadStartActions(string asin, CancellationToken cancellationToken = default);

@@ -478,8 +478,8 @@ namespace XRayBuilderGUI
 
         public static void Replace<TKey>(this Dictionary<TKey, string> dic, string needle, string replacement)
         {
-            foreach (var (key, value) in dic)
-                dic[key] = value.Replace(needle, replacement);
+            foreach (var key in dic.Keys.ToList())
+                dic[key] = dic[key].Replace(needle, replacement);
         }
 
         public static TValue GetOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key)

@@ -492,6 +492,7 @@ namespace XRayBuilderGUI.UI
                         try
                         {
                             saContent = await _amazonClient.DownloadStartActions(metadata.Asin);
+                            _logger.Log("Successfully downloaded pre-made Start Actions!");
                         }
                         catch
                         {

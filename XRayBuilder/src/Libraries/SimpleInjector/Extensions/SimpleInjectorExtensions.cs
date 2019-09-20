@@ -2,8 +2,9 @@
 using System.Linq;
 using SimpleInjector;
 using SimpleInjector.Diagnostics;
+using XRayBuilderGUI.Libraries.Reflection.Util;
 
-namespace XRayBuilderGUI
+namespace XRayBuilderGUI.Libraries.SimpleInjector.Extensions
 {
     public static class SimpleInjectorExtensions
     {

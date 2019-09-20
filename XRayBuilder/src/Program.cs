@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using SimpleInjector;
 using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
+using XRayBuilderGUI.Libraries.SimpleInjector.Extensions;
 using XRayBuilderGUI.UI;
 using XRayBuilderGUI.UI.Preview;
 using XRayBuilderGUI.UI.Preview.Logic;

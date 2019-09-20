@@ -11,6 +11,7 @@ using IonDotnet.Tree;
 using Newtonsoft.Json;
 using XRayBuilderGUI.Libraries.Enumerables.Extensions;
 using XRayBuilderGUI.Libraries.IO.Extensions;
+using XRayBuilderGUI.Libraries.Primitives.Extensions;
 
 namespace XRayBuilderGUI.Unpack.KFX
 {
@@ -87,7 +88,7 @@ namespace XRayBuilderGUI.Unpack.KFX
             // Python checks for extra info in container
 
             fs.Seek(header.Length, SeekOrigin.Begin);
-            var payloadSha1 = Functions.ByteToHexString(Functions.Sha1(fs.ReadToEnd())).ToLowerInvariant();
+            var payloadSha1 = fs.ReadToEnd().Sha1().ToHexString().ToLowerInvariant();
 
             fs.Seek(header.ContainerInfoOffset + header.ContainerInfoLength, SeekOrigin.Begin);
             var kfxGenInfoData = Encoding.UTF8.GetString(fs.ReadBytes((int) (header.Length - header.ContainerInfoOffset - header.ContainerInfoLength)));

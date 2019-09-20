@@ -7,11 +7,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Xml;
 using System.Xml.Serialization;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
@@ -224,21 +222,6 @@ namespace XRayBuilderGUI
             }
         }
 
-        //http://stackoverflow.com/questions/4123590/serialize-an-object-to-xml
-        public static string Serialize<T>(T value)
-        {
-            if (value == null)
-                return string.Empty;
-
-            var xmlserializer = new XmlSerializer(typeof(T));
-            var stringWriter = new StringWriter();
-            using (var writer = XmlWriter.Create(stringWriter))
-            {
-                xmlserializer.Serialize(writer, value);
-                return stringWriter.ToString();
-            }
-        }
-
         public static void Save<T>(T output, string fileName) where T : class
         {
             using (var writer = new StreamWriter(fileName, false, Encoding.UTF8))
@@ -304,16 +287,6 @@ namespace XRayBuilderGUI
             return output.ToString();
         }
 
-        // Shamelessly stolen from http://www.mobileread.com/forums/showthread.php?t=185565
-        public static byte[] CheckBytes(byte[] bytesToCheck)
-        {
-            if (bytesToCheck == null) return null;
-            var buffer = (byte[])bytesToCheck.Clone();
-            if (BitConverter.IsLittleEndian)
-                Array.Reverse(buffer);
-            return buffer;
-        }
-
         public static bool CleanUp(string folderPath)
         {
             if (!Directory.Exists(folderPath))
@@ -371,31 +344,6 @@ namespace XRayBuilderGUI
         public static long UnixTimestampMilliseconds()
         {
             return (long) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
-        }
-
-        // https://stackoverflow.com/questions/311165/how-do-you-convert-a-byte-array-to-a-hexadecimal-string-and-vice-versa/14333437#14333437
-        /// <summary>
-        /// Convert a byte array to hex string quickly
-        /// </summary>
-        public static string ByteToHexString(byte[] bytes)
-        {
-            var c = new char[bytes.Length * 2];
-            int b;
-            for (var i = 0; i < bytes.Length; i++)
-            {
-                b = bytes[i] >> 4;
-                c[i * 2] = (char)(55 + b + (((b - 10) >> 31) & -7));
-                b = bytes[i] & 0xF;
-                c[i * 2 + 1] = (char)(55 + b + (((b - 10) >> 31) & -7));
-            }
-
-            return new string(c);
-        }
-
-        public static byte[] Sha1(byte[] bytes)
-        {
-            using (var sha1 = new SHA1Managed())
-                return sha1.ComputeHash(bytes);
         }
     }
 

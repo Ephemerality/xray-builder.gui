@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using System.Text;
+using XRayBuilderGUI.Libraries.Primitives.Extensions;
 
 namespace XRayBuilderGUI.Unpack.Mobi
 {
@@ -85,7 +86,7 @@ namespace XRayBuilderGUI.Unpack.Mobi
             fs.Read(exthFlags, 0, exthFlags.Length);
 
             //If bit 6 (0x40) is set, then there's an EXTH record
-            var exthExists = (BitConverter.ToUInt32(Functions.CheckBytes(exthFlags), 0) & 0x40) != 0;
+            var exthExists = (BitConverter.ToUInt32(exthFlags.BigEndian(), 0) & 0x40) != 0;
 
             fs.Read(restOfMobiHeader, 0, restOfMobiHeader.Length);
 
@@ -99,7 +100,7 @@ namespace XRayBuilderGUI.Unpack.Mobi
             {
                 var tempFlags = new byte[2];
                 Array.Copy(restOfMobiHeader, 110, tempFlags, 0, 2);
-                var mbhFlags = BitConverter.ToUInt16(Functions.CheckBytes(tempFlags), 0);
+                var mbhFlags = BitConverter.ToUInt16(tempFlags.BigEndian(), 0);
                 multibyte = Convert.ToBoolean(mbhFlags & 1);
                 while (mbhFlags > 1)
                 {
@@ -113,8 +114,8 @@ namespace XRayBuilderGUI.Unpack.Mobi
             remainder = new byte[(int)(mobiHeaderSize - currentOffset)];
             fs.Read(remainder, 0, remainder.Length);
 
-            var fullNameIndexInRemainder = BitConverter.ToInt32(Functions.CheckBytes(fullNameOffset), 0) - currentOffset;
-            var fullNameLen = BitConverter.ToInt32(Functions.CheckBytes(fullNameLength), 0);
+            var fullNameIndexInRemainder = BitConverter.ToInt32(fullNameOffset.BigEndian(), 0) - currentOffset;
+            var fullNameLen = BitConverter.ToInt32(fullNameLength.BigEndian(), 0);
             fullName = new byte[fullNameLen];
 
             if (fullNameIndexInRemainder >= 0 &&
@@ -141,9 +142,9 @@ namespace XRayBuilderGUI.Unpack.Mobi
 
         public string IdentifierAsString => Encoding.ASCII.GetString(identifier).Trim('\0');
 
-        public uint HeaderLength => BitConverter.ToUInt32(Functions.CheckBytes(headerLength), 0);
+        public uint HeaderLength => BitConverter.ToUInt32(headerLength.BigEndian(), 0);
 
-        public uint MobiType => BitConverter.ToUInt32(Functions.CheckBytes(mobiType), 0);
+        public uint MobiType => BitConverter.ToUInt32(mobiType.BigEndian(), 0);
 
         public string MobiTypeAsString
         {
@@ -175,20 +176,20 @@ namespace XRayBuilderGUI.Unpack.Mobi
 
         public uint IndexKeys => BitConverter.ToUInt32(indexKeys, 0);
 
-        public uint FirstNonBookIndex => BitConverter.ToUInt32(Functions.CheckBytes(firstNonBookIndex), 0);
+        public uint FirstNonBookIndex => BitConverter.ToUInt32(firstNonBookIndex.BigEndian(), 0);
 
-        public uint FullNameOffset => BitConverter.ToUInt32(Functions.CheckBytes(fullNameOffset), 0);
+        public uint FullNameOffset => BitConverter.ToUInt32(fullNameOffset.BigEndian(), 0);
 
-        public uint FullNameLength => BitConverter.ToUInt32(Functions.CheckBytes(fullNameLength), 0);
+        public uint FullNameLength => BitConverter.ToUInt32(fullNameLength.BigEndian(), 0);
 
-        public uint MinVersion => BitConverter.ToUInt32(Functions.CheckBytes(minVersion), 0);
+        public uint MinVersion => BitConverter.ToUInt32(minVersion.BigEndian(), 0);
 
-        public uint HuffmanRecordOffset => BitConverter.ToUInt32(Functions.CheckBytes(huffmanRecordOffset), 0);
+        public uint HuffmanRecordOffset => BitConverter.ToUInt32(huffmanRecordOffset.BigEndian(), 0);
 
-        public uint HuffmanRecordCount => BitConverter.ToUInt32(Functions.CheckBytes(huffmanRecordCount), 0);
+        public uint HuffmanRecordCount => BitConverter.ToUInt32(huffmanRecordCount.BigEndian(), 0);
 
-        public uint HuffmanTableOffset => BitConverter.ToUInt32(Functions.CheckBytes(huffmanTableOffset), 0);
+        public uint HuffmanTableOffset => BitConverter.ToUInt32(huffmanTableOffset.BigEndian(), 0);
 
-        public uint HuffmanTableLength => BitConverter.ToUInt32(Functions.CheckBytes(huffmanTableLength), 0);
+        public uint HuffmanTableLength => BitConverter.ToUInt32(huffmanTableLength.BigEndian(), 0);
     }
 }

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using XRayBuilderGUI.Libraries.Primitives.Extensions;
 
 namespace XRayBuilderGUI.Unpack.Mobi
 {
@@ -32,7 +33,7 @@ namespace XRayBuilderGUI.Unpack.Mobi
 
         public string DBName => Encoding.UTF8.GetString(_dbName).Trim('\0');
 
-        public int NumRecords => BitConverter.ToInt16(Functions.CheckBytes(_numRecords), 0);
+        public int NumRecords => BitConverter.ToInt16(_numRecords.BigEndian(), 0);
 
         public uint MobiHeaderSize
         {
@@ -58,6 +59,6 @@ namespace XRayBuilderGUI.Unpack.Mobi
             fs.Read(_uniqueID, 0, _uniqueID.Length);
         }
 
-        public uint RecordDataOffset => BitConverter.ToUInt32(Functions.CheckBytes(_recordDataOffset), 0);
+        public uint RecordDataOffset => BitConverter.ToUInt32(_recordDataOffset.BigEndian(), 0);
     }
 }

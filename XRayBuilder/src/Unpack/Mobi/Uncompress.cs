@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using XRayBuilderGUI.Libraries.Primitives.Extensions;
 
 namespace XRayBuilderGUI.Unpack.Mobi
 {
@@ -83,19 +84,19 @@ namespace XRayBuilderGUI.Unpack.Mobi
                 throw new Exception("Invalid HUFF header.");
             var temp4 = new byte[4];
             Array.Copy(data, 8, temp4, 0, 4);
-            var off1 = BitConverter.ToUInt32(Functions.CheckBytes(temp4), 0);
+            var off1 = BitConverter.ToUInt32(temp4.BigEndian(), 0);
             Array.Copy(data, 12, temp4, 0, 4);
-            var off2 = BitConverter.ToUInt32(Functions.CheckBytes(temp4), 0);
+            var off2 = BitConverter.ToUInt32(temp4.BigEndian(), 0);
 
             for (var i = 0; i < 256; i++)
             {
                 Array.Copy(data, off1 + (i * 4), temp4, 0, 4);
-                _dict1.Add(dictUnpack(BitConverter.ToUInt32(Functions.CheckBytes(temp4), 0)));
+                _dict1.Add(dictUnpack(BitConverter.ToUInt32(temp4.BigEndian(), 0)));
             }
             for (var i = 0; i < 64; i++)
             {
                 Array.Copy(data, off2 + (i * 4), temp4, 0, 4);
-                _dict2.Add(BitConverter.ToUInt32(Functions.CheckBytes(temp4), 0));
+                _dict2.Add(BitConverter.ToUInt32(temp4.BigEndian(), 0));
             }
             var count = 1;
             _mincode.Add(0);
@@ -130,15 +131,15 @@ namespace XRayBuilderGUI.Unpack.Mobi
                 throw new Exception("Invalid CDIC header.");
             var temp4 = new byte[4];
             Array.Copy(data, 8, temp4, 0, 4);
-            var phrases = (int)BitConverter.ToUInt32(Functions.CheckBytes(temp4), 0);
+            var phrases = (int)BitConverter.ToUInt32(temp4.BigEndian(), 0);
             Array.Copy(data, 12, temp4, 0, 4);
-            var bits = (int)BitConverter.ToUInt32(Functions.CheckBytes(temp4), 0);
+            var bits = (int)BitConverter.ToUInt32(temp4.BigEndian(), 0);
             var n = Math.Min(1 << bits, phrases - dictionary.Count);
             for (var i = 0; i < n; i++)
             {
                 var temp2 = new byte[2];
                 Array.Copy(data, 16 + (i * 2), temp2, 0, 2);
-                var offset = BitConverter.ToUInt16(Functions.CheckBytes(temp2), 0);
+                var offset = BitConverter.ToUInt16(temp2.BigEndian(), 0);
                 dictionary.Add(getSlice(data, offset));
             }
         }
@@ -147,7 +148,7 @@ namespace XRayBuilderGUI.Unpack.Mobi
         {
             var temp2 = new byte[2];
             Array.Copy(data, 16 + offset, temp2, 0, 2);
-            var blen = BitConverter.ToUInt16(Functions.CheckBytes(temp2), 0);
+            var blen = BitConverter.ToUInt16(temp2.BigEndian(), 0);
             var slice = new byte[blen & 0x7fff];
             Array.Copy(data, 18 + offset, slice, 0, slice.Length);
             return new Slice(slice, blen & 0x8000);
@@ -162,7 +163,7 @@ namespace XRayBuilderGUI.Unpack.Mobi
             data = data.Concat(new byte[8]).ToArray();
             var pos = 0;
             Array.Copy(data, pos, temp8, 0, 8);
-            var x = BitConverter.ToUInt64(Functions.CheckBytes(temp8), 0);
+            var x = BitConverter.ToUInt64(temp8.BigEndian(), 0);
             var n = 32;
             while (true)
             {
@@ -170,7 +171,7 @@ namespace XRayBuilderGUI.Unpack.Mobi
                 {
                     pos += 4;
                     Array.Copy(data, pos, temp8, 0, 8);
-                    x = BitConverter.ToUInt64(Functions.CheckBytes(temp8), 0);
+                    x = BitConverter.ToUInt64(temp8.BigEndian(), 0);
                     n += 32;
                 }
                 var code = (x >> n) & ((1L << 32) - 1);

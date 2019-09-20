@@ -6,6 +6,7 @@
 
 using System;
 using System.IO;
+using XRayBuilderGUI.Libraries.Primitives.Extensions;
 
 namespace XRayBuilderGUI.Unpack.Mobi
 {
@@ -28,14 +29,14 @@ namespace XRayBuilderGUI.Unpack.Mobi
             fs.Seek(2, SeekOrigin.Current);
         }
 
-        public ushort Compression => BitConverter.ToUInt16(Functions.CheckBytes(_compression), 0);
+        public ushort Compression => BitConverter.ToUInt16(_compression.BigEndian(), 0);
 
-        public uint TextLength => BitConverter.ToUInt32(Functions.CheckBytes(_textLength), 0);
+        public uint TextLength => BitConverter.ToUInt32(_textLength.BigEndian(), 0);
 
-        public ushort RecordCount => BitConverter.ToUInt16(Functions.CheckBytes(_recordCount), 0);
+        public ushort RecordCount => BitConverter.ToUInt16(_recordCount.BigEndian(), 0);
 
-        public ushort RecordSize => BitConverter.ToUInt16(Functions.CheckBytes(_recordSize), 0);
+        public ushort RecordSize => BitConverter.ToUInt16(_recordSize.BigEndian(), 0);
 
-        public ushort EncryptionType => BitConverter.ToUInt16(Functions.CheckBytes(_encryptionType), 0);
+        public ushort EncryptionType => BitConverter.ToUInt16(_encryptionType.BigEndian(), 0);
     }
 }

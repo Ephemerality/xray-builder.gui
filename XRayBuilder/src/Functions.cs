@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -12,16 +11,10 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
-#if NETFRAMEWORK
-using Pluralize.NET;
-#else
-using Pluralize.NET.Core;
-#endif
 
 namespace XRayBuilderGUI
 {
@@ -380,8 +373,6 @@ namespace XRayBuilderGUI
             return (long) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
         }
 
-        public static string Pluralize(FormattableString formattable) => formattable.ToString(new PluralFormatProvider());
-
         // https://stackoverflow.com/questions/311165/how-do-you-convert-a-byte-array-to-a-hexadecimal-string-and-vice-versa/14333437#14333437
         /// <summary>
         /// Convert a byte array to hex string quickly
@@ -412,132 +403,5 @@ namespace XRayBuilderGUI
     {
         [DllImport("user32.dll")]
         internal static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
-    }
-
-    public static partial class ExtensionMethods
-    {
-        //http://stackoverflow.com/questions/166855/c-sharp-preg-replace
-        public static string PregReplace(this string input, string[] pattern, string[] replacements)
-        {
-            if (replacements.Length != pattern.Length)
-                throw new ArgumentException("Replacement and pattern arrays must be balanced");
-
-            for (var i = 0; i < pattern.Length; i++)
-            {
-                input = Regex.Replace(input, pattern[i], replacements[i]);
-            }
-            return input;
-        }
-
-        //http://stackoverflow.com/questions/444798/case-insensitive-containsstring
-        public static bool Contains(this string source, string toCheck, StringComparison comp)
-            => source?.IndexOf(toCheck, comp) >= 0;
-
-        public static bool ContainsIgnorecase(this string source, string toCheck)
-            => source.Contains(toCheck, StringComparison.OrdinalIgnoreCase);
-
-        public static void AddNotNull<T>(this IList<T> list, T value)
-        {
-            if (value != null) list.Add(value);
-        }
-
-        public static void AddNotNull<T>(this ConcurrentBag<T> list, T value)
-        {
-            if (value != null) list.Add(value);
-        }
-
-        public static string Plural(this string value, int count)
-        {
-            return count == 1
-                ? value
-                : new Pluralizer().Pluralize(value);
-        }
-
-        public static int? TryParseInt(this string s, NumberStyles style, IFormatProvider provider)
-        {
-            return int.TryParse(s, style, provider, out var result)
-                ? (int?) result
-                : null;
-        }
-
-        public static Match MatchOrNull(this Regex regex, string input)
-        {
-            if (input == null)
-                return null;
-
-            var match = regex.Match(input);
-            return match.Success ? match : null;
-        }
-
-        // https://stackoverflow.com/a/50244393
-        public static async Task<IEnumerable<T>> Where<T>(this IEnumerable<T> source, Func<T, Task<bool>> predicate)
-        {
-            var results = await Task.WhenAll(source.Select(async x => (x, await predicate(x))));
-            return results.Where(x => x.Item2).Select(x => x.Item1);
-        }
-
-        public static void Replace<TKey>(this Dictionary<TKey, string> dic, string needle, string replacement)
-        {
-            foreach (var key in dic.Keys.ToList())
-                dic[key] = dic[key].Replace(needle, replacement);
-        }
-
-        public static TValue GetOrDefault<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key)
-            => dic.TryGetValue(key, out var val) ? val : default;
-
-        public static TValue GetOrThrow<TKey, TValue>(this Dictionary<TKey, TValue> dic, TKey key)
-        {
-            if (dic.TryGetValue(key, out var val))
-                return val;
-
-            throw new ArgumentException("Key not found", nameof(key));
-        }
-
-        public static void Deconstruct<T1, T2>(this KeyValuePair<T1, T2> tuple, out T1 key, out T2 value)
-        {
-            key = tuple.Key;
-            value = tuple.Value;
-        }
-
-        /// <summary>
-        /// Read <paramref name="count"/> bytes from <paramref name="stream"/> after seeking to <paramref name="offset"/> from <paramref name="origin"/>
-        /// </summary>
-        public static byte[] ReadBytes(this Stream stream, int offset, int count, SeekOrigin origin)
-        {
-            stream.Seek(offset, origin);
-            return stream.ReadBytes(count);
-        }
-
-        public static byte[] ReadBytes(this Stream stream, int count)
-        {
-            var buffer = new byte[count];
-
-            var offset = 0;
-            while (offset < count)
-            {
-                var read = stream.Read(buffer, offset, count - offset);
-                if (read == 0)
-                    throw new EndOfStreamException();
-
-                offset += read;
-            }
-
-            return buffer;
-        }
-
-        public static byte[] ReadToEnd(this Stream stream)
-        {
-            var ms = new MemoryStream();
-            stream.CopyTo(ms);
-            return ms.ToArray();
-        }
-    }
-
-    public class PluralFormatProvider : IFormatProvider, ICustomFormatter
-    {
-        public object GetFormat(Type formatType) => this;
-
-        public string Format(string format, object arg, IFormatProvider formatProvider)
-            => arg + " " + format.Plural((int) arg);
     }
 }

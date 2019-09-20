@@ -36,6 +36,7 @@ using HtmlAgilityPack;
 using Newtonsoft.Json;
 using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.DataSources.Secondary.Model;
+using XRayBuilderGUI.Libraries.Primitives.Extensions;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI

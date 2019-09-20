@@ -9,6 +9,8 @@ using IonDotnet;
 using IonDotnet.Systems;
 using IonDotnet.Tree;
 using Newtonsoft.Json;
+using XRayBuilderGUI.Libraries.Enumerables.Extensions;
+using XRayBuilderGUI.Libraries.IO.Extensions;
 
 namespace XRayBuilderGUI.Unpack.KFX
 {

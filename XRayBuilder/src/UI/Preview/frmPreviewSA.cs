@@ -4,6 +4,8 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using XRayBuilderGUI.Libraries.Enumerables.Extensions;
+using XRayBuilderGUI.Libraries.Language.Pluralization;
 using XRayBuilderGUI.Model.Artifacts;
 using XRayBuilderGUI.Properties;
 
@@ -21,6 +23,7 @@ namespace XRayBuilderGUI.UI.Preview
             _httpClient = httpClient;
         }
 
+        // todo remove these I guess?
         public string titlePopup = "";
         public string descriptionPopup = "";
         public string biographyPopup = "";
@@ -80,7 +83,7 @@ namespace XRayBuilderGUI.UI.Preview
                 descriptionPopup = lblDescription.Text;
                 if (bookDescription.AmazonRating.HasValue)
                     pbRating.Image = (Image)Resources.ResourceManager.GetObject($"STAR{bookDescription.AmazonRating}");
-                lblVotes.Text = $"({bookDescription.NumberOfReviews ?? 0} {Functions.Pluralize($"{bookDescription.NumberOfReviews ?? 0:vote}")})";
+                lblVotes.Text = $"({bookDescription.NumberOfReviews ?? 0} {PluralUtil.Pluralize($"{bookDescription.NumberOfReviews ?? 0:vote}")})";
             }
 
             var author = startActions.Data.AuthorBios?.Authors?.FirstOrDefault();

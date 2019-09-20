@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary.Model;
+using XRayBuilderGUI.Libraries.Enumerables.Extensions;
+using XRayBuilderGUI.Libraries.Language.Pluralization;
+using XRayBuilderGUI.Libraries.Primitives.Extensions;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI.DataSources.Secondary
@@ -220,9 +223,9 @@ namespace XRayBuilderGUI.DataSources.Secondary
                 var span = TimeSpan.FromMinutes(minutes);
                 // Functions.Pluralize($"{BookList[i].editions:edition}")
                 _logger.Log(string.Format("Typical time to read: {0}, {1}, and {2} ({3} pages)",
-                    Functions.Pluralize($"{span.Days:day}"),
-                    Functions.Pluralize($"{span.Hours:hour}"),
-                    Functions.Pluralize($"{span.Minutes:minute}"),
+                    PluralUtil.Pluralize($"{span.Days:day}"),
+                    PluralUtil.Pluralize($"{span.Hours:hour}"),
+                    PluralUtil.Pluralize($"{span.Minutes:minute}"),
                     match.Groups[1].Value));
                 curBook.PagesInBook = int.Parse(match.Groups[1].Value);
                 curBook.ReadingHours = span.Hours;

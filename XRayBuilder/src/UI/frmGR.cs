@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows.Forms;
+using XRayBuilderGUI.Libraries.Language.Pluralization;
 using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI.UI
@@ -38,8 +39,8 @@ namespace XRayBuilderGUI.UI
             pbCover.Image = _bookList[i].CoverImage ?? Resources.missing_image;
             lblTitle.Text = _bookList[i].Title;
             lblAuthor.Text = "by " + _bookList[i].Author;
-            lblRating.Text = $"{_bookList[i].AmazonRating:#.#} average rating " + Functions.Pluralize($"({_bookList[i].Reviews:rating})");
-            lblEditions.Text = Functions.Pluralize($"{_bookList[i].Editions:edition}");
+            lblRating.Text = $"{_bookList[i].AmazonRating:#.#} average rating " + PluralUtil.Pluralize($"({_bookList[i].Reviews:rating})");
+            lblEditions.Text = PluralUtil.Pluralize($"{_bookList[i].Editions:edition}");
             linkID.Text = _bookList[i].GoodreadsId;
             _toolTip1.SetToolTip(linkID, $"http://www.goodreads.com/book/show/{linkID.Text}");
         }

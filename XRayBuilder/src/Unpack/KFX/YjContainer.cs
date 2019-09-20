@@ -10,6 +10,8 @@ using System.Text;
 using IonDotnet;
 using IonDotnet.Internals;
 using IonDotnet.Tree;
+using XRayBuilderGUI.Libraries.Enumerables.Extensions;
+using XRayBuilderGUI.Libraries.IO.Extensions;
 
 namespace XRayBuilderGUI.Unpack.KFX
 {

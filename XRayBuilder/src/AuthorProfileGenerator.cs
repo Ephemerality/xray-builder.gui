@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using XRayBuilderGUI.DataSources.Amazon;
+using XRayBuilderGUI.Libraries.Images.Extensions;
 
 namespace XRayBuilderGUI
 {
@@ -286,7 +287,7 @@ namespace XRayBuilderGUI
                         ImageHeight = response.Image.Height,
                         Name = response.Name,
                         OtherBookAsins = response.OtherBooks.Select(book => book.Asin).ToArray(),
-                        Picture = Functions.ImageToBase64(response.Image, ImageFormat.Jpeg)
+                        Picture = response.Image.ToBase64(ImageFormat.Jpeg)
                     }
                 }
             };

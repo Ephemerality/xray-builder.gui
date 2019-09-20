@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using XRayBuilderGUI.Libraries.Images.Extensions;
 
 namespace XRayBuilderGUI
 {
@@ -42,13 +43,14 @@ namespace XRayBuilderGUI
             return htmlDoc;
         }
 
+        // TODO should this return image not bitmap?
         public async Task<Bitmap> GetImageAsync(string url, bool greyscale = false, CancellationToken cancellationToken = default)
         {
             var response = await GetStreamAsync(url, cancellationToken);
             var image = new Bitmap(response);
 
             image = greyscale
-                ? Functions.MakeGrayscale3(image)
+                ? (Bitmap) image.ToGrayscale3()
                 : image;
 
             return image;

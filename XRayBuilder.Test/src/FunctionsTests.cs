@@ -32,14 +32,6 @@ namespace XRayBuilder.Test
             return s.Clean();
         }
 
-        [TestCase("é", ExpectedResult = "e")]
-        [TestCase(null, ExpectedResult = null)]
-        [TestCase("", ExpectedResult = "")]
-        public string RemoveDiacritics(string s)
-        {
-            return s.RemoveDiacritics();
-        }
-
         [TestCase(@"testfiles\A Storm of Swords - George R. R. Martin.mobi")]
         public void GetMetaDataInternal(string mobiFile)
         {

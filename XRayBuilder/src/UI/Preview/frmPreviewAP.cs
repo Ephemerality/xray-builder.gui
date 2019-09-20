@@ -4,6 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
+using XRayBuilderGUI.Libraries.Images.Extensions;
+using XRayBuilderGUI.Libraries.Images.Util;
 using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI.UI.Preview
@@ -32,7 +34,7 @@ namespace XRayBuilderGUI.UI.Preview
                 lblBiography.Text = tempData["b"]?.ToString() ?? "";
                 var image64 = tempData["i"]?.ToString() ?? "";
                 if (image64 != "")
-                    pbAuthorImage.Image = Functions.MakeGrayscale3(Functions.Base64ToImage(image64));
+                    pbAuthorImage.Image = ImageUtil.Base64ToImage(image64).ToGrayscale3();
             }
 
             tempData = ap["o"];

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -33,19 +30,6 @@ namespace XRayBuilderGUI
                 return streamReader.ReadToEnd();
         }
 
-        //http://www.levibotelho.com/development/c-remove-diacritics-accents-from-a-string/
-        public static string RemoveDiacritics(this string text)
-        {
-            if (string.IsNullOrWhiteSpace(text))
-                return text;
-
-            text = text.Normalize(NormalizationForm.FormD);
-            var chars = text.Where(c => CharUnicodeInfo.GetUnicodeCategory(c) !=
-                UnicodeCategory.NonSpacingMark).ToArray();
-
-            return new string(chars).Normalize(NormalizationForm.FormC);
-        }
-
         // TODO: Clean this up more cause it still sucks
         public static string Clean(this string str)
         {
@@ -64,57 +48,6 @@ namespace XRayBuilderGUI
                 str = Regex.Replace(str, $"({string.Join("|", s)})", r, RegexOptions.Multiline);
             }
             return str.Trim();
-        }
-
-        public static string ImageToBase64(Image image, ImageFormat format)
-        {
-            using (var ms = new MemoryStream())
-            {
-                image.Save(ms, format);
-                return Convert.ToBase64String(ms.ToArray());
-            }
-        }
-
-        public static Bitmap Base64ToImage(string base64String)
-        {
-            var imageBytes = Convert.FromBase64String(base64String);
-            using (var ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
-                return new Bitmap(ms);
-        }
-
-        public static Bitmap MakeGrayscale3(Bitmap original)
-        {
-            //create a blank bitmap the same size as original
-            var newBitmap = new Bitmap(original.Width, original.Height);
-
-            //get a graphics object from the new image
-            var g = Graphics.FromImage(newBitmap);
-
-            //create the grayscale ColorMatrix
-            var colorMatrix = new ColorMatrix(
-                new[]
-                {
-                    new [] {.3f, .3f, .3f, 0, 0},
-                    new [] {.59f, .59f, .59f, 0, 0},
-                    new [] {.11f, .11f, .11f, 0, 0},
-                    new [] {0f, 0f, 0f, 1f, 0f},
-                    new [] {0f, 0f, 0f, 0f, 1f}
-                });
-
-            //create some image attributes
-            var attributes = new ImageAttributes();
-
-            //set the color matrix attribute
-            attributes.SetColorMatrix(colorMatrix);
-
-            //draw the original image on the new image
-            //using the grayscale color matrix
-            g.DrawImage(original, new Rectangle(0, 0, original.Width, original.Height),
-                0, 0, original.Width, original.Height, GraphicsUnit.Pixel, attributes);
-
-            //dispose the Graphics object
-            g.Dispose();
-            return newBitmap;
         }
 
         public static string GetBookOutputDirectory(string author, string title, bool create)

@@ -13,6 +13,8 @@ namespace XRayBuilderGUI.Libraries.Primitives.Extensions
 {
     public static class StringExtensions
     {
+        private static readonly Pluralizer _pluralizer = new Pluralizer();
+
         //http://stackoverflow.com/questions/444798/case-insensitive-containsstring
         public static bool Contains(this string source, string toCheck, StringComparison comp)
             => source?.IndexOf(toCheck, comp) >= 0;
@@ -24,7 +26,7 @@ namespace XRayBuilderGUI.Libraries.Primitives.Extensions
         {
             return count == 1
                 ? value
-                : new Pluralizer().Pluralize(value);
+                : _pluralizer.Pluralize(value);
         }
 
         public static int? TryParseInt(this string s, NumberStyles style, IFormatProvider provider)

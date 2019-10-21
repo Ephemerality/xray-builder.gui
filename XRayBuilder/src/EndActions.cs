@@ -25,8 +25,9 @@ namespace XRayBuilderGUI
         private readonly IAmazonClient _amazonClient;
         private readonly IAmazonInfoParser _amazonInfoParser;
 
+        // TODO These paths shouldn't be here
         private string EaPath = "";
-        private string SaPath = "";
+        public string SaPath = "";
 
         public List<BookInfo> custAlsoBought = new List<BookInfo>();
 
@@ -38,6 +39,7 @@ namespace XRayBuilderGUI
         private readonly Func<string, string, string> _asinPrompt;
 
         //Requires an already-built AuthorProfile and the BaseEndActions.txt file
+        // TODO Move non-DI params from constructor to function
         public EndActions(
             AuthorProfileGenerator.Response authorProfile,
             BookInfo book,
@@ -573,18 +575,6 @@ namespace XRayBuilderGUI
             }
 
             return null;
-        }
-
-        public void WriteStartActions(string saContent)
-        {
-            if (string.IsNullOrEmpty(saContent)) return;
-            _logger.Log("Writing StartActions to file...");
-            using (var streamWriter = new StreamWriter(SaPath, false))
-            {
-                streamWriter.Write(saContent);
-                streamWriter.Flush();
-            }
-            _logger.Log("StartActions file created successfully!\r\nSaved to " + SaPath);
         }
 
         // todo output directory logic should be the same as frmmain uses

@@ -501,7 +501,10 @@ namespace XRayBuilderGUI.UI
                     }
                     if (string.IsNullOrEmpty(saContent))
                         saContent = ea.GenerateStartActionsFromBase(sa);
-                    ea.WriteStartActions(saContent);
+
+                    _logger.Log("Writing StartActions to file...");
+                    File.WriteAllText(ea.SaPath, saContent);
+                    _logger.Log("StartActions file created successfully!\r\nSaved to " + SaPath);
 
                     cmsPreview.Items[3].Enabled = true;
                     EaPath = $@"{outputDir}\EndActions.data.{bookInfo.Asin}.asc";

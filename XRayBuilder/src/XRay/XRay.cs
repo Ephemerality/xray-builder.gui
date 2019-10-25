@@ -1144,7 +1144,7 @@ namespace XRayBuilderGUI.XRay
         public void LoadAliases(string aliasFile = null)
         {
             var d = new Dictionary<string, string[]>();
-            aliasFile = aliasFile ?? AliasPath;
+            aliasFile ??= AliasPath;
             if (!File.Exists(aliasFile)) return;
             using (var streamReader = new StreamReader(aliasFile, Encoding.UTF8))
             {

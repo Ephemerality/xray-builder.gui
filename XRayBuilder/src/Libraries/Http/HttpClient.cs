@@ -11,8 +11,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using XRayBuilderGUI.Libraries.Images.Extensions;
+using XRayBuilderGUI.Libraries.Logging;
 
-namespace XRayBuilderGUI
+namespace XRayBuilderGUI.Libraries.Http
 {
     // TODO: Investigate if a caching layer is worthwhile
     public sealed class HttpClient : System.Net.Http.HttpClient, IHttpClient

@@ -14,10 +14,15 @@ using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.Extras.Artifacts;
 using XRayBuilderGUI.Extras.AuthorProfile;
+using XRayBuilderGUI.Libraries;
+using XRayBuilderGUI.Libraries.Http;
+using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Model;
 using XRayBuilderGUI.Properties;
 using XRayBuilderGUI.UI.Preview.Logic;
 using XRayBuilderGUI.Unpack;
+using XRayBuilderGUI.XRay;
+using EndActions = XRayBuilderGUI.Extras.EndActions.EndActions;
 
 namespace XRayBuilderGUI.UI
 {
@@ -203,15 +208,15 @@ namespace XRayBuilderGUI.UI
             _logger.Log("Offset: " + (AZW3 ? $"{_settings.offsetAZW3} (AZW3)" : _settings.offset.ToString()));
 
             //Create X-Ray and attempt to create the base file (essentially the same as the site)
-            XRay xray;
+            XRay.XRay xray;
             SetDatasourceLabels(); // Reset the dataSource for the new build process
             try
             {
                 if (rdoGoodreads.Checked)
-                    xray = new XRay(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _dataSource, _logger,
+                    xray = new XRay.XRay(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _dataSource, _logger,
                         AZW3 ? _settings.offsetAZW3 : _settings.offset, "", false);
                 else
-                    xray = new XRay(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _dataSource, _logger,
+                    xray = new XRay.XRay(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _dataSource, _logger,
                         AZW3 ? _settings.offsetAZW3 : _settings.offset, "");
 
                 await Task.Run(() => xray.CreateXray(_progress, _cancelTokens.Token)).ConfigureAwait(false);
@@ -553,7 +558,7 @@ namespace XRayBuilderGUI.UI
             {
                 txtXMLFile.Text = path;
 
-                var xray = new XRay(txtGoodreads.Text, _dataSource, _logger);
+                var xray = new XRay.XRay(txtGoodreads.Text, _dataSource, _logger);
                 var result = await Task.Run(() => xray.SaveXml(path, _progress, _cancelTokens.Token));
                 if (result == 1)
                     _logger.Log("Warning: Unable to download character data as no character data found on Goodreads.");

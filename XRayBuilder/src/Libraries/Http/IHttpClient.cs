@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 
-namespace XRayBuilderGUI
+namespace XRayBuilderGUI.Libraries.Http
 {
     public interface IHttpClient
     {

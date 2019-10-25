@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using XRayBuilderGUI.DataSources.Amazon;
+using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Unpack;
 
 namespace XRayBuilderGUI.UI

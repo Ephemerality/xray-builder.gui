@@ -1,9 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using XRayBuilderGUI;
 using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
+using XRayBuilderGUI.Libraries.Http;
+using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Model;
 
 namespace XRayBuilder.Test.DataSources

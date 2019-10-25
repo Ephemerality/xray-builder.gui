@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using XRayBuilderGUI;
+using XRayBuilderGUI.Libraries;
 using XRayBuilderGUI.Unpack;
 
 namespace XRayBuilder.Test

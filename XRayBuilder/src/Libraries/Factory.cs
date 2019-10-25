@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace XRayBuilderGUI
+namespace XRayBuilderGUI.Libraries
 {
     public interface IFactory<in TEnum, out TValue>
     {

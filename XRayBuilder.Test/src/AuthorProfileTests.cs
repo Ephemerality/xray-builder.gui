@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
 using NUnit.Framework;
-using XRayBuilderGUI;
 using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.Extras.AuthorProfile;
+using XRayBuilderGUI.Libraries.Http;
+using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Model;
 
 namespace XRayBuilder.Test

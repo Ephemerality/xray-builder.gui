@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace XRayBuilderGUI
+namespace XRayBuilderGUI.Libraries.Logging
 {
     public delegate void LogEventHandler(LogEventArgs e);
 

@@ -12,7 +12,7 @@ using HtmlAgilityPack;
 using Newtonsoft.Json;
 using XRayBuilderGUI.Model;
 
-namespace XRayBuilderGUI
+namespace XRayBuilderGUI.Libraries
 {
     public static class Functions
     {

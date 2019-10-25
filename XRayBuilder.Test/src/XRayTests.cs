@@ -6,12 +6,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using XRayBuilderGUI;
 using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.Extras.Artifacts;
+using XRayBuilderGUI.Libraries;
+using XRayBuilderGUI.Libraries.Http;
+using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Model;
-using EndActions = XRayBuilderGUI.EndActions;
+using XRayBuilderGUI.XRay;
+using EndActions = XRayBuilderGUI.Extras.EndActions.EndActions;
 
 namespace XRayBuilder.Test
 {

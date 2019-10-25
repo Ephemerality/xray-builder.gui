@@ -14,11 +14,14 @@ using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.Extras.Artifacts;
 using XRayBuilderGUI.Extras.AuthorProfile;
+using XRayBuilderGUI.Libraries;
 using XRayBuilderGUI.Libraries.Enumerables.Extensions;
+using XRayBuilderGUI.Libraries.Http;
+using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Model;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
-namespace XRayBuilderGUI
+namespace XRayBuilderGUI.Extras.EndActions
 {
     public class EndActions
     {

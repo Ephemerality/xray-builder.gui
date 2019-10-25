@@ -8,7 +8,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using XRayBuilderGUI.DataSources.Amazon;
+using XRayBuilderGUI.Libraries;
+using XRayBuilderGUI.Libraries.Http;
 using XRayBuilderGUI.Libraries.Images.Extensions;
+using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Model;
 
 namespace XRayBuilderGUI.Extras.AuthorProfile

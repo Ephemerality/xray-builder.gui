@@ -10,6 +10,9 @@ using HtmlAgilityPack;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using XRayBuilderGUI.DataSources.Amazon.Model;
+using XRayBuilderGUI.Libraries;
+using XRayBuilderGUI.Libraries.Http;
+using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Libraries.Parsing.Regex;
 using XRayBuilderGUI.Model;
 

@@ -31,15 +31,15 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml.Serialization;
 using HtmlAgilityPack;
-using Newtonsoft.Json;
 using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.DataSources.Secondary.Model;
+using XRayBuilderGUI.Libraries;
+using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Libraries.Primitives.Extensions;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
-namespace XRayBuilderGUI
+namespace XRayBuilderGUI.XRay
 {
     // TODO: Anywhere JSON is used, serialization should be done rather than text formatting...
     public class XRay
@@ -986,73 +986,6 @@ namespace XRayBuilderGUI
             {
                 return string.Format(@"{{""name"":{0},""start"":{1},""end"":{2}}}",
                     (Name == "" ? "null" : "\"" + Name + "\""), Start, End);
-            }
-        }
-
-        public class Term
-        {
-            public string Type = "";
-
-            [XmlElement("name")]
-            public string TermName = "";
-
-            public string Desc = "";
-
-            [XmlElement("src")]
-            public string DescSrc = "";
-
-            [XmlElement("url")]
-            public string DescUrl = "";
-
-            [XmlIgnore]
-            public List<string> Aliases = new List<string>();
-
-            [JsonIgnore]
-            [XmlIgnore]
-            public List<string> Locs = new List<string>();
-
-            [XmlIgnore]
-            public List<string> Assets = new List<string> { "" };
-
-            [XmlIgnore]
-            public int Id = -1;
-
-            [XmlIgnore]
-            public List<int[]> Occurrences = new List<int[]>();
-
-            public bool MatchCase;
-
-            public bool Match = true;
-
-            /// <summary>
-            /// Determines if the aliases are in Regex format
-            /// </summary>
-            public bool RegexAliases;
-
-            public Term()
-            {
-            }
-
-            public Term(string type)
-            {
-                Type = type;
-            }
-
-            public override string ToString()
-            {
-                //Note that the Amazon X-Ray files declare an "assets" var for each term, but I have not seen one that actually uses them to contain anything
-                if (Locs.Count > 0)
-                    return
-                        string.Format(
-                            @"{{""type"":""{0}"",""term"":""{1}"",""desc"":""{2}"",""descSrc"":""{3}"",""descUrl"":""{4}"",""locs"":[{5}]}}",
-                            Type, TermName, Desc, DescSrc, DescUrl, string.Join(",", Locs));
-                else
-                {
-                    return
-                        string.Format(
-                            @"{{""type"":""{0}"",""term"":""{1}"",""desc"":""{2}"",""descSrc"":""{3}"",""descUrl"":""{4}"",""locs"":[[100,100,100,6]]}}",
-                            Type, TermName, Desc, DescSrc, DescUrl);
-                }
             }
         }
 

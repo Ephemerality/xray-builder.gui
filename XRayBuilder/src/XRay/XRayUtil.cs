@@ -6,7 +6,7 @@ using System.IO;
 using System.Text;
 using Newtonsoft.Json.Linq;
 
-namespace XRayBuilderGUI
+namespace XRayBuilderGUI.XRay
 {
     public static class XRayUtil
     {
@@ -15,7 +15,7 @@ namespace XRayBuilderGUI
         /// </summary>
         /// <param name="xrayDb">Connection to any db containing the proper dataset.</param>
         /// <param name="singleUse">If set, will close the connection when complete.</param>
-        public static IEnumerable<XRay.Term> ExtractTermsNew(DbConnection xrayDb, bool singleUse)
+        public static IEnumerable<Term> ExtractTermsNew(DbConnection xrayDb, bool singleUse)
         {
             if (xrayDb.State != ConnectionState.Open)
                 xrayDb.Open();
@@ -30,7 +30,7 @@ namespace XRayBuilderGUI
 
             while (reader.Read())
             {
-                var newTerm = new XRay.Term
+                var newTerm = new Term
                 {
                     Id = Convert.ToInt32(reader["id"]),
                     TermName = (string)reader["label"],
@@ -79,7 +79,7 @@ namespace XRayBuilderGUI
             }
         }
 
-        public static IEnumerable<XRay.Term> ExtractTermsOld(string path)
+        public static IEnumerable<Term> ExtractTermsOld(string path)
         {
             string readContents;
             using (var streamReader = new StreamReader(path, Encoding.UTF8))
@@ -87,7 +87,7 @@ namespace XRayBuilderGUI
 
             var xray = JObject.Parse(readContents);
             foreach (var term in xray["terms"].Children())
-                yield return term.ToObject<XRay.Term>();
+                yield return term.ToObject<Term>();
         }
     }
 }

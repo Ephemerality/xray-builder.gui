@@ -5,7 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilderGUI.Extras.Artifacts;
+using XRayBuilderGUI.Libraries;
 using XRayBuilderGUI.Libraries.Enumerables.Extensions;
+using XRayBuilderGUI.Libraries.Http;
 using XRayBuilderGUI.Libraries.Language.Pluralization;
 using XRayBuilderGUI.Properties;
 

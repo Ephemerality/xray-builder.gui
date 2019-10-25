@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using XRayBuilderGUI.Model.Artifacts;
+using XRayBuilderGUI.Extras.Artifacts;
 
 namespace XRayBuilderGUI.UI.Preview
 {
@@ -54,7 +54,7 @@ namespace XRayBuilderGUI.UI.Preview
         {
             try
             {
-                var endActions = Functions.JsonDeserializeFile<Model.Artifacts.EndActions>(inputFile);
+                var endActions = Functions.JsonDeserializeFile<Extras.Artifacts.EndActions>(inputFile);
 
                 ilauthorRecs.Images.Clear();
                 lvAuthorRecs.Items.Clear();

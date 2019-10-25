@@ -12,8 +12,8 @@ using Newtonsoft.Json;
 using SimpleInjector;
 using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
+using XRayBuilderGUI.Extras.Artifacts;
 using XRayBuilderGUI.Extras.AuthorProfile;
-using XRayBuilderGUI.Model.Artifacts;
 using XRayBuilderGUI.Properties;
 using XRayBuilderGUI.UI.Preview.Logic;
 using XRayBuilderGUI.Unpack;
@@ -449,11 +449,11 @@ namespace XRayBuilderGUI.UI
                     await ea.GenerateNewFormatData(_progress, _cancelTokens.Token);
 
                     // TODO: Do the templates differently
-                    Model.Artifacts.EndActions eaBase;
+                    Extras.Artifacts.EndActions eaBase;
                     try
                     {
                         var template = File.ReadAllText(Environment.CurrentDirectory + @"\dist\BaseEndActions.json", Encoding.UTF8);
-                        eaBase = JsonConvert.DeserializeObject<Model.Artifacts.EndActions>(template);
+                        eaBase = JsonConvert.DeserializeObject<Extras.Artifacts.EndActions>(template);
                     }
                     catch (FileNotFoundException)
                     {

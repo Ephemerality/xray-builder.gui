@@ -9,7 +9,7 @@ using NUnit.Framework;
 using XRayBuilderGUI;
 using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
-using XRayBuilderGUI.Model.Artifacts;
+using XRayBuilderGUI.Extras.Artifacts;
 using EndActions = XRayBuilderGUI.EndActions;
 
 namespace XRayBuilder.Test
@@ -120,7 +120,7 @@ namespace XRayBuilder.Test
         {
             using (StreamReader streamReader = new StreamReader(@"testfiles\AuthorProfile.profile.B000FBFN1U.asc", Encoding.UTF8))
             {
-                var ap = JsonConvert.DeserializeObject<XRayBuilderGUI.Model.Artifacts.AuthorProfile>(streamReader.ReadToEnd());
+                var ap = JsonConvert.DeserializeObject<AuthorProfile>(streamReader.ReadToEnd());
                 var outtxt = JsonConvert.SerializeObject(ap);
                 File.WriteAllText(@"sampleap.txt", outtxt);
             }

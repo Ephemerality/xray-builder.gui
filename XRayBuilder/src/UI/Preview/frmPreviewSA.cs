@@ -4,9 +4,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using XRayBuilderGUI.Extras.Artifacts;
 using XRayBuilderGUI.Libraries.Enumerables.Extensions;
 using XRayBuilderGUI.Libraries.Language.Pluralization;
-using XRayBuilderGUI.Model.Artifacts;
 using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI.UI.Preview

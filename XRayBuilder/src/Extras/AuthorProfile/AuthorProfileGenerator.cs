@@ -264,23 +264,23 @@ namespace XRayBuilderGUI.Extras.AuthorProfile
             public string AmazonTld { get; set; }
         }
 
-        public static Model.Artifacts.AuthorProfile CreateAp(Response response, string bookAsin)
+        public static Artifacts.AuthorProfile CreateAp(Response response, string bookAsin)
         {
-            var authorOtherBooks = response.OtherBooks.Select(book => new Model.Artifacts.AuthorProfile.Book
+            var authorOtherBooks = response.OtherBooks.Select(book => new Artifacts.AuthorProfile.Book
             {
                 E = 1,
                 Asin = book.Asin,
                 Title = book.Title
             }).ToArray();
 
-            return new Model.Artifacts.AuthorProfile
+            return new Artifacts.AuthorProfile
             {
                 Asin = bookAsin,
                 CreationDate = Functions.UnixTimestampSeconds(),
                 OtherBooks = authorOtherBooks,
                 Authors = new[]
                 {
-                    new Model.Artifacts.AuthorProfile.Author
+                    new Artifacts.AuthorProfile.Author
                     {
                         Asin = response.Asin,
                         Bio = response.Biography,

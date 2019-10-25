@@ -12,9 +12,9 @@ using Newtonsoft.Json;
 using XRayBuilderGUI.DataSources;
 using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
+using XRayBuilderGUI.Extras.Artifacts;
 using XRayBuilderGUI.Extras.AuthorProfile;
 using XRayBuilderGUI.Libraries.Enumerables.Extensions;
-using XRayBuilderGUI.Model.Artifacts;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI
@@ -417,9 +417,9 @@ namespace XRayBuilderGUI
             }
         }
 
-        public async Task GenerateEndActionsFromBase(Model.Artifacts.EndActions baseEndActions)
+        public async Task GenerateEndActionsFromBase(Extras.Artifacts.EndActions baseEndActions)
         {
-            baseEndActions.BookInfo = new Model.Artifacts.EndActions.BookInformation
+            baseEndActions.BookInfo = new Extras.Artifacts.EndActions.BookInformation
             {
                 Asin = curBook.Asin,
                 ContentType = "EBOK",
@@ -429,7 +429,7 @@ namespace XRayBuilderGUI
                 EmbeddedID = $"{curBook.Databasename}:{curBook.Guid}",
                 Erl = _erl
             };
-            baseEndActions.Data.FollowSubscriptions = new Model.Artifacts.EndActions.AuthorSubscriptions
+            baseEndActions.Data.FollowSubscriptions = new Extras.Artifacts.EndActions.AuthorSubscriptions
             {
                 Subscriptions = new[]
                 {
@@ -443,13 +443,13 @@ namespace XRayBuilderGUI
             };
             baseEndActions.Data.AuthorSubscriptions = baseEndActions.Data.FollowSubscriptions;
             baseEndActions.Data.NextBook = Extensions.BookInfoToBook(curBook.Series?.Next, false);
-            baseEndActions.Data.PublicSharedRating = new Model.Artifacts.EndActions.Rating
+            baseEndActions.Data.PublicSharedRating = new Extras.Artifacts.EndActions.Rating
             {
                 Class = "publicSharedRating",
                 Timestamp = Functions.UnixTimestampMilliseconds(),
                 Value = Math.Round(curBook.AmazonRating, 1)
             };
-            baseEndActions.Data.CustomerProfile = new Model.Artifacts.EndActions.CustomerProfile
+            baseEndActions.Data.CustomerProfile = new Extras.Artifacts.EndActions.CustomerProfile
             {
                 PenName = _settings.PenName,
                 RealName = _settings.RealName

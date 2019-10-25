@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace XRayBuilderGUI.Model.Artifacts
+namespace XRayBuilderGUI.Extras.Artifacts
 {
     public class AuthorProfile
     {

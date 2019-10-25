@@ -36,19 +36,7 @@ namespace XRayBuilderGUI.Unpack.Mobi
             fs.Seek(GetPaddingSize(DataSize), SeekOrigin.Current); // Skip padding bytes
         }
 
-        protected int DataSize
-        {
-            get
-            {
-                var size = 0;
-                foreach (var rec in recordList)
-                {
-                    size += rec.Size;
-                }
-
-                return size;
-            }
-        }
+        private int DataSize => recordList.Sum(rec => rec.Size);
 
         public int Size
         {

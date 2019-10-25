@@ -37,6 +37,7 @@ using XRayBuilderGUI.DataSources.Secondary.Model;
 using XRayBuilderGUI.Libraries;
 using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Libraries.Primitives.Extensions;
+using XRayBuilderGUI.Libraries.Progress;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI.XRay
@@ -95,12 +96,6 @@ namespace XRayBuilderGUI.XRay
             "The Hon Mrs", "The Hon Ms", "The Hon Sir", "The Very Rev", "Toh Puan", "Tun", "Vice Admiral",
             "Viscount", "Viscountess", "Wg Cdr", "Jr", "Sr", "Sheriff", "Special Agent", "Detective", "Lt" };
         #endregion
-
-        // TODO: Remove all of the constructors
-        public XRay(ILogger logger)
-        {
-            _logger = logger;
-        }
 
         public XRay(string shelfari, ISecondarySource dataSource, ILogger logger)
         {
@@ -457,11 +452,9 @@ namespace XRayBuilderGUI.XRay
                     //If soft hyphen ignoring is turned on, also search hyphen-less text.
                     if (!character.Match) continue;
                     var termFound = false;
-                    var search = new List<string>(character.Aliases.Count);
-                    foreach (var alias in character.Aliases)
-                    {
-                        search.Add(Encoding.Default.GetString(Encoding.UTF8.GetBytes(alias)));
-                    }
+                    // Convert from UTF8 string to default-encoded representation
+                    var search = character.Aliases.Select(alias => Encoding.Default.GetString(Encoding.UTF8.GetBytes(alias)))
+                        .ToList();
                     if (character.RegexAliases)
                     {
                         if (search.Any(r => Regex.Match(node.InnerText, r).Success)
@@ -784,7 +777,7 @@ namespace XRayBuilderGUI.XRay
             }
         }
 
-        public int PopulateDb(SQLiteConnection db, IProgressBar progress, CancellationToken token)
+        public void PopulateDb(SQLiteConnection db, IProgressBar progress, CancellationToken token)
         {
             var sql = new StringBuilder(Terms.Count * 256);
             var personCount = 0;
@@ -919,7 +912,6 @@ namespace XRayBuilderGUI.XRay
             command = new SQLiteCommand(sql.ToString(), db);
             command.ExecuteNonQuery();
             command.Dispose();
-            return 0;
         }
 
         private int LoadTermsFromTxt(string txtfile)

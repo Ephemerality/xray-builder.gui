@@ -1,4 +1,4 @@
-﻿namespace XRayBuilderGUI
+﻿namespace XRayBuilderGUI.Libraries.Progress
 {
     public interface IProgressBar
     {

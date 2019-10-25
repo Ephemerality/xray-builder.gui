@@ -25,11 +25,6 @@ namespace XRayBuilderGUI.UI.Preview
             _httpClient = httpClient;
         }
 
-        // todo remove these I guess?
-        public string titlePopup = "";
-        public string descriptionPopup = "";
-        public string biographyPopup = "";
-
         public async Task Populate(string inputFile, CancellationToken cancellationToken = default)
         {
             var startActions = Functions.JsonDeserializeFile<StartActions>(inputFile);
@@ -80,9 +75,7 @@ namespace XRayBuilderGUI.UI.Preview
                 var bookDescription = startActions.Data.BookDescription;
                 lblTitle.Text = bookDescription.Title;
                 lblAuthor.Text = bookDescription.Authors.FirstOrDefault() ?? "";
-                titlePopup = lblAuthor.Text;
                 lblDescription.Text = bookDescription.Description;
-                descriptionPopup = lblDescription.Text;
                 if (bookDescription.AmazonRating.HasValue)
                     pbRating.Image = (Image)Resources.ResourceManager.GetObject($"STAR{bookDescription.AmazonRating}");
                 lblVotes.Text = $"({bookDescription.NumberOfReviews ?? 0} {PluralUtil.Pluralize($"{bookDescription.NumberOfReviews ?? 0:vote}")})";
@@ -95,7 +88,6 @@ namespace XRayBuilderGUI.UI.Preview
                 if (!string.IsNullOrEmpty(imageUrl))
                     pbAuthorImage.Image = await _httpClient.GetImageAsync(imageUrl, true, cancellationToken);
                 lblBiography.Text = author.Bio;
-                biographyPopup = lblBiography.Text;
             }
 
             if (startActions.Data.AuthorRecs != null || startActions.Data.AuthorFeaturedRecs != null)

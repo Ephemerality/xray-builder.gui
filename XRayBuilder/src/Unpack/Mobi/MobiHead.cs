@@ -126,17 +126,7 @@ namespace XRayBuilderGUI.Unpack.Mobi
             }
         }
 
-        public int ExthHeaderSize
-        {
-            get
-            {
-                if (exthHeader == null)
-                    return 0;
-                else
-                    return exthHeader.Size;
-            }
-
-        }
+        public int ExthHeaderSize => exthHeader?.Size ?? 0;
 
         public string FullName => Encoding.UTF8.GetString(fullName).Trim('\0');
 

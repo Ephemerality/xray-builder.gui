@@ -9,8 +9,8 @@ namespace XRayBuilderGUI.Libraries
 
     public abstract class Factory<TEnum, TValue> : IFactory<TEnum, TValue>
     {
-        protected abstract Dictionary<TEnum, TValue> _dictionary { get; }
+        protected abstract Dictionary<TEnum, TValue> Dictionary { get; }
 
-        public TValue Get(TEnum @enum) => _dictionary[@enum];
+        public TValue Get(TEnum @enum) => Dictionary[@enum];
     }
 }

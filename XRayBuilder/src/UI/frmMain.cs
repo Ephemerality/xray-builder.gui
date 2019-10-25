@@ -17,6 +17,7 @@ using XRayBuilderGUI.Extras.AuthorProfile;
 using XRayBuilderGUI.Libraries;
 using XRayBuilderGUI.Libraries.Http;
 using XRayBuilderGUI.Libraries.Logging;
+using XRayBuilderGUI.Libraries.Progress;
 using XRayBuilderGUI.Model;
 using XRayBuilderGUI.Properties;
 using XRayBuilderGUI.UI.Preview.Logic;

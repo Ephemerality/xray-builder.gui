@@ -56,11 +56,9 @@ namespace XRayBuilderGUI.UI
             get
             {
                 var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
-                if (attributes.Length == 0)
-                {
-                    return "";
-                }
-                return ((AssemblyDescriptionAttribute)attributes[0]).Description;
+                return attributes.Length == 0
+                    ? ""
+                    : ((AssemblyDescriptionAttribute)attributes[0]).Description;
             }
         }
 
@@ -69,11 +67,9 @@ namespace XRayBuilderGUI.UI
             get
             {
                 var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
-                if (attributes.Length == 0)
-                {
-                    return "";
-                }
-                return ((AssemblyProductAttribute)attributes[0]).Product;
+                return attributes.Length == 0
+                    ? ""
+                    : ((AssemblyProductAttribute)attributes[0]).Product;
             }
         }
 
@@ -82,24 +78,9 @@ namespace XRayBuilderGUI.UI
             get
             {
                 var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
-                if (attributes.Length == 0)
-                {
-                    return "";
-                }
-                return ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
-            }
-        }
-
-        public string AssemblyCompany
-        {
-            get
-            {
-                var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
-                if (attributes.Length == 0)
-                {
-                    return "";
-                }
-                return ((AssemblyCompanyAttribute)attributes[0]).Company;
+                return attributes.Length == 0
+                    ? ""
+                    : ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
             }
         }
         #endregion

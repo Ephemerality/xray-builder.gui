@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using JetBrains.Annotations;
 using XRayBuilderGUI.DataSources.Secondary.Model;
+using XRayBuilderGUI.Libraries.Progress;
 using XRayBuilderGUI.Model;
 
 namespace XRayBuilderGUI.DataSources.Secondary

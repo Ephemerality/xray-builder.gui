@@ -6,8 +6,6 @@ namespace XRayBuilderGUI.UI
 {
     public partial class frmASIN : Form
     {
-        public string thisAsin = "";
-
         public frmASIN(IAmazonClient amazonClient)
         {
             InitializeComponent();
@@ -33,10 +31,8 @@ namespace XRayBuilderGUI.UI
         private bool CheckAsin()
         {
             if (AmazonClient.IsAsin(tbAsin.Text))
-            {
-                thisAsin = tbAsin.Text;
                 return true;
-            }
+
             MessageBox.Show("This does not appear to be a valid ASIN." +
                                 "\r\nAre you sure it is correct?",
                                 "Invalid ASIN", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);

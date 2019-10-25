@@ -12,7 +12,7 @@ namespace XRayBuilderGUI.UI.Preview.Logic
             PreviewProvider.PreviewProviderStartActions previewProviderSa,
             PreviewProvider.PreviewProviderXRay previewProviderXr)
         {
-            _dictionary = new Dictionary<PreviewType, PreviewProvider>
+            Dictionary = new Dictionary<PreviewType, PreviewProvider>
             {
                 {PreviewType.AuthorProfile, previewProviderAp},
                 {PreviewType.EndActions, previewProviderEa},
@@ -21,7 +21,7 @@ namespace XRayBuilderGUI.UI.Preview.Logic
             };
         }
 
-        protected override Dictionary<PreviewType, PreviewProvider> _dictionary { get; }
+        protected override Dictionary<PreviewType, PreviewProvider> Dictionary { get; }
 
         public enum PreviewType
         {

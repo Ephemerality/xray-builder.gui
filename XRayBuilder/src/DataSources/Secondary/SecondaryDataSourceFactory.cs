@@ -8,7 +8,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
     {
         public SecondaryDataSourceFactory(Shelfari shelfari, Goodreads goodreads)
         {
-            _dictionary = new Dictionary<System.Enum, ISecondarySource>
+            Dictionary = new Dictionary<System.Enum, ISecondarySource>
             {
                 {Enum.Shelfari, shelfari},
                 {Enum.Goodreads, goodreads}
@@ -21,6 +21,6 @@ namespace XRayBuilderGUI.DataSources.Secondary
             Goodreads
         }
 
-        protected override Dictionary<System.Enum, ISecondarySource> _dictionary { get; }
+        protected override Dictionary<System.Enum, ISecondarySource> Dictionary { get; }
     }
 }

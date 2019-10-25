@@ -68,11 +68,7 @@ namespace XRayBuilderGUI.Libraries
         }
 
         public static bool ExtrasExist(string location, string asin)
-        {
-            if (File.Exists(location + $"\\AuthorProfile.profile.{asin}.asc") && File.Exists(location + $"\\EndActions.data.{asin}.asc"))
-                return true;
-            return false;
-        }
+            => File.Exists(location + $"\\AuthorProfile.profile.{asin}.asc") && File.Exists(location + $"\\EndActions.data.{asin}.asc");
 
         //public static string GetTempDirectory()
         //{

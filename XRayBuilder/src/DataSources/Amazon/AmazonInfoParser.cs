@@ -59,7 +59,7 @@ namespace XRayBuilderGUI.DataSources.Amazon
                 ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='main-image']");
 
             if (bookImageLoc == null)
-                _logger.Log($"Error finding book image.");
+                _logger.Log("Error finding book image.");
             else
             {
                 var imageUrl = Regex.Replace(bookImageLoc.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);

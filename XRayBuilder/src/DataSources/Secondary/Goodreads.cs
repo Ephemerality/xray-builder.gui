@@ -17,6 +17,7 @@ using XRayBuilderGUI.Libraries.Http;
 using XRayBuilderGUI.Libraries.Language.Pluralization;
 using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Libraries.Primitives.Extensions;
+using XRayBuilderGUI.Libraries.Progress;
 using XRayBuilderGUI.Model;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 

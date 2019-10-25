@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using XRayBuilderGUI.Libraries.Enumerables.Extensions;
 
 namespace XRayBuilderGUI.UI
 {
@@ -23,13 +24,13 @@ namespace XRayBuilderGUI.UI
 
         class AmazonRegion
         {
-            public string Name { get; set; }
-            public string TLD { get; set; }
+            public string Name { get; }
+            public string TLD { get; }
 
-            public AmazonRegion(string n, string t)
+            public AmazonRegion(string name, string tld)
             {
-                Name = n;
-                TLD = t;
+                Name = name;
+                TLD = tld;
             }
         }
 
@@ -165,9 +166,9 @@ namespace XRayBuilderGUI.UI
             toolTip1.SetToolTip(chkSearchAsin, "If enabled, search results will be filtered so that non-Kindle Edition books are removed");
             toolTip1.SetToolTip(chkEditBiography, "If enabled, allows editing the Author's biography before it's used.");
 
-            IList <AmazonRegion> regions = new List<AmazonRegion>(regionTLDs.Count);
-            foreach (var r in regionTLDs)
-                regions.Add(new AmazonRegion(r.Key, r.Value));
+            var regions = new List<AmazonRegion>(regionTLDs.Count);
+            foreach (var (name, tld) in regionTLDs)
+                regions.Add(new AmazonRegion(name, tld));
             cmbRegion.DataSource = regions;
             cmbRegion.DisplayMember = "Name";
             cmbRegion.ValueMember = "TLD";

@@ -6,14 +6,17 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using JetBrains.Annotations;
 using XRayBuilderGUI.DataSources.Secondary.Model;
 using XRayBuilderGUI.Libraries.Http;
 using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Libraries.Primitives.Extensions;
+using XRayBuilderGUI.Libraries.Progress;
 using XRayBuilderGUI.Model;
 
 namespace XRayBuilderGUI.DataSources.Secondary
 {
+    [UsedImplicitly]
     public class Shelfari : ISecondarySource
     {
         private readonly ILogger _logger;
@@ -36,7 +39,6 @@ namespace XRayBuilderGUI.DataSources.Secondary
             // Try to find book's page from Shelfari search
             var listofthings = new List<string>();
             var listoflinks = new List<string>();
-            var retData = new Dictionary<string, string>();
 
             var nodeResultCheck = shelfariHtmlDoc.DocumentNode.SelectSingleNode("//li[@class='item']/div[@class='text']");
             if (nodeResultCheck == null)

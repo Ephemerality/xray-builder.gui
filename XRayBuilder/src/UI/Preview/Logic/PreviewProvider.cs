@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using SimpleInjector;
 
 namespace XRayBuilderGUI.UI.Preview.Logic
@@ -19,6 +20,7 @@ namespace XRayBuilderGUI.UI.Preview.Logic
 
         public IPreviewForm GenForm() => (IPreviewForm) _diContainer.GetInstance(PreviewFormType);
 
+        [UsedImplicitly]
         public sealed class PreviewProviderAuthorProfile : PreviewProvider
         {
             public PreviewProviderAuthorProfile(Container diContainer) : base(diContainer) { }
@@ -29,6 +31,7 @@ namespace XRayBuilderGUI.UI.Preview.Logic
             public override Type PreviewFormType { get; } = typeof(frmPreviewAP);
         }
 
+        [UsedImplicitly]
         public sealed class PreviewProviderEndActions : PreviewProvider
         {
             public PreviewProviderEndActions(Container diContainer) : base(diContainer) { }
@@ -39,6 +42,7 @@ namespace XRayBuilderGUI.UI.Preview.Logic
             public override Type PreviewFormType { get; } = typeof(frmPreviewEA);
         }
 
+        [UsedImplicitly]
         public sealed class PreviewProviderStartActions : PreviewProvider
         {
             public PreviewProviderStartActions(Container diContainer) : base(diContainer) { }
@@ -49,6 +53,7 @@ namespace XRayBuilderGUI.UI.Preview.Logic
             public override Type PreviewFormType { get; } = typeof(frmPreviewSA);
         }
 
+        [UsedImplicitly]
         public sealed class PreviewProviderXRay : PreviewProvider
         {
             public PreviewProviderXRay(Container diContainer) : base(diContainer) { }

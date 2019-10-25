@@ -104,24 +104,22 @@ namespace XRayBuilderGUI.Unpack.KFX
             if (indexTableLength > 0)
             {
                 var entityTable = fs.ReadBytes(indexTableOffset, indexTableLength, SeekOrigin.Begin);
-                using (var reader = new BinaryReader(new MemoryStream(entityTable), Encoding.UTF8, true))
+                using var reader = new BinaryReader(new MemoryStream(entityTable), Encoding.UTF8, true);
+                while (reader.BaseStream.Position < reader.BaseStream.Length)
                 {
-                    while (reader.BaseStream.Position < reader.BaseStream.Length)
-                    {
-                        var id = reader.ReadInt32();
-                        var type = reader.ReadInt32();
-                        var entityOffset = (int) reader.ReadInt64();
-                        var entityLength = (int) reader.ReadInt64();
+                    var id = reader.ReadInt32();
+                    var type = reader.ReadInt32();
+                    var entityOffset = (int) reader.ReadInt64();
+                    var entityLength = (int) reader.ReadInt64();
 
-                        typeNums.Add(type);
+                    typeNums.Add(type);
 
-                        var entityStart = (int) header.Length + entityOffset;
-                        if (entityStart + entityLength > fs.Length)
-                            throw new Exception($"Container {containerId} is not large enough for entity end (offset {entityStart + entityLength})");
+                    var entityStart = (int) header.Length + entityOffset;
+                    if (entityStart + entityLength > fs.Length)
+                        throw new Exception($"Container {containerId} is not large enough for entity end (offset {entityStart + entityLength})");
 
-                        var entityData = new MemoryStream(fs.ReadBytes(entityStart, entityLength, SeekOrigin.Begin));
-                        Entities.Add(new Entity(entityData, id, type, docSymbols, loader));
-                    }
+                    var entityData = new MemoryStream(fs.ReadBytes(entityStart, entityLength, SeekOrigin.Begin));
+                    Entities.Add(new Entity(entityData, id, type, docSymbols, loader));
                 }
             }
 
@@ -181,30 +179,28 @@ namespace XRayBuilderGUI.Unpack.KFX
 
         public KfxHeader(Stream stream)
         {
-            using (var reader = new BinaryReader(stream, Encoding.UTF8, true))
+            using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+            Signature = Encoding.ASCII.GetString(reader.ReadBytes(4));
+            switch (Signature)
             {
-                Signature = Encoding.ASCII.GetString(reader.ReadBytes(4));
-                switch (Signature)
-                {
-                    case KfxSignature:
-                        break;
-                    case DrmSignature:
-                        throw new Exception("DRM-protected books are not supported");
-                    default:
-                        throw new Exception("Book is not in KFX format");
-                }
-
-                Version = reader.ReadUInt16();
-                if (!_allowedVersions.Contains(Version))
-                    throw new Exception($"KFX version not supported ({Version})");
-
-                Length = reader.ReadUInt32();
-                if (Length < MinHeaderLength)
-                    throw new Exception("Invalid KFX: header too short");
-
-                ContainerInfoOffset = reader.ReadUInt32();
-                ContainerInfoLength = reader.ReadUInt32();
+                case KfxSignature:
+                    break;
+                case DrmSignature:
+                    throw new Exception("DRM-protected books are not supported");
+                default:
+                    throw new Exception("Book is not in KFX format");
             }
+
+            Version = reader.ReadUInt16();
+            if (!_allowedVersions.Contains(Version))
+                throw new Exception($"KFX version not supported ({Version})");
+
+            Length = reader.ReadUInt32();
+            if (Length < MinHeaderLength)
+                throw new Exception("Invalid KFX: header too short");
+
+            ContainerInfoOffset = reader.ReadUInt32();
+            ContainerInfoLength = reader.ReadUInt32();
         }
     }
 }

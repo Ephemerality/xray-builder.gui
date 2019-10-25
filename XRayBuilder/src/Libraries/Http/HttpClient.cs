@@ -122,16 +122,14 @@ namespace XRayBuilderGUI.Libraries.Http
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            using (var cts = GetCancellationTokenSource(request, cancellationToken))
+            using var cts = GetCancellationTokenSource(request, cancellationToken);
+            try
             {
-                try
-                {
-                    return await base.SendAsync(request, cts?.Token ?? cancellationToken);
-                }
-                catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
-                {
-                    throw new TimeoutException();
-                }
+                return await base.SendAsync(request, cts?.Token ?? cancellationToken);
+            }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                throw new TimeoutException();
             }
         }
 

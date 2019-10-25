@@ -25,8 +25,8 @@ namespace XRayBuilderGUI.Libraries.Primitives.Extensions
 
         public static byte[] Sha1(this byte[] bytes)
         {
-            using (var sha1 = new SHA1Managed())
-                return sha1.ComputeHash(bytes);
+            using var sha1 = new SHA1Managed();
+            return sha1.ComputeHash(bytes);
         }
 
         // Stolen from http://www.mobileread.com/forums/showthread.php?t=185565

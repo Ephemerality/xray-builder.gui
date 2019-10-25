@@ -49,8 +49,8 @@ namespace XRayBuilderGUI.UI
                 && DialogResult.Yes == MessageBox.Show("The document type is not set to EBOK. Would you like this to be updated?\r\n"
                 + "Caution: This feature is experimental and could potentially ruin your book file.", "Incorrect Content Type", MessageBoxButtons.YesNo))
             {
-                using (var fs = new FileStream(bookPath, FileMode.Open, FileAccess.ReadWrite))
-                    md.UpdateCdeContentType(fs);
+                using var fs = new FileStream(bookPath, FileMode.Open, FileAccess.ReadWrite);
+                md.UpdateCdeContentType(fs);
             }
             else
             {

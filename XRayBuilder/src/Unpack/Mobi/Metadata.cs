@@ -48,8 +48,8 @@ namespace XRayBuilderGUI.Unpack.Mobi
                     if (firstImage == -1) firstImage = i;
                     if (i == firstImage + coverOffset)
                     {
-                        using (var ms = new MemoryStream(buffer))
-                            CoverImage = new Bitmap(ms);
+                        using var ms = new MemoryStream(buffer);
+                        CoverImage = new Bitmap(ms);
                     }
                 }
                 else if (Encoding.ASCII.GetString(buffer, 0, 8) == "BOUNDARY")

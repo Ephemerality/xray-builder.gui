@@ -64,18 +64,16 @@ namespace XRayBuilderGUI.XRay
 
         public static XRayVersion CheckXRayVersion(string path)
         {
-            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            using var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
+            var c = fs.ReadByte();
+            switch (c)
             {
-                var c = fs.ReadByte();
-                switch (c)
-                {
-                    case 'S':
-                        return XRayVersion.New;
-                    case '{':
-                        return XRayVersion.Old;
-                    default:
-                        return XRayVersion.Invalid;
-                }
+                case 'S':
+                    return XRayVersion.New;
+                case '{':
+                    return XRayVersion.Old;
+                default:
+                    return XRayVersion.Invalid;
             }
         }
 

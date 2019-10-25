@@ -993,14 +993,11 @@ namespace XRayBuilderGUI.XRay
         {
             if (!Directory.Exists(Environment.CurrentDirectory + @"\ext\"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\ext\");
-            using (
-                var streamWriter =
-                    new StreamWriter(Environment.CurrentDirectory + @"\ext\" + asin + ".chapters", false,
-                        Encoding.UTF8))
-            {
-                foreach (var c in _chapters)
-                    streamWriter.WriteLine(c.Name + "|" + c.Start + "|" + c.End);
-            }
+            using var streamWriter =
+                new StreamWriter(Environment.CurrentDirectory + @"\ext\" + asin + ".chapters", false,
+                    Encoding.UTF8);
+            foreach (var c in _chapters)
+                streamWriter.WriteLine(c.Name + "|" + c.Start + "|" + c.End);
         }
 
         public bool LoadChapters()
@@ -1035,16 +1032,14 @@ namespace XRayBuilderGUI.XRay
             //Try to load custom common titles from BaseSplitIgnore.txt
             try
             {
-                using (var streamReader = new StreamReader(Environment.CurrentDirectory + @"\dist\BaseSplitIgnore.txt", Encoding.UTF8))
+                using var streamReader = new StreamReader(Environment.CurrentDirectory + @"\dist\BaseSplitIgnore.txt", Encoding.UTF8);
+                var CustomSplitIgnore = streamReader.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.None)
+                    .Where(r => !r.StartsWith("//")).ToArray();
+                if (CustomSplitIgnore.Length >= 1)
                 {
-                    var CustomSplitIgnore = streamReader.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.None)
-                        .Where(r => !r.StartsWith("//")).ToArray();
-                    if (CustomSplitIgnore.Length >= 1)
-                    {
-                        CommonTitles = CustomSplitIgnore;
-                    }
-                    _logger.Log("Splitting aliases using custom common titles file...");
+                    CommonTitles = CustomSplitIgnore;
                 }
+                _logger.Log("Splitting aliases using custom common titles file...");
             }
             catch (Exception ex)
             {
@@ -1054,97 +1049,95 @@ namespace XRayBuilderGUI.XRay
             }
 
             //Try to remove common titles from aliases
-            using (var streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8))
+            using var streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8);
+            var aliasCheck = new List<string>();
+            foreach (var c in Terms)
             {
-                var aliasCheck = new List<string>();
-                foreach (var c in Terms)
+                if (c.Type == "character" && c.TermName.Contains(" "))
                 {
-                    if (c.Type == "character" && c.TermName.Contains(" "))
+                    try
                     {
-                        try
+                        if (Properties.Settings.Default.splitAliases)
                         {
-                            if (Properties.Settings.Default.splitAliases)
+                            var splitName = "";
+                            string titleTrimmed;
+                            var aliasList = new List<string>();
+                            var textInfo = new CultureInfo("en-US", false).TextInfo;
+
+                            var pattern = @"( ?(" + string.Join("|", CommonTitles) +
+                                          ")\\.? )|(^[A-Z]\\. )|( [A-Z]\\.)|(\")|(\u201C)|(\u201D)|(,)|(')";
+
+                            var regex = new Regex(pattern);
+                            var matchCheck = Regex.Match(c.TermName, pattern);
+                            if (matchCheck.Success)
                             {
-                                var splitName = "";
-                                string titleTrimmed;
-                                var aliasList = new List<string>();
-                                var textInfo = new CultureInfo("en-US", false).TextInfo;
-
-                                var pattern = @"( ?(" + string.Join("|", CommonTitles) +
-                                    ")\\.? )|(^[A-Z]\\. )|( [A-Z]\\.)|(\")|(\u201C)|(\u201D)|(,)|(')";
-
-                                var regex = new Regex(pattern);
-                                var matchCheck = Regex.Match(c.TermName, pattern);
-                                if (matchCheck.Success)
+                                titleTrimmed = c.TermName;
+                                foreach (Match match in regex.Matches(titleTrimmed))
                                 {
-                                    titleTrimmed = c.TermName;
-                                    foreach (Match match in regex.Matches(titleTrimmed))
-                                    {
-                                        titleTrimmed = titleTrimmed.Replace(match.Value, string.Empty);
-                                    }
-                                    foreach (Match match in regex.Matches(titleTrimmed))
-                                    {
-                                        titleTrimmed = titleTrimmed.Replace(match.Value, string.Empty);
-                                    }
-                                    aliasList.Add(titleTrimmed);
+                                    titleTrimmed = titleTrimmed.Replace(match.Value, string.Empty);
                                 }
-                                else
-                                    titleTrimmed = c.TermName;
-
-                                titleTrimmed = Regex.Replace(titleTrimmed, @"\s+", " ");
-                                titleTrimmed = Regex.Replace(titleTrimmed, @"( ?V?I{0,3}$)", string.Empty);
-                                titleTrimmed = Regex.Replace(titleTrimmed, @"(\(aka )", "(");
-
-                                var bracketedName = Regex.Match(titleTrimmed, @"(.*)(\()(.*)(\))");
-                                if (bracketedName.Success)
+                                foreach (Match match in regex.Matches(titleTrimmed))
                                 {
-                                    aliasList.Add(bracketedName.Groups[3].Value);
-                                    aliasList.Add(bracketedName.Groups[1].Value.TrimEnd());
-                                    titleTrimmed = titleTrimmed.Replace(bracketedName.Groups[2].Value, "")
-                                        .Replace(bracketedName.Groups[4].Value, "");
+                                    titleTrimmed = titleTrimmed.Replace(match.Value, string.Empty);
                                 }
-
-                                if (titleTrimmed.Contains(" "))
-                                {
-                                    titleTrimmed = titleTrimmed.Replace(" &amp;", "").Replace(" &", "");
-                                    var words = titleTrimmed.Split(' ');
-                                    foreach (var word in words)
-                                    {
-                                        if (word.ToUpper() == word)
-                                            aliasList.Add(textInfo.ToTitleCase(word.ToLower()));
-                                        else
-                                            aliasList.Add(word);
-                                    }
-                                }
-                                if (aliasList.Count > 0)
-                                {
-                                    aliasList.Sort((a, b) => b.Length.CompareTo(a.Length));
-                                    foreach (var word in aliasList)
-                                    {
-                                        if (aliasCheck.Any(str => str.Equals(word)))
-                                            continue;
-                                        aliasCheck.Add(word);
-                                        splitName += word + ",";
-                                    }
-                                    if (splitName.LastIndexOf(",") != -1)
-                                    {
-                                        streamWriter.WriteLine(c.TermName + "|" + splitName.Substring(0, splitName.LastIndexOf(",")));
-                                    }
-                                    else
-                                        streamWriter.WriteLine(c.TermName + "|");
-                                }
+                                aliasList.Add(titleTrimmed);
                             }
                             else
-                                streamWriter.WriteLine(c.TermName + "|");
+                                titleTrimmed = c.TermName;
+
+                            titleTrimmed = Regex.Replace(titleTrimmed, @"\s+", " ");
+                            titleTrimmed = Regex.Replace(titleTrimmed, @"( ?V?I{0,3}$)", string.Empty);
+                            titleTrimmed = Regex.Replace(titleTrimmed, @"(\(aka )", "(");
+
+                            var bracketedName = Regex.Match(titleTrimmed, @"(.*)(\()(.*)(\))");
+                            if (bracketedName.Success)
+                            {
+                                aliasList.Add(bracketedName.Groups[3].Value);
+                                aliasList.Add(bracketedName.Groups[1].Value.TrimEnd());
+                                titleTrimmed = titleTrimmed.Replace(bracketedName.Groups[2].Value, "")
+                                    .Replace(bracketedName.Groups[4].Value, "");
+                            }
+
+                            if (titleTrimmed.Contains(" "))
+                            {
+                                titleTrimmed = titleTrimmed.Replace(" &amp;", "").Replace(" &", "");
+                                var words = titleTrimmed.Split(' ');
+                                foreach (var word in words)
+                                {
+                                    if (word.ToUpper() == word)
+                                        aliasList.Add(textInfo.ToTitleCase(word.ToLower()));
+                                    else
+                                        aliasList.Add(word);
+                                }
+                            }
+                            if (aliasList.Count > 0)
+                            {
+                                aliasList.Sort((a, b) => b.Length.CompareTo(a.Length));
+                                foreach (var word in aliasList)
+                                {
+                                    if (aliasCheck.Any(str => str.Equals(word)))
+                                        continue;
+                                    aliasCheck.Add(word);
+                                    splitName += word + ",";
+                                }
+                                if (splitName.LastIndexOf(",") != -1)
+                                {
+                                    streamWriter.WriteLine(c.TermName + "|" + splitName.Substring(0, splitName.LastIndexOf(",")));
+                                }
+                                else
+                                    streamWriter.WriteLine(c.TermName + "|");
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            _logger.Log("An error occurred while splitting the aliases.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                        }
+                        else
+                            streamWriter.WriteLine(c.TermName + "|");
                     }
-                    else
-                        streamWriter.WriteLine(c.TermName + "|");
+                    catch (Exception ex)
+                    {
+                        _logger.Log("An error occurred while splitting the aliases.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                    }
                 }
+                else
+                    streamWriter.WriteLine(c.TermName + "|");
             }
         }
 
@@ -1226,51 +1219,47 @@ namespace XRayBuilderGUI.XRay
 
         public void SaveToFileOld(string path)
         {
-            using (var streamWriter = new StreamWriter(path, false, Encoding.UTF8))
-                streamWriter.Write(ToString());
+            using var streamWriter = new StreamWriter(path, false, Encoding.UTF8);
+            streamWriter.Write(ToString());
         }
 
         public void SaveToFileNew(string path, IProgressBar progress, CancellationToken token)
         {
             SQLiteConnection.CreateFile(path);
-            using (var m_dbConnection = new SQLiteConnection($"Data Source={path};Version=3;"))
+            using var m_dbConnection = new SQLiteConnection($"Data Source={path};Version=3;");
+            m_dbConnection.Open();
+            string sql;
+            try
             {
-                m_dbConnection.Open();
-                string sql;
-                try
-                {
-                    using (var streamReader = new StreamReader(Environment.CurrentDirectory + @"\dist\BaseDB.sql", Encoding.UTF8))
-                    {
-                        sql = streamReader.ReadToEnd();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new IOException("An error occurred while opening the BaseDB.sql file. Ensure you extracted it to the same directory as the program.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                }
-                var command = new SQLiteCommand("BEGIN; " + sql + " COMMIT;", m_dbConnection);
-                _logger.Log("Building new X-Ray database. May take a few minutes...");
-                command.ExecuteNonQuery();
-                command.Dispose();
-                command = new SQLiteCommand("PRAGMA user_version = 1; PRAGMA encoding = utf8; BEGIN;", m_dbConnection);
-                command.ExecuteNonQuery();
-                command.Dispose();
-                _logger.Log("Done building initial database. Populating with info from source X-Ray...");
-                PopulateDb(m_dbConnection, progress, token);
-                _logger.Log("Updating indices...");
-                sql = "CREATE INDEX idx_occurrence_start ON occurrence(start ASC);\n"
-                      + "CREATE INDEX idx_entity_type ON entity(type ASC);\n"
-                      + "CREATE INDEX idx_entity_excerpt ON entity_excerpt(entity ASC); COMMIT;";
-                command = new SQLiteCommand(sql, m_dbConnection);
-                command.ExecuteNonQuery();
-                command.Dispose();
+                using var streamReader = new StreamReader(Environment.CurrentDirectory + @"\dist\BaseDB.sql", Encoding.UTF8);
+                sql = streamReader.ReadToEnd();
             }
+            catch (Exception ex)
+            {
+                throw new IOException("An error occurred while opening the BaseDB.sql file. Ensure you extracted it to the same directory as the program.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+            }
+            var command = new SQLiteCommand("BEGIN; " + sql + " COMMIT;", m_dbConnection);
+            _logger.Log("Building new X-Ray database. May take a few minutes...");
+            command.ExecuteNonQuery();
+            command.Dispose();
+            command = new SQLiteCommand("PRAGMA user_version = 1; PRAGMA encoding = utf8; BEGIN;", m_dbConnection);
+            command.ExecuteNonQuery();
+            command.Dispose();
+            _logger.Log("Done building initial database. Populating with info from source X-Ray...");
+            PopulateDb(m_dbConnection, progress, token);
+            _logger.Log("Updating indices...");
+            sql = "CREATE INDEX idx_occurrence_start ON occurrence(start ASC);\n"
+                  + "CREATE INDEX idx_entity_type ON entity(type ASC);\n"
+                  + "CREATE INDEX idx_entity_excerpt ON entity_excerpt(entity ASC); COMMIT;";
+            command = new SQLiteCommand(sql, m_dbConnection);
+            command.ExecuteNonQuery();
+            command.Dispose();
         }
 
         public void SavePreviewToFile(string path)
         {
-            using (var streamWriter = new StreamWriter(path, false, Encoding.UTF8))
-                streamWriter.Write(getPreviewData());
+            using var streamWriter = new StreamWriter(path, false, Encoding.UTF8);
+            streamWriter.Write(getPreviewData());
         }
     }
 }

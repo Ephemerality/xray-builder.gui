@@ -169,10 +169,8 @@ namespace XRayBuilderGUI.Extras.AuthorProfile
                     try
                     {
                         _logger.Log("Saving biography to " + bioFile);
-                        using (var streamWriter = new StreamWriter(bioFile, false, System.Text.Encoding.UTF8))
-                        {
-                            streamWriter.Write(biography);
-                        }
+                        using var streamWriter = new StreamWriter(bioFile, false, System.Text.Encoding.UTF8);
+                        streamWriter.Write(biography);
                     }
                     catch (Exception ex)
                     {

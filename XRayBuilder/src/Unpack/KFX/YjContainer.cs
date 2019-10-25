@@ -945,50 +945,48 @@ namespace XRayBuilderGUI.Unpack.KFX
 
         public Entity(Stream stream, int id, int type, ISymbolTable symbolTable, IonDotnet.Systems.IonLoader loader)
         {
-            using (var reader = new BinaryReader(stream, Encoding.UTF8, true))
-            {
-                Signature = Encoding.ASCII.GetString(reader.ReadBytes(4));
-                if (Signature != EntitySignature)
-                    throw new Exception("Invalid signature");
+            using var reader = new BinaryReader(stream, Encoding.UTF8, true);
+            Signature = Encoding.ASCII.GetString(reader.ReadBytes(4));
+            if (Signature != EntitySignature)
+                throw new Exception("Invalid signature");
 
-                Version = reader.ReadUInt16();
-                if (!_allowedVersions.Contains(Version))
-                    throw new Exception($"Version not supported ({Version})");
+            Version = reader.ReadUInt16();
+            if (!_allowedVersions.Contains(Version))
+                throw new Exception($"Version not supported ({Version})");
 
-                Length = reader.ReadUInt32();
-                if (Length < MinHeaderLength)
-                    throw new Exception("Header too short");
+            Length = reader.ReadUInt32();
+            if (Length < MinHeaderLength)
+                throw new Exception("Header too short");
 
-                // Duplicated in KfxContainer
-                // 10 = number of bytes read so far
-                var containerInfoData = new MemoryStream(stream.ReadBytes((int)Length - 10));
-                var entityInfo = loader.LoadSingle<IonStruct>(containerInfoData);
-                if (entityInfo == null)
-                    throw new Exception("Bad container or something");
+            // Duplicated in KfxContainer
+            // 10 = number of bytes read so far
+            var containerInfoData = new MemoryStream(stream.ReadBytes((int)Length - 10));
+            var entityInfo = loader.LoadSingle<IonStruct>(containerInfoData);
+            if (entityInfo == null)
+                throw new Exception("Bad container or something");
 
-                var compressionType = entityInfo.GetById<IonInt>(410).IntValue;
-                if (compressionType != KfxContainer.DefaultCompressionType)
-                    throw new Exception($"Unexpected bcComprType ({compressionType})");
+            var compressionType = entityInfo.GetById<IonInt>(410).IntValue;
+            if (compressionType != KfxContainer.DefaultCompressionType)
+                throw new Exception($"Unexpected bcComprType ({compressionType})");
 
-                var drmScheme = entityInfo.GetById<IonInt>(411).IntValue;
-                if (drmScheme != KfxContainer.DefaultDrmScheme)
-                    throw new Exception($"Unexpected bcDRMScheme ({drmScheme})");
+            var drmScheme = entityInfo.GetById<IonInt>(411).IntValue;
+            if (drmScheme != KfxContainer.DefaultDrmScheme)
+                throw new Exception($"Unexpected bcDRMScheme ({drmScheme})");
 
-                FragmentId = symbolTable.FindKnownSymbol(id);
-                FragmentType = symbolTable.FindKnownSymbol(type);
+            FragmentId = symbolTable.FindKnownSymbol(id);
+            FragmentType = symbolTable.FindKnownSymbol(type);
 
-                Value = RawFragmentTypes.Contains(FragmentType)
-                    ? new IonBlob(new ReadOnlySpan<byte>(stream.ReadToEnd()))
-                    : loader.Load(stream.ReadToEnd()).Single();
+            Value = RawFragmentTypes.Contains(FragmentType)
+                ? new IonBlob(new ReadOnlySpan<byte>(stream.ReadToEnd()))
+                : loader.Load(stream.ReadToEnd()).Single();
 
-                // Skipping annotation handling for now
+            // Skipping annotation handling for now
 
-                //if ftype == fid and ftype in ROOT_FRAGMENT_TYPES and not self.pure:
+            //if ftype == fid and ftype in ROOT_FRAGMENT_TYPES and not self.pure:
 
-                //fid = "$348"
+            //fid = "$348"
 
-                //return YJFragment(fid = fid if fid != "$348" else None, ftype = ftype, value = self.value)
-            }
+            //return YJFragment(fid = fid if fid != "$348" else None, ftype = ftype, value = self.value)
         }
     }
 }

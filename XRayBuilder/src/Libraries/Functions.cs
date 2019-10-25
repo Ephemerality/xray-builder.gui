@@ -27,8 +27,8 @@ namespace XRayBuilderGUI.Libraries
 
         public static string ReadFromFile(string file)
         {
-            using (var streamReader = new StreamReader(file, Encoding.UTF8))
-                return streamReader.ReadToEnd();
+            using var streamReader = new StreamReader(file, Encoding.UTF8);
+            return streamReader.ReadToEnd();
         }
 
         // TODO: Clean this up more cause it still sucks
@@ -145,10 +145,8 @@ namespace XRayBuilderGUI.Libraries
             };
             try
             {
-                using (var process = Process.Start(startInfo))
-                {
-                    process?.WaitForExit();
-                }
+                using var process = Process.Start(startInfo);
+                process?.WaitForExit();
             }
             catch (Exception ex)
             {
@@ -158,12 +156,10 @@ namespace XRayBuilderGUI.Libraries
 
         public static void Save<T>(T output, string fileName) where T : class
         {
-            using (var writer = new StreamWriter(fileName, false, Encoding.UTF8))
-            {
-                var serializer = new XmlSerializer(typeof(T));
-                serializer.Serialize(writer, output);
-                writer.Flush();
-            }
+            using var writer = new StreamWriter(fileName, false, Encoding.UTF8);
+            var serializer = new XmlSerializer(typeof(T));
+            serializer.Serialize(writer, output);
+            writer.Flush();
         }
 
         //http://stackoverflow.com/questions/14562415/xml-deserialization-generic-method

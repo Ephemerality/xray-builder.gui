@@ -599,68 +599,66 @@ namespace XRayBuilderGUI.UI
             }
 
             //this.TopMost = true;
-            using (var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, false, _logger)))
+            using var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, false, _logger));
+            if (metadata == null)
+                return;
+
+            try
             {
-                if (metadata == null)
-                    return;
+                var books = new BookInfo[0];
+                if (_settings.searchByAsin)
+                    books = (await _dataSource.SearchBookByAsinAsync(metadata.Asin)).ToArray();
 
-                try
+                if (books.Length <= 0)
                 {
-                    var books = new BookInfo[0];
-                    if (_settings.searchByAsin)
-                        books = (await _dataSource.SearchBookByAsinAsync(metadata.Asin)).ToArray();
-
+                    books = (await _dataSource.SearchBookAsync(metadata.Author, metadata.Title)).ToArray();
                     if (books.Length <= 0)
                     {
-                        books = (await _dataSource.SearchBookAsync(metadata.Author, metadata.Title)).ToArray();
-                        if (books.Length <= 0)
-                        {
-                            _logger.Log($"Unable to find this book on {_dataSource.Name}!\nEnsure the book's title ({metadata.Title}) is accurate!");
-                            return;
-                        }
-                    }
-
-                    string bookUrl;
-                    if (books.Length == 1)
-                        bookUrl = books[0].DataUrl;
-                    else
-                    {
-                        books = books.OrderByDescending(book => book.Reviews)
-                            .ThenByDescending(book => book.Editions)
-                            .ToArray();
-
-                        // Pre-load cover images
-                        foreach (var book in books.Where(book => !string.IsNullOrEmpty(book.ImageUrl)))
-                        {
-                            try
-                            {
-                                book.CoverImage = await _httpClient.GetImageAsync(book.ImageUrl, cancellationToken: _cancelTokens.Token);
-                            }
-                            catch (Exception ex)
-                            {
-                                _logger.Log("Failed to download cover image: " + ex.Message);
-                            }
-                        }
-
-                        _logger.Log($"Warning: Multiple results returned from {_dataSource.Name}...");
-                        var frmG = new frmGR(books);
-                        frmG.ShowDialog();
-                        bookUrl = books[frmG.cbResults.SelectedIndex].DataUrl;
-                    }
-
-                    if (!string.IsNullOrEmpty(bookUrl))
-                    {
-                        txtGoodreads.Text = bookUrl;
-                        txtGoodreads.Refresh();
-                        _logger.Log(
-                            $"Book found on {_dataSource.Name}!\r\n{metadata.Title} by {metadata.Author}\r\n{_dataSource.Name} URL: {bookUrl}\r\n"
-                            + "You may want to visit the URL to ensure it is correct.");
+                        _logger.Log($"Unable to find this book on {_dataSource.Name}!\nEnsure the book's title ({metadata.Title}) is accurate!");
+                        return;
                     }
                 }
-                catch (Exception ex)
+
+                string bookUrl;
+                if (books.Length == 1)
+                    bookUrl = books[0].DataUrl;
+                else
                 {
-                    _logger.Log("An error occurred while searching: " + ex.Message + "\r\n" + ex.StackTrace);
+                    books = books.OrderByDescending(book => book.Reviews)
+                        .ThenByDescending(book => book.Editions)
+                        .ToArray();
+
+                    // Pre-load cover images
+                    foreach (var book in books.Where(book => !string.IsNullOrEmpty(book.ImageUrl)))
+                    {
+                        try
+                        {
+                            book.CoverImage = await _httpClient.GetImageAsync(book.ImageUrl, cancellationToken: _cancelTokens.Token);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.Log("Failed to download cover image: " + ex.Message);
+                        }
+                    }
+
+                    _logger.Log($"Warning: Multiple results returned from {_dataSource.Name}...");
+                    var frmG = new frmGR(books);
+                    frmG.ShowDialog();
+                    bookUrl = books[frmG.cbResults.SelectedIndex].DataUrl;
                 }
+
+                if (!string.IsNullOrEmpty(bookUrl))
+                {
+                    txtGoodreads.Text = bookUrl;
+                    txtGoodreads.Refresh();
+                    _logger.Log(
+                        $"Book found on {_dataSource.Name}!\r\n{metadata.Title} by {metadata.Author}\r\n{_dataSource.Name} URL: {bookUrl}\r\n"
+                        + "You may want to visit the URL to ensure it is correct.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log("An error occurred while searching: " + ex.Message + "\r\n" + ex.StackTrace);
             }
         }
 
@@ -872,12 +870,10 @@ namespace XRayBuilderGUI.UI
             }
 
             _logger.Log("Extracting raw markup...");
-            using (var metadata = MetadataLoader.Load(txtMobi.Text))
-            {
-                var rawMlPath = UIFunctions.RawMlPath(Path.GetFileNameWithoutExtension(txtMobi.Text));
-                metadata.SaveRawMl(rawMlPath);
-                _logger.Log($"Extracted to {rawMlPath}!\r\n");
-            }
+            using var metadata = MetadataLoader.Load(txtMobi.Text);
+            var rawMlPath = UIFunctions.RawMlPath(Path.GetFileNameWithoutExtension(txtMobi.Text));
+            metadata.SaveRawMl(rawMlPath);
+            _logger.Log($"Extracted to {rawMlPath}!\r\n");
         }
 
         private void txtOutput_LinkClicked(object sender, LinkClickedEventArgs e)

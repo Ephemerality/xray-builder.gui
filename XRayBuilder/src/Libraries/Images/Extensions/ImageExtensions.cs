@@ -45,11 +45,9 @@ namespace XRayBuilderGUI.Libraries.Images.Extensions
 
         public static string ToBase64(this Image image, ImageFormat format)
         {
-            using (var ms = new MemoryStream())
-            {
-                image.Save(ms, format);
-                return Convert.ToBase64String(ms.ToArray());
-            }
+            using var ms = new MemoryStream();
+            image.Save(ms, format);
+            return Convert.ToBase64String(ms.ToArray());
         }
     }
 }

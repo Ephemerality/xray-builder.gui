@@ -90,15 +90,5 @@ namespace XRayBuilderGUI.Model
         {
             return Title + " - " + Author;
         }
-
-        /// <summary>
-        /// Retrieves the book's description, image URL, and rating from the book's Amazon URL.
-        /// </summary>
-        /// <param name="amazonUrl">Book's Amazon URL</param>
-
-        /// <summary>
-        /// Retrieves the book's description, image URL, and rating from the book's Amazon page.
-        /// </summary>
-        /// <param name="bookDoc">Book's Amazon page, pre-downloaded</param>
     }
 }

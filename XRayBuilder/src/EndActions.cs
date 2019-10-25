@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using XRayBuilderGUI.DataSources;
 using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
+using XRayBuilderGUI.Extras.AuthorProfile;
 using XRayBuilderGUI.Libraries.Enumerables.Extensions;
 using XRayBuilderGUI.Model.Artifacts;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;

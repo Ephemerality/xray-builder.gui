@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.Libraries.Images.Extensions;
 
-namespace XRayBuilderGUI
+namespace XRayBuilderGUI.Extras.AuthorProfile
 {
     public class AuthorProfileGenerator : IAuthorProfileGenerator
     {

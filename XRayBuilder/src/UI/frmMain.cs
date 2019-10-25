@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using SimpleInjector;
 using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
+using XRayBuilderGUI.Extras.AuthorProfile;
 using XRayBuilderGUI.Model.Artifacts;
 using XRayBuilderGUI.Properties;
 using XRayBuilderGUI.UI.Preview.Logic;

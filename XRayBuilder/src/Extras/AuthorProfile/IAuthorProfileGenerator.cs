@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace XRayBuilderGUI
+namespace XRayBuilderGUI.Extras.AuthorProfile
 {
     public interface IAuthorProfileGenerator
     {

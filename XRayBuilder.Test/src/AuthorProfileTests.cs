@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using XRayBuilderGUI;
 using XRayBuilderGUI.DataSources.Amazon;
+using XRayBuilderGUI.Extras.AuthorProfile;
 
 namespace XRayBuilder.Test
 {

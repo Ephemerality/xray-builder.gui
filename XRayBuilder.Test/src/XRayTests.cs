@@ -10,6 +10,7 @@ using XRayBuilderGUI;
 using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.Extras.Artifacts;
+using XRayBuilderGUI.Model;
 using EndActions = XRayBuilderGUI.EndActions;
 
 namespace XRayBuilder.Test

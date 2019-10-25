@@ -14,6 +14,7 @@ using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.Extras.Artifacts;
 using XRayBuilderGUI.Extras.AuthorProfile;
+using XRayBuilderGUI.Model;
 using XRayBuilderGUI.Properties;
 using XRayBuilderGUI.UI.Preview.Logic;
 using XRayBuilderGUI.Unpack;

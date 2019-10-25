@@ -1,4 +1,4 @@
-﻿namespace XRayBuilderGUI
+﻿namespace XRayBuilderGUI.Model
 {
     public class SeriesInfo
     {

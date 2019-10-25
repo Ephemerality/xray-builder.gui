@@ -15,6 +15,7 @@ using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.Extras.Artifacts;
 using XRayBuilderGUI.Extras.AuthorProfile;
 using XRayBuilderGUI.Libraries.Enumerables.Extensions;
+using XRayBuilderGUI.Model;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI

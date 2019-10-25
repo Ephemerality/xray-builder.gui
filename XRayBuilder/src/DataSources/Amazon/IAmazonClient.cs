@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using XRayBuilderGUI.DataSources.Amazon.Model;
+using XRayBuilderGUI.Model;
 
 namespace XRayBuilderGUI.DataSources.Amazon
 {

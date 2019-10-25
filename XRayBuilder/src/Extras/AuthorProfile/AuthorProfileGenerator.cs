@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.Libraries.Images.Extensions;
+using XRayBuilderGUI.Model;
 
 namespace XRayBuilderGUI.Extras.AuthorProfile
 {

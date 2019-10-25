@@ -3,7 +3,7 @@ using System.Drawing;
 using XRayBuilderGUI.DataSources.Secondary.Model;
 using XRayBuilderGUI.Unpack;
 
-namespace XRayBuilderGUI
+namespace XRayBuilderGUI.Model
 {
     // TODO: Remove defaults and privates, move logic
     public class BookInfo

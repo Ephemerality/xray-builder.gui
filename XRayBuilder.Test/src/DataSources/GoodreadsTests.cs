@@ -4,6 +4,7 @@ using NUnit.Framework;
 using XRayBuilderGUI;
 using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
+using XRayBuilderGUI.Model;
 
 namespace XRayBuilder.Test.DataSources
 {

@@ -10,6 +10,7 @@ using System.Threading;
 using System.Xml.Serialization;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
+using XRayBuilderGUI.Model;
 
 namespace XRayBuilderGUI
 {

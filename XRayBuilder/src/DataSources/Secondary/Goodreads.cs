@@ -14,6 +14,7 @@ using XRayBuilderGUI.DataSources.Secondary.Model;
 using XRayBuilderGUI.Libraries.Enumerables.Extensions;
 using XRayBuilderGUI.Libraries.Language.Pluralization;
 using XRayBuilderGUI.Libraries.Primitives.Extensions;
+using XRayBuilderGUI.Model;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI.DataSources.Secondary

@@ -11,6 +11,7 @@ using JetBrains.Annotations;
 using Newtonsoft.Json;
 using XRayBuilderGUI.DataSources.Amazon.Model;
 using XRayBuilderGUI.Libraries.Parsing.Regex;
+using XRayBuilderGUI.Model;
 
 namespace XRayBuilderGUI.DataSources.Amazon
 {

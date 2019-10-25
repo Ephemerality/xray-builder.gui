@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using XRayBuilderGUI.DataSources.Secondary.Model;
 using XRayBuilderGUI.Libraries.Primitives.Extensions;
+using XRayBuilderGUI.Model;
 
 namespace XRayBuilderGUI.DataSources.Secondary
 {

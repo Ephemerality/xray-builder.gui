@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Windows.Forms;
 using XRayBuilderGUI.Libraries.Language.Pluralization;
+using XRayBuilderGUI.Model;
 using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI.UI

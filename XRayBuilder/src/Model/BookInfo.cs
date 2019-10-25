@@ -86,9 +86,6 @@ namespace XRayBuilderGUI.Model
             Asin = asin;
         }
 
-        public override string ToString()
-        {
-            return Title + " - " + Author;
-        }
+        public override string ToString() => $"{Title} - {Author}";
     }
 }

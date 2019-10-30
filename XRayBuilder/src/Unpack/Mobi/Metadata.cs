@@ -5,9 +5,11 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using XRayBuilderGUI.Unpack.Mobi.Decompress;
 
 namespace XRayBuilderGUI.Unpack.Mobi
 {
@@ -18,6 +20,7 @@ namespace XRayBuilderGUI.Unpack.Mobi
         private MobiHead _mobiHeader;
         private int _startRecord = 1;
         private readonly FileStream _fs;
+        private List<byte[]> _headerRecords;
 
         public Metadata(FileStream fs)
         {
@@ -34,23 +37,42 @@ namespace XRayBuilderGUI.Unpack.Mobi
             // Use ASIN of the first book in the mobi
             var coverOffset = _mobiHeader.exthHeader.CoverOffset;
             var firstImage = -1;
+
+            byte[] ReadRecord(int index)
+            {
+                var recSize = _pdb._recInfo[index + 1].RecordDataOffset - _pdb._recInfo[index].RecordDataOffset;
+                var buffer = new byte[recSize];
+                fs.Read(buffer, 0, buffer.Length);
+                return buffer;
+            }
+
+            // Gather and start storing all header records from first book
+            _headerRecords = new List<byte[]>(_pdb.NumRecords);
+            fs.Seek(0, SeekOrigin.Begin);
+            for (var i = 0; i < _pdh.RecordCount; i++)
+                _headerRecords.Add(ReadRecord(i));
+
             // Start at end of first book records, search for a second (KF8) and use it instead (for combo books)
+            // Gather remaining records
             for (int i = _pdh.RecordCount; i < _pdb.NumRecords - 1; i++)
             {
-                var recSize = _pdb._recInfo[i + 1].RecordDataOffset - _pdb._recInfo[i].RecordDataOffset;
-                if (recSize < 8) continue;
-                var buffer = new byte[recSize];
                 fs.Seek(_pdb._recInfo[i].RecordDataOffset, SeekOrigin.Begin);
-                fs.Read(buffer, 0, buffer.Length);
+                var buffer = ReadRecord(i);
+
+                _headerRecords.Add(buffer);
+
+                if (buffer.Length < 8)
+                    continue;
+
                 var imgtype = coverOffset == -1 ? "" : GetImageType(buffer);
                 if (imgtype != "")
                 {
-                    if (firstImage == -1) firstImage = i;
-                    if (i == firstImage + coverOffset)
-                    {
-                        using var ms = new MemoryStream(buffer);
-                        CoverImage = new Bitmap(ms);
-                    }
+                    if (firstImage == -1)
+                        firstImage = i;
+                    if (i != firstImage + coverOffset)
+                        continue;
+                    using var ms = new MemoryStream(buffer);
+                    CoverImage = new Bitmap(ms);
                 }
                 else if (Encoding.ASCII.GetString(buffer, 0, 8) == "BOUNDARY")
                 {
@@ -121,41 +143,16 @@ namespace XRayBuilderGUI.Unpack.Mobi
         {
             CheckDrm();
 
-            Decompressor decomp;
-            switch (_pdh.Compression)
+            // TODO Convert to Factory pattern
+            var decomp = _pdh.Compression switch
             {
-                case (1):
-                    decomp = new UncompressedReader();
-                    break;
-                case (2):
-                    decomp = new PalmDOCReader();
-                    break;
-                case (17480):
-                    var reader = new HUFFCDICReader();
-                    try
-                    {
-                        var recOffset = (int)_mobiHeader.HuffmanRecordOffset;
-                        var huffSect = new byte[_pdb._recInfo[recOffset + 1].RecordDataOffset - _pdb._recInfo[recOffset].RecordDataOffset];
-                        _fs.Seek(_pdb._recInfo[recOffset].RecordDataOffset, SeekOrigin.Begin);
-                        _fs.Read(huffSect, 0, huffSect.Length);
-                        reader.loadHuff(huffSect);
-                        var recCount = (int)_mobiHeader.HuffmanRecordCount;
-                        for (var i = 1; i < recCount; i++)
-                        {
-                            huffSect = new byte[_pdb._recInfo[recOffset + i + 1].RecordDataOffset - _pdb._recInfo[recOffset + i].RecordDataOffset];
-                            _fs.Seek(_pdb._recInfo[recOffset + i].RecordDataOffset, SeekOrigin.Begin);
-                            _fs.Read(huffSect, 0, huffSect.Length);
-                            reader.loadCdic(huffSect);
-                        }
-                    } catch (Exception ex)
-                    {
-                        throw new UnpackException("Error in HUFF/CDIC decompression: " + ex.Message + "\r\n" + ex.StackTrace);
-                    }
-                    decomp = reader;
-                    break;
-                default:
-                    throw new UnpackException("Unknown compression type " + _pdh.Compression + ".");
-            }
+                1 => (IDecompressor) new UncompressedReader(),
+                2 => new PalmDocReader(),
+                17480 => new HuffCdicReader(),
+                _ => throw new UnpackException("Unknown compression type " + _pdh.Compression + ".")
+            };
+
+            decomp.Initialize(_mobiHeader, _pdb, _headerRecords);
             var rawMl = new byte[0];
             var endRecord = _startRecord + _pdh.RecordCount -1;
             for (var i = _startRecord; i <= endRecord; i++)
@@ -163,8 +160,8 @@ namespace XRayBuilderGUI.Unpack.Mobi
                 var buffer = new byte[_pdb._recInfo[i + 1].RecordDataOffset - _pdb._recInfo[i].RecordDataOffset];
                 _fs.Seek(_pdb._recInfo[i].RecordDataOffset, SeekOrigin.Begin);
                 _fs.Read(buffer, 0, buffer.Length);
-                buffer = trimTrailingDataEntries(buffer);
-                var result = decomp.unpack(buffer);
+                buffer = TrimTrailingDataEntries(buffer);
+                var result = decomp.Unpack(buffer);
                 buffer = new byte[rawMl.Length + result.Length];
                 Buffer.BlockCopy(rawMl, 0, buffer, 0, rawMl.Length);
                 Buffer.BlockCopy(result, 0, buffer, rawMl.Length, result.Length);
@@ -173,7 +170,7 @@ namespace XRayBuilderGUI.Unpack.Mobi
             return rawMl;
         }
 
-        private byte[] trimTrailingDataEntries(byte[] data)
+        private byte[] TrimTrailingDataEntries(byte[] data)
         {
             for (var i = 0; i < _mobiHeader.trailers; i++)
             {
@@ -189,10 +186,11 @@ namespace XRayBuilderGUI.Unpack.Mobi
                 Array.Copy(data, temp, temp.Length);
                 data = temp;
             }
+
             return data;
         }
 
-        private int getSizeOfTrailingDataEntry(byte[] data)
+        private static int getSizeOfTrailingDataEntry(byte[] data)
         {
             var num = 0;
             for (var i = data.Length - 4; i < data.Length; i++)
@@ -205,12 +203,12 @@ namespace XRayBuilderGUI.Unpack.Mobi
         }
     }
 
-    public class EncryptedBookException : Exception
+    public sealed class EncryptedBookException : Exception
     {
         public EncryptedBookException() : base("-This book has DRM (it is encrypted). X-Ray Builder will only work on books that do not have DRM.") { }
     }
 
-    public class UnpackException : Exception
+    public sealed class UnpackException : Exception
     {
         public UnpackException(string message) : base(message) { }
     }

@@ -19,12 +19,10 @@ namespace XRayBuilderGUI.Unpack.Mobi
         private PalmDOCHeader _pdh;
         private MobiHead _mobiHeader;
         private int _startRecord = 1;
-        private readonly FileStream _fs;
         private List<byte[]> _headerRecords;
 
         public Metadata(FileStream fs)
         {
-            _fs = fs;
             Initialize(fs);
         }
 
@@ -40,6 +38,7 @@ namespace XRayBuilderGUI.Unpack.Mobi
 
             byte[] ReadRecord(int index)
             {
+                fs.Seek(_pdb._recInfo[index].RecordDataOffset, SeekOrigin.Begin);
                 var recSize = _pdb._recInfo[index + 1].RecordDataOffset - _pdb._recInfo[index].RecordDataOffset;
                 var buffer = new byte[recSize];
                 fs.Read(buffer, 0, buffer.Length);
@@ -48,7 +47,6 @@ namespace XRayBuilderGUI.Unpack.Mobi
 
             // Gather and start storing all header records from first book
             _headerRecords = new List<byte[]>(_pdb.NumRecords);
-            fs.Seek(0, SeekOrigin.Begin);
             for (var i = 0; i < _pdh.RecordCount; i++)
                 _headerRecords.Add(ReadRecord(i));
 
@@ -56,7 +54,6 @@ namespace XRayBuilderGUI.Unpack.Mobi
             // Gather remaining records
             for (int i = _pdh.RecordCount; i < _pdb.NumRecords - 1; i++)
             {
-                fs.Seek(_pdb._recInfo[i].RecordDataOffset, SeekOrigin.Begin);
                 var buffer = ReadRecord(i);
 
                 _headerRecords.Add(buffer);
@@ -87,7 +84,6 @@ namespace XRayBuilderGUI.Unpack.Mobi
         public void Dispose()
         {
             CoverImage?.Dispose();
-            _fs?.Dispose();
         }
 
         private static string GetImageType(byte[] data)
@@ -157,9 +153,7 @@ namespace XRayBuilderGUI.Unpack.Mobi
             var endRecord = _startRecord + _pdh.RecordCount -1;
             for (var i = _startRecord; i <= endRecord; i++)
             {
-                var buffer = new byte[_pdb._recInfo[i + 1].RecordDataOffset - _pdb._recInfo[i].RecordDataOffset];
-                _fs.Seek(_pdb._recInfo[i].RecordDataOffset, SeekOrigin.Begin);
-                _fs.Read(buffer, 0, buffer.Length);
+                var buffer = _headerRecords[i];
                 buffer = TrimTrailingDataEntries(buffer);
                 var result = decomp.Unpack(buffer);
                 buffer = new byte[rawMl.Length + result.Length];

@@ -16,7 +16,7 @@ namespace XRayBuilderGUI.Unpack.Mobi
     public sealed class Metadata : IMetadata
     {
         private PDBHeader _pdb;
-        private PalmDOCHeader _pdh;
+        private PalmDocHeader _pdh;
         private MobiHead _mobiHeader;
         private int _startRecord = 1;
         private List<byte[]> _headerRecords;
@@ -30,10 +30,10 @@ namespace XRayBuilderGUI.Unpack.Mobi
         {
             fs.Seek(0, SeekOrigin.Begin);
             _pdb = new PDBHeader(fs);
-            _pdh = new PalmDOCHeader(fs);
+            _pdh = new PalmDocHeader(fs);
             _mobiHeader = new MobiHead(fs, _pdb.MobiHeaderSize);
             // Use ASIN of the first book in the mobi
-            var coverOffset = _mobiHeader.exthHeader.CoverOffset;
+            var coverOffset = _mobiHeader.ExtHeader.CoverOffset;
             var firstImage = -1;
 
             byte[] ReadRecord(int index)
@@ -74,7 +74,7 @@ namespace XRayBuilderGUI.Unpack.Mobi
                 else if (Encoding.ASCII.GetString(buffer, 0, 8) == "BOUNDARY")
                 {
                     _startRecord = i + 2;
-                    _pdh = new PalmDOCHeader(fs);
+                    _pdh = new PalmDocHeader(fs);
                     _mobiHeader = new MobiHead(fs, _pdb.MobiHeaderSize);
                     break;
                 }
@@ -97,23 +97,23 @@ namespace XRayBuilderGUI.Unpack.Mobi
             return "";
         }
 
-        public string Asin => _mobiHeader.exthHeader.ASIN != "" ? _mobiHeader.exthHeader.ASIN : _mobiHeader.exthHeader.ASIN2;
+        public string Asin => _mobiHeader.ExtHeader.Asin != "" ? _mobiHeader.ExtHeader.Asin : _mobiHeader.ExtHeader.Asin2;
 
         public string DbName => _pdb.DBName;
 
-        public string UniqueId => _mobiHeader.UniqueID.ToString();
+        public string UniqueId => _mobiHeader.UniqueId.ToString();
 
-        public string Author => _mobiHeader.exthHeader.Author;
+        public string Author => _mobiHeader.ExtHeader.Author;
 
-        public string Title => _mobiHeader.FullName != "" ? _mobiHeader.FullName : _mobiHeader.exthHeader.UpdatedTitle;
+        public string Title => _mobiHeader.FullName != "" ? _mobiHeader.FullName : _mobiHeader.ExtHeader.UpdatedTitle;
 
         public long RawMlSize => _pdh.TextLength;
 
         public Image CoverImage { get; private set; }
 
-        public string CdeContentType => _mobiHeader.exthHeader.CDEType;
+        public string CdeContentType => _mobiHeader.ExtHeader.CdeType;
 
-        public void UpdateCdeContentType(FileStream fs) => _mobiHeader.exthHeader.UpdateCdeContentType(fs);
+        public void UpdateCdeContentType(FileStream fs) => _mobiHeader.ExtHeader.UpdateCdeContentType(fs);
         public bool RawMlSupported { get; } = true;
 
         /// <summary>
@@ -126,14 +126,10 @@ namespace XRayBuilderGUI.Unpack.Mobi
         }
 
         public void SaveRawMl(string path)
-        {
-            File.WriteAllBytes(path, GetRawMl());
-        }
+            => File.WriteAllBytes(path, GetRawMl());
 
         public Stream GetRawMlStream()
-        {
-            return new MemoryStream(GetRawMl());
-        }
+            => new MemoryStream(GetRawMl());
 
         public byte[] GetRawMl()
         {
@@ -164,14 +160,14 @@ namespace XRayBuilderGUI.Unpack.Mobi
 
         private byte[] TrimTrailingDataEntries(byte[] data)
         {
-            for (var i = 0; i < _mobiHeader.trailers; i++)
+            for (var i = 0; i < _mobiHeader.Trailers; i++)
             {
-                var num = getSizeOfTrailingDataEntry(data);
+                var num = GetSizeOfTrailingDataEntry(data);
                 var temp = new byte[data.Length - num];
                 Array.Copy(data, temp, temp.Length);
                 data = temp;
             }
-            if (_mobiHeader.multibyte)
+            if (_mobiHeader.Multibyte)
             {
                 var num = (data[data.Length - 1] & 3) + 1;
                 var temp = new byte[data.Length - num];
@@ -182,7 +178,7 @@ namespace XRayBuilderGUI.Unpack.Mobi
             return data;
         }
 
-        private static int getSizeOfTrailingDataEntry(byte[] data)
+        private int GetSizeOfTrailingDataEntry(byte[] data)
         {
             var num = 0;
             for (var i = data.Length - 4; i < data.Length; i++)
@@ -193,15 +189,5 @@ namespace XRayBuilderGUI.Unpack.Mobi
             }
             return num;
         }
-    }
-
-    public sealed class EncryptedBookException : Exception
-    {
-        public EncryptedBookException() : base("-This book has DRM (it is encrypted). X-Ray Builder will only work on books that do not have DRM.") { }
-    }
-
-    public sealed class UnpackException : Exception
-    {
-        public UnpackException(string message) : base(message) { }
     }
 }

@@ -10,15 +10,15 @@ using XRayBuilderGUI.Libraries.Primitives.Extensions;
 
 namespace XRayBuilderGUI.Unpack.Mobi
 {
-    public class PalmDOCHeader
+    public sealed class PalmDocHeader
     {
-        private byte[] _compression = new byte[2];
-        private byte[] _textLength = new byte[4];
-        private byte[] _recordCount = new byte[2];
-        private byte[] _recordSize = new byte[2];
-        private byte[] _encryptionType = new byte[2];
+        private readonly byte[] _compression = new byte[2];
+        private readonly byte[] _textLength = new byte[4];
+        private readonly byte[] _recordCount = new byte[2];
+        private readonly byte[] _recordSize = new byte[2];
+        private readonly byte[] _encryptionType = new byte[2];
 
-        public PalmDOCHeader(FileStream fs)
+        public PalmDocHeader(FileStream fs)
         {
             fs.Read(_compression, 0, _compression.Length);
             fs.Seek(2, SeekOrigin.Current);

@@ -7,91 +7,91 @@ using XRayBuilderGUI.Libraries.Primitives.Extensions;
 
 namespace XRayBuilderGUI.Unpack.Mobi
 {
-    public class MobiHead
+    public sealed class MobiHead
     {
-        private readonly byte[] identifier = new byte[4];
-        private readonly byte[] headerLength = new byte[4];
-        private readonly byte[] mobiType = new byte[4];
-        private readonly byte[] textEncoding = new byte[4];
-        private readonly byte[] uniqueID = new byte[4];
-        private readonly byte[] fileVersion = new byte[4];
-        private readonly byte[] orthographicIndex = new byte[4];
-        private readonly byte[] inflectionIndex = new byte[4];
-        private readonly byte[] indexNames = new byte[4];
-        private readonly byte[] indexKeys = new byte[4];
-        private readonly byte[] extraIndex0 = new byte[4];
-        private readonly byte[] extraIndex1 = new byte[4];
-        private readonly byte[] extraIndex2 = new byte[4];
-        private readonly byte[] extraIndex3 = new byte[4];
-        private readonly byte[] extraIndex4 = new byte[4];
-        private readonly byte[] extraIndex5 = new byte[4];
-        private readonly byte[] firstNonBookIndex = new byte[4];
-        private readonly byte[] fullNameOffset = new byte[4];
-        private readonly byte[] fullNameLength = new byte[4];
-        private readonly byte[] locale = new byte[4];
-        private readonly byte[] inputLanguage = new byte[4];
-        private readonly byte[] outputLanguage = new byte[4];
-        private readonly byte[] minVersion = new byte[4];
-        private readonly byte[] firstImageIndex = new byte[4];
-        private readonly byte[] huffmanRecordOffset = new byte[4];
-        private readonly byte[] huffmanRecordCount = new byte[4];
-        private readonly byte[] huffmanTableOffset = new byte[4];
-        private readonly byte[] huffmanTableLength = new byte[4];
-        private readonly byte[] exthFlags = new byte[4];
-        private readonly byte[] restOfMobiHeader;
-        public EXTHHeader exthHeader;
+        private readonly byte[] _identifier = new byte[4];
+        private readonly byte[] _headerLength = new byte[4];
+        private readonly byte[] _mobiType = new byte[4];
+        private readonly byte[] _textEncoding = new byte[4];
+        private readonly byte[] _uniqueId = new byte[4];
+        private readonly byte[] _fileVersion = new byte[4];
+        private readonly byte[] _orthographicIndex = new byte[4];
+        private readonly byte[] _inflectionIndex = new byte[4];
+        private readonly byte[] _indexNames = new byte[4];
+        private readonly byte[] _indexKeys = new byte[4];
+        private readonly byte[] _extraIndex0 = new byte[4];
+        private readonly byte[] _extraIndex1 = new byte[4];
+        private readonly byte[] _extraIndex2 = new byte[4];
+        private readonly byte[] _extraIndex3 = new byte[4];
+        private readonly byte[] _extraIndex4 = new byte[4];
+        private readonly byte[] _extraIndex5 = new byte[4];
+        private readonly byte[] _firstNonBookIndex = new byte[4];
+        private readonly byte[] _fullNameOffset = new byte[4];
+        private readonly byte[] _fullNameLength = new byte[4];
+        private readonly byte[] _locale = new byte[4];
+        private readonly byte[] _inputLanguage = new byte[4];
+        private readonly byte[] _outputLanguage = new byte[4];
+        private readonly byte[] _minVersion = new byte[4];
+        private readonly byte[] _firstImageIndex = new byte[4];
+        private readonly byte[] _huffmanRecordOffset = new byte[4];
+        private readonly byte[] _huffmanRecordCount = new byte[4];
+        private readonly byte[] _huffmanTableOffset = new byte[4];
+        private readonly byte[] _huffmanTableLength = new byte[4];
+        private readonly byte[] _exthFlags = new byte[4];
+        private readonly byte[] _restOfMobiHeader;
+        public readonly ExtHeader ExtHeader;
 
-        private readonly byte[] remainder;
-        private readonly byte[] fullName;
+        private readonly byte[] _remainder;
+        private readonly byte[] _fullName;
 
-        public bool multibyte;
-        public int trailers;
+        public bool Multibyte;
+        public int Trailers;
 
         public MobiHead(FileStream fs, uint mobiHeaderSize)
         {
-            fs.Read(identifier, 0, identifier.Length);
+            fs.Read(_identifier, 0, _identifier.Length);
             if (IdentifierAsString != "MOBI")
                 throw new UnpackException("Did not get expected MOBI identifier");
 
-            fs.Read(headerLength, 0, headerLength.Length);
-            restOfMobiHeader = new byte[HeaderLength + 16 - 132];
+            fs.Read(_headerLength, 0, _headerLength.Length);
+            _restOfMobiHeader = new byte[HeaderLength + 16 - 132];
 
-            fs.Read(mobiType, 0, mobiType.Length);
-            fs.Read(textEncoding, 0, textEncoding.Length);
-            fs.Read(uniqueID, 0, uniqueID.Length);
-            Array.Reverse(uniqueID);
-            fs.Read(fileVersion, 0, fileVersion.Length);
-            fs.Read(orthographicIndex, 0, orthographicIndex.Length);
-            fs.Read(inflectionIndex, 0, inflectionIndex.Length);
-            fs.Read(indexNames, 0, indexNames.Length);
-            fs.Read(indexKeys, 0, indexKeys.Length);
-            fs.Read(extraIndex0, 0, extraIndex0.Length);
-            fs.Read(extraIndex1, 0, extraIndex1.Length);
-            fs.Read(extraIndex2, 0, extraIndex2.Length);
-            fs.Read(extraIndex3, 0, extraIndex3.Length);
-            fs.Read(extraIndex4, 0, extraIndex4.Length);
-            fs.Read(extraIndex5, 0, extraIndex5.Length);
-            fs.Read(firstNonBookIndex, 0, firstNonBookIndex.Length);
-            fs.Read(fullNameOffset, 0, fullNameOffset.Length);
-            fs.Read(fullNameLength, 0, fullNameLength.Length);
-            fs.Read(locale, 0, locale.Length);
-            fs.Read(inputLanguage, 0, inputLanguage.Length);
-            fs.Read(outputLanguage, 0, outputLanguage.Length);
-            fs.Read(minVersion, 0, minVersion.Length);
-            fs.Read(firstImageIndex, 0, firstImageIndex.Length);
-            fs.Read(huffmanRecordOffset, 0, huffmanRecordOffset.Length);
-            fs.Read(huffmanRecordCount, 0, huffmanRecordCount.Length);
-            fs.Read(huffmanTableOffset, 0, huffmanTableOffset.Length);
-            fs.Read(huffmanTableLength, 0, huffmanTableLength.Length);
-            fs.Read(exthFlags, 0, exthFlags.Length);
+            fs.Read(_mobiType, 0, _mobiType.Length);
+            fs.Read(_textEncoding, 0, _textEncoding.Length);
+            fs.Read(_uniqueId, 0, _uniqueId.Length);
+            Array.Reverse(_uniqueId);
+            fs.Read(_fileVersion, 0, _fileVersion.Length);
+            fs.Read(_orthographicIndex, 0, _orthographicIndex.Length);
+            fs.Read(_inflectionIndex, 0, _inflectionIndex.Length);
+            fs.Read(_indexNames, 0, _indexNames.Length);
+            fs.Read(_indexKeys, 0, _indexKeys.Length);
+            fs.Read(_extraIndex0, 0, _extraIndex0.Length);
+            fs.Read(_extraIndex1, 0, _extraIndex1.Length);
+            fs.Read(_extraIndex2, 0, _extraIndex2.Length);
+            fs.Read(_extraIndex3, 0, _extraIndex3.Length);
+            fs.Read(_extraIndex4, 0, _extraIndex4.Length);
+            fs.Read(_extraIndex5, 0, _extraIndex5.Length);
+            fs.Read(_firstNonBookIndex, 0, _firstNonBookIndex.Length);
+            fs.Read(_fullNameOffset, 0, _fullNameOffset.Length);
+            fs.Read(_fullNameLength, 0, _fullNameLength.Length);
+            fs.Read(_locale, 0, _locale.Length);
+            fs.Read(_inputLanguage, 0, _inputLanguage.Length);
+            fs.Read(_outputLanguage, 0, _outputLanguage.Length);
+            fs.Read(_minVersion, 0, _minVersion.Length);
+            fs.Read(_firstImageIndex, 0, _firstImageIndex.Length);
+            fs.Read(_huffmanRecordOffset, 0, _huffmanRecordOffset.Length);
+            fs.Read(_huffmanRecordCount, 0, _huffmanRecordCount.Length);
+            fs.Read(_huffmanTableOffset, 0, _huffmanTableOffset.Length);
+            fs.Read(_huffmanTableLength, 0, _huffmanTableLength.Length);
+            fs.Read(_exthFlags, 0, _exthFlags.Length);
 
             //If bit 6 (0x40) is set, then there's an EXTH record
-            var exthExists = (BitConverter.ToUInt32(exthFlags.BigEndian(), 0) & 0x40) != 0;
+            var exthExists = (BitConverter.ToUInt32(_exthFlags.BigEndian(), 0) & 0x40) != 0;
 
-            fs.Read(restOfMobiHeader, 0, restOfMobiHeader.Length);
+            fs.Read(_restOfMobiHeader, 0, _restOfMobiHeader.Length);
 
             if (exthExists)
-                exthHeader = new EXTHHeader(fs);
+                ExtHeader = new ExtHeader(fs);
             else
                 throw new UnpackException("No EXT Header found. Ensure this book was processed with Calibre then try again.");
 
@@ -99,87 +99,86 @@ namespace XRayBuilderGUI.Unpack.Mobi
             if (MinVersion >= 5 && HeaderLength >= 228)
             {
                 var tempFlags = new byte[2];
-                Array.Copy(restOfMobiHeader, 110, tempFlags, 0, 2);
+                Array.Copy(_restOfMobiHeader, 110, tempFlags, 0, 2);
                 var mbhFlags = BitConverter.ToUInt16(tempFlags.BigEndian(), 0);
-                multibyte = Convert.ToBoolean(mbhFlags & 1);
+                Multibyte = Convert.ToBoolean(mbhFlags & 1);
                 while (mbhFlags > 1)
                 {
                     if ((mbhFlags & 2) == 2)
-                        trailers++;
+                        Trailers++;
                     mbhFlags >>= 1;
                 }
             }
 
-            var currentOffset = 132 + restOfMobiHeader.Length + ExthHeaderSize;
-            remainder = new byte[(int)(mobiHeaderSize - currentOffset)];
-            fs.Read(remainder, 0, remainder.Length);
+            var currentOffset = 132 + _restOfMobiHeader.Length + ExthHeaderSize;
+            _remainder = new byte[(int)(mobiHeaderSize - currentOffset)];
+            fs.Read(_remainder, 0, _remainder.Length);
 
-            var fullNameIndexInRemainder = BitConverter.ToInt32(fullNameOffset.BigEndian(), 0) - currentOffset;
-            var fullNameLen = BitConverter.ToInt32(fullNameLength.BigEndian(), 0);
-            fullName = new byte[fullNameLen];
+            var fullNameIndexInRemainder = BitConverter.ToInt32(_fullNameOffset.BigEndian(), 0) - currentOffset;
+            var fullNameLen = BitConverter.ToInt32(_fullNameLength.BigEndian(), 0);
+            _fullName = new byte[fullNameLen];
 
             if (fullNameIndexInRemainder >= 0 &&
-                fullNameIndexInRemainder < remainder.Length &&
-                fullNameIndexInRemainder + fullNameLen <= remainder.Length && fullNameLen > 0)
+                fullNameIndexInRemainder < _remainder.Length &&
+                fullNameIndexInRemainder + fullNameLen <= _remainder.Length && fullNameLen > 0)
             {
-                Array.Copy(remainder, fullNameIndexInRemainder, fullName, 0, fullNameLen);
+                Array.Copy(_remainder, fullNameIndexInRemainder, _fullName, 0, fullNameLen);
             }
         }
 
-        public int ExthHeaderSize => exthHeader?.Size ?? 0;
+        public int ExthHeaderSize => ExtHeader?.Size ?? 0;
 
-        public string FullName => Encoding.UTF8.GetString(fullName).Trim('\0');
+        public string FullName => Encoding.UTF8.GetString(_fullName).Trim('\0');
 
-        public string IdentifierAsString => Encoding.ASCII.GetString(identifier).Trim('\0');
+        public string IdentifierAsString => Encoding.ASCII.GetString(_identifier).Trim('\0');
 
-        public uint HeaderLength => BitConverter.ToUInt32(headerLength.BigEndian(), 0);
+        public uint HeaderLength => BitConverter.ToUInt32(_headerLength.BigEndian(), 0);
 
-        public uint MobiType => BitConverter.ToUInt32(mobiType.BigEndian(), 0);
+        public uint MobiType => BitConverter.ToUInt32(_mobiType.BigEndian(), 0);
 
         public string MobiTypeAsString
         {
             get
             {
-                switch (MobiType)
+                return MobiType switch
                 {
-                    case 2: return "Mobipocket Book";
-                    case 3: return "PalmDoc Book";
-                    case 4: return "Audio";
-                    case 257: return "News";
-                    case 258: return "News Feed";
-                    case 259: return "News Magazine";
-                    case 513: return "PICS";
-                    case 514: return "WORD";
-                    case 515: return "XLS";
-                    case 516: return "PPT";
-                    case 517: return "TEXT";
-                    case 518: return "HTML";
-                    default:
-                        return string.Format("Unknown {0}", MobiType);
-                }
+                    2 => "Mobipocket Book",
+                    3 => "PalmDoc Book",
+                    4 => "Audio",
+                    257 => "News",
+                    258 => "News Feed",
+                    259 => "News Magazine",
+                    513 => "PICS",
+                    514 => "WORD",
+                    515 => "XLS",
+                    516 => "PPT",
+                    517 => "TEXT",
+                    518 => "HTML",
+                    _ => $"Unknown {nameof(MobiType)} - {MobiType}"
+                };
             }
         }
 
-        public uint UniqueID => BitConverter.ToUInt32(uniqueID, 0);
+        public uint UniqueId => BitConverter.ToUInt32(_uniqueId, 0);
 
-        public uint FileVersion => BitConverter.ToUInt32(fileVersion, 0);
+        public uint FileVersion => BitConverter.ToUInt32(_fileVersion, 0);
 
-        public uint IndexKeys => BitConverter.ToUInt32(indexKeys, 0);
+        public uint IndexKeys => BitConverter.ToUInt32(_indexKeys, 0);
 
-        public uint FirstNonBookIndex => BitConverter.ToUInt32(firstNonBookIndex.BigEndian(), 0);
+        public uint FirstNonBookIndex => BitConverter.ToUInt32(_firstNonBookIndex.BigEndian(), 0);
 
-        public uint FullNameOffset => BitConverter.ToUInt32(fullNameOffset.BigEndian(), 0);
+        public uint FullNameOffset => BitConverter.ToUInt32(_fullNameOffset.BigEndian(), 0);
 
-        public uint FullNameLength => BitConverter.ToUInt32(fullNameLength.BigEndian(), 0);
+        public uint FullNameLength => BitConverter.ToUInt32(_fullNameLength.BigEndian(), 0);
 
-        public uint MinVersion => BitConverter.ToUInt32(minVersion.BigEndian(), 0);
+        public uint MinVersion => BitConverter.ToUInt32(_minVersion.BigEndian(), 0);
 
-        public uint HuffmanRecordOffset => BitConverter.ToUInt32(huffmanRecordOffset.BigEndian(), 0);
+        public uint HuffmanRecordOffset => BitConverter.ToUInt32(_huffmanRecordOffset.BigEndian(), 0);
 
-        public uint HuffmanRecordCount => BitConverter.ToUInt32(huffmanRecordCount.BigEndian(), 0);
+        public uint HuffmanRecordCount => BitConverter.ToUInt32(_huffmanRecordCount.BigEndian(), 0);
 
-        public uint HuffmanTableOffset => BitConverter.ToUInt32(huffmanTableOffset.BigEndian(), 0);
+        public uint HuffmanTableOffset => BitConverter.ToUInt32(_huffmanTableOffset.BigEndian(), 0);
 
-        public uint HuffmanTableLength => BitConverter.ToUInt32(huffmanTableLength.BigEndian(), 0);
+        public uint HuffmanTableLength => BitConverter.ToUInt32(_huffmanTableLength.BigEndian(), 0);
     }
 }

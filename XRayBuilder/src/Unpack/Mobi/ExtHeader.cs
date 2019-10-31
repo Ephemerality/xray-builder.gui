@@ -14,15 +14,15 @@ using XRayBuilderGUI.Libraries.Primitives.Extensions;
 
 namespace XRayBuilderGUI.Unpack.Mobi
 {
-    public class EXTHHeader
+    public sealed class ExtHeader
     {
-        private byte[] _identifier = new byte[4];
-        private byte[] _headerLength = new byte[4];
-        private byte[] _recordCount = new byte[4];
+        private readonly byte[] _identifier = new byte[4];
+        private readonly byte[] _headerLength = new byte[4];
+        private readonly byte[] _recordCount = new byte[4];
 
-        private List<EXTHRecord> recordList = new List<EXTHRecord>();
+        private readonly List<ExtHRecord> _recordList = new List<ExtHRecord>();
 
-        public EXTHHeader(FileStream fs)
+        public ExtHeader(FileStream fs)
         {
             fs.Read(_identifier, 0, _identifier.Length);
             if (IdentifierAsString != "EXTH")
@@ -31,12 +31,12 @@ namespace XRayBuilderGUI.Unpack.Mobi
             fs.Read(_recordCount, 0, _recordCount.Length);
             for (var i = 0; i < RecordCount; i++)
             {
-                recordList.Add(new EXTHRecord(fs));
+                _recordList.Add(new ExtHRecord(fs));
             }
             fs.Seek(GetPaddingSize(DataSize), SeekOrigin.Current); // Skip padding bytes
         }
 
-        private int DataSize => recordList.Sum(rec => rec.Size);
+        private int DataSize => _recordList.Sum(rec => rec.Size);
 
         public int Size
         {
@@ -47,7 +47,7 @@ namespace XRayBuilderGUI.Unpack.Mobi
             }
         }
 
-        protected int GetPaddingSize(int dataSize)
+        private int GetPaddingSize(int dataSize)
         {
             var paddingSize = dataSize % 4;
             if (paddingSize != 0) paddingSize = 4 - paddingSize;
@@ -65,13 +65,13 @@ namespace XRayBuilderGUI.Unpack.Mobi
 
         public string Description => GetRecordByType(103);
 
-        public string ASIN => GetRecordByType(113);
+        public string Asin => GetRecordByType(113);
 
-        public string CDEType => GetRecordByType(501);
+        public string CdeType => GetRecordByType(501);
 
         public string UpdatedTitle => GetRecordByType(503);
 
-        public string ASIN2 => GetRecordByType(504);
+        public string Asin2 => GetRecordByType(504);
 
         public int CoverOffset => BitConverter.ToInt32(GetRecordBytesByType(201)?.BigEndian() ?? new byte[] { 255, 255, 255, 255 }, 0);
 
@@ -79,56 +79,52 @@ namespace XRayBuilderGUI.Unpack.Mobi
         private byte[] GetRecordBytesByType(int recType)
         {
             byte[] record = null;
-            foreach (var rec in recordList)
+            foreach (var rec in _recordList.Where(rec => rec.RecordType == recType))
             {
-                if (rec.RecordType == recType)
-                {
-                    record = new byte[rec.RecordData.Length];
-                    Buffer.BlockCopy(rec.RecordData, 0, record, 0, rec.RecordData.Length);
-                    break;
-                }
+                record = new byte[rec.RecordData.Length];
+                Buffer.BlockCopy(rec.RecordData, 0, record, 0, rec.RecordData.Length);
+                break;
             }
+
             return record;
         }
 
         private string GetRecordByType(int recType)
         {
             var record = string.Empty;
-            foreach (var rec in recordList)
+            foreach (var rec in _recordList.Where(rec => rec.RecordType == recType))
             {
-                if (rec.RecordType == recType)
-                {
-                    record = System.Text.Encoding.UTF8.GetString(rec.RecordData);
-                    break;
-                }
+                record = Encoding.UTF8.GetString(rec.RecordData);
+                break;
             }
+
             return record;
         }
 
         public void UpdateCdeContentType(FileStream fs)
         {
             var newValue = Encoding.UTF8.GetBytes("EBOK");
-            var rec = recordList.First(r => r.RecordType == 501);
+            var rec = _recordList.First(r => r.RecordType == 501);
             if (rec == null)
                 throw new UnpackException("Could not find the CDEContentType record (EXTH 501).");
-            fs.Seek(rec.recordOffset, SeekOrigin.Begin);
+            fs.Seek(rec.RecordOffset, SeekOrigin.Begin);
             fs.Write(newValue, 0, newValue.Length);
         }
     }
 
-    class EXTHRecord
+    internal sealed class ExtHRecord
     {
         private readonly byte[] _recordType = new byte[4];
         private readonly byte[] _recordLength = new byte[4];
-        public long recordOffset;
+        public readonly long RecordOffset;
 
-        public EXTHRecord(Stream fs)
+        public ExtHRecord(Stream fs)
         {
             fs.Read(_recordType, 0, _recordType.Length);
             fs.Read(_recordLength, 0, _recordLength.Length);
 
             if (RecordLength < 8) throw new UnpackException("Invalid EXTH record length");
-            recordOffset = fs.Position;
+            RecordOffset = fs.Position;
             RecordData = new byte[RecordLength - 8];
             fs.Read(RecordData, 0, RecordData.Length);
         }

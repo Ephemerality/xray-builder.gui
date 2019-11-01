@@ -61,5 +61,11 @@ namespace XRayBuilderGUI.Libraries.Primitives.Extensions
 
             return new string(chars).Normalize(NormalizationForm.FormC);
         }
+
+        public static string TrimNonPrintableAscii(this string value)
+        {
+            var pattern = new Regex("[^ -~]+");
+            return pattern.Replace(value, "");
+        }
     }
 }

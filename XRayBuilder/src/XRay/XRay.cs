@@ -44,7 +44,7 @@ using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 namespace XRayBuilderGUI.XRay
 {
     // TODO: Anywhere JSON is used, serialization should be done rather than text formatting...
-    public class XRay
+    public partial class XRay
     {
         private readonly ILogger _logger;
 
@@ -954,32 +954,6 @@ namespace XRayBuilderGUI.XRay
                 }
             }
             return 0;
-        }
-
-        public class Excerpt
-        {
-            public int Id { get; set; }
-            public int Start { get; set; }
-            public int Length { get; set; }
-            public string Image { get; set; } = "";
-            public List<int> RelatedEntities = new List<int>();
-            //public int go_to = -1; unused but in the db
-            public int Highlights { get; set; }
-            public bool Notable { get; set; }
-        }
-
-        public class Chapter
-        {
-            public string Name { get; set; }
-            public long Start { get; set; }
-            public long End { get; set; }
-
-            // TODO: Replace w/ serialization
-            public override string ToString()
-            {
-                return string.Format(@"{{""name"":{0},""start"":{1},""end"":{2}}}",
-                    (Name == "" ? "null" : "\"" + Name + "\""), Start, End);
-            }
         }
 
         public void SaveChapters()

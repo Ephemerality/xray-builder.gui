@@ -23,6 +23,7 @@ using XRayBuilderGUI.Properties;
 using XRayBuilderGUI.UI.Preview.Logic;
 using XRayBuilderGUI.Unpack;
 using XRayBuilderGUI.XRay;
+using XRayBuilderGUI.XRay.Logic;
 using EndActions = XRayBuilderGUI.Extras.EndActions.EndActions;
 
 namespace XRayBuilderGUI.UI
@@ -36,6 +37,7 @@ namespace XRayBuilderGUI.UI
         private readonly IAuthorProfileGenerator _authorProfileGenerator;
         private readonly PreviewProviderFactory _previewProviderFactory;
         private readonly IAmazonInfoParser _amazonInfoParser;
+        private readonly IAliasesService _aliasesService;
         private readonly Container _diContainer;
 
         // TODO: Fix up these paths
@@ -51,7 +53,8 @@ namespace XRayBuilderGUI.UI
             IAuthorProfileGenerator authorProfileGenerator,
             IAmazonClient amazonClient,
             PreviewProviderFactory previewProviderFactory,
-            IAmazonInfoParser amazonInfoParser)
+            IAmazonInfoParser amazonInfoParser,
+            IAliasesService aliasesService)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
@@ -62,6 +65,7 @@ namespace XRayBuilderGUI.UI
             _amazonClient = amazonClient;
             _previewProviderFactory = previewProviderFactory;
             _amazonInfoParser = amazonInfoParser;
+            _aliasesService = aliasesService;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
         }
@@ -214,10 +218,10 @@ namespace XRayBuilderGUI.UI
             try
             {
                 if (rdoGoodreads.Checked)
-                    xray = new XRay.XRay(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _dataSource, _logger,
+                    xray = new XRay.XRay(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _dataSource, _logger, _aliasesService,
                         AZW3 ? _settings.offsetAZW3 : _settings.offset, "", false);
                 else
-                    xray = new XRay.XRay(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _dataSource, _logger,
+                    xray = new XRay.XRay(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _dataSource, _logger, _aliasesService,
                         AZW3 ? _settings.offsetAZW3 : _settings.offset, "");
 
                 await Task.Run(() => xray.CreateXray(_progress, _cancelTokens.Token)).ConfigureAwait(false);
@@ -559,7 +563,7 @@ namespace XRayBuilderGUI.UI
             {
                 txtXMLFile.Text = path;
 
-                var xray = new XRay.XRay(txtGoodreads.Text, _dataSource, _logger);
+                var xray = new XRay.XRay(txtGoodreads.Text, _dataSource, _logger, _aliasesService);
                 var result = await Task.Run(() => xray.SaveXml(path, _progress, _cancelTokens.Token));
                 if (result == 1)
                     _logger.Log("Warning: Unable to download character data as no character data found on Goodreads.");

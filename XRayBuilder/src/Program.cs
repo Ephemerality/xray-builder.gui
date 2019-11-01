@@ -10,6 +10,7 @@ using XRayBuilderGUI.Libraries.SimpleInjector.Extensions;
 using XRayBuilderGUI.UI;
 using XRayBuilderGUI.UI.Preview;
 using XRayBuilderGUI.UI.Preview.Logic;
+using XRayBuilderGUI.XRay.Logic;
 
 namespace XRayBuilderGUI
 {
@@ -49,6 +50,8 @@ namespace XRayBuilderGUI
             _container.AutoregisterDisposableTransientConcreteFromInterface<IPreviewForm>("Manually disposed");
 
             _container.Register<IAmazonInfoParser, AmazonInfoParser>(Lifestyle.Singleton);
+
+            _container.Register<IAliasesService, AliasesService>();
 
             _container.Verify();
         }

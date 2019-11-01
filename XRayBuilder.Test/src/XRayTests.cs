@@ -13,6 +13,7 @@ using XRayBuilderGUI.Libraries;
 using XRayBuilderGUI.Libraries.Http;
 using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Model;
+using XRayBuilderGUI.XRay.Logic;
 using EndActions = XRayBuilderGUI.Extras.EndActions.EndActions;
 
 namespace XRayBuilder.Test
@@ -25,6 +26,7 @@ namespace XRayBuilder.Test
         private IAmazonClient _amazonClient;
         private Goodreads _goodreads;
         private IAmazonInfoParser _amazonInfoParser;
+        private IAliasesService _aliasesService;
 
         [SetUp]
         public void Setup()
@@ -34,6 +36,7 @@ namespace XRayBuilder.Test
             _amazonInfoParser = new AmazonInfoParser(_logger, _httpClient);
             _amazonClient = new AmazonClient(_httpClient, _amazonInfoParser, _logger);
             _goodreads = new Goodreads(_logger, _httpClient, _amazonClient);
+            _aliasesService = new AliasesService(_logger);
         }
 
         private static readonly CancellationTokenSource tokens = new CancellationTokenSource();
@@ -45,7 +48,7 @@ namespace XRayBuilder.Test
 
         private XRayBuilderGUI.XRay.XRay CreateXRayFromXML(string path, string db, string guid, string asin)
         {
-            return new XRayBuilderGUI.XRay.XRay(path, db, guid, asin, _goodreads, _logger, 0, "") { unattended = true };
+            return new XRayBuilderGUI.XRay.XRay(path, db, guid, asin, _goodreads, _logger, _aliasesService, 0, "") { unattended = true };
         }
 
         [Test, TestCaseSource(nameof(books))]

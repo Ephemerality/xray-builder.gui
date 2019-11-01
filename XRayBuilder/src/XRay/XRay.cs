@@ -38,6 +38,7 @@ using XRayBuilderGUI.Libraries;
 using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Libraries.Primitives.Extensions;
 using XRayBuilderGUI.Libraries.Progress;
+using XRayBuilderGUI.XRay.Logic;
 using XRayBuilderGUI.XRay.Model;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
@@ -68,6 +69,7 @@ namespace XRayBuilderGUI.XRay
 
         private bool enableEdit = Properties.Settings.Default.enableEdit;
         private readonly ISecondarySource dataSource;
+        private readonly IAliasesService _aliasesService;
 
         public delegate DialogResult SafeShowDelegate(string msg, string caption, MessageBoxButtons buttons,
             MessageBoxIcon icon, MessageBoxDefaultButton def);
@@ -98,16 +100,17 @@ namespace XRayBuilderGUI.XRay
             "Viscount", "Viscountess", "Wg Cdr", "Jr", "Sr", "Sheriff", "Special Agent", "Detective", "Lt" };
         #endregion
 
-        public XRay(string shelfari, ISecondarySource dataSource, ILogger logger)
+        public XRay(string shelfari, ISecondarySource dataSource, ILogger logger, IAliasesService aliasesService)
         {
             if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
                 shelfari = "https://" + shelfari;
             dataUrl = shelfari;
             this.dataSource = dataSource;
             _logger = logger;
+            _aliasesService = aliasesService;
         }
 
-        public XRay(string shelfari, string db, string guid, string asin, ISecondarySource dataSource, ILogger logger, int locOffset = 0, string aliaspath = "", bool unattended = false)
+        public XRay(string shelfari, string db, string guid, string asin, ISecondarySource dataSource, ILogger logger, IAliasesService aliasesService, int locOffset = 0, string aliaspath = "", bool unattended = false)
         {
             if (shelfari == "" || db == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
@@ -124,9 +127,10 @@ namespace XRayBuilderGUI.XRay
             this.unattended = unattended;
             this.dataSource = dataSource;
             _logger = logger;
+            _aliasesService = aliasesService;
         }
 
-        public XRay(string xml, string db, string guid, string asin, ISecondarySource dataSource, ILogger logger, int locOffset = 0, string aliaspath = "")
+        public XRay(string xml, string db, string guid, string asin, ISecondarySource dataSource, ILogger logger, IAliasesService aliasesService, int locOffset = 0, string aliaspath = "")
         {
             if (xml == "" || db == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
@@ -139,12 +143,14 @@ namespace XRayBuilderGUI.XRay
             unattended = false;
             this.dataSource = dataSource;
             _logger = logger;
+            _aliasesService = aliasesService;
             skipShelfari = true;
         }
 
         public string AliasPath
         {
             set => _aliasPath = value;
+            // TODO directory service to handle default paths
             get => string.IsNullOrEmpty(_aliasPath) ? Environment.CurrentDirectory + @"\ext\" + asin + ".aliases" : _aliasPath;
         }
 
@@ -993,9 +999,11 @@ namespace XRayBuilderGUI.XRay
 
         public void SaveCharacters(string aliasFile)
         {
+            // todo service should handle this
             if (!Directory.Exists(Environment.CurrentDirectory + @"\ext\"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\ext\");
 
+            // todo these should probably already be loaded at this point
             //Try to load custom common titles from BaseSplitIgnore.txt
             try
             {
@@ -1110,40 +1118,21 @@ namespace XRayBuilderGUI.XRay
 
         public void LoadAliases(string aliasFile = null)
         {
-            var d = new Dictionary<string, string[]>();
             aliasFile ??= AliasPath;
             if (!File.Exists(aliasFile)) return;
-            using (var streamReader = new StreamReader(aliasFile, Encoding.UTF8))
-            {
-                while (!streamReader.EndOfStream)
-                {
-                    var input = streamReader.ReadLine();
-                    var temp = input?.Split('|');
-                    if (temp == null || temp.Length <= 1 || temp[0] == "" || temp[0].StartsWith("#")) continue;
-                    var temp2 = input.Substring(input.IndexOf('|') + 1).Split(',');
-                    //Check for misplaced pipe character in aliases
-                    if (temp2[0] != "" && temp2.Any(r => Regex.Match(@"\|", r).Success))
-                    {
-                        _logger.Log("An error occurred parsing the alias file. Ignoring term: " + temp[0] + " aliases.\r\nCheck the file is in the correct format: Character Name|Alias1,Alias2,Etc");
-                        continue;
-                    }
-                    if (temp2.Length == 0 || temp2[0] == "") continue;
-                    if (d.ContainsKey(temp[0]))
-                        _logger.Log("Duplicate alias of " + temp[0] + " found. Ignoring the duplicate.");
-                    else
-                        d.Add(temp[0], temp2);
-                }
-            }
+
+            var aliasesByTermName = _aliasesService.LoadAliases(aliasFile);
+
             for (var i = 0; i < Terms.Count; i++)
             {
                 var t = Terms[i];
-                if (d.ContainsKey(t.TermName))
+                if (aliasesByTermName.ContainsKey(t.TermName))
                 {
                     if (t.Aliases.Count > 0)
                     {
                         // If aliases exist (loaded from Goodreads), remove any duplicates and add them in the order from the aliases file
                         // Otherwise, the website would take precedence and that could be bad?
-                        foreach (var alias in d[t.TermName])
+                        foreach (var alias in aliasesByTermName[t.TermName])
                         {
                             if (t.Aliases.Contains(alias))
                             {
@@ -1155,7 +1144,7 @@ namespace XRayBuilderGUI.XRay
                         }
                     }
                     else
-                        t.Aliases = new List<string>(d[t.TermName]);
+                        t.Aliases = new List<string>(aliasesByTermName[t.TermName]);
                     // If first alias is "/c", character searches will be case-sensitive
                     // If it is /d, delete this character
                     // If /n, will not match excerpts but will leave character in X-Ray

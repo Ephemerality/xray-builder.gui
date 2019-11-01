@@ -13,6 +13,7 @@ using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Libraries.Primitives.Extensions;
 using XRayBuilderGUI.Libraries.Progress;
 using XRayBuilderGUI.Model;
+using XRayBuilderGUI.XRay.Model;
 
 namespace XRayBuilderGUI.DataSources.Secondary
 {
@@ -117,10 +118,10 @@ namespace XRayBuilderGUI.DataSources.Secondary
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<XRay.Term>> GetTermsAsync(string dataUrl, IProgressBar progress, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, IProgressBar progress, CancellationToken cancellationToken = default)
         {
             _logger.Log("Downloading Shelfari page...");
-            var terms = new List<XRay.Term>();
+            var terms = new List<Term>();
 
             if (sourceHtmlDoc == null)
             {
@@ -144,7 +145,11 @@ namespace XRayBuilderGUI.DataSources.Secondary
                 foreach (var li in characterNodes)
                 {
                     var tmpString = li.InnerText;
-                    var newTerm = new XRay.Term(sections[header]); //Create term as either character/topic
+                    //Create term as either character/topic
+                    var newTerm = new Term
+                    {
+                        Type = sections[header]
+                    };
                     if (tmpString.Contains(":"))
                     {
                         newTerm.TermName = tmpString.Substring(0, tmpString.IndexOf(":"));

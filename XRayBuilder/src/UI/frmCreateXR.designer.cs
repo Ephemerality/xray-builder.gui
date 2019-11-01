@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmCreateXR));
             this.lblName = new System.Windows.Forms.Label();
             this.lblAliases = new System.Windows.Forms.Label();
@@ -82,7 +82,7 @@
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvTerms)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.dgvTerms)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.cmsTerms.SuspendLayout();
@@ -91,9 +91,9 @@
             // lblName
             // 
             this.lblName.AutoSize = true;
-            this.lblName.Location = new System.Drawing.Point(10, 23);
+            this.lblName.Location = new System.Drawing.Point(12, 27);
             this.lblName.Name = "lblName";
-            this.lblName.Size = new System.Drawing.Size(38, 13);
+            this.lblName.Size = new System.Drawing.Size(42, 15);
             this.lblName.TabIndex = 1;
             this.lblName.Text = "Name:";
             this.lblName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -101,9 +101,9 @@
             // lblAliases
             // 
             this.lblAliases.AutoSize = true;
-            this.lblAliases.Location = new System.Drawing.Point(11, 55);
+            this.lblAliases.Location = new System.Drawing.Point(13, 63);
             this.lblAliases.Name = "lblAliases";
-            this.lblAliases.Size = new System.Drawing.Size(43, 13);
+            this.lblAliases.Size = new System.Drawing.Size(46, 15);
             this.lblAliases.TabIndex = 4;
             this.lblAliases.Text = "Aliases:";
             this.lblAliases.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -111,9 +111,9 @@
             // rdoWikipedia
             // 
             this.rdoWikipedia.AutoSize = true;
-            this.rdoWikipedia.Location = new System.Drawing.Point(95, 17);
+            this.rdoWikipedia.Location = new System.Drawing.Point(111, 20);
             this.rdoWikipedia.Name = "rdoWikipedia";
-            this.rdoWikipedia.Size = new System.Drawing.Size(72, 17);
+            this.rdoWikipedia.Size = new System.Drawing.Size(77, 19);
             this.rdoWikipedia.TabIndex = 1;
             this.rdoWikipedia.Text = "Wikipedia";
             this.rdoWikipedia.UseVisualStyleBackColor = true;
@@ -122,9 +122,9 @@
             // 
             this.rdoGoodreads.AutoSize = true;
             this.rdoGoodreads.Checked = true;
-            this.rdoGoodreads.Location = new System.Drawing.Point(14, 17);
+            this.rdoGoodreads.Location = new System.Drawing.Point(16, 20);
             this.rdoGoodreads.Name = "rdoGoodreads";
-            this.rdoGoodreads.Size = new System.Drawing.Size(77, 17);
+            this.rdoGoodreads.Size = new System.Drawing.Size(82, 19);
             this.rdoGoodreads.TabIndex = 0;
             this.rdoGoodreads.TabStop = true;
             this.rdoGoodreads.Text = "Goodreads";
@@ -143,9 +143,9 @@
             this.groupBox3.Controls.Add(this.txtName);
             this.groupBox3.Controls.Add(this.lblName);
             this.groupBox3.Controls.Add(this.lblAliases);
-            this.groupBox3.Location = new System.Drawing.Point(12, 6);
+            this.groupBox3.Location = new System.Drawing.Point(14, 7);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(536, 190);
+            this.groupBox3.Size = new System.Drawing.Size(625, 219);
             this.groupBox3.TabIndex = 39;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Details";
@@ -153,9 +153,9 @@
             // btnLink
             // 
             this.btnLink.Image = global::XRayBuilderGUI.Properties.Resources.setting;
-            this.btnLink.Location = new System.Drawing.Point(491, 150);
+            this.btnLink.Location = new System.Drawing.Point(573, 173);
             this.btnLink.Name = "btnLink";
-            this.btnLink.Size = new System.Drawing.Size(31, 26);
+            this.btnLink.Size = new System.Drawing.Size(36, 30);
             this.btnLink.TabIndex = 49;
             this.btnLink.Text = "...";
             this.btnLink.UseVisualStyleBackColor = true;
@@ -164,9 +164,9 @@
             // rdoTopic
             // 
             this.rdoTopic.AutoSize = true;
-            this.rdoTopic.Location = new System.Drawing.Point(471, 22);
+            this.rdoTopic.Location = new System.Drawing.Point(549, 25);
             this.rdoTopic.Name = "rdoTopic";
-            this.rdoTopic.Size = new System.Drawing.Size(58, 17);
+            this.rdoTopic.Size = new System.Drawing.Size(62, 19);
             this.rdoTopic.TabIndex = 3;
             this.rdoTopic.Text = "Setting";
             this.rdoTopic.UseVisualStyleBackColor = true;
@@ -175,9 +175,9 @@
             // 
             this.rdoCharacter.AutoSize = true;
             this.rdoCharacter.Checked = true;
-            this.rdoCharacter.Location = new System.Drawing.Point(394, 22);
+            this.rdoCharacter.Location = new System.Drawing.Point(460, 25);
             this.rdoCharacter.Name = "rdoCharacter";
-            this.rdoCharacter.Size = new System.Drawing.Size(71, 17);
+            this.rdoCharacter.Size = new System.Drawing.Size(76, 19);
             this.rdoCharacter.TabIndex = 2;
             this.rdoCharacter.TabStop = true;
             this.rdoCharacter.Text = "Character";
@@ -185,51 +185,51 @@
             // 
             // txtLink
             // 
-            this.txtLink.Location = new System.Drawing.Point(78, 156);
+            this.txtLink.Location = new System.Drawing.Point(91, 180);
             this.txtLink.Name = "txtLink";
-            this.txtLink.Size = new System.Drawing.Size(403, 20);
+            this.txtLink.Size = new System.Drawing.Size(469, 23);
             this.txtLink.TabIndex = 9;
             // 
             // lblLink
             // 
             this.lblLink.AutoSize = true;
-            this.lblLink.Location = new System.Drawing.Point(11, 159);
+            this.lblLink.Location = new System.Drawing.Point(13, 183);
             this.lblLink.Name = "lblLink";
-            this.lblLink.Size = new System.Drawing.Size(56, 13);
+            this.lblLink.Size = new System.Drawing.Size(59, 15);
             this.lblLink.TabIndex = 8;
             this.lblLink.Text = "Web Link:";
             this.lblLink.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // txtDescription
             // 
-            this.txtDescription.Location = new System.Drawing.Point(79, 84);
+            this.txtDescription.Location = new System.Drawing.Point(92, 97);
             this.txtDescription.Multiline = true;
             this.txtDescription.Name = "txtDescription";
-            this.txtDescription.Size = new System.Drawing.Size(443, 60);
+            this.txtDescription.Size = new System.Drawing.Size(516, 69);
             this.txtDescription.TabIndex = 7;
             // 
             // lblDescription
             // 
             this.lblDescription.AutoSize = true;
-            this.lblDescription.Location = new System.Drawing.Point(10, 87);
+            this.lblDescription.Location = new System.Drawing.Point(12, 100);
             this.lblDescription.Name = "lblDescription";
-            this.lblDescription.Size = new System.Drawing.Size(63, 13);
+            this.lblDescription.Size = new System.Drawing.Size(70, 15);
             this.lblDescription.TabIndex = 6;
             this.lblDescription.Text = "Description:";
             this.lblDescription.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // txtAliases
             // 
-            this.txtAliases.Location = new System.Drawing.Point(78, 52);
+            this.txtAliases.Location = new System.Drawing.Point(91, 60);
             this.txtAliases.Name = "txtAliases";
-            this.txtAliases.Size = new System.Drawing.Size(444, 20);
+            this.txtAliases.Size = new System.Drawing.Size(517, 23);
             this.txtAliases.TabIndex = 5;
             // 
             // txtName
             // 
-            this.txtName.Location = new System.Drawing.Point(79, 20);
+            this.txtName.Location = new System.Drawing.Point(92, 23);
             this.txtName.Name = "txtName";
-            this.txtName.Size = new System.Drawing.Size(303, 20);
+            this.txtName.Size = new System.Drawing.Size(353, 23);
             this.txtName.TabIndex = 1;
             // 
             // groupBox2
@@ -238,9 +238,9 @@
             this.groupBox2.Controls.Add(this.chkRegex);
             this.groupBox2.Controls.Add(this.chkMatch);
             this.groupBox2.Controls.Add(this.chkCase);
-            this.groupBox2.Location = new System.Drawing.Point(198, 202);
+            this.groupBox2.Location = new System.Drawing.Point(231, 233);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(350, 47);
+            this.groupBox2.Size = new System.Drawing.Size(408, 54);
             this.groupBox2.TabIndex = 40;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Options";
@@ -249,9 +249,9 @@
             // 
             this.chkDelete.AutoSize = true;
             this.chkDelete.Enabled = false;
-            this.chkDelete.Location = new System.Drawing.Point(184, 19);
+            this.chkDelete.Location = new System.Drawing.Point(215, 22);
             this.chkDelete.Name = "chkDelete";
-            this.chkDelete.Size = new System.Drawing.Size(57, 17);
+            this.chkDelete.Size = new System.Drawing.Size(59, 19);
             this.chkDelete.TabIndex = 3;
             this.chkDelete.Text = "Delete";
             this.chkDelete.UseVisualStyleBackColor = true;
@@ -260,9 +260,9 @@
             // 
             this.chkRegex.AutoSize = true;
             this.chkRegex.Enabled = false;
-            this.chkRegex.Location = new System.Drawing.Point(244, 19);
+            this.chkRegex.Location = new System.Drawing.Point(285, 22);
             this.chkRegex.Name = "chkRegex";
-            this.chkRegex.Size = new System.Drawing.Size(58, 17);
+            this.chkRegex.Size = new System.Drawing.Size(58, 19);
             this.chkRegex.TabIndex = 2;
             this.chkRegex.Text = "RegEx";
             this.chkRegex.UseVisualStyleBackColor = true;
@@ -272,9 +272,9 @@
             this.chkMatch.AutoSize = true;
             this.chkMatch.Checked = true;
             this.chkMatch.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkMatch.Location = new System.Drawing.Point(14, 19);
+            this.chkMatch.Location = new System.Drawing.Point(16, 22);
             this.chkMatch.Name = "chkMatch";
-            this.chkMatch.Size = new System.Drawing.Size(56, 17);
+            this.chkMatch.Size = new System.Drawing.Size(60, 19);
             this.chkMatch.TabIndex = 1;
             this.chkMatch.Text = "Match";
             this.chkMatch.UseVisualStyleBackColor = true;
@@ -282,9 +282,9 @@
             // chkCase
             // 
             this.chkCase.AutoSize = true;
-            this.chkCase.Location = new System.Drawing.Point(84, 19);
+            this.chkCase.Location = new System.Drawing.Point(98, 22);
             this.chkCase.Name = "chkCase";
-            this.chkCase.Size = new System.Drawing.Size(96, 17);
+            this.chkCase.Size = new System.Drawing.Size(100, 19);
             this.chkCase.TabIndex = 0;
             this.chkCase.Text = "Case Sensitive";
             this.chkCase.UseVisualStyleBackColor = true;
@@ -292,9 +292,9 @@
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.dgvTerms);
-            this.groupBox4.Location = new System.Drawing.Point(12, 255);
+            this.groupBox4.Location = new System.Drawing.Point(14, 294);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(536, 159);
+            this.groupBox4.Size = new System.Drawing.Size(625, 183);
             this.groupBox4.TabIndex = 46;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Terms";
@@ -308,24 +308,14 @@
             this.dgvTerms.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dgvTerms.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             this.dgvTerms.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvTerms.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Column1,
-            this.Column2,
-            this.Column3,
-            this.Column4,
-            this.Column6,
-            this.Column10,
-            this.Column5,
-            this.Column7,
-            this.Column8,
-            this.Column9});
-            this.dgvTerms.Location = new System.Drawing.Point(14, 20);
+            this.dgvTerms.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {this.Column1, this.Column2, this.Column3, this.Column4, this.Column6, this.Column10, this.Column5, this.Column7, this.Column8, this.Column9});
+            this.dgvTerms.Location = new System.Drawing.Point(16, 23);
             this.dgvTerms.Name = "dgvTerms";
             this.dgvTerms.ReadOnly = true;
             this.dgvTerms.RowHeadersVisible = false;
             this.dgvTerms.RowTemplate.DefaultCellStyle.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             this.dgvTerms.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvTerms.Size = new System.Drawing.Size(508, 125);
+            this.dgvTerms.Size = new System.Drawing.Size(593, 144);
             this.dgvTerms.TabIndex = 0;
             this.dgvTerms.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvTerms_CellMouseDoubleClick);
             this.dgvTerms.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvTerms_CellMouseDown);
@@ -365,8 +355,8 @@
             // 
             // Column10
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Column10.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Column10.DefaultCellStyle = dataGridViewCellStyle1;
             this.Column10.HeaderText = "Source";
             this.Column10.Name = "Column10";
             this.Column10.ReadOnly = true;
@@ -405,9 +395,9 @@
             // 
             this.groupBox1.Controls.Add(this.rdoWikipedia);
             this.groupBox1.Controls.Add(this.rdoGoodreads);
-            this.groupBox1.Location = new System.Drawing.Point(12, 202);
+            this.groupBox1.Location = new System.Drawing.Point(14, 233);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(174, 47);
+            this.groupBox1.Size = new System.Drawing.Size(203, 54);
             this.groupBox1.TabIndex = 30;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Source";
@@ -420,110 +410,110 @@
             this.groupBox5.Controls.Add(this.lblTitle);
             this.groupBox5.Controls.Add(this.txtAuthor);
             this.groupBox5.Controls.Add(this.lblAuthor);
-            this.groupBox5.Location = new System.Drawing.Point(12, 420);
+            this.groupBox5.Location = new System.Drawing.Point(14, 485);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(536, 51);
+            this.groupBox5.Size = new System.Drawing.Size(625, 59);
             this.groupBox5.TabIndex = 48;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Save File As";
             // 
             // txtAsin
             // 
-            this.txtAsin.Location = new System.Drawing.Point(442, 20);
+            this.txtAsin.Location = new System.Drawing.Point(516, 23);
             this.txtAsin.Name = "txtAsin";
-            this.txtAsin.Size = new System.Drawing.Size(80, 20);
+            this.txtAsin.Size = new System.Drawing.Size(93, 23);
             this.txtAsin.TabIndex = 6;
             // 
             // lblAsin
             // 
             this.lblAsin.AutoSize = true;
-            this.lblAsin.Location = new System.Drawing.Point(400, 23);
+            this.lblAsin.Location = new System.Drawing.Point(467, 27);
             this.lblAsin.Name = "lblAsin";
-            this.lblAsin.Size = new System.Drawing.Size(35, 13);
+            this.lblAsin.Size = new System.Drawing.Size(36, 15);
             this.lblAsin.TabIndex = 7;
             this.lblAsin.Text = "ASIN:";
             this.lblAsin.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // txtTitle
             // 
-            this.txtTitle.Location = new System.Drawing.Point(246, 20);
+            this.txtTitle.Location = new System.Drawing.Point(287, 23);
             this.txtTitle.Name = "txtTitle";
-            this.txtTitle.Size = new System.Drawing.Size(145, 20);
+            this.txtTitle.Size = new System.Drawing.Size(168, 23);
             this.txtTitle.TabIndex = 4;
             // 
             // lblTitle
             // 
             this.lblTitle.AutoSize = true;
-            this.lblTitle.Location = new System.Drawing.Point(211, 23);
+            this.lblTitle.Location = new System.Drawing.Point(246, 27);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(28, 13);
+            this.lblTitle.Size = new System.Drawing.Size(29, 15);
             this.lblTitle.TabIndex = 5;
             this.lblTitle.Text = "Tite:";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // txtAuthor
             // 
-            this.txtAuthor.Location = new System.Drawing.Point(57, 20);
+            this.txtAuthor.Location = new System.Drawing.Point(66, 23);
             this.txtAuthor.Name = "txtAuthor";
-            this.txtAuthor.Size = new System.Drawing.Size(145, 20);
+            this.txtAuthor.Size = new System.Drawing.Size(168, 23);
             this.txtAuthor.TabIndex = 2;
             // 
             // lblAuthor
             // 
             this.lblAuthor.AutoSize = true;
-            this.lblAuthor.Location = new System.Drawing.Point(9, 23);
+            this.lblAuthor.Location = new System.Drawing.Point(10, 27);
             this.lblAuthor.Name = "lblAuthor";
-            this.lblAuthor.Size = new System.Drawing.Size(41, 13);
+            this.lblAuthor.Size = new System.Drawing.Size(47, 15);
             this.lblAuthor.TabIndex = 3;
             this.lblAuthor.Text = "Author:";
             this.lblAuthor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // btnOpenXml
             // 
-            this.btnOpenXml.Image = ((System.Drawing.Image)(resources.GetObject("btnOpenXml.Image")));
-            this.btnOpenXml.Location = new System.Drawing.Point(559, 398);
+            this.btnOpenXml.Image = ((System.Drawing.Image) (resources.GetObject("btnOpenXml.Image")));
+            this.btnOpenXml.Location = new System.Drawing.Point(652, 459);
             this.btnOpenXml.Name = "btnOpenXml";
-            this.btnOpenXml.Size = new System.Drawing.Size(32, 32);
+            this.btnOpenXml.Size = new System.Drawing.Size(37, 37);
             this.btnOpenXml.TabIndex = 47;
             this.btnOpenXml.UseVisualStyleBackColor = true;
             this.btnOpenXml.Click += new System.EventHandler(this.btnOpenXml_Click);
             // 
             // btnEditTerm
             // 
-            this.btnEditTerm.Image = ((System.Drawing.Image)(resources.GetObject("btnEditTerm.Image")));
-            this.btnEditTerm.Location = new System.Drawing.Point(559, 260);
+            this.btnEditTerm.Image = ((System.Drawing.Image) (resources.GetObject("btnEditTerm.Image")));
+            this.btnEditTerm.Location = new System.Drawing.Point(652, 300);
             this.btnEditTerm.Name = "btnEditTerm";
-            this.btnEditTerm.Size = new System.Drawing.Size(32, 32);
+            this.btnEditTerm.Size = new System.Drawing.Size(37, 37);
             this.btnEditTerm.TabIndex = 44;
             this.btnEditTerm.UseVisualStyleBackColor = true;
             this.btnEditTerm.Click += new System.EventHandler(this.btnEditTerm_Click);
             // 
             // btnSaveXML
             // 
-            this.btnSaveXML.Image = ((System.Drawing.Image)(resources.GetObject("btnSaveXML.Image")));
-            this.btnSaveXML.Location = new System.Drawing.Point(559, 440);
+            this.btnSaveXML.Image = ((System.Drawing.Image) (resources.GetObject("btnSaveXML.Image")));
+            this.btnSaveXML.Location = new System.Drawing.Point(652, 508);
             this.btnSaveXML.Name = "btnSaveXML";
-            this.btnSaveXML.Size = new System.Drawing.Size(32, 32);
+            this.btnSaveXML.Size = new System.Drawing.Size(37, 37);
             this.btnSaveXML.TabIndex = 43;
             this.btnSaveXML.UseVisualStyleBackColor = true;
             this.btnSaveXML.Click += new System.EventHandler(this.btnSaveXML_Click);
             // 
             // btnRemoveTerm
             // 
-            this.btnRemoveTerm.Image = ((System.Drawing.Image)(resources.GetObject("btnRemoveTerm.Image")));
-            this.btnRemoveTerm.Location = new System.Drawing.Point(559, 302);
+            this.btnRemoveTerm.Image = ((System.Drawing.Image) (resources.GetObject("btnRemoveTerm.Image")));
+            this.btnRemoveTerm.Location = new System.Drawing.Point(652, 348);
             this.btnRemoveTerm.Name = "btnRemoveTerm";
-            this.btnRemoveTerm.Size = new System.Drawing.Size(32, 32);
+            this.btnRemoveTerm.Size = new System.Drawing.Size(37, 37);
             this.btnRemoveTerm.TabIndex = 42;
             this.btnRemoveTerm.UseVisualStyleBackColor = true;
             this.btnRemoveTerm.Click += new System.EventHandler(this.btnRemoveTerm_Click);
             // 
             // btnAddTerm
             // 
-            this.btnAddTerm.Image = ((System.Drawing.Image)(resources.GetObject("btnAddTerm.Image")));
-            this.btnAddTerm.Location = new System.Drawing.Point(559, 11);
+            this.btnAddTerm.Image = ((System.Drawing.Image) (resources.GetObject("btnAddTerm.Image")));
+            this.btnAddTerm.Location = new System.Drawing.Point(652, 13);
             this.btnAddTerm.Name = "btnAddTerm";
-            this.btnAddTerm.Size = new System.Drawing.Size(32, 32);
+            this.btnAddTerm.Size = new System.Drawing.Size(37, 37);
             this.btnAddTerm.TabIndex = 41;
             this.btnAddTerm.UseVisualStyleBackColor = true;
             this.btnAddTerm.Click += new System.EventHandler(this.btnAddTerm_Click);
@@ -532,16 +522,14 @@
             // 
             this.cmsTerms.AutoSize = false;
             this.cmsTerms.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.cmsTerms.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsmEdit,
-            this.tsmDelete});
+            this.cmsTerms.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {this.tsmEdit, this.tsmDelete});
             this.cmsTerms.Name = "cmsTerms";
             this.cmsTerms.Size = new System.Drawing.Size(80, 48);
             // 
             // tsmEdit
             // 
             this.tsmEdit.AutoSize = false;
-            this.tsmEdit.Image = ((System.Drawing.Image)(resources.GetObject("tsmEdit.Image")));
+            this.tsmEdit.Image = ((System.Drawing.Image) (resources.GetObject("tsmEdit.Image")));
             this.tsmEdit.Name = "tsmEdit";
             this.tsmEdit.ShowShortcutKeys = false;
             this.tsmEdit.Size = new System.Drawing.Size(79, 22);
@@ -551,7 +539,7 @@
             // tsmDelete
             // 
             this.tsmDelete.AutoSize = false;
-            this.tsmDelete.Image = ((System.Drawing.Image)(resources.GetObject("tsmDelete.Image")));
+            this.tsmDelete.Image = ((System.Drawing.Image) (resources.GetObject("tsmDelete.Image")));
             this.tsmDelete.Name = "tsmDelete";
             this.tsmDelete.Size = new System.Drawing.Size(79, 22);
             this.tsmDelete.Text = "Delete";
@@ -559,19 +547,19 @@
             // 
             // btnClear
             // 
-            this.btnClear.Image = ((System.Drawing.Image)(resources.GetObject("btnClear.Image")));
-            this.btnClear.Location = new System.Drawing.Point(559, 344);
+            this.btnClear.Image = ((System.Drawing.Image) (resources.GetObject("btnClear.Image")));
+            this.btnClear.Location = new System.Drawing.Point(652, 397);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(32, 32);
+            this.btnClear.Size = new System.Drawing.Size(37, 37);
             this.btnClear.TabIndex = 49;
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
             // frmCreateXR
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(602, 483);
+            this.ClientSize = new System.Drawing.Size(702, 557);
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.btnOpenXml);
@@ -584,7 +572,7 @@
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Icon = ((System.Drawing.Icon) (resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "frmCreateXR";
@@ -598,14 +586,13 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox4.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvTerms)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.dgvTerms)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.cmsTerms.ResumeLayout(false);
             this.ResumeLayout(false);
-
         }
 
         #endregion
@@ -653,9 +640,9 @@
         private System.Windows.Forms.ContextMenuStrip cmsTerms;
         private System.Windows.Forms.ToolStripMenuItem tsmEdit;
         private System.Windows.Forms.ToolStripMenuItem tsmDelete;
+        private System.Windows.Forms.Button btnClear;
         public System.Windows.Forms.TextBox txtTitle;
         public System.Windows.Forms.TextBox txtAuthor;
         public System.Windows.Forms.TextBox txtAsin;
-        private System.Windows.Forms.Button btnClear;
     }
 }

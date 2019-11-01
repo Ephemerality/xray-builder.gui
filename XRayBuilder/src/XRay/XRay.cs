@@ -38,6 +38,7 @@ using XRayBuilderGUI.Libraries;
 using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Libraries.Primitives.Extensions;
 using XRayBuilderGUI.Libraries.Progress;
+using XRayBuilderGUI.XRay.Model;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI.XRay

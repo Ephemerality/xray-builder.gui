@@ -19,6 +19,7 @@ using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Libraries.Primitives.Extensions;
 using XRayBuilderGUI.Libraries.Progress;
 using XRayBuilderGUI.Model;
+using XRayBuilderGUI.XRay.Model;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI.DataSources.Secondary
@@ -240,12 +241,12 @@ namespace XRayBuilderGUI.DataSources.Secondary
             return false;
         }
 
-        public async Task<IEnumerable<XRay.Term>> GetTermsAsync(string dataUrl, IProgressBar progress, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, IProgressBar progress, CancellationToken cancellationToken = default)
         {
             _logger.Log("Downloading Goodreads page...");
             var grDoc = await _httpClient.GetPageAsync(dataUrl, cancellationToken);
             var charNodes = grDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/a");
-            if (charNodes == null) return new List<XRay.Term>();
+            if (charNodes == null) return new List<Term>();
             // Check if ...more link exists on Goodreads page
             var moreCharNodes = grDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/span[@class='toggleContent']/a");
             var allChars = moreCharNodes == null ? charNodes : charNodes.Concat(moreCharNodes);
@@ -254,7 +255,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             progress?.Set(0, termCount);
             if (termCount > 20)
                 _logger.Log("More than 20 characters found. Consider using the 'download to XML' option if you need to build repeatedly.");
-            var terms = new ConcurrentBag<XRay.Term>();
+            var terms = new ConcurrentBag<Term>();
             await allChars.ParallelForEachAsync(async charNode =>
             {
                 try
@@ -273,9 +274,12 @@ namespace XRayBuilderGUI.DataSources.Secondary
         }
 
         // Are there actually any goodreads pages that aren't at goodreads.com for other languages??
-        private async Task<XRay.Term> GetTermAsync(string baseUrl, string relativeUrl, CancellationToken cancellationToken = default)
+        private async Task<Term> GetTermAsync(string baseUrl, string relativeUrl, CancellationToken cancellationToken = default)
         {
-            var result = new XRay.Term("character");
+            var result = new Term
+            {
+                Type = "character"
+            };
             var tempUri = new Uri(baseUrl);
             tempUri = new Uri(new Uri(tempUri.GetLeftPart(UriPartial.Authority)), relativeUrl);
             result.DescSrc = "Goodreads";

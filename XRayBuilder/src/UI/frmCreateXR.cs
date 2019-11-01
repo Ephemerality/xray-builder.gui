@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using XRayBuilderGUI.Libraries;
 using XRayBuilderGUI.Properties;
+using XRayBuilderGUI.XRay.Model;
 
 namespace XRayBuilderGUI.UI
 {
@@ -20,7 +21,7 @@ namespace XRayBuilderGUI.UI
         }
 
         private ToolTip toolTip1 = new ToolTip();
-        private List<XRay.Term> Terms = new List<XRay.Term>(100);
+        private List<Term> Terms = new List<Term>(100);
 
         private void btnAddTerm_Click(object sender, EventArgs e)
         {
@@ -112,9 +113,9 @@ namespace XRayBuilderGUI.UI
             try
             {
                 if (filetype == ".xml")
-                    Terms = Functions.DeserializeList<XRay.Term>(file);
+                    Terms = Functions.DeserializeList<Term>(file);
                 else if (filetype == ".txt")
-                    Terms = LoadTermsFromTxt<XRay.Term>(file);
+                    Terms = LoadTermsFromTxt<Term>(file);
                 else
                     MessageBox.Show("Error: Bad file type \"" + filetype + "\"");
                 foreach (var t in Terms)
@@ -272,7 +273,7 @@ namespace XRayBuilderGUI.UI
             var termId = 1;
             foreach (DataGridViewRow row in dgvTerms.Rows)
             {
-                var newTerm = new XRay.Term
+                var newTerm = new Term
                 {
                     Id = termId++,
                     Type = CompareImages((Bitmap) row.Cells[0].Value, Resources.character) ? "character" : "topic",
@@ -323,7 +324,7 @@ namespace XRayBuilderGUI.UI
                             MessageBox.Show("Error: Invalid term type \"" + temp + "\" on line " + lineCount);
                             return null;
                         }
-                        var newTerm = new XRay.Term
+                        var newTerm = new Term
                         {
                             Type = temp,
                             TermName = streamReader.ReadLine(),

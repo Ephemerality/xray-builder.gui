@@ -949,6 +949,7 @@ namespace XRayBuilderGUI.UI
             var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, false, _logger));
             if (metadata != null)
             {
+                // TODO DONT ACCESS THESE CONTROLS DIRECTLY
                 frmCreateXr.txtAuthor.Text = metadata.Author;
                 frmCreateXr.txtTitle.Text = metadata.Title;
                 frmCreateXr.txtAsin.Text = metadata.Asin;

@@ -5,6 +5,7 @@ using System.Data.Common;
 using System.IO;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using XRayBuilderGUI.XRay.Model;
 
 namespace XRayBuilderGUI.XRay
 {

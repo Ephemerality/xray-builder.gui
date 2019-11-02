@@ -7,7 +7,7 @@ using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.Libraries.Http;
 using XRayBuilderGUI.Libraries.Logging;
-using XRayBuilderGUI.XRay.Logic;
+using XRayBuilderGUI.XRay.Logic.Aliases;
 using XRayBuilderGUI.XRay.Logic.Chapters;
 using XRayBuilderGUI.XRay.Logic.Export;
 

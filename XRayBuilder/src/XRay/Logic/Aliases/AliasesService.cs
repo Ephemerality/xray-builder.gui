@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using XRayBuilderGUI.Libraries.Logging;
 
-namespace XRayBuilderGUI.XRay.Logic
+namespace XRayBuilderGUI.XRay.Logic.Aliases
 {
     public sealed class AliasesService : IAliasesService
     {

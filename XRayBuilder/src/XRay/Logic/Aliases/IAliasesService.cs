@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 
-namespace XRayBuilderGUI.XRay.Logic
+namespace XRayBuilderGUI.XRay.Logic.Aliases
 {
     public interface IAliasesService
     {

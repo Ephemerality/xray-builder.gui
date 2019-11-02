@@ -23,7 +23,7 @@ using XRayBuilderGUI.Properties;
 using XRayBuilderGUI.UI.Preview.Logic;
 using XRayBuilderGUI.Unpack;
 using XRayBuilderGUI.XRay;
-using XRayBuilderGUI.XRay.Logic;
+using XRayBuilderGUI.XRay.Logic.Aliases;
 using XRayBuilderGUI.XRay.Logic.Chapters;
 using XRayBuilderGUI.XRay.Logic.Export;
 using XRayBuilderGUI.XRay.Model.Export;

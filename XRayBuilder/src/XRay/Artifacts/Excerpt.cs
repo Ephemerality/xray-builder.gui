@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace XRayBuilderGUI.XRay.Model
+namespace XRayBuilderGUI.XRay.Artifacts
 {
     public class Excerpt
     {

@@ -19,7 +19,7 @@ using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Libraries.Primitives.Extensions;
 using XRayBuilderGUI.Libraries.Progress;
 using XRayBuilderGUI.Model;
-using XRayBuilderGUI.XRay.Model;
+using XRayBuilderGUI.XRay.Artifacts;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI.DataSources.Secondary

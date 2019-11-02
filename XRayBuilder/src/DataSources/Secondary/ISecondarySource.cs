@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 using XRayBuilderGUI.DataSources.Secondary.Model;
 using XRayBuilderGUI.Libraries.Progress;
 using XRayBuilderGUI.Model;
-using XRayBuilderGUI.XRay.Model;
+using XRayBuilderGUI.XRay.Artifacts;
 
 namespace XRayBuilderGUI.DataSources.Secondary
 {

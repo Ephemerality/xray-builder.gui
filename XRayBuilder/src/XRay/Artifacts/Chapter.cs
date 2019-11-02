@@ -1,4 +1,4 @@
-namespace XRayBuilderGUI.XRay.Model
+namespace XRayBuilderGUI.XRay.Artifacts
 {
     public class Chapter
     {

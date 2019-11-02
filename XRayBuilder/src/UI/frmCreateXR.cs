@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using XRayBuilderGUI.Libraries;
 using XRayBuilderGUI.Properties;
-using XRayBuilderGUI.XRay.Model;
+using XRayBuilderGUI.XRay.Artifacts;
 
 namespace XRayBuilderGUI.UI
 {

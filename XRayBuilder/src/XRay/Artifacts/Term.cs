@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
 
-namespace XRayBuilderGUI.XRay.Model
+namespace XRayBuilderGUI.XRay.Artifacts
 {
     public class Term
     {
@@ -30,6 +30,7 @@ namespace XRayBuilderGUI.XRay.Model
 
         [XmlIgnore]
         [JsonProperty("locs")]
+        // todo int[][]
         public List<string> Locs { get; set; } = new List<string>();
 
         [XmlIgnore]

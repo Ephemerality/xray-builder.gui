@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
-using XRayBuilderGUI.XRay.Model;
+using XRayBuilderGUI.XRay.Artifacts;
 
 namespace XRayBuilder.Test.XRay.Model
 {

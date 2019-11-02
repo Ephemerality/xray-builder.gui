@@ -3,8 +3,11 @@ using JetBrains.Annotations;
 
 namespace XRayBuilderGUI.XRay.Logic.Aliases
 {
-    public interface IAliasesService
+    public interface IAliasesRepository
     {
+        /// <summary>
+        /// Load any available aliases for <paramref name="xray"/>, adding and removing terms as specified in the alias file
+        /// </summary>
         void LoadAliasesForXRay(XRay xray);
 
         /// <summary>

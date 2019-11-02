@@ -7,11 +7,11 @@ using XRayBuilderGUI.Libraries.Logging;
 
 namespace XRayBuilderGUI.XRay.Logic.Aliases
 {
-    public sealed class AliasesService : IAliasesService
+    public sealed class AliasesRepository : IAliasesRepository
     {
         private readonly ILogger _logger;
 
-        public AliasesService(ILogger logger)
+        public AliasesRepository(ILogger logger)
         {
             _logger = logger;
         }

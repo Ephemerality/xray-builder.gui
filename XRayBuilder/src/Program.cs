@@ -57,7 +57,7 @@ namespace XRayBuilderGUI
 
             _container.Register<IAmazonInfoParser, AmazonInfoParser>(Lifestyle.Singleton);
 
-            _container.Register<IAliasesService, AliasesService>();
+            _container.Register<IAliasesRepository, AliasesRepository>();
 
             _container.Verify();
         }

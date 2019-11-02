@@ -40,7 +40,7 @@ namespace XRayBuilderGUI.UI
         private readonly IAuthorProfileGenerator _authorProfileGenerator;
         private readonly PreviewProviderFactory _previewProviderFactory;
         private readonly IAmazonInfoParser _amazonInfoParser;
-        private readonly IAliasesService _aliasesService;
+        private readonly IAliasesRepository _aliasesRepository;
         private readonly ChaptersService _chaptersService;
         private readonly XRayExporterFactory _xrayExporterFactory;
         private readonly IPreviewDataExporter _previewDataExporter;
@@ -60,7 +60,7 @@ namespace XRayBuilderGUI.UI
             IAmazonClient amazonClient,
             PreviewProviderFactory previewProviderFactory,
             IAmazonInfoParser amazonInfoParser,
-            IAliasesService aliasesService,
+            IAliasesRepository aliasesRepository,
             IPreviewDataExporter previewDataExporter,
             XRayExporterFactory xrayExporterFactory,
             ChaptersService chaptersService)
@@ -74,7 +74,7 @@ namespace XRayBuilderGUI.UI
             _amazonClient = amazonClient;
             _previewProviderFactory = previewProviderFactory;
             _amazonInfoParser = amazonInfoParser;
-            _aliasesService = aliasesService;
+            _aliasesRepository = aliasesRepository;
             _previewDataExporter = previewDataExporter;
             _xrayExporterFactory = xrayExporterFactory;
             _chaptersService = chaptersService;
@@ -255,7 +255,7 @@ namespace XRayBuilderGUI.UI
                     _logger.Log("Aliases file not found.");
                 else
                 {
-                    _aliasesService.LoadAliasesForXRay(xray);
+                    _aliasesRepository.LoadAliasesForXRay(xray);
                     _logger.Log($"Character aliases read from {xray.AliasPath}.");
                 }
 

@@ -43,7 +43,8 @@ namespace XRayBuilder.Test
 
         private static List<Book> books = new List<Book>
         {
-            new Book(@"testfiles\A Storm of Swords - George R. R. Martin.rawml", @"testfiles\A Storm of Swords - George R. R. Martin.xml", "A_Storm_of_Swords", "171927873", "B000FBFN1U")
+            new Book(@"testfiles\A Storm of Swords - George R. R. Martin.rawml", @"testfiles\A Storm of Swords - George R. R. Martin.xml", "A_Storm_of_Swords", "171927873", "B000FBFN1U"),
+            new Book(@"testfiles\Tick Tock - James Patterson.rawml", @"testfiles\Tick Tock - James Patterson.xml", "Tick_Tock", "2219522925", "B0047Y16MG")
         };
 
         private XRayBuilderGUI.XRay.XRay CreateXRayFromXML(string path, string db, string guid, string asin)
@@ -88,6 +89,21 @@ namespace XRayBuilder.Test
             string filename = xray.XRayName();
             string outpath = Path.Combine(Environment.CurrentDirectory, "out", filename);
             xray.SaveToFileNew(outpath, null, tokens.Token);
+        }
+
+        [Test, TestCaseSource(nameof(books))]
+        public async Task XRayXmlSaveOldTest(Book book)
+        {
+            var xray = CreateXRayFromXML(book.xml, book.db, book.guid, book.asin);
+            await xray.CreateXray(null, tokens.Token);
+            xray.ExportAndDisplayTerms();
+            xray.LoadAliases();
+            xray.ExpandFromRawMl(new FileStream(book.rawml, FileMode.Open), null, null, tokens.Token, false, false);
+            string filename = xray.XRayName();
+            string outpath = Path.Combine(Environment.CurrentDirectory, "out", filename);
+            xray.CreatedAt = new DateTime(2019, 11, 2, 13, 19, 18, DateTimeKind.Utc);
+            xray.SaveToFileOld(outpath);
+            FileAssert.AreEqual($"testfiles\\XRAY.entities.{book.asin}_old.asc", outpath);
         }
     }
 

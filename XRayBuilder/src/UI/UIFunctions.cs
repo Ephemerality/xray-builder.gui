@@ -82,7 +82,7 @@ namespace XRayBuilderGUI.UI
                     _logger.Log("Saving rawML to dmp directory...");
                     metadata.SaveRawMl(RawMlPath(Path.GetFileNameWithoutExtension(mobiFile)));
                 }
-                _logger.Log($"Got metadata!\r\nDatabase Name: {metadata.DbName}\r\nUniqueID: {metadata.UniqueId}");
+                _logger.Log($"Got metadata!\r\nDatabase Name: {metadata.DbName}\r\nUniqueID: {metadata.UniqueId}\r\nASIN: {metadata.Asin}");
 
                 return metadata;
             }

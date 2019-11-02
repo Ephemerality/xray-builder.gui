@@ -38,8 +38,8 @@ using XRayBuilderGUI.Libraries;
 using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Libraries.Primitives.Extensions;
 using XRayBuilderGUI.Libraries.Progress;
+using XRayBuilderGUI.XRay.Artifacts;
 using XRayBuilderGUI.XRay.Logic;
-using XRayBuilderGUI.XRay.Model;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI.XRay
@@ -66,6 +66,7 @@ namespace XRayBuilderGUI.XRay
         private int locOffset;
         private List<NotableClip> notableClips;
         private int foundNotables;
+        public DateTime? CreatedAt { get; set; }
 
         private bool enableEdit = Properties.Settings.Default.enableEdit;
         private readonly ISecondarySource dataSource;
@@ -184,18 +185,18 @@ namespace XRayBuilderGUI.XRay
             var dd = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             var xrayversion = $"{dd.Major}.{dd.Minor}{dd.Build}";
             //Insert creation date... seems useful?
-            var date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            CreatedAt ??= DateTime.Now;
             //If there are no chapters built (someone only ran create X-Ray), just use the default version
             if (_chapters.Count > 0)
                 return
                     string.Format(
                         @"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{8}"",""created"":""{9}"",""terms"":[{4}],""chapters"":[{5}],""assets"":{{}},""srl"":{6},""erl"":{7}}}",
                         asin, databaseName, Guid, version, string.Join(",", Terms),
-                        string.Join(",", _chapters), _srl, _erl, xrayversion, date);
+                        string.Join(",", _chapters), _srl, _erl, xrayversion, CreatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss"));
             return
                 string.Format(
                     @"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{5}"",""created"":""{6}"",""terms"":[{4}],""chapters"":[{{""name"":null,""start"":1,""end"":9999999}}]}}",
-                    asin, databaseName, Guid, version, string.Join(",", Terms), xrayversion, date);
+                    asin, databaseName, Guid, version, string.Join(",", Terms), xrayversion, CreatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss"));
         }
 
         //Add string creation for new XRAY.ASIN.previewData file

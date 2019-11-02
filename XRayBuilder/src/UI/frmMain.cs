@@ -23,6 +23,7 @@ using XRayBuilderGUI.Properties;
 using XRayBuilderGUI.UI.Preview.Logic;
 using XRayBuilderGUI.Unpack;
 using XRayBuilderGUI.XRay;
+using XRayBuilderGUI.XRay.Logic;
 using XRayBuilderGUI.XRay.Logic.Aliases;
 using XRayBuilderGUI.XRay.Logic.Chapters;
 using XRayBuilderGUI.XRay.Logic.Export;
@@ -42,6 +43,7 @@ namespace XRayBuilderGUI.UI
         private readonly IAmazonInfoParser _amazonInfoParser;
         private readonly IAliasesRepository _aliasesRepository;
         private readonly ChaptersService _chaptersService;
+        private readonly XRayService _xrayService;
         private readonly XRayExporterFactory _xrayExporterFactory;
         private readonly IPreviewDataExporter _previewDataExporter;
         private readonly Container _diContainer;
@@ -63,7 +65,8 @@ namespace XRayBuilderGUI.UI
             IAliasesRepository aliasesRepository,
             IPreviewDataExporter previewDataExporter,
             XRayExporterFactory xrayExporterFactory,
-            ChaptersService chaptersService)
+            ChaptersService chaptersService,
+            XRayService xrayService)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
@@ -78,6 +81,7 @@ namespace XRayBuilderGUI.UI
             _previewDataExporter = previewDataExporter;
             _xrayExporterFactory = xrayExporterFactory;
             _chaptersService = chaptersService;
+            _xrayService = xrayService;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
         }
@@ -238,7 +242,7 @@ namespace XRayBuilderGUI.UI
 
                 await Task.Run(() => xray.CreateXray(_progress, _cancelTokens.Token)).ConfigureAwait(false);
 
-                xray.ExportAndDisplayTerms();
+                _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath);
 
                 if (_settings.enableEdit && DialogResult.Yes ==
                     MessageBox.Show(

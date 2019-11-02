@@ -7,6 +7,7 @@ using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.Libraries.Http;
 using XRayBuilderGUI.Libraries.Logging;
+using XRayBuilderGUI.XRay.Logic;
 using XRayBuilderGUI.XRay.Logic.Aliases;
 using XRayBuilderGUI.XRay.Logic.Chapters;
 using XRayBuilderGUI.XRay.Logic.Export;
@@ -23,6 +24,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         private IAmazonClient _amazonClient;
         private IAmazonInfoParser _amazonInfoParser;
         private ChaptersService _chaptersService;
+        private IXRayService _xrayService;
 
         [SetUp]
         public void Setup()
@@ -35,6 +37,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             _goodreads = new Goodreads(_logger, _httpClient, _amazonClient);
             _aliasesRepository = new AliasesRepository(_logger);
             _chaptersService = new ChaptersService(_logger);
+            _xrayService = new XRayService(new AliasesService(_logger), _logger);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
@@ -42,7 +45,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         {
             var xray = TestData.CreateXRayFromXML(book.xml, book.db, book.guid, book.asin, _goodreads, _logger, _chaptersService);
             await xray.CreateXray(null, CancellationToken.None);
-            xray.ExportAndDisplayTerms();
+            _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath);
             _aliasesRepository.LoadAliasesForXRay(xray);
             xray.ExpandFromRawMl(new FileStream(book.rawml, FileMode.Open), null, null, CancellationToken.None, false, false);
             string filename = xray.XRayName();

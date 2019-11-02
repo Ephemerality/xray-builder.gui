@@ -20,7 +20,6 @@
 // HTMLAgilityPack from http://htmlagilitypack.codeplex.com
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -56,51 +55,25 @@ namespace XRayBuilderGUI.XRay
         public List<Excerpt> Excerpts = new List<Excerpt>();
         public long Srl;
         public long Erl;
-        private bool skipShelfari;
+        public bool SkipShelfari;
         public bool Unattended { get; set; }
         private int locOffset;
         private List<NotableClip> notableClips;
         public int FoundNotables;
         public DateTime? CreatedAt { get; set; }
 
-        private readonly ISecondarySource dataSource;
+        public readonly ISecondarySource DataSource;
         private readonly ChaptersService _chaptersService;
 
         public delegate DialogResult SafeShowDelegate(string msg, string caption, MessageBoxButtons buttons,
             MessageBoxIcon icon, MessageBoxDefaultButton def);
-
-        // TODO: Do something about this
-        #region CommonTitles
-        string[] CommonTitles = { "Mr", "Mrs", "Ms", "Miss", "Dr", "Herr", "Monsieur", "Hr", "Frau",
-            "A V M", "Admiraal", "Admiral", "Alderman", "Alhaji", "Ambassador", "Baron", "Barones", "Brig",
-            "Brigadier", "Brother", "Canon", "Capt", "Captain", "Cardinal", "Cdr", "Chief", "Cik", "Cmdr", "Col",
-            "Colonel", "Commandant", "Commander", "Commissioner", "Commodore", "Comte", "Comtessa", "Congressman",
-            "Conseiller", "Consul", "Conte", "Contessa", "Corporal", "Councillor", "Count", "Countess", "Air Cdre",
-            "Air Commodore", "Air Marshal", "Air Vice Marshal", "Brig Gen", "Brig General", "Brigadier General",
-            "Crown Prince", "Crown Princess", "Dame", "Datin", "Dato", "Datuk", "Datuk Seri", "Deacon", "Deaconess",
-            "Dean", "Dhr", "Dipl Ing", "Doctor", "Dott", "Dott Sa", "Dr", "Dr Ing", "Dra", "Drs", "Embajador",
-            "Embajadora", "En", "Encik", "Eng", "Eur Ing", "Exma Sra", "Exmo Sr", "Father", "First Lieutient",
-            "First Officer", "Flt Lieut", "Flying Officer", "Fr", "Frau", "Fraulein", "Fru", "Gen", "Generaal",
-            "General", "Governor", "Graaf", "Gravin", "Group Captain", "Grp Capt", "H E Dr", "H H", "H M", "H R H",
-            "Hajah", "Haji", "Hajim", "Her Highness", "Her Majesty", "Herr", "High Chief", "His Highness",
-            "His Holiness", "His Majesty", "Hon", "Hr", "Hra", "Ing", "Ir", "Jonkheer", "Judge", "Justice",
-            "Khun Ying", "Kolonel", "Lady", "Lcda", "Lic", "Lieut", "Lieut Cdr", "Lieut Col", "Lieut Gen", "Lord",
-            "Madame", "Mademoiselle", "Maj Gen", "Major", "Master", "Mevrouw", "Miss", "Mlle", "Mme", "Monsieur",
-            "Monsignor", "Mstr", "Nti", "Pastor", "President", "Prince", "Princess", "Princesse", "Prinses", "Prof",
-            "Prof Dr", "Prof Sir", "Professor", "Puan", "Puan Sri", "Rabbi", "Rear Admiral", "Rev", "Rev Canon",
-            "Rev Dr", "Rev Mother", "Reverend", "Rva", "Senator", "Sergeant", "Sheikh", "Sheikha", "Sig", "Sig Na",
-            "Sig Ra", "Sir", "Sister", "Sqn Ldr", "Sr", "Sr D", "Sra", "Srta", "Sultan", "Tan Sri", "Tan Sri Dato",
-            "Tengku", "Teuku", "Than Puying", "The Hon Dr", "The Hon Justice", "The Hon Miss", "The Hon Mr",
-            "The Hon Mrs", "The Hon Ms", "The Hon Sir", "The Very Rev", "Toh Puan", "Tun", "Vice Admiral",
-            "Viscount", "Viscountess", "Wg Cdr", "Jr", "Sr", "Sheriff", "Special Agent", "Detective", "Lt" };
-        #endregion
 
         public XRay(string shelfari, ISecondarySource dataSource, ILogger logger, ChaptersService chaptersService)
         {
             if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
                 shelfari = "https://" + shelfari;
             DataUrl = shelfari;
-            this.dataSource = dataSource;
+            DataSource = dataSource;
             _logger = logger;
             _chaptersService = chaptersService;
         }
@@ -119,7 +92,7 @@ namespace XRayBuilderGUI.XRay
             Asin = asin;
             this.locOffset = locOffset;
             _aliasPath = aliaspath;
-            this.dataSource = dataSource;
+            DataSource = dataSource;
             _logger = logger;
             _chaptersService = chaptersService;
         }
@@ -135,10 +108,10 @@ namespace XRayBuilderGUI.XRay
             Asin = asin;
             this.locOffset = locOffset;
             _aliasPath = aliaspath;
-            this.dataSource = dataSource;
+            DataSource = dataSource;
             _logger = logger;
             _chaptersService = chaptersService;
-            skipShelfari = true;
+            SkipShelfari = true;
         }
 
         public string AliasPath
@@ -158,7 +131,7 @@ namespace XRayBuilderGUI.XRay
         {
             try
             {
-                Terms = (await dataSource.GetTermsAsync(DataUrl, progress, token)).ToList();
+                Terms = (await DataSource.GetTermsAsync(DataUrl, progress, token)).ToList();
             }
             catch (OperationCanceledException)
             {
@@ -180,7 +153,7 @@ namespace XRayBuilderGUI.XRay
         public async Task<int> CreateXray(IProgressBar progress, CancellationToken token = default)
         {
             //Download Shelfari info if not skipping
-            if (skipShelfari)
+            if (SkipShelfari)
             {
                 if (!File.Exists(xmlFile))
                 {
@@ -210,9 +183,9 @@ namespace XRayBuilderGUI.XRay
             {
                 try
                 {
-                    Terms = (await dataSource.GetTermsAsync(DataUrl, progress, token)).ToList();
+                    Terms = (await DataSource.GetTermsAsync(DataUrl, progress, token)).ToList();
                     _logger.Log("Downloading notable clips...");
-                    notableClips = (await dataSource.GetNotableClipsAsync(DataUrl, null, progress, token))?.ToList();
+                    notableClips = (await DataSource.GetNotableClipsAsync(DataUrl, null, progress, token))?.ToList();
                 }
                 catch (OperationCanceledException)
                 {
@@ -220,45 +193,12 @@ namespace XRayBuilderGUI.XRay
                 }
                 if (Terms.Count == 0)
                 {
-                    _logger.Log("Error: No terms found on " + dataSource.Name + ".");
+                    _logger.Log("Error: No terms found on " + DataSource.Name + ".");
                     return 1;
                 }
             }
 
             return 0;
-        }
-
-        public void ExportAndDisplayTerms()
-        {
-            //Export available terms to a file to make it easier to create aliases or import the modified aliases if they exist
-            //Could potentially just attempt to automate the creation of aliases, but in some cases it is very subjective...
-            //For example, Shelfari shows the character "Artemis Fowl II", but in the book he is either referred to as "Artemis Fowl", "Artemis", or even "Arty"
-            //Other characters have one name on Shelfari but can have completely different names within the book
-            var aliasesDownloaded = false;
-            // TODO: Review this download process
-            //if ((!File.Exists(AliasPath) || Properties.Settings.Default.overwriteAliases) && Properties.Settings.Default.downloadAliases)
-            //{
-            //    aliasesDownloaded = await AttemptAliasDownload();
-            //}
-
-            if (!aliasesDownloaded && (!File.Exists(AliasPath) || Properties.Settings.Default.overwriteAliases))
-            {
-                SaveCharacters(AliasPath);
-                _logger.Log($"Characters exported to {AliasPath} for adding aliases.");
-            }
-
-            if (skipShelfari)
-                _logger.Log(string.Format("{0} {1} found in file:", Terms.Count, Terms.Count > 1 ? "Terms" : "Term"));
-            else
-                _logger.Log(string.Format("{0} {1} found on {2}:", Terms.Count, Terms.Count > 1 ? "Terms" : "Term", dataSource.Name));
-            var str = new StringBuilder(Terms.Count * 32); // Assume that most names will be less than 32 chars
-            var termId = 1;
-            foreach (var t in Terms)
-            {
-                str.Append(t.TermName).Append(", ");
-                t.Id = termId++;
-            }
-            _logger.Log(str.ToString());
         }
 
         //public async Task<bool> AttemptAliasDownload()
@@ -599,125 +539,6 @@ namespace XRayBuilderGUI.XRay
                 }
             }
             return 0;
-        }
-
-        public void SaveCharacters(string aliasFile)
-        {
-            // todo service should handle this
-            if (!Directory.Exists(Environment.CurrentDirectory + @"\ext\"))
-                Directory.CreateDirectory(Environment.CurrentDirectory + @"\ext\");
-
-            // todo these should probably already be loaded at this point
-            //Try to load custom common titles from BaseSplitIgnore.txt
-            try
-            {
-                using var streamReader = new StreamReader(Environment.CurrentDirectory + @"\dist\BaseSplitIgnore.txt", Encoding.UTF8);
-                var CustomSplitIgnore = streamReader.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.None)
-                    .Where(r => !r.StartsWith("//")).ToArray();
-                if (CustomSplitIgnore.Length >= 1)
-                {
-                    CommonTitles = CustomSplitIgnore;
-                }
-                _logger.Log("Splitting aliases using custom common titles file...");
-            }
-            catch (Exception ex)
-            {
-                _logger.Log("An error occurred while opening the BaseSplitIgnore.txt file.\r\n" +
-                    "Ensure you extracted it to the same directory as the program.\r\n" +
-                    ex.Message + "\r\nUsing built-in default terms...");
-            }
-
-            //Try to remove common titles from aliases
-            using var streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8);
-            var aliasCheck = new List<string>();
-            foreach (var c in Terms)
-            {
-                if (c.Type == "character" && c.TermName.Contains(" "))
-                {
-                    try
-                    {
-                        if (Properties.Settings.Default.splitAliases)
-                        {
-                            var splitName = "";
-                            string titleTrimmed;
-                            var aliasList = new List<string>();
-                            var textInfo = new CultureInfo("en-US", false).TextInfo;
-
-                            var pattern = @"( ?(" + string.Join("|", CommonTitles) +
-                                          ")\\.? )|(^[A-Z]\\. )|( [A-Z]\\.)|(\")|(\u201C)|(\u201D)|(,)|(')";
-
-                            var regex = new Regex(pattern);
-                            var matchCheck = Regex.Match(c.TermName, pattern);
-                            if (matchCheck.Success)
-                            {
-                                titleTrimmed = c.TermName;
-                                foreach (Match match in regex.Matches(titleTrimmed))
-                                {
-                                    titleTrimmed = titleTrimmed.Replace(match.Value, string.Empty);
-                                }
-                                foreach (Match match in regex.Matches(titleTrimmed))
-                                {
-                                    titleTrimmed = titleTrimmed.Replace(match.Value, string.Empty);
-                                }
-                                aliasList.Add(titleTrimmed);
-                            }
-                            else
-                                titleTrimmed = c.TermName;
-
-                            titleTrimmed = Regex.Replace(titleTrimmed, @"\s+", " ");
-                            titleTrimmed = Regex.Replace(titleTrimmed, @"( ?V?I{0,3}$)", string.Empty);
-                            titleTrimmed = Regex.Replace(titleTrimmed, @"(\(aka )", "(");
-
-                            var bracketedName = Regex.Match(titleTrimmed, @"(.*)(\()(.*)(\))");
-                            if (bracketedName.Success)
-                            {
-                                aliasList.Add(bracketedName.Groups[3].Value);
-                                aliasList.Add(bracketedName.Groups[1].Value.TrimEnd());
-                                titleTrimmed = titleTrimmed.Replace(bracketedName.Groups[2].Value, "")
-                                    .Replace(bracketedName.Groups[4].Value, "");
-                            }
-
-                            if (titleTrimmed.Contains(" "))
-                            {
-                                titleTrimmed = titleTrimmed.Replace(" &amp;", "").Replace(" &", "");
-                                var words = titleTrimmed.Split(' ');
-                                foreach (var word in words)
-                                {
-                                    if (word.ToUpper() == word)
-                                        aliasList.Add(textInfo.ToTitleCase(word.ToLower()));
-                                    else
-                                        aliasList.Add(word);
-                                }
-                            }
-                            if (aliasList.Count > 0)
-                            {
-                                aliasList.Sort((a, b) => b.Length.CompareTo(a.Length));
-                                foreach (var word in aliasList)
-                                {
-                                    if (aliasCheck.Any(str => str.Equals(word)))
-                                        continue;
-                                    aliasCheck.Add(word);
-                                    splitName += word + ",";
-                                }
-                                if (splitName.LastIndexOf(",") != -1)
-                                {
-                                    streamWriter.WriteLine(c.TermName + "|" + splitName.Substring(0, splitName.LastIndexOf(",")));
-                                }
-                                else
-                                    streamWriter.WriteLine(c.TermName + "|");
-                            }
-                        }
-                        else
-                            streamWriter.WriteLine(c.TermName + "|");
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Log("An error occurred while splitting the aliases.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-                    }
-                }
-                else
-                    streamWriter.WriteLine(c.TermName + "|");
-            }
         }
     }
 }

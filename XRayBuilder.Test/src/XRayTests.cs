@@ -14,6 +14,8 @@ using XRayBuilderGUI.Libraries;
 using XRayBuilderGUI.Libraries.Http;
 using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Model;
+using XRayBuilderGUI.XRay.Logic;
+using XRayBuilderGUI.XRay.Logic.Aliases;
 using XRayBuilderGUI.XRay.Logic.Chapters;
 using EndActions = XRayBuilderGUI.Extras.EndActions.EndActions;
 
@@ -28,6 +30,7 @@ namespace XRayBuilder.Test
         private Goodreads _goodreads;
         private IAmazonInfoParser _amazonInfoParser;
         private ChaptersService _chaptersService;
+        private IXRayService _xrayService;
 
         [SetUp]
         public void Setup()
@@ -38,6 +41,7 @@ namespace XRayBuilder.Test
             _amazonClient = new AmazonClient(_httpClient, _amazonInfoParser, _logger);
             _goodreads = new Goodreads(_logger, _httpClient, _amazonClient);
             _chaptersService = new ChaptersService(_logger);
+            _xrayService = new XRayService(new AliasesService(_logger), _logger);
         }
 
         private static readonly CancellationTokenSource Tokens = new CancellationTokenSource();
@@ -55,7 +59,7 @@ namespace XRayBuilder.Test
         {
             var xray = TestData.CreateXRayFromXML(book.xml, book.db, book.guid, book.asin, _goodreads, _logger, _chaptersService);
             await xray.CreateXray(null, Tokens.Token);
-            xray.ExportAndDisplayTerms();
+            _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath);
             FileAssert.AreEqual($"ext\\{book.asin}.aliases", $"testfiles\\{book.asin}.aliases");
         }
 

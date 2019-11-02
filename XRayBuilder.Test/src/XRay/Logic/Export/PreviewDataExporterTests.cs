@@ -8,6 +8,7 @@ using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.Libraries.Http;
 using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.XRay.Logic;
+using XRayBuilderGUI.XRay.Logic.Chapters;
 using XRayBuilderGUI.XRay.Logic.Export;
 
 namespace XRayBuilder.Test.XRay.Logic.Export
@@ -18,6 +19,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         private ILogger _logger;
         private Goodreads _goodreads;
         private IAliasesService _aliasesService;
+        private ChaptersService _chaptersService;
         private IHttpClient _httpClient;
         private IAmazonClient _amazonClient;
         private IAmazonInfoParser _amazonInfoParser;
@@ -33,12 +35,13 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             _goodreads = new Goodreads(_logger, _httpClient, _amazonClient);
             _aliasesService = new AliasesService(_logger);
             _previewDataExporter = new PreviewDataExporter();
+            _chaptersService = new ChaptersService(_logger);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXmlPreviewDataTest(Book book)
         {
-            var xray = TestData.CreateXRayFromXML(book.xml, book.db, book.guid, book.asin, _goodreads, _logger, _aliasesService);
+            var xray = TestData.CreateXRayFromXML(book.xml, book.db, book.guid, book.asin, _goodreads, _logger, _aliasesService, _chaptersService);
             await xray.CreateXray(null, CancellationToken.None);
             string outpath = Path.Combine(Environment.CurrentDirectory, "out", $"XRAY.{book.asin}.previewData");
             _previewDataExporter.Export(xray, outpath);

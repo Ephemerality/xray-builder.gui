@@ -28,7 +28,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using HtmlAgilityPack;
 using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.DataSources.Secondary.Model;
 using XRayBuilderGUI.Libraries;
@@ -37,6 +36,7 @@ using XRayBuilderGUI.Libraries.Primitives.Extensions;
 using XRayBuilderGUI.Libraries.Progress;
 using XRayBuilderGUI.XRay.Artifacts;
 using XRayBuilderGUI.XRay.Logic;
+using XRayBuilderGUI.XRay.Logic.Chapters;
 using XRayBuilderGUI.XRay.Model;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
@@ -57,16 +57,16 @@ namespace XRayBuilderGUI.XRay
         public List<Excerpt> Excerpts = new List<Excerpt>();
         public long Srl;
         public long Erl;
-        public bool Unattended;
         private bool skipShelfari;
+        public bool Unattended { get; set; }
         private int locOffset;
         private List<NotableClip> notableClips;
         public int FoundNotables;
         public DateTime? CreatedAt { get; set; }
 
-        private bool enableEdit = Properties.Settings.Default.enableEdit;
         private readonly ISecondarySource dataSource;
         private readonly IAliasesService _aliasesService;
+        private readonly ChaptersService _chaptersService;
 
         public delegate DialogResult SafeShowDelegate(string msg, string caption, MessageBoxButtons buttons,
             MessageBoxIcon icon, MessageBoxDefaultButton def);
@@ -97,7 +97,7 @@ namespace XRayBuilderGUI.XRay
             "Viscount", "Viscountess", "Wg Cdr", "Jr", "Sr", "Sheriff", "Special Agent", "Detective", "Lt" };
         #endregion
 
-        public XRay(string shelfari, ISecondarySource dataSource, ILogger logger, IAliasesService aliasesService)
+        public XRay(string shelfari, ISecondarySource dataSource, ILogger logger, IAliasesService aliasesService, ChaptersService chaptersService)
         {
             if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
                 shelfari = "https://" + shelfari;
@@ -105,9 +105,10 @@ namespace XRayBuilderGUI.XRay
             this.dataSource = dataSource;
             _logger = logger;
             _aliasesService = aliasesService;
+            _chaptersService = chaptersService;
         }
 
-        public XRay(string shelfari, string db, string guid, string asin, ISecondarySource dataSource, ILogger logger, IAliasesService aliasesService, int locOffset = 0, string aliaspath = "", bool unattended = false)
+        public XRay(string shelfari, string db, string guid, string asin, ISecondarySource dataSource, ILogger logger, IAliasesService aliasesService, ChaptersService chaptersService, int locOffset = 0, string aliaspath = "")
         {
             if (shelfari == "" || db == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
@@ -118,29 +119,30 @@ namespace XRayBuilderGUI.XRay
             databaseName = db;
             if (guid != null)
                 Guid = guid;
-            this.Asin = asin;
+            Asin = asin;
             this.locOffset = locOffset;
             _aliasPath = aliaspath;
-            Unattended = unattended;
             this.dataSource = dataSource;
             _logger = logger;
             _aliasesService = aliasesService;
+            _chaptersService = chaptersService;
         }
 
-        public XRay(string xml, string db, string guid, string asin, ISecondarySource dataSource, ILogger logger, IAliasesService aliasesService, int locOffset = 0, string aliaspath = "")
+        // TODO fix this constructor crap
+        public XRay(string xml, string db, string guid, string asin, ISecondarySource dataSource, ILogger logger, IAliasesService aliasesService, ChaptersService chaptersService, bool xmlUgh, int locOffset = 0, string aliaspath = "")
         {
             if (xml == "" || db == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
             xmlFile = xml;
             databaseName = db;
             Guid = guid;
-            this.Asin = asin;
+            Asin = asin;
             this.locOffset = locOffset;
             _aliasPath = aliaspath;
-            Unattended = false;
             this.dataSource = dataSource;
             _logger = logger;
             _aliasesService = aliasesService;
+            _chaptersService = chaptersService;
             skipShelfari = true;
         }
 
@@ -286,77 +288,6 @@ namespace XRayBuilderGUI.XRay
         //    return false;
         //}
 
-        public void HandleChapters(long mlLen, HtmlDocument doc, string rawMl, SafeShowDelegate safeShow)
-        {
-            //Similar to aliases, if chapters definition exists, load it. Otherwise, attempt to build it from the book
-            var chapterFile = Environment.CurrentDirectory + @"\ext\" + Asin + ".chapters";
-            if (File.Exists(chapterFile) && !Properties.Settings.Default.overwriteChapters)
-            {
-                if (LoadChapters())
-                    _logger.Log($"Chapters read from {chapterFile}.\r\nDelete this file if you want chapters built automatically.");
-                else
-                    _logger.Log($"An error occurred reading chapters from {chapterFile}.\r\nFile is missing or not formatted correctly.");
-            }
-            else
-            {
-                try
-                {
-                    SearchChapters(doc, rawMl);
-                }
-                catch (Exception ex)
-                {
-                    _logger.Log("Error searching for chapters: " + ex.Message);
-                }
-                //Built chapters list is saved for manual editing
-                if (Chapters.Count > 0)
-                {
-                    SaveChapters();
-                    _logger.Log($"Chapters exported to {chapterFile} for manual editing.");
-                }
-                else
-                    _logger.Log($"No chapters detected.\r\nYou can create a file at {chapterFile} if you want to define chapters manually.");
-            }
-
-            if (!Unattended && enableEdit)
-                if (DialogResult.Yes ==
-                    safeShow("Would you like to open the chapters file in notepad for editing?", "Chapters",
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
-                {
-                    Functions.RunNotepad(chapterFile);
-                    Chapters.Clear();
-                    if (LoadChapters())
-                        _logger.Log("Reloaded chapters from edited file.");
-                    else
-                        _logger.Log($"An error occurred reloading chapters from {chapterFile}.\r\nFile is missing or not formatted correctly.");
-                }
-
-            //If no chapters were found, add a default chapter that spans the entire book
-            //Define srl and erl so "progress bar" shows up correctly
-            if (Chapters.Count == 0)
-            {
-                Chapters.Add(new Chapter
-                {
-                    Name = "",
-                    Start = 1,
-                    End = mlLen
-                });
-                Srl = 1;
-                Erl = mlLen;
-            }
-            else
-            {
-                //Run through all chapters and take the highest value, in case some chapters can be defined in individual chapters and parts.
-                //EG. Part 1 includes chapters 1-6, Part 2 includes chapters 7-12.
-                Srl = Chapters[0].Start;
-                _logger.Log("Found chapters:");
-                foreach (var c in Chapters)
-                {
-                    if (c.End > Erl) Erl = c.End;
-                    _logger.Log($"{c.Name} | start: {c.Start} | end: {c.End}");
-                }
-            }
-        }
-
         public int ExpandFromRawMl(Stream rawMlStream, SafeShowDelegate safeShow, IProgressBar progress, CancellationToken token, bool ignoreSoftHypen = false, bool shortEx = true)
         {
             // If there is an apostrophe, attempt to match 's at the end of the term
@@ -377,7 +308,7 @@ namespace XRayBuilderGUI.XRay
                 var readContents = streamReader.ReadToEnd();
                 var utf8Doc = new HtmlDocument();
                 utf8Doc.LoadHtml(readContents);
-                HandleChapters(rawMlStream.Length, utf8Doc, readContents, safeShow);
+                _chaptersService.HandleChapters(this, Asin, rawMlStream.Length, utf8Doc, readContents, safeShow, Unattended);
             }
 
             _logger.Log("Scanning book content...");
@@ -634,137 +565,6 @@ namespace XRayBuilderGUI.XRay
             return 0;
         }
 
-        /// <summary>
-        /// Searches for a Table of Contents within the book and adds the chapters to _chapters.
-        /// </summary>
-        /// <param name="bookDoc">Book's HTML</param>
-        /// <param name="rawML">Path to the book's rawML file</param>
-        private void SearchChapters(HtmlDocument bookDoc, string rawML)
-        {
-            var leadingZerosRegex = new Regex(@"^0+(?=\d)", RegexOptions.Compiled);
-            string tocHtml;
-            var tocDoc = new HtmlDocument();
-            var toc = bookDoc.DocumentNode.SelectSingleNode(
-                    "//reference[translate(@title,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='TABLE OF CONTENTS']");
-            Chapters.Clear();
-            //Find table of contents, using case-insensitive search
-            if (toc != null)
-            {
-                var tocloc = Convert.ToInt32(leadingZerosRegex.Replace(toc.GetAttributeValue("filepos", ""), ""));
-                tocHtml = rawML.Substring(tocloc, rawML.IndexOf("<mbp:pagebreak/>", tocloc + 1, StringComparison.Ordinal) - tocloc);
-                tocDoc = new HtmlDocument();
-                tocDoc.LoadHtml(tocHtml);
-                var tocNodes = tocDoc.DocumentNode.SelectNodes("//a");
-                foreach (var chapter in tocNodes)
-                {
-                    if (chapter.InnerHtml == "") continue;
-                    var filepos = Convert.ToInt32(leadingZerosRegex.Replace(chapter.GetAttributeValue("filepos", "0"), ""));
-                    if (Chapters.Count > 0)
-                    {
-                        Chapters[Chapters.Count - 1].End = filepos;
-                        if (Chapters[Chapters.Count - 1].Start > filepos)
-                            Chapters.RemoveAt(Chapters.Count - 1); //remove broken chapters
-                    }
-                    Chapters.Add(new Chapter
-                    {
-                        Name = chapter.InnerText,
-                        Start = filepos,
-                        End = rawML.Length
-                    });
-                }
-            }
-
-            //Search again, looking for Calibre's 'new' mobi ToC format
-            if (Chapters.Count == 0)
-            {
-                try
-                {
-                    var index = rawML.LastIndexOf(">Table of Contents<");
-                    if (index >= 0)
-                    {
-                        index = rawML.IndexOf("<p ", index);
-                        var breakIndex = rawML.IndexOf("<div class=\"mbp_pagebreak\"", index);
-                        if (breakIndex == -1)
-                            breakIndex = rawML.IndexOf("div class=\"mbppagebreak\"", index);
-                        tocHtml = rawML.Substring(index, breakIndex - index);
-                        tocDoc.LoadHtml(tocHtml);
-                        var tocNodes = tocDoc.DocumentNode.SelectNodes("//p");
-                        // Search for each chapter heading, ignore any misses (user can go and add any that are missing if necessary)
-                        foreach (var chap in tocNodes)
-                        {
-                            index = rawML.IndexOf(chap.InnerText);
-                            if (index > -1)
-                            {
-                                if (Chapters.Count > 0)
-                                    Chapters[Chapters.Count - 1].End = index;
-                                Chapters.Add(new Chapter
-                                {
-                                    Name = chap.InnerText,
-                                    Start = index,
-                                    End = rawML.Length
-                                });
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.Log("Error searching for Calibre chapters: " + ex.Message);
-                }
-            }
-
-            // Try searching for Calibre's toc2 nodes
-            if (Chapters.Count == 0)
-            {
-                var tocNodes = bookDoc.DocumentNode.SelectNodes("//p[@class='toc2']")?.ToArray() ?? new HtmlNode[0];
-                foreach (var node in tocNodes)
-                {
-                    var position = node.StreamPosition;
-                    if (Chapters.Count > 0)
-                        Chapters[Chapters.Count - 1].End = position;
-                    Chapters.Add(new Chapter
-                    {
-                        Name = node.InnerText,
-                        Start = position,
-                        End = rawML.Length
-                    });
-                }
-            }
-
-            //Try a broad search for chapterish names just for fun
-            if (Chapters.Count == 0)
-            {
-                // TODO: Expand on the chapter matching pattern concept
-                const string chapterPattern = @"((?:chapter|book|section|part|capitulo)\s+.*)|((?:prolog|prologue|epilogue)(?:\s+|$).*)|((?:one|two|three|four|five|six|seven|eight|nine|ten)(?:\s+|$).*)";
-                const string xpath = "//*[self::h1 or self::h2 or self::h3 or self::h4 or self::h5]";
-                var chapterNodes = bookDoc.DocumentNode.SelectNodes("//a")
-                    ?.Where(div => div.GetAttributeValue("class", "") == "chapter" || Regex.IsMatch(div.InnerText, chapterPattern, RegexOptions.IgnoreCase))
-                    .ToList();
-                if (chapterNodes == null)
-                    return;
-                var headingNodes = bookDoc.DocumentNode.SelectNodes(xpath).ToList();
-                if (headingNodes.Count > chapterNodes.Count)
-                    chapterNodes = headingNodes;
-                foreach (var chap in chapterNodes)
-                {
-                    if (chap.InnerText.ContainsIgnorecase("Table of Contents")) continue;
-                    var index = rawML.IndexOf(chap.InnerHtml) + chap.InnerHtml.IndexOf(chap.InnerText);
-                    if (index > -1)
-                    {
-                        if (Chapters.Count > 0)
-                            Chapters[Chapters.Count - 1].End = index;
-                        Chapters.Add(new Chapter
-                        {
-                            Name = chap.InnerText,
-                            Start = index,
-                            End = rawML.Length
-                        });
-                    }
-                }
-            }
-        }
-
-
         private int LoadTermsFromTxt(string txtfile)
         {
             if (!File.Exists(txtfile)) return 1;
@@ -804,41 +604,6 @@ namespace XRayBuilderGUI.XRay
                 }
             }
             return 0;
-        }
-
-        public void SaveChapters()
-        {
-            if (!Directory.Exists(Environment.CurrentDirectory + @"\ext\"))
-                Directory.CreateDirectory(Environment.CurrentDirectory + @"\ext\");
-            using var streamWriter =
-                new StreamWriter(Environment.CurrentDirectory + @"\ext\" + Asin + ".chapters", false,
-                    Encoding.UTF8);
-            foreach (var c in Chapters)
-                streamWriter.WriteLine(c.Name + "|" + c.Start + "|" + c.End);
-        }
-
-        public bool LoadChapters()
-        {
-            Chapters = new List<Chapter>();
-            if (!File.Exists(Environment.CurrentDirectory + @"\ext\" + Asin + ".chapters")) return false;
-            using (
-                var streamReader =
-                    new StreamReader(Environment.CurrentDirectory + @"\ext\" + Asin + ".chapters", Encoding.UTF8))
-            {
-                while (!streamReader.EndOfStream)
-                {
-                    var tmp = streamReader.ReadLine()?.Split('|');
-                    if (tmp?.Length != 3) return false; //Malformed chapters file
-                    if (tmp[0] == "" || tmp[0].Substring(0, 1) == "#") continue;
-                    Chapters.Add(new Chapter
-                    {
-                        Name = tmp[0],
-                        Start = Convert.ToInt32(tmp[1]),
-                        End = Convert.ToInt64(tmp[2])
-                    });
-                }
-            }
-            return true;
         }
 
         public void SaveCharacters(string aliasFile)

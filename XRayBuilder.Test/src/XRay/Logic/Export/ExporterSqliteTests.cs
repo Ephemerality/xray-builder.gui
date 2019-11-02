@@ -8,6 +8,7 @@ using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.Libraries.Http;
 using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.XRay.Logic;
+using XRayBuilderGUI.XRay.Logic.Chapters;
 using XRayBuilderGUI.XRay.Logic.Export;
 
 namespace XRayBuilder.Test.XRay.Logic.Export
@@ -21,6 +22,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         private IHttpClient _httpClient;
         private IAmazonClient _amazonClient;
         private IAmazonInfoParser _amazonInfoParser;
+        private ChaptersService _chaptersService;
 
         [SetUp]
         public void Setup()
@@ -32,12 +34,13 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             _xrayExporter = new XRayExporterSqlite(_logger);
             _goodreads = new Goodreads(_logger, _httpClient, _amazonClient);
             _aliasesService = new AliasesService(_logger);
+            _chaptersService = new ChaptersService(_logger);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXMLSaveNewTest(Book book)
         {
-            var xray = TestData.CreateXRayFromXML(book.xml, book.db, book.guid, book.asin, _goodreads, _logger, _aliasesService);
+            var xray = TestData.CreateXRayFromXML(book.xml, book.db, book.guid, book.asin, _goodreads, _logger, _aliasesService, _chaptersService);
             await xray.CreateXray(null, CancellationToken.None);
             xray.ExportAndDisplayTerms();
             xray.LoadAliases();

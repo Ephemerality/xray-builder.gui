@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using XRayBuilder.Test.XRay;
 using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.Extras.Artifacts;
@@ -39,66 +40,47 @@ namespace XRayBuilder.Test
             _aliasesService = new AliasesService(_logger);
         }
 
-        private static readonly CancellationTokenSource tokens = new CancellationTokenSource();
-
-        private static List<Book> books = new List<Book>
-        {
-            new Book(@"testfiles\A Storm of Swords - George R. R. Martin.rawml", @"testfiles\A Storm of Swords - George R. R. Martin.xml", "A_Storm_of_Swords", "171927873", "B000FBFN1U"),
-            new Book(@"testfiles\Tick Tock - James Patterson.rawml", @"testfiles\Tick Tock - James Patterson.xml", "Tick_Tock", "2219522925", "B0047Y16MG")
-        };
+        private static readonly CancellationTokenSource Tokens = new CancellationTokenSource();
 
         private XRayBuilderGUI.XRay.XRay CreateXRayFromXML(string path, string db, string guid, string asin)
         {
-            return new XRayBuilderGUI.XRay.XRay(path, db, guid, asin, _goodreads, _logger, _aliasesService, 0, "") { unattended = true };
+            return new XRayBuilderGUI.XRay.XRay(path, db, guid, asin, _goodreads, _logger, _aliasesService, 0, "") { Unattended = true };
         }
 
-        [Test, TestCaseSource(nameof(books))]
+        [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXMLTest(Book book)
         {
             XRayBuilderGUI.XRay.XRay xray = CreateXRayFromXML(book.xml, book.db, book.guid, book.asin);
             Assert.NotNull(xray);
-            Assert.AreEqual(await xray.CreateXray(null, tokens.Token), 0);
+            Assert.AreEqual(await xray.CreateXray(null, Tokens.Token), 0);
         }
 
-        [Test, TestCaseSource(nameof(books))]
+        [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXMLAliasTest(Book book)
         {
             var xray = CreateXRayFromXML(book.xml, book.db, book.guid, book.asin);
-            await xray.CreateXray(null, tokens.Token);
+            await xray.CreateXray(null, Tokens.Token);
             xray.ExportAndDisplayTerms();
             FileAssert.AreEqual($"ext\\{book.asin}.aliases", $"testfiles\\{book.asin}.aliases");
         }
 
-        [Test, TestCaseSource(nameof(books))]
+        [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXMLExpandRawMLTest(Book book)
         {
             var xray = CreateXRayFromXML(book.xml, book.db, book.guid, book.asin);
-            await xray.CreateXray(null, tokens.Token);
-            Assert.AreEqual(xray.ExpandFromRawMl(new FileStream(book.rawml, FileMode.Open), null, null, tokens.Token, false, false), 0);
+            await xray.CreateXray(null, Tokens.Token);
+            Assert.AreEqual(xray.ExpandFromRawMl(new FileStream(book.rawml, FileMode.Open), null, null, Tokens.Token, false, false), 0);
             FileAssert.AreEqual($"ext\\{book.asin}.chapters", $"testfiles\\{book.asin}.chapters");
         }
 
-        [Test, TestCaseSource(nameof(books))]
-        public async Task XRayXMLSaveNewTest(Book book)
-        {
-            var xray = CreateXRayFromXML(book.xml, book.db, book.guid, book.asin);
-            await xray.CreateXray(null, tokens.Token);
-            xray.ExportAndDisplayTerms();
-            xray.LoadAliases();
-            xray.ExpandFromRawMl(new FileStream(book.rawml, FileMode.Open), null, null, tokens.Token, false, false);
-            string filename = xray.XRayName();
-            string outpath = Path.Combine(Environment.CurrentDirectory, "out", filename);
-            xray.SaveToFileNew(outpath, null, tokens.Token);
-        }
-
-        [Test, TestCaseSource(nameof(books))]
+        [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXmlSaveOldTest(Book book)
         {
             var xray = CreateXRayFromXML(book.xml, book.db, book.guid, book.asin);
-            await xray.CreateXray(null, tokens.Token);
+            await xray.CreateXray(null, Tokens.Token);
             xray.ExportAndDisplayTerms();
             xray.LoadAliases();
-            xray.ExpandFromRawMl(new FileStream(book.rawml, FileMode.Open), null, null, tokens.Token, false, false);
+            xray.ExpandFromRawMl(new FileStream(book.rawml, FileMode.Open), null, null, Tokens.Token, false, false);
             string filename = xray.XRayName();
             string outpath = Path.Combine(Environment.CurrentDirectory, "out", filename);
             xray.CreatedAt = new DateTime(2019, 11, 2, 13, 19, 18, DateTimeKind.Utc);
@@ -106,11 +88,11 @@ namespace XRayBuilder.Test
             FileAssert.AreEqual($"testfiles\\XRAY.entities.{book.asin}_old.asc", outpath);
         }
 
-        [Test, TestCaseSource(nameof(books))]
+        [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXmlPreviewDataTest(Book book)
         {
             var xray = CreateXRayFromXML(book.xml, book.db, book.guid, book.asin);
-            await xray.CreateXray(null, tokens.Token);
+            await xray.CreateXray(null, Tokens.Token);
             string outpath = Path.Combine(Environment.CurrentDirectory, "out", $"XRAY.{book.asin}.previewData");
             xray.SavePreviewToFile(outpath);
             FileAssert.AreEqual($"testfiles\\XRAY.{book.asin}.previewData", outpath);

@@ -18,11 +18,8 @@
 */
 
 // HTMLAgilityPack from http://htmlagilitypack.codeplex.com
-
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SQLite;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -50,7 +47,7 @@ namespace XRayBuilderGUI.XRay
     {
         private readonly ILogger _logger;
 
-        private string dataUrl = "";
+        public string DataUrl = "";
         private string xmlFile = "";
         private string databaseName = "";
         private string _guid = "";
@@ -59,14 +56,14 @@ namespace XRayBuilderGUI.XRay
         private string _aliasPath;
         public List<Term> Terms = new List<Term>(100);
         private List<Chapter> _chapters = new List<Chapter>();
-        private List<Excerpt> excerpts = new List<Excerpt>();
-        private long _srl;
-        private long _erl;
-        public bool unattended;
+        public List<Excerpt> Excerpts = new List<Excerpt>();
+        public long Srl;
+        public long Erl;
+        public bool Unattended;
         private bool skipShelfari;
         private int locOffset;
         private List<NotableClip> notableClips;
-        private int foundNotables;
+        public int FoundNotables;
         public DateTime? CreatedAt { get; set; }
 
         private bool enableEdit = Properties.Settings.Default.enableEdit;
@@ -106,7 +103,7 @@ namespace XRayBuilderGUI.XRay
         {
             if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
                 shelfari = "https://" + shelfari;
-            dataUrl = shelfari;
+            DataUrl = shelfari;
             this.dataSource = dataSource;
             _logger = logger;
             _aliasesService = aliasesService;
@@ -119,14 +116,14 @@ namespace XRayBuilderGUI.XRay
 
             if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
                 shelfari = "https://" + shelfari;
-            dataUrl = shelfari;
+            DataUrl = shelfari;
             databaseName = db;
             if (guid != null)
                 Guid = guid;
             this.asin = asin;
             this.locOffset = locOffset;
             _aliasPath = aliaspath;
-            this.unattended = unattended;
+            Unattended = unattended;
             this.dataSource = dataSource;
             _logger = logger;
             _aliasesService = aliasesService;
@@ -142,7 +139,7 @@ namespace XRayBuilderGUI.XRay
             this.asin = asin;
             this.locOffset = locOffset;
             _aliasPath = aliaspath;
-            unattended = false;
+            Unattended = false;
             this.dataSource = dataSource;
             _logger = logger;
             _aliasesService = aliasesService;
@@ -166,7 +163,7 @@ namespace XRayBuilderGUI.XRay
         {
             try
             {
-                Terms = (await dataSource.GetTermsAsync(dataUrl, progress, token)).ToList();
+                Terms = (await dataSource.GetTermsAsync(DataUrl, progress, token)).ToList();
             }
             catch (OperationCanceledException)
             {
@@ -232,9 +229,9 @@ namespace XRayBuilderGUI.XRay
             {
                 try
                 {
-                    Terms = (await dataSource.GetTermsAsync(dataUrl, progress, token)).ToList();
+                    Terms = (await dataSource.GetTermsAsync(DataUrl, progress, token)).ToList();
                     _logger.Log("Downloading notable clips...");
-                    notableClips = (await dataSource.GetNotableClipsAsync(dataUrl, null, progress, token))?.ToList();
+                    notableClips = (await dataSource.GetNotableClipsAsync(DataUrl, null, progress, token))?.ToList();
                 }
                 catch (OperationCanceledException)
                 {
@@ -336,7 +333,7 @@ namespace XRayBuilderGUI.XRay
                     _logger.Log($"No chapters detected.\r\nYou can create a file at {chapterFile} if you want to define chapters manually.");
             }
 
-            if (!unattended && enableEdit)
+            if (!Unattended && enableEdit)
                 if (DialogResult.Yes ==
                     safeShow("Would you like to open the chapters file in notepad for editing?", "Chapters",
                         MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
@@ -359,18 +356,18 @@ namespace XRayBuilderGUI.XRay
                     Start = 1,
                     End = mlLen
                 });
-                _srl = 1;
-                _erl = mlLen;
+                Srl = 1;
+                Erl = mlLen;
             }
             else
             {
                 //Run through all chapters and take the highest value, in case some chapters can be defined in individual chapters and parts.
                 //EG. Part 1 includes chapters 1-6, Part 2 includes chapters 7-12.
-                _srl = _chapters[0].Start;
+                Srl = _chapters[0].Start;
                 _logger.Log("Found chapters:");
                 foreach (var c in _chapters)
                 {
-                    if (c.End > _erl) _erl = c.End;
+                    if (c.End > Erl) Erl = c.End;
                     _logger.Log($"{c.Name} | start: {c.Start} | end: {c.End}");
                 }
             }
@@ -428,7 +425,7 @@ namespace XRayBuilderGUI.XRay
                     _logger.Log("An error occurred locating the paragraph within the book content.");
                     return 1;
                 }
-                if (location < _srl || location > _erl) continue; //Skip paragraph if outside chapter range
+                if (location < Srl || location > Erl) continue; //Skip paragraph if outside chapter range
                 var noSoftHypen = "";
                 if (ignoreSoftHypen)
                 {
@@ -585,7 +582,7 @@ namespace XRayBuilderGUI.XRay
                             // For new format
                             character.Occurrences.Add(new[] { location + locOffset + locHighlight[j], lenHighlight[j] });
                         }
-                        var exCheck = excerpts.Where(t => t.Start.Equals(location + locOffset)).ToArray();
+                        var exCheck = Excerpts.Where(t => t.Start.Equals(location + locOffset)).ToArray();
                         if (exCheck.Length > 0)
                         {
                             if (!exCheck[0].RelatedEntities.Contains(character.Id))
@@ -600,7 +597,7 @@ namespace XRayBuilderGUI.XRay
                                 Length = lenQuote
                             };
                             newExcerpt.RelatedEntities.Add(character.Id);
-                            excerpts.Add(newExcerpt);
+                            Excerpts.Add(newExcerpt);
                         }
                     }
                 }
@@ -614,7 +611,7 @@ namespace XRayBuilderGUI.XRay
                         if (index > -1)
                         {
                             // See if an excerpt already exists at this location
-                            var excerpt = excerpts.FirstOrDefault(e => e.Start == index);
+                            var excerpt = Excerpts.FirstOrDefault(e => e.Start == index);
                             if (excerpt == null)
                             {
                                 if (Properties.Settings.Default.skipNoLikes && quote.Likes == 0
@@ -630,12 +627,12 @@ namespace XRayBuilderGUI.XRay
                                 };
                                 excerpt.RelatedEntities.Add(0); // Mark the excerpt as notable
                                                                  // TODO: also add other related entities
-                                excerpts.Add(excerpt);
+                                Excerpts.Add(excerpt);
                             }
                             else
                                 excerpt.RelatedEntities.Add(0);
 
-                            foundNotables++;
+                            FoundNotables++;
                         }
                     }
                 }
@@ -783,142 +780,6 @@ namespace XRayBuilderGUI.XRay
             }
         }
 
-        public void PopulateDb(SQLiteConnection db, IProgressBar progress, CancellationToken token)
-        {
-            var sql = new StringBuilder(Terms.Count * 256);
-            var personCount = 0;
-            var termCount = 0;
-            var command = new SQLiteCommand($"update string set text='{dataUrl}' where id=15", db);
-            command.ExecuteNonQuery();
-
-            _logger.Log("Updating database with terms, descriptions, and excerpts...");
-            //Write all entities and occurrences
-            _logger.Log($"Writing {Terms.Count} terms...");
-            progress?.Set(0, Terms.Count);
-            command = new SQLiteCommand("insert into entity (id, label, loc_label, type, count, has_info_card) values (@id, @label, null, @type, @count, 1)", db);
-            var command2 = new SQLiteCommand("insert into entity_description (text, source_wildcard, source, entity) values (@text, @source_wildcard, @source, @entity)", db);
-            var command3 = new SQLiteCommand("insert into occurrence (entity, start, length) values (@entity, @start, @length)", db);
-            foreach (var t in Terms)
-            {
-                token.ThrowIfCancellationRequested();
-                if (t.Type == "character") personCount++;
-                else if (t.Type == "topic") termCount++;
-                command.Parameters.Add("@id", DbType.Int32).Value = t.Id;
-                command.Parameters.Add("@label", DbType.String).Value = t.TermName;
-                command.Parameters.Add("@type", DbType.Int32).Value = t.Type == "character" ? 1 : 2;
-                command.Parameters.Add("@count", DbType.Int32).Value = t.Occurrences.Count;
-                command.ExecuteNonQuery();
-
-                command2.Parameters.Add("@text", DbType.String).Value = t.Desc == "" ? "No description available." : t.Desc;
-                command2.Parameters.Add("@source_wildcard", DbType.String).Value = t.TermName;
-                command2.Parameters.Add("@source", DbType.Int32).Value = t.DescSrc == "shelfari" ? 4 : 6;
-                command2.Parameters.Add("@entity", DbType.Int32).Value = t.Id;
-                command2.ExecuteNonQuery();
-
-                foreach (var loc in t.Occurrences)
-                {
-                    command3.Parameters.Add("@entity", DbType.Int32).Value = t.Id;
-                    command3.Parameters.Add("@start", DbType.Int32).Value = loc[0];
-                    command3.Parameters.Add("@length", DbType.Int32).Value = loc[1];
-                    command3.ExecuteNonQuery();
-                }
-                progress?.Add(1);
-            }
-
-            //Write excerpts and entity_excerpt table
-            _logger.Log($"Writing {excerpts.Count} excerpts...");
-            command.CommandText = "insert into excerpt (id, start, length, image, related_entities, goto) values (@id, @start, @length, @image, @rel_ent, null);";
-            command.Parameters.Clear();
-            command2.CommandText = "insert into entity_excerpt (entity, excerpt) values (@entityId, @excerptId)";
-            command2.Parameters.Clear();
-            progress?.Set(0, excerpts.Count);
-            foreach (var e in excerpts)
-            {
-                token.ThrowIfCancellationRequested();
-                command.Parameters.Add("id", DbType.Int32).Value = e.Id;
-                command.Parameters.Add("start", DbType.Int32).Value = e.Start;
-                command.Parameters.Add("length", DbType.Int32).Value = e.Length;
-                command.Parameters.Add("image", DbType.String).Value = e.Image;
-                command.Parameters.Add("rel_ent", DbType.String).Value = string.Join(",", e.RelatedEntities.Where(en => en != 0).ToArray()); // don't write 0 (notable flag)
-                command.ExecuteNonQuery();
-                foreach (var ent in e.RelatedEntities)
-                {
-                    token.ThrowIfCancellationRequested();
-                    if (ent == 0) continue; // skip notable flag
-                    command2.Parameters.Add("@entityId", DbType.Int32).Value = ent;
-                    command2.Parameters.Add("@excerptId", DbType.Int32).Value = e.Id;
-                    command2.ExecuteNonQuery();
-                }
-                progress?.Add(1);
-            }
-
-            // create links to notable clips in order of popularity
-            _logger.Log("Adding notable clips...");
-            command.Parameters.Clear();
-            var notablesOnly = excerpts.Where(ex => ex.Notable).OrderByDescending(ex => ex.Highlights);
-            foreach (var notable in notablesOnly)
-            {
-                command.CommandText = $"insert into entity_excerpt (entity, excerpt) values (0, {notable.Id})";
-                command.ExecuteNonQuery();
-            }
-
-            // Populate some more clips if not enough were found initially
-            // TODO: Add a config value in settings for this amount
-            var toAdd = new List<Excerpt>(20);
-            if (foundNotables <= 20 && foundNotables + excerpts.Count <= 20)
-                toAdd.AddRange(excerpts);
-            else if (foundNotables <= 20)
-            {
-                var rand = new Random();
-                var eligible = excerpts.Where(ex => !ex.Notable).ToList();
-                while (foundNotables <= 20 && eligible.Count > 0)
-                {
-                    var randEx = eligible.ElementAt(rand.Next(eligible.Count));
-                    toAdd.Add(randEx);
-                    eligible.Remove(randEx);
-                    foundNotables++;
-                }
-            }
-            foreach (var excerpt in toAdd)
-            {
-                command.CommandText = $"insert into entity_excerpt (entity, excerpt) values (0, {excerpt.Id})";
-                command.ExecuteNonQuery();
-            }
-            command.Dispose();
-
-            token.ThrowIfCancellationRequested();
-            _logger.Log("Writing top mentions...");
-            var sorted =
-                Terms.Where(t => t.Type.Equals("character"))
-                    .OrderByDescending(t => t.Locs.Count)
-                    .Select(t => t.Id)
-                    .ToList();
-            sql.Clear();
-            sql.AppendFormat("update type set top_mentioned_entities='{0}' where id=1;\n",
-                string.Join(",", sorted.GetRange(0, Math.Min(10, sorted.Count))));
-            sorted =
-                Terms.Where(t => t.Type.Equals("topic"))
-                    .OrderByDescending(t => t.Locs.Count)
-                    .Select(t => t.Id)
-                    .ToList();
-            sql.AppendFormat("update type set top_mentioned_entities='{0}' where id=2;",
-                string.Join(",", sorted.GetRange(0, Math.Min(10, sorted.Count))));
-            command = new SQLiteCommand(sql.ToString(), db);
-            command.ExecuteNonQuery();
-            command.Dispose();
-
-            token.ThrowIfCancellationRequested();
-            _logger.Log("Writing metadata...");
-
-            sql.Clear();
-            sql.AppendFormat(
-                "insert into book_metadata (srl, erl, has_images, has_excerpts, show_spoilers_default, num_people, num_terms, num_images, preview_images) "
-                + "values ({0}, {1}, 0, 1, 0, {2}, {3}, 0, null);", _srl, _erl, personCount, termCount);
-
-            command = new SQLiteCommand(sql.ToString(), db);
-            command.ExecuteNonQuery();
-            command.Dispose();
-        }
 
         private int LoadTermsFromTxt(string txtfile)
         {
@@ -1176,8 +1037,8 @@ namespace XRayBuilderGUI.XRay
         {
             var appVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 
-            var start = (long?) _srl;
-            var end = (long?) _erl;
+            var start = (long?) Srl;
+            var end = (long?) Erl;
             var chapters = _chapters.ToArray();
 
             if (_chapters.Count <= 0)
@@ -1218,39 +1079,6 @@ namespace XRayBuilderGUI.XRay
 
             using var streamWriter = new StreamWriter(path, false, Encoding.UTF8);
             streamWriter.Write(JsonUtil.Serialize(xray));
-        }
-
-        public void SaveToFileNew(string path, IProgressBar progress, CancellationToken token)
-        {
-            SQLiteConnection.CreateFile(path);
-            using var m_dbConnection = new SQLiteConnection($"Data Source={path};Version=3;");
-            m_dbConnection.Open();
-            string sql;
-            try
-            {
-                using var streamReader = new StreamReader(Environment.CurrentDirectory + @"\dist\BaseDB.sql", Encoding.UTF8);
-                sql = streamReader.ReadToEnd();
-            }
-            catch (Exception ex)
-            {
-                throw new IOException("An error occurred while opening the BaseDB.sql file. Ensure you extracted it to the same directory as the program.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
-            }
-            var command = new SQLiteCommand("BEGIN; " + sql + " COMMIT;", m_dbConnection);
-            _logger.Log("Building new X-Ray database. May take a few minutes...");
-            command.ExecuteNonQuery();
-            command.Dispose();
-            command = new SQLiteCommand("PRAGMA user_version = 1; PRAGMA encoding = utf8; BEGIN;", m_dbConnection);
-            command.ExecuteNonQuery();
-            command.Dispose();
-            _logger.Log("Done building initial database. Populating with info from source X-Ray...");
-            PopulateDb(m_dbConnection, progress, token);
-            _logger.Log("Updating indices...");
-            sql = "CREATE INDEX idx_occurrence_start ON occurrence(start ASC);\n"
-                  + "CREATE INDEX idx_entity_type ON entity(type ASC);\n"
-                  + "CREATE INDEX idx_entity_excerpt ON entity_excerpt(entity ASC); COMMIT;";
-            command = new SQLiteCommand(sql, m_dbConnection);
-            command.ExecuteNonQuery();
-            command.Dispose();
         }
 
         public void SavePreviewToFile(string path)

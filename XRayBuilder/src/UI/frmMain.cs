@@ -38,6 +38,7 @@ namespace XRayBuilderGUI.UI
         private readonly PreviewProviderFactory _previewProviderFactory;
         private readonly IAmazonInfoParser _amazonInfoParser;
         private readonly IAliasesService _aliasesService;
+        private readonly IDatabaseExportService _databaseExportService;
         private readonly Container _diContainer;
 
         // TODO: Fix up these paths
@@ -54,7 +55,7 @@ namespace XRayBuilderGUI.UI
             IAmazonClient amazonClient,
             PreviewProviderFactory previewProviderFactory,
             IAmazonInfoParser amazonInfoParser,
-            IAliasesService aliasesService)
+            IAliasesService aliasesService, IDatabaseExportService databaseExportService)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
@@ -66,6 +67,7 @@ namespace XRayBuilderGUI.UI
             _previewProviderFactory = previewProviderFactory;
             _amazonInfoParser = amazonInfoParser;
             _aliasesService = aliasesService;
+            _databaseExportService = databaseExportService;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
         }
@@ -291,7 +293,7 @@ namespace XRayBuilderGUI.UI
             {
                 try
                 {
-                    xray.SaveToFileNew(newPath, _progress, _cancelTokens.Token);
+                    _databaseExportService.Export(xray, newPath, _progress, _cancelTokens.Token);
                 }
                 catch (OperationCanceledException)
                 {

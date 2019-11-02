@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using JetBrains.Annotations;
 using XRayBuilderGUI.Libraries.Logging;
 
 namespace XRayBuilderGUI.XRay.Logic
@@ -17,11 +16,6 @@ namespace XRayBuilderGUI.XRay.Logic
             _logger = logger;
         }
 
-        /// <summary>
-        /// Loads a set of aliases for terms from <paramref name="aliasFile"/>.
-        /// Returns null if the file does not exist.
-        /// </summary>
-        [CanBeNull]
         public Dictionary<string, string[]> LoadAliases(string aliasFile)
         {
             if (!File.Exists(aliasFile))

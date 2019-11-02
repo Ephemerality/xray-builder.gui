@@ -10,13 +10,13 @@ using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Libraries.Progress;
 using XRayBuilderGUI.XRay.Model;
 
-namespace XRayBuilderGUI.XRay.Logic
+namespace XRayBuilderGUI.XRay.Logic.Export
 {
-    public class DatabaseExportService : IDatabaseExportService
+    public class ExporterSqlite : IExporter
     {
         private readonly ILogger _logger;
 
-        public DatabaseExportService(ILogger logger)
+        public ExporterSqlite(ILogger logger)
         {
             _logger = logger;
         }

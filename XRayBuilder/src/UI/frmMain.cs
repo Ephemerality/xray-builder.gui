@@ -24,6 +24,7 @@ using XRayBuilderGUI.UI.Preview.Logic;
 using XRayBuilderGUI.Unpack;
 using XRayBuilderGUI.XRay;
 using XRayBuilderGUI.XRay.Logic;
+using XRayBuilderGUI.XRay.Logic.Export;
 using EndActions = XRayBuilderGUI.Extras.EndActions.EndActions;
 
 namespace XRayBuilderGUI.UI
@@ -38,7 +39,8 @@ namespace XRayBuilderGUI.UI
         private readonly PreviewProviderFactory _previewProviderFactory;
         private readonly IAmazonInfoParser _amazonInfoParser;
         private readonly IAliasesService _aliasesService;
-        private readonly IDatabaseExportService _databaseExportService;
+        private readonly IExporter _databaseExporter;
+        private readonly IPreviewDataExporter _previewDataExporter;
         private readonly Container _diContainer;
 
         // TODO: Fix up these paths
@@ -55,7 +57,9 @@ namespace XRayBuilderGUI.UI
             IAmazonClient amazonClient,
             PreviewProviderFactory previewProviderFactory,
             IAmazonInfoParser amazonInfoParser,
-            IAliasesService aliasesService, IDatabaseExportService databaseExportService)
+            IAliasesService aliasesService,
+            IExporter databaseExporter,
+            IPreviewDataExporter previewDataExporter)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
@@ -67,7 +71,8 @@ namespace XRayBuilderGUI.UI
             _previewProviderFactory = previewProviderFactory;
             _amazonInfoParser = amazonInfoParser;
             _aliasesService = aliasesService;
-            _databaseExportService = databaseExportService;
+            _databaseExporter = databaseExporter;
+            _previewDataExporter = previewDataExporter;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
         }
@@ -293,7 +298,7 @@ namespace XRayBuilderGUI.UI
             {
                 try
                 {
-                    _databaseExportService.Export(xray, newPath, _progress, _cancelTokens.Token);
+                    _databaseExporter.Export(xray, newPath, _progress, _cancelTokens.Token);
                 }
                 catch (OperationCanceledException)
                 {
@@ -311,13 +316,13 @@ namespace XRayBuilderGUI.UI
                 //Save the new XRAY.ASIN.previewData file
                 try
                 {
-                    var PdPath = outFolder + @"\XRAY." + metadata.Asin + ".previewData";
-                    xray.SavePreviewToFile(PdPath);
-                    _logger.Log($"X-Ray previewData file created successfully!\r\nSaved to {PdPath}");
+                    var pdPath = outFolder + @"\XRAY." + metadata.Asin + ".previewData";
+                    _previewDataExporter.Export(xray, pdPath);
+                    _logger.Log($"X-Ray previewData file created successfully!\r\nSaved to {pdPath}");
                 }
                 catch (Exception ex)
                 {
-                    _logger.Log(string.Format("An error occurred saving the previewData file: {0}\r\n{1}", ex.Message, ex.StackTrace));
+                    _logger.Log($"An error occurred saving the previewData file: {ex.Message}\r\n{ex.StackTrace}");
                 }
             }
             else

@@ -35,7 +35,6 @@ using XRayBuilderGUI.Libraries;
 using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Libraries.Primitives.Extensions;
 using XRayBuilderGUI.Libraries.Progress;
-using XRayBuilderGUI.Libraries.Serialization.Json.Util;
 using XRayBuilderGUI.XRay.Artifacts;
 using XRayBuilderGUI.XRay.Logic;
 using XRayBuilderGUI.XRay.Model;
@@ -49,13 +48,12 @@ namespace XRayBuilderGUI.XRay
 
         public string DataUrl = "";
         private string xmlFile = "";
-        private string databaseName = "";
+        public readonly string databaseName = "";
         private string _guid = "";
-        private string asin = "";
-        private string version = "1";
+        public string Asin = "";
         private string _aliasPath;
         public List<Term> Terms = new List<Term>(100);
-        private List<Chapter> _chapters = new List<Chapter>();
+        public List<Chapter> Chapters = new List<Chapter>();
         public List<Excerpt> Excerpts = new List<Excerpt>();
         public long Srl;
         public long Erl;
@@ -120,7 +118,7 @@ namespace XRayBuilderGUI.XRay
             databaseName = db;
             if (guid != null)
                 Guid = guid;
-            this.asin = asin;
+            this.Asin = asin;
             this.locOffset = locOffset;
             _aliasPath = aliaspath;
             Unattended = unattended;
@@ -136,7 +134,7 @@ namespace XRayBuilderGUI.XRay
             xmlFile = xml;
             databaseName = db;
             Guid = guid;
-            this.asin = asin;
+            this.Asin = asin;
             this.locOffset = locOffset;
             _aliasPath = aliaspath;
             Unattended = false;
@@ -150,7 +148,7 @@ namespace XRayBuilderGUI.XRay
         {
             set => _aliasPath = value;
             // TODO directory service to handle default paths
-            get => string.IsNullOrEmpty(_aliasPath) ? Environment.CurrentDirectory + @"\ext\" + asin + ".aliases" : _aliasPath;
+            get => string.IsNullOrEmpty(_aliasPath) ? Environment.CurrentDirectory + @"\ext\" + Asin + ".aliases" : _aliasPath;
         }
 
         public string Guid
@@ -178,8 +176,8 @@ namespace XRayBuilderGUI.XRay
 
         public string XRayName(bool android = false) =>
             android
-                ? $"XRAY.{asin}.{(databaseName == null ? "" : $"{databaseName}_")}{Guid ?? ""}.db"
-                : $"XRAY.entities.{asin}.asc";
+                ? $"XRAY.{Asin}.{(databaseName == null ? "" : $"{databaseName}_")}{Guid ?? ""}.db"
+                : $"XRAY.entities.{Asin}.asc";
 
         // TODO: Change return values to exceptions instead
         public async Task<int> CreateXray(IProgressBar progress, CancellationToken token = default)
@@ -291,7 +289,7 @@ namespace XRayBuilderGUI.XRay
         public void HandleChapters(long mlLen, HtmlDocument doc, string rawMl, SafeShowDelegate safeShow)
         {
             //Similar to aliases, if chapters definition exists, load it. Otherwise, attempt to build it from the book
-            var chapterFile = Environment.CurrentDirectory + @"\ext\" + asin + ".chapters";
+            var chapterFile = Environment.CurrentDirectory + @"\ext\" + Asin + ".chapters";
             if (File.Exists(chapterFile) && !Properties.Settings.Default.overwriteChapters)
             {
                 if (LoadChapters())
@@ -310,7 +308,7 @@ namespace XRayBuilderGUI.XRay
                     _logger.Log("Error searching for chapters: " + ex.Message);
                 }
                 //Built chapters list is saved for manual editing
-                if (_chapters.Count > 0)
+                if (Chapters.Count > 0)
                 {
                     SaveChapters();
                     _logger.Log($"Chapters exported to {chapterFile} for manual editing.");
@@ -325,7 +323,7 @@ namespace XRayBuilderGUI.XRay
                         MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
                 {
                     Functions.RunNotepad(chapterFile);
-                    _chapters.Clear();
+                    Chapters.Clear();
                     if (LoadChapters())
                         _logger.Log("Reloaded chapters from edited file.");
                     else
@@ -334,9 +332,9 @@ namespace XRayBuilderGUI.XRay
 
             //If no chapters were found, add a default chapter that spans the entire book
             //Define srl and erl so "progress bar" shows up correctly
-            if (_chapters.Count == 0)
+            if (Chapters.Count == 0)
             {
-                _chapters.Add(new Chapter
+                Chapters.Add(new Chapter
                 {
                     Name = "",
                     Start = 1,
@@ -349,9 +347,9 @@ namespace XRayBuilderGUI.XRay
             {
                 //Run through all chapters and take the highest value, in case some chapters can be defined in individual chapters and parts.
                 //EG. Part 1 includes chapters 1-6, Part 2 includes chapters 7-12.
-                Srl = _chapters[0].Start;
+                Srl = Chapters[0].Start;
                 _logger.Log("Found chapters:");
-                foreach (var c in _chapters)
+                foreach (var c in Chapters)
                 {
                     if (c.End > Erl) Erl = c.End;
                     _logger.Log($"{c.Name} | start: {c.Start} | end: {c.End}");
@@ -648,7 +646,7 @@ namespace XRayBuilderGUI.XRay
             var tocDoc = new HtmlDocument();
             var toc = bookDoc.DocumentNode.SelectSingleNode(
                     "//reference[translate(@title,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')='TABLE OF CONTENTS']");
-            _chapters.Clear();
+            Chapters.Clear();
             //Find table of contents, using case-insensitive search
             if (toc != null)
             {
@@ -661,13 +659,13 @@ namespace XRayBuilderGUI.XRay
                 {
                     if (chapter.InnerHtml == "") continue;
                     var filepos = Convert.ToInt32(leadingZerosRegex.Replace(chapter.GetAttributeValue("filepos", "0"), ""));
-                    if (_chapters.Count > 0)
+                    if (Chapters.Count > 0)
                     {
-                        _chapters[_chapters.Count - 1].End = filepos;
-                        if (_chapters[_chapters.Count - 1].Start > filepos)
-                            _chapters.RemoveAt(_chapters.Count - 1); //remove broken chapters
+                        Chapters[Chapters.Count - 1].End = filepos;
+                        if (Chapters[Chapters.Count - 1].Start > filepos)
+                            Chapters.RemoveAt(Chapters.Count - 1); //remove broken chapters
                     }
-                    _chapters.Add(new Chapter
+                    Chapters.Add(new Chapter
                     {
                         Name = chapter.InnerText,
                         Start = filepos,
@@ -677,7 +675,7 @@ namespace XRayBuilderGUI.XRay
             }
 
             //Search again, looking for Calibre's 'new' mobi ToC format
-            if (_chapters.Count == 0)
+            if (Chapters.Count == 0)
             {
                 try
                 {
@@ -697,9 +695,9 @@ namespace XRayBuilderGUI.XRay
                             index = rawML.IndexOf(chap.InnerText);
                             if (index > -1)
                             {
-                                if (_chapters.Count > 0)
-                                    _chapters[_chapters.Count - 1].End = index;
-                                _chapters.Add(new Chapter
+                                if (Chapters.Count > 0)
+                                    Chapters[Chapters.Count - 1].End = index;
+                                Chapters.Add(new Chapter
                                 {
                                     Name = chap.InnerText,
                                     Start = index,
@@ -716,15 +714,15 @@ namespace XRayBuilderGUI.XRay
             }
 
             // Try searching for Calibre's toc2 nodes
-            if (_chapters.Count == 0)
+            if (Chapters.Count == 0)
             {
                 var tocNodes = bookDoc.DocumentNode.SelectNodes("//p[@class='toc2']")?.ToArray() ?? new HtmlNode[0];
                 foreach (var node in tocNodes)
                 {
                     var position = node.StreamPosition;
-                    if (_chapters.Count > 0)
-                        _chapters[_chapters.Count - 1].End = position;
-                    _chapters.Add(new Chapter
+                    if (Chapters.Count > 0)
+                        Chapters[Chapters.Count - 1].End = position;
+                    Chapters.Add(new Chapter
                     {
                         Name = node.InnerText,
                         Start = position,
@@ -734,7 +732,7 @@ namespace XRayBuilderGUI.XRay
             }
 
             //Try a broad search for chapterish names just for fun
-            if (_chapters.Count == 0)
+            if (Chapters.Count == 0)
             {
                 // TODO: Expand on the chapter matching pattern concept
                 const string chapterPattern = @"((?:chapter|book|section|part|capitulo)\s+.*)|((?:prolog|prologue|epilogue)(?:\s+|$).*)|((?:one|two|three|four|five|six|seven|eight|nine|ten)(?:\s+|$).*)";
@@ -753,9 +751,9 @@ namespace XRayBuilderGUI.XRay
                     var index = rawML.IndexOf(chap.InnerHtml) + chap.InnerHtml.IndexOf(chap.InnerText);
                     if (index > -1)
                     {
-                        if (_chapters.Count > 0)
-                            _chapters[_chapters.Count - 1].End = index;
-                        _chapters.Add(new Chapter
+                        if (Chapters.Count > 0)
+                            Chapters[Chapters.Count - 1].End = index;
+                        Chapters.Add(new Chapter
                         {
                             Name = chap.InnerText,
                             Start = index,
@@ -813,26 +811,26 @@ namespace XRayBuilderGUI.XRay
             if (!Directory.Exists(Environment.CurrentDirectory + @"\ext\"))
                 Directory.CreateDirectory(Environment.CurrentDirectory + @"\ext\");
             using var streamWriter =
-                new StreamWriter(Environment.CurrentDirectory + @"\ext\" + asin + ".chapters", false,
+                new StreamWriter(Environment.CurrentDirectory + @"\ext\" + Asin + ".chapters", false,
                     Encoding.UTF8);
-            foreach (var c in _chapters)
+            foreach (var c in Chapters)
                 streamWriter.WriteLine(c.Name + "|" + c.Start + "|" + c.End);
         }
 
         public bool LoadChapters()
         {
-            _chapters = new List<Chapter>();
-            if (!File.Exists(Environment.CurrentDirectory + @"\ext\" + asin + ".chapters")) return false;
+            Chapters = new List<Chapter>();
+            if (!File.Exists(Environment.CurrentDirectory + @"\ext\" + Asin + ".chapters")) return false;
             using (
                 var streamReader =
-                    new StreamReader(Environment.CurrentDirectory + @"\ext\" + asin + ".chapters", Encoding.UTF8))
+                    new StreamReader(Environment.CurrentDirectory + @"\ext\" + Asin + ".chapters", Encoding.UTF8))
             {
                 while (!streamReader.EndOfStream)
                 {
                     var tmp = streamReader.ReadLine()?.Split('|');
                     if (tmp?.Length != 3) return false; //Malformed chapters file
                     if (tmp[0] == "" || tmp[0].Substring(0, 1) == "#") continue;
-                    _chapters.Add(new Chapter
+                    Chapters.Add(new Chapter
                     {
                         Name = tmp[0],
                         Start = Convert.ToInt32(tmp[1]),
@@ -1017,54 +1015,6 @@ namespace XRayBuilderGUI.XRay
                     }
                 }
             }
-        }
-
-        public void SaveToFileOld(string path)
-        {
-            var appVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-
-            var start = (long?) Srl;
-            var end = (long?) Erl;
-            var chapters = _chapters.ToArray();
-
-            if (_chapters.Count <= 0)
-            {
-                start = null;
-                end = null;
-                chapters = new []
-                {
-                    new Chapter
-                    {
-                        Name = null,
-                        Start = 1,
-                        End = 9999999
-                    }
-                };
-            }
-
-            var xray = new Artifacts.XRay
-            {
-                Asin = asin,
-                Guid = $"{databaseName}:{_guid}",
-                Version = "1",
-                XRayVersion = $"{appVersion.Major}.{appVersion.Minor}{appVersion.Build}",
-                Created = (CreatedAt ?? DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"),
-                Terms = Terms.Select(term => new Term
-                {
-                    Desc = term.Desc ?? "",
-                    DescSrc = term.DescSrc ?? "",
-                    DescUrl = term.DescUrl ?? "",
-                    Type = term.Type,
-                    TermName = term.TermName,
-                    Locs = term.Locs.Count > 0 ? term.Locs : new List<long[]> {new long[] {100,100,100,6}}
-                }).ToArray(),
-                Chapters = chapters,
-                Start = start,
-                End = end
-            };
-
-            using var streamWriter = new StreamWriter(path, false, Encoding.UTF8);
-            streamWriter.Write(JsonUtil.Serialize(xray));
         }
     }
 }

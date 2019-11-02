@@ -67,21 +67,6 @@ namespace XRayBuilder.Test
             Assert.AreEqual(xray.ExpandFromRawMl(new FileStream(book.rawml, FileMode.Open), null, null, Tokens.Token, false, false), 0);
             FileAssert.AreEqual($"ext\\{book.asin}.chapters", $"testfiles\\{book.asin}.chapters");
         }
-
-        [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
-        public async Task XRayXmlSaveOldTest(Book book)
-        {
-            var xray = TestData.CreateXRayFromXML(book.xml, book.db, book.guid, book.asin, _goodreads, _logger, _aliasesService);
-            await xray.CreateXray(null, Tokens.Token);
-            xray.ExportAndDisplayTerms();
-            xray.LoadAliases();
-            xray.ExpandFromRawMl(new FileStream(book.rawml, FileMode.Open), null, null, Tokens.Token, false, false);
-            string filename = xray.XRayName();
-            string outpath = Path.Combine(Environment.CurrentDirectory, "out", filename);
-            xray.CreatedAt = new DateTime(2019, 11, 2, 13, 19, 18, DateTimeKind.Utc);
-            xray.SaveToFileOld(outpath);
-            FileAssert.AreEqual($"testfiles\\XRAY.entities.{book.asin}_old.asc", outpath);
-        }
     }
 
     [TestFixture]

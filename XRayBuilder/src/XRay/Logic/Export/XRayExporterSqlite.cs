@@ -12,11 +12,11 @@ using XRayBuilderGUI.XRay.Model;
 
 namespace XRayBuilderGUI.XRay.Logic.Export
 {
-    public class ExporterSqlite : IExporter
+    public sealed class XRayExporterSqlite : IXRayExporter
     {
         private readonly ILogger _logger;
 
-        public ExporterSqlite(ILogger logger)
+        public XRayExporterSqlite(ILogger logger)
         {
             _logger = logger;
         }

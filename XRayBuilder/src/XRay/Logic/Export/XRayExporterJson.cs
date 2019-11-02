@@ -10,7 +10,7 @@ using XRayBuilderGUI.XRay.Artifacts;
 
 namespace XRayBuilderGUI.XRay.Logic.Export
 {
-    public class ExporterJson : IExporter
+    public sealed class XRayExporterJson : IXRayExporter
     {
         public void Export(XRay xray, string path, IProgressBar progress, CancellationToken cancellationToken = default)
         {

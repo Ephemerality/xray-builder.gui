@@ -15,7 +15,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
     public sealed class ExporterSqliteTests
     {
         private ILogger _logger;
-        private IExporter _exporter;
+        private IXRayExporter _xrayExporter;
         private Goodreads _goodreads;
         private IAliasesService _aliasesService;
         private IHttpClient _httpClient;
@@ -29,7 +29,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             _httpClient = new HttpClient(_logger);
             _amazonInfoParser = new AmazonInfoParser(_logger, _httpClient);
             _amazonClient = new AmazonClient(_httpClient, _amazonInfoParser, _logger);
-            _exporter = new ExporterSqlite(_logger);
+            _xrayExporter = new XRayExporterSqlite(_logger);
             _goodreads = new Goodreads(_logger, _httpClient, _amazonClient);
             _aliasesService = new AliasesService(_logger);
         }
@@ -44,7 +44,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             xray.ExpandFromRawMl(new FileStream(book.rawml, FileMode.Open), null, null, CancellationToken.None, false, false);
             string filename = xray.XRayName();
             string outpath = Path.Combine(Environment.CurrentDirectory, "out", filename);
-            _exporter.Export(xray, outpath, null, CancellationToken.None);
+            _xrayExporter.Export(xray, outpath, null, CancellationToken.None);
         }
     }
 }

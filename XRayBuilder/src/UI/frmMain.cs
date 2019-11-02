@@ -40,8 +40,8 @@ namespace XRayBuilderGUI.UI
         private readonly IAmazonInfoParser _amazonInfoParser;
         private readonly IAliasesService _aliasesService;
         // todo factory for these 2
-        private readonly ExporterSqlite _exporterSqlite;
-        private readonly ExporterJson _exporterJson;
+        private readonly XRayExporterSqlite _xrayExporterSqlite;
+        private readonly XRayExporterJson _xrayExporterJson;
         private readonly IPreviewDataExporter _previewDataExporter;
         private readonly Container _diContainer;
 
@@ -60,9 +60,9 @@ namespace XRayBuilderGUI.UI
             PreviewProviderFactory previewProviderFactory,
             IAmazonInfoParser amazonInfoParser,
             IAliasesService aliasesService,
-            ExporterSqlite exporterSqlite,
+            XRayExporterSqlite xrayExporterSqlite,
             IPreviewDataExporter previewDataExporter,
-            ExporterJson exporterJson)
+            XRayExporterJson xrayExporterJson)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
@@ -74,9 +74,9 @@ namespace XRayBuilderGUI.UI
             _previewProviderFactory = previewProviderFactory;
             _amazonInfoParser = amazonInfoParser;
             _aliasesService = aliasesService;
-            _exporterSqlite = exporterSqlite;
+            _xrayExporterSqlite = xrayExporterSqlite;
             _previewDataExporter = previewDataExporter;
-            _exporterJson = exporterJson;
+            _xrayExporterJson = xrayExporterJson;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
         }
@@ -302,7 +302,7 @@ namespace XRayBuilderGUI.UI
             {
                 try
                 {
-                    _exporterSqlite.Export(xray, newPath, _progress, _cancelTokens.Token);
+                    _xrayExporterSqlite.Export(xray, newPath, _progress, _cancelTokens.Token);
                 }
                 catch (OperationCanceledException)
                 {
@@ -331,7 +331,7 @@ namespace XRayBuilderGUI.UI
             }
             else
             {
-                _exporterJson.Export(xray, newPath, _progress, _cancelTokens.Token);
+                _xrayExporterJson.Export(xray, newPath, _progress, _cancelTokens.Token);
             }
             _logger.Log($"X-Ray file created successfully!\r\nSaved to {newPath}");
 

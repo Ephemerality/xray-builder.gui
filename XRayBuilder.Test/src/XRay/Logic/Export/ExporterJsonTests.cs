@@ -20,7 +20,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         private IHttpClient _httpClient;
         private IAmazonClient _amazonClient;
         private IAmazonInfoParser _amazonInfoParser;
-        private IExporter _exporter;
+        private IXRayExporter _xrayExporter;
 
         [SetUp]
         public void Setup()
@@ -31,7 +31,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             _amazonClient = new AmazonClient(_httpClient, _amazonInfoParser, _logger);
             _goodreads = new Goodreads(_logger, _httpClient, _amazonClient);
             _aliasesService = new AliasesService(_logger);
-            _exporter = new ExporterJson();
+            _xrayExporter = new XRayExporterJson();
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
@@ -45,7 +45,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             string filename = xray.XRayName();
             string outpath = Path.Combine(Environment.CurrentDirectory, "out", filename);
             xray.CreatedAt = new DateTime(2019, 11, 2, 13, 19, 18, DateTimeKind.Utc);
-            _exporter.Export(xray, outpath, null, CancellationToken.None);
+            _xrayExporter.Export(xray, outpath, null, CancellationToken.None);
             FileAssert.AreEqual($"testfiles\\XRAY.entities.{book.asin}_old.asc", outpath);
         }
     }

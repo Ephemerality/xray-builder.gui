@@ -29,6 +29,7 @@ namespace XRayBuilderGUI.XRay.Logic.Export
             Populate(xray, database, progress, cancellationToken);
             _logger.Log("Updating indices...");
             UpdateIndices(database);
+            database.Dispose();
         }
 
         /// <summary>
@@ -38,7 +39,7 @@ namespace XRayBuilderGUI.XRay.Logic.Export
         private SQLiteConnection Create(string path)
         {
             SQLiteConnection.CreateFile(path);
-            using var db = new SQLiteConnection($"Data Source={path};Version=3;");
+            var db = new SQLiteConnection($"Data Source={path};Version=3;");
             db.Open();
             string sql;
             try

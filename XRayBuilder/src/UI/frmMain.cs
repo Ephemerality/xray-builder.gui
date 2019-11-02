@@ -25,6 +25,7 @@ using XRayBuilderGUI.Unpack;
 using XRayBuilderGUI.XRay;
 using XRayBuilderGUI.XRay.Logic;
 using XRayBuilderGUI.XRay.Logic.Export;
+using XRayBuilderGUI.XRay.Model.Export;
 using EndActions = XRayBuilderGUI.Extras.EndActions.EndActions;
 
 namespace XRayBuilderGUI.UI
@@ -39,9 +40,7 @@ namespace XRayBuilderGUI.UI
         private readonly PreviewProviderFactory _previewProviderFactory;
         private readonly IAmazonInfoParser _amazonInfoParser;
         private readonly IAliasesService _aliasesService;
-        // todo factory for these 2
-        private readonly XRayExporterSqlite _xrayExporterSqlite;
-        private readonly XRayExporterJson _xrayExporterJson;
+        private readonly XRayExporterFactory _xrayExporterFactory;
         private readonly IPreviewDataExporter _previewDataExporter;
         private readonly Container _diContainer;
 
@@ -60,9 +59,8 @@ namespace XRayBuilderGUI.UI
             PreviewProviderFactory previewProviderFactory,
             IAmazonInfoParser amazonInfoParser,
             IAliasesService aliasesService,
-            XRayExporterSqlite xrayExporterSqlite,
             IPreviewDataExporter previewDataExporter,
-            XRayExporterJson xrayExporterJson)
+            XRayExporterFactory xrayExporterFactory)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
@@ -74,9 +72,8 @@ namespace XRayBuilderGUI.UI
             _previewProviderFactory = previewProviderFactory;
             _amazonInfoParser = amazonInfoParser;
             _aliasesService = aliasesService;
-            _xrayExporterSqlite = xrayExporterSqlite;
             _previewDataExporter = previewDataExporter;
-            _xrayExporterJson = xrayExporterJson;
+            _xrayExporterFactory = xrayExporterFactory;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
         }
@@ -298,23 +295,25 @@ namespace XRayBuilderGUI.UI
             }
             var newPath = outFolder + "\\" + xray.XRayName(_settings.android);
 
+            try
+            {
+                var xrayExporter = _xrayExporterFactory.Get(_settings.useNewVersion ? XRayExporterFactory.Enum.Sqlite : XRayExporterFactory.Enum.Json);
+                xrayExporter.Export(xray, newPath, _progress, _cancelTokens.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.Log("Building canceled.");
+                return;
+            }
+            catch (Exception ex)
+            {
+                // TODO: Add option to retry maybe?
+                _logger.Log($"An error occurred while creating the X-Ray file. Is it opened in another program?\r\n{ex.Message}");
+                return;
+            }
+
             if (_settings.useNewVersion)
             {
-                try
-                {
-                    _xrayExporterSqlite.Export(xray, newPath, _progress, _cancelTokens.Token);
-                }
-                catch (OperationCanceledException)
-                {
-                    _logger.Log("Building canceled.");
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    // TODO: Add option to retry maybe?
-                    _logger.Log($"An error occurred while creating the new X-Ray database. Is it opened in another program?\r\n{ex.Message}");
-                    return;
-                }
                 XrPath = outFolder + @"\XRAY.entities." + metadata.Asin;
 
                 //Save the new XRAY.ASIN.previewData file
@@ -329,10 +328,7 @@ namespace XRayBuilderGUI.UI
                     _logger.Log($"An error occurred saving the previewData file: {ex.Message}\r\n{ex.StackTrace}");
                 }
             }
-            else
-            {
-                _xrayExporterJson.Export(xray, newPath, _progress, _cancelTokens.Token);
-            }
+
             _logger.Log($"X-Ray file created successfully!\r\nSaved to {newPath}");
 
             checkFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));

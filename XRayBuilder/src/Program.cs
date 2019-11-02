@@ -11,6 +11,8 @@ using XRayBuilderGUI.UI;
 using XRayBuilderGUI.UI.Preview;
 using XRayBuilderGUI.UI.Preview.Logic;
 using XRayBuilderGUI.XRay.Logic;
+using XRayBuilderGUI.XRay.Logic.Export;
+using XRayBuilderGUI.XRay.Model.Export;
 
 namespace XRayBuilderGUI
 {
@@ -44,6 +46,10 @@ namespace XRayBuilderGUI
             // TODO: Figure out autoregister for Factory<,>
             _container.Register<SecondaryDataSourceFactory>(Lifestyle.Singleton);
             _container.AutoregisterConcreteFromInterface<ISecondarySource>(Lifestyle.Singleton);
+            _container.Register<XRayExporterFactory>(Lifestyle.Singleton);
+            _container.AutoregisterConcreteFromInterface<IXRayExporter>(Lifestyle.Singleton);
+
+            _container.Register<IPreviewDataExporter, PreviewDataExporter>(Lifestyle.Singleton);
 
             _container.Register<PreviewProviderFactory>(Lifestyle.Singleton);
             _container.AutoregisterConcreteFromAbstract<PreviewProvider>(Lifestyle.Singleton);

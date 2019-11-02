@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace XRayBuilderGUI.XRay.Artifacts
 {
-    public class Term
+    public sealed class Term
     {
         [JsonProperty("type")]
         public string Type { get; set; }
@@ -30,12 +30,7 @@ namespace XRayBuilderGUI.XRay.Artifacts
 
         [XmlIgnore]
         [JsonProperty("locs")]
-        // todo int[][]
-        public List<string> Locs { get; set; } = new List<string>();
-
-        [XmlIgnore]
-        [JsonIgnore]
-        public List<string> Assets { get; set; } = new List<string>();
+        public List<long[]> Locs { get; set; } = new List<long[]>();
 
         [XmlIgnore]
         [JsonIgnore]
@@ -56,20 +51,5 @@ namespace XRayBuilderGUI.XRay.Artifacts
         /// </summary>
         [JsonIgnore]
         public bool RegexAliases;
-
-        public override string ToString()
-        {
-            //Note that the Amazon X-Ray files declare an "assets" var for each term, but I have not seen one that actually uses them to contain anything
-            if (Locs.Count > 0)
-                return
-                    string.Format(
-                        @"{{""type"":""{0}"",""term"":""{1}"",""desc"":""{2}"",""descSrc"":""{3}"",""descUrl"":""{4}"",""locs"":[{5}]}}",
-                        Type, TermName, Desc, DescSrc, DescUrl, string.Join(",", Locs));
-
-            return
-                string.Format(
-                    @"{{""type"":""{0}"",""term"":""{1}"",""desc"":""{2}"",""descSrc"":""{3}"",""descUrl"":""{4}"",""locs"":[[100,100,100,6]]}}",
-                    Type, TermName, Desc, DescSrc, DescUrl);
-        }
     }
 }

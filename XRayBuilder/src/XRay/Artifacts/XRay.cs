@@ -28,11 +28,11 @@ namespace XRayBuilderGUI.XRay.Artifacts
         [JsonProperty("assets")]
         public Assets Assets { get; set; } = new Assets();
 
-        [JsonProperty("srl")]
-        public long Start { get; set; }
+        [JsonProperty("srl", NullValueHandling = NullValueHandling.Ignore)]
+        public long? Start { get; set; }
 
-        [JsonProperty("erl")]
-        public long End { get; set; }
+        [JsonProperty("erl", NullValueHandling = NullValueHandling.Ignore)]
+        public long? End { get; set; }
     }
 
     public sealed class Assets

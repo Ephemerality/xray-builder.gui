@@ -15,7 +15,7 @@ namespace XRayBuilder.Test.XRay.Model
                 Aliases = new List<string> {"Billy", "Bill"},
                 Desc = "Definitely Billy",
                 Id = 1,
-                Locs = new List<string> {"[123,123,123,1]"},
+                Locs = new List<long[]> {new long[] {123,123,123,1}},
                 Match = true,
                 Occurrences = new List<int[]> {new [] {123, 456}},
                 Type = "character",

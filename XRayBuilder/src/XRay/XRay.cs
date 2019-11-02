@@ -38,14 +38,15 @@ using XRayBuilderGUI.Libraries;
 using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Libraries.Primitives.Extensions;
 using XRayBuilderGUI.Libraries.Progress;
+using XRayBuilderGUI.Libraries.Serialization.Json.Util;
 using XRayBuilderGUI.XRay.Artifacts;
 using XRayBuilderGUI.XRay.Logic;
+using XRayBuilderGUI.XRay.Model;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI.XRay
 {
-    // TODO: Anywhere JSON is used, serialization should be done rather than text formatting...
-    public partial class XRay
+    public class XRay
     {
         private readonly ILogger _logger;
 
@@ -176,27 +177,6 @@ namespace XRayBuilderGUI.XRay
             _logger.Log(@"Exporting terms...");
             Functions.Save(Terms, outfile);
             return 0;
-        }
-
-        public override string ToString()
-        {
-            //Insert a version tag of the current program version so you know which version built it.
-            //Will be ignored by the Kindle.
-            var dd = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            var xrayversion = $"{dd.Major}.{dd.Minor}{dd.Build}";
-            //Insert creation date... seems useful?
-            CreatedAt ??= DateTime.Now;
-            //If there are no chapters built (someone only ran create X-Ray), just use the default version
-            if (_chapters.Count > 0)
-                return
-                    string.Format(
-                        @"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{8}"",""created"":""{9}"",""terms"":[{4}],""chapters"":[{5}],""assets"":{{}},""srl"":{6},""erl"":{7}}}",
-                        asin, databaseName, Guid, version, string.Join(",", Terms),
-                        string.Join(",", _chapters), _srl, _erl, xrayversion, CreatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss"));
-            return
-                string.Format(
-                    @"{{""asin"":""{0}"",""guid"":""{1}:{2}"",""version"":""{3}"",""xrayversion"":""{5}"",""created"":""{6}"",""terms"":[{4}],""chapters"":[{{""name"":null,""start"":1,""end"":9999999}}]}}",
-                    asin, databaseName, Guid, version, string.Join(",", Terms), xrayversion, CreatedAt.Value.ToString("yyyy-MM-dd HH:mm:ss"));
         }
 
         //Add string creation for new XRAY.ASIN.previewData file
@@ -573,8 +553,13 @@ namespace XRayBuilderGUI.XRay
                                 //Only add new locs if shorter excerpt was found
                                 if (newLoc >= 0)
                                 {
-                                    character.Locs.Add(string.Format("[{0},{1},{2},{3}]", newLoc + locOffset, newLenQuote,
-                                        newLocHighlight, lenHighlight[j]));
+                                    character.Locs.Add(new []
+                                    {
+                                        newLoc + locOffset,
+                                        newLenQuote,
+                                        newLocHighlight,
+                                        lenHighlight[j]
+                                    });
                                     locHighlight.RemoveAt(j);
                                     lenHighlight.RemoveAt(j--);
                                 }
@@ -583,9 +568,16 @@ namespace XRayBuilderGUI.XRay
 
                         for (var j = 0; j < locHighlight.Count; j++)
                         {
-                            character.Locs.Add(string.Format("[{0},{1},{2},{3}]", location + locOffset, lenQuote,
-                                locHighlight[j], lenHighlight[j])); // For old format
-                            character.Occurrences.Add(new[] { location + locOffset + locHighlight[j], lenHighlight[j] }); // For new format
+                            // For old format
+                            character.Locs.Add(new long[]
+                            {
+                                location + locOffset,
+                                lenQuote,
+                                locHighlight[j],
+                                lenHighlight[j]
+                            });
+                            // For new format
+                            character.Occurrences.Add(new[] { location + locOffset + locHighlight[j], lenHighlight[j] });
                         }
                         var exCheck = excerpts.Where(t => t.Start.Equals(location + locOffset)).ToArray();
                         if (exCheck.Length > 0)
@@ -1176,8 +1168,50 @@ namespace XRayBuilderGUI.XRay
 
         public void SaveToFileOld(string path)
         {
+            var appVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+
+            var start = (long?) _srl;
+            var end = (long?) _erl;
+            var chapters = _chapters.ToArray();
+
+            if (_chapters.Count <= 0)
+            {
+                start = null;
+                end = null;
+                chapters = new []
+                {
+                    new Chapter
+                    {
+                        Name = null,
+                        Start = 1,
+                        End = 9999999
+                    }
+                };
+            }
+
+            var xray = new Artifacts.XRay
+            {
+                Asin = asin,
+                Guid = $"{databaseName}:{_guid}",
+                Version = "1",
+                XRayVersion = $"{appVersion.Major}.{appVersion.Minor}{appVersion.Build}",
+                Created = (CreatedAt ?? DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"),
+                Terms = Terms.Select(term => new Term
+                {
+                    Desc = term.Desc ?? "",
+                    DescSrc = term.DescSrc ?? "",
+                    DescUrl = term.DescUrl ?? "",
+                    Type = term.Type,
+                    TermName = term.TermName,
+                    Locs = term.Locs.Count > 0 ? term.Locs : new List<long[]> {new long[] {100,100,100,6}}
+                }).ToArray(),
+                Chapters = chapters,
+                Start = start,
+                End = end
+            };
+
             using var streamWriter = new StreamWriter(path, false, Encoding.UTF8);
-            streamWriter.Write(ToString());
+            streamWriter.Write(JsonUtil.Serialize(xray));
         }
 
         public void SaveToFileNew(string path, IProgressBar progress, CancellationToken token)

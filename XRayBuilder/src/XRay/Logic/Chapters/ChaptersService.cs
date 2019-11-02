@@ -18,8 +18,6 @@ namespace XRayBuilderGUI.XRay.Logic.Chapters
     public class ChaptersService
     {
         private readonly ILogger _logger;
-        // TODO Config
-        private readonly bool _enableEdit = Properties.Settings.Default.enableEdit;
 
         public ChaptersService(ILogger logger)
         {
@@ -30,7 +28,7 @@ namespace XRayBuilderGUI.XRay.Logic.Chapters
         /// Read the chapters or search for them and apply them to the given <param name="xray"></param> 
         /// </summary>
         // TODO Do something about unattended/dialog stuff
-        public void HandleChapters(XRay xray, string asin, long mlLen, HtmlDocument doc, string rawMl, XRay.SafeShowDelegate safeShow, bool unattended)
+        public void HandleChapters(XRay xray, string asin, long mlLen, HtmlDocument doc, string rawMl, XRay.SafeShowDelegate safeShow, bool unattended, bool enableEdit)
         {
             //Similar to aliases, if chapters definition exists, load it. Otherwise, attempt to build it from the book
             var chapterFile = $@"{Environment.CurrentDirectory}\ext\{asin}.chapters";
@@ -68,7 +66,7 @@ namespace XRayBuilderGUI.XRay.Logic.Chapters
                     _logger.Log($"No chapters detected.\r\nYou can create a file at {chapterFile} if you want to define chapters manually.");
             }
 
-            if (!unattended && _enableEdit)
+            if (!unattended && enableEdit)
                 if (DialogResult.Yes ==
                     safeShow("Would you like to open the chapters file in notepad for editing?", "Chapters",
                         MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))

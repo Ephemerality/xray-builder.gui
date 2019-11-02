@@ -303,7 +303,7 @@ namespace XRayBuilderGUI.XRay
                 var readContents = streamReader.ReadToEnd();
                 var utf8Doc = new HtmlDocument();
                 utf8Doc.LoadHtml(readContents);
-                _chaptersService.HandleChapters(this, Asin, rawMlStream.Length, utf8Doc, readContents, safeShow, Unattended);
+                _chaptersService.HandleChapters(this, Asin, rawMlStream.Length, utf8Doc, readContents, safeShow, Unattended, Properties.Settings.Default.enableEdit);
             }
 
             _logger.Log("Scanning book content...");
@@ -624,7 +624,7 @@ namespace XRayBuilderGUI.XRay
             {
                 _logger.Log("An error occurred while opening the BaseSplitIgnore.txt file.\r\n" +
                     "Ensure you extracted it to the same directory as the program.\r\n" +
-                    ex.Message + "\r\nUsing built in default terms...");
+                    ex.Message + "\r\nUsing built-in default terms...");
             }
 
             //Try to remove common titles from aliases

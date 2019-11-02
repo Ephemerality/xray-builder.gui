@@ -105,6 +105,16 @@ namespace XRayBuilder.Test
             xray.SaveToFileOld(outpath);
             FileAssert.AreEqual($"testfiles\\XRAY.entities.{book.asin}_old.asc", outpath);
         }
+
+        [Test, TestCaseSource(nameof(books))]
+        public async Task XRayXmlPreviewDataTest(Book book)
+        {
+            var xray = CreateXRayFromXML(book.xml, book.db, book.guid, book.asin);
+            await xray.CreateXray(null, tokens.Token);
+            string outpath = Path.Combine(Environment.CurrentDirectory, "out", $"XRAY.{book.asin}.previewData");
+            xray.SavePreviewToFile(outpath);
+            FileAssert.AreEqual($"testfiles\\XRAY.{book.asin}.previewData", outpath);
+        }
     }
 
     [TestFixture]

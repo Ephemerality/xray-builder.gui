@@ -179,13 +179,19 @@ namespace XRayBuilderGUI.XRay
             return 0;
         }
 
-        //Add string creation for new XRAY.ASIN.previewData file
-        public string getPreviewData()
-        {
-            var preview = @"{{""numImages"":0,""numTerms"":{0},""previewImages"":""[]"",""excerptIds"":[],""numPeople"":{1}}}";
-            preview = string.Format(preview, Terms.Count(t => t.Type == "topic"), Terms.Count(t => t.Type == "character"));
-            return preview;
-        }
+        /// <summary>
+        /// Data required for the new XRAY.previewData files, but without images or excerpts
+        /// </summary>
+        // TODO support images & excerpts
+        public PreviewData GetPreviewData()
+            => new PreviewData
+            {
+                NumImages = 0,
+                NumTerms = Terms.Count(t => t.Type == "topic"),
+                PreviewImages = "[]",
+                ExcerptIds = new string[0],
+                NumPeople = Terms.Count(t => t.Type == "character")
+            };
 
         public string XRayName(bool android = false) =>
             android
@@ -1250,7 +1256,7 @@ namespace XRayBuilderGUI.XRay
         public void SavePreviewToFile(string path)
         {
             using var streamWriter = new StreamWriter(path, false, Encoding.UTF8);
-            streamWriter.Write(getPreviewData());
+            streamWriter.Write(JsonUtil.Serialize(GetPreviewData()));
         }
     }
 }

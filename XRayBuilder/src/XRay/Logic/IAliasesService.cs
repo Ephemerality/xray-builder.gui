@@ -5,11 +5,13 @@ namespace XRayBuilderGUI.XRay.Logic
 {
     public interface IAliasesService
     {
+        void LoadAliasesForXRay(XRay xray);
+
         /// <summary>
         /// Loads a set of aliases for terms from <paramref name="aliasFile"/>.
         /// Returns null if the file does not exist.
         /// </summary>
         [CanBeNull]
-        Dictionary<string, string[]> LoadAliases(string aliasFile);
+        Dictionary<string, string[]> LoadAliasesFromFile(string aliasFile);
     }
 }

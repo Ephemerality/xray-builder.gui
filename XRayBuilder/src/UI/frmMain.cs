@@ -230,10 +230,10 @@ namespace XRayBuilderGUI.UI
             try
             {
                 if (rdoGoodreads.Checked)
-                    xray = new XRay.XRay(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _dataSource, _logger, _aliasesService, _chaptersService,
+                    xray = new XRay.XRay(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _dataSource, _logger, _chaptersService,
                         AZW3 ? _settings.offsetAZW3 : _settings.offset, "");
                 else
-                    xray = new XRay.XRay(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _dataSource, _logger, _aliasesService, _chaptersService, true,
+                    xray = new XRay.XRay(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _dataSource, _logger, _chaptersService, true,
                         AZW3 ? _settings.offsetAZW3 : _settings.offset, "");
 
                 await Task.Run(() => xray.CreateXray(_progress, _cancelTokens.Token)).ConfigureAwait(false);
@@ -255,7 +255,7 @@ namespace XRayBuilderGUI.UI
                     _logger.Log("Aliases file not found.");
                 else
                 {
-                    xray.LoadAliases();
+                    _aliasesService.LoadAliasesForXRay(xray);
                     _logger.Log($"Character aliases read from {xray.AliasPath}.");
                 }
 
@@ -574,7 +574,7 @@ namespace XRayBuilderGUI.UI
             {
                 txtXMLFile.Text = path;
 
-                var xray = new XRay.XRay(txtGoodreads.Text, _dataSource, _logger, _aliasesService, _chaptersService);
+                var xray = new XRay.XRay(txtGoodreads.Text, _dataSource, _logger, _chaptersService);
                 var result = await Task.Run(() => xray.SaveXml(path, _progress, _cancelTokens.Token));
                 if (result == 1)
                     _logger.Log("Warning: Unable to download character data as no character data found on Goodreads.");

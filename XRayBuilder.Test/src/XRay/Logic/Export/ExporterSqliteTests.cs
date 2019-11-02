@@ -40,10 +40,10 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXMLSaveNewTest(Book book)
         {
-            var xray = TestData.CreateXRayFromXML(book.xml, book.db, book.guid, book.asin, _goodreads, _logger, _aliasesService, _chaptersService);
+            var xray = TestData.CreateXRayFromXML(book.xml, book.db, book.guid, book.asin, _goodreads, _logger, _chaptersService);
             await xray.CreateXray(null, CancellationToken.None);
             xray.ExportAndDisplayTerms();
-            xray.LoadAliases();
+            _aliasesService.LoadAliasesForXRay(xray);
             xray.ExpandFromRawMl(new FileStream(book.rawml, FileMode.Open), null, null, CancellationToken.None, false, false);
             string filename = xray.XRayName();
             string outpath = Path.Combine(Environment.CurrentDirectory, "out", filename);

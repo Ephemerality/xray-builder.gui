@@ -14,7 +14,6 @@ using XRayBuilderGUI.Libraries;
 using XRayBuilderGUI.Libraries.Http;
 using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Model;
-using XRayBuilderGUI.XRay.Logic;
 using XRayBuilderGUI.XRay.Logic.Chapters;
 using EndActions = XRayBuilderGUI.Extras.EndActions.EndActions;
 
@@ -28,7 +27,6 @@ namespace XRayBuilder.Test
         private IAmazonClient _amazonClient;
         private Goodreads _goodreads;
         private IAmazonInfoParser _amazonInfoParser;
-        private IAliasesService _aliasesService;
         private ChaptersService _chaptersService;
 
         [SetUp]
@@ -39,7 +37,6 @@ namespace XRayBuilder.Test
             _amazonInfoParser = new AmazonInfoParser(_logger, _httpClient);
             _amazonClient = new AmazonClient(_httpClient, _amazonInfoParser, _logger);
             _goodreads = new Goodreads(_logger, _httpClient, _amazonClient);
-            _aliasesService = new AliasesService(_logger);
             _chaptersService = new ChaptersService(_logger);
         }
 
@@ -48,7 +45,7 @@ namespace XRayBuilder.Test
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXMLTest(Book book)
         {
-            XRayBuilderGUI.XRay.XRay xray = TestData.CreateXRayFromXML(book.xml, book.db, book.guid, book.asin, _goodreads, _logger, _aliasesService, _chaptersService);
+            XRayBuilderGUI.XRay.XRay xray = TestData.CreateXRayFromXML(book.xml, book.db, book.guid, book.asin, _goodreads, _logger, _chaptersService);
             Assert.NotNull(xray);
             Assert.AreEqual(await xray.CreateXray(null, Tokens.Token), 0);
         }
@@ -56,7 +53,7 @@ namespace XRayBuilder.Test
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXMLAliasTest(Book book)
         {
-            var xray = TestData.CreateXRayFromXML(book.xml, book.db, book.guid, book.asin, _goodreads, _logger, _aliasesService, _chaptersService);
+            var xray = TestData.CreateXRayFromXML(book.xml, book.db, book.guid, book.asin, _goodreads, _logger, _chaptersService);
             await xray.CreateXray(null, Tokens.Token);
             xray.ExportAndDisplayTerms();
             FileAssert.AreEqual($"ext\\{book.asin}.aliases", $"testfiles\\{book.asin}.aliases");
@@ -65,7 +62,7 @@ namespace XRayBuilder.Test
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXMLExpandRawMLTest(Book book)
         {
-            var xray = TestData.CreateXRayFromXML(book.xml, book.db, book.guid, book.asin, _goodreads, _logger, _aliasesService, _chaptersService);
+            var xray = TestData.CreateXRayFromXML(book.xml, book.db, book.guid, book.asin, _goodreads, _logger, _chaptersService);
             await xray.CreateXray(null, Tokens.Token);
             Assert.AreEqual(xray.ExpandFromRawMl(new FileStream(book.rawml, FileMode.Open), null, null, Tokens.Token, false, false), 0);
             FileAssert.AreEqual($"ext\\{book.asin}.chapters", $"testfiles\\{book.asin}.chapters");

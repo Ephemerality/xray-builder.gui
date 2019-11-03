@@ -36,6 +36,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         public async Task XRayXMLSaveNewTest(Book book)
         {
             var xray = await _xrayService.CreateXRayAsync(book.xml, book.db, book.guid, book.asin, 0, _file, null, CancellationToken.None);
+            xray.Unattended = true;
             _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath);
             _aliasesRepository.LoadAliasesForXRay(xray);
             xray.ExpandFromRawMl(new FileStream(book.rawml, FileMode.Open), null, null, CancellationToken.None, false, false);

@@ -31,7 +31,7 @@ namespace XRayBuilder.Test.DataSources
         [Test]
         public void NameTest()
         {
-            Assert.AreEqual(_goodreads.Name, nameof(SecondarySourceGoodreads));
+            Assert.AreEqual("Goodreads", _goodreads.Name);
         }
 
         [Test]

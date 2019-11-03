@@ -27,6 +27,7 @@ using XRayBuilderGUI.XRay.Logic;
 using XRayBuilderGUI.XRay.Logic.Aliases;
 using XRayBuilderGUI.XRay.Logic.Chapters;
 using XRayBuilderGUI.XRay.Logic.Export;
+using XRayBuilderGUI.XRay.Logic.Terms;
 using XRayBuilderGUI.XRay.Model.Export;
 using EndActions = XRayBuilderGUI.Extras.EndActions.EndActions;
 
@@ -43,9 +44,10 @@ namespace XRayBuilderGUI.UI
         private readonly IAmazonInfoParser _amazonInfoParser;
         private readonly IAliasesRepository _aliasesRepository;
         private readonly ChaptersService _chaptersService;
-        private readonly XRayService _xrayService;
+        private readonly IXRayService _xrayService;
         private readonly XRayExporterFactory _xrayExporterFactory;
         private readonly IPreviewDataExporter _previewDataExporter;
+        private readonly ITermsService _termsService;
         private readonly Container _diContainer;
 
         // TODO: Fix up these paths
@@ -66,7 +68,8 @@ namespace XRayBuilderGUI.UI
             IPreviewDataExporter previewDataExporter,
             XRayExporterFactory xrayExporterFactory,
             ChaptersService chaptersService,
-            XRayService xrayService)
+            IXRayService xrayService,
+            ITermsService termsService)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
@@ -82,6 +85,7 @@ namespace XRayBuilderGUI.UI
             _xrayExporterFactory = xrayExporterFactory;
             _chaptersService = chaptersService;
             _xrayService = xrayService;
+            _termsService = termsService;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
         }
@@ -933,8 +937,8 @@ namespace XRayBuilderGUI.UI
             try
             {
                 var terms = newVer == XRayUtil.XRayVersion.New
-                    ? XRayUtil.ExtractTermsNew(new SQLiteConnection($"Data Source={selPath}; Version=3;"), true)
-                    : XRayUtil.ExtractTermsOld(selPath);
+                    ? _termsService.ExtractTermsNew(new SQLiteConnection($"Data Source={selPath}; Version=3;"), true)
+                    : _termsService.ExtractTermsOld(selPath);
                 if (!Directory.Exists(Environment.CurrentDirectory + @"\xml\"))
                     Directory.CreateDirectory(Environment.CurrentDirectory + @"\xml\");
                 var outfile = Environment.CurrentDirectory + @"\xml\" + Path.GetFileNameWithoutExtension(selPath) + ".xml";

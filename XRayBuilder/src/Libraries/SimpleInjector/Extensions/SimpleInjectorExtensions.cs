@@ -45,6 +45,19 @@ namespace XRayBuilderGUI.Libraries.SimpleInjector.Extensions
         }
 
         /// <summary>
+        /// Auto-register any types derived from <paramref name="@interface"/> with the given <paramref name="lifestyle"/>
+        /// </summary>
+        public static void AutoregisterConcreteFromInterface(this Container container, Type @interface, Lifestyle lifestyle)
+        {
+            if (!@interface.IsInterface)
+                throw new ArgumentException("Type not an interface", nameof(@interface));
+
+            var types = ReflectionUtil.GetConcreteFromInterface(@interface).ToArray();
+            foreach (var type in types)
+                container.Register(type, type, lifestyle);
+        }
+
+        /// <summary>
         /// Auto-register any types derived from <typeparamref name="TInterface"/> as transient, ignoring the disposable transient warning
         /// </summary>
         public static void AutoregisterDisposableTransientConcreteFromInterface<TInterface>(this Container container, string message)

@@ -16,5 +16,10 @@ namespace XRayBuilderGUI.Libraries.Reflection.Util
             => Assembly.GetAssembly(typeof(TInterface))
                 .GetTypes()
                 .Where(type => type.IsClass && !type.IsAbstract && typeof(TInterface).IsAssignableFrom(type));
+
+        public static IEnumerable<Type> GetConcreteFromInterface(Type @interface)
+            => Assembly.GetAssembly(@interface)
+                .GetTypes()
+                .Where(type => type.IsClass && !type.IsAbstract && @interface.IsAssignableFrom(type));
     }
 }

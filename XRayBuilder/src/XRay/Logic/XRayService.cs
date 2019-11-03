@@ -369,5 +369,28 @@ namespace XRayBuilderGUI.XRay.Logic
                 _logger.Log($"No locations were found for the term \"{t.TermName}\".\r\nYou should add aliases for this term using the book or rawml as a reference.");
             }
         }
+
+        // TODO: Redo this later maybe
+        //public async Task<bool> AttemptAliasDownload()
+        //{
+        //    try
+        //    {
+        //        string aliases = await HttpDownloader.GetPageHtmlAsync("https://www.revensoftware.com/xray/aliases/" + asin);
+        //        StreamWriter fs = new StreamWriter(AliasPath, false, Encoding.UTF8);
+        //        fs.Write(aliases);
+        //        fs.Close();
+        //        _logger.Log("Found and downloaded pre-made aliases file.");
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        if (!ex.Message.Contains("(404) Not Found"))
+        //            _logger.Log("No pre-made aliases available for this book.");
+        //        else
+        //            _logger.Log("An error occurred downloading aliases: " + ex.Message + "\r\n" + ex.StackTrace);
+        //    }
+
+        //    return false;
+        //}
     }
 }

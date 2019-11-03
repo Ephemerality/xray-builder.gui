@@ -6,6 +6,7 @@ Thanks to darrenmcg, Author Profile, Start Actions, and End Actions files can al
 ## Acknowledgements
 * New GUI, Shelfari/Goodreads search, previews, Start/End Actions, Author Profile, and various other new features by darrenmcg/Psycho Reptile  
 * [Original X-Ray script by shinew](http://www.mobileread.com/forums/showthread.php?t=157770)  
+* [jhowell's KFX in/output plugins for Calibre](https://www.mobileread.com/forums/showthread.php?t=272407)
 
 ## Requirements
 * Windows  

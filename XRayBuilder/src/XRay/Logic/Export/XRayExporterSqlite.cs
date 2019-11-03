@@ -24,12 +24,12 @@ namespace XRayBuilderGUI.XRay.Logic.Export
         public void Export(XRay xray, string path, IProgressBar progress, CancellationToken cancellationToken = default)
         {
             _logger.Log("Building new X-Ray database...");
-            var database = Create(path);
+            using var database = Create(path);
             _logger.Log("Done building initial database. Populating with info from source X-Ray...");
             Populate(xray, database, progress, cancellationToken);
             _logger.Log("Updating indices...");
             UpdateIndices(database);
-            database.Dispose();
+            database.Close();
         }
 
         /// <summary>

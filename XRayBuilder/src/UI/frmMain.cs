@@ -246,7 +246,6 @@ namespace XRayBuilderGUI.UI
                         AZW3 ? _settings.offsetAZW3 : _settings.offset, fileDataSource, _progress, _cancelTokens.Token);
                 }
 
-                //await Task.Run(() => xray.CreateXray(_progress, _cancelTokens.Token)).ConfigureAwait(false);
                 xray = await Task.Run(() => xrayTask).ConfigureAwait(false);
 
                 _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath);

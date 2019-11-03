@@ -21,7 +21,7 @@ using XRayBuilderGUI.Libraries.Progress;
 using XRayBuilderGUI.Libraries.Serialization.Xml.Util;
 using XRayBuilderGUI.Model;
 using XRayBuilderGUI.Properties;
-using XRayBuilderGUI.UI.Preview.Logic;
+using XRayBuilderGUI.UI.Preview.Model;
 using XRayBuilderGUI.Unpack;
 using XRayBuilderGUI.XRay.Logic;
 using XRayBuilderGUI.XRay.Logic.Aliases;

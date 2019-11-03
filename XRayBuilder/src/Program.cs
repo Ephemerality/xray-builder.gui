@@ -9,7 +9,7 @@ using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Libraries.SimpleInjector.Extensions;
 using XRayBuilderGUI.UI;
 using XRayBuilderGUI.UI.Preview;
-using XRayBuilderGUI.UI.Preview.Logic;
+using XRayBuilderGUI.UI.Preview.Model;
 using XRayBuilderGUI.XRay.Logic;
 using XRayBuilderGUI.XRay.Logic.Aliases;
 using XRayBuilderGUI.XRay.Logic.Chapters;

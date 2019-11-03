@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using XRayBuilderGUI.Libraries;
 
-namespace XRayBuilderGUI.UI.Preview.Logic
+namespace XRayBuilderGUI.UI.Preview.Model
 {
-    public class PreviewProviderFactory : Factory<PreviewProviderFactory.PreviewType, PreviewProvider>
+    public sealed class PreviewProviderFactory : Factory<PreviewProviderFactory.PreviewType, PreviewProvider>
     {
         public PreviewProviderFactory(
             // ReSharper disable SuggestBaseTypeForParameter

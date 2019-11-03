@@ -2,18 +2,18 @@
 using JetBrains.Annotations;
 using SimpleInjector;
 
-namespace XRayBuilderGUI.UI.Preview.Logic
+namespace XRayBuilderGUI.UI.Preview.Model
 {
     public abstract class PreviewProvider
     {
         public abstract PreviewProviderFactory.PreviewType Type { get; }
         public abstract string Name { get; }
         public abstract string FilenameValidator { get; }
-        public abstract Type PreviewFormType { get; }
+        protected abstract Type PreviewFormType { get; }
 
         private readonly Container _diContainer;
 
-        protected PreviewProvider(Container diContainer)
+        private PreviewProvider(Container diContainer)
         {
             _diContainer = diContainer;
         }
@@ -28,7 +28,7 @@ namespace XRayBuilderGUI.UI.Preview.Logic
             public override PreviewProviderFactory.PreviewType Type { get; } = PreviewProviderFactory.PreviewType.AuthorProfile;
             public override string Name { get; } = "AuthorProfile";
             public override string FilenameValidator { get; } = "AuthorProfile";
-            public override Type PreviewFormType { get; } = typeof(frmPreviewAP);
+            protected override Type PreviewFormType { get; } = typeof(frmPreviewAP);
         }
 
         [UsedImplicitly]
@@ -39,7 +39,7 @@ namespace XRayBuilderGUI.UI.Preview.Logic
             public override PreviewProviderFactory.PreviewType Type { get; } = PreviewProviderFactory.PreviewType.EndActions;
             public override string Name { get; } = "EndActions";
             public override string FilenameValidator { get; } = "EndActions";
-            public override Type PreviewFormType { get; } = typeof(frmPreviewEA);
+            protected override Type PreviewFormType { get; } = typeof(frmPreviewEA);
         }
 
         [UsedImplicitly]
@@ -50,7 +50,7 @@ namespace XRayBuilderGUI.UI.Preview.Logic
             public override PreviewProviderFactory.PreviewType Type { get; } = PreviewProviderFactory.PreviewType.StartActions;
             public override string Name { get; } = "StartActions";
             public override string FilenameValidator { get; } = "StartActions";
-            public override Type PreviewFormType { get; } = typeof(frmPreviewSA);
+            protected override Type PreviewFormType { get; } = typeof(frmPreviewSA);
         }
 
         [UsedImplicitly]
@@ -61,7 +61,7 @@ namespace XRayBuilderGUI.UI.Preview.Logic
             public override PreviewProviderFactory.PreviewType Type { get; } = PreviewProviderFactory.PreviewType.XRay;
             public override string Name { get; } = "X-Ray";
             public override string FilenameValidator { get; } = "XRAY.entities";
-            public override Type PreviewFormType { get; } = typeof(frmPreviewXR);
+            protected override Type PreviewFormType { get; } = typeof(frmPreviewXR);
         }
     }
 }

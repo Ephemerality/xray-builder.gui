@@ -137,11 +137,8 @@ namespace XRayBuilderGUI.UI
 
         private void ToggleInterface(bool enabled)
         {
-            foreach (Control c in Controls)
-            {
-                if (c is Button)
-                    c.Enabled = enabled;
-            }
+            foreach (var c in Controls.OfType<Button>())
+                c.Enabled = enabled;
             txtMobi.Enabled = enabled;
             txtXMLFile.Enabled = enabled;
             txtGoodreads.Enabled = enabled;
@@ -194,7 +191,7 @@ namespace XRayBuilderGUI.UI
             }
             if (rdoGoodreads.Checked && txtGoodreads.Text == "")
             {
-                MessageBox.Show("No " + _dataSource.Name + " link was specified.", "Missing " + _dataSource.Name + " Link");
+                MessageBox.Show($"No {_dataSource.Name} link was specified.", $"Missing {_dataSource.Name} Link");
                 return;
             }
             if (!Directory.Exists(_settings.outDir))
@@ -226,7 +223,7 @@ namespace XRayBuilderGUI.UI
 
             //If AZW3 file use AZW3 offset, if checked. Checked by default.
             var AZW3 = Path.GetExtension(txtMobi.Text) == ".azw3" && _settings.overrideOffset;
-            _logger.Log("Offset: " + (AZW3 ? $"{_settings.offsetAZW3} (AZW3)" : _settings.offset.ToString()));
+            _logger.Log($"Offset: {(AZW3 ? $"{_settings.offsetAZW3} (AZW3)" : _settings.offset.ToString())}");
 
             //Create X-Ray and attempt to create the base file (essentially the same as the site)
             XRay.XRay xray;
@@ -278,7 +275,7 @@ namespace XRayBuilderGUI.UI
             }
             catch (Exception ex)
             {
-                _logger.Log("An error occurred while building the X-Ray:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                _logger.Log($"An error occurred while building the X-Ray:\r\n{ex.Message}\r\n{ex.StackTrace}");
                 return;
             }
 
@@ -288,7 +285,7 @@ namespace XRayBuilderGUI.UI
             {
                 if (_settings.android)
                 {
-                    outFolder = _settings.outDir + @"\Android\" + metadata.Asin;
+                    outFolder = $@"{_settings.outDir}\Android\{metadata.Asin}";
                     Directory.CreateDirectory(outFolder);
                 }
                 else
@@ -298,10 +295,10 @@ namespace XRayBuilderGUI.UI
             }
             catch (Exception ex)
             {
-                _logger.Log("Failed to create output directory: " + ex.Message + "\r\n" + ex.StackTrace + "\r\nFiles will be placed in the default output directory.");
+                _logger.Log($"Failed to create output directory: {ex.Message}\r\n{ex.StackTrace}\r\nFiles will be placed in the default output directory.");
                 outFolder = _settings.outDir;
             }
-            var newPath = outFolder + "\\" + xray.XRayName(_settings.android);
+            var newPath = $"{outFolder}\\{xray.XRayName(_settings.android)}";
 
             try
             {
@@ -322,12 +319,12 @@ namespace XRayBuilderGUI.UI
 
             if (_settings.useNewVersion)
             {
-                XrPath = outFolder + @"\XRAY.entities." + metadata.Asin;
+                XrPath = $@"{outFolder}\XRAY.entities.{metadata.Asin}";
 
                 //Save the new XRAY.ASIN.previewData file
                 try
                 {
-                    var pdPath = outFolder + @"\XRAY." + metadata.Asin + ".previewData";
+                    var pdPath = $@"{outFolder}\XRAY.{metadata.Asin}.previewData";
                     _previewDataExporter.Export(xray, pdPath);
                     _logger.Log($"X-Ray previewData file created successfully!\r\nSaved to {pdPath}");
                 }
@@ -434,11 +431,11 @@ namespace XRayBuilderGUI.UI
                 try
                 {
                     File.WriteAllText(ApPath, authorProfileOutput);
-                    _logger.Log("Author Profile file created successfully!\r\nSaved to " + ApPath);
+                    _logger.Log($"Author Profile file created successfully!\r\nSaved to {ApPath}");
                 }
                 catch (Exception ex)
                 {
-                    _logger.Log("An error occurred while writing the Author Profile file: " + ex.Message + "\r\n" + ex.StackTrace);
+                    _logger.Log($"An error occurred while writing the Author Profile file: {ex.Message}\r\n{ex.StackTrace}");
                     return;
                 }
 
@@ -478,7 +475,7 @@ namespace XRayBuilderGUI.UI
                     Extras.Artifacts.EndActions eaBase;
                     try
                     {
-                        var template = File.ReadAllText(Environment.CurrentDirectory + @"\dist\BaseEndActions.json", Encoding.UTF8);
+                        var template = File.ReadAllText($@"{Environment.CurrentDirectory}\dist\BaseEndActions.json", Encoding.UTF8);
                         eaBase = JsonConvert.DeserializeObject<Extras.Artifacts.EndActions>(template);
                     }
                     catch (FileNotFoundException)
@@ -497,7 +494,7 @@ namespace XRayBuilderGUI.UI
                     StartActions sa;
                     try
                     {
-                        var template = File.ReadAllText(Environment.CurrentDirectory + @"\dist\BaseStartActions.json", Encoding.UTF8);
+                        var template = File.ReadAllText($@"{Environment.CurrentDirectory}\dist\BaseStartActions.json", Encoding.UTF8);
                         sa = JsonConvert.DeserializeObject<StartActions>(template);
                     }
                     catch (FileNotFoundException)
@@ -531,7 +528,7 @@ namespace XRayBuilderGUI.UI
 
                     _logger.Log("Writing StartActions to file...");
                     File.WriteAllText(ea.SaPath, saContent);
-                    _logger.Log("StartActions file created successfully!\r\nSaved to " + SaPath);
+                    _logger.Log($"StartActions file created successfully!\r\nSaved to {SaPath}");
 
                     cmsPreview.Items[3].Enabled = true;
                     EaPath = $@"{outputDir}\EndActions.data.{bookInfo.Asin}.asc";
@@ -544,7 +541,7 @@ namespace XRayBuilderGUI.UI
                 checkFiles(bookInfo.Author, bookInfo.Title, bookInfo.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));
                 if (_settings.playSound)
                 {
-                    var player = new System.Media.SoundPlayer(Environment.CurrentDirectory + @"\done.wav");
+                    var player = new System.Media.SoundPlayer($@"{Environment.CurrentDirectory}\done.wav");
                     player.Play();
                 }
             }
@@ -571,9 +568,9 @@ namespace XRayBuilderGUI.UI
                 return;
             }
             ToggleInterface(false);
-            if (!Directory.Exists(Environment.CurrentDirectory + @"\xml\"))
-                Directory.CreateDirectory(Environment.CurrentDirectory + @"\xml\");
-            var path = Environment.CurrentDirectory + @"\xml\" + Path.GetFileNameWithoutExtension(txtMobi.Text) + ".xml";
+            if (!Directory.Exists($@"{Environment.CurrentDirectory}\xml\"))
+                Directory.CreateDirectory($@"{Environment.CurrentDirectory}\xml\");
+            var path = $@"{Environment.CurrentDirectory}\xml\{Path.GetFileNameWithoutExtension(txtMobi.Text)}.xml";
             try
             {
                 txtXMLFile.Text = path;
@@ -585,7 +582,7 @@ namespace XRayBuilderGUI.UI
                 else if (result == 2)
                     _logger.Log("Download cancelled.");
                 else
-                    _logger.Log("Character data has been successfully saved to: " + path);
+                    _logger.Log($"Character data has been successfully saved to: {path}");
             }
             catch (Exception ex)
             {
@@ -657,7 +654,7 @@ namespace XRayBuilderGUI.UI
                         }
                         catch (Exception ex)
                         {
-                            _logger.Log("Failed to download cover image: " + ex.Message);
+                            _logger.Log($"Failed to download cover image: {ex.Message}");
                         }
                     }
 
@@ -678,7 +675,7 @@ namespace XRayBuilderGUI.UI
             }
             catch (Exception ex)
             {
-                _logger.Log("An error occurred while searching: " + ex.Message + "\r\n" + ex.StackTrace);
+                _logger.Log($"An error occurred while searching: {ex.Message}\r\n{ex.StackTrace}");
             }
         }
 
@@ -741,10 +738,10 @@ namespace XRayBuilderGUI.UI
             // TODO: Maybe do something about these paths
             // TODO: ExtLoader or something?
             foreach (var dir in new [] { "out", "log", "dmp", "tmp", "ext" })
-                Directory.CreateDirectory(Environment.CurrentDirectory + $"\\{dir}");
+                Directory.CreateDirectory($"{Environment.CurrentDirectory}\\{dir}");
 
             if (_settings.outDir == "")
-                _settings.outDir = Environment.CurrentDirectory + @"\out";
+                _settings.outDir = $@"{Environment.CurrentDirectory}\out";
 
             txtGoodreads.Text = _settings.Goodreads;
             if (_settings.buildSource == "Goodreads")
@@ -772,8 +769,9 @@ namespace XRayBuilderGUI.UI
 
         private void frmMain_DragDrop(object sender, DragEventArgs e)
         {
-            if (!e.Data.GetDataPresent(DataFormats.FileDrop)) return;
-            var filePaths = (string[])(e.Data.GetData(DataFormats.FileDrop));
+            if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+                return;
+            var filePaths = (string[]) e.Data.GetData(DataFormats.FileDrop);
             foreach (var fileLoc in filePaths.Where(File.Exists))
             {
                 txtMobi.Text = fileLoc;
@@ -802,15 +800,19 @@ namespace XRayBuilderGUI.UI
                 btnKindleExtras.Enabled = !btnKindleExtras.Enabled;
                 btnOneClick.Enabled = !btnOneClick.Enabled;
             }
-            if (((RadioButton)sender).Text == "Shelfari")
-                lblGoodreads.Left = 150;
-            else if (((RadioButton)sender).Text == "Goodreads")
-                lblGoodreads.Left = 134;
+
+            lblGoodreads.Left = ((RadioButton) sender).Text switch
+            {
+                "Shelfari" => 150,
+                "Goodreads" => 134,
+                _ => lblGoodreads.Left
+            };
         }
 
         private void txtMobi_TextChanged(object sender, EventArgs e)
         {
-            if (txtMobi.Text == "" || !File.Exists(txtMobi.Text)) return;
+            if (txtMobi.Text == "" || !File.Exists(txtMobi.Text))
+                return;
             txtGoodreads.Text = "";
             prgBar.Value = 0;
 

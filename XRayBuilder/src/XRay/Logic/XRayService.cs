@@ -21,15 +21,15 @@ namespace XRayBuilderGUI.XRay.Logic
     [UsedImplicitly]
     public sealed class XRayService : IXRayService
     {
-        private readonly IAliasesService _aliasesService;
         private readonly ILogger _logger;
         private readonly ChaptersService _chaptersService;
+        private readonly IAliasesRepository _aliasesRepository;
 
-        public XRayService(IAliasesService aliasesService, ILogger logger, ChaptersService chaptersService)
+        public XRayService(ILogger logger, ChaptersService chaptersService, IAliasesRepository aliasesRepository)
         {
-            _aliasesService = aliasesService;
             _logger = logger;
             _chaptersService = chaptersService;
+            _aliasesRepository = aliasesRepository;
         }
 
         public async Task<XRay> CreateXRayAsync(
@@ -75,7 +75,7 @@ namespace XRayBuilderGUI.XRay.Logic
 
             if (!aliasesDownloaded && (!File.Exists(path) || Properties.Settings.Default.overwriteAliases))
             {
-                _aliasesService.SaveCharacters(xray.Terms, xray.Asin);
+                _aliasesRepository.SaveCharactersToFile(xray.Terms, xray.Asin);
                 _logger.Log($"Characters exported to {path} for adding aliases.");
             }
 

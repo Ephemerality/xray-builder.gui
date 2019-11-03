@@ -19,12 +19,12 @@ namespace XRayBuilderGUI.UI
     public partial class frmCreateXR : Form
     {
         private readonly ITermsService _termsService;
-        private readonly IAliasesService _aliasesService;
+        private readonly IAliasesRepository _aliasesRepository;
 
-        public frmCreateXR(ITermsService termsService, IAliasesService aliasesService)
+        public frmCreateXR(ITermsService termsService, IAliasesRepository aliasesRepository)
         {
             _termsService = termsService;
-            _aliasesService = aliasesService;
+            _aliasesRepository = aliasesRepository;
             InitializeComponent();
         }
 
@@ -205,7 +205,7 @@ namespace XRayBuilderGUI.UI
             try
             {
                 CreateTerms();
-                _aliasesService.SaveCharacters(_terms, txtAsin.Text);
+                _aliasesRepository.SaveCharactersToFile(_terms, txtAsin.Text);
                 MessageBox.Show("X-Ray entities and Alias files created sucessfully!");
             }
             catch (Exception ex)

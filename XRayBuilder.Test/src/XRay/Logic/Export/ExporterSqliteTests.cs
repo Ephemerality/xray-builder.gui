@@ -30,9 +30,9 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             _termsService = new TermsService();
             _file = new SecondarySourceFile(_logger, _termsService);
             _xrayExporter = new XRayExporterSqlite(_logger);
-            _aliasesRepository = new AliasesRepository(_logger);
+            _aliasesRepository = new AliasesRepository(_logger, new AliasesService(_logger));
             _chaptersService = new ChaptersService(_logger);
-            _xrayService = new XRayService(new AliasesService(_logger), _logger, _chaptersService);
+            _xrayService = new XRayService(_logger, _chaptersService, _aliasesRepository);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]

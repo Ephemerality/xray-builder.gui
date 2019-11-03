@@ -1,19 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using XRayBuilderGUI.Libraries.Enumerables.Extensions;
 using XRayBuilderGUI.Libraries.Logging;
+using XRayBuilderGUI.XRay.Artifacts;
 
 namespace XRayBuilderGUI.XRay.Logic.Aliases
 {
     public sealed class AliasesRepository : IAliasesRepository
     {
         private readonly ILogger _logger;
+        private readonly IAliasesService _aliasesService;
 
-        public AliasesRepository(ILogger logger)
+        public AliasesRepository(ILogger logger, IAliasesService aliasesService)
         {
             _logger = logger;
+            _aliasesService = aliasesService;
         }
 
         // todo make this better
@@ -101,6 +106,34 @@ namespace XRayBuilderGUI.XRay.Logic.Aliases
             }
 
             return aliasesByTermName;
+        }
+
+        public void SaveCharactersToFile(IEnumerable<Term> terms, string asin)
+        {
+            // todo service should handle this
+            var path = $@"{Environment.CurrentDirectory}\ext\";
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            var aliasFile = $"{path}{asin}.aliases";
+
+            using var streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8);
+
+            var characters = terms.Where(term => term.Type == "character");
+            try
+            {
+                var aliasesByTermName = _aliasesService.GenerateAliases(characters);
+                foreach (var (name, aliases) in aliasesByTermName)
+                {
+                    // Aliases must be sorted by length, descending, to ensure they are matched properly
+                    var sortedAliases = aliases.OrderByDescending(alias => alias.Length);
+                    streamWriter.WriteLine($"{name}|{string.Join(",", sortedAliases)}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Log("An error occurred while saving the aliases.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+            }
         }
     }
 }

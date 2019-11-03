@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using XRayBuilderGUI.Libraries.Enumerables.Extensions;
 using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.XRay.Artifacts;
 
@@ -39,12 +38,8 @@ namespace XRayBuilderGUI.XRay.Logic.Aliases
             "Viscount", "Viscountess", "Wg Cdr", "Jr", "Sr", "Sheriff", "Special Agent", "Detective", "Lt" };
         #endregion
 
-        private readonly ILogger _logger;
-
         public AliasesService(ILogger logger)
         {
-            _logger = logger;
-
             //Try to load custom common titles from BaseSplitIgnore.txt
             try
             {
@@ -60,34 +55,6 @@ namespace XRayBuilderGUI.XRay.Logic.Aliases
                 logger.Log("An error occurred while opening the BaseSplitIgnore.txt file.\r\n" +
                     "Ensure you extracted it to the same directory as the program.\r\n" +
                     ex.Message + "\r\nUsing built-in default terms...");
-            }
-        }
-
-        public void SaveCharacters(IEnumerable<Term> terms, string asin)
-        {
-            // todo service should handle this
-            var path = $@"{Environment.CurrentDirectory}\ext\";
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-
-            var aliasFile = $"{path}{asin}.aliases";
-
-            using var streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8);
-
-            var characters = terms.Where(term => term.Type == "character");
-            try
-            {
-                var aliasesByTermName = GenerateAliases(characters);
-                foreach (var (name, aliases) in aliasesByTermName)
-                {
-                    // Aliases must be sorted by length, descending, to ensure they are matched properly
-                    var sortedAliases = aliases.OrderByDescending(alias => alias.Length);
-                    streamWriter.WriteLine($"{name}|{string.Join(",", sortedAliases)}");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Log("An error occurred while saving the aliases.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
             }
         }
 

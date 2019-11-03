@@ -6,11 +6,6 @@ namespace XRayBuilderGUI.XRay.Logic.Aliases
     public interface IAliasesService
     {
         /// <summary>
-        /// Write any characters and their aliases from <paramref name="terms"/> to <paramref name="aliasFile"/>
-        /// </summary>
-        void SaveCharacters(IEnumerable<Term> terms, string aliasFile);
-
-        /// <summary>
         /// Takes a set of characters and attempts to split their names into plausible aliases.
         /// Ignores common titles like "Sir", "Mr.", etc.
         /// Strips and uses keywords like "aka" to determine aliases.

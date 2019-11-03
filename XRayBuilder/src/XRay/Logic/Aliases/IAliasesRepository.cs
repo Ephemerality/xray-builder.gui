@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
+using XRayBuilderGUI.XRay.Artifacts;
 
 namespace XRayBuilderGUI.XRay.Logic.Aliases
 {
@@ -16,5 +17,10 @@ namespace XRayBuilderGUI.XRay.Logic.Aliases
         /// </summary>
         [CanBeNull]
         Dictionary<string, string[]> LoadAliasesFromFile(string aliasFile);
+
+        /// <summary>
+        /// Write any characters and their aliases from <paramref name="terms"/> to an alias file for <paramref name="asin"/>
+        /// </summary>
+        void SaveCharactersToFile(IEnumerable<Term> terms, string asin);
     }
 }

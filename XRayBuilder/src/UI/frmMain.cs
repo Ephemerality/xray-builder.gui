@@ -271,11 +271,8 @@ namespace XRayBuilderGUI.UI
 
                 _logger.Log("Initial X-Ray built, adding locations and chapters...");
                 //Expand the X-Ray file from the unpacked mobi
-                if (await Task.Run(() => xray.ExpandFromRawMl(metadata.GetRawMlStream(), SafeShow, _progress, _cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion)).ConfigureAwait(false) > 0)
-                {
-                    _logger.Log("Build canceled or error occurred while processing locations and chapters.");
-                    return;
-                }
+                await Task.Run(() => _xrayService.ExpandFromRawMl(xray, metadata.GetRawMlStream(), SafeShow, _progress, _cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion))
+                    .ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {

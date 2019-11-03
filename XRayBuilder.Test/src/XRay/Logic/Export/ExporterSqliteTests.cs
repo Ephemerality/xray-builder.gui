@@ -39,7 +39,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             xray.Unattended = true;
             _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath);
             _aliasesRepository.LoadAliasesForXRay(xray);
-            xray.ExpandFromRawMl(new FileStream(book.rawml, FileMode.Open), null, null, CancellationToken.None, false, false);
+            _xrayService.ExpandFromRawMl(xray, new FileStream(book.rawml, FileMode.Open), null, null, CancellationToken.None, false, false);
             string filename = xray.XRayName();
             string outpath = Path.Combine(Environment.CurrentDirectory, "out", filename);
             _xrayExporter.Export(xray, outpath, null, CancellationToken.None);

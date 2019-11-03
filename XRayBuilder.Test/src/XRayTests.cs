@@ -56,7 +56,7 @@ namespace XRayBuilder.Test
         {
             var xray = await _xrayService.CreateXRayAsync(book.xml, book.db, book.guid, book.asin, 0, _file, null, CancellationToken.None);
             xray.Unattended = true;
-            Assert.AreEqual(xray.ExpandFromRawMl(new FileStream(book.rawml, FileMode.Open), null, null, CancellationToken.None, false, false), 0);
+            _xrayService.ExpandFromRawMl(xray, new FileStream(book.rawml, FileMode.Open), null, null, CancellationToken.None, false, false);
             FileAssert.AreEqual($"ext\\{book.asin}.chapters", $"testfiles\\{book.asin}.chapters");
         }
     }

@@ -38,7 +38,7 @@ namespace XRayBuilderGUI.XRay.Logic.Export
             var xrayArtifact = new Artifacts.XRay
             {
                 Asin = xray.Asin,
-                Guid = $"{xray.databaseName}:{xray.Guid}",
+                Guid = $"{xray.DatabaseName}:{xray.Guid}",
                 Version = "1",
                 XRayVersion = $"{appVersion.Major}.{appVersion.Minor}{appVersion.Build}",
                 Created = (xray.CreatedAt ?? DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"),

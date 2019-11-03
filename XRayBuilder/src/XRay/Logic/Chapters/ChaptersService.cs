@@ -28,7 +28,7 @@ namespace XRayBuilderGUI.XRay.Logic.Chapters
         /// Read the chapters or search for them and apply them to the given <param name="xray"></param> 
         /// </summary>
         // TODO Do something about unattended/dialog stuff
-        public void HandleChapters(XRay xray, string asin, long mlLen, HtmlDocument doc, string rawMl, XRay.SafeShowDelegate safeShow, bool unattended, bool enableEdit)
+        public void HandleChapters(XRay xray, string asin, long mlLen, HtmlDocument doc, string rawMl, SafeShowDelegate safeShow, bool unattended, bool enableEdit)
         {
             //Similar to aliases, if chapters definition exists, load it. Otherwise, attempt to build it from the book
             var chapterFile = $@"{Environment.CurrentDirectory}\ext\{asin}.chapters";

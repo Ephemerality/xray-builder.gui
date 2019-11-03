@@ -1,6 +1,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.Libraries.Progress;
 
@@ -24,6 +25,9 @@ namespace XRayBuilderGUI.XRay.Logic
         /// Expand the <paramref name="xray"/> using data from the <paramref name="rawMlStream"/>.
         /// Adds chapters, character locations, excerpts, and notable clips.
         /// </summary>
-        void ExpandFromRawMl(XRay xray, Stream rawMlStream, XRay.SafeShowDelegate safeShow, IProgressBar progress, CancellationToken token, bool ignoreSoftHypen = false, bool shortEx = true);
+        void ExpandFromRawMl(XRay xray, Stream rawMlStream, SafeShowDelegate safeShow, IProgressBar progress, CancellationToken token, bool ignoreSoftHypen = false, bool shortEx = true);
     }
+
+    // TODO: Make this not rely on Windows.Forms
+    public delegate DialogResult SafeShowDelegate(string msg, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton def);
 }

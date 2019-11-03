@@ -42,7 +42,7 @@ namespace XRayBuilderGUI.XRay.Logic
             IProgressBar progress,
             CancellationToken token = default)
         {
-            var xray = new XRay(dataLocation, db, guid, asin, dataSource, _logger, _chaptersService, locOffset)
+            var xray = new XRay(dataLocation, db, guid, asin, dataSource, locOffset)
             {
                 Terms = (await dataSource.GetTermsAsync(dataLocation, progress, token)).ToList()
             };
@@ -94,7 +94,7 @@ namespace XRayBuilderGUI.XRay.Logic
         }
 
         // TODO split this up, possible return a result instead of modifying xray
-        public void ExpandFromRawMl(XRay xray, Stream rawMlStream, XRay.SafeShowDelegate safeShow, IProgressBar progress, CancellationToken token, bool ignoreSoftHypen = false, bool shortEx = true)
+        public void ExpandFromRawMl(XRay xray, Stream rawMlStream, SafeShowDelegate safeShow, IProgressBar progress, CancellationToken token, bool ignoreSoftHypen = false, bool shortEx = true)
         {
             // If there is an apostrophe, attempt to match 's at the end of the term
             // Match end of word, then search for any lingering punctuation

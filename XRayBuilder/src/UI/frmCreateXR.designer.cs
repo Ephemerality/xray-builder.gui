@@ -579,7 +579,6 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "X-Ray Terms Creator";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmCreateXR_FormClosing);
             this.Load += new System.EventHandler(this.frmCreateXR_Load);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();

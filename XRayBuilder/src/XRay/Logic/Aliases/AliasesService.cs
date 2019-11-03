@@ -63,11 +63,14 @@ namespace XRayBuilderGUI.XRay.Logic.Aliases
             }
         }
 
-        public void SaveCharacters(IEnumerable<Term> terms, string aliasFile)
+        public void SaveCharacters(IEnumerable<Term> terms, string asin)
         {
             // todo service should handle this
-            if (!Directory.Exists(Environment.CurrentDirectory + @"\ext\"))
-                Directory.CreateDirectory(Environment.CurrentDirectory + @"\ext\");
+            var path = $@"{Environment.CurrentDirectory}\ext\";
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            var aliasFile = $"{path}{asin}.aliases";
 
             using var streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8);
 
@@ -76,11 +79,15 @@ namespace XRayBuilderGUI.XRay.Logic.Aliases
             {
                 var aliasesByTermName = GenerateAliases(characters);
                 foreach (var (name, aliases) in aliasesByTermName)
-                    streamWriter.WriteLine($"{name}|{string.Join(",", aliases)}");
+                {
+                    // Aliases must be sorted by length, descending, to ensure they are matched properly
+                    var sortedAliases = aliases.OrderByDescending(alias => alias.Length);
+                    streamWriter.WriteLine($"{name}|{string.Join(",", sortedAliases)}");
+                }
             }
             catch (Exception ex)
             {
-                _logger.Log("An error occurred while generating the aliases.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                _logger.Log("An error occurred while saving the aliases.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
             }
         }
 
@@ -91,7 +98,7 @@ namespace XRayBuilderGUI.XRay.Logic.Aliases
 
             foreach (var character in characters)
             {
-                // Short circuit if no alias is possible or splitting is disabled
+                // Short circuit if no alias is possible splitting is disabled, or if aliases already exist (manually added or pre-built)
                 if (!character.TermName.Contains(" ") || !Properties.Settings.Default.splitAliases)
                 {
                     aliasesByTermName.Add(character.TermName, new string[0]);
@@ -129,8 +136,6 @@ namespace XRayBuilderGUI.XRay.Logic.Aliases
                 // Filter out any already-existing aliases from other terms
                 var dedupedAliases = aliases
                     .Where(alias => !aliasesByTermName.Values.SelectMany(existingAliases => existingAliases).Contains(alias))
-                    // Aliases must be sorted by length, descending, to ensure they are matched properly
-                    .OrderByDescending(alias => alias.Length)
                     .ToArray();
 
                 if (dedupedAliases.Length > 0)

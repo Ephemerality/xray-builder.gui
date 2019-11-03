@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
@@ -12,16 +11,19 @@ using XRayBuilderGUI.Libraries.Progress;
 using XRayBuilderGUI.Libraries.Serialization.Xml.Util;
 using XRayBuilderGUI.Model;
 using XRayBuilderGUI.XRay.Artifacts;
+using XRayBuilderGUI.XRay.Logic.Terms;
 
 namespace XRayBuilderGUI.DataSources.Secondary
 {
-    public class SecondarySourceFile : ISecondarySource
+    public sealed class SecondarySourceFile : ISecondarySource
     {
         private readonly ILogger _logger;
+        private readonly ITermsService _termsService;
 
-        public SecondarySourceFile(ILogger logger)
+        public SecondarySourceFile(ILogger logger, ITermsService termsService)
         {
             _logger = logger;
+            _termsService = termsService;
         }
 
         public string Name { get; } = "File";
@@ -38,46 +40,13 @@ namespace XRayBuilderGUI.DataSources.Secondary
                 case ".xml":
                     return Task.FromResult((IEnumerable<Term>) XmlUtil.DeserializeFile<Term[]>(xmlFile));
                 case ".txt":
-                {
-                    return Task.FromResult(LoadTermsFromTxt(xmlFile));
-                }
+                    return Task.FromResult(_termsService.ReadTermsFromTxt(xmlFile));
                 default:
                     _logger.Log("Error: Bad file type \"" + filetype + "\"");
                     break;
             }
 
             return Task.FromResult(Enumerable.Empty<Term>());
-        }
-
-        private IEnumerable<Term> LoadTermsFromTxt(string txtfile)
-        {
-            using var streamReader = new StreamReader(txtfile, Encoding.UTF8);
-            var termId = 1;
-            var lineCount = 1;
-            var terms = new List<Term>();
-            while (!streamReader.EndOfStream)
-            {
-                var type = streamReader.ReadLine()?.ToLower();
-                if (string.IsNullOrEmpty(type))
-                    continue;
-                lineCount++;
-                if (type != "character" && type != "topic")
-                    throw new Exception($"Error: Invalid term type \"{type}\" on line {lineCount}");
-
-                terms.Add(new Term
-                {
-                    Type = type,
-                    TermName = streamReader.ReadLine(),
-                    Desc = streamReader.ReadLine(),
-                    MatchCase = type == "character",
-                    DescSrc = "shelfari",
-                    Id = termId++
-                });
-
-                lineCount += 2;
-            }
-
-            return terms;
         }
 
         #region Unsupported

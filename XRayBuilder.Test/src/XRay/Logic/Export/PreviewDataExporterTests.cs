@@ -9,6 +9,7 @@ using XRayBuilderGUI.XRay.Logic;
 using XRayBuilderGUI.XRay.Logic.Aliases;
 using XRayBuilderGUI.XRay.Logic.Chapters;
 using XRayBuilderGUI.XRay.Logic.Export;
+using XRayBuilderGUI.XRay.Logic.Terms;
 
 namespace XRayBuilder.Test.XRay.Logic.Export
 {
@@ -20,12 +21,14 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         private ChaptersService _chaptersService;
         private IPreviewDataExporter _previewDataExporter;
         private IXRayService _xrayService;
+        private ITermsService _termsService;
 
         [SetUp]
         public void Setup()
         {
             _logger = new Logger();
-            _file = new SecondarySourceFile(_logger);
+            _termsService = new TermsService();
+            _file = new SecondarySourceFile(_logger, _termsService);
             _previewDataExporter = new PreviewDataExporter();
             _chaptersService = new ChaptersService(_logger);
             _xrayService = new XRayService(new AliasesService(_logger), _logger, _chaptersService);

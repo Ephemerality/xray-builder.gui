@@ -15,6 +15,7 @@ using XRayBuilderGUI.Model;
 using XRayBuilderGUI.XRay.Logic;
 using XRayBuilderGUI.XRay.Logic.Aliases;
 using XRayBuilderGUI.XRay.Logic.Chapters;
+using XRayBuilderGUI.XRay.Logic.Terms;
 using EndActions = XRayBuilderGUI.Extras.EndActions.EndActions;
 
 namespace XRayBuilder.Test
@@ -26,12 +27,14 @@ namespace XRayBuilder.Test
         private SecondarySourceFile _file;
         private ChaptersService _chaptersService;
         private IXRayService _xrayService;
+        private ITermsService _termsService;
 
         [SetUp]
         public void Setup()
         {
             _logger = new Logger();
-            _file = new SecondarySourceFile(_logger);
+            _termsService = new TermsService();
+            _file = new SecondarySourceFile(_logger, _termsService);
             _chaptersService = new ChaptersService(_logger);
             _xrayService = new XRayService(new AliasesService(_logger), _logger, _chaptersService);
         }

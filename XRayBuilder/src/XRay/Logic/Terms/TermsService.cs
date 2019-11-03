@@ -86,5 +86,33 @@ namespace XRayBuilderGUI.XRay.Logic.Terms
                 throw new Exception($"No terms were found on {dataSource.Name}");
             XmlUtil.SerializeToFile(terms, outFile);
         }
+
+        public IEnumerable<Term> ReadTermsFromTxt(string txtFile)
+        {
+            using var streamReader = new StreamReader(txtFile, Encoding.UTF8);
+            var termId = 1;
+            var lineCount = 1;
+            while (!streamReader.EndOfStream)
+            {
+                var type = streamReader.ReadLine()?.ToLower();
+                if (string.IsNullOrEmpty(type))
+                    continue;
+                lineCount++;
+                if (type != "character" && type != "topic")
+                    throw new Exception($"Error: Invalid term type \"{type}\" on line {lineCount}");
+
+                yield return new Term
+                {
+                    Type = type,
+                    TermName = streamReader.ReadLine(),
+                    Desc = streamReader.ReadLine(),
+                    MatchCase = type == "character",
+                    DescSrc = "shelfari",
+                    Id = termId++
+                };
+
+                lineCount += 2;
+            }
+        }
     }
 }

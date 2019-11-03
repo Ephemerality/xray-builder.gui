@@ -9,8 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using XRayBuilderGUI.DataSources.Secondary;
-using XRayBuilderGUI.Libraries;
 using XRayBuilderGUI.Libraries.Progress;
+using XRayBuilderGUI.Libraries.Serialization.Xml.Util;
 using XRayBuilderGUI.XRay.Artifacts;
 
 namespace XRayBuilderGUI.XRay.Logic.Terms
@@ -84,7 +84,7 @@ namespace XRayBuilderGUI.XRay.Logic.Terms
             var terms = (await dataSource.GetTermsAsync(dataUrl, progress, token)).ToArray();
             if (terms.Length == 0)
                 throw new Exception($"No terms were found on {dataSource.Name}");
-            Functions.Save(terms, outFile);
+            XmlUtil.SerializeToFile(terms, outFile);
         }
     }
 }

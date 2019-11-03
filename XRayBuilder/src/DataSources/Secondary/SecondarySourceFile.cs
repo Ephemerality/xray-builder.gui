@@ -7,9 +7,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using XRayBuilderGUI.DataSources.Secondary.Model;
-using XRayBuilderGUI.Libraries;
 using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Libraries.Progress;
+using XRayBuilderGUI.Libraries.Serialization.Xml.Util;
 using XRayBuilderGUI.Model;
 using XRayBuilderGUI.XRay.Artifacts;
 
@@ -36,7 +36,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
             switch (filetype)
             {
                 case ".xml":
-                    return Task.FromResult((IEnumerable<Term>) Functions.XmlDeserialize<Term[]>(xmlFile));
+                    return Task.FromResult((IEnumerable<Term>) XmlUtil.DeserializeFile<Term[]>(xmlFile));
                 case ".txt":
                 {
                     return Task.FromResult(LoadTermsFromTxt(xmlFile));

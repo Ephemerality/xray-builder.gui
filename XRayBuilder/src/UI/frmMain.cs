@@ -18,6 +18,7 @@ using XRayBuilderGUI.Libraries;
 using XRayBuilderGUI.Libraries.Http;
 using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Libraries.Progress;
+using XRayBuilderGUI.Libraries.Serialization.Xml.Util;
 using XRayBuilderGUI.Model;
 using XRayBuilderGUI.Properties;
 using XRayBuilderGUI.UI.Preview.Logic;
@@ -942,7 +943,7 @@ namespace XRayBuilderGUI.UI
                 if (!Directory.Exists(Environment.CurrentDirectory + @"\xml\"))
                     Directory.CreateDirectory(Environment.CurrentDirectory + @"\xml\");
                 var outfile = Environment.CurrentDirectory + @"\xml\" + Path.GetFileNameWithoutExtension(selPath) + ".xml";
-                Functions.Save(terms.ToList(), outfile);
+                XmlUtil.SerializeToFile(terms.ToList(), outfile);
                 _logger.Log("Character data has been successfully extracted and saved to: " + outfile);
             }
             catch (Exception ex)

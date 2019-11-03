@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using XRayBuilderGUI.Extras.Artifacts;
 using XRayBuilderGUI.Libraries;
 using XRayBuilderGUI.Libraries.Http;
+using XRayBuilderGUI.Libraries.Serialization.Json.Util;
 
 namespace XRayBuilderGUI.UI.Preview
 {
@@ -56,7 +57,7 @@ namespace XRayBuilderGUI.UI.Preview
         {
             try
             {
-                var endActions = Functions.JsonDeserializeFile<Extras.Artifacts.EndActions>(inputFile);
+                var endActions = JsonUtil.DeserializeFile<EndActions>(inputFile);
 
                 ilauthorRecs.Images.Clear();
                 lvAuthorRecs.Items.Clear();

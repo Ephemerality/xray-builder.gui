@@ -6,24 +6,13 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Xml.Serialization;
 using HtmlAgilityPack;
-using Newtonsoft.Json;
 using XRayBuilderGUI.Model;
 
 namespace XRayBuilderGUI.Libraries
 {
     public static class Functions
     {
-        public static TObject JsonDeserialize<TObject>(string value, bool strict = true)
-            => JsonConvert.DeserializeObject<TObject>(value, new JsonSerializerSettings
-            {
-                MissingMemberHandling = strict ? MissingMemberHandling.Error : MissingMemberHandling.Ignore
-            });
-
-        public static TObject JsonDeserializeFile<TObject>(string filename, bool strict = true)
-            => JsonDeserialize<TObject>(ReadFromFile(filename), strict);
-
         public static string ReadFromFile(string file)
         {
             using var streamReader = new StreamReader(file, Encoding.UTF8);
@@ -65,9 +54,6 @@ namespace XRayBuilderGUI.Libraries
             var fileChars = Path.GetInvalidFileNameChars();
             return new string(filename.Where(x => !fileChars.Contains(x)).ToArray());
         }
-
-        public static bool ExtrasExist(string location, string asin)
-            => File.Exists(location + $"\\AuthorProfile.profile.{asin}.asc") && File.Exists(location + $"\\EndActions.data.{asin}.asc");
 
         //public static string GetTempDirectory()
         //{
@@ -146,35 +132,6 @@ namespace XRayBuilderGUI.Libraries
             catch (Exception ex)
             {
                 throw new Exception("Error trying to launch notepad.", ex);
-            }
-        }
-
-        public static void Save<T>(T output, string fileName) where T : class
-        {
-            using var writer = new StreamWriter(fileName, false, Encoding.UTF8);
-            var serializer = new XmlSerializer(typeof(T));
-            serializer.Serialize(writer, output);
-            writer.Flush();
-        }
-
-        // todo move to xml library
-        //http://stackoverflow.com/questions/14562415/xml-deserialization-generic-method
-        public static T XmlDeserialize<T>(string filePath)
-        {
-            if (!File.Exists(filePath))
-                throw new Exception($"File not found: {filePath}");
-
-            var serializer = new XmlSerializer(typeof(T));
-            using var reader = new StreamReader(filePath, Encoding.UTF8);
-
-            try
-            {
-                return (T) serializer.Deserialize(reader);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidDataException($"Error processing XML file: {ex.Message}"
-                                               + "\r\nIf the error contains a (#, #), the first number is the line the error occurred on.", ex);
             }
         }
 

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using XRayBuilderGUI.Libraries;
+using XRayBuilderGUI.Libraries.Serialization.Xml.Util;
 using XRayBuilderGUI.Properties;
 using XRayBuilderGUI.XRay.Artifacts;
 
@@ -113,7 +113,7 @@ namespace XRayBuilderGUI.UI
             try
             {
                 if (filetype == ".xml")
-                    Terms = Functions.XmlDeserialize<List<Term>>(file);
+                    Terms = XmlUtil.DeserializeFile<List<Term>>(file);
                 else if (filetype == ".txt")
                     Terms = LoadTermsFromTxt<Term>(file);
                 else
@@ -290,7 +290,7 @@ namespace XRayBuilderGUI.UI
                 };
                 Terms.Add(newTerm);
             }
-            Functions.Save(Terms, outfile);
+            XmlUtil.SerializeToFile(Terms, outfile);
         }
 
         private static bool CompareImages(Bitmap image1, Bitmap image2)

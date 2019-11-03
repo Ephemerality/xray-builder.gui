@@ -12,6 +12,7 @@ using XRayBuilderGUI.UI.Preview;
 using XRayBuilderGUI.UI.Preview.Logic;
 using XRayBuilderGUI.XRay.Logic;
 using XRayBuilderGUI.XRay.Logic.Aliases;
+using XRayBuilderGUI.XRay.Logic.Chapters;
 using XRayBuilderGUI.XRay.Logic.Export;
 using XRayBuilderGUI.XRay.Logic.Terms;
 using XRayBuilderGUI.XRay.Model.Export;
@@ -54,6 +55,7 @@ namespace XRayBuilderGUI
             _container.Register<IXRayService, XRayService>(Lifestyle.Singleton);
             _container.Register<ITermsService, TermsService>(Lifestyle.Singleton);
             _container.Register<IAliasesService, AliasesService>(Lifestyle.Singleton);
+            _container.Register<ChaptersService>(Lifestyle.Singleton);
 
             _container.Register<IPreviewDataExporter, PreviewDataExporter>(Lifestyle.Singleton);
 

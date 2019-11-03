@@ -1,26 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using XRayBuilderGUI.Libraries;
 
 namespace XRayBuilderGUI.DataSources.Secondary
 {
-    public class SecondaryDataSourceFactory : Factory<Enum, ISecondarySource>
+    public sealed class SecondaryDataSourceFactory : Factory<SecondaryDataSourceFactory.Enum, ISecondarySource>
     {
-        public SecondaryDataSourceFactory(Shelfari shelfari, Goodreads goodreads)
+        public SecondaryDataSourceFactory(
+            SecondarySourceShelfari shelfari,
+            SecondarySourceGoodreads goodreads,
+            SecondarySourceFile file)
         {
-            Dictionary = new Dictionary<System.Enum, ISecondarySource>
+            Dictionary = new Dictionary<Enum, ISecondarySource>
             {
                 {Enum.Shelfari, shelfari},
-                {Enum.Goodreads, goodreads}
+                {Enum.Goodreads, goodreads},
+                {Enum.File, file}
             };
         }
 
         public enum Enum
         {
             Shelfari,
-            Goodreads
+            Goodreads,
+            File
         }
 
-        protected override Dictionary<System.Enum, ISecondarySource> Dictionary { get; }
+        protected override Dictionary<Enum, ISecondarySource> Dictionary { get; }
     }
 }

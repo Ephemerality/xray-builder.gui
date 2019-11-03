@@ -18,14 +18,14 @@ using XRayBuilderGUI.XRay.Artifacts;
 namespace XRayBuilderGUI.DataSources.Secondary
 {
     [UsedImplicitly]
-    public class Shelfari : ISecondarySource
+    public sealed class SecondarySourceShelfari : ISecondarySource
     {
         private readonly ILogger _logger;
         private readonly IHttpClient _httpClient;
 
         private HtmlDocument sourceHtmlDoc;
 
-        public Shelfari(ILogger logger, IHttpClient httpClient)
+        public SecondarySourceShelfari(ILogger logger, IHttpClient httpClient)
         {
             _logger = logger;
             _httpClient = httpClient;
@@ -34,6 +34,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
         public string Name => "Shelfari";
         public bool SearchEnabled { get; } = false;
         public int UrlLabelPosition { get; } = 150;
+        public bool SupportsNotableClips { get; } = true;
 
         private string FindShelfariURL(HtmlDocument shelfariHtmlDoc, string author, string title)
         {
@@ -115,7 +116,7 @@ namespace XRayBuilderGUI.DataSources.Secondary
 
         public Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, IProgressBar progress, CancellationToken cancellationToken = default)

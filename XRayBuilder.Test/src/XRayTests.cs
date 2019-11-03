@@ -7,11 +7,9 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using XRayBuilder.Test.XRay;
-using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.Extras.Artifacts;
 using XRayBuilderGUI.Libraries;
-using XRayBuilderGUI.Libraries.Http;
 using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.Model;
 using XRayBuilderGUI.XRay.Logic;
@@ -25,10 +23,7 @@ namespace XRayBuilder.Test
     public class XRayTests
     {
         private ILogger _logger;
-        private IHttpClient _httpClient;
-        private IAmazonClient _amazonClient;
-        private Goodreads _goodreads;
-        private IAmazonInfoParser _amazonInfoParser;
+        private SecondarySourceFile _file;
         private ChaptersService _chaptersService;
         private IXRayService _xrayService;
 
@@ -36,29 +31,22 @@ namespace XRayBuilder.Test
         public void Setup()
         {
             _logger = new Logger();
-            _httpClient = new HttpClient(_logger);
-            _amazonInfoParser = new AmazonInfoParser(_logger, _httpClient);
-            _amazonClient = new AmazonClient(_httpClient, _amazonInfoParser, _logger);
-            _goodreads = new Goodreads(_logger, _httpClient, _amazonClient);
+            _file = new SecondarySourceFile(_logger);
             _chaptersService = new ChaptersService(_logger);
-            _xrayService = new XRayService(new AliasesService(_logger), _logger);
+            _xrayService = new XRayService(new AliasesService(_logger), _logger, _chaptersService);
         }
-
-        private static readonly CancellationTokenSource Tokens = new CancellationTokenSource();
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXMLTest(Book book)
         {
-            XRayBuilderGUI.XRay.XRay xray = TestData.CreateXRayFromXML(book.xml, book.db, book.guid, book.asin, _goodreads, _logger, _chaptersService);
+            var xray = await _xrayService.CreateXRayAsync(book.xml, book.db, book.guid, book.asin, 0, _file, null, CancellationToken.None);
             Assert.NotNull(xray);
-            Assert.AreEqual(await xray.CreateXray(null, Tokens.Token), 0);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXMLAliasTest(Book book)
         {
-            var xray = TestData.CreateXRayFromXML(book.xml, book.db, book.guid, book.asin, _goodreads, _logger, _chaptersService);
-            await xray.CreateXray(null, Tokens.Token);
+            var xray = await _xrayService.CreateXRayAsync(book.xml, book.db, book.guid, book.asin, 0, _file, null, CancellationToken.None);
             _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath);
             FileAssert.AreEqual($"ext\\{book.asin}.aliases", $"testfiles\\{book.asin}.aliases");
         }
@@ -66,9 +54,9 @@ namespace XRayBuilder.Test
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXMLExpandRawMLTest(Book book)
         {
-            var xray = TestData.CreateXRayFromXML(book.xml, book.db, book.guid, book.asin, _goodreads, _logger, _chaptersService);
-            await xray.CreateXray(null, Tokens.Token);
-            Assert.AreEqual(xray.ExpandFromRawMl(new FileStream(book.rawml, FileMode.Open), null, null, Tokens.Token, false, false), 0);
+            var xray = await _xrayService.CreateXRayAsync(book.xml, book.db, book.guid, book.asin, 0, _file, null, CancellationToken.None);
+            xray.Unattended = true;
+            Assert.AreEqual(xray.ExpandFromRawMl(new FileStream(book.rawml, FileMode.Open), null, null, CancellationToken.None, false, false), 0);
             FileAssert.AreEqual($"ext\\{book.asin}.chapters", $"testfiles\\{book.asin}.chapters");
         }
     }

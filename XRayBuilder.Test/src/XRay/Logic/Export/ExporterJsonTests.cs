@@ -3,9 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using XRayBuilderGUI.DataSources.Amazon;
 using XRayBuilderGUI.DataSources.Secondary;
-using XRayBuilderGUI.Libraries.Http;
 using XRayBuilderGUI.Libraries.Logging;
 using XRayBuilderGUI.XRay.Logic;
 using XRayBuilderGUI.XRay.Logic.Aliases;
@@ -17,11 +15,8 @@ namespace XRayBuilder.Test.XRay.Logic.Export
     public sealed class ExporterJsonTests
     {
         private ILogger _logger;
-        private Goodreads _goodreads;
+        private SecondarySourceFile _file;
         private IAliasesRepository _aliasesRepository;
-        private IHttpClient _httpClient;
-        private IAmazonClient _amazonClient;
-        private IAmazonInfoParser _amazonInfoParser;
         private IXRayExporter _xrayExporter;
         private ChaptersService _chaptersService;
         private IXRayService _xrayService;
@@ -30,21 +25,17 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         public void Setup()
         {
             _logger = new Logger();
-            _httpClient = new HttpClient(_logger);
-            _amazonInfoParser = new AmazonInfoParser(_logger, _httpClient);
-            _amazonClient = new AmazonClient(_httpClient, _amazonInfoParser, _logger);
-            _goodreads = new Goodreads(_logger, _httpClient, _amazonClient);
+            _file = new SecondarySourceFile(_logger);
             _aliasesRepository = new AliasesRepository(_logger);
             _xrayExporter = new XRayExporterJson();
             _chaptersService = new ChaptersService(_logger);
-            _xrayService = new XRayService(new AliasesService(_logger), _logger);
+            _xrayService = new XRayService(new AliasesService(_logger), _logger, _chaptersService);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXmlSaveOldTest(Book book)
         {
-            var xray = TestData.CreateXRayFromXML(book.xml, book.db, book.guid, book.asin, _goodreads, _logger, _chaptersService);
-            await xray.CreateXray(null, CancellationToken.None);
+            var xray = await _xrayService.CreateXRayAsync(book.xml, book.db, book.guid, book.asin, 0, _file, null, CancellationToken.None);
             _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath);
             _aliasesRepository.LoadAliasesForXRay(xray);
             xray.ExpandFromRawMl(new FileStream(book.rawml, FileMode.Open), null, null, CancellationToken.None, false, false);

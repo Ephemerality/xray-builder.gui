@@ -234,14 +234,20 @@ namespace XRayBuilderGUI.UI
             SetDatasourceLabels(); // Reset the dataSource for the new build process
             try
             {
+                Task<XRay.XRay> xrayTask;
                 if (rdoGoodreads.Checked)
-                    xray = new XRay.XRay(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _dataSource, _logger, _chaptersService,
-                        AZW3 ? _settings.offsetAZW3 : _settings.offset, "");
+                    xrayTask = _xrayService.CreateXRayAsync(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin,
+                        AZW3 ? _settings.offsetAZW3 : _settings.offset, _dataSource, _progress, _cancelTokens.Token);
                 else
-                    xray = new XRay.XRay(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _dataSource, _logger, _chaptersService, true,
-                        AZW3 ? _settings.offsetAZW3 : _settings.offset, "");
+                {
+                    // TODO Set datasource properly
+                    var fileDataSource = _diContainer.GetInstance<SecondaryDataSourceFactory>().Get(SecondaryDataSourceFactory.Enum.File);
+                    xrayTask = _xrayService.CreateXRayAsync(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin,
+                        AZW3 ? _settings.offsetAZW3 : _settings.offset, fileDataSource, _progress, _cancelTokens.Token);
+                }
 
-                await Task.Run(() => xray.CreateXray(_progress, _cancelTokens.Token)).ConfigureAwait(false);
+                //await Task.Run(() => xray.CreateXray(_progress, _cancelTokens.Token)).ConfigureAwait(false);
+                xray = await Task.Run(() => xrayTask).ConfigureAwait(false);
 
                 _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath);
 

@@ -7,7 +7,7 @@ namespace XRayBuilder.Test.XRay
 {
     public static class TestData
     {
-        public static XRayBuilderGUI.XRay.XRay CreateXRayFromXML(string path, string db, string guid, string asin, Goodreads goodreads, ILogger logger, ChaptersService chaptersService)
+        public static XRayBuilderGUI.XRay.XRay CreateXRayFromXML(string path, string db, string guid, string asin, SecondarySourceGoodreads goodreads, ILogger logger, ChaptersService chaptersService)
             => new XRayBuilderGUI.XRay.XRay(path, db, guid, asin, goodreads, logger, chaptersService, true, 0, "") { Unattended = true };
 
         public static List<Book> Books = new List<Book>

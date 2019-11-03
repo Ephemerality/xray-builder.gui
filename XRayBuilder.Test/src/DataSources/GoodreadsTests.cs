@@ -15,7 +15,7 @@ namespace XRayBuilder.Test.DataSources
         private ILogger _logger;
         private IHttpClient _httpClient;
         private IAmazonClient _amazonClient;
-        private Goodreads _goodreads;
+        private SecondarySourceGoodreads _goodreads;
         private IAmazonInfoParser _amazonInfoParser;
 
         [SetUp]
@@ -25,13 +25,13 @@ namespace XRayBuilder.Test.DataSources
             _httpClient = new HttpClient(_logger);
             _amazonInfoParser = new AmazonInfoParser(_logger, _httpClient);
             _amazonClient = new AmazonClient(_httpClient, _amazonInfoParser, _logger);
-            _goodreads = new Goodreads(_logger, _httpClient, _amazonClient);
+            _goodreads = new SecondarySourceGoodreads(_logger, _httpClient, _amazonClient);
         }
 
         [Test]
         public void NameTest()
         {
-            Assert.AreEqual(_goodreads.Name, nameof(Goodreads));
+            Assert.AreEqual(_goodreads.Name, nameof(SecondarySourceGoodreads));
         }
 
         [Test]

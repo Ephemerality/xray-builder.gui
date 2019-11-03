@@ -24,7 +24,7 @@ using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilderGUI.DataSources.Secondary
 {
-    public class Goodreads : ISecondarySource
+    public sealed class SecondarySourceGoodreads : ISecondarySource
     {
         private readonly ILogger _logger;
         private readonly IHttpClient _httpClient;
@@ -35,10 +35,11 @@ namespace XRayBuilderGUI.DataSources.Secondary
         public string Name => "Goodreads";
         public bool SearchEnabled { get; } = true;
         public int UrlLabelPosition { get; } = 134;
+        public bool SupportsNotableClips { get; } = true;
 
         private readonly Regex _regexBookId = new Regex(@"/book/show/(?<id>[0-9]+)", RegexOptions.Compiled);
 
-        public Goodreads(ILogger logger, IHttpClient httpClient, IAmazonClient amazonClient)
+        public SecondarySourceGoodreads(ILogger logger, IHttpClient httpClient, IAmazonClient amazonClient)
         {
             _logger = logger;
             _httpClient = httpClient;

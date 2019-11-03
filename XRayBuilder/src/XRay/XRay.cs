@@ -58,7 +58,7 @@ namespace XRayBuilderGUI.XRay
         public bool SkipShelfari;
         public bool Unattended { get; set; }
         private int locOffset;
-        private List<NotableClip> notableClips;
+        public List<NotableClip> NotableClips;
         public int FoundNotables;
         public DateTime? CreatedAt { get; set; }
 
@@ -148,58 +148,6 @@ namespace XRayBuilderGUI.XRay
             android
                 ? $"XRAY.{Asin}.{(databaseName == null ? "" : $"{databaseName}_")}{Guid ?? ""}.db"
                 : $"XRAY.entities.{Asin}.asc";
-
-        // TODO: Change return values to exceptions instead
-        public async Task<int> CreateXray(IProgressBar progress, CancellationToken token = default)
-        {
-            //Download Shelfari info if not skipping
-            if (SkipShelfari)
-            {
-                if (!File.Exists(xmlFile))
-                {
-                    _logger.Log("An error occurred opening file (" + xmlFile + ")");
-                    return 1;
-                }
-                _logger.Log("Loading terms from file...");
-                var filetype = Path.GetExtension(xmlFile);
-                if (filetype == ".xml")
-                    Terms = Functions.DeserializeList<Term>(xmlFile);
-                else if (filetype == ".txt")
-                {
-                    if (LoadTermsFromTxt(xmlFile) > 0)
-                    {
-                        _logger.Log("An error occurred loading from text file.");
-                        return 1;
-                    }
-                }
-                else
-                {
-                    _logger.Log("Error: Bad file type \"" + filetype + "\"");
-                    return 1;
-                }
-                if (Terms == null || Terms.Count == 0) return 1;
-            }
-            else
-            {
-                try
-                {
-                    Terms = (await DataSource.GetTermsAsync(DataUrl, progress, token)).ToList();
-                    _logger.Log("Downloading notable clips...");
-                    notableClips = (await DataSource.GetNotableClipsAsync(DataUrl, null, progress, token))?.ToList();
-                }
-                catch (OperationCanceledException)
-                {
-                    return 2;
-                }
-                if (Terms.Count == 0)
-                {
-                    _logger.Log("Error: No terms found on " + DataSource.Name + ".");
-                    return 1;
-                }
-            }
-
-            return 0;
-        }
 
         //public async Task<bool> AttemptAliasDownload()
         //{
@@ -453,9 +401,9 @@ namespace XRayBuilderGUI.XRay
                 }
 
                 // Attempt to match downloaded notable clips, not worried if no matches occur as some will be added later anyway
-                if (Properties.Settings.Default.useNewVersion && notableClips != null)
+                if (Properties.Settings.Default.useNewVersion && NotableClips != null)
                 {
-                    foreach (var quote in notableClips)
+                    foreach (var quote in NotableClips)
                     {
                         var index = node.InnerText.IndexOf(quote.Text, StringComparison.Ordinal);
                         if (index > -1)
@@ -496,47 +444,6 @@ namespace XRayBuilderGUI.XRay
             {
                 if (t.Match && t.Locs.Count == 0)
                     _logger.Log($"No locations were found for the term \"{t.TermName}\".\r\nYou should add aliases for this term using the book or rawml as a reference.");
-            }
-            return 0;
-        }
-
-        private int LoadTermsFromTxt(string txtfile)
-        {
-            if (!File.Exists(txtfile)) return 1;
-            using (var streamReader = new StreamReader(txtfile, Encoding.UTF8))
-            {
-                var termId = 1;
-                var lineCount = 1;
-                Terms.Clear();
-                while (!streamReader.EndOfStream)
-                {
-                    try
-                    {
-                        var temp = streamReader.ReadLine()?.ToLower(); //type
-                        if (string.IsNullOrEmpty(temp)) continue;
-                        lineCount++;
-                        if (temp != "character" && temp != "topic")
-                        {
-                            _logger.Log("Error: Invalid term type \"" + temp + "\" on line " + lineCount);
-                            return 1;
-                        }
-                        Terms.Add(new Term
-                        {
-                            Type = temp,
-                            TermName = streamReader.ReadLine(),
-                            Desc = streamReader.ReadLine(),
-                            MatchCase = temp == "character",
-                            DescSrc = "shelfari",
-                            Id = termId++
-                        });
-                        lineCount += 2;
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Log("An error occurred reading from txt file: " + ex.Message + "\r\n" + ex.StackTrace);
-                        return 1;
-                    }
-                }
             }
             return 0;
         }

@@ -113,7 +113,7 @@ namespace XRayBuilderGUI.UI
             try
             {
                 if (filetype == ".xml")
-                    Terms = Functions.DeserializeList<Term>(file);
+                    Terms = Functions.XmlDeserialize<List<Term>>(file);
                 else if (filetype == ".txt")
                     Terms = LoadTermsFromTxt<Term>(file);
                 else

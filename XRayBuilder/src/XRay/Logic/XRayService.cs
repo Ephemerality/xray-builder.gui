@@ -1,8 +1,14 @@
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
+using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.Libraries.Logging;
+using XRayBuilderGUI.Libraries.Progress;
 using XRayBuilderGUI.XRay.Logic.Aliases;
+using XRayBuilderGUI.XRay.Logic.Chapters;
 
 namespace XRayBuilderGUI.XRay.Logic
 {
@@ -11,11 +17,40 @@ namespace XRayBuilderGUI.XRay.Logic
     {
         private readonly IAliasesService _aliasesService;
         private readonly ILogger _logger;
+        private readonly ChaptersService _chaptersService;
 
-        public XRayService(IAliasesService aliasesService, ILogger logger)
+        public XRayService(IAliasesService aliasesService, ILogger logger, ChaptersService chaptersService)
         {
             _aliasesService = aliasesService;
             _logger = logger;
+            _chaptersService = chaptersService;
+        }
+
+        public async Task<XRay> CreateXRayAsync(
+            string dataLocation,
+            string db,
+            string guid,
+            string asin,
+            int locOffset,
+            ISecondarySource dataSource,
+            IProgressBar progress,
+            CancellationToken token = default)
+        {
+            var xray = new XRay(dataLocation, db, guid, asin, dataSource, _logger, _chaptersService, locOffset)
+            {
+                Terms = (await dataSource.GetTermsAsync(dataLocation, progress, token)).ToList()
+            };
+            if (dataSource.SupportsNotableClips)
+            {
+                _logger.Log("Downloading notable clips...");
+                xray.NotableClips = (await dataSource.GetNotableClipsAsync(dataLocation, null, progress, token))?.ToList();
+            }
+            if (xray.Terms.Count == 0)
+            {
+                _logger.Log("Warning: No terms found on " + dataSource.Name + ".");
+            }
+
+            return xray;
         }
 
         public void ExportAndDisplayTerms(XRay xray, string path)

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -157,28 +156,26 @@ namespace XRayBuilderGUI.Libraries
             serializer.Serialize(writer, output);
             writer.Flush();
         }
-
+        
+        // todo move to xml library
         //http://stackoverflow.com/questions/14562415/xml-deserialization-generic-method
-        public static List<T> DeserializeList<T>(string filePath)
+        public static T XmlDeserialize<T>(string filePath)
         {
-            var itemList = new List<T>();
+            if (!File.Exists(filePath))
+                throw new Exception($"File not found: {filePath}");
 
-            if (!File.Exists(filePath)) return itemList;
+            var serializer = new XmlSerializer(typeof(T));
+            using var reader = new StreamReader(filePath, Encoding.UTF8);
 
-            var serializer = new XmlSerializer(typeof(List<T>));
-            TextReader reader = new StreamReader(filePath, Encoding.UTF8);
             try
             {
-                itemList = (List<T>)serializer.Deserialize(reader);
+                return (T) serializer.Deserialize(reader);
             }
             catch (Exception ex)
             {
                 throw new InvalidDataException($"Error processing XML file: {ex.Message}"
                                                + "\r\nIf the error contains a (#, #), the first number is the line the error occurred on.", ex);
             }
-            reader.Close();
-
-            return itemList;
         }
 
         /// <summary>

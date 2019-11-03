@@ -46,6 +46,7 @@ namespace XRayBuilderGUI.XRay.Logic
             foreach (var t in xray.Terms)
             {
                 str.Append(t.TermName).Append(", ");
+                // todo don't set the IDs here...
                 t.Id = termId++;
             }
             _logger.Log(str.ToString());

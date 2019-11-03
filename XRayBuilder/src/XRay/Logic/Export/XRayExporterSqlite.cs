@@ -103,7 +103,7 @@ namespace XRayBuilderGUI.XRay.Logic.Export
                 command.Parameters.Add("@count", DbType.Int32).Value = t.Occurrences.Count;
                 command.ExecuteNonQuery();
 
-                command2.Parameters.Add("@text", DbType.String).Value = t.Desc == "" ? "No description available." : t.Desc;
+                command2.Parameters.Add("@text", DbType.String).Value = string.IsNullOrEmpty(t.Desc) ? "No description available." : t.Desc;
                 command2.Parameters.Add("@source_wildcard", DbType.String).Value = t.TermName;
                 command2.Parameters.Add("@source", DbType.Int32).Value = t.DescSrc == "shelfari" ? 4 : 6;
                 command2.Parameters.Add("@entity", DbType.Int32).Value = t.Id;

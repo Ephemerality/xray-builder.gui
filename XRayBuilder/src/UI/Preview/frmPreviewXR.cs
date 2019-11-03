@@ -4,13 +4,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilderGUI.XRay;
+using XRayBuilderGUI.XRay.Logic.Terms;
 
 namespace XRayBuilderGUI.UI.Preview
 {
     public partial class frmPreviewXR : Form, IPreviewForm
     {
-        public frmPreviewXR()
+        private readonly ITermsService _termsService;
+
+        public frmPreviewXR(ITermsService termsService)
         {
+            _termsService = termsService;
             InitializeComponent();
         }
 
@@ -22,8 +26,8 @@ namespace XRayBuilderGUI.UI.Preview
                 throw new Exception("Invalid X-Ray file.");
 
             var terms = ver == XRayUtil.XRayVersion.New
-                ? XRayUtil.ExtractTermsNew(new SQLiteConnection($"Data Source={filePath}; Version=3;"), true)
-                : XRayUtil.ExtractTermsOld(filePath);
+                ? _termsService.ExtractTermsNew(new SQLiteConnection($"Data Source={filePath}; Version=3;"), true)
+                : _termsService.ExtractTermsOld(filePath);
 
             flpPeople.Controls.Clear();
             flpTerms.Controls.Clear();

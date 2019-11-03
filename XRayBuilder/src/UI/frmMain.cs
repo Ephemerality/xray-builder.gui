@@ -971,7 +971,7 @@ namespace XRayBuilderGUI.UI
 
         private async void btnCreate_Click(object sender, EventArgs e)
         {
-            var frmCreateXr = new frmCreateXR();
+            var frmCreateXr = _diContainer.GetInstance<frmCreateXR>();
             var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, false, _logger));
             if (metadata != null)
             {

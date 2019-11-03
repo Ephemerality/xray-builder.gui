@@ -59,6 +59,7 @@ namespace XRayBuilderGUI.XRay.Logic
             return xray;
         }
 
+        // TODO Remove path from here when directory service is done
         public void ExportAndDisplayTerms(XRay xray, string path)
         {
             //Export available terms to a file to make it easier to create aliases or import the modified aliases if they exist
@@ -74,7 +75,7 @@ namespace XRayBuilderGUI.XRay.Logic
 
             if (!aliasesDownloaded && (!File.Exists(path) || Properties.Settings.Default.overwriteAliases))
             {
-                _aliasesService.SaveCharacters(xray.Terms, path);
+                _aliasesService.SaveCharacters(xray.Terms, xray.Asin);
                 _logger.Log($"Characters exported to {path} for adding aliases.");
             }
 

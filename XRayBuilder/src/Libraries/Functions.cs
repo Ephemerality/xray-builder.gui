@@ -156,7 +156,7 @@ namespace XRayBuilderGUI.Libraries
             serializer.Serialize(writer, output);
             writer.Flush();
         }
-        
+
         // todo move to xml library
         //http://stackoverflow.com/questions/14562415/xml-deserialization-generic-method
         public static T XmlDeserialize<T>(string filePath)

@@ -25,7 +25,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilderGUI.DataSources.Secondary;
 using XRayBuilderGUI.DataSources.Secondary.Model;
@@ -125,23 +124,6 @@ namespace XRayBuilderGUI.XRay
         {
             private set => _guid = Functions.ConvertGuid(value);
             get => _guid;
-        }
-
-        public async Task<int> SaveXml(string outfile, IProgressBar progress, CancellationToken token = default)
-        {
-            try
-            {
-                Terms = (await DataSource.GetTermsAsync(DataUrl, progress, token)).ToList();
-            }
-            catch (OperationCanceledException)
-            {
-                return 2;
-            }
-            if (Terms.Count == 0)
-                return 1;
-            _logger.Log(@"Exporting terms...");
-            Functions.Save(Terms, outfile);
-            return 0;
         }
 
         public string XRayName(bool android = false) =>

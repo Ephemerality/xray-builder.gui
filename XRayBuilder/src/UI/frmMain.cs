@@ -582,16 +582,14 @@ namespace XRayBuilderGUI.UI
             var path = $@"{Environment.CurrentDirectory}\xml\{Path.GetFileNameWithoutExtension(txtMobi.Text)}.xml";
             try
             {
+                _logger.Log($@"Exporting terms from {_dataSource.Name}...");
+                await Task.Run(() => _termsService.DownloadAndSaveAsync(_dataSource, txtGoodreads.Text, path, _progress, _cancelTokens.Token));
+                _logger.Log($"Character data has been successfully saved to: {path}");
                 txtXMLFile.Text = path;
-
-                var xray = new XRay.XRay(txtGoodreads.Text, _dataSource, _logger, _chaptersService);
-                var result = await Task.Run(() => xray.SaveXml(path, _progress, _cancelTokens.Token));
-                if (result == 1)
-                    _logger.Log("Warning: Unable to download character data as no character data found on Goodreads.");
-                else if (result == 2)
-                    _logger.Log("Download cancelled.");
-                else
-                    _logger.Log($"Character data has been successfully saved to: {path}");
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.Log("Download cancelled.");
             }
             catch (Exception ex)
             {

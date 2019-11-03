@@ -11,6 +11,7 @@ using XRayBuilderGUI.XRay.Artifacts;
 namespace XRayBuilderGUI.DataSources.Secondary
 {
     // TODO Consider splitting sources into terms/xray vs metadata/extras
+    // TODO Factory based on URL?
     public interface ISecondarySource
     {
         string Name { get; }

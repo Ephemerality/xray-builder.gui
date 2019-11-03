@@ -1,5 +1,9 @@
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Threading;
+using System.Threading.Tasks;
+using XRayBuilderGUI.DataSources.Secondary;
+using XRayBuilderGUI.Libraries.Progress;
 using XRayBuilderGUI.XRay.Artifacts;
 
 namespace XRayBuilderGUI.XRay.Logic.Terms
@@ -17,5 +21,10 @@ namespace XRayBuilderGUI.XRay.Logic.Terms
         /// Extract terms from the old JSON X-Ray format
         /// </summary>
         IEnumerable<Term> ExtractTermsOld(string path);
+
+        /// <summary>
+        /// Downloads terms from the <paramref name="dataSource"/> and saves them to <paramref name="outFile"/>
+        /// </summary>
+        Task DownloadAndSaveAsync(ISecondarySource dataSource, string dataUrl, string outFile, IProgressBar progress, CancellationToken token = default);
     }
 }

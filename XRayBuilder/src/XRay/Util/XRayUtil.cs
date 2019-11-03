@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Text;
 
-namespace XRayBuilderGUI.XRay
+namespace XRayBuilderGUI.XRay.Util
 {
     public static class XRayUtil
     {

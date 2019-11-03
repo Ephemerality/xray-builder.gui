@@ -3,8 +3,8 @@ using System.Data.SQLite;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using XRayBuilderGUI.XRay;
 using XRayBuilderGUI.XRay.Logic.Terms;
+using XRayBuilderGUI.XRay.Util;
 
 namespace XRayBuilderGUI.UI.Preview
 {

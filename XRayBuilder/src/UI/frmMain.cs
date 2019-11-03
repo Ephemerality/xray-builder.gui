@@ -22,13 +22,13 @@ using XRayBuilderGUI.Model;
 using XRayBuilderGUI.Properties;
 using XRayBuilderGUI.UI.Preview.Logic;
 using XRayBuilderGUI.Unpack;
-using XRayBuilderGUI.XRay;
 using XRayBuilderGUI.XRay.Logic;
 using XRayBuilderGUI.XRay.Logic.Aliases;
 using XRayBuilderGUI.XRay.Logic.Chapters;
 using XRayBuilderGUI.XRay.Logic.Export;
 using XRayBuilderGUI.XRay.Logic.Terms;
 using XRayBuilderGUI.XRay.Model.Export;
+using XRayBuilderGUI.XRay.Util;
 using EndActions = XRayBuilderGUI.Extras.EndActions.EndActions;
 
 namespace XRayBuilderGUI.UI

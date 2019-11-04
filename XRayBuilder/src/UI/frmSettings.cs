@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using XRayBuilderGUI.Libraries.Enumerables.Extensions;
 
 namespace XRayBuilderGUI.UI
 {

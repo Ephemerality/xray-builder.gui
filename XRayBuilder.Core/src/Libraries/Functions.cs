@@ -227,9 +227,9 @@ namespace XRayBuilder.Core.Libraries
         }
     }
 
-    internal static class NativeMethods
+    public static class NativeMethods
     {
         [DllImport("user32.dll")]
-        internal static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+        public static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
     }
 }

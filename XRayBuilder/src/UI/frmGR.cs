@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows.Forms;
-using XRayBuilderGUI.Libraries.Language.Pluralization;
-using XRayBuilderGUI.Model;
+using XRayBuilder.Core.Libraries.Language.Pluralization;
+using XRayBuilder.Core.Model;
 using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI.UI

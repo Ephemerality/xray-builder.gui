@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using XRayBuilderGUI.Libraries.Progress;
+using XRayBuilder.Core.Libraries.Progress;
 
 namespace XRayBuilderGUI.UI
 {

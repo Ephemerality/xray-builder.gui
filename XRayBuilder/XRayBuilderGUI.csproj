@@ -70,28 +70,13 @@
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.110" />
   </ItemGroup>
   
-  <Choose>
-    <When Condition="$(TargetFramework.StartsWith('net4'))">
-      <ItemGroup>
-        <Reference Include="System.ComponentModel.DataAnnotations" />
-        <Reference Include="System.Data.Entity.Design" />
-        <Reference Include="System.Net.Http" />
-        <Reference Include="System.Data.DataSetExtensions" />
-        <Reference Include="Microsoft.CSharp" />
-        <Reference Include="System.Deployment" />
-        <Reference Include="System.Windows.Forms" />
-      </ItemGroup>
-    </When>
-    <Otherwise>
-      <PropertyGroup>
-        <UseWindowsForms>true</UseWindowsForms>
-      </PropertyGroup>
-      <ItemGroup>
-        <PackageReference Include="Microsoft.Windows.Compatibility" Version="2.0.1" />
-        <PackageReference Include="Pluralize.NET.Core" Version="1.0.0" />
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
+  <PropertyGroup>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="2.0.1" />
+    <PackageReference Include="Pluralize.NET.Core" Version="1.0.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Update="src\UI\frmAbout.cs">

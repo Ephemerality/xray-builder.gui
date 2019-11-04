@@ -6,17 +6,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using XRayBuilder.Core.DataSources.Secondary;
+using XRayBuilder.Core.Extras.Artifacts;
+using XRayBuilder.Core.Libraries;
+using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Model;
+using XRayBuilder.Core.XRay.Logic;
+using XRayBuilder.Core.XRay.Logic.Aliases;
+using XRayBuilder.Core.XRay.Logic.Chapters;
+using XRayBuilder.Core.XRay.Logic.Terms;
 using XRayBuilder.Test.XRay;
-using XRayBuilderGUI.DataSources.Secondary;
-using XRayBuilderGUI.Extras.Artifacts;
-using XRayBuilderGUI.Libraries;
-using XRayBuilderGUI.Libraries.Logging;
-using XRayBuilderGUI.Model;
-using XRayBuilderGUI.XRay.Logic;
-using XRayBuilderGUI.XRay.Logic.Aliases;
-using XRayBuilderGUI.XRay.Logic.Chapters;
-using XRayBuilderGUI.XRay.Logic.Terms;
-using EndActions = XRayBuilderGUI.Extras.EndActions.EndActions;
 
 namespace XRayBuilder.Test
 {

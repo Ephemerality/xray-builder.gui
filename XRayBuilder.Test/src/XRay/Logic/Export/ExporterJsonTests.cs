@@ -3,13 +3,13 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using XRayBuilderGUI.DataSources.Secondary;
-using XRayBuilderGUI.Libraries.Logging;
-using XRayBuilderGUI.XRay.Logic;
-using XRayBuilderGUI.XRay.Logic.Aliases;
-using XRayBuilderGUI.XRay.Logic.Chapters;
-using XRayBuilderGUI.XRay.Logic.Export;
-using XRayBuilderGUI.XRay.Logic.Terms;
+using XRayBuilder.Core.DataSources.Secondary;
+using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.XRay.Logic;
+using XRayBuilder.Core.XRay.Logic.Aliases;
+using XRayBuilder.Core.XRay.Logic.Chapters;
+using XRayBuilder.Core.XRay.Logic.Export;
+using XRayBuilder.Core.XRay.Logic.Terms;
 
 namespace XRayBuilder.Test.XRay.Logic.Export
 {

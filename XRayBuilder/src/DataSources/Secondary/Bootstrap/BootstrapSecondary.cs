@@ -4,7 +4,7 @@ using XRayBuilderGUI.Libraries.SimpleInjector.Extensions;
 
 namespace XRayBuilderGUI.DataSources.Secondary.Bootstrap
 {
-    public class BootstrapSecondary : IBootstrapSegment, IContainerSegment
+    public sealed class BootstrapSecondary : IBootstrapSegment, IContainerSegment
     {
         public void Register(IBootstrapBuilder builder)
         {

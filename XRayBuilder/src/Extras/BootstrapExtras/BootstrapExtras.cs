@@ -12,7 +12,7 @@ namespace XRayBuilderGUI.Extras.BootstrapExtras
 
         public void Register(Container container)
         {
-            container.Register<IAuthorProfileGenerator, AuthorProfileGenerator>(Lifestyle.Singleton);
+            container.RegisterSingleton<IAuthorProfileGenerator, AuthorProfileGenerator>();
         }
     }
 }

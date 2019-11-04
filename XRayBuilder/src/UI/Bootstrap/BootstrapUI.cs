@@ -16,7 +16,7 @@ namespace XRayBuilderGUI.UI.Bootstrap
         public void Register(Container container)
         {
             container.RegisterTransientIgnore<frmMain>("Disposed by application");
-            container.Register<PreviewProviderFactory>(Lifestyle.Singleton);
+            container.RegisterSingleton<PreviewProviderFactory>();
             container.AutoregisterConcreteFromAbstract<PreviewProvider>(Lifestyle.Singleton);
             container.AutoregisterDisposableTransientConcreteFromInterface<IPreviewForm>("Manually disposed");
         }

@@ -11,7 +11,7 @@ namespace XRayBuilderGUI.Libraries.Logging.Bootstrap
 
         public void Register(Container container)
         {
-            container.Register<ILogger, Logger>(Lifestyle.Singleton);
+            container.RegisterSingleton<ILogger, Logger>();
         }
     }
 }

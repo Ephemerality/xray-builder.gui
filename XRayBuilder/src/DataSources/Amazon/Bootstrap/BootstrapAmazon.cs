@@ -3,7 +3,7 @@ using XRayBuilderGUI.Libraries.Bootstrap.Model;
 
 namespace XRayBuilderGUI.DataSources.Amazon.Bootstrap
 {
-    public class BootstrapAmazon : IBootstrapSegment, IContainerSegment
+    public sealed class BootstrapAmazon : IBootstrapSegment, IContainerSegment
     {
         public void Register(IBootstrapBuilder builder)
         {
@@ -11,8 +11,8 @@ namespace XRayBuilderGUI.DataSources.Amazon.Bootstrap
 
         public void Register(Container container)
         {
-            container.Register<IAmazonClient, AmazonClient>(Lifestyle.Singleton);
-            container.Register<IAmazonInfoParser, AmazonInfoParser>(Lifestyle.Singleton);
+            container.RegisterSingleton<IAmazonClient, AmazonClient>();
+            container.RegisterSingleton<IAmazonInfoParser, AmazonInfoParser>();
         }
     }
 }

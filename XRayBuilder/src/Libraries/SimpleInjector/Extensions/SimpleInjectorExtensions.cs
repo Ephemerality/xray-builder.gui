@@ -73,5 +73,8 @@ namespace XRayBuilderGUI.Libraries.SimpleInjector.Extensions
                 registration.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, message);
             }
         }
+
+        public static void RegisterSingleton<TConcrete>(this Container container) where TConcrete : class
+            => container.Register<TConcrete>(Lifestyle.Singleton);
     }
 }

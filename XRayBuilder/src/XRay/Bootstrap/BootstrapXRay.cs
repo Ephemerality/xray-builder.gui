@@ -18,12 +18,12 @@ namespace XRayBuilderGUI.XRay.Bootstrap
         public void Register(Container container)
         {
             container.AutoregisterConcreteFromInterface<IXRayExporter>(Lifestyle.Singleton);
-            container.Register<IXRayService, XRayService>(Lifestyle.Singleton);
-            container.Register<ITermsService, TermsService>(Lifestyle.Singleton);
-            container.Register<IAliasesService, AliasesService>(Lifestyle.Singleton);
-            container.Register<IAliasesRepository, AliasesRepository>(Lifestyle.Singleton);
-            container.Register<ChaptersService>(Lifestyle.Singleton);
-            container.Register<IPreviewDataExporter, PreviewDataExporter>(Lifestyle.Singleton);
+            container.RegisterSingleton<IXRayService, XRayService>();
+            container.RegisterSingleton<ITermsService, TermsService>();
+            container.RegisterSingleton<IAliasesService, AliasesService>();
+            container.RegisterSingleton<IAliasesRepository, AliasesRepository>();
+            container.RegisterSingleton<IPreviewDataExporter, PreviewDataExporter>();
+            container.RegisterSingleton<ChaptersService>();
         }
     }
 }

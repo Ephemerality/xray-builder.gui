@@ -11,7 +11,7 @@ namespace XRayBuilderGUI.Libraries.Http.Bootstrap
 
         public void Register(Container container)
         {
-            container.Register<IHttpClient, HttpClient>(Lifestyle.Singleton);
+            container.RegisterSingleton<IHttpClient, HttpClient>();
         }
     }
 }

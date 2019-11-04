@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XRayBuilder.Test", "XRayBui
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IonDotnet", "IonDotnet\IonDotnet\IonDotnet.csproj", "{E99B7735-94E4-46DE-85E3-EE72178261B9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XRayBuilder.Core", "XRayBuilder.Core\XRayBuilder.Core.csproj", "{AA34A70F-7538-4364-A05F-37EC6896D3D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{E99B7735-94E4-46DE-85E3-EE72178261B9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E99B7735-94E4-46DE-85E3-EE72178261B9}.Release|x86.ActiveCfg = Release|Any CPU
 		{E99B7735-94E4-46DE-85E3-EE72178261B9}.Release|x86.Build.0 = Release|Any CPU
+		{AA34A70F-7538-4364-A05F-37EC6896D3D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA34A70F-7538-4364-A05F-37EC6896D3D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA34A70F-7538-4364-A05F-37EC6896D3D3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AA34A70F-7538-4364-A05F-37EC6896D3D3}.Debug|x86.Build.0 = Debug|Any CPU
+		{AA34A70F-7538-4364-A05F-37EC6896D3D3}.Perf|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA34A70F-7538-4364-A05F-37EC6896D3D3}.Perf|Any CPU.Build.0 = Debug|Any CPU
+		{AA34A70F-7538-4364-A05F-37EC6896D3D3}.Perf|x86.ActiveCfg = Debug|Any CPU
+		{AA34A70F-7538-4364-A05F-37EC6896D3D3}.Perf|x86.Build.0 = Debug|Any CPU
+		{AA34A70F-7538-4364-A05F-37EC6896D3D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA34A70F-7538-4364-A05F-37EC6896D3D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA34A70F-7538-4364-A05F-37EC6896D3D3}.Release|x86.ActiveCfg = Release|Any CPU
+		{AA34A70F-7538-4364-A05F-37EC6896D3D3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

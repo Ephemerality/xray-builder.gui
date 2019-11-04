@@ -1,21 +1,17 @@
 ﻿using System;
 using System.Windows.Forms;
 using SimpleInjector;
-using XRayBuilderGUI.DataSources.Amazon;
-using XRayBuilderGUI.DataSources.Secondary;
-using XRayBuilderGUI.Extras.AuthorProfile;
+using XRayBuilderGUI.DataSources.Amazon.Bootstrap;
+using XRayBuilderGUI.DataSources.Secondary.Bootstrap;
+using XRayBuilderGUI.Extras.BootstrapExtras;
 using XRayBuilderGUI.Libraries;
-using XRayBuilderGUI.Libraries.Http;
-using XRayBuilderGUI.Libraries.Logging;
+using XRayBuilderGUI.Libraries.Bootstrap.Logic;
+using XRayBuilderGUI.Libraries.Http.Bootstrap;
+using XRayBuilderGUI.Libraries.Logging.Bootstrap;
 using XRayBuilderGUI.Libraries.SimpleInjector.Extensions;
 using XRayBuilderGUI.UI;
-using XRayBuilderGUI.UI.Preview;
-using XRayBuilderGUI.UI.Preview.Model;
-using XRayBuilderGUI.XRay.Logic;
-using XRayBuilderGUI.XRay.Logic.Aliases;
-using XRayBuilderGUI.XRay.Logic.Chapters;
-using XRayBuilderGUI.XRay.Logic.Export;
-using XRayBuilderGUI.XRay.Logic.Terms;
+using XRayBuilderGUI.UI.Bootstrap;
+using XRayBuilderGUI.XRay.Bootstrap;
 
 namespace XRayBuilderGUI
 {
@@ -39,34 +35,19 @@ namespace XRayBuilderGUI
         {
             _container = new Container();
 
-            _container.Register<ILogger, Logger>(Lifestyle.Singleton);
-            _container.RegisterTransientIgnore<frmMain>("Disposed by application");
-
             _container.AutoregisterConcreteFromInterface(typeof(IFactory<,>), Lifestyle.Singleton);
 
-            _container.Register<IHttpClient, HttpClient>(Lifestyle.Singleton);
-            _container.Register<IAmazonClient, AmazonClient>(Lifestyle.Singleton);
-            _container.Register<IAuthorProfileGenerator, AuthorProfileGenerator>(Lifestyle.Singleton);
+            var builder = new BootstrapBuilder(_container);
 
-            _container.AutoregisterConcreteFromInterface<ISecondarySource>(Lifestyle.Singleton);
-            _container.AutoregisterConcreteFromInterface<IXRayExporter>(Lifestyle.Singleton);
+            builder.Register<BootstrapLogging>();
+            builder.Register<BootstrapHttp>();
+            builder.Register<BootstrapExtras>();
+            builder.Register<BootstrapAmazon>();
+            builder.Register<BootstrapSecondary>();
+            builder.Register<BootstrapUI>();
+            builder.Register<BootstrapXRay>();
 
-            _container.Register<IXRayService, XRayService>(Lifestyle.Singleton);
-            _container.Register<ITermsService, TermsService>(Lifestyle.Singleton);
-            _container.Register<IAliasesService, AliasesService>(Lifestyle.Singleton);
-            _container.Register<ChaptersService>(Lifestyle.Singleton);
-
-            _container.Register<IPreviewDataExporter, PreviewDataExporter>(Lifestyle.Singleton);
-
-            _container.Register<PreviewProviderFactory>(Lifestyle.Singleton);
-            _container.AutoregisterConcreteFromAbstract<PreviewProvider>(Lifestyle.Singleton);
-            _container.AutoregisterDisposableTransientConcreteFromInterface<IPreviewForm>("Manually disposed");
-
-            _container.Register<IAmazonInfoParser, AmazonInfoParser>(Lifestyle.Singleton);
-
-            _container.Register<IAliasesRepository, AliasesRepository>(Lifestyle.Singleton);
-
-            _container.Verify();
+            builder.Build();
         }
     }
 }

@@ -25,7 +25,6 @@ using XRayBuilderGUI.UI.Preview.Model;
 using XRayBuilderGUI.Unpack;
 using XRayBuilderGUI.XRay.Logic;
 using XRayBuilderGUI.XRay.Logic.Aliases;
-using XRayBuilderGUI.XRay.Logic.Chapters;
 using XRayBuilderGUI.XRay.Logic.Export;
 using XRayBuilderGUI.XRay.Logic.Terms;
 using XRayBuilderGUI.XRay.Model.Export;
@@ -44,7 +43,6 @@ namespace XRayBuilderGUI.UI
         private readonly PreviewProviderFactory _previewProviderFactory;
         private readonly IAmazonInfoParser _amazonInfoParser;
         private readonly IAliasesRepository _aliasesRepository;
-        private readonly ChaptersService _chaptersService;
         private readonly IXRayService _xrayService;
         private readonly XRayExporterFactory _xrayExporterFactory;
         private readonly IPreviewDataExporter _previewDataExporter;
@@ -68,7 +66,6 @@ namespace XRayBuilderGUI.UI
             IAliasesRepository aliasesRepository,
             IPreviewDataExporter previewDataExporter,
             XRayExporterFactory xrayExporterFactory,
-            ChaptersService chaptersService,
             IXRayService xrayService,
             ITermsService termsService)
         {
@@ -84,7 +81,6 @@ namespace XRayBuilderGUI.UI
             _aliasesRepository = aliasesRepository;
             _previewDataExporter = previewDataExporter;
             _xrayExporterFactory = xrayExporterFactory;
-            _chaptersService = chaptersService;
             _xrayService = xrayService;
             _termsService = termsService;
             _logger.LogEvent += rtfLogger.Log;

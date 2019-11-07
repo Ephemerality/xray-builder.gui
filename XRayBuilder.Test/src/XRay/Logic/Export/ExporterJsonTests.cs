@@ -38,16 +38,16 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXmlSaveOldTest(Book book)
         {
-            var xray = await _xrayService.CreateXRayAsync(book.xml, book.db, book.guid, book.asin, 0, _file, null, CancellationToken.None);
+            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, 0, _file, null, CancellationToken.None);
             xray.Unattended = true;
             _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath);
             _aliasesRepository.LoadAliasesForXRay(xray);
-            _xrayService.ExpandFromRawMl(xray, new FileStream(book.rawml, FileMode.Open), null, null, CancellationToken.None, false, false);
+            _xrayService.ExpandFromRawMl(xray, new FileStream(book.Rawml, FileMode.Open), null, null, CancellationToken.None, false, false);
             string filename = xray.XRayName();
             string outpath = Path.Combine(Environment.CurrentDirectory, "out", filename);
             xray.CreatedAt = new DateTime(2019, 11, 2, 13, 19, 18, DateTimeKind.Utc);
             _xrayExporter.Export(xray, outpath, null, CancellationToken.None);
-            FileAssert.AreEqual($"testfiles\\XRAY.entities.{book.asin}_old.asc", outpath);
+            FileAssert.AreEqual($"testfiles\\XRAY.entities.{book.Asin}_old.asc", outpath);
         }
     }
 }

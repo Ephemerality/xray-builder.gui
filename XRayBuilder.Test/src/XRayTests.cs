@@ -42,25 +42,25 @@ namespace XRayBuilder.Test
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXMLTest(Book book)
         {
-            var xray = await _xrayService.CreateXRayAsync(book.xml, book.db, book.guid, book.asin, 0, _file, null, CancellationToken.None);
+            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, 0, _file, null, CancellationToken.None);
             Assert.NotNull(xray);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXMLAliasTest(Book book)
         {
-            var xray = await _xrayService.CreateXRayAsync(book.xml, book.db, book.guid, book.asin, 0, _file, null, CancellationToken.None);
+            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, 0, _file, null, CancellationToken.None);
             _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath);
-            FileAssert.AreEqual($"ext\\{book.asin}.aliases", $"testfiles\\{book.asin}.aliases");
+            FileAssert.AreEqual($"ext\\{book.Asin}.aliases", $"testfiles\\{book.Asin}.aliases");
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXMLExpandRawMLTest(Book book)
         {
-            var xray = await _xrayService.CreateXRayAsync(book.xml, book.db, book.guid, book.asin, 0, _file, null, CancellationToken.None);
+            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, 0, _file, null, CancellationToken.None);
             xray.Unattended = true;
-            _xrayService.ExpandFromRawMl(xray, new FileStream(book.rawml, FileMode.Open), null, null, CancellationToken.None, false, false);
-            FileAssert.AreEqual($"ext\\{book.asin}.chapters", $"testfiles\\{book.asin}.chapters");
+            _xrayService.ExpandFromRawMl(xray, new FileStream(book.Rawml, FileMode.Open), null, null, CancellationToken.None, false, false);
+            FileAssert.AreEqual($"ext\\{book.Asin}.chapters", $"testfiles\\{book.Asin}.chapters");
         }
     }
 
@@ -128,19 +128,11 @@ namespace XRayBuilder.Test
 
     public class Book
     {
-        public string rawml;
-        public string xml;
-        public string db;
-        public string guid;
-        public string asin;
-
-        public Book(string rawml, string xml, string db, string guid, string asin)
-        {
-            this.rawml = rawml;
-            this.xml = xml;
-            this.db = db;
-            this.guid = guid;
-            this.asin = asin;
-        }
+        public string Rawml { get; set; }
+        public string Xml { get; set; }
+        public string Db { get; set; }
+        public string Guid { get; set; }
+        public string Asin { get; set; }
+        public string Bookpath { get; set; }
     }
 }

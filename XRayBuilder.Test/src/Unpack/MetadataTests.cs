@@ -1,7 +1,7 @@
 using System.IO;
 using NUnit.Framework;
+using XRayBuilder.Core.Unpack;
 using XRayBuilder.Test.XRay;
-using XRayBuilderGUI.Unpack;
 
 namespace XRayBuilder.Test.Unpack
 {

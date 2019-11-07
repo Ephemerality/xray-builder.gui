@@ -12,6 +12,6 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
         /// Duplicate aliases will be ignored, only the first will remain.
         /// Characters with no aliases will still be present.
         /// </summary>
-        IEnumerable<KeyValuePair<string, string[]>> GenerateAliases(IEnumerable<Term> characters);
+        IEnumerable<KeyValuePair<string, string[]>> GenerateAliases(IEnumerable<Term> characters, bool splitAliases);
     }
 }

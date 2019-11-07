@@ -13,7 +13,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
         string ParseAsin(string input);
         string ParseAsinFromUrl(string input);
         string Url(string tld, string asin);
-        Task<AuthorSearchResults> SearchAuthor(string author, string bookAsin, string TLD, CancellationToken cancellationToken = default);
+        Task<AuthorSearchResults> SearchAuthor(string author, string bookAsin, string TLD, bool saveHtml, CancellationToken cancellationToken = default);
         Task<BookInfo> SearchBook(string title, string author, string TLD, CancellationToken cancellationToken = default);
         IAsyncEnumerable<BookInfo> EnhanceBookInfos(IEnumerable<BookInfo> books, [EnumeratorCancellation] CancellationToken cancellationToken = default);
         Task<string> DownloadStartActions(string asin, CancellationToken cancellationToken = default);

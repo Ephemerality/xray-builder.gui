@@ -60,7 +60,7 @@ namespace XRayBuilder.Core.XRay.Logic
         }
 
         // TODO Remove path from here when directory service is done
-        public void ExportAndDisplayTerms(XRay xray, string path)
+        public void ExportAndDisplayTerms(XRay xray, string path, bool overwriteAliases, bool splitAliases)
         {
             //Export available terms to a file to make it easier to create aliases or import the modified aliases if they exist
             //Could potentially just attempt to automate the creation of aliases, but in some cases it is very subjective...
@@ -73,9 +73,9 @@ namespace XRayBuilder.Core.XRay.Logic
             //    aliasesDownloaded = await AttemptAliasDownload();
             //}
 
-            if (!aliasesDownloaded && (!File.Exists(path) || Properties.Settings.Default.overwriteAliases))
+            if (!aliasesDownloaded && (!File.Exists(path) || overwriteAliases))
             {
-                _aliasesRepository.SaveCharactersToFile(xray.Terms, xray.Asin);
+                _aliasesRepository.SaveCharactersToFile(xray.Terms, xray.Asin, splitAliases);
                 _logger.Log($"Characters exported to {path} for adding aliases.");
             }
 
@@ -95,7 +95,19 @@ namespace XRayBuilder.Core.XRay.Logic
         }
 
         // TODO split this up, possible return a result instead of modifying xray
-        public void ExpandFromRawMl(XRay xray, Stream rawMlStream, SafeShowDelegate safeShow, IProgressBar progress, CancellationToken token, bool ignoreSoftHypen = false, bool shortEx = true)
+        public void ExpandFromRawMl(
+            XRay xray,
+            Stream rawMlStream,
+            bool enableEdit,
+            bool useNewVersion,
+            bool skipNoLikes,
+            int minClipLen,
+            bool overwriteChapters,
+            SafeShowDelegate safeShow,
+            IProgressBar progress,
+            CancellationToken token,
+            bool ignoreSoftHypen = false,
+            bool shortEx = true)
         {
             // If there is an apostrophe, attempt to match 's at the end of the term
             // Match end of word, then search for any lingering punctuation
@@ -115,7 +127,7 @@ namespace XRayBuilder.Core.XRay.Logic
                 var readContents = streamReader.ReadToEnd();
                 var utf8Doc = new HtmlDocument();
                 utf8Doc.LoadHtml(readContents);
-                _chaptersService.HandleChapters(xray, xray.Asin, rawMlStream.Length, utf8Doc, readContents, safeShow, xray.Unattended, Properties.Settings.Default.enableEdit);
+                _chaptersService.HandleChapters(xray, xray.Asin, rawMlStream.Length, utf8Doc, readContents, overwriteChapters, safeShow, xray.Unattended, enableEdit);
             }
 
             _logger.Log("Scanning book content...");
@@ -326,7 +338,7 @@ namespace XRayBuilder.Core.XRay.Logic
                 }
 
                 // Attempt to match downloaded notable clips, not worried if no matches occur as some will be added later anyway
-                if (Properties.Settings.Default.useNewVersion && xray.NotableClips != null)
+                if (useNewVersion && xray.NotableClips != null)
                 {
                     foreach (var quote in xray.NotableClips)
                     {
@@ -337,8 +349,8 @@ namespace XRayBuilder.Core.XRay.Logic
                             var excerpt = xray.Excerpts.FirstOrDefault(e => e.Start == index);
                             if (excerpt == null)
                             {
-                                if (Properties.Settings.Default.skipNoLikes && quote.Likes == 0
-                                    || quote.Text.Length < Properties.Settings.Default.minClipLen)
+                                if (skipNoLikes && quote.Likes == 0
+                                    || quote.Text.Length < minClipLen)
                                     continue;
                                 excerpt = new Excerpt
                                 {

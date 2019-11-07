@@ -40,7 +40,8 @@ namespace XRayBuilder.Test
                         AmazonTld = "com",
                         SaveBio = false,
                         UseNewVersion = true,
-                        EditBiography = false
+                        EditBiography = false,
+                        SaveHtml = false
                     }
                 });
             Assert.NotNull(response);

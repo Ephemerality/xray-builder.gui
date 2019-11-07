@@ -39,11 +39,11 @@ namespace XRayBuilder.Core.Libraries
             return str.Trim();
         }
 
-        public static string GetBookOutputDirectory(string author, string title, bool create)
+        public static string GetBookOutputDirectory(string author, string title, bool create, string baseOutputDir)
         {
             var newAuthor = RemoveInvalidFileChars(author);
             var newTitle = RemoveInvalidFileChars(title);
-            var path = Path.Combine(Properties.Settings.Default.outDir, $"{newAuthor}\\{newTitle}");
+            var path = Path.Combine(baseOutputDir, $"{newAuthor}\\{newTitle}");
             if (create)
                 Directory.CreateDirectory(path);
             return path;

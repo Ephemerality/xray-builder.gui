@@ -107,7 +107,7 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             return aliasesByTermName;
         }
 
-        public void SaveCharactersToFile(IEnumerable<Term> terms, string asin)
+        public void SaveCharactersToFile(IEnumerable<Term> terms, string asin, bool splitAliases)
         {
             // todo service should handle this
             var path = $@"{Environment.CurrentDirectory}\ext\";
@@ -121,7 +121,7 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             var characters = terms.Where(term => term.Type == "character");
             try
             {
-                var aliasesByTermName = _aliasesService.GenerateAliases(characters);
+                var aliasesByTermName = _aliasesService.GenerateAliases(characters, splitAliases);
                 foreach (var (name, aliases) in aliasesByTermName)
                 {
                     // Aliases must be sorted by length, descending, to ensure they are matched properly

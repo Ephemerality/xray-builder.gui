@@ -9,7 +9,7 @@ namespace XRayBuilder.Core.XRay.Logic
 {
     public interface IXRayService
     {
-        void ExportAndDisplayTerms(XRay xray, string path);
+        void ExportAndDisplayTerms(XRay xray, string path, bool overwriteAliases, bool splitAliases);
 
         Task<XRay> CreateXRayAsync(
             string dataLocation,
@@ -25,7 +25,19 @@ namespace XRayBuilder.Core.XRay.Logic
         /// Expand the <paramref name="xray"/> using data from the <paramref name="rawMlStream"/>.
         /// Adds chapters, character locations, excerpts, and notable clips.
         /// </summary>
-        void ExpandFromRawMl(XRay xray, Stream rawMlStream, SafeShowDelegate safeShow, IProgressBar progress, CancellationToken token, bool ignoreSoftHypen = false, bool shortEx = true);
+        void ExpandFromRawMl(
+            XRay xray,
+            Stream rawMlStream,
+            bool enableEdit,
+            bool useNewVersion,
+            bool skipNoLikes,
+            int minClipLen,
+            bool overwriteChapters,
+            SafeShowDelegate safeShow,
+            IProgressBar progress,
+            CancellationToken token,
+            bool ignoreSoftHypen = false,
+            bool shortEx = true);
     }
 
     // TODO: Make this not rely on Windows.Forms

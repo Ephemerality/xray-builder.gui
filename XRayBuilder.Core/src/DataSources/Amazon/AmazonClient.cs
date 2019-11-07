@@ -58,7 +58,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
         public string Url(string tld, string asin) => $"https://www.amazon.{tld}/dp/{asin}";
 
-        public async Task<AuthorSearchResults> SearchAuthor(string author, string bookAsin, string TLD, CancellationToken cancellationToken = default)
+        public async Task<AuthorSearchResults> SearchAuthor(string author, string bookAsin, string TLD, bool saveHtml, CancellationToken cancellationToken = default)
         {
             //Generate Author search URL from author's name
             var newAuthor = Functions.FixAuthor(author);
@@ -70,7 +70,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             // Search Amazon for Author
             var authorSearchDoc = await _httpClient.GetPageAsync(amazonAuthorSearchUrl, cancellationToken);
 
-            if (Properties.Settings.Default.saveHtml)
+            if (saveHtml)
             {
                 try
                 {

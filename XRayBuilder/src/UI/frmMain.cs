@@ -115,7 +115,7 @@ namespace XRayBuilderGUI.UI
                 _logger.Log("Warning: The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.");
 
             if (string.IsNullOrEmpty(outputDir))
-                outputDir = Functions.GetBookOutputDirectory(author, title, create);
+                outputDir = Functions.GetBookOutputDirectory(author, title, create, _settings.outDir);
 
             if (_settings.outputToSidecar)
                 outputDir = Path.Combine(outputDir, $"{fileName}.sdr");
@@ -245,7 +245,7 @@ namespace XRayBuilderGUI.UI
 
                 xray = await Task.Run(() => xrayTask).ConfigureAwait(false);
 
-                _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath);
+                _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath, _settings.overwriteAliases, _settings.splitAliases);
 
                 if (_settings.enableEdit && DialogResult.Yes ==
                     MessageBox.Show(
@@ -268,7 +268,7 @@ namespace XRayBuilderGUI.UI
 
                 _logger.Log("Initial X-Ray built, adding locations and chapters...");
                 //Expand the X-Ray file from the unpacked mobi
-                await Task.Run(() => _xrayService.ExpandFromRawMl(xray, metadata.GetRawMlStream(), SafeShow, _progress, _cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion))
+                await Task.Run(() => _xrayService.ExpandFromRawMl(xray, metadata.GetRawMlStream(), _settings.enableEdit, _settings.useNewVersion, _settings.skipNoLikes, _settings.minClipLen, _settings.overwriteChapters, SafeShow, _progress, _cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion))
                     .ConfigureAwait(false);
             }
             catch (OperationCanceledException)
@@ -422,7 +422,8 @@ namespace XRayBuilderGUI.UI
                         AmazonTld = _settings.amazonTLD,
                         SaveBio = _settings.saveBio,
                         UseNewVersion = _settings.useNewVersion,
-                        EditBiography = _settings.editBiography
+                        EditBiography = _settings.editBiography,
+                        SaveHtml = _settings.saveHtml
                     }
                 }, _cancelTokens.Token);
 
@@ -466,7 +467,10 @@ namespace XRayBuilderGUI.UI
                     RealName = _settings.realName,
                     UseNewVersion = _settings.useNewVersion,
                     UseSubDirectories = _settings.useSubDirectories,
-                    PromptAsin = _settings.promptASIN
+                    PromptAsin = _settings.promptASIN,
+                    Overwrite = _settings.overwrite,
+                    SaveHtml = _settings.saveHtml,
+                    EstimatePageCount = _settings.pageCount
                 }, AsinPrompt, _logger, _httpClient, _amazonClient, _amazonInfoParser);
                 if (!await ea.Generate()) return;
 

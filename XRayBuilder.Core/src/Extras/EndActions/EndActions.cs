@@ -92,7 +92,7 @@ namespace XRayBuilder.Core.Extras.EndActions
                 return false;
             }
             _logger.Log("Book found on Amazon!");
-            if (Properties.Settings.Default.saveHtml)
+            if (_settings.SaveHtml)
             {
                 try
                 {
@@ -408,7 +408,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             {
                 if (!await _dataSource.GetPageCountAsync(curBook, token))
                 {
-                    if (!Properties.Settings.Default.pageCount)
+                    if (!_settings.EstimatePageCount)
                         _logger.Log("No page count found on Goodreads");
                     _logger.Log("Attempting to estimate page count...");
                     _logger.Log(Functions.GetPageCount(curBook.RawmlPath, curBook));
@@ -595,7 +595,7 @@ namespace XRayBuilder.Core.Extras.EndActions
                 }
                 else
                     outputDir = _settings.UseSubDirectories
-                        ? Functions.GetBookOutputDirectory(curBook.Author, curBook.Title, true)
+                        ? Functions.GetBookOutputDirectory(curBook.Author, curBook.Title, true, _settings.OutDir)
                         : _settings.OutDir;
             }
             catch (Exception ex)
@@ -610,7 +610,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             EaPath = outputDir + @"\EndActions.data." + curBook.Asin + ".asc";
             SaPath = outputDir + @"\StartActions.data." + curBook.Asin + ".asc";
 
-            if (!Properties.Settings.Default.overwrite && File.Exists(EaPath))
+            if (!_settings.Overwrite && File.Exists(EaPath))
             {
                 _logger.Log("Error: EndActions file already exists... Skipping!\r\n" +
                          "Please review the settings page if you want to overwite any existing files.");
@@ -632,6 +632,9 @@ namespace XRayBuilder.Core.Extras.EndActions
             public bool UseNewVersion { get; set; }
             public bool UseSubDirectories { get; set; }
             public bool PromptAsin { get; set; }
+            public bool Overwrite { get; set; }
+            public bool EstimatePageCount { get; set; }
+            public bool SaveHtml { get; set; }
         }
     }
 }

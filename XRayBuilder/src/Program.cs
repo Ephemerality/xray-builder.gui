@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Windows.Forms;
 using SimpleInjector;
-using XRayBuilderGUI.DataSources.Amazon.Bootstrap;
-using XRayBuilderGUI.DataSources.Secondary.Bootstrap;
-using XRayBuilderGUI.Extras.BootstrapExtras;
-using XRayBuilderGUI.Libraries;
-using XRayBuilderGUI.Libraries.Bootstrap.Logic;
-using XRayBuilderGUI.Libraries.Http.Bootstrap;
-using XRayBuilderGUI.Libraries.Logging.Bootstrap;
-using XRayBuilderGUI.Libraries.SimpleInjector.Extensions;
+using XRayBuilder.Core.DataSources.Amazon.Bootstrap;
+using XRayBuilder.Core.DataSources.Secondary.Bootstrap;
+using XRayBuilder.Core.Extras.BootstrapExtras;
+using XRayBuilder.Core.Libraries;
+using XRayBuilder.Core.Libraries.Bootstrap.Logic;
+using XRayBuilder.Core.Libraries.Http.Bootstrap;
+using XRayBuilder.Core.Libraries.Logging.Bootstrap;
+using XRayBuilder.Core.Libraries.SimpleInjector.Extensions;
+using XRayBuilder.Core.XRay.Bootstrap;
 using XRayBuilderGUI.UI;
 using XRayBuilderGUI.UI.Bootstrap;
-using XRayBuilderGUI.XRay.Bootstrap;
 
 namespace XRayBuilderGUI
 {

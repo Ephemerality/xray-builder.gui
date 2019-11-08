@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections.Async;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using XRayBuilderGUI.Extras.Artifacts;
-using XRayBuilderGUI.Libraries;
-using XRayBuilderGUI.Libraries.Http;
-using XRayBuilderGUI.Libraries.Serialization.Json.Util;
+using Dasync.Collections;
+using XRayBuilder.Core.Extras.Artifacts;
+using XRayBuilder.Core.Libraries;
+using XRayBuilder.Core.Libraries.Http;
+using XRayBuilder.Core.Libraries.Serialization.Json.Util;
 
 namespace XRayBuilderGUI.UI.Preview
 {
@@ -94,7 +94,7 @@ namespace XRayBuilderGUI.UI.Preview
             ListViewItem_SetSpacing(listView, 60 + 7, 90 + 7);
 
             var urls = books.Select(book => book.ImageUrl);
-            var greyscaleImages = await _httpClient.GetImages(urls, true).ToArrayAsync(cancellationToken);
+            var greyscaleImages = await _httpClient.GetImages(urls, true, cancellationToken).ToArrayAsync(cancellationToken);
 
             var i = 0;
             foreach (var greyscaleImage in greyscaleImages)

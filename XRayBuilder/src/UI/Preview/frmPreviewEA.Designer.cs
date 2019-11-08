@@ -42,8 +42,8 @@
             this.ilauthorRecs = new System.Windows.Forms.ImageList(this.components);
             this.lvAuthorRecs = new System.Windows.Forms.ListView();
             this.lblNotInSeries = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.pbSeperator)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbNextCover)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.pbSeperator)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.pbNextCover)).BeginInit();
             this.SuspendLayout();
             // 
             // lvCustomersWhoBoughtRecs
@@ -51,9 +51,9 @@
             this.lvCustomersWhoBoughtRecs.BackColor = System.Drawing.SystemColors.Control;
             this.lvCustomersWhoBoughtRecs.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.lvCustomersWhoBoughtRecs.LargeImageList = this.ilcustomersWhoBoughtRecs;
-            this.lvCustomersWhoBoughtRecs.Location = new System.Drawing.Point(8, 161);
+            this.lvCustomersWhoBoughtRecs.Location = new System.Drawing.Point(9, 186);
             this.lvCustomersWhoBoughtRecs.Name = "lvCustomersWhoBoughtRecs";
-            this.lvCustomersWhoBoughtRecs.Size = new System.Drawing.Size(291, 258);
+            this.lvCustomersWhoBoughtRecs.Size = new System.Drawing.Size(339, 298);
             this.lvCustomersWhoBoughtRecs.TabIndex = 41;
             this.lvCustomersWhoBoughtRecs.UseCompatibleStateImageBehavior = false;
             this.lvCustomersWhoBoughtRecs.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.lvcustomersWhoBoughtRecs_ItemSelectionChanged);
@@ -66,20 +66,20 @@
             // 
             // lblCustomersWhoBoughtRecs
             // 
-            this.lblCustomersWhoBoughtRecs.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCustomersWhoBoughtRecs.Location = new System.Drawing.Point(11, 140);
+            this.lblCustomersWhoBoughtRecs.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.lblCustomersWhoBoughtRecs.Location = new System.Drawing.Point(13, 162);
             this.lblCustomersWhoBoughtRecs.Name = "lblCustomersWhoBoughtRecs";
-            this.lblCustomersWhoBoughtRecs.Size = new System.Drawing.Size(286, 13);
+            this.lblCustomersWhoBoughtRecs.Size = new System.Drawing.Size(334, 15);
             this.lblCustomersWhoBoughtRecs.TabIndex = 40;
             this.lblCustomersWhoBoughtRecs.Text = "Customers who bought this book also bought";
             this.lblCustomersWhoBoughtRecs.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblAuthorRecs
             // 
-            this.lblAuthorRecs.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAuthorRecs.Location = new System.Drawing.Point(306, 10);
+            this.lblAuthorRecs.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.lblAuthorRecs.Location = new System.Drawing.Point(357, 12);
             this.lblAuthorRecs.Name = "lblAuthorRecs";
-            this.lblAuthorRecs.Size = new System.Drawing.Size(289, 13);
+            this.lblAuthorRecs.Size = new System.Drawing.Size(337, 15);
             this.lblAuthorRecs.TabIndex = 38;
             this.lblAuthorRecs.Text = "More by the author";
             this.lblAuthorRecs.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -87,10 +87,10 @@
             // lblNextAuthor
             // 
             this.lblNextAuthor.AutoEllipsis = true;
-            this.lblNextAuthor.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblNextAuthor.Location = new System.Drawing.Point(80, 66);
+            this.lblNextAuthor.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.lblNextAuthor.Location = new System.Drawing.Point(93, 76);
             this.lblNextAuthor.Name = "lblNextAuthor";
-            this.lblNextAuthor.Size = new System.Drawing.Size(219, 13);
+            this.lblNextAuthor.Size = new System.Drawing.Size(255, 15);
             this.lblNextAuthor.TabIndex = 36;
             this.lblNextAuthor.Text = "NextAuthor";
             this.lblNextAuthor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -98,20 +98,20 @@
             // lblNextTitle
             // 
             this.lblNextTitle.AutoEllipsis = true;
-            this.lblNextTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblNextTitle.Location = new System.Drawing.Point(80, 49);
+            this.lblNextTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.lblNextTitle.Location = new System.Drawing.Point(93, 57);
             this.lblNextTitle.Name = "lblNextTitle";
-            this.lblNextTitle.Size = new System.Drawing.Size(219, 13);
+            this.lblNextTitle.Size = new System.Drawing.Size(255, 15);
             this.lblNextTitle.TabIndex = 34;
             this.lblNextTitle.Text = "Next Title";
             this.lblNextTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblNextInSeries
             // 
-            this.lblNextInSeries.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblNextInSeries.Location = new System.Drawing.Point(10, 10);
+            this.lblNextInSeries.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.lblNextInSeries.Location = new System.Drawing.Point(12, 12);
             this.lblNextInSeries.Name = "lblNextInSeries";
-            this.lblNextInSeries.Size = new System.Drawing.Size(289, 13);
+            this.lblNextInSeries.Size = new System.Drawing.Size(337, 15);
             this.lblNextInSeries.TabIndex = 33;
             this.lblNextInSeries.Text = "Next in series";
             this.lblNextInSeries.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -119,19 +119,19 @@
             // pbSeperator
             // 
             this.pbSeperator.Image = global::XRayBuilderGUI.Properties.Resources.seperator;
-            this.pbSeperator.Location = new System.Drawing.Point(14, 131);
+            this.pbSeperator.Location = new System.Drawing.Point(16, 151);
             this.pbSeperator.Name = "pbSeperator";
-            this.pbSeperator.Size = new System.Drawing.Size(285, 2);
+            this.pbSeperator.Size = new System.Drawing.Size(332, 2);
             this.pbSeperator.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pbSeperator.TabIndex = 37;
             this.pbSeperator.TabStop = false;
             // 
             // pbNextCover
             // 
-            this.pbNextCover.Image = ((System.Drawing.Image)(resources.GetObject("pbNextCover.Image")));
-            this.pbNextCover.Location = new System.Drawing.Point(14, 31);
+            this.pbNextCover.Image = ((System.Drawing.Image) (resources.GetObject("pbNextCover.Image")));
+            this.pbNextCover.Location = new System.Drawing.Point(16, 36);
             this.pbNextCover.Name = "pbNextCover";
-            this.pbNextCover.Size = new System.Drawing.Size(60, 90);
+            this.pbNextCover.Size = new System.Drawing.Size(70, 104);
             this.pbNextCover.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pbNextCover.TabIndex = 35;
             this.pbNextCover.TabStop = false;
@@ -147,9 +147,9 @@
             this.lvAuthorRecs.BackColor = System.Drawing.SystemColors.Control;
             this.lvAuthorRecs.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.lvAuthorRecs.LargeImageList = this.ilauthorRecs;
-            this.lvAuthorRecs.Location = new System.Drawing.Point(304, 31);
+            this.lvAuthorRecs.Location = new System.Drawing.Point(355, 36);
             this.lvAuthorRecs.Name = "lvAuthorRecs";
-            this.lvAuthorRecs.Size = new System.Drawing.Size(291, 388);
+            this.lvAuthorRecs.Size = new System.Drawing.Size(339, 448);
             this.lvAuthorRecs.TabIndex = 42;
             this.lvAuthorRecs.UseCompatibleStateImageBehavior = false;
             this.lvAuthorRecs.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.lvauthorRecs_ItemSelectionChanged);
@@ -157,19 +157,19 @@
             // lblNotInSeries
             // 
             this.lblNotInSeries.AutoEllipsis = true;
-            this.lblNotInSeries.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblNotInSeries.Location = new System.Drawing.Point(11, 29);
+            this.lblNotInSeries.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.lblNotInSeries.Location = new System.Drawing.Point(13, 33);
             this.lblNotInSeries.Name = "lblNotInSeries";
-            this.lblNotInSeries.Size = new System.Drawing.Size(289, 30);
+            this.lblNotInSeries.Size = new System.Drawing.Size(337, 35);
             this.lblNotInSeries.TabIndex = 43;
             this.lblNotInSeries.Text = "This book is not part of a series or\r\nit is the last book in a series...";
             this.lblNotInSeries.Visible = false;
             // 
             // frmPreviewEA
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(602, 426);
+            this.ClientSize = new System.Drawing.Size(702, 492);
             this.Controls.Add(this.lvAuthorRecs);
             this.Controls.Add(this.lvCustomersWhoBoughtRecs);
             this.Controls.Add(this.lblCustomersWhoBoughtRecs);
@@ -188,10 +188,9 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Before You Go...";
-            ((System.ComponentModel.ISupportInitialize)(this.pbSeperator)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbNextCover)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.pbSeperator)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.pbNextCover)).EndInit();
             this.ResumeLayout(false);
-
         }
 
         #endregion

@@ -1,14 +1,14 @@
 using System.Collections.Generic;
-using XRayBuilderGUI.DataSources.Secondary;
-using XRayBuilderGUI.Libraries.Logging;
-using XRayBuilderGUI.XRay.Logic.Chapters;
+using XRayBuilder.Core.DataSources.Secondary;
+using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.XRay.Logic.Chapters;
 
 namespace XRayBuilder.Test.XRay
 {
     public static class TestData
     {
-        public static XRayBuilderGUI.XRay.XRay CreateXRayFromXML(string path, string db, string guid, string asin, SecondarySourceGoodreads goodreads, ILogger logger, ChaptersService chaptersService)
-            => new XRayBuilderGUI.XRay.XRay(path, db, guid, asin, goodreads, true, 0, "") { Unattended = true };
+        public static Core.XRay.XRay CreateXRayFromXML(string path, string db, string guid, string asin, SecondarySourceGoodreads goodreads, ILogger logger, ChaptersService chaptersService)
+            => new Core.XRay.XRay(path, db, guid, asin, goodreads, true, 0, "") { Unattended = true };
 
         public static List<Book> Books = new List<Book>
         {

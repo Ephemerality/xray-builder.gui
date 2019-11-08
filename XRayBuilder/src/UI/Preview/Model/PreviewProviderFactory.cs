@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using XRayBuilderGUI.Libraries;
+using XRayBuilder.Core.Libraries;
 
 namespace XRayBuilderGUI.UI.Preview.Model
 {

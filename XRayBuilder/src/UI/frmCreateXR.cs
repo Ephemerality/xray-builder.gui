@@ -7,12 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using XRayBuilderGUI.Libraries.Images.Util;
-using XRayBuilderGUI.Libraries.Serialization.Xml.Util;
+using XRayBuilder.Core.Libraries.Images.Util;
+using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
+using XRayBuilder.Core.XRay.Artifacts;
+using XRayBuilder.Core.XRay.Logic.Aliases;
+using XRayBuilder.Core.XRay.Logic.Terms;
 using XRayBuilderGUI.Properties;
-using XRayBuilderGUI.XRay.Artifacts;
-using XRayBuilderGUI.XRay.Logic.Aliases;
-using XRayBuilderGUI.XRay.Logic.Terms;
 
 namespace XRayBuilderGUI.UI
 {
@@ -205,7 +205,7 @@ namespace XRayBuilderGUI.UI
             try
             {
                 CreateTerms();
-                _aliasesRepository.SaveCharactersToFile(_terms, txtAsin.Text);
+                _aliasesRepository.SaveCharactersToFile(_terms, txtAsin.Text, Properties.Settings.Default.splitAliases);
                 MessageBox.Show("X-Ray entities and Alias files created sucessfully!");
             }
             catch (Exception ex)

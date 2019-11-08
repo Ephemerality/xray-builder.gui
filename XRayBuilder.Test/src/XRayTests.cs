@@ -6,17 +6,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using XRayBuilder.Core.DataSources.Secondary;
+using XRayBuilder.Core.Extras.Artifacts;
+using XRayBuilder.Core.Libraries;
+using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Model;
+using XRayBuilder.Core.XRay.Logic;
+using XRayBuilder.Core.XRay.Logic.Aliases;
+using XRayBuilder.Core.XRay.Logic.Chapters;
+using XRayBuilder.Core.XRay.Logic.Terms;
 using XRayBuilder.Test.XRay;
-using XRayBuilderGUI.DataSources.Secondary;
-using XRayBuilderGUI.Extras.Artifacts;
-using XRayBuilderGUI.Libraries;
-using XRayBuilderGUI.Libraries.Logging;
-using XRayBuilderGUI.Model;
-using XRayBuilderGUI.XRay.Logic;
-using XRayBuilderGUI.XRay.Logic.Aliases;
-using XRayBuilderGUI.XRay.Logic.Chapters;
-using XRayBuilderGUI.XRay.Logic.Terms;
-using EndActions = XRayBuilderGUI.Extras.EndActions.EndActions;
 
 namespace XRayBuilder.Test
 {
@@ -50,7 +49,7 @@ namespace XRayBuilder.Test
         public async Task XRayXMLAliasTest(Book book)
         {
             var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, 0, _file, null, CancellationToken.None);
-            _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath);
+            _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath, true, false);
             FileAssert.AreEqual($"ext\\{book.Asin}.aliases", $"testfiles\\{book.Asin}.aliases");
         }
 
@@ -59,7 +58,7 @@ namespace XRayBuilder.Test
         {
             var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, 0, _file, null, CancellationToken.None);
             xray.Unattended = true;
-            _xrayService.ExpandFromRawMl(xray, new FileStream(book.Rawml, FileMode.Open), null, null, CancellationToken.None, false, false);
+            _xrayService.ExpandFromRawMl(xray, new FileStream(book.Rawml, FileMode.Open), false, true, true, 0, true, null, null, CancellationToken.None, false, false);
             FileAssert.AreEqual($"ext\\{book.Asin}.chapters", $"testfiles\\{book.Asin}.chapters");
         }
     }

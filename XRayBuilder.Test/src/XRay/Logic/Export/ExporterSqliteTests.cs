@@ -3,13 +3,13 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using XRayBuilderGUI.DataSources.Secondary;
-using XRayBuilderGUI.Libraries.Logging;
-using XRayBuilderGUI.XRay.Logic;
-using XRayBuilderGUI.XRay.Logic.Aliases;
-using XRayBuilderGUI.XRay.Logic.Chapters;
-using XRayBuilderGUI.XRay.Logic.Export;
-using XRayBuilderGUI.XRay.Logic.Terms;
+using XRayBuilder.Core.DataSources.Secondary;
+using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.XRay.Logic;
+using XRayBuilder.Core.XRay.Logic.Aliases;
+using XRayBuilder.Core.XRay.Logic.Chapters;
+using XRayBuilder.Core.XRay.Logic.Export;
+using XRayBuilder.Core.XRay.Logic.Terms;
 
 namespace XRayBuilder.Test.XRay.Logic.Export
 {
@@ -40,9 +40,9 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         {
             var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, 0, _file, null, CancellationToken.None);
             xray.Unattended = true;
-            _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath);
+            _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath, true, false);
             _aliasesRepository.LoadAliasesForXRay(xray);
-            _xrayService.ExpandFromRawMl(xray, new FileStream(book.Rawml, FileMode.Open), null, null, CancellationToken.None, false, false);
+            _xrayService.ExpandFromRawMl(xray, new FileStream(book.Rawml, FileMode.Open), false, true, true, 0, true, null, null, CancellationToken.None, false, false);
             string filename = xray.XRayName();
             string outpath = Path.Combine(Environment.CurrentDirectory, "out", filename);
             _xrayExporter.Export(xray, outpath, null, CancellationToken.None);

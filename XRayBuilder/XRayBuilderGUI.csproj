@@ -60,15 +60,15 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AsyncEnumerator" Version="2.2.2" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.4" />
-    <PackageReference Include="JetBrains.Annotations" Version="2019.1.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="Pluralize.NET" Version="0.1.84" />
-    <PackageReference Include="SimpleInjector" Version="4.6.0" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.110" />
+    <PackageReference Include="AsyncEnumerator" Version="4.0.1" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.16" />
+    <PackageReference Include="JetBrains.Annotations" Version="2019.1.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3-beta2" />
+    <PackageReference Include="Pluralize.NET" Version="1.0.2" />
+    <PackageReference Include="SimpleInjector" Version="4.7.1" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.112" />
   </ItemGroup>
-  
+
   <Choose>
     <When Condition="$(TargetFramework.StartsWith('net4'))">
       <ItemGroup>
@@ -253,6 +253,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IonDotnet\IonDotnet\IonDotnet.csproj" />
+    <ProjectReference Include="..\XRayBuilder.Core\XRayBuilder.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="src\HTTPDownloader.cs" />

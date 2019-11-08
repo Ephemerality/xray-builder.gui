@@ -10,26 +10,26 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using SimpleInjector;
-using XRayBuilderGUI.DataSources.Amazon;
-using XRayBuilderGUI.DataSources.Secondary;
-using XRayBuilderGUI.Extras.Artifacts;
-using XRayBuilderGUI.Extras.AuthorProfile;
-using XRayBuilderGUI.Libraries;
-using XRayBuilderGUI.Libraries.Http;
-using XRayBuilderGUI.Libraries.Logging;
-using XRayBuilderGUI.Libraries.Progress;
-using XRayBuilderGUI.Libraries.Serialization.Xml.Util;
-using XRayBuilderGUI.Model;
+using XRayBuilder.Core.DataSources.Amazon;
+using XRayBuilder.Core.DataSources.Secondary;
+using XRayBuilder.Core.Extras.Artifacts;
+using XRayBuilder.Core.Extras.AuthorProfile;
+using XRayBuilder.Core.Libraries;
+using XRayBuilder.Core.Libraries.Http;
+using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Libraries.Progress;
+using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
+using XRayBuilder.Core.Model;
+using XRayBuilder.Core.Unpack;
+using XRayBuilder.Core.XRay;
+using XRayBuilder.Core.XRay.Logic;
+using XRayBuilder.Core.XRay.Logic.Aliases;
+using XRayBuilder.Core.XRay.Logic.Export;
+using XRayBuilder.Core.XRay.Logic.Terms;
+using XRayBuilder.Core.XRay.Model.Export;
+using XRayBuilder.Core.XRay.Util;
 using XRayBuilderGUI.Properties;
 using XRayBuilderGUI.UI.Preview.Model;
-using XRayBuilderGUI.Unpack;
-using XRayBuilderGUI.XRay.Logic;
-using XRayBuilderGUI.XRay.Logic.Aliases;
-using XRayBuilderGUI.XRay.Logic.Export;
-using XRayBuilderGUI.XRay.Logic.Terms;
-using XRayBuilderGUI.XRay.Model.Export;
-using XRayBuilderGUI.XRay.Util;
-using EndActions = XRayBuilderGUI.Extras.EndActions.EndActions;
 
 namespace XRayBuilderGUI.UI
 {
@@ -115,7 +115,7 @@ namespace XRayBuilderGUI.UI
                 _logger.Log("Warning: The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.");
 
             if (string.IsNullOrEmpty(outputDir))
-                outputDir = Functions.GetBookOutputDirectory(author, title, create);
+                outputDir = Functions.GetBookOutputDirectory(author, title, create, _settings.outDir);
 
             if (_settings.outputToSidecar)
                 outputDir = Path.Combine(outputDir, $"{fileName}.sdr");
@@ -227,11 +227,11 @@ namespace XRayBuilderGUI.UI
             _logger.Log($"Offset: {(AZW3 ? $"{_settings.offsetAZW3} (AZW3)" : _settings.offset.ToString())}");
 
             //Create X-Ray and attempt to create the base file (essentially the same as the site)
-            XRay.XRay xray;
+            XRay xray;
             SetDatasourceLabels(); // Reset the dataSource for the new build process
             try
             {
-                Task<XRay.XRay> xrayTask;
+                Task<XRay> xrayTask;
                 if (rdoGoodreads.Checked)
                     xrayTask = _xrayService.CreateXRayAsync(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin,
                         AZW3 ? _settings.offsetAZW3 : _settings.offset, _dataSource, _progress, _cancelTokens.Token);
@@ -245,7 +245,7 @@ namespace XRayBuilderGUI.UI
 
                 xray = await Task.Run(() => xrayTask).ConfigureAwait(false);
 
-                _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath);
+                _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath, _settings.overwriteAliases, _settings.splitAliases);
 
                 if (_settings.enableEdit && DialogResult.Yes ==
                     MessageBox.Show(
@@ -268,7 +268,7 @@ namespace XRayBuilderGUI.UI
 
                 _logger.Log("Initial X-Ray built, adding locations and chapters...");
                 //Expand the X-Ray file from the unpacked mobi
-                await Task.Run(() => _xrayService.ExpandFromRawMl(xray, metadata.GetRawMlStream(), SafeShow, _progress, _cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion))
+                await Task.Run(() => _xrayService.ExpandFromRawMl(xray, metadata.GetRawMlStream(), _settings.enableEdit, _settings.useNewVersion, _settings.skipNoLikes, _settings.minClipLen, _settings.overwriteChapters, SafeShow, _progress, _cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion))
                     .ConfigureAwait(false);
             }
             catch (OperationCanceledException)
@@ -422,7 +422,8 @@ namespace XRayBuilderGUI.UI
                         AmazonTld = _settings.amazonTLD,
                         SaveBio = _settings.saveBio,
                         UseNewVersion = _settings.useNewVersion,
-                        EditBiography = _settings.editBiography
+                        EditBiography = _settings.editBiography,
+                        SaveHtml = _settings.saveHtml
                     }
                 }, _cancelTokens.Token);
 
@@ -456,7 +457,7 @@ namespace XRayBuilderGUI.UI
                     return frmAsin.tbAsin.Text;
                 }
 
-                var ea = new EndActions(response, bookInfo, metadata.RawMlSize, _dataSource, new EndActions.Settings
+                var ea = new XRayBuilder.Core.Extras.EndActions.EndActions(response, bookInfo, metadata.RawMlSize, _dataSource, new XRayBuilder.Core.Extras.EndActions.EndActions.Settings
                 {
                     AmazonTld = _settings.amazonTLD,
                     Android = _settings.android,
@@ -466,7 +467,10 @@ namespace XRayBuilderGUI.UI
                     RealName = _settings.realName,
                     UseNewVersion = _settings.useNewVersion,
                     UseSubDirectories = _settings.useSubDirectories,
-                    PromptAsin = _settings.promptASIN
+                    PromptAsin = _settings.promptASIN,
+                    Overwrite = _settings.overwrite,
+                    SaveHtml = _settings.saveHtml,
+                    EstimatePageCount = _settings.pageCount
                 }, AsinPrompt, _logger, _httpClient, _amazonClient, _amazonInfoParser);
                 if (!await ea.Generate()) return;
 
@@ -475,11 +479,11 @@ namespace XRayBuilderGUI.UI
                     await ea.GenerateNewFormatData(_progress, _cancelTokens.Token);
 
                     // TODO: Do the templates differently
-                    Extras.Artifacts.EndActions eaBase;
+                    EndActions eaBase;
                     try
                     {
                         var template = File.ReadAllText($@"{Environment.CurrentDirectory}\dist\BaseEndActions.json", Encoding.UTF8);
-                        eaBase = JsonConvert.DeserializeObject<Extras.Artifacts.EndActions>(template);
+                        eaBase = JsonConvert.DeserializeObject<EndActions>(template);
                     }
                     catch (FileNotFoundException)
                     {

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using XRayBuilderGUI.Libraries;
-using XRayBuilderGUI.Libraries.Logging;
-using XRayBuilderGUI.Libraries.Primitives.Extensions;
+using XRayBuilder.Core.Libraries;
+using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Libraries.Primitives.Extensions;
 
 namespace XRayBuilderGUI.UI
 {

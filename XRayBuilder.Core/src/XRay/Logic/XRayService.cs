@@ -24,12 +24,14 @@ namespace XRayBuilder.Core.XRay.Logic
         private readonly ILogger _logger;
         private readonly ChaptersService _chaptersService;
         private readonly IAliasesRepository _aliasesRepository;
+        private readonly Encoding _encoding;
 
         public XRayService(ILogger logger, ChaptersService chaptersService, IAliasesRepository aliasesRepository)
         {
             _logger = logger;
             _chaptersService = chaptersService;
             _aliasesRepository = aliasesRepository;
+            _encoding = CodePagesEncodingProvider.Instance.GetEncoding(1252);
         }
 
         public async Task<XRay> CreateXRayAsync(
@@ -111,14 +113,14 @@ namespace XRayBuilder.Core.XRay.Logic
         {
             // If there is an apostrophe, attempt to match 's at the end of the term
             // Match end of word, then search for any lingering punctuation
-            var apostrophes = Encoding.Default.GetString(Encoding.UTF8.GetBytes("('|\u2019|\u0060|\u00B4)")); // '\u2019\u0060\u00B4
-            var quotes = Encoding.Default.GetString(Encoding.UTF8.GetBytes("(\"|\u2018|\u2019|\u201A|\u201B|\u201C|\u201D|\u201E|\u201F)"));
-            var dashesEllipsis = Encoding.Default.GetString(Encoding.UTF8.GetBytes("(-|\u2010|\u2011|\u2012|\u2013|\u2014|\u2015|\u2026|&#8211;|&#8212;|&#8217;|&#8218;|&#8230;)")); //U+2010 to U+2015 and U+2026
+            var apostrophes = _encoding.GetString(Encoding.UTF8.GetBytes("('|\u2019|\u0060|\u00B4)")); // '\u2019\u0060\u00B4
+            var quotes = _encoding.GetString(Encoding.UTF8.GetBytes("(\"|\u2018|\u2019|\u201A|\u201B|\u201C|\u201D|\u201E|\u201F)"));
+            var dashesEllipsis = _encoding.GetString(Encoding.UTF8.GetBytes("(-|\u2010|\u2011|\u2012|\u2013|\u2014|\u2015|\u2026|&#8211;|&#8212;|&#8217;|&#8218;|&#8230;)")); //U+2010 to U+2015 and U+2026
             var punctuationMarks = string.Format(@"({0}s|{0})?{1}?[!\.?,""\);:]*{0}*{1}*{2}*", apostrophes, quotes, dashesEllipsis);
 
             var excerptId = 0;
             var web = new HtmlDocument();
-            web.Load(rawMlStream, Encoding.Default);
+            web.Load(rawMlStream, _encoding);
 
             rawMlStream.Seek(0, SeekOrigin.Begin);
             // TODO: passing stream, doc, and contents probably not necessary)
@@ -179,7 +181,7 @@ namespace XRayBuilder.Core.XRay.Logic
                         continue;
                     var termFound = false;
                     // Convert from UTF8 string to default-encoded representation
-                    var search = character.Aliases.Select(alias => Encoding.Default.GetString(Encoding.UTF8.GetBytes(alias)))
+                    var search = character.Aliases.Select(alias => _encoding.GetString(Encoding.UTF8.GetBytes(alias)))
                         .ToList();
                     if (character.RegexAliases)
                     {

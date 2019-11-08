@@ -44,6 +44,13 @@ namespace XRayBuilder.Core.DataSources.Amazon
             return ParseAmazonDocument(doc);
         }
 
+        public void CheckCaptcha(HtmlDocument doc)
+        {
+            var captchaCheck = doc.DocumentNode.SelectSingleNode("//input[@id='captchacharacters']");
+            if (captchaCheck != null)
+                throw new AmazonCaptchaException();
+        }
+
         /// <summary>
         /// Retrieves a book's description, image URL, and rating from the Amazon document
         /// </summary>
@@ -51,9 +58,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
         {
             var response = new InfoResponse();
 
-            var captchaCheck = bookDoc.DocumentNode.SelectSingleNode("//input[@id='captchacharacters']");
-            if (captchaCheck != null)
-                throw new AmazonCaptchaException();
+            CheckCaptcha(bookDoc);
 
             #region Image URL
             var bookImageLoc = bookDoc.DocumentNode.SelectSingleNode("//*[@id='imgBlkFront']")

@@ -85,11 +85,15 @@ namespace XRayBuilder.Core.DataSources.Amazon
             }
 
             // Check for captcha
-            // TODO: Try to prompt for captcha and have user complete it to continue
-            if (authorSearchDoc.DocumentNode.InnerText.Contains("Robot Check"))
+            try
+            {
+                _amazonInfoParser.CheckCaptcha(authorSearchDoc);
+            }
+            catch (AmazonCaptchaException)
             {
                 _logger.Log($"Warning: Amazon.{TLD} is requesting a captcha."
                     + $"You can try visiting Amazon.{TLD} in a real browser first, try another region, or try again later.");
+                return null;
             }
             // Try to find Author's page from Amazon search
             var properAuthor = "";

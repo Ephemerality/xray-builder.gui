@@ -4,7 +4,6 @@ using System.Drawing;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
@@ -23,7 +22,7 @@ namespace XRayBuilder.Core.Libraries.Http
         Task<Stream> GetStreamAsync(string url, CancellationToken cancellationToken);
         Task<HtmlDocument> GetPageAsync(string url, CancellationToken cancellationToken = default);
         Task<Bitmap> GetImageAsync(string url, bool greyscale = false, CancellationToken cancellationToken = default);
-        IAsyncEnumerable<Bitmap> GetImages(IEnumerable<string> urls, bool greyscale = false, [EnumeratorCancellation] CancellationToken cancellationToken = default);
+        IAsyncEnumerable<Bitmap> GetImages(IEnumerable<string> urls, bool greyscale = false, CancellationToken cancellationToken = default);
         Task<HttpResponseMessage> GetAsync(string requestUri);
         Task<HttpResponseMessage> GetAsync(Uri requestUri);
         Task<HttpResponseMessage> GetAsync(string requestUri, HttpCompletionOption completionOption);

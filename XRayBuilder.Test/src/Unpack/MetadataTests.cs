@@ -23,10 +23,8 @@ namespace XRayBuilder.Test.Unpack
         public void RawlTest(Book book)
         {
             var metadata = MetadataLoader.Load(book.Bookpath);
-            if (!Directory.Exists("rawml"))
-                Directory.CreateDirectory("rawml");
-            File.WriteAllBytes($"rawml\\{book.Asin}.rawml",metadata.GetRawMl());
-            FileAssert.AreEqual(book.Rawml, $"rawml\\{book.Asin}.rawml");
+            var expected = File.ReadAllBytes(book.Rawml);
+            Assert.AreEqual(expected, metadata.GetRawMl());
         }
     }
 }

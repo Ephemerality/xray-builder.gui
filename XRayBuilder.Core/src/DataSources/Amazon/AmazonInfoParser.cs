@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using XRayBuilder.Core.DataSources.Amazon.Model;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
@@ -49,6 +50,10 @@ namespace XRayBuilder.Core.DataSources.Amazon
         public InfoResponse ParseAmazonDocument(HtmlDocument bookDoc)
         {
             var response = new InfoResponse();
+
+            var captchaCheck = bookDoc.DocumentNode.SelectSingleNode("//input[@id='captchacharacters']");
+            if (captchaCheck != null)
+                throw new AmazonCaptchaException();
 
             #region Image URL
             var bookImageLoc = bookDoc.DocumentNode.SelectSingleNode("//*[@id='imgBlkFront']")

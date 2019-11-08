@@ -6,6 +6,8 @@
         <PublishSingleFile>true</PublishSingleFile>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <UseWindowsForms>true</UseWindowsForms>
+        <AssemblyVersion>2.1.1.0</AssemblyVersion>
+        <FileVersion>2.1.1.0</FileVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -27,4 +29,5 @@
     <ItemGroup>
       <ProjectReference Include="..\IonDotnet\IonDotnet\IonDotnet.csproj" />
     </ItemGroup>
+    
 </Project>

@@ -43,4 +43,18 @@
     <ProjectReference Include="..\IonDotnet\IonDotnet\IonDotnet.csproj" />
     <ProjectReference Include="..\XRayBuilder.Core\XRayBuilder.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="dist\BaseEndActions.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="dist\BaseStartActions.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Content Include="dist\BaseSplitIgnore.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="dist\BaseDB.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

@@ -1,9 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{F33C5D94-7612-4406-8D09-4637FB5F4FBA}</ProjectGuid>
     <RootNamespace>XRayBuilder.Test</RootNamespace>
     <AssemblyName>XRayBuilder.Test</AssemblyName>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>net462</TargetFramework>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -15,7 +15,6 @@
     <Product>XRayBuilderTests</Product>
     <Copyright>Copyright ©  2019</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
-    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -32,7 +31,6 @@
     <PackageReference Include="HtmlAgilityPack" Version="1.11.16" />
     <PackageReference Include="JetBrains.Annotations" Version="2019.1.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
-    <PackageReference Include="Microsoft.Windows.Compatibility" Version="3.1.0-preview2.19523.17" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3-beta2" />
     <PackageReference Include="SimpleInjector" Version="4.7.1" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.112" />

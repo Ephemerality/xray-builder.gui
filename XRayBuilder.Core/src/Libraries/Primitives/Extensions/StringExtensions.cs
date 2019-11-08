@@ -1,13 +1,11 @@
 #if NETFRAMEWORK
 using Pluralize.NET;
-#else
 #endif
 using System;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Pluralize.NET;
 
 namespace XRayBuilder.Core.Libraries.Primitives.Extensions
 {

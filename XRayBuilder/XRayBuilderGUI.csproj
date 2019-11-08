@@ -1,12 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <ProjectGuid>{8AA950E7-5FEE-4130-9D30-18B8397E1DD8}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AssemblyName>X-Ray Builder GUI</AssemblyName>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
+    <TargetFramework>net462</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
@@ -68,9 +67,30 @@
     <PackageReference Include="Pluralize.NET" Version="1.0.2" />
     <PackageReference Include="SimpleInjector" Version="4.7.1" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.112" />
-    <PackageReference Include="Microsoft.Windows.Compatibility" Version="3.1.0-preview2.19523.17" />
-    <PackageReference Include="Pluralize.NET.Core" Version="1.0.0" />
   </ItemGroup>
+
+  <Choose>
+    <When Condition="$(TargetFramework.StartsWith('net4'))">
+      <ItemGroup>
+        <Reference Include="System.ComponentModel.DataAnnotations" />
+        <Reference Include="System.Data.Entity.Design" />
+        <Reference Include="System.Net.Http" />
+        <Reference Include="System.Data.DataSetExtensions" />
+        <Reference Include="Microsoft.CSharp" />
+        <Reference Include="System.Deployment" />
+        <Reference Include="System.Windows.Forms" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <UseWindowsForms>true</UseWindowsForms>
+      </PropertyGroup>
+      <ItemGroup>
+        <PackageReference Include="Microsoft.Windows.Compatibility" Version="2.0.1" />
+        <PackageReference Include="Pluralize.NET.Core" Version="1.0.0" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
 
   <ItemGroup>
     <Compile Update="src\UI\frmAbout.cs">

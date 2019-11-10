@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Secondary.Model;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Unpack;
@@ -11,8 +12,12 @@ namespace XRayBuilder.Core.Model
     {
         public string Title { get; set; }
         public string Author { get; set; }
-        // TODO: Add TLD to go with ASIN (asin/tld class?)
         public string Asin { get; set; }
+        [CanBeNull]
+        public string Tld { get; set; }
+        public string AmazonUrl => string.IsNullOrEmpty(Asin)
+            ? null
+            : $"https://www.amazon.{(string.IsNullOrEmpty(Tld) ? "com" : Tld)}/dp/{Asin}";
         public string Databasename { get; set; }
         public string FileName { get; set; }
         public string Description { get; set; } = "";
@@ -20,7 +25,6 @@ namespace XRayBuilder.Core.Model
         public double AmazonRating { get; set; }
         public int Reviews { get; set; }
         public string DataUrl { get; set; } = "";
-        public string AmazonUrl => string.IsNullOrEmpty(Asin) ? null : $"https://www.amazon.com/dp/{Asin}";
         // TODO: Shouldn't be here?
         public string RawmlPath { get; set; } = "";
 

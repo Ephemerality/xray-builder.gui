@@ -179,7 +179,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             string biography = null;
             try
             {
-                biography = GetAuthorBiography(authorHtmlDoc, TLD);
+                biography = GetAuthorBiography(authorHtmlDoc);
             }
             catch (FormatChangedException)
             {
@@ -189,7 +189,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             string authorImageUrl = null;
             try
             {
-                authorImageUrl = GetAuthorImageUrl(authorHtmlDoc, TLD);
+                authorImageUrl = GetAuthorImageUrl(authorHtmlDoc);
             }
             catch (FormatChangedException)
             {
@@ -210,7 +210,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
         }
 
         // Get biography from results page; TLD included in case different Amazon sites have different formatting
-        private string GetAuthorBiography(HtmlDocument authorHtmlDoc, string TLD)
+        private string GetAuthorBiography(HtmlDocument authorHtmlDoc)
         {
             var bioNode = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-bio' and @class='a-row']/div/div/span")
                    ?? authorHtmlDoc.DocumentNode.SelectSingleNode("//span[@id='author_biography']")
@@ -219,7 +219,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             return bioNode.InnerText;
         }
 
-        private string GetAuthorImageUrl(HtmlDocument authorHtmlDoc, string TLD)
+        private string GetAuthorImageUrl(HtmlDocument authorHtmlDoc)
         {
             var imageNode = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-image']/img")
                    ?? authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='authorImage']/img")
@@ -237,7 +237,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
         /// <summary>
         /// As of 2018-07-31, format changed. For some amount of time, keep both just in case.
         /// </summary>
-        private List<BookInfo> GetAuthorBooksNew(HtmlDocument authorHtmlDoc, string author, string TLD)
+        private List<BookInfo> GetAuthorBooksNew(HtmlDocument authorHtmlDoc, string author, string tld)
         {
             var resultsNodes = authorHtmlDoc.DocumentNode.SelectNodes("//div[@id='searchWidget']/div");
             if (resultsNodes == null) return null;
@@ -269,13 +269,16 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 // TODO: This should be removable when the Kindle Only page is parsed instead
                 if (asin == "")
                     continue; //throw new DataSource.FormatChangedException(nameof(Amazon), "book results - kindle edition asin");
-                bookList.Add(new BookInfo(name, author, asin));
+                bookList.Add(new BookInfo(name, author, asin)
+                {
+                    Tld = tld
+                });
             }
             return bookList;
         }
 
         [NotNull]
-        private List<BookInfo> GetAuthorBooks(HtmlDocument authorHtmlDoc, string author, string TLD)
+        private List<BookInfo> GetAuthorBooks(HtmlDocument authorHtmlDoc, string author, string tld)
         {
             var bookList = new List<BookInfo>();
 
@@ -316,7 +319,10 @@ namespace XRayBuilder.Core.DataSources.Amazon
                     if (otherBook == null) continue;
                     var asin = ParseAsinFromUrl(otherBook.OuterHtml);
                     if (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(asin))
-                        bookList.Add(new BookInfo(name, author, asin));
+                        bookList.Add(new BookInfo(name, author, asin)
+                        {
+                            Tld = tld
+                        });
                 }
             }
             return bookList;

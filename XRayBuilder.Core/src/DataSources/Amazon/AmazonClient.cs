@@ -256,18 +256,12 @@ namespace XRayBuilder.Core.DataSources.Amazon
                     continue;
 
                 // Get first Kindle ASIN
-                var asin = "";
-                foreach (var bookNode in bookNodes)
-                {
-                    var match = _regexAsinUrl.Match(bookNode.OuterHtml);
-                    if (!match.Success)
-                        continue;
-                    asin = match.Groups["asin"].Value;
-                    break;
-                }
+                var asin = bookNodes.Select(bookNode => _regexAsinUrl.Match(bookNode.OuterHtml))
+                    .FirstOrDefault(match => match.Success)
+                    ?.Groups["asin"].Value;
 
                 // TODO: This should be removable when the Kindle Only page is parsed instead
-                if (asin == "")
+                if (string.IsNullOrEmpty(asin))
                     continue; //throw new DataSource.FormatChangedException(nameof(Amazon), "book results - kindle edition asin");
                 bookList.Add(new BookInfo(name, author, asin)
                 {

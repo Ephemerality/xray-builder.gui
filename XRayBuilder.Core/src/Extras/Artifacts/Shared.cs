@@ -18,7 +18,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
                 Authors = new[] { bookInfo.Author },
                 ImageUrl = bookInfo.ImageUrl,
                 Description = featured ? bookInfo.Description : null,
-                AmazonRating = featured ? (double?)bookInfo.AmazonRating : null,
+                AmazonRating = featured ? bookInfo.AmazonRating : null,
                 NumberOfReviews = featured ? (int?)bookInfo.Reviews : null
             };
         }

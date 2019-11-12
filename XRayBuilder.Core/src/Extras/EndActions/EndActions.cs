@@ -451,7 +451,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             {
                 Class = "publicSharedRating",
                 Timestamp = Functions.UnixTimestampMilliseconds(),
-                Value = Math.Round(curBook.AmazonRating, 1)
+                Value = Math.Round(curBook.AmazonRating ?? 0.0, 1)
             };
             baseEndActions.Data.CustomerProfile = new Extras.Artifacts.EndActions.CustomerProfile
             {

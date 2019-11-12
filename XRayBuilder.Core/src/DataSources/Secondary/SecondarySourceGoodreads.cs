@@ -46,8 +46,8 @@ namespace XRayBuilder.Core.DataSources.Secondary
             _amazonClient = amazonClient;
         }
 
-        public string ParseBookIdFromUrl(string input) => _regexBookId.Match(input).Groups["id"].Value;
-        public static string BookUrl(string id) => string.IsNullOrEmpty(id) ? null : $"https://www.goodreads.com/book/show/{id}";
+        private string ParseBookIdFromUrl(string input) => _regexBookId.Match(input).Groups["id"].Value;
+        private string BookUrl(string id) => string.IsNullOrEmpty(id) ? null : $"https://www.goodreads.com/book/show/{id}";
         private string SearchUrl(string author, string title) => $"https://www.goodreads.com/search?q={author}%20{title}";
         private string SearchUrlAsin(string asin) => $"https://www.goodreads.com/search?q={asin}";
 
@@ -370,7 +370,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
             //Add rating and reviews count if missing from Amazon book info
             var metaNode = grDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
-            if (metaNode != null && curBook.AmazonRating == 0)
+            if (metaNode != null && !curBook.AmazonRating.HasValue)
             {
                 var goodreadsRating = metaNode.SelectSingleNode("//span[@class='value rating']")
                     ?? metaNode.SelectSingleNode(".//span[@itemprop='ratingValue']");

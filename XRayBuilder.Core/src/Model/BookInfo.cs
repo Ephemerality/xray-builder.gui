@@ -22,7 +22,7 @@ namespace XRayBuilder.Core.Model
         public string FileName { get; set; }
         public string Description { get; set; } = "";
         public string ImageUrl { get; set; } = "";
-        public double AmazonRating { get; set; }
+        public double? AmazonRating { get; set; }
         public int Reviews { get; set; }
         public string DataUrl { get; set; } = "";
         // TODO: Shouldn't be here?

@@ -788,6 +788,11 @@ namespace XRayBuilder.Core.Unpack.KFX
         public long RawMlSize { get; private set; }
         public Image CoverImage { get; private set; }
 
+        public bool IsAzw3
+        {
+            get => false;
+            set => throw new NotSupportedException();
+        }
         public string Asin => Metadata.Asin;
         public string Author => Metadata.Author;
         public string CdeContentType => Metadata.CdeContentType;

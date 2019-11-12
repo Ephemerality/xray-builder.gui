@@ -43,10 +43,6 @@
     </Choose>
 
     <ItemGroup>
-      <Folder Include="src" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\IonDotnet\IonDotnet\IonDotnet.csproj" />
     </ItemGroup>
     

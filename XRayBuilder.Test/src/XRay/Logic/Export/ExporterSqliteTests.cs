@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Unpack.Mobi;
 using XRayBuilder.Core.XRay.Logic;
 using XRayBuilder.Core.XRay.Logic.Aliases;
 using XRayBuilder.Core.XRay.Logic.Chapters;
@@ -38,11 +39,12 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXMLSaveNewTest(Book book)
         {
-            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, 0, _file, null, CancellationToken.None);
+            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, _file, null, CancellationToken.None);
             xray.Unattended = true;
             _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath, true, false);
+            var fakeMetadata = new Metadata {IsAzw3 = false};
             _aliasesRepository.LoadAliasesForXRay(xray);
-            _xrayService.ExpandFromRawMl(xray, new FileStream(book.Rawml, FileMode.Open), false, true, true, 0, true, null, null, CancellationToken.None, false, false);
+            _xrayService.ExpandFromRawMl(xray, fakeMetadata, new FileStream(book.Rawml, FileMode.Open), false, true, true, 0, true, null, null, CancellationToken.None, false, false);
             string filename = xray.XRayName();
             string outpath = Path.Combine(Environment.CurrentDirectory, "out", filename);
             _xrayExporter.Export(xray, outpath, null, CancellationToken.None);

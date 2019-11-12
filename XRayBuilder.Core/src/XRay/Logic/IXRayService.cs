@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Progress;
+using XRayBuilder.Core.Unpack;
 
 namespace XRayBuilder.Core.XRay.Logic
 {
@@ -16,7 +17,6 @@ namespace XRayBuilder.Core.XRay.Logic
             string db,
             string guid,
             string asin,
-            int locOffset,
             ISecondarySource dataSource,
             IProgressBar progress,
             CancellationToken token = default);
@@ -27,6 +27,7 @@ namespace XRayBuilder.Core.XRay.Logic
         /// </summary>
         void ExpandFromRawMl(
             XRay xray,
+            IMetadata metadata,
             Stream rawMlStream,
             bool enableEdit,
             bool useNewVersion,

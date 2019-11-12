@@ -22,14 +22,13 @@ namespace XRayBuilder.Core.XRay
         public long Erl;
         public readonly bool SkipShelfari;
         public bool Unattended { get; set; }
-        public readonly int LocOffset;
         public List<NotableClip> NotableClips;
         public int FoundNotables;
         public DateTime? CreatedAt { get; set; }
 
         public readonly ISecondarySource DataSource;
 
-        public XRay(string shelfari, string db, string guid, string asin, ISecondarySource dataSource, int locOffset = 0, string aliaspath = "")
+        public XRay(string shelfari, string db, string guid, string asin, ISecondarySource dataSource, string aliaspath = "")
         {
             if (shelfari == "" || db == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
@@ -41,20 +40,18 @@ namespace XRayBuilder.Core.XRay
             if (guid != null)
                 Guid = guid;
             Asin = asin;
-            LocOffset = locOffset;
             _aliasPath = aliaspath;
             DataSource = dataSource;
         }
 
         // TODO fix this constructor crap
-        public XRay(string xml, string db, string guid, string asin, ISecondarySource dataSource, bool xmlUgh, int locOffset = 0, string aliaspath = "")
+        public XRay(string xml, string db, string guid, string asin, ISecondarySource dataSource, bool xmlUgh, string aliaspath = "")
         {
             if (xml == "" || db == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
             DatabaseName = db;
             Guid = guid;
             Asin = asin;
-            LocOffset = locOffset;
             _aliasPath = aliaspath;
             DataSource = dataSource;
             SkipShelfari = true;

@@ -222,10 +222,6 @@ namespace XRayBuilderGUI.UI
             if (_cancelTokens.IsCancellationRequested) return;
             _logger.Log("Attempting to build X-Ray...");
 
-            //If AZW3 file use AZW3 offset, if checked. Checked by default.
-            var AZW3 = Path.GetExtension(txtMobi.Text) == ".azw3" && _settings.overrideOffset;
-            _logger.Log($"Offset: {(AZW3 ? $"{_settings.offsetAZW3} (AZW3)" : _settings.offset.ToString())}");
-
             //Create X-Ray and attempt to create the base file (essentially the same as the site)
             XRay xray;
             SetDatasourceLabels(); // Reset the dataSource for the new build process
@@ -233,14 +229,12 @@ namespace XRayBuilderGUI.UI
             {
                 Task<XRay> xrayTask;
                 if (rdoGoodreads.Checked)
-                    xrayTask = _xrayService.CreateXRayAsync(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin,
-                        AZW3 ? _settings.offsetAZW3 : _settings.offset, _dataSource, _progress, _cancelTokens.Token);
+                    xrayTask = _xrayService.CreateXRayAsync(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _dataSource, _progress, _cancelTokens.Token);
                 else
                 {
                     // TODO Set datasource properly
                     var fileDataSource = _diContainer.GetInstance<SecondaryDataSourceFactory>().Get(SecondaryDataSourceFactory.Enum.File);
-                    xrayTask = _xrayService.CreateXRayAsync(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin,
-                        AZW3 ? _settings.offsetAZW3 : _settings.offset, fileDataSource, _progress, _cancelTokens.Token);
+                    xrayTask = _xrayService.CreateXRayAsync(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, fileDataSource, _progress, _cancelTokens.Token);
                 }
 
                 xray = await Task.Run(() => xrayTask).ConfigureAwait(false);
@@ -268,7 +262,8 @@ namespace XRayBuilderGUI.UI
 
                 _logger.Log("Initial X-Ray built, adding locations and chapters...");
                 //Expand the X-Ray file from the unpacked mobi
-                await Task.Run(() => _xrayService.ExpandFromRawMl(xray, metadata.GetRawMlStream(), _settings.enableEdit, _settings.useNewVersion, _settings.skipNoLikes, _settings.minClipLen, _settings.overwriteChapters, SafeShow, _progress, _cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion))
+                // ReSharper disable twice AccessToDisposedClosure
+                await Task.Run(() => _xrayService.ExpandFromRawMl(xray, metadata, metadata.GetRawMlStream(), _settings.enableEdit, _settings.useNewVersion, _settings.skipNoLikes, _settings.minClipLen, _settings.overwriteChapters, SafeShow, _progress, _cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion))
                     .ConfigureAwait(false);
             }
             catch (OperationCanceledException)

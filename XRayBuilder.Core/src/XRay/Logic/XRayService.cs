@@ -12,6 +12,7 @@ using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Primitives.Extensions;
 using XRayBuilder.Core.Libraries.Progress;
+using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Logic.Aliases;
 using XRayBuilder.Core.XRay.Logic.Chapters;
 using XRayBuilder.Core.XRay.Model;
@@ -39,12 +40,11 @@ namespace XRayBuilder.Core.XRay.Logic
             string db,
             string guid,
             string asin,
-            int locOffset,
             ISecondarySource dataSource,
             IProgressBar progress,
             CancellationToken token = default)
         {
-            var xray = new XRay(dataLocation, db, guid, asin, dataSource, locOffset)
+            var xray = new XRay(dataLocation, db, guid, asin, dataSource)
             {
                 Terms = (await dataSource.GetTermsAsync(dataLocation, progress, token)).ToList()
             };
@@ -99,6 +99,7 @@ namespace XRayBuilder.Core.XRay.Logic
         // TODO split this up, possible return a result instead of modifying xray
         public void ExpandFromRawMl(
             XRay xray,
+            IMetadata metadata,
             Stream rawMlStream,
             bool enableEdit,
             bool useNewVersion,
@@ -111,6 +112,8 @@ namespace XRayBuilder.Core.XRay.Logic
             bool ignoreSoftHypen = false,
             bool shortEx = true)
         {
+            var locOffset = metadata.IsAzw3 ? -16 : 0;
+
             // If there is an apostrophe, attempt to match 's at the end of the term
             // Match end of word, then search for any lingering punctuation
             var apostrophes = _encoding.GetString(Encoding.UTF8.GetBytes("('|\u2019|\u0060|\u00B4)")); // '\u2019\u0060\u00B4
@@ -296,7 +299,7 @@ namespace XRayBuilder.Core.XRay.Logic
                             {
                                 character.Locs.Add(new []
                                 {
-                                    newLoc + xray.LocOffset,
+                                    newLoc + locOffset,
                                     newLenQuote,
                                     newLocHighlight,
                                     lenHighlight[j]
@@ -312,15 +315,15 @@ namespace XRayBuilder.Core.XRay.Logic
                         // For old format
                         character.Locs.Add(new long[]
                         {
-                            location + xray.LocOffset,
+                            location + locOffset,
                             lenQuote,
                             locHighlight[j],
                             lenHighlight[j]
                         });
                         // For new format
-                        character.Occurrences.Add(new[] { location + xray.LocOffset + locHighlight[j], lenHighlight[j] });
+                        character.Occurrences.Add(new[] { location + locOffset + locHighlight[j], lenHighlight[j] });
                     }
-                    var exCheck = xray.Excerpts.Where(t => t.Start.Equals(location + xray.LocOffset)).ToArray();
+                    var exCheck = xray.Excerpts.Where(t => t.Start.Equals(location + locOffset)).ToArray();
                     if (exCheck.Length > 0)
                     {
                         if (!exCheck[0].RelatedEntities.Contains(character.Id))
@@ -331,7 +334,7 @@ namespace XRayBuilder.Core.XRay.Logic
                         var newExcerpt = new Excerpt
                         {
                             Id = excerptId++,
-                            Start = location + xray.LocOffset,
+                            Start = location + locOffset,
                             Length = lenQuote
                         };
                         newExcerpt.RelatedEntities.Add(character.Id);

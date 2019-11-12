@@ -11,6 +11,7 @@ using XRayBuilder.Core.Extras.Artifacts;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Model;
+using XRayBuilder.Core.Unpack.Mobi;
 using XRayBuilder.Core.XRay.Logic;
 using XRayBuilder.Core.XRay.Logic.Aliases;
 using XRayBuilder.Core.XRay.Logic.Chapters;
@@ -41,14 +42,14 @@ namespace XRayBuilder.Test
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXMLTest(Book book)
         {
-            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, 0, _file, null, CancellationToken.None);
+            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, _file, null, CancellationToken.None);
             Assert.NotNull(xray);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXMLAliasTest(Book book)
         {
-            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, 0, _file, null, CancellationToken.None);
+            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, _file, null, CancellationToken.None);
             _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath, true, false);
             FileAssert.AreEqual($"ext\\{book.Asin}.aliases", $"testfiles\\{book.Asin}.aliases");
         }
@@ -56,9 +57,10 @@ namespace XRayBuilder.Test
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXMLExpandRawMLTest(Book book)
         {
-            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, 0, _file, null, CancellationToken.None);
+            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, _file, null, CancellationToken.None);
             xray.Unattended = true;
-            _xrayService.ExpandFromRawMl(xray, new FileStream(book.Rawml, FileMode.Open), false, true, true, 0, true, null, null, CancellationToken.None, false, false);
+            var fakeMetadata = new Metadata {IsAzw3 = false};
+            _xrayService.ExpandFromRawMl(xray, fakeMetadata, new FileStream(book.Rawml, FileMode.Open), false, true, true, 0, true, null, null, CancellationToken.None, false, false);
             FileAssert.AreEqual($"ext\\{book.Asin}.chapters", $"testfiles\\{book.Asin}.chapters");
         }
     }

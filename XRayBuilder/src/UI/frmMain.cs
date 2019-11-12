@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 using SimpleInjector;
 using XRayBuilder.Core.DataSources.Amazon;
+using XRayBuilder.Core.DataSources.Logic;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Extras.Artifacts;
 using XRayBuilder.Core.Extras.AuthorProfile;
@@ -627,18 +628,19 @@ namespace XRayBuilderGUI.UI
 
             try
             {
-                var books = new BookInfo[0];
-                if (_settings.searchByAsin)
-                    books = (await _dataSource.SearchBookByAsinAsync(metadata.Asin)).ToArray();
+                var bookSearchService = _diContainer.GetInstance<IBookSearchService>();
+                var books = await bookSearchService.SearchSecondarySourceAsync(_dataSource,
+                    new BookSearchService.Parameters
+                    {
+                        Asin = _settings.searchByAsin ? metadata.Asin : null,
+                        Author = metadata.Author,
+                        Title = metadata.Title
+                    }, _cancelTokens.Token);
 
                 if (books.Length <= 0)
                 {
-                    books = (await _dataSource.SearchBookAsync(metadata.Author, metadata.Title)).ToArray();
-                    if (books.Length <= 0)
-                    {
-                        _logger.Log($"Unable to find this book on {_dataSource.Name}!\nEnsure the book's title ({metadata.Title}) is accurate!");
-                        return;
-                    }
+                    _logger.Log($"Unable to find this book on {_dataSource.Name}!\nEnsure the book's title ({metadata.Title}) is accurate!");
+                    return;
                 }
 
                 string bookUrl;
@@ -646,10 +648,6 @@ namespace XRayBuilderGUI.UI
                     bookUrl = books[0].DataUrl;
                 else
                 {
-                    books = books.OrderByDescending(book => book.Reviews)
-                        .ThenByDescending(book => book.Editions)
-                        .ToArray();
-
                     // Pre-load cover images
                     foreach (var book in books.Where(book => !string.IsNullOrEmpty(book.ImageUrl)))
                     {

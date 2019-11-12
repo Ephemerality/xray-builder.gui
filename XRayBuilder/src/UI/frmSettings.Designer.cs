@@ -58,11 +58,7 @@
             this.rdoShelfari = new System.Windows.Forms.RadioButton();
             this.rdoGoodreads = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.txtAZWOffset = new System.Windows.Forms.TextBox();
-            this.chkOverrideOffset = new System.Windows.Forms.CheckBox();
             this.chkSoftHyphen = new System.Windows.Forms.CheckBox();
-            this.lblOffset = new System.Windows.Forms.Label();
-            this.txtOffset = new System.Windows.Forms.TextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
             this.txtMinClipLen = new System.Windows.Forms.TextBox();
@@ -418,35 +414,13 @@
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.txtAZWOffset);
-            this.groupBox4.Controls.Add(this.chkOverrideOffset);
             this.groupBox4.Controls.Add(this.chkSoftHyphen);
-            this.groupBox4.Controls.Add(this.lblOffset);
-            this.groupBox4.Controls.Add(this.txtOffset);
             this.groupBox4.Location = new System.Drawing.Point(6, 146);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(378, 74);
+            this.groupBox4.Size = new System.Drawing.Size(378, 107);
             this.groupBox4.TabIndex = 28;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Preferences";
-            // 
-            // txtAZWOffset
-            // 
-            this.txtAZWOffset.Location = new System.Drawing.Point(257, 43);
-            this.txtAZWOffset.Name = "txtAZWOffset";
-            this.txtAZWOffset.Size = new System.Drawing.Size(47, 20);
-            this.txtAZWOffset.TabIndex = 24;
-            // 
-            // chkOverrideOffset
-            // 
-            this.chkOverrideOffset.AutoSize = true;
-            this.chkOverrideOffset.Location = new System.Drawing.Point(160, 45);
-            this.chkOverrideOffset.Name = "chkOverrideOffset";
-            this.chkOverrideOffset.Size = new System.Drawing.Size(91, 17);
-            this.chkOverrideOffset.TabIndex = 23;
-            this.chkOverrideOffset.Text = "AWZ3 Offset:";
-            this.chkOverrideOffset.UseVisualStyleBackColor = true;
-            this.chkOverrideOffset.CheckedChanged += new System.EventHandler(this.chkOverrideOffset_CheckedChanged);
             // 
             // chkSoftHyphen
             // 
@@ -457,23 +431,6 @@
             this.chkSoftHyphen.TabIndex = 21;
             this.chkSoftHyphen.Text = "Ignore Soft Hyphens";
             this.chkSoftHyphen.UseVisualStyleBackColor = true;
-            // 
-            // lblOffset
-            // 
-            this.lblOffset.AutoSize = true;
-            this.lblOffset.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblOffset.Location = new System.Drawing.Point(157, 20);
-            this.lblOffset.Name = "lblOffset";
-            this.lblOffset.Size = new System.Drawing.Size(77, 13);
-            this.lblOffset.TabIndex = 19;
-            this.lblOffset.Text = "Excerpt Offset:";
-            // 
-            // txtOffset
-            // 
-            this.txtOffset.Location = new System.Drawing.Point(257, 17);
-            this.txtOffset.Name = "txtOffset";
-            this.txtOffset.Size = new System.Drawing.Size(47, 20);
-            this.txtOffset.TabIndex = 20;
             // 
             // groupBox3
             // 
@@ -893,11 +850,7 @@
         private System.Windows.Forms.CheckBox chkPageCount;
         private System.Windows.Forms.TabPage tabPgXray;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.TextBox txtAZWOffset;
-        private System.Windows.Forms.CheckBox chkOverrideOffset;
         private System.Windows.Forms.CheckBox chkSoftHyphen;
-        private System.Windows.Forms.Label lblOffset;
-        private System.Windows.Forms.TextBox txtOffset;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.CheckBox chkSkipNoLikes;
         private System.Windows.Forms.GroupBox gbXray;

@@ -12,7 +12,7 @@ namespace XRayBuilderGUI.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.2.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.3.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -68,18 +68,6 @@ namespace XRayBuilderGUI.Properties {
             }
             set {
                 this["saverawml"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int offset {
-            get {
-                return ((int)(this["offset"]));
-            }
-            set {
-                this["offset"] = value;
             }
         }
         
@@ -296,18 +284,6 @@ namespace XRayBuilderGUI.Properties {
             }
             set {
                 this["overrideOffset"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("-16")]
-        public int offsetAZW3 {
-            get {
-                return ((int)(this["offsetAZW3"]));
-            }
-            set {
-                this["offsetAZW3"] = value;
             }
         }
         

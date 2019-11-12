@@ -65,7 +65,6 @@ namespace XRayBuilderGUI.UI
             chkRaw.Checked = Properties.Settings.Default.saverawml;
             chkSoftHyphen.Checked = Properties.Settings.Default.ignoresofthyphen;
             chkUseNew.Checked = Properties.Settings.Default.useNewVersion;
-            txtOffset.Text = Properties.Settings.Default.offset.ToString();
             chkAndroid.Checked = Properties.Settings.Default.android;
             txtReal.Text = Properties.Settings.Default.realName;
             txtPen.Text = Properties.Settings.Default.penName;
@@ -80,8 +79,6 @@ namespace XRayBuilderGUI.UI
             chkSplitAliases.Checked = Properties.Settings.Default.splitAliases;
             chkSound.Checked = Properties.Settings.Default.playSound;
             chkDownloadAliases.Checked = Properties.Settings.Default.downloadAliases;
-            chkOverrideOffset.Checked = Properties.Settings.Default.overrideOffset;
-            txtAZWOffset.Text = Properties.Settings.Default.offsetAZW3.ToString();
             chkPageCount.Checked = Properties.Settings.Default.pageCount;
             chkSaveBio.Checked = Properties.Settings.Default.saveBio;
             if (Properties.Settings.Default.dataSource == "Goodreads")
@@ -98,8 +95,6 @@ namespace XRayBuilderGUI.UI
             var toolTip1 = new ToolTip();
             toolTip1.SetToolTip(chkRaw,
                 "Save the rawML (raw markup) of the book\r\nin the output directory so you can review it.");
-            toolTip1.SetToolTip(txtOffset,
-                "This offset will be applied to every\r\nbook location (usually a negative\r\nnumber). Must be an integer.");
             toolTip1.SetToolTip(chkSoftHyphen,
                 "Ignore soft hyphens (Unicode U+00AD)\r\n" +
                 "while searching for terms. This may\r\n" +
@@ -145,7 +140,6 @@ namespace XRayBuilderGUI.UI
                                                     "aliases will be overwritten with the ones downloaded.");
             toolTip1.SetToolTip(btnSupport, "Visit the MobileRead forum for\r\n" +
                                         "support, bug reports, or questions.");
-            toolTip1.SetToolTip(chkOverrideOffset, "This offset will be applied to every\r\nAWZ3 book location (usually -16).\r\nMust be an integer.");
             toolTip1.SetToolTip(chkPageCount, "Try to estimate books page count (based\r\n" +
                                               "on user_none accurate APNX generation).\r\n" +
                                               "If no page count is found online, an\r\n" +
@@ -182,16 +176,6 @@ namespace XRayBuilderGUI.UI
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            if (!int.TryParse(txtOffset.Text, out var offset))
-            {
-                MessageBox.Show("The offset must be an integer.", "Offset Error");
-                return;
-            }
-            if (!int.TryParse(txtAZWOffset.Text, out var offsetAZW))
-            {
-                MessageBox.Show("The offset must be an integer.", "Offset Error");
-                return;
-            }
             if (txtReal.Text.Trim().Length == 0 || txtPen.Text.Trim().Length == 0)
             {
                 MessageBox.Show("Both Real and Pen names are required for\r\nEnd Action file creation.");
@@ -209,7 +193,6 @@ namespace XRayBuilderGUI.UI
             Properties.Settings.Default.android = chkAndroid.Checked;
             Properties.Settings.Default.skipNoLikes = chkSkipNoLikes.Checked;
             Properties.Settings.Default.minClipLen = minClipLen;
-            Properties.Settings.Default.offset = offset;
             Properties.Settings.Default.realName = txtReal.Text;
             Properties.Settings.Default.penName = txtPen.Text;
             Properties.Settings.Default.enableEdit = chkEnableEdit.Checked;
@@ -221,8 +204,6 @@ namespace XRayBuilderGUI.UI
             Properties.Settings.Default.splitAliases = chkSplitAliases.Checked;
             Properties.Settings.Default.playSound = chkSound.Checked;
             Properties.Settings.Default.downloadAliases = chkDownloadAliases.Checked;
-            Properties.Settings.Default.overrideOffset = chkOverrideOffset.Checked;
-            Properties.Settings.Default.offsetAZW3 = offsetAZW;
             Properties.Settings.Default.pageCount = chkPageCount.Checked;
             Properties.Settings.Default.saveBio = chkSaveBio.Checked;
             Properties.Settings.Default.amazonTLD = cmbRegion.SelectedValue.ToString();
@@ -343,11 +324,6 @@ namespace XRayBuilderGUI.UI
         {
             if (chkDownloadAliases.Checked)
                 chkOverwrite.Checked = false;
-        }
-
-        private void chkOverrideOffset_CheckedChanged(object sender, EventArgs e)
-        {
-            txtAZWOffset.Enabled = chkOverrideOffset.Checked;
         }
     }
 }

@@ -1,4 +1,5 @@
 using SimpleInjector;
+using XRayBuilder.Core.DataSources.Logic;
 using XRayBuilder.Core.Libraries.Bootstrap.Model;
 using XRayBuilder.Core.Libraries.SimpleInjector.Extensions;
 using XRayBuilderGUI.UI.Preview;
@@ -19,6 +20,7 @@ namespace XRayBuilderGUI.UI.Bootstrap
             container.RegisterSingleton<PreviewProviderFactory>();
             container.AutoregisterConcreteFromAbstract<PreviewProvider>(Lifestyle.Singleton);
             container.AutoregisterDisposableTransientConcreteFromInterface<IPreviewForm>("Manually disposed");
+            container.RegisterSingleton<IBookSearchService, BookSearchService>();
         }
     }
 }

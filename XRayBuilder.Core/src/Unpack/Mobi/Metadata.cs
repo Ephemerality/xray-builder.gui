@@ -76,7 +76,6 @@ namespace XRayBuilder.Core.Unpack.Mobi
                 }
                 else if (Encoding.ASCII.GetString(buffer, 0, 8) == "BOUNDARY")
                 {
-                    //TODO Confirm whether or not this can be used for setting IsAzw3
                     _startRecord = i + 2;
                     _pdh = new PalmDocHeader(fs);
                     _mobiHeader = new MobiHead(fs, _pdb.MobiHeaderSize);
@@ -101,7 +100,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
             return "";
         }
 
-        public bool IsAzw3 { get; set; }
+        public bool IsAzw3 => _mobiHeader.FileVersion >= 8;
 
         public string Asin => _mobiHeader.ExtHeader.Asin != "" ? _mobiHeader.ExtHeader.Asin : _mobiHeader.ExtHeader.Asin2;
 

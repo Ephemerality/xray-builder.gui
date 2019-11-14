@@ -6,7 +6,7 @@ namespace XRayBuilder.Core.Unpack
 {
     public interface IMetadata : IDisposable
     {
-        bool IsAzw3 { get; set; }
+        bool IsAzw3 { get; }
         string Asin { get; }
         string Author { get; }
         string CdeContentType { get; }

@@ -42,7 +42,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, _file, null, CancellationToken.None);
             xray.Unattended = true;
             _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath, true, false);
-            var fakeMetadata = new Metadata {IsAzw3 = false};
+            var fakeMetadata = new Metadata();
             _aliasesRepository.LoadAliasesForXRay(xray);
             _xrayService.ExpandFromRawMl(xray, fakeMetadata, new FileStream(book.Rawml, FileMode.Open), false, true, true, 0, true, null, null, CancellationToken.None, false, false);
             string filename = xray.XRayName();

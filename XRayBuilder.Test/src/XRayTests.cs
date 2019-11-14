@@ -59,7 +59,7 @@ namespace XRayBuilder.Test
         {
             var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, _file, null, CancellationToken.None);
             xray.Unattended = true;
-            var fakeMetadata = new Metadata {IsAzw3 = false};
+            var fakeMetadata = new Metadata();
             _xrayService.ExpandFromRawMl(xray, fakeMetadata, new FileStream(book.Rawml, FileMode.Open), false, true, true, 0, true, null, null, CancellationToken.None, false, false);
             FileAssert.AreEqual($"ext\\{book.Asin}.chapters", $"testfiles\\{book.Asin}.chapters");
         }

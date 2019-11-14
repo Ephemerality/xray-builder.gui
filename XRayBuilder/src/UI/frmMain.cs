@@ -213,7 +213,7 @@ namespace XRayBuilderGUI.UI
 
             prgBar.Value = 0;
 
-            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.saverawml, _logger)).ConfigureAwait(false);
+            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.saverawml, _logger));
             if (metadata == null)
                 return;
 

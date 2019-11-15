@@ -100,7 +100,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
             return "";
         }
 
-        public bool IsAzw3 => _mobiHeader.FileVersion >= 8;
+        public bool IsAzw3 => _mobiHeader?.FileVersion >= 8;
 
         public string Asin => _mobiHeader.ExtHeader.Asin != "" ? _mobiHeader.ExtHeader.Asin : _mobiHeader.ExtHeader.Asin2;
 

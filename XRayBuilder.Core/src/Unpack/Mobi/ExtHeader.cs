@@ -18,8 +18,8 @@ namespace XRayBuilder.Core.Unpack.Mobi
     public sealed class ExtHeader
     {
         public string Identifier { get; set; }
-        public uint HeaderLength { get; set; }
-        public uint RecordCount { get; set; }
+        public int HeaderLength { get; set; }
+        public int RecordCount { get; set; }
 
         private readonly List<ExtHRecord> _recordList = new List<ExtHRecord>();
 
@@ -28,8 +28,8 @@ namespace XRayBuilder.Core.Unpack.Mobi
             Identifier = Encoding.UTF8.GetString(reader.ReadBytes(4)).Trim('\0');
             if (Identifier != "EXTH")
                 throw new UnpackException($"Invalid EXTH identifier: {Identifier}");
-            HeaderLength = reader.ReadUInt32();
-            RecordCount = reader.ReadUInt32();
+            HeaderLength = reader.ReadInt32();
+            RecordCount = reader.ReadInt32();
             for (var i = 0; i < RecordCount; i++)
                 _recordList.Add(new ExtHRecord(reader));
             reader.Seek(GetPaddingSize(DataSize), SeekOrigin.Current); // Skip padding bytes

@@ -10,30 +10,29 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
+using MiscUtil.IO;
 using XRayBuilder.Core.Libraries.Primitives.Extensions;
 
 namespace XRayBuilder.Core.Unpack.Mobi
 {
     public sealed class ExtHeader
     {
-        private readonly byte[] _identifier = new byte[4];
-        private readonly byte[] _headerLength = new byte[4];
-        private readonly byte[] _recordCount = new byte[4];
+        public string Identifier { get; set; }
+        public uint HeaderLength { get; set; }
+        public uint RecordCount { get; set; }
 
         private readonly List<ExtHRecord> _recordList = new List<ExtHRecord>();
 
-        public ExtHeader(FileStream fs)
+        public ExtHeader(EndianBinaryReader reader)
         {
-            fs.Read(_identifier, 0, _identifier.Length);
-            if (IdentifierAsString != "EXTH")
-                throw new UnpackException("Expected to find EXTH header identifier EXTH but got something else instead");
-            fs.Read(_headerLength, 0, _headerLength.Length);
-            fs.Read(_recordCount, 0, _recordCount.Length);
+            Identifier = Encoding.UTF8.GetString(reader.ReadBytes(4)).Trim('\0');
+            if (Identifier != "EXTH")
+                throw new UnpackException($"Invalid EXTH identifier: {Identifier}");
+            HeaderLength = reader.ReadUInt32();
+            RecordCount = reader.ReadUInt32();
             for (var i = 0; i < RecordCount; i++)
-            {
-                _recordList.Add(new ExtHRecord(fs));
-            }
-            fs.Seek(GetPaddingSize(DataSize), SeekOrigin.Current); // Skip padding bytes
+                _recordList.Add(new ExtHRecord(reader));
+            reader.Seek(GetPaddingSize(DataSize), SeekOrigin.Current); // Skip padding bytes
         }
 
         private int DataSize => _recordList.Sum(rec => rec.Size);
@@ -50,16 +49,11 @@ namespace XRayBuilder.Core.Unpack.Mobi
         private int GetPaddingSize(int dataSize)
         {
             var paddingSize = dataSize % 4;
-            if (paddingSize != 0) paddingSize = 4 - paddingSize;
+            if (paddingSize != 0)
+                paddingSize = 4 - paddingSize;
 
             return paddingSize;
         }
-
-        public string IdentifierAsString => Encoding.UTF8.GetString(_identifier).Trim('\0');
-
-        public uint HeaderLength => BitConverter.ToUInt32(_headerLength.BigEndian(), 0);
-
-        public uint RecordCount => BitConverter.ToUInt32(_recordCount.BigEndian(), 0);
 
         public string Author => GetRecordByType(100);
 
@@ -107,41 +101,37 @@ namespace XRayBuilder.Core.Unpack.Mobi
             var rec = _recordList.First(r => r.RecordType == 501);
             if (rec == null)
                 throw new UnpackException("Could not find the CDEContentType record (EXTH 501).");
-            fs.Seek(rec.RecordOffset, SeekOrigin.Begin);
+           // fs.Seek(rec.RecordOffset, SeekOrigin.Begin);
             fs.Write(newValue, 0, newValue.Length);
         }
     }
 
     internal sealed class ExtHRecord
     {
-        private readonly byte[] _recordType = new byte[4];
-        private readonly byte[] _recordLength = new byte[4];
-        public readonly long RecordOffset;
+        public uint RecordType { get; set; }
+        public uint RecordLength { get; set; }
+        public byte[] RecordData { get; set; }
 
-        public ExtHRecord(Stream fs)
+        public ExtHRecord(EndianBinaryReader reader)
         {
-            fs.Read(_recordType, 0, _recordType.Length);
-            fs.Read(_recordLength, 0, _recordLength.Length);
+            RecordType = reader.ReadUInt32();
+            RecordLength = reader.ReadUInt32();
 
-            if (RecordLength < 8) throw new UnpackException("Invalid EXTH record length");
-            RecordOffset = fs.Position;
-            RecordData = new byte[RecordLength - 8];
-            fs.Read(RecordData, 0, RecordData.Length);
+            if (RecordLength < 8)
+                throw new UnpackException("Invalid EXTH record length");
+
+            RecordData = reader.ReadBytes((int) RecordLength - 8);
         }
 
-        public override string ToString()
+        public void Write(EndianBinaryWriter writer)
         {
-            return Encoding.UTF8.GetString(RecordData);
+            writer.Write(RecordType);
+            writer.Write(RecordLength);
+            writer.Write(RecordData);
         }
 
-        public int DataLength => RecordData.Length;
+        public override string ToString() => Encoding.UTF8.GetString(RecordData);
 
-        public int Size => DataLength + 8;
-
-        public uint RecordLength => BitConverter.ToUInt32(_recordLength.BigEndian(), 0);
-
-        public uint RecordType => BitConverter.ToUInt32(_recordType.BigEndian(), 0);
-
-        public byte[] RecordData { get; }
+        public int Size => RecordData.Length + 8;
     }
 }

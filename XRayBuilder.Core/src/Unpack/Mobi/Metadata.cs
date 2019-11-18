@@ -9,6 +9,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using MiscUtil.Conversion;
+using MiscUtil.IO;
+using XRayBuilder.Core.Libraries.IO.Extensions;
 using XRayBuilder.Core.Unpack.Mobi.Decompress;
 
 namespace XRayBuilder.Core.Unpack.Mobi
@@ -18,6 +21,8 @@ namespace XRayBuilder.Core.Unpack.Mobi
         private PDBHeader _pdb;
         private PalmDocHeader _pdh;
         private MobiHead _mobiHeader;
+        private PalmDocHeader _palmDocHeaderKf8 = null;
+        private MobiHead _mobiHeadKf8 = null;
         private int _startRecord = 1;
         private List<byte[]> _headerRecords;
 
@@ -41,11 +46,11 @@ namespace XRayBuilder.Core.Unpack.Mobi
 
             byte[] ReadRecord(int index)
             {
-                fs.Seek(_pdb._recInfo[index].RecordDataOffset, SeekOrigin.Begin);
-                var recSize = _pdb._recInfo[index + 1].RecordDataOffset - _pdb._recInfo[index].RecordDataOffset;
-                var buffer = new byte[recSize];
-                fs.Read(buffer, 0, buffer.Length);
-                return buffer;
+                fs.Seek(_pdb.RecordMetadata[index].DataOffset, SeekOrigin.Begin);
+
+                return index < _pdb.RecordMetadata.Length - 1
+                    ? fs.ReadBytes((int) (_pdb.RecordMetadata[index + 1].DataOffset - _pdb.RecordMetadata[index].DataOffset))
+                    : fs.ReadToEnd();
             }
 
             // Gather and start storing all header records from first book
@@ -55,7 +60,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
 
             // Start at end of first book records, search for a second (KF8) and use it instead (for combo books)
             // Gather remaining records
-            for (int i = _pdh.RecordCount; i < _pdb.NumRecords - 1; i++)
+            for (int i = _pdh.RecordCount; i < _pdb.NumRecords; i++)
             {
                 var buffer = ReadRecord(i);
 
@@ -77,11 +82,21 @@ namespace XRayBuilder.Core.Unpack.Mobi
                 else if (Encoding.ASCII.GetString(buffer, 0, 8) == "BOUNDARY")
                 {
                     _startRecord = i + 2;
-                    _pdh = new PalmDocHeader(fs);
-                    _mobiHeader = new MobiHead(fs, _pdb.MobiHeaderSize);
-                    break;
+                    _palmDocHeaderKf8 = new PalmDocHeader(fs);
+                    _mobiHeadKf8 = new MobiHead(fs, _pdb.MobiHeaderSize);
                 }
             }
+        }
+
+        public void Save(Stream stream)
+        {
+            var writer = new EndianBinaryWriter(EndianBitConverter.Big, stream);
+            // PDB header
+            writer.Write(_pdb.HeaderBytes());
+
+            // Dump all records
+            foreach (var record in _headerRecords)
+                writer.Write(record);
         }
 
         public void Dispose()

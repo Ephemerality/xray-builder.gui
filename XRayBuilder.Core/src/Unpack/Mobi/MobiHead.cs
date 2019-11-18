@@ -3,6 +3,8 @@
 using System;
 using System.IO;
 using System.Text;
+using MiscUtil.Conversion;
+using MiscUtil.IO;
 using XRayBuilder.Core.Libraries.Primitives.Extensions;
 
 namespace XRayBuilder.Core.Unpack.Mobi
@@ -91,7 +93,10 @@ namespace XRayBuilder.Core.Unpack.Mobi
             fs.Read(_restOfMobiHeader, 0, _restOfMobiHeader.Length);
 
             if (exthExists)
-                ExtHeader = new ExtHeader(fs);
+            {
+                var reader = new EndianBinaryReader(EndianBitConverter.Big, fs);
+                ExtHeader = new ExtHeader(reader);
+            }
             else
                 throw new UnpackException("No EXT Header found. Ensure this book was processed with Calibre then try again.");
 

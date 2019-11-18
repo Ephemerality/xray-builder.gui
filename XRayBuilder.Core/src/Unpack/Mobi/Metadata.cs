@@ -172,16 +172,18 @@ namespace XRayBuilder.Core.Unpack.Mobi
             };
 
             decomp.Initialize(_mobiHeader, _pdb, _headerRecords);
-            var rawMl = new byte[_activePdh.TextLength];
-            var rawMlOffset = 0;
+            var rawMl = new byte[0];
             var endRecord = _startRecord + _activePdh.RecordCount - 1;
             for (var i = _startRecord; i <= endRecord; i++)
             {
                 var headerBuffer = TrimTrailingDataEntries(_headerRecords[i]);
                 var result = decomp.Unpack(headerBuffer);
-                Buffer.BlockCopy(result, 0, rawMl, rawMlOffset, result.Length);
-                rawMlOffset += result.Length;
+                var buffer = new byte[rawMl.Length + result.Length];
+                Buffer.BlockCopy(rawMl, 0, buffer, 0, rawMl.Length);
+                Buffer.BlockCopy(result, 0, buffer, rawMl.Length, result.Length);
+                rawMl = buffer;
             }
+
             return rawMl;
         }
 

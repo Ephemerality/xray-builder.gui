@@ -135,5 +135,7 @@ namespace XRayBuilder.Test
         public string Guid { get; set; }
         public string Asin { get; set; }
         public string Bookpath { get; set; }
+        public string Author { get; set; }
+        public string Title { get; set; }
     }
 }

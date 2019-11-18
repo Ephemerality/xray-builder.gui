@@ -8,15 +8,15 @@ namespace XRayBuilder.Test.Unpack
     [TestFixture]
     public sealed class MetadataTests
     {
-        [TestCase(@"testfiles\A Storm of Swords - George R. R. Martin.mobi")]
-        public void GetMetaDataTest(string mobiFile)
+        [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
+        public void GetMetaDataTest(Book book)
         {
-            var md = MetadataLoader.Load(mobiFile);
-            Assert.AreEqual(md.Asin, "B000FBFN1U");
-            Assert.AreEqual(md.UniqueId, "171927873");
-            Assert.AreEqual(md.DbName, "A_Storm_of_Swords");
-            Assert.AreEqual(md.Author, "George R. R. Martin");
-            Assert.AreEqual(md.Title, "A Storm of Swords");
+            var md = MetadataLoader.Load(book.Bookpath);
+            Assert.AreEqual(book.Asin, md.Asin);
+            Assert.AreEqual(book.Guid, md.UniqueId);
+            Assert.AreEqual(book.Db, md.DbName);
+            Assert.AreEqual(book.Author, md.Author);
+            Assert.AreEqual(book.Title, md.Title);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]

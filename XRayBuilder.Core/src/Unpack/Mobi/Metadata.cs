@@ -21,10 +21,13 @@ namespace XRayBuilder.Core.Unpack.Mobi
         private PDBHeader _pdb;
         private PalmDocHeader _pdh;
         private MobiHead _mobiHeader;
-        private PalmDocHeader _palmDocHeaderKf8 = null;
-        private MobiHead _mobiHeadKf8 = null;
+        private PalmDocHeader _palmDocHeaderKf8;
+        private MobiHead _mobiHeadKf8;
         private int _startRecord = 1;
         private List<byte[]> _headerRecords;
+
+        private PalmDocHeader _activePdh;
+        private MobiHead _activeMobiHeader;
 
         public Metadata(FileStream fs)
         {
@@ -38,8 +41,8 @@ namespace XRayBuilder.Core.Unpack.Mobi
         {
             fs.Seek(0, SeekOrigin.Begin);
             _pdb = new PDBHeader(fs);
-            _pdh = new PalmDocHeader(fs);
-            _mobiHeader = new MobiHead(fs, _pdb.MobiHeaderSize);
+            _pdh = _activePdh = new PalmDocHeader(fs);
+            _mobiHeader = _activeMobiHeader = new MobiHead(fs, _pdb.MobiHeaderSize);
             // Use ASIN of the first book in the mobi
             var coverOffset = _mobiHeader.ExtHeader.CoverOffset;
             var firstImage = -1;
@@ -82,8 +85,8 @@ namespace XRayBuilder.Core.Unpack.Mobi
                 else if (Encoding.ASCII.GetString(buffer, 0, 8) == "BOUNDARY")
                 {
                     _startRecord = i + 2;
-                    _palmDocHeaderKf8 = new PalmDocHeader(fs);
-                    _mobiHeadKf8 = new MobiHead(fs, _pdb.MobiHeaderSize);
+                    _palmDocHeaderKf8 = _activePdh = new PalmDocHeader(fs);
+                    _mobiHeadKf8 = _activeMobiHeader = new MobiHead(fs, _pdb.MobiHeaderSize);
                 }
             }
         }
@@ -115,25 +118,29 @@ namespace XRayBuilder.Core.Unpack.Mobi
             return "";
         }
 
-        public bool IsAzw3 => _mobiHeader?.FileVersion >= 8;
+        public bool IsAzw3 => _activeMobiHeader?.Version >= 8;
 
-        public string Asin => _mobiHeader.ExtHeader.Asin != "" ? _mobiHeader.ExtHeader.Asin : _mobiHeader.ExtHeader.Asin2;
+        public string Asin => _activeMobiHeader.ExtHeader.Asin != ""
+            ? _activeMobiHeader.ExtHeader.Asin
+            : _activeMobiHeader.ExtHeader.Asin2;
 
         public string DbName => _pdb.DBName;
 
-        public string UniqueId => _mobiHeader.UniqueId.ToString();
+        public string UniqueId => _activeMobiHeader.UniqueId.ToString();
 
-        public string Author => _mobiHeader.ExtHeader.Author;
+        public string Author => _activeMobiHeader.ExtHeader.Author;
 
-        public string Title => _mobiHeader.FullName != "" ? _mobiHeader.FullName : _mobiHeader.ExtHeader.UpdatedTitle;
+        public string Title => _activeMobiHeader.FullName != ""
+            ? _activeMobiHeader.FullName
+            : _activeMobiHeader.ExtHeader.UpdatedTitle;
 
-        public long RawMlSize => _pdh.TextLength;
+        public long RawMlSize => _activePdh.TextLength;
 
         public Image CoverImage { get; private set; }
 
-        public string CdeContentType => _mobiHeader.ExtHeader.CdeType;
+        public string CdeContentType => _activeMobiHeader.ExtHeader.CdeType;
 
-        public void UpdateCdeContentType(FileStream fs) => _mobiHeader.ExtHeader.UpdateCdeContentType(fs);
+        public void UpdateCdeContentType(FileStream fs) => _activeMobiHeader.ExtHeader.UpdateCdeContentType(fs);
         public bool RawMlSupported { get; } = true;
 
         /// <summary>
@@ -141,7 +148,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
         /// </summary>
         public void CheckDrm()
         {
-            if (_pdh.EncryptionType != 0)
+            if (_activePdh.EncryptionType != 0)
                 throw new EncryptedBookException();
         }
 
@@ -156,18 +163,18 @@ namespace XRayBuilder.Core.Unpack.Mobi
             CheckDrm();
 
             // TODO Convert to Factory pattern
-            var decomp = _pdh.Compression switch
+            var decomp = _activePdh.Compression switch
             {
                 1 => (IDecompressor) new UncompressedReader(),
                 2 => new PalmDocReader(),
                 17480 => new HuffCdicReader(),
-                _ => throw new UnpackException("Unknown compression type " + _pdh.Compression + ".")
+                _ => throw new UnpackException("Unknown compression type " + _activePdh.Compression + ".")
             };
 
             decomp.Initialize(_mobiHeader, _pdb, _headerRecords);
-            var rawMl = new byte[_pdh.TextLength];
+            var rawMl = new byte[_activePdh.TextLength];
             var rawMlOffset = 0;
-            var endRecord = _startRecord + _pdh.RecordCount - 1;
+            var endRecord = _startRecord + _activePdh.RecordCount - 1;
             for (var i = _startRecord; i <= endRecord; i++)
             {
                 var headerBuffer = TrimTrailingDataEntries(_headerRecords[i]);
@@ -178,6 +185,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
             return rawMl;
         }
 
+        // TODO Could be more efficient
         private byte[] TrimTrailingDataEntries(byte[] data)
         {
             for (var i = 0; i < _mobiHeader.Trailers; i++)
@@ -198,7 +206,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
             return data;
         }
 
-        private int GetSizeOfTrailingDataEntry(byte[] data)
+        private static int GetSizeOfTrailingDataEntry(byte[] data)
         {
             var num = 0;
             for (var i = data.Length - 4; i < data.Length; i++)

@@ -20,7 +20,8 @@ namespace XRayBuilder.Core.Unpack
         byte[] GetRawMl();
         Stream GetRawMlStream();
         void SaveRawMl(string path);
-        void UpdateCdeContentType(FileStream fs);
+        void UpdateCdeContentType();
+        void Save(Stream stream);
 
         // Settings (should be moved)
         bool RawMlSupported { get; }

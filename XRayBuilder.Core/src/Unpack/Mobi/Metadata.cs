@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using MiscUtil.Conversion;
 using MiscUtil.IO;
@@ -42,7 +43,10 @@ namespace XRayBuilder.Core.Unpack.Mobi
             fs.Seek(0, SeekOrigin.Begin);
             _pdb = new PDBHeader(fs);
             _pdh = _activePdh = new PalmDocHeader(fs);
-            _mobiHeader = _activeMobiHeader = new MobiHead(fs, _pdb.MobiHeaderSize);
+            _mobiHeader = _activeMobiHeader = new MobiHead(fs, _pdb.MobiHeaderSize)
+            {
+                HeaderRecordIndex = 0
+            };
             // Use ASIN of the first book in the mobi
             var coverOffset = _mobiHeader.ExtHeader.CoverOffset;
             var firstImage = -1;
@@ -86,7 +90,10 @@ namespace XRayBuilder.Core.Unpack.Mobi
                 {
                     _startRecord = i + 2;
                     _palmDocHeaderKf8 = _activePdh = new PalmDocHeader(fs);
-                    _mobiHeadKf8 = _activeMobiHeader = new MobiHead(fs, _pdb.MobiHeaderSize);
+                    _mobiHeadKf8 = _activeMobiHeader = new MobiHead(fs, _pdb.MobiHeaderSize)
+                    {
+                        HeaderRecordIndex = i
+                    };
                 }
             }
         }
@@ -97,6 +104,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
             // PDB header
             writer.Write(_pdb.HeaderBytes());
 
+            // TODO Remove exth from mobihead and keep it separate
             // Dump all records
             foreach (var record in _headerRecords)
                 writer.Write(record);
@@ -140,7 +148,42 @@ namespace XRayBuilder.Core.Unpack.Mobi
 
         public string CdeContentType => _activeMobiHeader.ExtHeader.CdeType;
 
-        public void UpdateCdeContentType(FileStream fs) => _activeMobiHeader.ExtHeader.UpdateCdeContentType(fs);
+        public void UpdateCdeContentType()
+        {
+            var recordData = Encoding.UTF8.GetBytes("EBOK");
+            foreach (var mobiHeader in new[] { _mobiHeader, _mobiHeadKf8 }.Where(header => header != null))
+            {
+                var rec = mobiHeader.ExtHeader.RecordList.FirstOrDefault(r => r.RecordType == 501);
+                if (rec == null)
+                {
+                    rec = new ExtHRecord
+                    {
+                        RecordData = recordData,
+                        RecordType = 501
+                    };
+                    mobiHeader.ExtHeader.RecordList.Add(rec);
+                }
+                else
+                    rec.RecordData = recordData;
+            }
+
+            RebuildMobiHeaders();
+        }
+
+        private void RebuildMobiHeaders()
+        {
+            _headerRecords[0] = _pdh.HeaderBytes().Concat(_mobiHeader.RecordBytes()).ToArray();
+            if (_mobiHeadKf8 != null)
+                _headerRecords[_mobiHeadKf8.HeaderRecordIndex] = _palmDocHeaderKf8.HeaderBytes().Concat(_mobiHeadKf8.RecordBytes()).ToArray();
+
+            var offset = _pdb.HeaderBytes().Length;
+            for (var i = 0; i < _pdb.RecordMetadata.Length; i++)
+            {
+                _pdb.RecordMetadata[i].DataOffset = (uint) offset;
+                offset += _headerRecords[i].Length;
+            }
+        }
+
         public bool RawMlSupported { get; } = true;
 
         /// <summary>

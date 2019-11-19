@@ -862,10 +862,8 @@ namespace XRayBuilder.Core.Unpack.KFX
             throw new NotSupportedException();
         }
 
-        public void UpdateCdeContentType(FileStream fs)
-        {
-            throw new NotSupportedException();
-        }
+        public void UpdateCdeContentType() => throw new NotSupportedException();
+        public void Save(Stream stream) => throw new NotSupportedException();
 
         public bool RawMlSupported { get; } = false;
 

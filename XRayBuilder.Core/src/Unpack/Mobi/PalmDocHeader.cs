@@ -13,20 +13,36 @@ namespace XRayBuilder.Core.Unpack.Mobi
     public sealed class PalmDocHeader
     {
         private readonly byte[] _compression = new byte[2];
+        private readonly byte[] _unused = new byte[2];
         private readonly byte[] _textLength = new byte[4];
         private readonly byte[] _recordCount = new byte[2];
         private readonly byte[] _recordSize = new byte[2];
         private readonly byte[] _encryptionType = new byte[2];
+        private readonly byte[] _unknown = new byte[2];
 
-        public PalmDocHeader(FileStream fs)
+        public PalmDocHeader(Stream fs)
         {
             fs.Read(_compression, 0, _compression.Length);
-            fs.Seek(2, SeekOrigin.Current);
+            fs.Read(_unused, 0, _unused.Length);
             fs.Read(_textLength, 0, _textLength.Length);
             fs.Read(_recordCount, 0, _recordCount.Length);
             fs.Read(_recordSize, 0, _recordSize.Length);
             fs.Read(_encryptionType, 0, _encryptionType.Length);
-            fs.Seek(2, SeekOrigin.Current);
+            fs.Read(_unknown, 0, _unknown.Length);
+        }
+
+        public byte[] HeaderBytes()
+        {
+            using var header = new MemoryStream();
+            header.Write(_compression, 0, _compression.Length);
+            header.Write(_unused, 0, _unused.Length);
+            header.Write(_textLength, 0, _textLength.Length);
+            header.Write(_recordCount, 0, _recordCount.Length);
+            header.Write(_recordSize, 0, _recordSize.Length);
+            header.Write(_encryptionType, 0, _encryptionType.Length);
+            header.Write(_unknown, 0, _unknown.Length);
+
+            return header.ToArray();
         }
 
         public ushort Compression => BitConverter.ToUInt16(_compression.BigEndian(), 0);

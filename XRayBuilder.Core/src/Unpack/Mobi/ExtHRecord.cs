@@ -6,24 +6,25 @@ namespace XRayBuilder.Core.Unpack.Mobi
     public sealed class ExtHRecord
     {
         public int RecordType { get; set; }
-        public int RecordLength { get; set; }
         public byte[] RecordData { get; set; }
+
+        public ExtHRecord() { }
 
         public ExtHRecord(EndianBinaryReader reader)
         {
             RecordType = reader.ReadInt32();
-            RecordLength = reader.ReadInt32();
+            var recordLength = reader.ReadInt32();
 
-            if (RecordLength < 8)
+            if (recordLength < 8)
                 throw new UnpackException("Invalid EXTH record length");
 
-            RecordData = reader.ReadBytes((int) RecordLength - 8);
+            RecordData = reader.ReadBytes(recordLength - 8);
         }
 
         public void Write(EndianBinaryWriter writer)
         {
             writer.Write(RecordType);
-            writer.Write(RecordLength);
+            writer.Write(Size);
             writer.Write(RecordData);
         }
 

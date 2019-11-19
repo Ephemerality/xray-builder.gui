@@ -10,6 +10,11 @@ namespace XRayBuilder.Core.Unpack.Mobi
 {
     public sealed class MobiHead
     {
+        /// <summary>
+        /// For internal implementation, the record to which this header belongs (always 0 for regular mobi, higher for KF8)
+        /// </summary>
+        public int HeaderRecordIndex { get; set; }
+
         public string Identifier { get; set; }
         public int HeaderLength { get; set; }
         public int MobiType { get; set; }
@@ -28,7 +33,6 @@ namespace XRayBuilder.Core.Unpack.Mobi
         public int ExtraIndex4 { get; set; }
         public int ExtraIndex5 { get; set; }
         public int FirstNonBookIndex { get; set; }
-        public int FullNameOffset { get; set; }
         public int FullNameLength { get; set; }
         /// <summary>
         /// Book locale code.
@@ -45,12 +49,12 @@ namespace XRayBuilder.Core.Unpack.Mobi
         public int HuffmanTableOffset { get; set; }
         public int HuffmanTableLength { get; set; }
         public int ExtHFlags { get; set; }
-        public byte[] Unknown1 { get; set; }
+        private byte[] Unknown1 { get; }
         public int DrmOffset { get; set; }
         public int DrmCount { get; set; }
         public int DrmSize { get; set; }
         public int DrmFlags { get; set; }
-        public byte[] Unknown2 { get; set; }
+        private byte[] Unknown2 { get; }
         public short FirstContentRecordNumber { get; set; }
         public short LastContentRecordNumber { get; set; }
         public int Unknown3 { get; set; }
@@ -76,15 +80,83 @@ namespace XRayBuilder.Core.Unpack.Mobi
         /// If not 0xFFFFFFFF, the record number of the first INDX record created from an ncx file.
         /// </summary>
         public int IndxRecordOffset { get; set; }
-        public string FullName { get; set; }
+        private byte[] _fullName { get; }
 
         private readonly byte[] _restOfMobiHeader;
         public readonly ExtHeader ExtHeader;
 
-        private readonly byte[] _remainder;
+        private readonly int _remainderLength;
 
         public bool Multibyte { get; }
         public int Trailers { get; }
+
+        public byte[] RecordBytes()
+        {
+            using var writer = new EndianBinaryWriter(EndianBitConverter.Big, new MemoryStream());
+            var extHeaderBytes = ExtHeader.HeaderBytes();
+            var fullNameOffset = 16 + Identifier.Length + 112 + Unknown1.Length + 16 + Unknown2.Length + 56 + _restOfMobiHeader.Length + extHeaderBytes.Length;
+
+            writer.Write(Encoding.ASCII.GetBytes(Identifier));
+            writer.Write(HeaderLength);
+            writer.Write(MobiType);
+            writer.Write(CryptoType);
+            writer.Write(TextEncoding);
+            writer.Write(UniqueId);
+            writer.Write(Version);
+            writer.Write(OrthographicIndex);
+            writer.Write(InflectionIndex);
+            writer.Write(IndexNames);
+            writer.Write(IndexKeys);
+            writer.Write(ExtraIndex0);
+            writer.Write(ExtraIndex1);
+            writer.Write(ExtraIndex2);
+            writer.Write(ExtraIndex3);
+            writer.Write(ExtraIndex4);
+            writer.Write(ExtraIndex5);
+            writer.Write(FirstNonBookIndex);
+            writer.Write(fullNameOffset);
+            writer.Write(FullNameLength);
+            writer.Write(Locale);
+            writer.Write(InputLanguage);
+            writer.Write(OutputLanguage);
+            writer.Write(MinVersion);
+            writer.Write(FirstImageIndex);
+            writer.Write(HuffmanRecordOffset);
+            writer.Write(HuffmanRecordCount);
+            writer.Write(HuffmanTableOffset);
+            writer.Write(HuffmanTableLength);
+            writer.Write(ExtHFlags);
+            writer.Write(Unknown1);
+            writer.Write(DrmOffset);
+            writer.Write(DrmCount);
+            writer.Write(DrmSize);
+            writer.Write(DrmFlags);
+            writer.Write(Unknown2);
+            writer.Write(FirstContentRecordNumber);
+            writer.Write(LastContentRecordNumber);
+            writer.Write(Unknown3);
+            writer.Write(FcisRecordNumber);
+            writer.Write(Unknown4);
+            writer.Write(FlisRecordNumber);
+            writer.Write(Unknown5);
+            writer.Write(Unknown6);
+            writer.Write(Unknown7);
+            writer.Write(Unknown8);
+            writer.Write(Unknown9);
+            writer.Write(Unknown10);
+            writer.Write(MbhFlags);
+            writer.Write(IndxRecordOffset);
+            writer.Write(_restOfMobiHeader);
+
+            writer.Write(extHeaderBytes);
+
+            if (_fullName != null)
+                writer.Write(_fullName);
+
+            writer.Write(new byte[_remainderLength]);
+
+            return ((MemoryStream) writer.BaseStream).ToArray();
+        }
 
         public MobiHead(FileStream fs, uint mobiHeaderSize)
         {
@@ -110,7 +182,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
             ExtraIndex4 = reader.ReadInt32();
             ExtraIndex5 = reader.ReadInt32();
             FirstNonBookIndex = reader.ReadInt32();
-            FullNameOffset = reader.ReadInt32();
+            var fullNameOffset = reader.ReadInt32();
             FullNameLength = reader.ReadInt32();
             Locale = reader.ReadInt32();
             InputLanguage = reader.ReadInt32();
@@ -170,20 +242,22 @@ namespace XRayBuilder.Core.Unpack.Mobi
             }
 
             var currentOffset = 248 + _restOfMobiHeader.Length + ExthHeaderSize;
-            _remainder = reader.ReadBytes((int) (mobiHeaderSize - currentOffset));
+            _remainderLength = (int) (mobiHeaderSize - currentOffset);
+            var remainder = reader.ReadBytes(_remainderLength);
 
-            var fullNameIndexInRemainder = FullNameOffset - currentOffset;
+            var fullNameIndexInRemainder = fullNameOffset - currentOffset;
             if (fullNameIndexInRemainder >= 0 &&
-                fullNameIndexInRemainder < _remainder.Length &&
-                fullNameIndexInRemainder + FullNameLength <= _remainder.Length && FullNameLength > 0)
+                fullNameIndexInRemainder < remainder.Length &&
+                fullNameIndexInRemainder + FullNameLength <= remainder.Length && FullNameLength > 0)
             {
-                var buffer = new byte[FullNameLength];
-                Array.Copy(_remainder, fullNameIndexInRemainder, buffer, 0, FullNameLength);
-                FullName = Encoding.ASCII.GetString(buffer).Trim('\0');
+                _fullName = new byte[FullNameLength];
+                Array.Copy(remainder, fullNameIndexInRemainder, _fullName, 0, FullNameLength);
+                _remainderLength -= FullNameLength;
             }
         }
 
         public int ExthHeaderSize => ExtHeader?.Size ?? 0;
+        public string FullName => Encoding.UTF8.GetString(_fullName).Trim('\0');
 
         public string MobiTypeAsString
         {

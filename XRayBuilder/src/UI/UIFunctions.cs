@@ -19,7 +19,7 @@ namespace XRayBuilderGUI.UI
 
         public static string GetFile(string title, string defaultFile, string filter = "All files (*.*)|*.*", string initialDir = "")
         {
-            var f = new OpenFileDialog
+            using var f = new OpenFileDialog
             {
                 Title = title,
                 Filter = filter,
@@ -45,15 +45,11 @@ namespace XRayBuilderGUI.UI
         {
             if (md.CdeContentType == "EBOK")
                 return;
-            if (md.CdeContentType.Length == 4
-                && DialogResult.Yes == MessageBox.Show("The document type is not set to EBOK. Would you like this to be updated?\r\nCaution: This feature is experimental and could potentially ruin your book file.", "Incorrect Content Type", MessageBoxButtons.YesNo))
+            if (DialogResult.Yes == MessageBox.Show("The document type is not set to EBOK. Would you like this to be updated?\r\nCaution: This feature is experimental and could potentially ruin your book file.", "Incorrect Content Type", MessageBoxButtons.YesNo))
             {
-                using var fs = new FileStream(bookPath, FileMode.Open, FileAccess.ReadWrite);
-                md.UpdateCdeContentType(fs);
-            }
-            else
-            {
-                throw new Exception("The document type is not set to EBOK and cannot be updated automatically; Kindle will not display an X-Ray for this book.\r\nYou must either use Calibre's convert feature (Personal Doc tag under MOBI Output) or a MOBI editor (exth 501) to change this.");
+                using var fs = new FileStream(bookPath, FileMode.Create);
+                md.UpdateCdeContentType();
+                md.Save(fs);
             }
         }
 

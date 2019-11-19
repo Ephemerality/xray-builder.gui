@@ -36,5 +36,8 @@ namespace XRayBuilder.Core.Libraries.IO.Extensions
             stream.CopyTo(ms);
             return ms.ToArray();
         }
+
+        public static void Skip(this Stream stream, int count)
+            => stream.Seek(count, SeekOrigin.Current);
     }
 }

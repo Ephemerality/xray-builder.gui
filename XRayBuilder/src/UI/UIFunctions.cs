@@ -13,7 +13,7 @@ namespace XRayBuilderGUI.UI
     {
         public static string GetDir(string defaultFolder)
         {
-            var f = new FolderBrowserDialog { SelectedPath = defaultFolder };
+            using var f = new FolderBrowserDialog { SelectedPath = defaultFolder };
             return f.ShowDialog() == DialogResult.OK ? f.SelectedPath : defaultFolder;
         }
 
@@ -47,9 +47,16 @@ namespace XRayBuilderGUI.UI
                 return;
             if (DialogResult.Yes == MessageBox.Show("The document type is not set to EBOK. Would you like this to be updated?\r\nCaution: This feature is experimental and could potentially ruin your book file.", "Incorrect Content Type", MessageBoxButtons.YesNo))
             {
-                using var fs = new FileStream(bookPath, FileMode.Create);
-                md.UpdateCdeContentType();
-                md.Save(fs);
+                try
+                {
+                    using var fs = new FileStream(bookPath, FileMode.Create);
+                    md.UpdateCdeContentType();
+                    md.Save(fs);
+                }
+                catch (IOException)
+                {
+                    MessageBox.Show("Failed to update Content Type, could not open with write access. Is the book open in another application?");
+                }
             }
         }
 

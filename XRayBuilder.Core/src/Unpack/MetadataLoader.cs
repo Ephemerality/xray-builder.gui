@@ -9,7 +9,7 @@ namespace XRayBuilder.Core.Unpack
     {
         public static IMetadata Load(string file)
         {
-            var fs = new FileStream(file, FileMode.Open, FileAccess.Read);
+            using var fs = new FileStream(file, FileMode.Open, FileAccess.Read);
 
             IMetadata metadata;
             switch (Path.GetExtension(file))

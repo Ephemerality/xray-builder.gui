@@ -35,7 +35,7 @@ namespace XRayBuilder.Test.XRay
             new Book
             {
                 Rawml = @"testfiles\Firewing (Silverwing)_nodrm.rawml",
-                Xml = @"",
+                Xml = @"testfiles\Firewing (Silverwing)_nodrm.xml",
                 Db = "CR!EVRXGDB8416WN5C6CC4HWZS1QH6M",
                 Guid = "1127971787",
                 Asin = "B00655KOZK",

@@ -175,13 +175,18 @@ namespace XRayBuilder.Core.Libraries.Http
                             await Task.Delay(5000, cancellationToken);
                             continue;
                         // Too many requests
-                        case (HttpStatusCode)429:
+                        case (HttpStatusCode) 429:
                             await Task.Delay(1000, cancellationToken);
                             continue;
                     }
 
                     // Not something we can retry, return the response as is
                     return response;
+                }
+                catch (HttpRequestException ex) when (ex.InnerException is WebException webEx && webEx.Status == WebExceptionStatus.NameResolutionFailure)
+                {
+                    // No internet, just give up
+                    throw;
                 }
                 catch (Exception ex) when (tries++ < MaxRetries && !(ex is OperationCanceledException))
                 {

@@ -799,6 +799,7 @@ namespace XRayBuilder.Core.Unpack.KFX
         public string DbName => Metadata.AssetId;
         public string Title => Metadata.Title;
         public string UniqueId => null;
+        public bool CanModify => false;
 
         private KfxMetadata Metadata { get; set; }
         private class KfxMetadata
@@ -864,6 +865,7 @@ namespace XRayBuilder.Core.Unpack.KFX
 
         public void UpdateCdeContentType() => throw new NotSupportedException();
         public void Save(Stream stream) => throw new NotSupportedException();
+        public void SetAsin(string asin) => throw new NotSupportedException();
 
         public bool RawMlSupported { get; } = false;
 

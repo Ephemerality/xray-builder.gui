@@ -15,6 +15,10 @@ namespace XRayBuilder.Core.Unpack
         long RawMlSize { get; }
         string Title { get; }
         string UniqueId { get; }
+        /// <summary>
+        /// Indicates whether or not the metadata can be modified and saved
+        /// </summary>
+        bool CanModify { get; }
 
         void CheckDrm();
         byte[] GetRawMl();
@@ -22,6 +26,7 @@ namespace XRayBuilder.Core.Unpack
         void SaveRawMl(string path);
         void UpdateCdeContentType();
         void Save(Stream stream);
+        void SetAsin(string asin);
 
         // Settings (should be moved)
         bool RawMlSupported { get; }

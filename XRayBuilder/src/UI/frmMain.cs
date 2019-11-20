@@ -183,6 +183,44 @@ namespace XRayBuilderGUI.UI
             ToggleInterface(true);
         }
 
+        public async Task<IMetadata> GetAndValidateMetadata(string mobiFile, bool saveRawMl, CancellationToken cancellationToken)
+        {
+            _logger.Log("Extracting metadata...");
+            try
+            {
+                var metadata = MetadataLoader.Load(mobiFile);
+                UIFunctions.EbokTagPromptOrThrow(metadata, mobiFile);
+                try
+                {
+                    await CheckAndFixIncorrectAsinOrThrow(metadata, mobiFile);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log($"Failed to validate/fix ASIN: {ex.Message}\r\nContinuing anyway...", LogLevel.Error);
+                }
+
+                if (!Settings.Default.useNewVersion && metadata.DbName.Length == 31)
+                {
+                    MessageBox.Show($"WARNING: Database Name is the maximum length. If \"{metadata.DbName}\" is the full book title, this should not be an issue.\r\nIf the title is supposed to be longer than that, you may get an error on your Kindle (WG on firmware < 5.6).\r\nThis can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n");
+                }
+
+                if (saveRawMl && metadata.RawMlSupported)
+                {
+                    _logger.Log("Saving rawML to dmp directory...");
+                    metadata.SaveRawMl(UIFunctions.RawMlPath(Path.GetFileNameWithoutExtension(mobiFile)));
+                }
+                _logger.Log($"Got metadata!\r\nDatabase Name: {metadata.DbName}\r\nUniqueID: {metadata.UniqueId}\r\nASIN: {metadata.Asin}");
+
+                return metadata;
+            }
+            catch (Exception ex)
+            {
+                _logger.Log($"An error occurred extracting metadata: {ex.Message}\r\n{ex.StackTrace}");
+            }
+
+            return null;
+        }
+
         private async Task btnBuild_Run()
         {
             //Check current settings
@@ -213,7 +251,7 @@ namespace XRayBuilderGUI.UI
 
             prgBar.Value = 0;
 
-            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.saverawml, _logger));
+            var metadata = await GetAndValidateMetadata(txtMobi.Text, _settings.saverawml, _cancelTokens.Token);
             if (metadata == null)
                 return;
 
@@ -385,7 +423,7 @@ namespace XRayBuilderGUI.UI
                 return;
             }
 
-            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.saverawml, _logger));
+            var metadata = await GetAndValidateMetadata(txtMobi.Text, _settings.saverawml, _cancelTokens.Token);
             if (metadata == null)
                 return;
 
@@ -616,7 +654,7 @@ namespace XRayBuilderGUI.UI
             }
 
             //this.TopMost = true;
-            using var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, false, _logger));
+            using var metadata = await GetAndValidateMetadata(txtMobi.Text, false, _cancelTokens.Token);
             if (metadata == null)
                 return;
 
@@ -806,14 +844,14 @@ namespace XRayBuilderGUI.UI
             };
         }
 
-        private void txtMobi_TextChanged(object sender, EventArgs e)
+        private async void txtMobi_TextChanged(object sender, EventArgs e)
         {
             if (txtMobi.Text == "" || !File.Exists(txtMobi.Text))
                 return;
             txtGoodreads.Text = "";
             prgBar.Value = 0;
 
-            var metadata = UIFunctions.GetAndValidateMetadata(txtMobi.Text, false, _logger);
+            var metadata = await GetAndValidateMetadata(txtMobi.Text, false, _cancelTokens.Token);
             if (metadata == null)
             {
                 txtMobi.Text = "";
@@ -964,7 +1002,7 @@ namespace XRayBuilderGUI.UI
         private async void btnCreate_Click(object sender, EventArgs e)
         {
             var frmCreateXr = _diContainer.GetInstance<frmCreateXR>();
-            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, false, _logger));
+            var metadata = await GetAndValidateMetadata(txtMobi.Text, false, _cancelTokens.Token);
             if (metadata != null)
             {
                 // TODO DONT ACCESS THESE CONTROLS DIRECTLY
@@ -1036,6 +1074,44 @@ namespace XRayBuilderGUI.UI
             {
                 _logger.Log("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
             }
+        }
+
+        private async Task CheckAndFixIncorrectAsinOrThrow(IMetadata metadata, string bookPath)
+        {
+            if (AmazonClient.IsAsin(metadata.Asin))
+                return;
+
+            if (!metadata.CanModify && DialogResult.No == MessageBox.Show($"Invalid Amazon ASIN detected: {metadata.Asin}!\nKindle may not display an X-Ray for this book.\nDo you wish to continue?", "Incorrect ASIN", MessageBoxButtons.YesNo))
+            {
+                throw new Exception($"Invalid Amazon ASIN detected: {metadata.Asin}!\r\nKindle may not display an X-Ray for this book.\r\nYou must either use Calibre's Quality Check plugin (Fix ASIN for Kindle Fire) or a MOBI editor (exth 113 and optionally 504) to change this.");
+            }
+
+            var dialogResult = MessageBox.Show($"Invalid Amazon ASIN detected: {metadata.Asin}!\nKindle may not display an X-Ray for this book.\nDo you want to fix it?\r\n(This will modify the book meaning it will need to be re-copied to your Kindle device)\r\nTHIS FEATURE IS EXPERIMETAL AND COULD DESTROY YOUR BOOK!", "Incorrect ASIN", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.No)
+                return;
+
+            _logger.Log($"Searching Amazon for {metadata.Title} by {metadata.Author}...");
+            var amazonSearchResult = await _amazonClient.SearchBook(metadata.Title, metadata.Author, _settings.amazonTLD, _cancelTokens.Token);
+            if (amazonSearchResult != null)
+            {
+                // Prompt if book is correct. If not, prompt for manual entry
+                dialogResult = MessageBox.Show($"Found the following book on Amazon:\r\nTitle: {amazonSearchResult.Title}\r\nAuthor: {amazonSearchResult.Author}\r\nASIN: {amazonSearchResult.Asin}\r\n\r\nDoes this seem correct? If so, the shown ASIN will be used.", "Amazon Search Result", MessageBoxButtons.YesNoCancel);
+                switch (dialogResult)
+                {
+                    case DialogResult.Cancel:
+                        return;
+                    case DialogResult.Yes:
+                    {
+                        metadata.SetAsin(amazonSearchResult.Asin);
+                        using var fs = new FileStream(bookPath, FileMode.Create);
+                        metadata.Save(fs);
+                        _logger.Log($"Successfully updated the ASIN to {metadata.Asin}! Be sure to copy this new version of the book to your Kindle device.");
+                        return;
+                    }
+                }
+            }
+
+            // TODO: manual entry
         }
     }
 }

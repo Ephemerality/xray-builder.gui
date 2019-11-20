@@ -135,6 +135,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
         public string DbName => _pdb.DBName;
 
         public string UniqueId => _activeMobiHeader.UniqueId.ToString();
+        public bool CanModify => true;
 
         public string Author => _activeMobiHeader.ExtHeader.Author;
 
@@ -149,17 +150,19 @@ namespace XRayBuilder.Core.Unpack.Mobi
         public string CdeContentType => _activeMobiHeader.ExtHeader.CdeType;
 
         public void UpdateCdeContentType()
+            => UpdateOrCreateExtHeaderRecord(501, Encoding.UTF8.GetBytes("EBOK"));
+
+        private void UpdateOrCreateExtHeaderRecord(int recordType, byte[] recordData)
         {
-            var recordData = Encoding.UTF8.GetBytes("EBOK");
             foreach (var mobiHeader in new[] { _mobiHeader, _mobiHeadKf8 }.Where(header => header != null))
             {
-                var rec = mobiHeader.ExtHeader.RecordList.FirstOrDefault(r => r.RecordType == 501);
+                var rec = mobiHeader.ExtHeader.RecordList.FirstOrDefault(r => r.RecordType == recordType);
                 if (rec == null)
                 {
                     rec = new ExtHRecord
                     {
                         RecordData = recordData,
-                        RecordType = 501
+                        RecordType = recordType
                     };
                     mobiHeader.ExtHeader.RecordList.Add(rec);
                 }
@@ -169,6 +172,9 @@ namespace XRayBuilder.Core.Unpack.Mobi
 
             RebuildMobiHeaders();
         }
+
+        public void SetAsin(string asin)
+            => UpdateOrCreateExtHeaderRecord(113, Encoding.ASCII.GetBytes(asin));
 
         private void RebuildMobiHeaders()
         {

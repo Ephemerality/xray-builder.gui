@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -340,13 +341,22 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 node = searchDoc.DocumentNode.SelectSingleNode("//li[@id='result_1']");
                 nodeASIN = node?.SelectSingleNode(".//a[@title='Kindle Edition']");
             }
+            if (nodeASIN == null)
+            {
+                node = searchDoc.DocumentNode.SelectSingleNode("//div[contains(@class, 's-result-item')]");
+                nodeASIN = node?.SelectSingleNode(".//a[contains(text(),'Kindle')]");
+            }
             //At least attempt to verify it might be the same book?
-            if (node != null && nodeASIN != null && node.InnerText.IndexOf(title, StringComparison.OrdinalIgnoreCase) >= 0)
+            // TODO improve the detection here
+            if (node != null && nodeASIN != null
+                             && (node.InnerText.IndexOf(title, StringComparison.OrdinalIgnoreCase) >= 0
+                                 || node.InnerText.IndexOf(WebUtility.HtmlEncode(title), StringComparison.OrdinalIgnoreCase) >= 0))
             {
                 var foundAsin = ParseAsinFromUrl(nodeASIN.OuterHtml);
-                node = node.SelectSingleNode(".//div/div/div/div[@class='a-fixed-left-grid-col a-col-right']/div/a");
-                if (node != null)
-                    result = new BookInfo(node.InnerText, author, foundAsin);
+                var titleNode = node.SelectSingleNode(".//div/div/div/div[@class='a-fixed-left-grid-col a-col-right']/div/a")
+                    ?? node.SelectSingleNode(".//h2");
+                if (titleNode != null)
+                    result = new BookInfo(WebUtility.HtmlDecode(titleNode.InnerText.Trim()), author, foundAsin);
             }
             return result;
         }

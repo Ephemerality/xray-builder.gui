@@ -204,12 +204,13 @@ namespace XRayBuilder.Core.DataSources.Secondary
                     var kindleEditionsUrl = string.Format("https://www.goodreads.com/work/editions/{0}?utf8=%E2%9C%93&sort=num_ratings&filter_by_format=Kindle+Edition", match.Groups[1].Value);
                     bookHtmlDoc = await _httpClient.GetPageAsync(kindleEditionsUrl, cancellationToken);
                     var bookNodes = bookHtmlDoc.DocumentNode.SelectNodes("//div[@class='elementList clearFix']");
-                    if (bookNodes != null)
-                    {
-                        foreach (var book in bookNodes)
-                            return _amazonClient.ParseAsin(book.InnerHtml);
-                    }
+                    var asin = bookNodes?.Select(book => _amazonClient.ParseAsin(book.InnerHtml))
+                        .FirstOrDefault(possibleAsin => !string.IsNullOrEmpty(possibleAsin));
+
+                    if (asin != null)
+                        return asin;
                 }
+
                 return "";
             }
             catch (Exception ex)

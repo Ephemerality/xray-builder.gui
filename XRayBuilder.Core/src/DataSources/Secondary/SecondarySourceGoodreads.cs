@@ -74,6 +74,9 @@ namespace XRayBuilder.Core.DataSources.Secondary
                 yield break;
 
             var resultNodes = goodreadsHtmlDoc.DocumentNode.SelectNodes("//tr[@itemtype='http://schema.org/Book']");
+            if (resultNodes == null)
+                yield break;
+
             //Return a list of search results
             foreach (var link in resultNodes)
             {

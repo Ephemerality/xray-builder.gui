@@ -182,6 +182,8 @@ namespace XRayBuilder.Core.Extras.EndActions
                             if (otherBook == null)
                                 continue;
                             var sponsAsin = _amazonClient.ParseAsinFromUrl(otherBook.GetAttributeValue("href", ""));
+                            if (sponsAsin == null)
+                                continue;
 
                             otherBook = otherBook.SelectSingleNode(".//img");
                             var match = Regex.Match(otherBook.GetAttributeValue("alt", ""),

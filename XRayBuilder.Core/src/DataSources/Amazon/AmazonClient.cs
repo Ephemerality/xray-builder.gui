@@ -241,7 +241,9 @@ namespace XRayBuilder.Core.DataSources.Amazon
         private List<BookInfo> GetAuthorBooksNew(HtmlDocument authorHtmlDoc, string author, string tld)
         {
             var resultsNodes = authorHtmlDoc.DocumentNode.SelectNodes("//div[@id='searchWidget']/div");
-            if (resultsNodes == null) return null;
+            if (resultsNodes == null)
+                return new List<BookInfo>();
+
             var bookList = new List<BookInfo>(resultsNodes.Count);
             foreach (var result in resultsNodes)
             {
@@ -283,14 +285,18 @@ namespace XRayBuilder.Core.DataSources.Amazon
             // TODO: Reduce this duplication
             foreach (var result in resultsNodes)
             {
-                if (!result.Id.StartsWith("result_")) continue;
+                if (!result.Id.StartsWith("result_"))
+                    continue;
                 var otherBook = result.SelectSingleNode(".//div[@class='a-row a-spacing-small']/div/a/h2");
-                if (otherBook == null) continue;
+                if (otherBook == null)
+                    continue;
                 // Skip known-bad things like lists and series and stuff
                 if (_regexIgnoreHeaders.IsMatch(otherBook.InnerText))
                     continue;
                 var name = otherBook.InnerText.Trim();
                 otherBook = result.SelectSingleNode(".//*[@title='Kindle Edition']");
+                if (otherBook == null)
+                    continue;
                 var asin = ParseAsinFromUrl(otherBook.OuterHtml);
                 if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(asin))
                     bookList.Add(new BookInfo(name, author, asin));

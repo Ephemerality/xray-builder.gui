@@ -72,7 +72,7 @@ namespace XRayBuilder.Test.DataSources
         public async Task SearchBookAsinTest()
         {
             var result = await _goodreads.SearchBookASINById("13497");
-            Assert.AreEqual("B004P1JEXE", result);
+            Assert.AreEqual("B000FCKGPC", result);
         }
 
         [Test]

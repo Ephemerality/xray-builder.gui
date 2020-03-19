@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using SimpleInjector;
 using XRayBuilder.Core.DataSources.Amazon.Bootstrap;
 using XRayBuilder.Core.DataSources.Secondary.Bootstrap;
-using XRayBuilder.Core.Extras.BootstrapExtras;
+using XRayBuilder.Core.Extras.Bootstrap;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Bootstrap.Logic;
 using XRayBuilder.Core.Libraries.Http.Bootstrap;

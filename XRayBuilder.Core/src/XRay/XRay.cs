@@ -14,7 +14,6 @@ namespace XRayBuilder.Core.XRay
         public readonly string DatabaseName;
         private string _guid = "";
         public readonly string Asin;
-        private readonly string _aliasPath;
         public List<Term> Terms = new List<Term>(100);
         public List<Chapter> Chapters = new List<Chapter>();
         public readonly List<Excerpt> Excerpts = new List<Excerpt>();
@@ -28,7 +27,7 @@ namespace XRayBuilder.Core.XRay
 
         public readonly ISecondarySource DataSource;
 
-        public XRay(string shelfari, string db, string guid, string asin, ISecondarySource dataSource, string aliaspath = "")
+        public XRay(string shelfari, string db, string guid, string asin, ISecondarySource dataSource)
         {
             if (shelfari == "" || db == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
@@ -40,27 +39,23 @@ namespace XRayBuilder.Core.XRay
             if (guid != null)
                 Guid = guid;
             Asin = asin;
-            _aliasPath = aliaspath;
             DataSource = dataSource;
         }
 
         // TODO fix this constructor crap
-        public XRay(string xml, string db, string guid, string asin, ISecondarySource dataSource, bool xmlUgh, string aliaspath = "")
+        public XRay(string xml, string db, string guid, string asin, ISecondarySource dataSource, bool xmlUgh)
         {
             if (xml == "" || db == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
             DatabaseName = db;
             Guid = guid;
             Asin = asin;
-            _aliasPath = aliaspath;
             DataSource = dataSource;
             SkipShelfari = true;
         }
 
         // TODO directory service to handle default paths
-        public string AliasPath => string.IsNullOrEmpty(_aliasPath)
-            ? $@"{Environment.CurrentDirectory}\ext\{Asin}.aliases"
-            : _aliasPath;
+        public string AliasPath => $@"{Environment.CurrentDirectory}\ext\{Asin}.aliases";
 
         public string Guid
         {

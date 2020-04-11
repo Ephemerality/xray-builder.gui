@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using IonDotnet;
-using IonDotnet.Systems;
-using IonDotnet.Tree;
+using Amazon.IonDotnet;
+using Amazon.IonDotnet.Builders;
+using Amazon.IonDotnet.Tree.Impl;
 using Newtonsoft.Json;
 using XRayBuilder.Core.Libraries.Enumerables.Extensions;
 using XRayBuilder.Core.Libraries.IO.Extensions;
@@ -19,7 +19,7 @@ namespace XRayBuilder.Core.Unpack.KFX
     {
         public const int DefaultCompressionType = 0;
         public const int DefaultDrmScheme = 0;
-        public const int DefaultChunkSize = 4096;
+        private const int DefaultChunkSize = 4096;
 
         public IonList FormatCapabilities { get; set; } = IonList.NewNull();
 
@@ -31,14 +31,11 @@ namespace XRayBuilder.Core.Unpack.KFX
 
         public KfxContainer(Stream fs)
         {
-            var catalog = new SimpleCatalog();
-            catalog.PutTable(YjSymbolTable);
-
             var loader = IonLoader.WithReaderOptions(new ReaderOptions
             {
                 Encoding = Encoding.UTF8,
                 Format = ReaderFormat.Detect,
-                Catalog = catalog
+                Catalog = KfxSymbolTable.GetCatalog()
             });
 
             var header = new KfxHeader(fs);
@@ -48,18 +45,18 @@ namespace XRayBuilder.Core.Unpack.KFX
             if (containerInfo == null)
                 throw new Exception("Bad container or something");
 
-            var containerId = containerInfo.GetById<IonString>(409).StringValue;
+            var containerId = containerInfo.GetField(KfxSymbols.BcContId).StringValue;
 
-            var compressionType = containerInfo.GetById<IonInt>(410).IntValue;
+            var compressionType = containerInfo.GetField(KfxSymbols.BcComprType).IntValue;
             if (compressionType != DefaultCompressionType)
                 throw new Exception($"Unexpected bcComprType ({compressionType})");
 
-            var drmScheme = containerInfo.GetById<IonInt>(411).IntValue;
+            var drmScheme = containerInfo.GetField(KfxSymbols.BcDrmScheme).IntValue;
             if (drmScheme != DefaultDrmScheme)
                 throw new Exception($"Unexpected bcDRMScheme ({drmScheme})");
 
-            var docSymbolOffset = containerInfo.GetById<IonInt>(415);
-            var docSymbolLength = containerInfo.GetById<IonInt>(416);
+            var docSymbolOffset = containerInfo.GetField(KfxSymbols.BcDocSymbolOffset);
+            var docSymbolLength = containerInfo.GetField(KfxSymbols.BcDocSymbolLength);
             ISymbolTable docSymbols = null;
             if (docSymbolLength.LongValue > 0)
             {
@@ -67,23 +64,23 @@ namespace XRayBuilder.Core.Unpack.KFX
                 loader.Load(docSymbolData, out docSymbols);
             }
 
-            var chunkSize = containerInfo.GetById<IonInt>(412).IntValue;
+            var chunkSize = containerInfo.GetField(KfxSymbols.BcChunkSize).IntValue;
             if (chunkSize != DefaultChunkSize)
                 throw new Exception($"Unexpected bcChunkSize in container {containerId} info ({chunkSize})");
 
             if (header.Version > 1)
             {
-                var formatCapabilitiesOffset = containerInfo.GetById<IonInt>(594).IntValue;
-                var formatCapabilitiesLength = containerInfo.GetById<IonInt>(595).IntValue;
+                var formatCapabilitiesOffset = containerInfo.GetField(KfxSymbols.BcFCapabilitiesOffset).IntValue;
+                var formatCapabilitiesLength = containerInfo.GetField(KfxSymbols.BcFCapabilitiesLength).IntValue;
                 if (formatCapabilitiesLength > 0)
                 {
                     var formatCapabilitiesData = new MemoryStream(fs.ReadBytes(formatCapabilitiesOffset, formatCapabilitiesLength, SeekOrigin.Begin));
-                    FormatCapabilities = loader.Load(formatCapabilitiesData).Single() as IonList;
+                    FormatCapabilities = ((IonDatagram) loader.Load(formatCapabilitiesData)).Single() as IonList;
                 }
             }
 
-            var indexTableOffset = containerInfo.GetById<IonInt>(413).IntValue;
-            var indexTableLength = containerInfo.GetById<IonInt>(414).IntValue;
+            var indexTableOffset = containerInfo.GetField(KfxSymbols.BcIndexTabOffset).IntValue;
+            var indexTableLength = containerInfo.GetField(KfxSymbols.BcIndexTabLength).IntValue;
 
             // Python checks for extra info in container
 

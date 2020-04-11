@@ -19,6 +19,10 @@
         <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.0-preview3.19551.4" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\IonDotnet\Amazon.IonDotnet\Amazon.IonDotnet.csproj" />
+    </ItemGroup>
+
     <Choose>
         <When Condition="$(TargetFramework.StartsWith('net4'))">
             <ItemGroup>
@@ -41,9 +45,5 @@
             </ItemGroup>
         </Otherwise>
     </Choose>
-
-    <ItemGroup>
-      <ProjectReference Include="..\IonDotnet\IonDotnet\IonDotnet.csproj" />
-    </ItemGroup>
     
 </Project>

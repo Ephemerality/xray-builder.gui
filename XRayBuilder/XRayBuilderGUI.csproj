@@ -252,7 +252,7 @@
     <None Include="Resources\AI.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IonDotnet\IonDotnet\IonDotnet.csproj" />
+    <ProjectReference Include="..\IonDotnet\Amazon.IonDotnet\Amazon.IonDotnet.csproj" />
     <ProjectReference Include="..\XRayBuilder.Core\XRayBuilder.Core.csproj" />
   </ItemGroup>
   <ItemGroup>

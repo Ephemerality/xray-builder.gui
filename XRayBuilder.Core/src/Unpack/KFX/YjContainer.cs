@@ -64,7 +64,7 @@ namespace XRayBuilder.Core.Unpack.KFX
         {
             // This is definitely going to break
             // TODO: Handle other ids too, also consider multiple authors
-            var metadata = Entities.Where(entity => entity.FragmentType == "$490")
+            var metadata = Entities.Where(entity => entity.FragmentType == KfxSymbols.BookMetadata)
                 .Select(entity => entity.Value).OfType<IonStruct>()
                 .Select(s => s.First()).OfType<IonList>()
                 .SelectMany(list => list).OfType<IonStruct>()
@@ -186,7 +186,7 @@ namespace XRayBuilder.Core.Unpack.KFX
         private const int MinHeaderLength = 10;
         private readonly int[] _allowedVersions = { 1 };
 
-        public string[] RawFragmentTypes = { "$417", "$418" };
+        public string[] RawFragmentTypes = { KfxSymbols.Bcrawmedia, KfxSymbols.Bcrawfont };
 
         private string DebuggerDisplay => $"{FragmentType} - {FragmentId}";
 

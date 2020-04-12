@@ -20,7 +20,7 @@ namespace XRayBuilder.Core.Unpack.KFX
         public static ICatalog GetCatalog()
         {
             var catalog = new SimpleCatalog();
-            var yjSymbols = SharedSymbolTable.NewSharedSymbolTable("YJ_symbols", 10, SharedSymbolTable.GetSystem(1), YjSymbols);
+            var yjSymbols = SharedSymbolTable.NewSharedSymbolTable("YJ_symbols", 10, null, YjSymbols);
             catalog.PutTable(yjSymbols);
             return catalog;
         }

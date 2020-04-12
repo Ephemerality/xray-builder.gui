@@ -56,6 +56,25 @@ namespace XRayBuilder.Core.Unpack.KFX
             if (containerInfo == null)
                 throw new Exception("Bad container or something");
 
+            // Get document symbol offsets by their ID, load the symbols, then reload the container
+            var docSymbolOffset = containerInfo.GetById(KfxSymbolTable.KfxSymbolIds[KfxSymbols.BcDocSymbolOffset]);
+            var docSymbolLength = containerInfo.GetById(KfxSymbolTable.KfxSymbolIds[KfxSymbols.BcDocSymbolLength]);
+            ISymbolTable docSymbols = null;
+            if (docSymbolLength.LongValue > 0)
+            {
+                var docSymbolData = new MemoryStream(fs.ReadBytes(docSymbolOffset.IntValue, docSymbolLength.IntValue, SeekOrigin.Begin));
+                loader.Load(docSymbolData, out docSymbols);
+
+                loader = IonLoader.WithReaderOptions(new ReaderOptions
+                {
+                    Encoding = Encoding.UTF8,
+                    Format = ReaderFormat.Detect,
+                    InitialSymbolTable = docSymbols
+                });
+                containerInfoData.Seek(0, SeekOrigin.Begin);
+                containerInfo = loader.LoadSingle<IonStruct>(containerInfoData);
+            }
+
             var containerId = containerInfo.GetField(KfxSymbols.BcContId).StringValue;
 
             var compressionType = containerInfo.GetField(KfxSymbols.BcComprType).IntValue;
@@ -65,15 +84,6 @@ namespace XRayBuilder.Core.Unpack.KFX
             var drmScheme = containerInfo.GetField(KfxSymbols.BcDrmScheme).IntValue;
             if (drmScheme != DefaultDrmScheme)
                 throw new Exception($"Unexpected bcDRMScheme ({drmScheme})");
-
-            var docSymbolOffset = containerInfo.GetField(KfxSymbols.BcDocSymbolOffset);
-            var docSymbolLength = containerInfo.GetField(KfxSymbols.BcDocSymbolLength);
-            ISymbolTable docSymbols = null;
-            if (docSymbolLength.LongValue > 0)
-            {
-                var docSymbolData = new MemoryStream(fs.ReadBytes(docSymbolOffset.IntValue, docSymbolLength.IntValue, SeekOrigin.Begin));
-                loader.Load(docSymbolData, out docSymbols);
-            }
 
             var chunkSize = containerInfo.GetField(KfxSymbols.BcChunkSize).IntValue;
             if (chunkSize != DefaultChunkSize)

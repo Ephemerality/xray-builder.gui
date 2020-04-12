@@ -11,6 +11,7 @@ using Amazon.IonDotnet;
 using Amazon.IonDotnet.Builders;
 using Amazon.IonDotnet.Tree;
 using Amazon.IonDotnet.Tree.Impl;
+using JetBrains.Annotations;
 using XRayBuilder.Core.Libraries.Enumerables.Extensions;
 using XRayBuilder.Core.Libraries.IO.Extensions;
 
@@ -113,57 +114,24 @@ namespace XRayBuilder.Core.Unpack.KFX
 
         public bool RawMlSupported { get; } = false;
 
-        public void GetBookNavigation()
+        [CanBeNull]
+        public IonList GetDefaultToc()
         {
-            var bookNav = Entities.ValueOrDefault<IonList>("$389");
-            var readingOrderId = GetReadingOrderIds().Single();
-            if (bookNav != null)
-            {
-                foreach (var nav in bookNav.OfType<IonStruct>())
-                {
-                    if (nav.GetField(KfxSymbols.ReadingOrderName).SymbolValue.Sid != readingOrderId)
-                        continue;
-                    var navContainers = (IonList) nav.GetField(KfxSymbols.NavContainers);
-                    if (navContainers == null)
-                        continue;
+            var bookNav = Entities.ValueOrDefault<IonList>(KfxSymbols.BookNavigation);
+            if (bookNav == null)
+                return null;
 
-                    //if isinstance(nav_container, IonSymbol):
-                    //  nav_container = self.fragments[YJFragmentKey(ftype = "$391", fid = nav_container)].value
-                    //  inline_nav_containers = False
+            // Find default TOC from nav containers
+            var chapterList = bookNav.OfType<IonStruct>()
+                .Where(nav => nav.GetField(KfxSymbols.ReadingOrderName).StringValue == KfxSymbols.Default)
+                .Select(nav => (IonList) nav.GetField(KfxSymbols.NavContainers))
+                .Where(navContainers => navContainers != null)
+                .SelectMany(navContainers => navContainers.OfType<IonStruct>())
+                .Where(navContainer => navContainer.GetField(KfxSymbols.NavType).StringValue == KfxSymbols.Toc)
+                .Select(toc => (IonList) toc.GetField(KfxSymbols.Entries))
+                .FirstOrDefault();
 
-                    foreach (var navContainer in navContainers.OfType<IonStruct>())
-                    {
-                        if (navContainer.GetField(KfxSymbols.NavType).SymbolValue.Sid != KfxSymbolTable.KfxSymbolIds[KfxSymbols.Toc])
-                            continue;
-                        //var containerName = navContainer.GetById<IonSymbol>(239);
-                        var chapterList = (IonList) navContainer.GetField(KfxSymbols.Entries);
-
-                    }
-                }
-            }
-
-            throw new Exception($"Unable to locate book navigation for reading order {readingOrderId}");
-        }
-
-        public IEnumerable<int> GetReadingOrderIds()
-        {
-            var orders = GetReadingOrders();
-            return orders.OfType<IonStruct>()
-                .Select(order => order.GetField(KfxSymbols.ReadingOrderName)?.SymbolValue.Sid)
-                .Where(id => id != null)
-                .Cast<int>();
-        }
-
-        public IonList GetReadingOrders()
-        {
-            var docData = Entities.SingleOrDefault("$538");
-            if (docData?.Value is IonStruct docStruct)
-                return (IonList) docStruct.GetField(KfxSymbols.ReadingOrders);
-
-            throw new NotImplementedException();
-
-            //metadata = self.fragments.get("$258", first = True)
-            //return [] if metadata is None else metadata.value.get("$169", [])
+            return chapterList;
         }
 
         public void Dispose()

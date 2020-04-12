@@ -23,8 +23,19 @@ namespace XRayBuilder.Core.Unpack.KFX
 
         public IonList FormatCapabilities { get; set; } = IonList.NewNull();
 
+        /// <summary>
+        /// Storyline, Section, DocumentData
+        /// </summary>
         public int[] KfxMainContainerFragmentIdNums = { 259, 260, 538 };
+
+        /// <summary>
+        /// Metadata, ContainerEntityMap, BookMetadata, ContentFeatures
+        /// </summary>
         public int[] KfxMetadataContainerFragmentIdNums = { 258, 419, 490, 585 };
+
+        /// <summary>
+        /// BcRawMedia
+        /// </summary>
         public int[] KfxAttachableContainerFragmentIdNums = { 417 };
 
         public KfxContainerInfo ContainerInfo;

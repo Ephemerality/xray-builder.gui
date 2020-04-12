@@ -1,7 +1,6 @@
 ﻿// Based on KFX handling from jhowell's KFX in/output plugins (https://www.mobileread.com/forums/showthread.php?t=272407)
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -19,7 +18,7 @@ namespace XRayBuilder.Core.Unpack.KFX
 {
     public class YjContainer : IMetadata
     {
-        public EntityCollection Entities { get; set; } = new EntityCollection();
+        protected EntityCollection Entities { get; } = new EntityCollection();
 
         public enum ContainerFormat
         {
@@ -38,6 +37,7 @@ namespace XRayBuilder.Core.Unpack.KFX
             get => false;
             set => throw new NotSupportedException();
         }
+
         public string Asin => Metadata.Asin;
         public string Author => Metadata.Author;
         public string CdeContentType => Metadata.CdeContentType;
@@ -47,6 +47,7 @@ namespace XRayBuilder.Core.Unpack.KFX
         public bool CanModify => false;
 
         private KfxMetadata Metadata { get; set; }
+
         private class KfxMetadata
         {
             public string Asin { get; set; }
@@ -63,18 +64,22 @@ namespace XRayBuilder.Core.Unpack.KFX
 
         protected void SetMetadata()
         {
-            // This is definitely going to break
             // TODO: Handle other ids too, also consider multiple authors
-            var metadata = Entities.Where(entity => entity.FragmentType == KfxSymbols.BookMetadata)
-                .Select(entity => entity.Value).OfType<IonStruct>()
-                .Select(s => s.First()).OfType<IonList>()
-                .SelectMany(list => list).OfType<IonStruct>()
-                .Where(s => ((IonString) s.First()).StringValue == "kindle_title_metadata")
+            var metadata = Entities
+                .ValueOrDefault<IonStruct>(KfxSymbols.BookMetadata)
+                ?.OfType<IonList>()
+                .FirstOrDefault()
+                ?.OfType<IonStruct>()
+                .Where(metadataSet => ((IonString) metadataSet.First()).StringValue == "kindle_title_metadata")
                 .Select(md => (IonList) md.GetField(KfxSymbols.Metadata))
-                .Single()
-                .Cast<IonStruct>()
+                .FirstOrDefault()
+                ?.OfType<IonStruct>()
                 .Where(s => s.GetField(KfxSymbols.Value) is IonString)
-                .ToDictionary(s => s.GetField(KfxSymbols.Key).StringValue, s => s.GetField(KfxSymbols.Value).StringValue);
+                .ToDictionary(metadataValue => metadataValue.GetField(KfxSymbols.Key).StringValue,
+                    metadataValue => metadataValue.GetField(KfxSymbols.Value).StringValue);
+
+            if (metadata == null)
+                throw new Exception("Metadata not found");
 
             Metadata = new KfxMetadata
             {
@@ -94,7 +99,9 @@ namespace XRayBuilder.Core.Unpack.KFX
         /// <summary>
         /// Not needed as we will crash during load if DRM is detected
         /// </summary>
-        public void CheckDrm() { }
+        public void CheckDrm()
+        {
+        }
 
         public byte[] GetRawMl()
         {
@@ -152,9 +159,9 @@ namespace XRayBuilder.Core.Unpack.KFX
 
         private const string EntitySignature = "ENTY";
         private const int MinHeaderLength = 10;
-        private readonly int[] _allowedVersions = { 1 };
+        private readonly int[] _allowedVersions = {1};
 
-        public string[] RawFragmentTypes = { KfxSymbols.Bcrawmedia, KfxSymbols.Bcrawfont };
+        private readonly string[] RawFragmentTypes = {KfxSymbols.Bcrawmedia, KfxSymbols.Bcrawfont};
 
         private string DebuggerDisplay => $"{FragmentType} - {FragmentId}";
 
@@ -175,7 +182,7 @@ namespace XRayBuilder.Core.Unpack.KFX
 
             // Duplicated in KfxContainer
             // 10 = number of bytes read so far
-            var containerInfoData = new MemoryStream(stream.ReadBytes((int)Length - 10));
+            var containerInfoData = new MemoryStream(stream.ReadBytes((int) Length - 10));
             var entityInfo = loader.LoadSingle<IonStruct>(containerInfoData);
             if (entityInfo == null)
                 throw new Exception("Bad container or something");

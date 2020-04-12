@@ -1,6 +1,4 @@
 ﻿using System.IO;
-using System.Linq;
-using Amazon.IonDotnet.Tree.Impl;
 using NUnit.Framework;
 using XRayBuilder.Core.Unpack.KFX;
 

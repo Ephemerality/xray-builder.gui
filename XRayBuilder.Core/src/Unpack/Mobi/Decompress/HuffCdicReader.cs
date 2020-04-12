@@ -17,10 +17,10 @@ namespace XRayBuilder.Core.Unpack.Mobi.Decompress
         {
             try
             {
-                var huffmanRecordOffset = (int) mobiHeader.HuffmanRecordOffset;
+                var huffmanRecordOffset = mobiHeader.HuffmanRecordOffset;
                 var huffSect = headerRecords[huffmanRecordOffset];
                 loadHuff(huffSect);
-                var recCount = (int)mobiHeader.HuffmanRecordCount;
+                var recCount = mobiHeader.HuffmanRecordCount;
                 for (var i = 1; i < recCount; i++)
                 {
                     huffSect = headerRecords[huffmanRecordOffset + i];

@@ -21,24 +21,24 @@ namespace XRayBuilder.Core.Unpack.KFX
         public const int DefaultDrmScheme = 0;
         private const int DefaultChunkSize = 4096;
 
-        public IonList FormatCapabilities { get; set; } = IonList.NewNull();
+        private IonList FormatCapabilities { get; set; } = IonList.NewNull();
 
         /// <summary>
         /// Storyline, Section, DocumentData
         /// </summary>
-        public int[] KfxMainContainerFragmentIdNums = { 259, 260, 538 };
+        private readonly int[] _kfxMainContainerFragmentIdNums = { 259, 260, 538 };
 
         /// <summary>
         /// Metadata, ContainerEntityMap, BookMetadata, ContentFeatures
         /// </summary>
-        public int[] KfxMetadataContainerFragmentIdNums = { 258, 419, 490, 585 };
+        private readonly int[] _kfxMetadataContainerFragmentIdNums = { 258, 419, 490, 585 };
 
         /// <summary>
         /// BcRawMedia
         /// </summary>
-        public int[] KfxAttachableContainerFragmentIdNums = { 417 };
+        private readonly int[] _kfxAttachableContainerFragmentIdNums = { 417 };
 
-        public KfxContainerInfo ContainerInfo;
+        public readonly KfxContainerInfo ContainerInfo;
 
         public KfxContainer(Stream fs)
         {
@@ -132,11 +132,11 @@ namespace XRayBuilder.Core.Unpack.KFX
             }
 
             ContainerFormat containerFormat;
-            if (typeNums.Intersect(KfxMainContainerFragmentIdNums).Any())
+            if (typeNums.Intersect(_kfxMainContainerFragmentIdNums).Any())
                 containerFormat = ContainerFormat.KfxMain;
-            else if (typeNums.Intersect(KfxMetadataContainerFragmentIdNums).Any())
+            else if (typeNums.Intersect(_kfxMetadataContainerFragmentIdNums).Any())
                 containerFormat = ContainerFormat.KfxMetadata;
-            else if (typeNums.Intersect(KfxAttachableContainerFragmentIdNums).Any())
+            else if (typeNums.Intersect(_kfxAttachableContainerFragmentIdNums).Any())
                 containerFormat = ContainerFormat.KfxAttachable;
             else
                 containerFormat = ContainerFormat.KfxUnknown;

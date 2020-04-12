@@ -25,7 +25,7 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
         }
 
         /// <summary>
-        /// Read the chapters or search for them and apply them to the given <param name="xray"></param> 
+        /// Read the chapters or search for them and apply them to the given <param name="xray"></param>
         /// </summary>
         // TODO Do something about unattended/dialog stuff
         public void HandleChapters(XRay xray, string asin, long mlLen, HtmlDocument doc, string rawMl, bool overwriteChapters, SafeShowDelegate safeShow, bool unattended, bool enableEdit)

@@ -1,24 +1,19 @@
 ﻿// Based on KFX handling from jhowell's KFX in/output plugins (https://www.mobileread.com/forums/showthread.php?t=272407)
 
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using Amazon.IonDotnet;
-using Amazon.IonDotnet.Builders;
-using Amazon.IonDotnet.Tree;
 using Amazon.IonDotnet.Tree.Impl;
 using JetBrains.Annotations;
 using XRayBuilder.Core.Libraries.Enumerables.Extensions;
-using XRayBuilder.Core.Libraries.IO.Extensions;
 
 namespace XRayBuilder.Core.Unpack.KFX
 {
     public class YjContainer : IMetadata
     {
-        protected EntityCollection Entities { get; } = new EntityCollection();
+        public EntityCollection Entities { get; } = new EntityCollection();
 
         public enum ContainerFormat
         {
@@ -141,74 +136,29 @@ namespace XRayBuilder.Core.Unpack.KFX
             return chapterList;
         }
 
+        public IEnumerable<string> GetOrderedSectionNames()
+        {
+            var defaultReadingOrder = GetReadingOrders().FirstOrDefault();
+
+            return defaultReadingOrder != null
+                ? ((IonList) defaultReadingOrder.GetField(KfxSymbols.Sections))
+                    .Select(section => section.StringValue)
+                : Enumerable.Empty<string>();
+        }
+
+        public IonList GetReadingOrders()
+        {
+            var docData = Entities.ValueOrDefault<IonStruct>(KfxSymbols.DocumentData);
+            if (docData != null)
+                return (IonList) docData.GetField(KfxSymbols.ReadingOrders);
+                
+            //todo find a case where the readingorders are stored in aa metadata fragment
+            throw new NotSupportedException();
+        }
+
         public void Dispose()
         {
             CoverImage?.Dispose();
-        }
-    }
-
-    [DebuggerDisplay("{DebuggerDisplay,nq}")]
-    public class Entity
-    {
-        public string FragmentId { get; set; }
-        public string FragmentType { get; set; }
-        public string Signature { get; }
-        public ushort Version { get; }
-        public uint Length { get; }
-        public IIonValue Value { get; }
-
-        private const string EntitySignature = "ENTY";
-        private const int MinHeaderLength = 10;
-        private readonly int[] _allowedVersions = {1};
-
-        private readonly string[] RawFragmentTypes = {KfxSymbols.Bcrawmedia, KfxSymbols.Bcrawfont};
-
-        private string DebuggerDisplay => $"{FragmentType} - {FragmentId}";
-
-        public Entity(Stream stream, int id, int type, ISymbolTable symbolTable, IonLoader loader)
-        {
-            using var reader = new BinaryReader(stream, Encoding.UTF8, true);
-            Signature = Encoding.ASCII.GetString(reader.ReadBytes(4));
-            if (Signature != EntitySignature)
-                throw new Exception("Invalid signature");
-
-            Version = reader.ReadUInt16();
-            if (!_allowedVersions.Contains(Version))
-                throw new Exception($"Version not supported ({Version})");
-
-            Length = reader.ReadUInt32();
-            if (Length < MinHeaderLength)
-                throw new Exception("Header too short");
-
-            // Duplicated in KfxContainer
-            // 10 = number of bytes read so far
-            var containerInfoData = new MemoryStream(stream.ReadBytes((int) Length - 10));
-            var entityInfo = loader.LoadSingle<IonStruct>(containerInfoData);
-            if (entityInfo == null)
-                throw new Exception("Bad container or something");
-
-            var compressionType = entityInfo.GetField(KfxSymbols.BcComprType).IntValue;
-            if (compressionType != KfxContainer.DefaultCompressionType)
-                throw new Exception($"Unexpected bcComprType ({compressionType})");
-
-            var drmScheme = entityInfo.GetField(KfxSymbols.BcDrmScheme).IntValue;
-            if (drmScheme != KfxContainer.DefaultDrmScheme)
-                throw new Exception($"Unexpected bcDRMScheme ({drmScheme})");
-
-            FragmentId = symbolTable.FindKnownSymbol(id);
-            FragmentType = symbolTable.FindKnownSymbol(type);
-
-            Value = RawFragmentTypes.Contains(FragmentType)
-                ? new IonBlob(new ReadOnlySpan<byte>(stream.ReadToEnd()))
-                : ((IonDatagram) loader.Load(stream.ReadToEnd())).Single();
-
-            // Skipping annotation handling for now
-
-            //if ftype == fid and ftype in ROOT_FRAGMENT_TYPES and not self.pure:
-
-            //fid = "$348"
-
-            //return YJFragment(fid = fid if fid != "$348" else None, ftype = ftype, value = self.value)
         }
     }
 }

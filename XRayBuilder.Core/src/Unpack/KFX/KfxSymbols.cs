@@ -269,7 +269,7 @@ namespace XRayBuilder.Core.Unpack.KFX
         public const string Plugin = nameof(Plugin);
         public const string Knockout = nameof(Knockout);
         public const string List = nameof(List);
-        public const string Listitem = nameof(Listitem);
+        public const string ListItem = nameof(ListItem);
         public const string Table = nameof(Table);
         public const string TableRow = nameof(TableRow);
         public const string Sidebar = nameof(Sidebar);

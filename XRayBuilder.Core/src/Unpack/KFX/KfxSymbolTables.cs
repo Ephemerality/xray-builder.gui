@@ -294,7 +294,7 @@ namespace XRayBuilder.Core.Unpack.KFX
             KfxSymbols.Plugin,
             KfxSymbols.Knockout,
             KfxSymbols.List,
-            KfxSymbols.Listitem,
+            KfxSymbols.ListItem,
             KfxSymbols.Table,
             KfxSymbols.TableRow,
             KfxSymbols.Sidebar,

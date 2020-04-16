@@ -22,9 +22,12 @@ using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
 using XRayBuilder.Core.Model;
 using XRayBuilder.Core.Unpack;
+using XRayBuilder.Core.Unpack.KFX;
+using XRayBuilder.Core.Unpack.Mobi;
 using XRayBuilder.Core.XRay;
 using XRayBuilder.Core.XRay.Logic;
 using XRayBuilder.Core.XRay.Logic.Aliases;
+using XRayBuilder.Core.XRay.Logic.Chapters;
 using XRayBuilder.Core.XRay.Logic.Export;
 using XRayBuilder.Core.XRay.Logic.Terms;
 using XRayBuilder.Core.XRay.Model.Export;
@@ -49,6 +52,9 @@ namespace XRayBuilderGUI.UI
         private readonly IPreviewDataExporter _previewDataExporter;
         private readonly ITermsService _termsService;
         private readonly Container _diContainer;
+        // TODO Different type handling should come from some sort of factory or whatever
+        private readonly KfxChaptersService _kfxChaptersService;
+        private readonly KfxXrayService _kfxXrayService;
 
         // TODO: Fix up these paths
         private string EaPath = "";
@@ -68,7 +74,9 @@ namespace XRayBuilderGUI.UI
             IPreviewDataExporter previewDataExporter,
             XRayExporterFactory xrayExporterFactory,
             IXRayService xrayService,
-            ITermsService termsService)
+            ITermsService termsService,
+            KfxChaptersService kfxChaptersService,
+            KfxXrayService kfxXrayService)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
@@ -84,6 +92,8 @@ namespace XRayBuilderGUI.UI
             _xrayExporterFactory = xrayExporterFactory;
             _xrayService = xrayService;
             _termsService = termsService;
+            _kfxChaptersService = kfxChaptersService;
+            _kfxXrayService = kfxXrayService;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
         }
@@ -300,9 +310,24 @@ namespace XRayBuilderGUI.UI
 
                 _logger.Log("Initial X-Ray built, adding locations and chapters...");
                 //Expand the X-Ray file from the unpacked mobi
-                // ReSharper disable twice AccessToDisposedClosure
-                await Task.Run(() => _xrayService.ExpandFromRawMl(xray, metadata, metadata.GetRawMlStream(), _settings.enableEdit, _settings.useNewVersion, _settings.skipNoLikes, _settings.minClipLen, _settings.overwriteChapters, SafeShow, _progress, _cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion))
-                    .ConfigureAwait(false);
+                Task buildTask;
+                switch (metadata)
+                {
+                    case Metadata _:
+                        // ReSharper disable twice AccessToDisposedClosure
+                        buildTask = Task.Run(() => _xrayService.ExpandFromRawMl(xray, metadata, metadata.GetRawMlStream(), _settings.enableEdit, _settings.useNewVersion, _settings.skipNoLikes, _settings.minClipLen, _settings.overwriteChapters, SafeShow, _progress, _cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion));
+                        break;
+                    case KfxContainer kfx:
+                        buildTask = Task.Run(() =>
+                        {
+                            _kfxChaptersService.AddChapters(xray, kfx);
+                            _kfxXrayService.AddLocations(xray, kfx);
+                        });
+                        break;
+                    default:
+                        throw new NotSupportedException();
+                }
+                await buildTask.ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {

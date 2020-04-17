@@ -26,7 +26,41 @@ namespace XRayBuilder.Core.Unpack.KFX
         }
 
         public long RawMlSize { get; private set; }
-        public Image CoverImage { get; private set; }
+
+        public Image CoverImage
+        {
+            get
+            {
+                // todo move this out of the property
+                if (Metadata?.CoverImage == null)
+                    return null;
+
+                var resourceInfo = Entities
+                    .FirstOrDefault(f => f.FragmentType == KfxSymbols.ExternalResource && f.FragmentId == Metadata.CoverImage)
+                    ?.Value;
+                if (resourceInfo == null)
+                    return null;
+
+                var resourceId = resourceInfo.GetField(KfxSymbols.Location).StringValue;
+                var format = resourceInfo.GetField(KfxSymbols.Format).StringValue;
+
+                var imageFragment = Entities
+                    .FirstOrDefault(f => f.FragmentType == KfxSymbols.Bcrawmedia && f.FragmentId == resourceId)
+                    ?.Value;
+                if (imageFragment == null || !(imageFragment is IonBlob blob))
+                    return null;
+
+                try
+                {
+                    using var ms = new MemoryStream(blob.Bytes().ToArray());
+                    return new Bitmap(ms);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Unsupported image format: {format}", e);
+                }
+            }
+        }
 
         public bool IsAzw3
         {

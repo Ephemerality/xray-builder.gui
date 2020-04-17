@@ -42,6 +42,18 @@ namespace XRayBuilder.Test
             Assert.AreEqual(tocLength, toc.Count);
         }
 
+        [TestCase(@"testfiles\Fire & Blood (A Song of Ice and - George R. R. Martin.kfx", 1920, 1263)]
+        [TestCase(@"testfiles\Frankenstein - Mary W. Shelley.kfx", 800, 600)]
+        public void CoverImageTest(string kfxFile, int height, int width)
+        {
+            var fs = new FileStream(kfxFile, FileMode.Open, FileAccess.Read);
+            var kfx = new KfxContainer(fs);
+            var coverImage = kfx.CoverImage;
+            Assert.NotNull(coverImage);
+            Assert.AreEqual(height, coverImage.Height);
+            Assert.AreEqual(width, coverImage.Width);
+        }
+
         [TestCase(@"testfiles\Fire & Blood (A Song of Ice and - George R. R. Martin.kfx", "Baelon", 6213, 799606, 3274, 34956246)]
         [TestCase(@"testfiles\Frankenstein - Mary W. Shelley.kfx", "Frankenstein", 3, 415895, 757, 6457329)]
         public void ContentTest(string kfxFile, string search, int firstOffset, int lastOffset, int chunkCount, long sum)

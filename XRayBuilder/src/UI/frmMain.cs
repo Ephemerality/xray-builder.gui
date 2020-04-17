@@ -27,7 +27,6 @@ using XRayBuilder.Core.Unpack.Mobi;
 using XRayBuilder.Core.XRay;
 using XRayBuilder.Core.XRay.Logic;
 using XRayBuilder.Core.XRay.Logic.Aliases;
-using XRayBuilder.Core.XRay.Logic.Chapters;
 using XRayBuilder.Core.XRay.Logic.Export;
 using XRayBuilder.Core.XRay.Logic.Terms;
 using XRayBuilder.Core.XRay.Model.Export;
@@ -53,7 +52,6 @@ namespace XRayBuilderGUI.UI
         private readonly ITermsService _termsService;
         private readonly Container _diContainer;
         // TODO Different type handling should come from some sort of factory or whatever
-        private readonly KfxChaptersService _kfxChaptersService;
         private readonly KfxXrayService _kfxXrayService;
 
         // TODO: Fix up these paths
@@ -75,7 +73,6 @@ namespace XRayBuilderGUI.UI
             XRayExporterFactory xrayExporterFactory,
             IXRayService xrayService,
             ITermsService termsService,
-            KfxChaptersService kfxChaptersService,
             KfxXrayService kfxXrayService)
         {
             InitializeComponent();
@@ -92,7 +89,6 @@ namespace XRayBuilderGUI.UI
             _xrayExporterFactory = xrayExporterFactory;
             _xrayService = xrayService;
             _termsService = termsService;
-            _kfxChaptersService = kfxChaptersService;
             _kfxXrayService = kfxXrayService;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
@@ -321,11 +317,7 @@ namespace XRayBuilderGUI.UI
                         if (!_settings.useNewVersion)
                             throw new Exception("Building the old format of X-Ray is not supported with KFX books");
 
-                        buildTask = Task.Run(() =>
-                        {
-                            _kfxChaptersService.AddChapters(xray, kfx);
-                            _kfxXrayService.AddLocations(xray, kfx, _settings.skipNoLikes, _settings.minClipLen, _progress, _cancelTokens.Token);
-                        });
+                        buildTask = Task.Run(() => _kfxXrayService.AddLocations(xray, kfx, _settings.skipNoLikes, _settings.minClipLen, _progress, _cancelTokens.Token));
                         break;
                     default:
                         throw new NotSupportedException();

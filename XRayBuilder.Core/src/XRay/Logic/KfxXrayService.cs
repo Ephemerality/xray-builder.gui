@@ -37,6 +37,13 @@ namespace XRayBuilder.Core.XRay.Logic
         {
             _logger.Log("Scanning book content...");
             var contentChunks = kfx.GetContentChunks();
+
+            // Set start and end of content
+            // TODO Figure out how to identify the first *actual* bit of content after the TOC
+            var last = contentChunks.Last();
+            xray.Srl = 1;
+            xray.Erl = last.Pid + last.Length - 1;
+
             var offset = 0;
             var excerptId = 0;
             progress?.Set(0, contentChunks.Count);

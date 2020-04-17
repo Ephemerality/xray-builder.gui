@@ -42,9 +42,11 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, _file, null, CancellationToken.None);
             xray.Unattended = true;
             _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath, true, false);
-            var metadata = new Metadata(new FileStream(book.Bookpath, FileMode.Open, FileAccess.Read));
+            using var fs = new FileStream(book.Bookpath, FileMode.Open, FileAccess.Read);
+            var metadata = new Metadata(fs);
             _aliasesRepository.LoadAliasesForXRay(xray);
-            _xrayService.ExpandFromRawMl(xray, metadata, new FileStream(book.Rawml, FileMode.Open), false, true, true, 0, true, null, null, CancellationToken.None, false, false);
+            using var bookFs = new FileStream(book.Rawml, FileMode.Open);
+            _xrayService.ExpandFromRawMl(xray, metadata, bookFs, false, false, true, 0, true, null, null, CancellationToken.None, false, false);
             string filename = xray.XRayName();
             string outpath = Path.Combine(Environment.CurrentDirectory, "out", filename);
             xray.CreatedAt = new DateTime(2019, 11, 2, 13, 19, 18, DateTimeKind.Utc);

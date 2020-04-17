@@ -55,12 +55,23 @@ namespace XRayBuilder.Test
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
-        public async Task XRayXMLExpandRawMLTest(Book book)
+        public async Task XRayXMLExpandRawMLNewVersionTest(Book book)
         {
             var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, _file, null, CancellationToken.None);
             xray.Unattended = true;
             var fakeMetadata = new Metadata();
-            _xrayService.ExpandFromRawMl(xray, fakeMetadata, new FileStream(book.Rawml, FileMode.Open), false, true, true, 0, true, null, null, CancellationToken.None, false, false);
+            using var fs = new FileStream(book.Rawml, FileMode.Open);
+            _xrayService.ExpandFromRawMl(xray, fakeMetadata, fs, false, true, true, 0, true, null, null, CancellationToken.None, false, false);
+        }
+
+        [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
+        public async Task XRayXMLExpandRawMLOldVersionTest(Book book)
+        {
+            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, _file, null, CancellationToken.None);
+            xray.Unattended = true;
+            var fakeMetadata = new Metadata();
+            using var fs = new FileStream(book.Rawml, FileMode.Open);
+            _xrayService.ExpandFromRawMl(xray, fakeMetadata, fs, false, false, true, 0, true, null, null, CancellationToken.None, false, false);
             FileAssert.AreEqual($"ext\\{book.Asin}.chapters", $"testfiles\\{book.Asin}.chapters");
         }
     }

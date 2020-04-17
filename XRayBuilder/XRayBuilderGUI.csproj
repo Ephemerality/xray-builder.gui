@@ -240,9 +240,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="doc\GNU General Public License.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="doc\Readme.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

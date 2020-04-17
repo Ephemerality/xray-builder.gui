@@ -38,6 +38,7 @@ namespace XRayBuilder.Core.XRay.Artifacts
 
         [XmlIgnore]
         [JsonIgnore]
+        // TODO This is dumb
         public List<int[]> Occurrences { get; set; } = new List<int[]>();
 
         [JsonIgnore]

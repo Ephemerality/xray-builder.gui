@@ -1,6 +1,6 @@
 namespace XRayBuilder.Core.Unpack.KFX
 {
-    public class ContentChunk
+    public sealed class ContentChunk
     {
         public string Name { get; set; }
         public bool MatchZeroLen { get; set; }

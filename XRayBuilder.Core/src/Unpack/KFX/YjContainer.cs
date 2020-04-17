@@ -162,7 +162,7 @@ namespace XRayBuilder.Core.Unpack.KFX
         /// Translated more or less directly from the KFX Input plugin by jhowell, yj_position_location.py
         /// </summary>
         /// TODO Tidy up, remove double-nested local functions
-        public IEnumerable<ContentChunk> GetContentChunks()
+        public List<ContentChunk> GetContentChunks()
         {
             var posInfo = new List<ContentChunk>();
             var sectionPosInfo = new List<ContentChunk>();
@@ -280,15 +280,13 @@ namespace XRayBuilder.Core.Unpack.KFX
 
                         if (ionStruct.ContainsField(KfxSymbols.Content) && !new[] {KfxSymbols.AltText, KfxSymbols.Mathml}.Contains(annotationType?.StringValue))
                         {
-                            foreach (var contentStruct in ionStruct.Where(s => s.FieldNameSymbol.Text == KfxSymbols.Content).OfType<IonStruct>())
-                            {
-                                var content = Entities
-                                    .First(fragment => fragment.FragmentType == KfxSymbols.Content && fragment.FragmentId == contentStruct.GetField("name").StringValue)
-                                    .Value
-                                    .GetField(KfxSymbols.ContentList)
-                                    .GetElementAt(contentStruct.GetField(KfxSymbols.Index).IntValue);
-                                HaveContent(currentEid, content.StringValue.Length, advance, contentStruct.GetField("name").StringValue, content.StringValue);
-                            }
+                            var contentStruct = ionStruct.GetField(KfxSymbols.Content);
+                            var content = Entities
+                                .First(fragment => fragment.FragmentType == KfxSymbols.Content && fragment.FragmentId == contentStruct.GetField("name").StringValue)
+                                .Value
+                                .GetField(KfxSymbols.ContentList)
+                                .GetElementAt(contentStruct.GetField(KfxSymbols.Index).IntValue);
+                            HaveContent(currentEid, content.StringValue.Length, advance, contentStruct.GetField("name").StringValue, content.StringValue);
                         }
 
                         if (ionStruct.ContainsField(KfxSymbols.Annotations))
@@ -307,18 +305,13 @@ namespace XRayBuilder.Core.Unpack.KFX
                             else
                                 ExtractPositionData(contentListValue, currentEid, KfxSymbols.ContentList, null, null, advance);
                         }
-                        // if "$146" in data:
-                            // if typ == "$274":
-                            //     extract_position_data(data["$146"], current_eid, typ, None, None, advance)
-                            // elif typ == "$272":
-                            //     extract_position_data(data["$146"], None, "$146", None, None, False)
-                            // else:
-                            //     extract_position_data(data["$146"], current_eid, "$146", None, None, advance)
 
-                        // if "$145" in data and annot_type not in ["$584", "$690"]:
-                        //     fv = data["$145"]
-                        //     if ion_type(fv) is not IonStruct:
-                        //         extract_position_data(fv, current_eid, "$145", None, None, advance)
+                        if (ionStruct.ContainsField(KfxSymbols.Content) && !new[] {KfxSymbols.AltText, KfxSymbols.Mathml}.Contains(annotationType?.StringValue))
+                        {
+                            var contentValue = ionStruct.GetField(KfxSymbols.Content);
+                            if (!(contentValue is IonStruct))
+                                ExtractPositionData(contentValue, currentEid, KfxSymbols.Content, null, null, advance);
+                        }
 
                         if (ionStruct.ContainsField(KfxSymbols.StoryName) && contentKey != KfxSymbols.Storyline)
                         {

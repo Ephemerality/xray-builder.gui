@@ -77,8 +77,6 @@ namespace XRayBuilder.Core.XRay.Logic
                         }
 
                         var highlightOccurrences = highlights.SelectMany(highlightGroup => highlightGroup.Select(highlight => new[] {highlightGroup.Key, highlight}));
-                        if (highlightOccurrences.Any(asdasd => asdasd.Contains(507347)))
-                            break;
                         character.Occurrences.AddRange(highlightOccurrences);
 
                         // Check excerpts

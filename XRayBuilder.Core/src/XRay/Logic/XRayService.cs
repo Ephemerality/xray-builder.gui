@@ -125,10 +125,12 @@ namespace XRayBuilder.Core.XRay.Logic
             var web = new HtmlDocument();
             web.Load(rawMlStream, _encoding);
 
-            rawMlStream.Seek(0, SeekOrigin.Begin);
-            // TODO: passing stream, doc, and contents probably not necessary)
-            using (var streamReader = new StreamReader(rawMlStream, Encoding.UTF8))
+            // Only load chapters when building the old format
+            if (!useNewVersion)
             {
+                rawMlStream.Seek(0, SeekOrigin.Begin);
+                // TODO: passing stream, doc, and contents probably not necessary)
+                using var streamReader = new StreamReader(rawMlStream, Encoding.UTF8);
                 var readContents = streamReader.ReadToEnd();
                 var utf8Doc = new HtmlDocument();
                 utf8Doc.LoadHtml(readContents);

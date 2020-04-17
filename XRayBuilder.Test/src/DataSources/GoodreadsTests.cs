@@ -72,7 +72,8 @@ namespace XRayBuilder.Test.DataSources
         public async Task SearchBookAsinTest()
         {
             var result = await _goodreads.SearchBookASINById("13497");
-            Assert.AreEqual("B000FCKGPC", result);
+            var possibleAsins = new[] {"B000FCKGPC", "BINU9MFSUG"};
+            Assert.IsTrue(possibleAsins.Contains(result), $"{result} was not expected");
         }
 
         [Test]

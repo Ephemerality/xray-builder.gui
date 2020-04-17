@@ -318,10 +318,13 @@ namespace XRayBuilderGUI.UI
                         buildTask = Task.Run(() => _xrayService.ExpandFromRawMl(xray, metadata, metadata.GetRawMlStream(), _settings.enableEdit, _settings.useNewVersion, _settings.skipNoLikes, _settings.minClipLen, _settings.overwriteChapters, SafeShow, _progress, _cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion));
                         break;
                     case KfxContainer kfx:
+                        if (!_settings.useNewVersion)
+                            throw new Exception("Building the old format of X-Ray is not supported with KFX books");
+
                         buildTask = Task.Run(() =>
                         {
                             _kfxChaptersService.AddChapters(xray, kfx);
-                            _kfxXrayService.AddLocations(xray, kfx);
+                            _kfxXrayService.AddLocations(xray, kfx, _settings.skipNoLikes, _settings.minClipLen, _progress, _cancelTokens.Token);
                         });
                         break;
                     default:

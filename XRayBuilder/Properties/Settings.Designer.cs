@@ -418,5 +418,14 @@ namespace XRayBuilderGUI.Properties {
                 this["outputToSidecar"] = value;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string sentryDest {
+            get {
+                return ((string)(this["sentryDest"]));
+            }
+        }
     }
 }

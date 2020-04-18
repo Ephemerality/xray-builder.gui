@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using Sentry;
 using SimpleInjector;
 using XRayBuilder.Core.DataSources.Amazon.Bootstrap;
 using XRayBuilder.Core.DataSources.Secondary.Bootstrap;
@@ -25,6 +26,7 @@ namespace XRayBuilderGUI
         [STAThread]
         private static void Main()
         {
+            using var _ = SentrySdk.Init(Properties.Settings.Default.sentryDest);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Bootstrap();

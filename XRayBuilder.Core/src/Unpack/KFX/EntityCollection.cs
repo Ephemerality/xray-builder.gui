@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Amazon.IonDotnet.Tree;
 
 namespace XRayBuilder.Core.Unpack.KFX
 {
@@ -31,6 +32,25 @@ namespace XRayBuilder.Core.Unpack.KFX
         public T ValueOrDefault<T>(string fragmentType)
         {
             var entity = SingleOrDefault(fragmentType);
+            if (entity?.Value is T value)
+                return value;
+
+            return default;
+        }
+
+        public IIonValue ValueOrDefault(string fragmentType, string fragmentId)
+        {
+            return _entities.SingleOrDefault(e => e.FragmentType == fragmentType && e.FragmentId == fragmentId)?.Value;
+        }
+
+        public IIonValue Value(string fragmentType, string fragmentId)
+        {
+            return _entities.Single(e => e.FragmentType == fragmentType && e.FragmentId == fragmentId).Value;
+        }
+
+        public T ValueOrDefault<T>(string fragmentType, string fragmentId)
+        {
+            var entity = _entities.SingleOrDefault(e => e.FragmentType == fragmentType && e.FragmentId == fragmentId);
             if (entity?.Value is T value)
                 return value;
 

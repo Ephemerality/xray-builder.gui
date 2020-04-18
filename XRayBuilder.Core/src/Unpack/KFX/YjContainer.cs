@@ -94,17 +94,12 @@ namespace XRayBuilder.Core.Unpack.KFX
 
         protected void SetMetadata()
         {
-            // TODO: Handle other ids too, also consider multiple authors
             var metadata = Entities
                 .ValueOrDefault<IonStruct>(KfxSymbols.BookMetadata)
-                ?.OfType<IonList>()
-                .FirstOrDefault()
-                ?.OfType<IonStruct>()
-                .Where(metadataSet => ((IonString) metadataSet.First()).StringValue == "kindle_title_metadata")
-                .Select(md => (IonList) md.GetField(KfxSymbols.Metadata))
-                .FirstOrDefault()
-                ?.OfType<IonStruct>()
-                .Where(s => s.GetField(KfxSymbols.Value) is IonString)
+                ?.GetField<IonList>(KfxSymbols.CategorisedMetadata)
+                ?.FirstOrDefault(md => md.GetField(KfxSymbols.Category)?.StringValue == "kindle_title_metadata")
+                ?.GetField<IonList>(KfxSymbols.Metadata)
+                ?.Where(kvp => kvp.GetField(KfxSymbols.Value) is IonString)
                 .ToDictionary(metadataValue => metadataValue.GetField(KfxSymbols.Key).StringValue,
                     metadataValue => metadataValue.GetField(KfxSymbols.Value).StringValue);
 
@@ -146,57 +141,45 @@ namespace XRayBuilder.Core.Unpack.KFX
         }
 
         public void UpdateCdeContentType() => throw new NotSupportedException();
-        
+
         public void Save(Stream stream) => throw new NotSupportedException();
         public void SetAsin(string asin) => throw new NotSupportedException();
+
         public int? GetPageCount()
             => Entities
                 .ValueOrDefault<IonList>(KfxSymbols.BookNavigation)
-                ?.Select(nav => (IonList) nav.GetField(KfxSymbols.NavContainers))
-                .Where(navContainers => navContainers != null)
-                .SelectMany(navContainers => navContainers.OfType<IonStruct>())
-                .Where(navContainer => navContainer.GetField(KfxSymbols.NavType).StringValue == KfxSymbols.PageList)
-                .Select(toc => (IonList) toc.GetField(KfxSymbols.Entries))
-                .FirstOrDefault()
+                ?.FirstOrDefault(nav => nav.GetField(KfxSymbols.ReadingOrderName).StringValue == KfxSymbols.Default)
+                ?.GetField<IonList>(KfxSymbols.NavContainers)
+                ?.FirstOrDefault(navContainer => navContainer.GetField(KfxSymbols.NavType).StringValue == KfxSymbols.PageList)
+                ?.GetField(KfxSymbols.Entries)
                 ?.Count;
 
         public bool RawMlSupported { get; } = false;
 
         [CanBeNull]
         public IonList GetDefaultToc()
-        {
-            var bookNav = Entities.ValueOrDefault<IonList>(KfxSymbols.BookNavigation);
-            if (bookNav == null)
-                return null;
+            => Entities
+                .ValueOrDefault<IonList>(KfxSymbols.BookNavigation)
+                ?.FirstOrDefault(nav => nav.GetField(KfxSymbols.ReadingOrderName).StringValue == KfxSymbols.Default)
+                ?.GetField<IonList>(KfxSymbols.NavContainers)
+                ?.FirstOrDefault(navContainer => navContainer.GetField(KfxSymbols.NavType).StringValue == KfxSymbols.Toc)
+                ?.GetField<IonList>(KfxSymbols.Entries);
 
-            // Find default TOC from nav containers
-            var chapterList = bookNav.OfType<IonStruct>()
-                .Where(nav => nav.GetField(KfxSymbols.ReadingOrderName).StringValue == KfxSymbols.Default)
-                .Select(nav => (IonList) nav.GetField(KfxSymbols.NavContainers))
-                .Where(navContainers => navContainers != null)
-                .SelectMany(navContainers => navContainers.OfType<IonStruct>())
-                .Where(navContainer => navContainer.GetField(KfxSymbols.NavType).StringValue == KfxSymbols.Toc)
-                .Select(toc => (IonList) toc.GetField(KfxSymbols.Entries))
-                .FirstOrDefault();
-
-            return chapterList;
-        }
-
-        public IEnumerable<string> GetOrderedSectionNames()
+        private IEnumerable<string> GetOrderedSectionNames()
         {
             var defaultReadingOrder = GetReadingOrders().FirstOrDefault();
 
             return defaultReadingOrder != null
-                ? ((IonList) defaultReadingOrder.GetField(KfxSymbols.Sections))
+                ? defaultReadingOrder.GetField<IonList>(KfxSymbols.Sections)
                     .Select(section => section.StringValue)
                 : Enumerable.Empty<string>();
         }
 
-        public IonList GetReadingOrders()
+        private IonList GetReadingOrders()
         {
             var docData = Entities.ValueOrDefault<IonStruct>(KfxSymbols.DocumentData);
             if (docData != null)
-                return (IonList) docData.GetField(KfxSymbols.ReadingOrders);
+                return docData.GetField<IonList>(KfxSymbols.ReadingOrders);
 
             //todo find a case where the readingorders are stored in a metadata fragment
             throw new NotSupportedException();
@@ -273,7 +256,7 @@ namespace XRayBuilder.Core.Unpack.KFX
                             var valueToExtract = v;
                             if (new[] {KfxSymbols.ContentList, KfxSymbols.Plugin}.Contains(contentKey) && v is IonSymbol listSymbol) // todo && is_kpf_prepub
                                 // todo confirm this actually works
-                                valueToExtract = Entities.First(frag => frag.FragmentType == KfxSymbols.Structure && frag.FragmentId == listSymbol.SymbolValue.Text).Value;
+                                valueToExtract = Entities.Value(KfxSymbols.Structure, listSymbol.SymbolValue.Text);
                             ExtractPositionData(valueToExtract, currentEid, contentKey, i, ionList.Count - 1, advance);
                         }
                     }
@@ -327,18 +310,18 @@ namespace XRayBuilder.Core.Unpack.KFX
                         {
                             var contentStruct = ionStruct.GetField(KfxSymbols.Content);
                             var content = Entities
-                                .First(fragment => fragment.FragmentType == KfxSymbols.Content && fragment.FragmentId == contentStruct.GetField("name").StringValue)
-                                .Value
-                                .GetField(KfxSymbols.ContentList)
+                                .ValueOrDefault(KfxSymbols.Content, contentStruct.GetField("name").StringValue)
+                                ?.GetField(KfxSymbols.ContentList)
                                 .GetElementAt(contentStruct.GetField(KfxSymbols.Index).IntValue);
-                            HaveContent(currentEid, content.StringValue.Length, advance, contentStruct.GetField("name").StringValue, content.StringValue);
+                            if (content != null)
+                                HaveContent(currentEid, content.StringValue.Length, advance, contentStruct.GetField("name").StringValue, content.StringValue);
                         }
 
                         if (ionStruct.ContainsField(KfxSymbols.Annotations))
                             ExtractPositionData(ionStruct.GetField(KfxSymbols.Annotations), currentEid, KfxSymbols.Annotations, null, null, advance);
 
                         if (ionStruct.ContainsField(KfxSymbols.AltContent))
-                            ExtractPositionData(Entities.First(fragment => fragment.FragmentType == KfxSymbols.Storyline && fragment.FragmentId == ionStruct.GetField(KfxSymbols.AltContent).StringValue).Value, null, KfxSymbols.Storyline, null, null, advance);
+                            ExtractPositionData(Entities.Value(KfxSymbols.Storyline, ionStruct.GetField(KfxSymbols.AltContent).StringValue), null, KfxSymbols.Storyline, null, null, advance);
 
                         if (ionStruct.ContainsField(KfxSymbols.ContentList))
                         {
@@ -372,9 +355,12 @@ namespace XRayBuilder.Core.Unpack.KFX
                             // else:
                             if (!processedStoryNames.Contains(storyNameValue))
                             {
-                                var fragment = Entities.First(frag => frag.FragmentType == KfxSymbols.Storyline && frag.FragmentId == storyNameValue);
-                                ExtractPositionData(fragment.Value, null, KfxSymbols.Storyline, null, null, advance);
-                                processedStoryNames.Add(storyNameValue);
+                                var fragment = Entities.ValueOrDefault(KfxSymbols.Storyline, storyNameValue);
+                                if (fragment != null)
+                                {
+                                    ExtractPositionData(fragment, null, KfxSymbols.Storyline, null, null, advance);
+                                    processedStoryNames.Add(storyNameValue);
+                                }
                             }
                         }
 
@@ -401,10 +387,10 @@ namespace XRayBuilder.Core.Unpack.KFX
                     }
                 }
 
-                var section = Entities.FirstOrDefault(fragment => fragment.FragmentType == KfxSymbols.Section && fragment.FragmentId == name);
+                var section = Entities.ValueOrDefault(KfxSymbols.Section, name);
                 if (section == null)
                     return;
-                ExtractPositionData(section.Value, null, KfxSymbols.Section, null, null, true);
+                ExtractPositionData(section, null, KfxSymbols.Section, null, null, true);
 
                 // TODO
                 if (pendingStoryNames.Any())

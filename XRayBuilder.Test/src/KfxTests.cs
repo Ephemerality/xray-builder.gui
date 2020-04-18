@@ -42,6 +42,16 @@ namespace XRayBuilder.Test
             Assert.AreEqual(tocLength, toc.Count);
         }
 
+        [TestCase(@"testfiles\Fire & Blood (A Song of Ice and - George R. R. Martin.kfx", 738)]
+        public void GetPageCountTest(string kfxFile, int pages)
+        {
+            var fs = new FileStream(kfxFile, FileMode.Open, FileAccess.Read);
+            var kfx = new KfxContainer(fs);
+            var pageCount = kfx.GetPageCount();
+            Assert.NotNull(pageCount);
+            Assert.AreEqual(pages, pageCount);
+        }
+
         [TestCase(@"testfiles\Fire & Blood (A Song of Ice and - George R. R. Martin.kfx", 1920, 1263)]
         [TestCase(@"testfiles\Frankenstein - Mary W. Shelley.kfx", 800, 600)]
         public void CoverImageTest(string kfxFile, int height, int width)

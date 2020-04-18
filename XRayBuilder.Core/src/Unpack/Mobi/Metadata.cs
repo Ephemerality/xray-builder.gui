@@ -176,6 +176,8 @@ namespace XRayBuilder.Core.Unpack.Mobi
         public void SetAsin(string asin)
             => UpdateOrCreateExtHeaderRecord(113, Encoding.ASCII.GetBytes(asin));
 
+        public int? GetPageCount() => null;
+
         private void RebuildMobiHeaders()
         {
             _headerRecords[0] = _pdh.HeaderBytes().Concat(_mobiHeader.RecordBytes()).ToArray();

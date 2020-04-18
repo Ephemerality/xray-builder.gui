@@ -529,7 +529,7 @@ namespace XRayBuilderGUI.UI
 
                 if (_settings.useNewVersion)
                 {
-                    await ea.GenerateNewFormatData(_progress, _cancelTokens.Token);
+                    await ea.GenerateNewFormatData(metadata, _progress, _cancelTokens.Token);
 
                     // TODO: Do the templates differently
                     EndActions eaBase;

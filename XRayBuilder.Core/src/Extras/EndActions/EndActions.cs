@@ -19,6 +19,7 @@ using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Model;
+using XRayBuilder.Core.Unpack;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilder.Core.Extras.EndActions
@@ -342,7 +343,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             }
         }
 
-        public async Task GenerateNewFormatData(IProgressBar progress, CancellationToken token = default)
+        public async Task GenerateNewFormatData(IMetadata metadata, IProgressBar progress, CancellationToken token = default)
         {
             try
             {
@@ -410,10 +411,16 @@ namespace XRayBuilder.Core.Extras.EndActions
             {
                 if (!await _dataSource.GetPageCountAsync(curBook, token))
                 {
-                    if (!_settings.EstimatePageCount)
-                        _logger.Log("No page count found on Goodreads");
-                    _logger.Log("Attempting to estimate page count...");
-                    _logger.Log(Functions.GetPageCount(curBook.RawmlPath, curBook));
+                    var metadataCount = metadata.GetPageCount();
+                    if (metadataCount.HasValue)
+                        curBook.PagesInBook = metadataCount.Value;
+                    else if (_settings.EstimatePageCount)
+                    {
+                        _logger.Log("No page count found on Goodreads or in metadata. Attempting to estimate page count...");
+                        _logger.Log(Functions.GetPageCount(curBook.RawmlPath, curBook));
+                    }
+                    else
+                        _logger.Log("No page count found on Goodreads or in metadata");
                 }
             }
             catch (Exception ex)

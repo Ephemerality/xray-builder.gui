@@ -27,6 +27,7 @@ namespace XRayBuilder.Core.Unpack
         void UpdateCdeContentType();
         void Save(Stream stream);
         void SetAsin(string asin);
+        int? GetPageCount();
 
         // Settings (should be moved)
         bool RawMlSupported { get; }

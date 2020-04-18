@@ -146,8 +146,19 @@ namespace XRayBuilder.Core.Unpack.KFX
         }
 
         public void UpdateCdeContentType() => throw new NotSupportedException();
+        
         public void Save(Stream stream) => throw new NotSupportedException();
         public void SetAsin(string asin) => throw new NotSupportedException();
+        public int? GetPageCount()
+            => Entities
+                .ValueOrDefault<IonList>(KfxSymbols.BookNavigation)
+                ?.Select(nav => (IonList) nav.GetField(KfxSymbols.NavContainers))
+                .Where(navContainers => navContainers != null)
+                .SelectMany(navContainers => navContainers.OfType<IonStruct>())
+                .Where(navContainer => navContainer.GetField(KfxSymbols.NavType).StringValue == KfxSymbols.PageList)
+                .Select(toc => (IonList) toc.GetField(KfxSymbols.Entries))
+                .FirstOrDefault()
+                ?.Count;
 
         public bool RawMlSupported { get; } = false;
 

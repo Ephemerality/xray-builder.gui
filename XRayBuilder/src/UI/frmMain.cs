@@ -375,7 +375,7 @@ namespace XRayBuilderGUI.UI
 
             if (_settings.useNewVersion)
             {
-                XrPath = $@"{outFolder}\XRAY.entities.{metadata.Asin}";
+                XrPath = $@"{outFolder}\XRAY.entities.{metadata.Asin}.asc";
 
                 //Save the new XRAY.ASIN.previewData file
                 try
@@ -392,7 +392,7 @@ namespace XRayBuilderGUI.UI
 
             _logger.Log($"X-Ray file created successfully!\r\nSaved to {newPath}");
 
-            checkFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));
+            CheckFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));
 
             if (_settings.playSound)
             {
@@ -598,7 +598,7 @@ namespace XRayBuilderGUI.UI
 
                 cmsPreview.Items[1].Enabled = true;
 
-                checkFiles(bookInfo.Author, bookInfo.Title, bookInfo.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));
+                CheckFiles(bookInfo.Author, bookInfo.Title, bookInfo.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));
                 if (_settings.playSound)
                 {
                     var player = new System.Media.SoundPlayer($@"{Environment.CurrentDirectory}\done.wav");
@@ -892,7 +892,7 @@ namespace XRayBuilderGUI.UI
             txtAsin.Text = metadata.Asin;
             _tooltip.SetToolTip(txtAsin, _amazonClient.Url(_settings.amazonTLD, txtAsin.Text));
 
-            checkFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));
+            CheckFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));
             btnBuild.Enabled = metadata.XRaySupported;
             btnOneClick.Enabled = metadata.XRaySupported;
 
@@ -1033,28 +1033,26 @@ namespace XRayBuilderGUI.UI
             frmCreateXr.ShowDialog();
         }
 
-        // TODO: Fix this mess
-        private void checkFiles(string author, string title, string fileName, string asin)
+        // TODO: Fix this mess - paths really need to come from a single source...
+        private void CheckFiles(string author, string title, string fileName, string asin)
         {
             var bookOutputDir = OutputDirectory(author, Functions.RemoveInvalidFileChars(title), asin, fileName, false);
 
-            if (File.Exists(bookOutputDir + @"\StartActions.data." + asin + ".asc"))
-                pbFile1.Image = Resources.file_on;
-            else
-                pbFile1.Image = Resources.file_off;
-            if (File.Exists(bookOutputDir + @"\AuthorProfile.profile." + asin + ".asc"))
-                pbFile2.Image = Resources.file_on;
-            else
-                pbFile2.Image = Resources.file_off;
-            if (File.Exists(bookOutputDir + @"\EndActions.data." + asin + ".asc"))
-                pbFile3.Image = Resources.file_on;
-            else
-                pbFile3.Image = Resources.file_off;
-            XrPath = bookOutputDir + @"\XRAY.entities." + asin + ".asc";
-            if (File.Exists(XrPath))
-                pbFile4.Image = Resources.file_on;
-            else
-                pbFile4.Image = Resources.file_off;
+            pbFile1.Image = File.Exists(bookOutputDir + @"\StartActions.data." + asin + ".asc")
+                ? Resources.file_on
+                : Resources.file_off;
+
+            pbFile2.Image = File.Exists(bookOutputDir + @"\AuthorProfile.profile." + asin + ".asc")
+                ? Resources.file_on
+                : Resources.file_off;
+
+            pbFile3.Image = File.Exists(bookOutputDir + @"\EndActions.data." + asin + ".asc")
+                ? Resources.file_on
+                : Resources.file_off;
+
+            pbFile4.Image = File.Exists(bookOutputDir + @"\XRAY.entities." + asin + ".asc")
+                ? Resources.file_on
+                : Resources.file_off;
         }
 
         private void btnCancel_Click(object sender, EventArgs e)

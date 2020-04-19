@@ -147,7 +147,7 @@ namespace XRayBuilder.Core.XRay.Logic
                 offset += contentChunk.Length;
             }
 
-            foreach (var term in xray.Terms.Where(t => t.Match && t.Locs.Count == 0))
+            foreach (var term in xray.Terms.Where(t => t.Match && t.Occurrences.Count == 0))
             {
                 _logger.Log($"No locations were found for the term \"{term.TermName}\".\r\nYou should add aliases for this term using the book or rawml as a reference.");
             }

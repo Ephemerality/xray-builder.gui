@@ -155,6 +155,7 @@ namespace XRayBuilder.Core.Unpack.KFX
                 ?.Count;
 
         public bool RawMlSupported { get; } = false;
+        public bool XRaySupported { get; } = true;
 
         [CanBeNull]
         public IonList GetDefaultToc()

@@ -893,8 +893,8 @@ namespace XRayBuilderGUI.UI
             _tooltip.SetToolTip(txtAsin, _amazonClient.Url(_settings.amazonTLD, txtAsin.Text));
 
             checkFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));
-            btnBuild.Enabled = metadata.RawMlSupported;
-            btnOneClick.Enabled = metadata.RawMlSupported;
+            btnBuild.Enabled = metadata.XRaySupported;
+            btnOneClick.Enabled = metadata.XRaySupported;
 
             try
             {

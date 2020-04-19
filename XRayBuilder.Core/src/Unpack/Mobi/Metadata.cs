@@ -193,6 +193,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
         }
 
         public bool RawMlSupported { get; } = true;
+        public bool XRaySupported { get; } = true;
 
         /// <summary>
         /// Throws <see cref="EncryptedBookException"/> if DRM is enabled.

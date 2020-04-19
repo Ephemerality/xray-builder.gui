@@ -31,5 +31,6 @@ namespace XRayBuilder.Core.Unpack
 
         // Settings (should be moved)
         bool RawMlSupported { get; }
+        bool XRaySupported { get; }
     }
 }

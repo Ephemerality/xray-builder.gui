@@ -58,17 +58,17 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             }
         }
 
-        public IEnumerable<KeyValuePair<string, string[]>> GenerateAliases(IEnumerable<Term> characters, bool splitAliases)
+        public IEnumerable<KeyValuePair<string, string[]>> GenerateAliases(IEnumerable<Term> characters)
         {
             var sanitizePattern = new Regex($@"( ?({string.Join("|", _commonTitles)})\.? )|(^[A-Z]\. )|( [A-Z]\.)|("")|(“)|(”)|(,)|(')");
             var aliasesByTermName = new Dictionary<string, string[]>();
 
             foreach (var character in characters)
             {
-                // Short circuit if no alias is possible splitting is disabled, or if aliases already exist (manually added or pre-built)
-                if (!character.TermName.Contains(" ") || !splitAliases)
+                // Short-circuit if no alias is possible or if aliases already exist (manually added or pre-built)
+                if (!character.TermName.Contains(" ") || character.Aliases.Count > 0)
                 {
-                    aliasesByTermName.Add(character.TermName, new string[0]);
+                    aliasesByTermName.Add(character.TermName, character.Aliases.ToArray());
                     continue;
                 }
 

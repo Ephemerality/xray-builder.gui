@@ -212,7 +212,7 @@ namespace XRayBuilderGUI.UI
             try
             {
                 CreateTerms();
-                _aliasesRepository.SaveCharactersToFile(_terms, txtAsin.Text, Properties.Settings.Default.splitAliases);
+                _aliasesRepository.SaveCharactersToFile(_terms, txtAsin.Text, Settings.Default.splitAliases);
                 MessageBox.Show("X-Ray entities and Alias files created sucessfully!");
             }
             catch (Exception ex)

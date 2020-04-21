@@ -122,7 +122,11 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             var characters = terms.Where(term => term.Type == "character");
             try
             {
-                var aliasesByTermName = _aliasesService.GenerateAliases(characters, splitAliases);
+                var aliasesByTermName = splitAliases
+                    ? _aliasesService.GenerateAliases(characters)
+                    : characters.ToDictionary(character => character.TermName,
+                        character => character.Aliases.ToArray());
+
                 foreach (var (name, aliases) in aliasesByTermName)
                 {
                     // Aliases must be sorted by length, descending, to ensure they are matched properly

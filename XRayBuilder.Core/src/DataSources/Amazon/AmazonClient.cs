@@ -51,10 +51,8 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
         public static bool IsAsin(string asin) => Regex.IsMatch(asin, "^B[A-Z0-9]{9}$");
 
-        [CanBeNull]
         public string ParseAsin(string input) => _regexAsin.MatchOrNull(input)?.Groups["asin"].Value;
 
-        [CanBeNull]
         public string ParseAsinFromUrl(string input) => _regexAsinUrl.MatchOrNull(input)?.Groups["asin"].Value;
 
         public string Url(string tld, string asin) => $"https://www.amazon.{tld}/dp/{asin}";

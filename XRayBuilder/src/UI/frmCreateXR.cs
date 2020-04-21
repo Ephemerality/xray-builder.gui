@@ -4,9 +4,10 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.Libraries.Images.Util;
 using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
 using XRayBuilder.Core.XRay.Artifacts;
@@ -20,12 +21,18 @@ namespace XRayBuilderGUI.UI
     {
         private readonly ITermsService _termsService;
         private readonly IAliasesRepository _aliasesRepository;
+        private readonly IAmazonClient _amazonClient;
 
-        public frmCreateXR(ITermsService termsService, IAliasesRepository aliasesRepository)
+        public frmCreateXR(ITermsService termsService, IAliasesRepository aliasesRepository, IAmazonClient amazonClient)
         {
             _termsService = termsService;
             _aliasesRepository = aliasesRepository;
+            _amazonClient = amazonClient;
             InitializeComponent();
+
+            var dgvType = dgvTerms.GetType();
+            var pi = dgvType.GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic);
+            pi?.SetValue(dgvTerms, true, null);
         }
 
         private readonly ToolTip _toolTip1 = new ToolTip();
@@ -54,31 +61,33 @@ namespace XRayBuilderGUI.UI
 
         private void btnEditTerm_Click(object sender, EventArgs e)
         {
-            if (txtName.Text != "" && DialogResult.Cancel == MessageBox.Show(
-                    "You have not added this term to the term list.\r\n" +
-                    "Click Cancel to add the current term to the term list.\r\n" +
-                    "Press Ok to replace the current term with this one in the term list." +
-                    "Do you want to continue?",
-                    "Unsaved changes",
-                    MessageBoxButtons.OKCancel,
-                    MessageBoxIcon.Warning))
-                return;
-            foreach (var row in dgvTerms.Rows.Cast<DataGridViewRow>().Where(row => row.Selected))
+            if (!string.IsNullOrWhiteSpace(txtName.Text) && DialogResult.Cancel == MessageBox.Show(
+                $"The current term ({txtName.Text}) has not been added to the list!\r\n" +
+                "Click Cancel if you want a chance to add the term first.\r\n" +
+                "Press Ok to overwrite the current term with selected one from the term list.",
+                $"Unsaved changes to {txtName.Text}",
+                MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2))
             {
-                rdoCharacter.Checked = ImageUtil.AreEqual((Bitmap)row.Cells[0].Value, Resources.character);
-                rdoTopic.Checked = ImageUtil.AreEqual((Bitmap)row.Cells[0].Value, Resources.setting);
-                txtName.Text = row.Cells[1].Value.ToString();
-                txtAliases.Text = row.Cells[2].Value.ToString();
-                txtDescription.Text = row.Cells[3].Value.ToString();
-                txtLink.Text = row.Cells[4].Value.ToString();
-                rdoGoodreads.Checked = row.Cells[5].Value.ToString() == "Goodreads";
-                rdoWikipedia.Checked = row.Cells[5].Value.ToString() == "Wikipedia";
-                chkMatch.Checked = (bool)row.Cells[6].Value;
-                chkCase.Checked = (bool)row.Cells[7].Value;
-                //chkDelete.Checked = (bool)row.Cells[8].Value;
-                chkRegex.Checked = (bool)row.Cells[9].Value;
-                dgvTerms.Rows.Remove(row);
+                return;
             }
+
+            var row = dgvTerms.SelectedRows.Cast<DataGridViewRow>().FirstOrDefault();
+            if (row == null)
+                return;
+
+            rdoCharacter.Checked = ImageUtil.AreEqual((Bitmap)row.Cells[0].Value, Resources.character);
+            rdoTopic.Checked = ImageUtil.AreEqual((Bitmap)row.Cells[0].Value, Resources.setting);
+            txtName.Text = row.Cells[1].Value?.ToString() ?? "";
+            txtAliases.Text = row.Cells[2].Value?.ToString() ?? "";
+            txtDescription.Text = row.Cells[3].Value?.ToString() ?? "";
+            txtLink.Text = row.Cells[4].Value?.ToString() ?? "";
+            rdoGoodreads.Checked = row.Cells[5].Value?.ToString() == "Goodreads";
+            rdoWikipedia.Checked = row.Cells[5].Value?.ToString() == "Wikipedia";
+            chkMatch.Checked = (bool?)row.Cells[6].Value ?? false;
+            chkCase.Checked = (bool?)row.Cells[7].Value ?? false;
+            //chkDelete.Checked = (bool)row.Cells[8].Value;
+            chkRegex.Checked = (bool?)row.Cells[9].Value ?? false;
+            dgvTerms.Rows.Remove(row);
         }
 
         private void btnLink_Click(object sender, EventArgs e)
@@ -106,10 +115,8 @@ namespace XRayBuilderGUI.UI
             if (openFile.ShowDialog() != DialogResult.OK)
                 return;
             var filetype = Path.GetExtension(openFile.FileName);
-            var file = openFile.FileName;
-            var match = Regex.Match(file, "(B[A-Z0-9]{9})", RegexOptions.Compiled);
-            if (match.Success)
-                txtAsin.Text = match.Value;
+            txtAsin.Text = _amazonClient.ParseAsin(openFile.FileName) ?? "";
+            // todo another path to centralize
             var aliasFile = $@"{Environment.CurrentDirectory}\ext\{txtAsin.Text}.aliases";
             var d = new Dictionary<string, string>();
             dgvTerms.Rows.Clear();
@@ -122,10 +129,10 @@ namespace XRayBuilderGUI.UI
                 switch (filetype)
                 {
                     case ".xml":
-                        _terms = XmlUtil.DeserializeFile<List<Term>>(file);
+                        _terms = XmlUtil.DeserializeFile<List<Term>>(openFile.FileName);
                         break;
                     case ".txt":
-                        _terms = _termsService.ReadTermsFromTxt(file).ToList();
+                        _terms = _termsService.ReadTermsFromTxt(openFile.FileName).ToList();
                         break;
                     default:
                         MessageBox.Show($"Error: Bad file type \"{filetype}\"");
@@ -270,16 +277,16 @@ namespace XRayBuilderGUI.UI
                 {
                     Id = termId++,
                     Type = ImageUtil.AreEqual((Bitmap) row.Cells[0].Value, Resources.character) ? "character" : "topic",
-                    TermName = row.Cells[1].Value.ToString(),
-                    Aliases = row.Cells[2].Value.ToString() != ""
+                    TermName = row.Cells[1].Value?.ToString() ?? "",
+                    Aliases = !string.IsNullOrEmpty(row.Cells[2].Value?.ToString())
                         ? row.Cells[2].Value.ToString().Split(',').Distinct().ToList()
                         : new List<string>(),
-                    Desc = row.Cells[3].Value.ToString(),
-                    DescUrl = row.Cells[4].Value.ToString(),
-                    DescSrc = row.Cells[5].Value.ToString(),
-                    Match = (bool) row.Cells[6].Value,
-                    MatchCase = (bool) row.Cells[7].Value,
-                    RegexAliases = (bool) row.Cells[9].Value
+                    Desc = row.Cells[3].Value?.ToString() ?? "",
+                    DescUrl = row.Cells[4].Value?.ToString() ?? "",
+                    DescSrc = row.Cells[5].Value?.ToString() ?? "",
+                    Match = (bool?) row.Cells[6].Value ?? false,
+                    MatchCase = (bool?) row.Cells[7].Value ?? false,
+                    RegexAliases = (bool?) row.Cells[9].Value ?? false
                 });
             }
             XmlUtil.SerializeToFile(_terms, outfile);
@@ -290,7 +297,7 @@ namespace XRayBuilderGUI.UI
             if (dgvTerms.Rows.Count <= 0)
                 return;
 
-            if (DialogResult.Yes != MessageBox.Show("Clearing the term list is irreversible!", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
+            if (DialogResult.OK != MessageBox.Show("Clearing the term list is irreversible!", "Are you sure?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2))
                 return;
 
             dgvTerms.Rows.Clear();

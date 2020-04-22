@@ -119,12 +119,14 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
 
             using var streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8);
 
-            var characters = terms.Where(term => term.Type == "character");
+            var sortedTerms = terms
+                .OrderBy(term => term.Type)
+                .ThenBy(term => term.TermName);
             try
             {
                 var aliasesByTermName = splitAliases
-                    ? _aliasesService.GenerateAliases(characters)
-                    : characters.ToDictionary(character => character.TermName,
+                    ? _aliasesService.GenerateAliases(sortedTerms)
+                    : sortedTerms.ToDictionary(character => character.TermName,
                         character => character.Aliases.ToArray());
 
                 foreach (var (name, aliases) in aliasesByTermName)

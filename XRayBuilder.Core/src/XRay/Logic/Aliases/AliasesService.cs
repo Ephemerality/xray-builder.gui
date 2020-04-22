@@ -65,8 +65,8 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
 
             foreach (var character in characters)
             {
-                // Short-circuit if no alias is possible or if aliases already exist (manually added or pre-built)
-                if (!character.TermName.Contains(" ") || character.Aliases.Count > 0)
+                // Short-circuit if no alias is possible, if this isn't a character, or if aliases already exist (manually added or pre-built)
+                if (!character.TermName.Contains(" ") || character.Type != "character" || character.Aliases.Count > 0)
                 {
                     aliasesByTermName.Add(character.TermName, character.Aliases.ToArray());
                     continue;

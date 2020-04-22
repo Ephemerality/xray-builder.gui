@@ -38,13 +38,16 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
 
             while (reader.Read())
             {
+                var type = Convert.ToInt32(reader["type"]);
+
                 var newTerm = new Term
                 {
                     Id = Convert.ToInt32(reader["id"]),
                     TermName = (string)reader["label"],
-                    Type = Convert.ToInt32(reader["type"]) == 1 ? "character" : "topic",
+                    Type = type == 1 ? "character" : "topic",
                     Desc = (string)reader["text"],
-                    DescSrc = reader["sourcetxt"] == DBNull.Value ? "" : (string)reader["sourcetxt"]
+                    DescSrc = reader["sourcetxt"] == DBNull.Value ? "" : (string)reader["sourcetxt"],
+                    MatchCase = type == 1 // characters should match case by default
                 };
 
                 // Real locations aren't needed for extracting terms for preview or XML saving, but need count

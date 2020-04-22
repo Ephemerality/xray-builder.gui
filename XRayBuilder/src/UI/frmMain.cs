@@ -987,6 +987,7 @@ namespace XRayBuilderGUI.UI
             }
             try
             {
+                // TODO This should be based on the file not the setting
                 var terms = newVer == XRayUtil.XRayVersion.New
                     ? _termsService.ExtractTermsNew(new SQLiteConnection($"Data Source={selPath}; Version=3;"), true)
                     : _termsService.ExtractTermsOld(selPath);

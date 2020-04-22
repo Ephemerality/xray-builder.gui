@@ -282,6 +282,8 @@
             // chkCase
             // 
             this.chkCase.AutoSize = true;
+            this.chkCase.Checked = true;
+            this.chkCase.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkCase.Location = new System.Drawing.Point(84, 19);
             this.chkCase.Name = "chkCase";
             this.chkCase.Size = new System.Drawing.Size(96, 17);

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using XRayBuilder.Core.Libraries.Logging;
-using XRayBuilder.Core.Libraries.Primitives.Extensions;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Unpack.KFX;
 using XRayBuilder.Core.XRay.Model;
@@ -55,22 +54,18 @@ namespace XRayBuilder.Core.XRay.Logic
                 {
                     foreach (var character in xray.Terms.Where(term => term.Match))
                     {
-                        // If the aliases are regex-based, search for those first
-                        if (character.RegexAliases && !character.Aliases.Any(pattern => Regex.IsMatch(contentChunk.ContentText, pattern)))
-                            continue;
+                        // If the aliases are not supposed to be in regex format, escape them
+                        var aliases = character.RegexAliases
+                            ? character.Aliases
+                            : character.Aliases.Select(Regex.Escape);
 
-                        // Search for the term's name and its aliases in the chunk, respecting the case setting
-                        var searchList = new[] {character.TermName}.Concat(character.Aliases).ToArray();
-                        if ((!character.MatchCase || !searchList.Any(contentChunk.ContentText.Contains))
-                            && (character.MatchCase || !searchList.Any(contentChunk.ContentText.ContainsIgnorecase)))
-                        {
-                            continue;
-                        }
+                        var searchList = new[] {character.TermName}.Concat(aliases).ToArray();
 
-                        //Search content for character name and aliases
+                        //Search content for character name and aliases, respecting the case setting
                         var regexOptions = character.MatchCase || character.RegexAliases
                             ? RegexOptions.None
                             : RegexOptions.IgnoreCase;
+
                         var currentOffset = offset;
                         var highlights = searchList
                             .Select(search => Regex.Matches(contentChunk.ContentText, $@"{Quotes}?\b{search}{_punctuationMarks}", regexOptions))
@@ -78,10 +73,7 @@ namespace XRayBuilder.Core.XRay.Logic
                             .ToLookup(match => currentOffset + match.Index, match => match.Length);
 
                         if (highlights.Count == 0)
-                        {
-                            _logger.Log($"An error occurred while searching for start of highlight.\r\nWas looking for (or one of the aliases of): {character.TermName}\r\nSearching in: {contentChunk.ContentText}");
                             continue;
-                        }
 
                         var highlightOccurrences = highlights.SelectMany(highlightGroup => highlightGroup.Select(highlight => new[] {highlightGroup.Key, highlight}));
                         character.Occurrences.AddRange(highlightOccurrences);
@@ -147,10 +139,16 @@ namespace XRayBuilder.Core.XRay.Logic
                 offset += contentChunk.Length;
             }
 
-            foreach (var term in xray.Terms.Where(t => t.Match && t.Occurrences.Count == 0))
-            {
-                _logger.Log($"No locations were found for the term \"{term.TermName}\".\r\nYou should add aliases for this term using the book or rawml as a reference.");
-            }
+            var missingOccurrences = xray.Terms
+                .Where(term => term.Match && term.Occurrences.Count == 0)
+                .Select(term => term.TermName)
+                .ToArray();
+
+            if (!missingOccurrences.Any())
+                return;
+
+            var termList = string.Join(", ", missingOccurrences);
+            _logger.Log($"\r\nNo locations were found for the following terms. You should add aliases for them using the book as a reference:\r\n{termList}\r\n");
         }
     }
 }

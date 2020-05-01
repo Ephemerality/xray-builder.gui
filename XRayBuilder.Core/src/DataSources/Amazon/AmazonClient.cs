@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -151,7 +152,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             // Load Author's Amazon page
             var authorHtmlDoc = new HtmlDocument();
             var authorPage = await _httpClient.GetStreamAsync(authorAmazonWebsiteLocation, cancellationToken);
-            authorHtmlDoc.Load(authorPage);
+            authorHtmlDoc.Load(authorPage, Encoding.UTF8);
 
             // Try to find the Kindle Edition link
             // Either use the new one w/ only Kindle editions or the original

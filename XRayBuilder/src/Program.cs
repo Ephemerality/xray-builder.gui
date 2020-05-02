@@ -10,6 +10,7 @@ using XRayBuilder.Core.Libraries.Bootstrap.Logic;
 using XRayBuilder.Core.Libraries.Http.Bootstrap;
 using XRayBuilder.Core.Libraries.Logging.Bootstrap;
 using XRayBuilder.Core.Libraries.SimpleInjector.Extensions;
+using XRayBuilder.Core.Model.Exceptions;
 using XRayBuilder.Core.XRay.Bootstrap;
 using XRayBuilderGUI.UI;
 using XRayBuilderGUI.UI.Bootstrap;
@@ -29,7 +30,15 @@ namespace XRayBuilderGUI
             using var _ = SentrySdk.Init(Properties.Settings.Default.sentryDest);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Bootstrap();
+            try
+            {
+                Bootstrap();
+            }
+            // SimpleInjector verification throws an InvalidOperationException with an ActivationException that contains the actual exception
+            catch (InvalidOperationException e) when (e.InnerException?.InnerException is InitializationException iEx)
+            {
+                MessageBox.Show($"Failed to initialize the application:\r\n{iEx.Message}");
+            }
             Application.Run(_container.GetInstance<frmMain>());
         }
 

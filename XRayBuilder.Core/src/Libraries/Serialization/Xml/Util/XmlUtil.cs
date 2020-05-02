@@ -7,7 +7,6 @@ namespace XRayBuilder.Core.Libraries.Serialization.Xml.Util
 {
     public static class XmlUtil
     {
-        // TODO split into string methods vs straight to file
         public static void SerializeToFile<T>(T output, string fileName) where T : class
         {
             using var writer = new StreamWriter(fileName, false, Encoding.UTF8);

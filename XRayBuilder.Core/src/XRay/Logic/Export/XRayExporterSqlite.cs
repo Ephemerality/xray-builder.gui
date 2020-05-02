@@ -66,10 +66,10 @@ namespace XRayBuilder.Core.XRay.Logic.Export
         /// </summary>
         private void UpdateIndices(SQLiteConnection db)
         {
-            var sql = "CREATE INDEX idx_occurrence_start ON occurrence(start ASC);\n"
-                  + "CREATE INDEX idx_entity_type ON entity(type ASC);\n"
-                  + "CREATE INDEX idx_entity_excerpt ON entity_excerpt(entity ASC); COMMIT;";
-            var command = new SQLiteCommand(sql, db);
+            const string sql = "CREATE INDEX idx_occurrence_start ON occurrence(start ASC);\n"
+                               + "CREATE INDEX idx_entity_type ON entity(type ASC);\n"
+                               + "CREATE INDEX idx_entity_excerpt ON entity_excerpt(entity ASC); COMMIT;";
+            using var command = new SQLiteCommand(sql, db);
             command.ExecuteNonQuery();
             command.Dispose();
         }

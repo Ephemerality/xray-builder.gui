@@ -14,7 +14,6 @@ using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Extras.Artifacts;
 using XRayBuilder.Core.Extras.AuthorProfile;
 using XRayBuilder.Core.Libraries;
-using XRayBuilder.Core.Libraries.Enumerables.Extensions;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Progress;
@@ -513,82 +512,6 @@ namespace XRayBuilder.Core.Extras.EndActions
                 streamWriter.Flush();
             }
             _logger.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
-        }
-
-        public string GenerateStartActionsFromBase(StartActions baseStartActions)
-        {
-            baseStartActions.BookInfo = new StartActions.BookInformation
-            {
-                Asin = curBook.Asin,
-                ContentType = "EBOK",
-                Timestamp = Functions.UnixTimestampMilliseconds(),
-                RefTagSuffix = "AAAgAAA",
-                ImageUrl = curBook.ImageUrl,
-                Erl = -1
-            };
-            if (!string.IsNullOrEmpty(curBook.Series?.Position))
-            {
-                baseStartActions.Data.SeriesPosition = new StartActions.SeriesPosition
-                {
-                    PositionInSeries = Convert.ToInt32(double.Parse(curBook.Series.Position)),
-                    TotalInSeries = curBook.Series.Total,
-                    SeriesName = curBook.Series.Name
-                };
-            }
-            baseStartActions.Data.FollowSubscriptions = new StartActions.AuthorSubscriptions
-            {
-                Subscriptions = new []
-                {
-                    new Subscription
-                    {
-                        Asin = curBook.AuthorAsin,
-                        Name = curBook.Author,
-                        ImageUrl = curBook.AuthorImageUrl
-                    }
-                }
-            };
-            baseStartActions.Data.AuthorSubscriptions = baseStartActions.Data.FollowSubscriptions;
-            baseStartActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMPASSAGES%", $"{curBook.notableClips?.Count ?? 0}");
-            baseStartActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMHIGHLIGHTS%", $"{curBook.notableClips?.Sum(c => c.Likes) ?? 0}");
-            baseStartActions.Data.GrokShelfInfo.Asin = curBook.Asin;
-            baseStartActions.Data.BookDescription = Extensions.BookInfoToBook(curBook, true);
-            baseStartActions.Data.CurrentBook = baseStartActions.Data.BookDescription;
-            baseStartActions.Data.AuthorBios = new AuthorBios
-            {
-                Authors = new []
-                {
-                    new Author
-                    {
-                        // TODO: Check mismatched fields from curbook and authorprofile
-                        Asin = _authorProfile.Asin,
-                        Name = curBook.Author,
-                        Bio = _authorProfile.Biography,
-                        ImageUrl = _authorProfile.ImageUrl
-                    }
-                }
-            };
-            baseStartActions.Data.AuthorRecs = new Recs
-            {
-                Class = "recommendationList",
-                Recommendations = _authorProfile.OtherBooks.Select(bk => Extensions.BookInfoToBook(bk, false)).ToArray()
-            };
-            baseStartActions.Data.ReadingTime.Hours = curBook.ReadingHours;
-            baseStartActions.Data.ReadingTime.Minutes = curBook.ReadingMinutes;
-            baseStartActions.Data.ReadingTime.FormattedTime.Replace("%HOURS%", curBook.ReadingHours.ToString());
-            baseStartActions.Data.ReadingTime.FormattedTime.Replace("%MINUTES%", curBook.ReadingMinutes.ToString());
-            baseStartActions.Data.PreviousBookInTheSeries = Extensions.BookInfoToBook(curBook.Series?.Previous, true);
-            baseStartActions.Data.ReadingPages.PagesInBook = curBook.PagesInBook;
-
-            try
-            {
-                return Functions.ExpandUnicode(JsonConvert.SerializeObject(baseStartActions));
-            }
-            catch (Exception ex)
-            {
-                _logger.Log("An error occurred creating the StartActions template: " + ex.Message + "\r\n" + ex.StackTrace);
-            }
-
-            return null;
         }
 
         // todo output directory logic should be the same as frmmain uses

@@ -33,7 +33,7 @@ namespace XRayBuilder.Core.Libraries.Http
         public async Task<string> GetStringAsync(string url, CancellationToken cancellationToken = default)
         {
             var response = await GetStreamAsync(url, cancellationToken);
-            return new StreamReader(response, Encoding.UTF8).ReadToEnd();
+            return await new StreamReader(response, Encoding.UTF8).ReadToEndAsync();
         }
 
         public async Task<HtmlDocument> GetPageAsync(string url, CancellationToken cancellationToken = default)

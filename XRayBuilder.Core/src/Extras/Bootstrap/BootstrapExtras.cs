@@ -1,5 +1,6 @@
 using SimpleInjector;
 using XRayBuilder.Core.Extras.AuthorProfile;
+using XRayBuilder.Core.Extras.StartActions;
 using XRayBuilder.Core.Libraries.Bootstrap.Model;
 
 namespace XRayBuilder.Core.Extras.Bootstrap
@@ -13,6 +14,7 @@ namespace XRayBuilder.Core.Extras.Bootstrap
         public void Register(Container container)
         {
             container.RegisterSingleton<IAuthorProfileGenerator, AuthorProfileGenerator>();
+            container.RegisterSingleton<IStartActionsArtifactService, StartActionsArtifactService>();
         }
     }
 }

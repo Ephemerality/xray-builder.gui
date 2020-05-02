@@ -15,6 +15,7 @@ using XRayBuilder.Core.DataSources.Logic;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Extras.Artifacts;
 using XRayBuilder.Core.Extras.AuthorProfile;
+using XRayBuilder.Core.Extras.StartActions;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
@@ -53,6 +54,7 @@ namespace XRayBuilderGUI.UI
         private readonly Container _diContainer;
         // TODO Different type handling should come from some sort of factory or whatever
         private readonly KfxXrayService _kfxXrayService;
+        private readonly IStartActionsArtifactService _startActionsArtifactService;
 
         // TODO: Fix up these paths
         private string EaPath = "";
@@ -73,7 +75,8 @@ namespace XRayBuilderGUI.UI
             XRayExporterFactory xrayExporterFactory,
             IXRayService xrayService,
             ITermsService termsService,
-            KfxXrayService kfxXrayService)
+            KfxXrayService kfxXrayService,
+            IStartActionsArtifactService startActionsArtifactService)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
@@ -90,6 +93,7 @@ namespace XRayBuilderGUI.UI
             _xrayService = xrayService;
             _termsService = termsService;
             _kfxXrayService = kfxXrayService;
+            _startActionsArtifactService = startActionsArtifactService;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
         }
@@ -551,23 +555,6 @@ namespace XRayBuilderGUI.UI
 
                     await ea.GenerateEndActionsFromBase(eaBase);
 
-                    StartActions sa;
-                    try
-                    {
-                        var template = File.ReadAllText($@"{Environment.CurrentDirectory}\dist\BaseStartActions.json", Encoding.UTF8);
-                        sa = JsonConvert.DeserializeObject<StartActions>(template);
-                    }
-                    catch (FileNotFoundException)
-                    {
-                        _logger.Log(@"Unable to find dist\BaseStartActions.json, make sure it has been extracted!");
-                        return;
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.Log($@"An error occurred while loading dist\BaseStartActions.json (make sure any new versions have been extracted!)\r\n{e.Message}\r\n{e.StackTrace}");
-                        return;
-                    }
-
                     // TODO: Separate out SA logic
                     string saContent = null;
                     if (_settings.downloadSA)
@@ -583,8 +570,9 @@ namespace XRayBuilderGUI.UI
                             _logger.Log("No pre-made Start Actions available, building...");
                         }
                     }
+
                     if (string.IsNullOrEmpty(saContent))
-                        saContent = ea.GenerateStartActionsFromBase(sa);
+                        saContent = _startActionsArtifactService.GenerateStartActions(ea.curBook, response);
 
                     _logger.Log("Writing StartActions to file...");
                     File.WriteAllText(ea.SaPath, saContent);

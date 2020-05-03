@@ -235,7 +235,6 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                 Biography = biography,
                 Image = ApAuthorImage,
                 ImageUrl = searchResults.ImageUrl,
-                AmazonTld = request.Settings.AmazonTld
             };
         }
 
@@ -263,7 +262,6 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             public Bitmap Image { get; set; }
             public string ImageUrl { get; set; }
             public BookInfo[] OtherBooks { get; set; }
-            public string AmazonTld { get; set; }
         }
 
         public static Artifacts.AuthorProfile CreateAp(Response response, string bookAsin)

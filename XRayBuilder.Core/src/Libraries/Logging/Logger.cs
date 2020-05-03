@@ -24,6 +24,16 @@ namespace XRayBuilder.Core.Libraries.Logging
         }
     }
 
+    public sealed class ConsoleLogger : ILogger
+    {
+        public event LogEventHandler LogEvent;
+
+        public void Log(string message, LogLevel level = LogLevel.Auto)
+        {
+            Console.WriteLine($"{level}: {message}");
+        }
+    }
+
     public interface ILogger
     {
         event LogEventHandler LogEvent;

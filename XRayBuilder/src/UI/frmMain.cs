@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,8 +12,8 @@ using SimpleInjector;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Logic;
 using XRayBuilder.Core.DataSources.Secondary;
-using XRayBuilder.Core.Extras.Artifacts;
 using XRayBuilder.Core.Extras.AuthorProfile;
+using XRayBuilder.Core.Extras.EndActions;
 using XRayBuilder.Core.Extras.StartActions;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
@@ -55,6 +54,7 @@ namespace XRayBuilderGUI.UI
         // TODO Different type handling should come from some sort of factory or whatever
         private readonly KfxXrayService _kfxXrayService;
         private readonly IStartActionsArtifactService _startActionsArtifactService;
+        private readonly IEndActionsArtifactService _endActionsArtifactService;
 
         // TODO: Fix up these paths
         private string EaPath = "";
@@ -76,7 +76,8 @@ namespace XRayBuilderGUI.UI
             IXRayService xrayService,
             ITermsService termsService,
             KfxXrayService kfxXrayService,
-            IStartActionsArtifactService startActionsArtifactService)
+            IStartActionsArtifactService startActionsArtifactService,
+            IEndActionsArtifactService endActionsArtifactService)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
@@ -94,6 +95,7 @@ namespace XRayBuilderGUI.UI
             _termsService = termsService;
             _kfxXrayService = kfxXrayService;
             _startActionsArtifactService = startActionsArtifactService;
+            _endActionsArtifactService = endActionsArtifactService;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
         }
@@ -471,7 +473,7 @@ namespace XRayBuilderGUI.UI
                     return;
                 }
 
-                var response = await _authorProfileGenerator.GenerateAsync(new AuthorProfileGenerator.Request
+                var authorProfileResponse = await _authorProfileGenerator.GenerateAsync(new AuthorProfileGenerator.Request
                 {
                     Book = bookInfo,
                     Settings = new AuthorProfileGenerator.Settings
@@ -484,10 +486,10 @@ namespace XRayBuilderGUI.UI
                     }
                 }, _cancelTokens.Token);
 
-                if (response == null)
+                if (authorProfileResponse == null)
                     return;
 
-                var authorProfileOutput = JsonConvert.SerializeObject(AuthorProfileGenerator.CreateAp(response, bookInfo.Asin));
+                var authorProfileOutput = JsonConvert.SerializeObject(AuthorProfileGenerator.CreateAp(authorProfileResponse, bookInfo.Asin));
 
                 try
                 {
@@ -500,7 +502,6 @@ namespace XRayBuilderGUI.UI
                     return;
                 }
 
-                SaPath = $@"{outputDir}\StartActions.data.{bookInfo.Asin}.asc";
                 _logger.Log("Attempting to build Start Actions and End Actions...");
 
                 string AsinPrompt(string title, string author)
@@ -514,75 +515,82 @@ namespace XRayBuilderGUI.UI
                     return frmAsin.tbAsin.Text;
                 }
 
-                var ea = new XRayBuilder.Core.Extras.EndActions.EndActions(response, bookInfo, metadata.RawMlSize, _dataSource, new XRayBuilder.Core.Extras.EndActions.EndActions.Settings
+                var ea = new EndActionsDataGenerator(bookInfo, _dataSource, new XRayBuilder.Core.Extras.EndActions.EndActionsDataGenerator.Settings
                 {
                     AmazonTld = _settings.amazonTLD,
-                    Android = _settings.android,
-                    OutDir = _settings.outDir,
-                    OutputToSidecar = _settings.outputToSidecar,
-                    PenName = _settings.penName,
-                    RealName = _settings.realName,
                     UseNewVersion = _settings.useNewVersion,
-                    UseSubDirectories = _settings.useSubDirectories,
                     PromptAsin = _settings.promptASIN,
-                    Overwrite = _settings.overwrite,
                     SaveHtml = _settings.saveHtml,
                     EstimatePageCount = _settings.pageCount
-                }, AsinPrompt, _logger, _httpClient, _amazonClient, _amazonInfoParser);
-                if (!await ea.Generate()) return;
+                }, _logger, _httpClient, _amazonClient, _amazonInfoParser);
 
-                if (_settings.useNewVersion)
+                var endActionsResponse = _settings.useNewVersion
+                    ? await ea.GenerateNewFormatData(authorProfileResponse, AsinPrompt, metadata, _progress, _cancelTokens.Token)
+                    : await ea.GenerateOld(_cancelTokens.Token);
+
+                if (endActionsResponse == null)
+                    return;
+
+                if (!_settings.overwrite && File.Exists(EaPath))
                 {
-                    await ea.GenerateNewFormatData(metadata, _progress, _cancelTokens.Token);
-
-                    // TODO: Do the templates differently
-                    EndActions eaBase;
-                    try
-                    {
-                        var template = File.ReadAllText($@"{Environment.CurrentDirectory}\dist\BaseEndActions.json", Encoding.UTF8);
-                        eaBase = JsonConvert.DeserializeObject<EndActions>(template);
-                    }
-                    catch (FileNotFoundException)
-                    {
-                        _logger.Log(@"Unable to find dist\BaseEndActions.json, make sure it has been extracted!");
-                        return;
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.Log($@"An error occurred while loading dist\BaseEndActions.json (make sure any new versions have been extracted!)\r\n{e.Message}\r\n{e.StackTrace}");
-                        return;
-                    }
-
-                    await ea.GenerateEndActionsFromBase(eaBase);
-
-                    // TODO: Separate out SA logic
-                    string saContent = null;
-                    if (_settings.downloadSA)
-                    {
-                        _logger.Log("Attempting to download Start Actions...");
-                        try
-                        {
-                            saContent = await _amazonClient.DownloadStartActions(metadata.Asin);
-                            _logger.Log("Successfully downloaded pre-made Start Actions!");
-                        }
-                        catch
-                        {
-                            _logger.Log("No pre-made Start Actions available, building...");
-                        }
-                    }
-
-                    if (string.IsNullOrEmpty(saContent))
-                        saContent = _startActionsArtifactService.GenerateStartActions(ea.curBook, response);
-
-                    _logger.Log("Writing StartActions to file...");
-                    File.WriteAllText(ea.SaPath, saContent);
-                    _logger.Log($"StartActions file created successfully!\r\nSaved to {SaPath}");
-
-                    cmsPreview.Items[3].Enabled = true;
-                    EaPath = $@"{outputDir}\EndActions.data.{bookInfo.Asin}.asc";
+                    _logger.Log("Error: EndActions file already exists... Skipping!\r\n" +
+                                "Please review the settings page if you want to overwite any existing files.");
                 }
                 else
-                    ea.GenerateOld();
+                {
+                    // Todo actions response/request stuff could still be cleaned up
+                    var endActionsRequest = new EndActionsArtifactService.Request(
+                        bookAsin: endActionsResponse.Book.Asin,
+                        bookImageUrl: endActionsResponse.Book.ImageUrl,
+                        bookDatabaseName: endActionsResponse.Book.Databasename,
+                        bookGuid: endActionsResponse.Book.Guid,
+                        bookErl: metadata.RawMlSize,
+                        bookAmazonRating: endActionsResponse.Book.AmazonRating,
+                        bookSeriesInfo: endActionsResponse.Book.Series,
+                        author: authorProfileResponse.Name,
+                        authorAsin: authorProfileResponse.Asin,
+                        authorImageUrl: authorProfileResponse.ImageUrl,
+                        authorBiography: authorProfileResponse.Biography,
+                        authorOtherBooks: authorProfileResponse.OtherBooks,
+                        userPenName: _settings.penName,
+                        userRealName: _settings.realName,
+                        customerAlsoBought: endActionsResponse.CustomerAlsoBought);
+
+                    var endActionsContent = _settings.useNewVersion
+                        ? _endActionsArtifactService.GenerateNew(endActionsRequest)
+                        : _endActionsArtifactService.GenerateOld(endActionsRequest);
+
+                    _logger.Log("Writing EndActions to file...");
+                    EaPath = $@"{outputDir}\EndActions.data.{bookInfo.Asin}.asc";
+                    File.WriteAllText(EaPath, endActionsContent);
+                    _logger.Log($"EndActions file created successfully!\r\nSaved to {EaPath}");
+                }
+
+                // TODO: Separate out SA logic
+                SaPath = $@"{outputDir}\StartActions.data.{bookInfo.Asin}.asc";
+                string saContent = null;
+                if (_settings.downloadSA)
+                {
+                    _logger.Log("Attempting to download Start Actions...");
+                    try
+                    {
+                        saContent = await _amazonClient.DownloadStartActions(metadata.Asin);
+                        _logger.Log("Successfully downloaded pre-made Start Actions!");
+                    }
+                    catch
+                    {
+                        _logger.Log("No pre-made Start Actions available, building...");
+                    }
+                }
+
+                if (string.IsNullOrEmpty(saContent))
+                    saContent = _startActionsArtifactService.GenerateStartActions(endActionsResponse.Book, authorProfileResponse);
+
+                _logger.Log("Writing StartActions to file...");
+                File.WriteAllText(SaPath, saContent);
+                _logger.Log($"StartActions file created successfully!\r\nSaved to {SaPath}");
+
+                cmsPreview.Items[3].Enabled = true;
 
                 cmsPreview.Items[1].Enabled = true;
 

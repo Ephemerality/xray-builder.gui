@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
-using Newtonsoft.Json;
+using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Secondary;
-using XRayBuilder.Core.Extras.Artifacts;
 using XRayBuilder.Core.Extras.AuthorProfile;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
@@ -23,46 +20,33 @@ using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilder.Core.Extras.EndActions
 {
-    public class EndActions
+    public sealed class EndActionsDataGenerator
     {
         private readonly ILogger _logger;
         private readonly IHttpClient _httpClient;
         private readonly IAmazonClient _amazonClient;
         private readonly IAmazonInfoParser _amazonInfoParser;
 
-        // TODO These paths shouldn't be here
-        private string EaPath = "";
-        public string SaPath = "";
+        private List<BookInfo> custAlsoBought = new List<BookInfo>();
+        private BookInfo curBook;
 
-        public List<BookInfo> custAlsoBought = new List<BookInfo>();
-
-        public BookInfo curBook;
-        private readonly AuthorProfileGenerator.Response _authorProfile;
         private readonly ISecondarySource _dataSource;
-        private readonly long _erl;
         private readonly Settings _settings;
-        private readonly Func<string, string, string> _asinPrompt;
 
         //Requires an already-built AuthorProfile and the BaseEndActions.txt file
         // TODO Move non-DI params from constructor to function
-        public EndActions(
-            AuthorProfileGenerator.Response authorProfile,
+        public EndActionsDataGenerator(
             BookInfo book,
-            long erl,
             ISecondarySource dataSource,
             Settings settings,
-            Func<string, string, string> asinPrompt,
             ILogger logger,
             IHttpClient httpClient,
             IAmazonClient amazonClient,
             IAmazonInfoParser amazonInfoParser)
         {
-            _authorProfile = authorProfile;
             curBook = book;
-            _erl = erl;
             _dataSource = dataSource;
             _settings = settings;
-            _asinPrompt = asinPrompt;
             _logger = logger;
             _httpClient = httpClient;
             _amazonClient = amazonClient;
@@ -70,9 +54,10 @@ namespace XRayBuilder.Core.Extras.EndActions
         }
 
         /// <summary>
-        /// Generate the necessities for both old and new formats
+        /// Generate the necessities for the old format
+        /// TODO Remove anything that gets generated for the new version
         /// </summary>
-        public async Task<bool> Generate(CancellationToken cancellationToken = default)
+        public async Task<Response> GenerateOld(CancellationToken cancellationToken = default)
         {
             _logger.Log("Attempting to find book on Amazon...");
             //Generate Book search URL from book's ASIN
@@ -89,7 +74,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             catch (Exception ex)
             {
                 _logger.Log(string.Format("An error ocurred while downloading book's Amazon page: {0}\r\nYour ASIN may not be correct.", ex.Message));
-                return false;
+                return null;
             }
             _logger.Log("Book found on Amazon!");
             if (_settings.SaveHtml)
@@ -115,7 +100,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             catch (Exception ex)
             {
                 _logger.Log(string.Format("An error ocurred parsing Amazon info: {0}", ex.Message));
-                return false;
+                return null;
             }
 
             _logger.Log("Gathering recommended book metadata...");
@@ -157,7 +142,7 @@ namespace XRayBuilder.Core.Extras.EndActions
 
                     if (_settings.UseNewVersion)
                     {
-                        await foreach (var book in _amazonClient.EnhanceBookInfos(possibleBooks, cancellationToken))
+                        await foreach (var _ in _amazonClient.EnhanceBookInfos(possibleBooks, cancellationToken))
                         {
                             // todo progress
                         }
@@ -203,7 +188,7 @@ namespace XRayBuilder.Core.Extras.EndActions
                             possibleBooks.Add(new BookInfo(sponsTitle, sponsAuthor, sponsAsin));
                         }
 
-                        await foreach (var book in _amazonClient.EnhanceBookInfos(possibleBooks, cancellationToken))
+                        await foreach (var _ in _amazonClient.EnhanceBookInfos(possibleBooks, cancellationToken))
                         {
                             // todo progress
                         }
@@ -215,68 +200,17 @@ namespace XRayBuilder.Core.Extras.EndActions
             catch (Exception ex)
             {
                 _logger.Log("An error occurred parsing the book's amazon page: " + ex.Message + ex.StackTrace);
-                return false;
+                return null;
             }
-            SetPaths();
-            return true;
+
+            return new Response
+            {
+                Book = curBook,
+                CustomerAlsoBought = custAlsoBought.ToArray()
+            };
         }
 
-        public void GenerateOld()
-        {
-            //Create final EndActions.data.ASIN.asc
-            var dt = DateTime.Now.ToString("s");
-            var tz = DateTime.Now.ToString("zzz");
-            var writer = new XmlTextWriter(EaPath, Encoding.UTF8);
-            _logger.Log("Writing EndActions to file...");
-            writer.WriteProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"");
-            writer.WriteStartElement("endaction");
-            writer.WriteAttributeString("version", "0");
-            writer.WriteAttributeString("guid", $"{curBook.Databasename}:{curBook.Guid}");
-            writer.WriteAttributeString("key", curBook.Asin);
-            writer.WriteAttributeString("type", "EBOK");
-            writer.WriteAttributeString("timestamp", dt + tz);
-            writer.WriteElementString("treatment", "d");
-            writer.WriteStartElement("currentBook");
-            writer.WriteElementString("imageUrl", curBook.ImageUrl);
-            writer.WriteElementString("asin", curBook.Asin);
-            writer.WriteElementString("hasSample", "false");
-            writer.WriteEndElement();
-            writer.WriteStartElement("customerProfile");
-            writer.WriteElementString("penName", _settings.PenName);
-            writer.WriteElementString("realName", _settings.RealName);
-            writer.WriteEndElement();
-            writer.WriteStartElement("recs");
-            writer.WriteAttributeString("type", "author");
-            for (var i = 0; i < Math.Min(_authorProfile.OtherBooks.Length, 5); i++)
-            {
-                writer.WriteStartElement("rec");
-                writer.WriteAttributeString("hasSample", "false");
-                writer.WriteAttributeString("asin", _authorProfile.OtherBooks[i].Asin);
-                writer.WriteElementString("title", _authorProfile.OtherBooks[i].Title);
-                writer.WriteElementString("author", curBook.Author);
-                writer.WriteEndElement();
-            }
-            writer.WriteEndElement();
-            writer.WriteStartElement("recs");
-            writer.WriteAttributeString("type", "purchase");
-            for (var i = 0; i < Math.Min(custAlsoBought.Count, 5); i++)
-            {
-                writer.WriteStartElement("rec");
-                writer.WriteAttributeString("hasSample", "false");
-                writer.WriteAttributeString("asin", custAlsoBought[i].Asin);
-                writer.WriteElementString("title", custAlsoBought[i].Title);
-                writer.WriteElementString("author", custAlsoBought[i].Author);
-                writer.WriteEndElement();
-            }
-            writer.WriteEndElement();
-            writer.WriteElementString("booksMentionedPosition", "2");
-            writer.WriteEndElement();
-            writer.Flush();
-            writer.Close();
-            _logger.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
-        }
-
-        private async Task<BookInfo> SearchOrPrompt(BookInfo book, CancellationToken cancellationToken = default)
+        private async Task<BookInfo> SearchOrPrompt(BookInfo book, Func<string, string, string> asinPrompt, CancellationToken cancellationToken = default)
         {
             // If the asin was available from another source, use it
             if (!string.IsNullOrEmpty(book.Asin))
@@ -292,10 +226,10 @@ namespace XRayBuilder.Core.Extras.EndActions
             {
 
                 newBook = await _amazonClient.SearchBook(book.Title, book.Author, _settings.AmazonTld, cancellationToken);
-                if (newBook == null && _settings.PromptAsin && _asinPrompt != null)
+                if (newBook == null && _settings.PromptAsin && asinPrompt != null)
                 {
                     _logger.Log($"ASIN prompt for {book.Title}...");
-                    var asin = _asinPrompt(book.Title, book.Author);
+                    var asin = asinPrompt(book.Title, book.Author);
                     if (string.IsNullOrWhiteSpace(asin))
                         return null;
                     _logger.Log($"ASIN supplied: {asin}");
@@ -317,7 +251,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             return newBook;
         }
 
-        public async Task ExpandSeriesMetadata(SeriesInfo series, CancellationToken cancellationToken = default)
+        private async Task ExpandSeriesMetadata(AuthorProfileGenerator.Response authorProfile, SeriesInfo series, Func<string, string, string> asinPrompt, CancellationToken cancellationToken = default)
         {
             // Search author's other books for the book (assumes next in series was written by the same author...)
             // Returns the first one found, though there should probably not be more than 1 of the same name anyway
@@ -325,8 +259,8 @@ namespace XRayBuilder.Core.Extras.EndActions
             // Swaps out the basic next/previous from Goodreads w/ full Amazon ones
             async Task<BookInfo> FromApOrSearch(BookInfo book, CancellationToken ct)
             {
-                return _authorProfile.OtherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.Title, $@"^{book.Title}(?: \(.*\))?$"))
-                    ?? await SearchOrPrompt(book, ct);
+                return authorProfile.OtherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.Title, $@"^{book.Title}(?: \(.*\))?$"))
+                    ?? await SearchOrPrompt(book, asinPrompt, ct);
             }
 
             // TODO: Don't juggle around bookinfos
@@ -342,19 +276,33 @@ namespace XRayBuilder.Core.Extras.EndActions
             }
         }
 
-        public async Task GenerateNewFormatData(IMetadata metadata, IProgressBar progress, CancellationToken token = default)
+        /// <summary>
+        /// Generate necessities for the new format (which includes running <see cref="GenerateOld"/> automatically)
+        /// </summary>
+        [ItemCanBeNull]
+        public async Task<Response> GenerateNewFormatData(
+            AuthorProfileGenerator.Response authorProfile,
+            Func<string, string, string> asinPrompt,
+            IMetadata metadata,
+            IProgressBar progress,
+            CancellationToken cancellationToken = default)
         {
+            // Generate old stuff first, ignore response since curBook and custAlsoBought are shared
+            // todo make them not shared
+            if (await GenerateOld(cancellationToken) == null)
+                return null;
+
             try
             {
-                await _dataSource.GetExtrasAsync(curBook, progress, token);
-                curBook.Series = await _dataSource.GetSeriesInfoAsync(curBook.DataUrl, token);
+                await _dataSource.GetExtrasAsync(curBook, progress, cancellationToken);
+                curBook.Series = await _dataSource.GetSeriesInfoAsync(curBook.DataUrl, cancellationToken);
 
                 if (curBook.Series == null || curBook.Series.Total == 0)
                     _logger.Log("The book was not found to be part of a series.");
                 else if (curBook.Series.Next == null && curBook.Series.Position != curBook.Series.Total.ToString())// && !curBook.Series.Position?.Contains(".") == true)
                     _logger.Log("An error occurred finding the next book in series. The book may not be part of a series, or it is the latest release.");
                 else
-                    await ExpandSeriesMetadata(curBook.Series, token);
+                    await ExpandSeriesMetadata(authorProfile, curBook.Series, asinPrompt, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -371,7 +319,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             {
                 try
                 {
-                    var seriesResult = await _amazonClient.DownloadNextInSeries(curBook.Asin, token);
+                    var seriesResult = await _amazonClient.DownloadNextInSeries(curBook.Asin, cancellationToken);
                     switch (seriesResult?.Error?.ErrorCode)
                     {
                         case "ERR004":
@@ -384,7 +332,7 @@ namespace XRayBuilder.Core.Extras.EndActions
                                 new BookInfo(seriesResult.NextBook.Title.TitleName,
                                     Functions.FixAuthor(seriesResult.NextBook.Authors.FirstOrDefault()?.AuthorName),
                                     seriesResult.NextBook.Asin);
-                            var response = await _amazonInfoParser.GetAndParseAmazonDocument(curBook.Series.Next.AmazonUrl, token);
+                            var response = await _amazonInfoParser.GetAndParseAmazonDocument(curBook.Series.Next.AmazonUrl, cancellationToken);
                             response.ApplyToBookInfo(curBook.Series.Next);
                             break;
                     }
@@ -408,7 +356,7 @@ namespace XRayBuilder.Core.Extras.EndActions
 
             try
             {
-                if (!await _dataSource.GetPageCountAsync(curBook, token))
+                if (!await _dataSource.GetPageCountAsync(curBook, cancellationToken))
                 {
                     var metadataCount = metadata.GetPageCount();
                     if (metadataCount.HasValue)
@@ -427,126 +375,18 @@ namespace XRayBuilder.Core.Extras.EndActions
                 _logger.Log("An error occurred while searching for or estimating the page count: " + ex.Message + "\r\n" + ex.StackTrace);
                 throw;
             }
+
+            return new Response
+            {
+                Book = curBook,
+                CustomerAlsoBought = custAlsoBought.ToArray()
+            };
         }
 
-        public async Task GenerateEndActionsFromBase(Extras.Artifacts.EndActions baseEndActions)
+        public sealed class Response
         {
-            baseEndActions.BookInfo = new Extras.Artifacts.EndActions.BookInformation
-            {
-                Asin = curBook.Asin,
-                ContentType = "EBOK",
-                Timestamp = Functions.UnixTimestampMilliseconds(),
-                RefTagSuffix = "AAATAAB",
-                ImageUrl = curBook.ImageUrl,
-                EmbeddedID = $"{curBook.Databasename}:{curBook.Guid}",
-                Erl = _erl
-            };
-            baseEndActions.Data.FollowSubscriptions = new Extras.Artifacts.EndActions.AuthorSubscriptions
-            {
-                Subscriptions = new[]
-                {
-                    new Subscription
-                    {
-                        Asin = curBook.AuthorAsin,
-                        Name = curBook.Author,
-                        ImageUrl = curBook.AuthorImageUrl
-                    }
-                }
-            };
-            baseEndActions.Data.AuthorSubscriptions = baseEndActions.Data.FollowSubscriptions;
-            baseEndActions.Data.NextBook = Extensions.BookInfoToBook(curBook.Series?.Next, false);
-            baseEndActions.Data.PublicSharedRating = new Extras.Artifacts.EndActions.Rating
-            {
-                Class = "publicSharedRating",
-                Timestamp = Functions.UnixTimestampMilliseconds(),
-                Value = Math.Round(curBook.AmazonRating ?? 0.0, 1)
-            };
-            baseEndActions.Data.CustomerProfile = new Extras.Artifacts.EndActions.CustomerProfile
-            {
-                PenName = _settings.PenName,
-                RealName = _settings.RealName
-            };
-            baseEndActions.Data.Rating = baseEndActions.Data.PublicSharedRating;
-            baseEndActions.Data.AuthorBios = new AuthorBios
-            {
-                Authors = new[]
-                {
-                    new Author
-                    {
-                        // TODO: Check mismatched fields from curbook and authorprofile
-                        Asin = _authorProfile.Asin,
-                        Name = curBook.Author,
-                        Bio = _authorProfile.Biography,
-                        ImageUrl = _authorProfile.ImageUrl
-                    }
-                }
-            };
-            baseEndActions.Data.AuthorRecs = new Recs
-            {
-                Class = "featuredRecommendationList",
-                Recommendations = _authorProfile.OtherBooks.Select(bk => Extensions.BookInfoToBook(bk, true)).ToArray()
-            };
-            baseEndActions.Data.CustomersWhoBoughtRecs = new Recs
-            {
-                Class = "featuredRecommendationList",
-                Recommendations = custAlsoBought.Select(bk => Extensions.BookInfoToBook(bk, true)).ToArray()
-            };
-
-            //string goodReads = String.Format(@"""goodReadsReview"":{{""class"":""goodReadsReview"",""reviewId"":""NoReviewId"",""rating"":{0},""submissionDateMs"":{1}}}", ratingText, dateMs);
-
-            string finalOutput;
-            try
-            {
-                finalOutput = Functions.ExpandUnicode(JsonConvert.SerializeObject(baseEndActions));
-            }
-            catch (Exception ex)
-            {
-                _logger.Log("An error occurred creating the EndAction data template: " + ex.Message + "\r\n" + ex.StackTrace);
-                throw;
-            }
-
-            _logger.Log("Writing EndActions to file...");
-            using (var streamWriter = new StreamWriter(EaPath, false))
-            {
-                await streamWriter.WriteAsync(finalOutput);
-                streamWriter.Flush();
-            }
-            _logger.Log("EndActions file created successfully!\r\nSaved to " + EaPath);
-        }
-
-        // todo output directory logic should be the same as frmmain uses
-        private void SetPaths()
-        {
-            string outputDir;
-            try
-            {
-                if (_settings.Android)
-                {
-                    outputDir = _settings.OutDir + @"\Android\" + curBook.Asin;
-                    Directory.CreateDirectory(outputDir);
-                }
-                else
-                    outputDir = _settings.UseSubDirectories
-                        ? Functions.GetBookOutputDirectory(curBook.Author, curBook.Title, true, _settings.OutDir)
-                        : _settings.OutDir;
-            }
-            catch (Exception ex)
-            {
-                _logger.Log("An error occurred creating the output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
-                outputDir = _settings.OutDir;
-            }
-
-            if (_settings.OutputToSidecar)
-                outputDir = Path.Combine(outputDir, $"{Path.GetFileNameWithoutExtension(curBook.FileName)}.sdr");
-
-            EaPath = outputDir + @"\EndActions.data." + curBook.Asin + ".asc";
-            SaPath = outputDir + @"\StartActions.data." + curBook.Asin + ".asc";
-
-            if (!_settings.Overwrite && File.Exists(EaPath))
-            {
-                _logger.Log("Error: EndActions file already exists... Skipping!\r\n" +
-                         "Please review the settings page if you want to overwite any existing files.");
-            }
+            public BookInfo Book { get; set; }
+            public BookInfo[] CustomerAlsoBought { get; set; }
         }
 
         /// <summary>
@@ -555,16 +395,9 @@ namespace XRayBuilder.Core.Extras.EndActions
         /// </summary>
         public class Settings
         {
-            public string OutDir { get; set; }
-            public bool OutputToSidecar { get; set; }
-            public bool Android { get; set; }
-            public string PenName { get; set; }
-            public string RealName { get; set; }
             public string AmazonTld { get; set; }
             public bool UseNewVersion { get; set; }
-            public bool UseSubDirectories { get; set; }
             public bool PromptAsin { get; set; }
-            public bool Overwrite { get; set; }
             public bool EstimatePageCount { get; set; }
             public bool SaveHtml { get; set; }
         }

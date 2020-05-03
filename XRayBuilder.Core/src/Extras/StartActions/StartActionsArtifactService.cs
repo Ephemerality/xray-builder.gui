@@ -111,7 +111,7 @@ namespace XRayBuilder.Core.Extras.StartActions
             }
             catch (Exception ex)
             {
-                _logger.Log("An error occurred creating the StartActions template: " + ex.Message + "\r\n" + ex.StackTrace);
+                _logger.Log("An error occurred creating the StartActions: " + ex.Message + "\r\n" + ex.StackTrace);
             }
 
             return null;

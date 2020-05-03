@@ -151,6 +151,9 @@ namespace XRayBuilder.Core.Libraries
             return author;
         }
 
+        /// <summary>
+        /// Convert non-ascii characters into the \uXXXX hexidecimal format
+        /// </summary>
         public static string ExpandUnicode(string input)
         {
             var output = new StringBuilder(input.Length);

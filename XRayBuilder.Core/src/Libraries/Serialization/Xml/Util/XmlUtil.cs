@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Xml.Serialization;
+using JetBrains.Annotations;
 
 namespace XRayBuilder.Core.Libraries.Serialization.Xml.Util
 {
@@ -32,6 +33,14 @@ namespace XRayBuilder.Core.Libraries.Serialization.Xml.Util
             {
                 throw new InvalidDataException($"Error processing XML file: {ex.Message}\r\nIf the error contains a (#, #), the first number is the line the error occurred on.", ex);
             }
+        }
+
+        public sealed class Utf8StringWriter : StringWriter
+        {
+            public Utf8StringWriter([CanBeNull] IFormatProvider formatProvider = null) : base(formatProvider) { }
+
+            // Use UTF8 encoding but write no BOM
+            public override Encoding Encoding => new UTF8Encoding(false);
         }
     }
 }

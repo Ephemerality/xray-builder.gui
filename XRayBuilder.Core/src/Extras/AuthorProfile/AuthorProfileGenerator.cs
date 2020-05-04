@@ -104,9 +104,11 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             if (request.Settings.SaveBio && File.Exists(bioFile))
             {
                 biography = ReadBio(bioFile);
-                if (string.IsNullOrEmpty(biography))
+                // if it's null, there was an error. if it's just empty, we'll parse it out instead
+                if (biography == null)
                     return null;
-                readFromFile = true;
+                if (biography == "")
+                    readFromFile = true;
             }
 
             if (string.IsNullOrEmpty(biography) && !string.IsNullOrEmpty(searchResults.Biography))

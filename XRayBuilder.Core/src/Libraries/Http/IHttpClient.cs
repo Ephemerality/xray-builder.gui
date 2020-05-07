@@ -12,7 +12,6 @@ namespace XRayBuilder.Core.Libraries.Http
 {
     public interface IHttpClient
     {
-        Task<T> GetJsonAsync<T>(string url, CancellationToken cancellationToken = default);
         Task<string> GetStringAsync(string url, CancellationToken cancellationToken);
         Task<Stream> GetStreamAsync(string url, CancellationToken cancellationToken);
         Task<HtmlDocument> GetPageAsync(string url, CancellationToken cancellationToken = default);

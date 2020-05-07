@@ -40,6 +40,9 @@ namespace XRayBuilder.Core.Extras.Artifacts
             [JsonProperty("embeddedID")]
             public string EmbeddedID { get; set; }
 
+            [JsonProperty("fictionStatus", DefaultValueHandling = DefaultValueHandling.Ignore)]
+            public string FictionStatus { get; set; }
+
             [JsonProperty("erl")]
             public long Erl { get; set; }
         }
@@ -72,6 +75,9 @@ namespace XRayBuilder.Core.Extras.Artifacts
 
             [JsonProperty("oneClickBorrowSupported", NullValueHandling = NullValueHandling.Ignore)]
             public bool? OneClickBorrowSupported { get; set; }
+
+            [JsonProperty("showShareButton", NullValueHandling = NullValueHandling.Ignore)]
+            public bool? ShowShareButton { get; set; }
 
             [JsonProperty("showWishListButton", NullValueHandling = NullValueHandling.Ignore)]
             public bool? ShowWishListButton { get; set; }
@@ -161,6 +167,24 @@ namespace XRayBuilder.Core.Extras.Artifacts
             public Subscription[] Subscriptions { get; set; }
         }
 
+        public class GrokShelfInfo
+        {
+            [JsonProperty("class")]
+            public string Class { get; set; } = "goodReadsShelfInfo";
+
+            [JsonProperty("asin")]
+            public string Asin { get; set; }
+
+            [JsonProperty("shelves")]
+            public string[] Shelves { get; set; }
+
+            [JsonProperty("is_sensitive")]
+            public bool IsSensitive { get; set; }
+
+            [JsonProperty("is_autoshelving_enabled")]
+            public bool IsAutoshelvingEnabled { get; set; }
+        }
+
         public class DataJson
         {
             [JsonProperty("followSubscriptions")]
@@ -189,6 +213,15 @@ namespace XRayBuilder.Core.Extras.Artifacts
 
             [JsonProperty("authorSubscriptions")]
             public AuthorSubscriptions AuthorSubscriptions { get; set; }
+
+            [JsonProperty("citationRecs", DefaultValueHandling = DefaultValueHandling.Ignore)]
+            public Recs CitationRecs { get; set; }
+
+            [JsonProperty("grokShelfInfo", DefaultValueHandling = DefaultValueHandling.Ignore)]
+            public GrokShelfInfo GrokShelfInfo { get; set; }
+
+            [JsonProperty("microgenreRecs", DefaultValueHandling = DefaultValueHandling.Ignore)]
+            public Recs MicrogenreRecs { get; set; }
         }
     }
 }

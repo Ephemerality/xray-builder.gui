@@ -40,7 +40,7 @@ namespace XRayBuilder.Core.Libraries.Http
         {
             var htmlDoc = new HtmlDocument {OptionAutoCloseOnEnd = true};
             var stream = await GetStreamAsync(url, cancellationToken);
-            htmlDoc.Load(stream);
+            htmlDoc.Load(stream, Encoding.UTF8);
             return htmlDoc;
         }
 

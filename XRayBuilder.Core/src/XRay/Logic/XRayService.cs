@@ -136,6 +136,12 @@ namespace XRayBuilder.Core.XRay.Logic
                 utf8Doc.LoadHtml(readContents);
                 _chaptersService.HandleChapters(xray, xray.Asin, rawMlStream.Length, utf8Doc, readContents, overwriteChapters, safeShow, xray.Unattended, enableEdit);
             }
+            else
+            {
+                // set default ERL to prevent filtering
+                xray.Srl = 1;
+                xray.Erl = rawMlStream.Length;
+            }
 
             _logger.Log("Scanning book content...");
             var timer = new System.Diagnostics.Stopwatch();

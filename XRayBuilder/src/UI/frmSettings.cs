@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using XRayBuilder.Core.Libraries.Enumerables.Extensions;
 
@@ -16,13 +17,16 @@ namespace XRayBuilderGUI.UI
             { "France", "fr" }, { "Germany", "de" }, { "India", "in" }, { "Italy", "it" }, { "Japan", "co.jp" },
             { "Mexico", "com.mx" }, { "Netherlands", "nl" }, { "Spain", "es" }, { "USA", "com" }, { "UK", "co.uk" }
         };
+        private readonly Dictionary<string, string> roentgenRegionTLDs = new Dictionary<string, string> {
+            { "Germany", "de" }, { "USA", "com" }
+        };
 
         public frmSettings()
         {
             InitializeComponent();
         }
 
-        class AmazonRegion
+        private sealed class AmazonRegion
         {
             public string Name { get; }
             public string TLD { get; }
@@ -86,10 +90,13 @@ namespace XRayBuilderGUI.UI
             else
                 rdoShelfari.Checked = true;
             chkPromptAsin.Checked = Properties.Settings.Default.promptASIN;
-            chkDownloadSA.Checked = Properties.Settings.Default.downloadSA;
             chkSearchAsin.Checked = Properties.Settings.Default.searchByAsin;
             chkEditBiography.Checked = Properties.Settings.Default.editBiography;
             chkUseSidecar.Checked = Properties.Settings.Default.outputToSidecar;
+
+            chkRoentgenStartActions.Checked = Properties.Settings.Default.downloadSA;
+            chkRoentgenEndActions.Checked = Properties.Settings.Default.downloadEA;
+            chkRoentgenAuthorProfile.Checked = Properties.Settings.Default.downloadAP;
 
             // Added \r\n to show smaller tooltips
             var toolTip1 = new ToolTip();
@@ -159,7 +166,6 @@ namespace XRayBuilderGUI.UI
                                                "in Calibre, and may help file creation.");
             toolTip1.SetToolTip(chkSearchAsin, "If enabled, search results will be filtered so that non-Kindle Edition books are removed");
             toolTip1.SetToolTip(chkEditBiography, "If enabled, allows editing the Author's biography before it's used.");
-            toolTip1.SetToolTip(chkDownloadSA, "Attempt to download pre-made Start Actions files instead of building them from scratch.\r\n(Pre-made ones are generally more rich and accurate)");
 
             var regions = new List<AmazonRegion>(regionTLDs.Count);
             foreach (var (name, tld) in regionTLDs)
@@ -168,6 +174,14 @@ namespace XRayBuilderGUI.UI
             cmbRegion.DisplayMember = "Name";
             cmbRegion.ValueMember = "TLD";
             cmbRegion.SelectedValue = Properties.Settings.Default.amazonTLD;
+
+            var roentgenRegions = roentgenRegionTLDs
+                .Select(kvp => new AmazonRegion(kvp.Key, kvp.Value))
+                .ToArray();
+            cmbRoentgenRegion.DataSource = roentgenRegions;
+            cmbRoentgenRegion.DisplayMember = "Name";
+            cmbRoentgenRegion.ValueMember = "TLD";
+            cmbRoentgenRegion.SelectedValue = Properties.Settings.Default.roentgenRegion;
         }
 
         private void btnBrowseOut_Click(object sender, EventArgs e)
@@ -210,10 +224,13 @@ namespace XRayBuilderGUI.UI
             Properties.Settings.Default.amazonTLD = cmbRegion.SelectedValue.ToString();
             Properties.Settings.Default.dataSource = rdoGoodreads.Checked ? "Goodreads" : "Shelfari";
             Properties.Settings.Default.promptASIN = chkPromptAsin.Checked;
-            Properties.Settings.Default.downloadSA = chkDownloadSA.Checked;
             Properties.Settings.Default.searchByAsin = chkSearchAsin.Checked;
             Properties.Settings.Default.editBiography = chkEditBiography.Checked;
             Properties.Settings.Default.outputToSidecar = chkUseSidecar.Checked;
+            Properties.Settings.Default.downloadSA = chkRoentgenStartActions.Checked;
+            Properties.Settings.Default.downloadEA = chkRoentgenEndActions.Checked;
+            Properties.Settings.Default.downloadAP = chkRoentgenAuthorProfile.Checked;
+            Properties.Settings.Default.roentgenRegion = cmbRoentgenRegion.SelectedValue.ToString();
             Properties.Settings.Default.Save();
 
             Close();

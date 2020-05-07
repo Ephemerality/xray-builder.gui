@@ -104,5 +104,14 @@
     <Setting Name="sentryDest" Type="System.String" Scope="Application">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="downloadEA" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="downloadAP" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="roentgenRegion" Type="System.String" Scope="User">
+      <Value Profile="(Default)">com</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

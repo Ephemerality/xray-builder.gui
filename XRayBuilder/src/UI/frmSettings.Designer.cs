@@ -78,7 +78,6 @@
             this.tabPgAmazon = new System.Windows.Forms.TabPage();
             this.gbAmazonPrefs = new System.Windows.Forms.GroupBox();
             this.chkEditBiography = new System.Windows.Forms.CheckBox();
-            this.chkDownloadSA = new System.Windows.Forms.CheckBox();
             this.chkPromptAsin = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.cmbRegion = new System.Windows.Forms.ComboBox();
@@ -89,6 +88,15 @@
             this.txtPen = new System.Windows.Forms.TextBox();
             this.lblPen = new System.Windows.Forms.Label();
             this.listSettings = new System.Windows.Forms.ListBox();
+            this.tabPgRoentgen = new System.Windows.Forms.TabPage();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.chkRoentgenAuthorProfile = new System.Windows.Forms.CheckBox();
+            this.chkRoentgenEndActions = new System.Windows.Forms.CheckBox();
+            this.chkRoentgenStartActions = new System.Windows.Forms.CheckBox();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.cmbRoentgenRegion = new System.Windows.Forms.ComboBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -109,6 +117,9 @@
             this.tabPgAmazon.SuspendLayout();
             this.gbAmazonPrefs.SuspendLayout();
             this.gbDetails.SuspendLayout();
+            this.tabPgRoentgen.SuspendLayout();
+            this.groupBox7.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // btnSupport
@@ -168,6 +179,7 @@
             this.tabSettings.Controls.Add(this.tabPgXray);
             this.tabSettings.Controls.Add(this.tabPgAliasChapter);
             this.tabSettings.Controls.Add(this.tabPgAmazon);
+            this.tabSettings.Controls.Add(this.tabPgRoentgen);
             this.tabSettings.ItemSize = new System.Drawing.Size(0, 1);
             this.tabSettings.Location = new System.Drawing.Point(144, 1);
             this.tabSettings.Name = "tabSettings";
@@ -616,7 +628,6 @@
             // gbAmazonPrefs
             // 
             this.gbAmazonPrefs.Controls.Add(this.chkEditBiography);
-            this.gbAmazonPrefs.Controls.Add(this.chkDownloadSA);
             this.gbAmazonPrefs.Controls.Add(this.chkPromptAsin);
             this.gbAmazonPrefs.Controls.Add(this.label1);
             this.gbAmazonPrefs.Controls.Add(this.cmbRegion);
@@ -638,16 +649,6 @@
             this.chkEditBiography.Text = "Edit author biography";
             this.chkEditBiography.UseVisualStyleBackColor = true;
             // 
-            // chkDownloadSA
-            // 
-            this.chkDownloadSA.AutoSize = true;
-            this.chkDownloadSA.Location = new System.Drawing.Point(14, 68);
-            this.chkDownloadSA.Name = "chkDownloadSA";
-            this.chkDownloadSA.Size = new System.Drawing.Size(137, 17);
-            this.chkDownloadSA.TabIndex = 28;
-            this.chkDownloadSA.Text = "Download Start Actions";
-            this.chkDownloadSA.UseVisualStyleBackColor = true;
-            // 
             // chkPromptAsin
             // 
             this.chkPromptAsin.AutoSize = true;
@@ -662,7 +663,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(12, 94);
+            this.label1.Location = new System.Drawing.Point(12, 74);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(44, 13);
             this.label1.TabIndex = 26;
@@ -672,7 +673,7 @@
             // 
             this.cmbRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbRegion.FormattingEnabled = true;
-            this.cmbRegion.Location = new System.Drawing.Point(62, 91);
+            this.cmbRegion.Location = new System.Drawing.Point(62, 71);
             this.cmbRegion.Name = "cmbRegion";
             this.cmbRegion.Size = new System.Drawing.Size(78, 21);
             this.cmbRegion.TabIndex = 25;
@@ -745,7 +746,8 @@
             "Directories",
             "X-Ray",
             "Aliases and Chapters",
-            "Amazon"});
+            "Amazon",
+            "Roentgen"});
             this.listSettings.Location = new System.Drawing.Point(12, 12);
             this.listSettings.Name = "listSettings";
             this.listSettings.Size = new System.Drawing.Size(130, 253);
@@ -753,6 +755,102 @@
             this.listSettings.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listSettings_DrawItem);
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
+            // 
+            // tabPgRoentgen
+            // 
+            this.tabPgRoentgen.Controls.Add(this.groupBox7);
+            this.tabPgRoentgen.Location = new System.Drawing.Point(4, 5);
+            this.tabPgRoentgen.Name = "tabPgRoentgen";
+            this.tabPgRoentgen.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPgRoentgen.Size = new System.Drawing.Size(390, 259);
+            this.tabPgRoentgen.TabIndex = 5;
+            this.tabPgRoentgen.Text = "tabPgRoentgen";
+            this.tabPgRoentgen.UseVisualStyleBackColor = true;
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.label4);
+            this.groupBox7.Controls.Add(this.cmbRoentgenRegion);
+            this.groupBox7.Controls.Add(this.pictureBox2);
+            this.groupBox7.Controls.Add(this.label3);
+            this.groupBox7.Controls.Add(this.chkRoentgenAuthorProfile);
+            this.groupBox7.Controls.Add(this.chkRoentgenEndActions);
+            this.groupBox7.Controls.Add(this.chkRoentgenStartActions);
+            this.groupBox7.Location = new System.Drawing.Point(6, 7);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(378, 245);
+            this.groupBox7.TabIndex = 27;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Pre-built Downloads";
+            // 
+            // chkRoentgenAuthorProfile
+            // 
+            this.chkRoentgenAuthorProfile.AutoSize = true;
+            this.chkRoentgenAuthorProfile.Location = new System.Drawing.Point(14, 22);
+            this.chkRoentgenAuthorProfile.Name = "chkRoentgenAuthorProfile";
+            this.chkRoentgenAuthorProfile.Size = new System.Drawing.Size(89, 17);
+            this.chkRoentgenAuthorProfile.TabIndex = 33;
+            this.chkRoentgenAuthorProfile.Text = "Author Profile";
+            this.chkRoentgenAuthorProfile.UseVisualStyleBackColor = true;
+            // 
+            // chkRoentgenEndActions
+            // 
+            this.chkRoentgenEndActions.AutoSize = true;
+            this.chkRoentgenEndActions.Location = new System.Drawing.Point(14, 45);
+            this.chkRoentgenEndActions.Name = "chkRoentgenEndActions";
+            this.chkRoentgenEndActions.Size = new System.Drawing.Size(83, 17);
+            this.chkRoentgenEndActions.TabIndex = 29;
+            this.chkRoentgenEndActions.Text = "End Actions";
+            this.chkRoentgenEndActions.UseVisualStyleBackColor = true;
+            // 
+            // chkRoentgenStartActions
+            // 
+            this.chkRoentgenStartActions.AutoSize = true;
+            this.chkRoentgenStartActions.Location = new System.Drawing.Point(14, 68);
+            this.chkRoentgenStartActions.Name = "chkRoentgenStartActions";
+            this.chkRoentgenStartActions.Size = new System.Drawing.Size(86, 17);
+            this.chkRoentgenStartActions.TabIndex = 24;
+            this.chkRoentgenStartActions.Text = "Start Actions";
+            this.chkRoentgenStartActions.UseVisualStyleBackColor = true;
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
+            this.pictureBox2.Location = new System.Drawing.Point(123, 25);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(14, 14);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox2.TabIndex = 37;
+            this.pictureBox2.TabStop = false;
+            // 
+            // label3
+            // 
+            this.label3.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.label3.Location = new System.Drawing.Point(143, 23);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(229, 48);
+            this.label3.TabIndex = 36;
+            this.label3.Text = "When these settings are enabled, pre-built versions of the files will be download" +
+    "ed if they are available. Requires a valid ASIN.";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(9, 94);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(44, 13);
+            this.label4.TabIndex = 39;
+            this.label4.Text = "Region:";
+            // 
+            // cmbRoentgenRegion
+            // 
+            this.cmbRoentgenRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbRoentgenRegion.FormattingEnabled = true;
+            this.cmbRoentgenRegion.Location = new System.Drawing.Point(59, 91);
+            this.cmbRoentgenRegion.Name = "cmbRoentgenRegion";
+            this.cmbRoentgenRegion.Size = new System.Drawing.Size(78, 21);
+            this.cmbRoentgenRegion.TabIndex = 38;
             // 
             // frmSettings
             // 
@@ -809,6 +907,10 @@
             this.gbAmazonPrefs.PerformLayout();
             this.gbDetails.ResumeLayout(false);
             this.gbDetails.PerformLayout();
+            this.tabPgRoentgen.ResumeLayout(false);
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -869,10 +971,18 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtMinClipLen;
-        private System.Windows.Forms.CheckBox chkDownloadSA;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox chkSearchAsin;
         private System.Windows.Forms.CheckBox chkEditBiography;
         private System.Windows.Forms.CheckBox chkUseSidecar;
+        private System.Windows.Forms.TabPage tabPgRoentgen;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.CheckBox chkRoentgenAuthorProfile;
+        private System.Windows.Forms.CheckBox chkRoentgenEndActions;
+        private System.Windows.Forms.CheckBox chkRoentgenStartActions;
+        private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ComboBox cmbRoentgenRegion;
     }
 }

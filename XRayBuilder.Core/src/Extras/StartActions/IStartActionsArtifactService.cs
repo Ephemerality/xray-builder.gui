@@ -5,6 +5,6 @@ namespace XRayBuilder.Core.Extras.StartActions
 {
     public interface IStartActionsArtifactService
     {
-        string GenerateStartActions(BookInfo curBook, AuthorProfileGenerator.Response authorProfile);
+        Artifacts.StartActions GenerateStartActions(BookInfo curBook, AuthorProfileGenerator.Response authorProfile);
     }
 }

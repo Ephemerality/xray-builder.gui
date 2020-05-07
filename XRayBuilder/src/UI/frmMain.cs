@@ -11,7 +11,9 @@ using Newtonsoft.Json;
 using SimpleInjector;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Logic;
+using XRayBuilder.Core.DataSources.Roentgen.Logic;
 using XRayBuilder.Core.DataSources.Secondary;
+using XRayBuilder.Core.Extras.Artifacts;
 using XRayBuilder.Core.Extras.AuthorProfile;
 using XRayBuilder.Core.Extras.EndActions;
 using XRayBuilder.Core.Extras.StartActions;
@@ -55,6 +57,7 @@ namespace XRayBuilderGUI.UI
         private readonly KfxXrayService _kfxXrayService;
         private readonly IStartActionsArtifactService _startActionsArtifactService;
         private readonly IEndActionsArtifactService _endActionsArtifactService;
+        private readonly RoentgenClient _roentgenClient;
 
         // TODO: Fix up these paths
         private string EaPath = "";
@@ -77,7 +80,8 @@ namespace XRayBuilderGUI.UI
             ITermsService termsService,
             KfxXrayService kfxXrayService,
             IStartActionsArtifactService startActionsArtifactService,
-            IEndActionsArtifactService endActionsArtifactService)
+            IEndActionsArtifactService endActionsArtifactService,
+            RoentgenClient roentgenClient)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
@@ -96,6 +100,7 @@ namespace XRayBuilderGUI.UI
             _kfxXrayService = kfxXrayService;
             _startActionsArtifactService = startActionsArtifactService;
             _endActionsArtifactService = endActionsArtifactService;
+            _roentgenClient = roentgenClient;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
         }
@@ -522,7 +527,7 @@ namespace XRayBuilderGUI.UI
                     PromptAsin = _settings.promptASIN,
                     SaveHtml = _settings.saveHtml,
                     EstimatePageCount = _settings.pageCount
-                }, _logger, _httpClient, _amazonClient, _amazonInfoParser);
+                }, _logger, _httpClient, _amazonClient, _amazonInfoParser, _roentgenClient);
 
                 var endActionsResponse = _settings.useNewVersion
                     ? await ea.GenerateNewFormatData(authorProfileResponse, AsinPrompt, metadata, _progress, _cancelTokens.Token)
@@ -568,26 +573,32 @@ namespace XRayBuilderGUI.UI
 
                 // TODO: Separate out SA logic
                 SaPath = $@"{outputDir}\StartActions.data.{bookInfo.Asin}.asc";
-                string saContent = null;
+                StartActions startActions = null;
                 if (_settings.downloadSA)
                 {
                     _logger.Log("Attempting to download Start Actions...");
                     try
                     {
-                        saContent = await _amazonClient.DownloadStartActions(metadata.Asin);
+                        startActions = await _roentgenClient.DownloadStartActionsAsync(metadata.Asin, _cancelTokens.Token);
                         _logger.Log("Successfully downloaded pre-made Start Actions!");
                     }
                     catch
                     {
-                        _logger.Log("No pre-made Start Actions available, building...");
+                        _logger.Log("No pre-made Start Actions available, building instead...");
                     }
                 }
 
-                if (string.IsNullOrEmpty(saContent))
-                    saContent = _startActionsArtifactService.GenerateStartActions(endActionsResponse.Book, authorProfileResponse);
+                startActions ??= _startActionsArtifactService.GenerateStartActions(endActionsResponse.Book, authorProfileResponse);
 
                 _logger.Log("Writing StartActions to file...");
-                File.WriteAllText(SaPath, saContent);
+                try
+                {
+                    File.WriteAllText(SaPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(startActions)));
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log("An error occurred creating the StartActions: " + ex.Message + "\r\n" + ex.StackTrace);
+                }
                 _logger.Log($"StartActions file created successfully!\r\nSaved to {SaPath}");
 
                 cmsPreview.Items[3].Enabled = true;

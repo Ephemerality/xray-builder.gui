@@ -7,7 +7,6 @@ using XRayBuilder.Core.Extras.Artifacts;
 using XRayBuilder.Core.Extras.AuthorProfile;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Enumerables.Extensions;
-using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Primitives.Util;
 using XRayBuilder.Core.Model;
 using XRayBuilder.Core.Model.Exceptions;
@@ -16,13 +15,10 @@ namespace XRayBuilder.Core.Extras.StartActions
 {
     public sealed class StartActionsArtifactService : IStartActionsArtifactService
     {
-        private readonly ILogger _logger;
         private readonly Artifacts.StartActions _baseStartActions;
 
-        public StartActionsArtifactService(ILogger logger)
+        public StartActionsArtifactService()
         {
-            _logger = logger;
-
             try
             {
                 var template = File.ReadAllText($@"{Environment.CurrentDirectory}\dist\BaseStartActions.json", Encoding.UTF8);
@@ -38,7 +34,7 @@ namespace XRayBuilder.Core.Extras.StartActions
             }
         }
 
-        public string GenerateStartActions(BookInfo curBook, AuthorProfileGenerator.Response authorProfile)
+        public Artifacts.StartActions GenerateStartActions(BookInfo curBook, AuthorProfileGenerator.Response authorProfile)
         {
             var startActions = _baseStartActions.Clone();
 
@@ -105,16 +101,7 @@ namespace XRayBuilder.Core.Extras.StartActions
             startActions.Data.PreviousBookInTheSeries = Extensions.BookInfoToBook(curBook.Series?.Previous, true);
             startActions.Data.ReadingPages.PagesInBook = curBook.PagesInBook;
 
-            try
-            {
-                return Functions.ExpandUnicode(JsonConvert.SerializeObject(startActions));
-            }
-            catch (Exception ex)
-            {
-                _logger.Log("An error occurred creating the StartActions: " + ex.Message + "\r\n" + ex.StackTrace);
-            }
-
-            return null;
+            return startActions;
         }
     }
 }

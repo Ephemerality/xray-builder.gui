@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using JetBrains.Annotations;
-using Newtonsoft.Json;
 using XRayBuilder.Core.DataSources.Amazon.Model;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
@@ -382,15 +381,6 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
                 yield return book;
             }
-        }
-
-        public Task<string> DownloadStartActions(string asin, CancellationToken cancellationToken = default)
-            => _httpClient.GetStringAsync($"https://www.revensoftware.com/amazon/sa/{asin}", cancellationToken);
-
-        public async Task<NextBookResult> DownloadNextInSeries(string asin, CancellationToken cancellationToken = default)
-        {
-            var response = await _httpClient.GetStringAsync($"https://www.revensoftware.com/amazon/next/{asin}", cancellationToken);
-            return JsonConvert.DeserializeObject<NextBookResult>(response);
         }
     }
 }

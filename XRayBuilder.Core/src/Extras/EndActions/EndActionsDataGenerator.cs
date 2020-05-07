@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources;
 using XRayBuilder.Core.DataSources.Amazon;
+using XRayBuilder.Core.DataSources.Roentgen.Logic;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Extras.AuthorProfile;
 using XRayBuilder.Core.Libraries;
@@ -26,6 +27,7 @@ namespace XRayBuilder.Core.Extras.EndActions
         private readonly IHttpClient _httpClient;
         private readonly IAmazonClient _amazonClient;
         private readonly IAmazonInfoParser _amazonInfoParser;
+        private readonly RoentgenClient _roentgenClient;
 
         private List<BookInfo> custAlsoBought = new List<BookInfo>();
         private BookInfo curBook;
@@ -42,7 +44,8 @@ namespace XRayBuilder.Core.Extras.EndActions
             ILogger logger,
             IHttpClient httpClient,
             IAmazonClient amazonClient,
-            IAmazonInfoParser amazonInfoParser)
+            IAmazonInfoParser amazonInfoParser,
+            RoentgenClient roentgenClient)
         {
             curBook = book;
             _dataSource = dataSource;
@@ -51,6 +54,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             _httpClient = httpClient;
             _amazonClient = amazonClient;
             _amazonInfoParser = amazonInfoParser;
+            _roentgenClient = roentgenClient;
         }
 
         /// <summary>
@@ -319,7 +323,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             {
                 try
                 {
-                    var seriesResult = await _amazonClient.DownloadNextInSeries(curBook.Asin, cancellationToken);
+                    var seriesResult = await _roentgenClient.DownloadNextInSeriesAsync(curBook.Asin, cancellationToken);
                     switch (seriesResult?.Error?.ErrorCode)
                     {
                         case "ERR004":

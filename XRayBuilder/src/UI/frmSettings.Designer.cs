@@ -87,16 +87,16 @@
             this.txtReal = new System.Windows.Forms.TextBox();
             this.txtPen = new System.Windows.Forms.TextBox();
             this.lblPen = new System.Windows.Forms.Label();
-            this.listSettings = new System.Windows.Forms.ListBox();
             this.tabPgRoentgen = new System.Windows.Forms.TabPage();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.cmbRoentgenRegion = new System.Windows.Forms.ComboBox();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.chkRoentgenAuthorProfile = new System.Windows.Forms.CheckBox();
             this.chkRoentgenEndActions = new System.Windows.Forms.CheckBox();
             this.chkRoentgenStartActions = new System.Windows.Forms.CheckBox();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.cmbRoentgenRegion = new System.Windows.Forms.ComboBox();
+            this.listSettings = new System.Windows.Forms.ListBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -735,27 +735,6 @@
             this.lblPen.TabIndex = 19;
             this.lblPen.Text = "Pen Name:";
             // 
-            // listSettings
-            // 
-            this.listSettings.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
-            this.listSettings.FormattingEnabled = true;
-            this.listSettings.IntegralHeight = false;
-            this.listSettings.ItemHeight = 20;
-            this.listSettings.Items.AddRange(new object[] {
-            "General",
-            "Directories",
-            "X-Ray",
-            "Aliases and Chapters",
-            "Amazon",
-            "Roentgen"});
-            this.listSettings.Location = new System.Drawing.Point(12, 12);
-            this.listSettings.Name = "listSettings";
-            this.listSettings.Size = new System.Drawing.Size(130, 253);
-            this.listSettings.TabIndex = 38;
-            this.listSettings.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listSettings_DrawItem);
-            this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
-            this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
-            // 
             // tabPgRoentgen
             // 
             this.tabPgRoentgen.Controls.Add(this.groupBox7);
@@ -783,35 +762,26 @@
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Pre-built Downloads";
             // 
-            // chkRoentgenAuthorProfile
+            // label4
             // 
-            this.chkRoentgenAuthorProfile.AutoSize = true;
-            this.chkRoentgenAuthorProfile.Location = new System.Drawing.Point(14, 22);
-            this.chkRoentgenAuthorProfile.Name = "chkRoentgenAuthorProfile";
-            this.chkRoentgenAuthorProfile.Size = new System.Drawing.Size(89, 17);
-            this.chkRoentgenAuthorProfile.TabIndex = 33;
-            this.chkRoentgenAuthorProfile.Text = "Author Profile";
-            this.chkRoentgenAuthorProfile.UseVisualStyleBackColor = true;
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(9, 94);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(44, 13);
+            this.label4.TabIndex = 39;
+            this.label4.Text = "Region:";
+            this.label4.Visible = false;
             // 
-            // chkRoentgenEndActions
+            // cmbRoentgenRegion
             // 
-            this.chkRoentgenEndActions.AutoSize = true;
-            this.chkRoentgenEndActions.Location = new System.Drawing.Point(14, 45);
-            this.chkRoentgenEndActions.Name = "chkRoentgenEndActions";
-            this.chkRoentgenEndActions.Size = new System.Drawing.Size(83, 17);
-            this.chkRoentgenEndActions.TabIndex = 29;
-            this.chkRoentgenEndActions.Text = "End Actions";
-            this.chkRoentgenEndActions.UseVisualStyleBackColor = true;
-            // 
-            // chkRoentgenStartActions
-            // 
-            this.chkRoentgenStartActions.AutoSize = true;
-            this.chkRoentgenStartActions.Location = new System.Drawing.Point(14, 68);
-            this.chkRoentgenStartActions.Name = "chkRoentgenStartActions";
-            this.chkRoentgenStartActions.Size = new System.Drawing.Size(86, 17);
-            this.chkRoentgenStartActions.TabIndex = 24;
-            this.chkRoentgenStartActions.Text = "Start Actions";
-            this.chkRoentgenStartActions.UseVisualStyleBackColor = true;
+            this.cmbRoentgenRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbRoentgenRegion.FormattingEnabled = true;
+            this.cmbRoentgenRegion.Location = new System.Drawing.Point(59, 91);
+            this.cmbRoentgenRegion.Name = "cmbRoentgenRegion";
+            this.cmbRoentgenRegion.Size = new System.Drawing.Size(78, 21);
+            this.cmbRoentgenRegion.TabIndex = 38;
+            this.cmbRoentgenRegion.Visible = false;
             // 
             // pictureBox2
             // 
@@ -833,24 +803,57 @@
             this.label3.Text = "When these settings are enabled, pre-built versions of the files will be download" +
     "ed if they are available. Requires a valid ASIN.";
             // 
-            // label4
+            // chkRoentgenAuthorProfile
             // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(9, 94);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(44, 13);
-            this.label4.TabIndex = 39;
-            this.label4.Text = "Region:";
+            this.chkRoentgenAuthorProfile.AutoSize = true;
+            this.chkRoentgenAuthorProfile.Location = new System.Drawing.Point(197, 147);
+            this.chkRoentgenAuthorProfile.Name = "chkRoentgenAuthorProfile";
+            this.chkRoentgenAuthorProfile.Size = new System.Drawing.Size(89, 17);
+            this.chkRoentgenAuthorProfile.TabIndex = 33;
+            this.chkRoentgenAuthorProfile.Text = "Author Profile";
+            this.chkRoentgenAuthorProfile.UseVisualStyleBackColor = true;
+            this.chkRoentgenAuthorProfile.Visible = false;
             // 
-            // cmbRoentgenRegion
+            // chkRoentgenEndActions
             // 
-            this.cmbRoentgenRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbRoentgenRegion.FormattingEnabled = true;
-            this.cmbRoentgenRegion.Location = new System.Drawing.Point(59, 91);
-            this.cmbRoentgenRegion.Name = "cmbRoentgenRegion";
-            this.cmbRoentgenRegion.Size = new System.Drawing.Size(78, 21);
-            this.cmbRoentgenRegion.TabIndex = 38;
+            this.chkRoentgenEndActions.AutoSize = true;
+            this.chkRoentgenEndActions.Location = new System.Drawing.Point(14, 24);
+            this.chkRoentgenEndActions.Name = "chkRoentgenEndActions";
+            this.chkRoentgenEndActions.Size = new System.Drawing.Size(83, 17);
+            this.chkRoentgenEndActions.TabIndex = 29;
+            this.chkRoentgenEndActions.Text = "End Actions";
+            this.chkRoentgenEndActions.UseVisualStyleBackColor = true;
+            // 
+            // chkRoentgenStartActions
+            // 
+            this.chkRoentgenStartActions.AutoSize = true;
+            this.chkRoentgenStartActions.Location = new System.Drawing.Point(14, 47);
+            this.chkRoentgenStartActions.Name = "chkRoentgenStartActions";
+            this.chkRoentgenStartActions.Size = new System.Drawing.Size(86, 17);
+            this.chkRoentgenStartActions.TabIndex = 24;
+            this.chkRoentgenStartActions.Text = "Start Actions";
+            this.chkRoentgenStartActions.UseVisualStyleBackColor = true;
+            // 
+            // listSettings
+            // 
+            this.listSettings.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
+            this.listSettings.FormattingEnabled = true;
+            this.listSettings.IntegralHeight = false;
+            this.listSettings.ItemHeight = 20;
+            this.listSettings.Items.AddRange(new object[] {
+            "General",
+            "Directories",
+            "X-Ray",
+            "Aliases and Chapters",
+            "Amazon",
+            "Roentgen"});
+            this.listSettings.Location = new System.Drawing.Point(12, 12);
+            this.listSettings.Name = "listSettings";
+            this.listSettings.Size = new System.Drawing.Size(130, 253);
+            this.listSettings.TabIndex = 38;
+            this.listSettings.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listSettings_DrawItem);
+            this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
+            this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
             // 
             // frmSettings
             // 
@@ -915,74 +918,75 @@
 
         }
 
-        #endregion
-        private System.Windows.Forms.Button btnSupport;
+        private System.Windows.Forms.Button btnBrowseOut;
         private System.Windows.Forms.Button btnClearLogs;
         private System.Windows.Forms.Button btnLogs;
         private System.Windows.Forms.Button btnSave;
-        private System.Windows.Forms.Label lblSeperator;
-        private System.Windows.Forms.TabControl tabSettings;
-        private System.Windows.Forms.TabPage tabPgGeneral;
-        private System.Windows.Forms.TabPage tabPgDirectories;
-        private System.Windows.Forms.TabPage tabPgAliasChapter;
-        private System.Windows.Forms.TabPage tabPgAmazon;
-        private System.Windows.Forms.GroupBox gbGeneral;
-        private System.Windows.Forms.CheckBox chkSound;
-        private System.Windows.Forms.GroupBox gbDirectories;
-        private System.Windows.Forms.TextBox txtOut;
-        private System.Windows.Forms.Button btnBrowseOut;
-        private System.Windows.Forms.GroupBox gbUnpack;
-        private System.Windows.Forms.CheckBox chkSaveHtml;
-        private System.Windows.Forms.CheckBox chkRaw;
-        private System.Windows.Forms.CheckBox chkSubDirectories;
-        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.Button btnSupport;
         private System.Windows.Forms.CheckBox chkAlias;
-        private System.Windows.Forms.CheckBox chkSplitAliases;
-        private System.Windows.Forms.CheckBox chkEnableEdit;
-        private System.Windows.Forms.CheckBox chkDownloadAliases;
-        private System.Windows.Forms.GroupBox groupBox6;
-        private System.Windows.Forms.CheckBox chkChapters;
-        private System.Windows.Forms.CheckBox chkOverwrite;
-        private System.Windows.Forms.GroupBox gbDetails;
-        private System.Windows.Forms.Label lblReal;
-        private System.Windows.Forms.TextBox txtReal;
-        private System.Windows.Forms.TextBox txtPen;
-        private System.Windows.Forms.Label lblPen;
-        private System.Windows.Forms.ListBox listSettings;
-        private System.Windows.Forms.CheckBox chkPageCount;
-        private System.Windows.Forms.TabPage tabPgXray;
-        private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.CheckBox chkSoftHyphen;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.CheckBox chkSkipNoLikes;
-        private System.Windows.Forms.GroupBox gbXray;
         private System.Windows.Forms.CheckBox chkAndroid;
-        private System.Windows.Forms.CheckBox chkUseNew;
-        private System.Windows.Forms.GroupBox gbProcess;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.RadioButton rdoShelfari;
-        private System.Windows.Forms.RadioButton rdoGoodreads;
-        private System.Windows.Forms.GroupBox gbAmazonPrefs;
-        private System.Windows.Forms.CheckBox chkSaveBio;
-        private System.Windows.Forms.ComboBox cmbRegion;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.CheckBox chkPromptAsin;
-        private System.Windows.Forms.Label lblNote;
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtMinClipLen;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.CheckBox chkSearchAsin;
+        private System.Windows.Forms.CheckBox chkChapters;
+        private System.Windows.Forms.CheckBox chkDownloadAliases;
         private System.Windows.Forms.CheckBox chkEditBiography;
-        private System.Windows.Forms.CheckBox chkUseSidecar;
-        private System.Windows.Forms.TabPage tabPgRoentgen;
-        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.CheckBox chkEnableEdit;
+        private System.Windows.Forms.CheckBox chkOverwrite;
+        private System.Windows.Forms.CheckBox chkPageCount;
+        private System.Windows.Forms.CheckBox chkPromptAsin;
+        private System.Windows.Forms.CheckBox chkRaw;
         private System.Windows.Forms.CheckBox chkRoentgenAuthorProfile;
         private System.Windows.Forms.CheckBox chkRoentgenEndActions;
         private System.Windows.Forms.CheckBox chkRoentgenStartActions;
-        private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.CheckBox chkSaveBio;
+        private System.Windows.Forms.CheckBox chkSaveHtml;
+        private System.Windows.Forms.CheckBox chkSearchAsin;
+        private System.Windows.Forms.CheckBox chkSkipNoLikes;
+        private System.Windows.Forms.CheckBox chkSoftHyphen;
+        private System.Windows.Forms.CheckBox chkSound;
+        private System.Windows.Forms.CheckBox chkSplitAliases;
+        private System.Windows.Forms.CheckBox chkSubDirectories;
+        private System.Windows.Forms.CheckBox chkUseNew;
+        private System.Windows.Forms.CheckBox chkUseSidecar;
+        private System.Windows.Forms.ComboBox cmbRegion;
+        private System.Windows.Forms.ComboBox cmbRoentgenRegion;
+        private System.Windows.Forms.GroupBox gbAmazonPrefs;
+        private System.Windows.Forms.GroupBox gbDetails;
+        private System.Windows.Forms.GroupBox gbDirectories;
+        private System.Windows.Forms.GroupBox gbGeneral;
+        private System.Windows.Forms.GroupBox gbProcess;
+        private System.Windows.Forms.GroupBox gbUnpack;
+        private System.Windows.Forms.GroupBox gbXray;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.ComboBox cmbRoentgenRegion;
+        private System.Windows.Forms.Label lblNote;
+        private System.Windows.Forms.Label lblPen;
+        private System.Windows.Forms.Label lblReal;
+        private System.Windows.Forms.Label lblSeperator;
+        private System.Windows.Forms.ListBox listSettings;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.RadioButton rdoGoodreads;
+        private System.Windows.Forms.RadioButton rdoShelfari;
+        private System.Windows.Forms.TabPage tabPgAliasChapter;
+        private System.Windows.Forms.TabPage tabPgAmazon;
+        private System.Windows.Forms.TabPage tabPgDirectories;
+        private System.Windows.Forms.TabPage tabPgGeneral;
+        private System.Windows.Forms.TabPage tabPgRoentgen;
+        private System.Windows.Forms.TabPage tabPgXray;
+        private System.Windows.Forms.TabControl tabSettings;
+        private System.Windows.Forms.TextBox txtMinClipLen;
+        private System.Windows.Forms.TextBox txtOut;
+        private System.Windows.Forms.TextBox txtPen;
+        private System.Windows.Forms.TextBox txtReal;
+
+        #endregion
     }
 }

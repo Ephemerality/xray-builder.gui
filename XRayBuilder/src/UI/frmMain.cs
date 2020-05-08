@@ -905,12 +905,17 @@ namespace XRayBuilderGUI.UI
 
             try
             {
-                // Directory.Delete(randomFile, true);
+                if (AmazonClient.IsAsin(metadata.Asin))
+                {
+                    // Fire and forget
+                    #pragma warning disable 4014
+                    Task.Run(() => _roentgenClient.PreloadAsync(metadata.Asin, _cancelTokens.Token)).ConfigureAwait(false);
+                    #pragma warning restore 4014
+                }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.Log($"An error occurred while trying to delete temporary files: {ex.Message}\r\n{ex.StackTrace}\r\n"
-                    + "Try deleting these files manually.");
+                // Ignored
             }
         }
 

@@ -1,9 +1,13 @@
 using System;
+using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using XRayBuilder.Core.DataSources.Amazon.Model;
+using XRayBuilder.Core.DataSources.Roentgen.Model;
 using XRayBuilder.Core.Extras.Artifacts;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Serialization.Json.Util;
@@ -12,7 +16,7 @@ using XRayBuilder.Core.XRay.Artifacts;
 
 namespace XRayBuilder.Core.DataSources.Roentgen.Logic
 {
-    public sealed class RoentgenClient
+    public sealed class RoentgenClient : IRoentgenClient
     {
         private readonly IHttpClient _httpClient;
 
@@ -22,10 +26,10 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
         }
 
         private const string BaseUrl = "https://www.revensoftware.com/roentgen";
+        private const string DownloadEndpoint = "/download";
         private string StartActionsEndpoint(string asin) => $"/startactions/{asin}";
         private string SeriesEndpoint(string asin) => $"/next/{asin}";
         private string PreloadEndpoint(string asin) => $"/preload/{asin}";
-        private string DownloadEndpoint(string asin, string type) => $"/download/{asin}/{type}";
 
         private async Task<T> HandleDownloadExceptionsAsync<T>(Func<Task<T>> downloadTask) where T : class
         {
@@ -74,18 +78,33 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
         {
             return HandleDownloadExceptionsAsync(async () =>
             {
-                var response = await _httpClient.GetStringAsync($"{BaseUrl}{DownloadEndpoint(asin, "Terms")}", cancellationToken);
+                var response = await _httpClient.GetStringAsync($"{BaseUrl}{DownloadEndpoint}", cancellationToken);
                 return XmlUtil.Deserialize<Term[]>(response);
             });
         }
 
-        public Task<EndActions> DownloadEndActionsAsync(string asin, CancellationToken cancellationToken)
+        public Task<EndActions> DownloadEndActionsAsync(string asin, string regionTld, CancellationToken cancellationToken)
         {
-            return HandleDownloadExceptionsAsync(async () =>
+            return HandleDownloadExceptionsAsync(() => DownloadArtifactAsync<EndActions>(asin, regionTld, DownloadRequest.TypeEnum.EndActions, cancellationToken));
+        }
+
+        public Task<AuthorProfile> DownloadAuthorProfileeAsync(string asin, string regionTld, CancellationToken cancellationToken)
+        {
+            return HandleDownloadExceptionsAsync(() => DownloadArtifactAsync<AuthorProfile>(asin, regionTld, DownloadRequest.TypeEnum.AuthorProfile, cancellationToken));
+        }
+
+        private async Task<T> DownloadArtifactAsync<T>(string asin, string regionTld, DownloadRequest.TypeEnum type, CancellationToken cancellationToken)
+        {
+            var request = new StringContent(JsonUtil.Serialize(new DownloadRequest
             {
-                var response = await _httpClient.GetStringAsync($"{BaseUrl}{DownloadEndpoint(asin, "EndActions")}", cancellationToken);
-                return JsonUtil.Deserialize<EndActions>(response);
-            });
+                Asin = asin,
+                Type = type,
+                Region = regionTld
+            }), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync($"{BaseUrl}{DownloadEndpoint}", request, cancellationToken);
+            var responseStream = await response.Content.ReadAsStreamAsync();
+            var responseString = await new StreamReader(responseStream, Encoding.UTF8).ReadToEndAsync();
+            return JsonUtil.Deserialize<T>(responseString);
         }
     }
 }

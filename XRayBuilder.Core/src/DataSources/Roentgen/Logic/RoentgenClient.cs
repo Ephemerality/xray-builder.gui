@@ -44,7 +44,7 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
             }
         }
 
-        public Task<StartActions> DownloadStartActionsAsync(string asin, CancellationToken cancellationToken)
+        public Task<StartActions> DownloadStartActionsAsync(string asin, string regionTld, CancellationToken cancellationToken)
         {
             return HandleDownloadExceptionsAsync(async () =>
             {
@@ -88,7 +88,7 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
             return HandleDownloadExceptionsAsync(() => DownloadArtifactAsync<EndActions>(asin, regionTld, DownloadRequest.TypeEnum.EndActions, cancellationToken));
         }
 
-        public Task<AuthorProfile> DownloadAuthorProfileeAsync(string asin, string regionTld, CancellationToken cancellationToken)
+        public Task<AuthorProfile> DownloadAuthorProfileAsync(string asin, string regionTld, CancellationToken cancellationToken)
         {
             return HandleDownloadExceptionsAsync(() => DownloadArtifactAsync<AuthorProfile>(asin, regionTld, DownloadRequest.TypeEnum.AuthorProfile, cancellationToken));
         }

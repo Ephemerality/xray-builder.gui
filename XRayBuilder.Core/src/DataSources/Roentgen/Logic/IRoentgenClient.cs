@@ -8,11 +8,11 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
 {
     public interface IRoentgenClient
     {
-        Task<StartActions> DownloadStartActionsAsync(string asin, CancellationToken cancellationToken);
+        Task<StartActions> DownloadStartActionsAsync(string asin, string regionTld, CancellationToken cancellationToken);
         Task<NextBookResult> DownloadNextInSeriesAsync(string asin, CancellationToken cancellationToken);
         Task PreloadAsync(string asin, CancellationToken cancellationToken);
         Task<Term[]> DownloadTermsAsync(string asin, CancellationToken cancellationToken);
         Task<EndActions> DownloadEndActionsAsync(string asin, string regionTld, CancellationToken cancellationToken);
-        Task<AuthorProfile> DownloadAuthorProfileeAsync(string asin, string regionTld, CancellationToken cancellationToken);
+        Task<AuthorProfile> DownloadAuthorProfileAsync(string asin, string regionTld, CancellationToken cancellationToken);
     }
 }

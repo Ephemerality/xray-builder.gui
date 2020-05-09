@@ -76,7 +76,6 @@ namespace XRayBuilderGUI.UI
             chkSubDirectories.Checked = Properties.Settings.Default.useSubDirectories;
             chkSkipNoLikes.Checked = Properties.Settings.Default.skipNoLikes;
             txtMinClipLen.Text = Properties.Settings.Default.minClipLen.ToString();
-            chkOverwrite.Checked = Properties.Settings.Default.overwrite;
             chkAlias.Checked = Properties.Settings.Default.overwriteAliases;
             chkChapters.Checked = Properties.Settings.Default.overwriteChapters;
             chkSaveHtml.Checked = Properties.Settings.Default.saveHtml;
@@ -89,6 +88,11 @@ namespace XRayBuilderGUI.UI
                 rdoGoodreads.Checked = true;
             else
                 rdoShelfari.Checked = true;
+
+            chkOverwriteAP.Checked = Properties.Settings.Default.overwriteAP;
+            chkOverwriteEA.Checked = Properties.Settings.Default.overwriteEA;
+            chkOverwriteSA.Checked = Properties.Settings.Default.overwriteSA;
+            chkAutoBuildAP.Checked = Properties.Settings.Default.autoBuildAP;
             chkPromptAsin.Checked = Properties.Settings.Default.promptASIN;
             chkSearchAsin.Checked = Properties.Settings.Default.searchByAsin;
             chkEditBiography.Checked = Properties.Settings.Default.editBiography;
@@ -131,7 +135,9 @@ namespace XRayBuilderGUI.UI
             toolTip1.SetToolTip(chkSubDirectories, "Save generated files to an\r\n\"Author\\Filename\" subdirectory.");
             toolTip1.SetToolTip(chkUseSidecar, "Save generated files to a sidecar subdirectory based on the filename.");
             toolTip1.SetToolTip(btnLogs, "Open the log files directory.");
-            toolTip1.SetToolTip(chkOverwrite, "Overwrite existing Author Profile,\r\nStart and End Actions files.");
+            toolTip1.SetToolTip(chkOverwriteAP, "Overwrite existing Author Profile files.");
+            toolTip1.SetToolTip(chkOverwriteEA, "Overwrite existing End Actions files.");
+            toolTip1.SetToolTip(chkOverwriteSA, "Overwrite existing Start Actions files.");
             toolTip1.SetToolTip(chkAlias, "Overwrite existing alias files.");
             toolTip1.SetToolTip(chkChapters, "Overwrite existing chapter files.");
             toolTip1.SetToolTip(chkSaveHtml, "Save parsed HTML files. This is generally used\r\n" +
@@ -166,6 +172,7 @@ namespace XRayBuilderGUI.UI
                                                "in Calibre, and may help file creation.");
             toolTip1.SetToolTip(chkSearchAsin, "If enabled, search results will be filtered so that non-Kindle Edition books are removed");
             toolTip1.SetToolTip(chkEditBiography, "If enabled, allows editing the Author's biography before it's used.");
+            toolTip1.SetToolTip(chkAutoBuildAP, "When set, the Author Profile will be built using Start/End Actions files instead of using Amazon.");
 
             var regions = new List<AmazonRegion>(regionTLDs.Count);
             foreach (var (name, tld) in regionTLDs)
@@ -212,9 +219,12 @@ namespace XRayBuilderGUI.UI
             Properties.Settings.Default.penName = txtPen.Text;
             Properties.Settings.Default.enableEdit = chkEnableEdit.Checked;
             Properties.Settings.Default.useSubDirectories = chkSubDirectories.Checked;
-            Properties.Settings.Default.overwrite = chkOverwrite.Checked;
+            Properties.Settings.Default.overwriteAP = chkOverwriteAP.Checked;
+            Properties.Settings.Default.overwriteEA = chkOverwriteEA.Checked;
+            Properties.Settings.Default.overwriteSA = chkOverwriteSA.Checked;
             Properties.Settings.Default.overwriteAliases = chkAlias.Checked;
             Properties.Settings.Default.overwriteChapters = chkChapters.Checked;
+            Properties.Settings.Default.autoBuildAP = chkAutoBuildAP.Checked;
             Properties.Settings.Default.saveHtml = chkSaveHtml.Checked;
             Properties.Settings.Default.splitAliases = chkSplitAliases.Checked;
             Properties.Settings.Default.playSound = chkSound.Checked;
@@ -297,9 +307,9 @@ namespace XRayBuilderGUI.UI
 
         private void chkOverwrite_CheckedChanged(object sender, EventArgs e)
         {
-            chkAlias.Enabled = chkOverwrite.Checked;
-            chkChapters.Enabled = chkOverwrite.Checked;
-            if (!chkOverwrite.Checked)
+            chkAlias.Enabled = chkOverwriteAP.Checked;
+            chkChapters.Enabled = chkOverwriteAP.Checked;
+            if (!chkOverwriteAP.Checked)
             {
                 chkAlias.Checked = false;
                 chkChapters.Checked = false;
@@ -341,7 +351,7 @@ namespace XRayBuilderGUI.UI
         private void chkDownloadAliases_CheckedChanged(object sender, EventArgs e)
         {
             if (chkDownloadAliases.Checked)
-                chkOverwrite.Checked = false;
+                chkOverwriteAP.Checked = false;
         }
     }
 }

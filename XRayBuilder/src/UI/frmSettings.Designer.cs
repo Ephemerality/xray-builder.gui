@@ -66,11 +66,15 @@
             this.gbXray = new System.Windows.Forms.GroupBox();
             this.chkAndroid = new System.Windows.Forms.CheckBox();
             this.chkUseNew = new System.Windows.Forms.CheckBox();
-            this.tabPgAliasChapter = new System.Windows.Forms.TabPage();
+            this.tabPgExtras = new System.Windows.Forms.TabPage();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.chkAutoBuildAP = new System.Windows.Forms.CheckBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.chkOverwriteSA = new System.Windows.Forms.CheckBox();
+            this.chkOverwriteEA = new System.Windows.Forms.CheckBox();
             this.chkChapters = new System.Windows.Forms.CheckBox();
             this.chkAlias = new System.Windows.Forms.CheckBox();
-            this.chkOverwrite = new System.Windows.Forms.CheckBox();
+            this.chkOverwriteAP = new System.Windows.Forms.CheckBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.chkDownloadAliases = new System.Windows.Forms.CheckBox();
             this.chkSplitAliases = new System.Windows.Forms.CheckBox();
@@ -111,7 +115,8 @@
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.gbXray.SuspendLayout();
-            this.tabPgAliasChapter.SuspendLayout();
+            this.tabPgExtras.SuspendLayout();
+            this.groupBox8.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.tabPgAmazon.SuspendLayout();
@@ -177,7 +182,7 @@
             this.tabSettings.Controls.Add(this.tabPgGeneral);
             this.tabSettings.Controls.Add(this.tabPgDirectories);
             this.tabSettings.Controls.Add(this.tabPgXray);
-            this.tabSettings.Controls.Add(this.tabPgAliasChapter);
+            this.tabSettings.Controls.Add(this.tabPgExtras);
             this.tabSettings.Controls.Add(this.tabPgAmazon);
             this.tabSettings.Controls.Add(this.tabPgRoentgen);
             this.tabSettings.ItemSize = new System.Drawing.Size(0, 1);
@@ -515,29 +520,71 @@
             this.chkUseNew.Text = "Use New X-Ray Format";
             this.chkUseNew.UseVisualStyleBackColor = true;
             // 
-            // tabPgAliasChapter
+            // tabPgExtras
             // 
-            this.tabPgAliasChapter.Controls.Add(this.groupBox6);
-            this.tabPgAliasChapter.Controls.Add(this.groupBox5);
-            this.tabPgAliasChapter.Location = new System.Drawing.Point(4, 5);
-            this.tabPgAliasChapter.Name = "tabPgAliasChapter";
-            this.tabPgAliasChapter.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPgAliasChapter.Size = new System.Drawing.Size(390, 259);
-            this.tabPgAliasChapter.TabIndex = 3;
-            this.tabPgAliasChapter.Text = "tabPage4";
-            this.tabPgAliasChapter.UseVisualStyleBackColor = true;
+            this.tabPgExtras.Controls.Add(this.groupBox8);
+            this.tabPgExtras.Controls.Add(this.groupBox6);
+            this.tabPgExtras.Controls.Add(this.groupBox5);
+            this.tabPgExtras.Location = new System.Drawing.Point(4, 5);
+            this.tabPgExtras.Name = "tabPgExtras";
+            this.tabPgExtras.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPgExtras.Size = new System.Drawing.Size(390, 259);
+            this.tabPgExtras.TabIndex = 3;
+            this.tabPgExtras.Text = "tabPage4";
+            this.tabPgExtras.UseVisualStyleBackColor = true;
+            // 
+            // groupBox8
+            // 
+            this.groupBox8.Controls.Add(this.chkAutoBuildAP);
+            this.groupBox8.Location = new System.Drawing.Point(180, 12);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(204, 100);
+            this.groupBox8.TabIndex = 32;
+            this.groupBox8.TabStop = false;
+            this.groupBox8.Text = "Author Profile";
+            // 
+            // chkAutoBuildAP
+            // 
+            this.chkAutoBuildAP.Location = new System.Drawing.Point(14, 19);
+            this.chkAutoBuildAP.Name = "chkAutoBuildAP";
+            this.chkAutoBuildAP.Size = new System.Drawing.Size(184, 43);
+            this.chkAutoBuildAP.TabIndex = 24;
+            this.chkAutoBuildAP.Text = "Build from downloaded or existing Start/End Actions when possible";
+            this.chkAutoBuildAP.UseVisualStyleBackColor = true;
             // 
             // groupBox6
             // 
+            this.groupBox6.Controls.Add(this.chkOverwriteSA);
+            this.groupBox6.Controls.Add(this.chkOverwriteEA);
             this.groupBox6.Controls.Add(this.chkChapters);
             this.groupBox6.Controls.Add(this.chkAlias);
-            this.groupBox6.Controls.Add(this.chkOverwrite);
+            this.groupBox6.Controls.Add(this.chkOverwriteAP);
             this.groupBox6.Location = new System.Drawing.Point(6, 118);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(378, 100);
             this.groupBox6.TabIndex = 31;
             this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Output";
+            this.groupBox6.Text = "Overwrite Options";
+            // 
+            // chkOverwriteSA
+            // 
+            this.chkOverwriteSA.AutoSize = true;
+            this.chkOverwriteSA.Location = new System.Drawing.Point(120, 45);
+            this.chkOverwriteSA.Name = "chkOverwriteSA";
+            this.chkOverwriteSA.Size = new System.Drawing.Size(86, 17);
+            this.chkOverwriteSA.TabIndex = 32;
+            this.chkOverwriteSA.Text = "Start Actions";
+            this.chkOverwriteSA.UseVisualStyleBackColor = true;
+            // 
+            // chkOverwriteEA
+            // 
+            this.chkOverwriteEA.AutoSize = true;
+            this.chkOverwriteEA.Location = new System.Drawing.Point(120, 19);
+            this.chkOverwriteEA.Name = "chkOverwriteEA";
+            this.chkOverwriteEA.Size = new System.Drawing.Size(83, 17);
+            this.chkOverwriteEA.TabIndex = 31;
+            this.chkOverwriteEA.Text = "End Actions";
+            this.chkOverwriteEA.UseVisualStyleBackColor = true;
             // 
             // chkChapters
             // 
@@ -559,16 +606,16 @@
             this.chkAlias.Text = "Aliases";
             this.chkAlias.UseVisualStyleBackColor = true;
             // 
-            // chkOverwrite
+            // chkOverwriteAP
             // 
-            this.chkOverwrite.AutoSize = true;
-            this.chkOverwrite.Location = new System.Drawing.Point(14, 19);
-            this.chkOverwrite.Name = "chkOverwrite";
-            this.chkOverwrite.Size = new System.Drawing.Size(130, 17);
-            this.chkOverwrite.TabIndex = 26;
-            this.chkOverwrite.Text = "Overwrite existing files";
-            this.chkOverwrite.UseVisualStyleBackColor = true;
-            this.chkOverwrite.CheckedChanged += new System.EventHandler(this.chkOverwrite_CheckedChanged);
+            this.chkOverwriteAP.AutoSize = true;
+            this.chkOverwriteAP.Location = new System.Drawing.Point(14, 19);
+            this.chkOverwriteAP.Name = "chkOverwriteAP";
+            this.chkOverwriteAP.Size = new System.Drawing.Size(89, 17);
+            this.chkOverwriteAP.TabIndex = 26;
+            this.chkOverwriteAP.Text = "Author Profile";
+            this.chkOverwriteAP.UseVisualStyleBackColor = true;
+            this.chkOverwriteAP.CheckedChanged += new System.EventHandler(this.chkOverwrite_CheckedChanged);
             // 
             // groupBox5
             // 
@@ -577,10 +624,10 @@
             this.groupBox5.Controls.Add(this.chkEnableEdit);
             this.groupBox5.Location = new System.Drawing.Point(6, 12);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(378, 100);
+            this.groupBox5.Size = new System.Drawing.Size(162, 100);
             this.groupBox5.TabIndex = 26;
             this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Configuration";
+            this.groupBox5.Text = "Aliases Options";
             // 
             // chkDownloadAliases
             // 
@@ -591,6 +638,7 @@
             this.chkDownloadAliases.TabIndex = 33;
             this.chkDownloadAliases.Text = "Download aliases";
             this.chkDownloadAliases.UseVisualStyleBackColor = true;
+            this.chkDownloadAliases.Visible = false;
             this.chkDownloadAliases.CheckedChanged += new System.EventHandler(this.chkDownloadAliases_CheckedChanged);
             // 
             // chkSplitAliases
@@ -598,9 +646,9 @@
             this.chkSplitAliases.AutoSize = true;
             this.chkSplitAliases.Location = new System.Drawing.Point(14, 45);
             this.chkSplitAliases.Name = "chkSplitAliases";
-            this.chkSplitAliases.Size = new System.Drawing.Size(145, 17);
+            this.chkSplitAliases.Size = new System.Drawing.Size(144, 17);
             this.chkSplitAliases.TabIndex = 29;
-            this.chkSplitAliases.Text = "Automatically split Aliases";
+            this.chkSplitAliases.Text = "Automatically split aliases";
             this.chkSplitAliases.UseVisualStyleBackColor = true;
             // 
             // chkEnableEdit
@@ -608,9 +656,9 @@
             this.chkEnableEdit.AutoSize = true;
             this.chkEnableEdit.Location = new System.Drawing.Point(14, 19);
             this.chkEnableEdit.Name = "chkEnableEdit";
-            this.chkEnableEdit.Size = new System.Drawing.Size(207, 17);
+            this.chkEnableEdit.Size = new System.Drawing.Size(140, 17);
             this.chkEnableEdit.TabIndex = 24;
-            this.chkEnableEdit.Text = "Enable editing of Chapters and Aliases";
+            this.chkEnableEdit.Text = "Enable editing of aliases";
             this.chkEnableEdit.UseVisualStyleBackColor = true;
             // 
             // tabPgAmazon
@@ -844,7 +892,7 @@
             "General",
             "Directories",
             "X-Ray",
-            "Aliases and Chapters",
+            "Extras",
             "Amazon",
             "Roentgen"});
             this.listSettings.Location = new System.Drawing.Point(12, 12);
@@ -900,7 +948,8 @@
             this.groupBox3.PerformLayout();
             this.gbXray.ResumeLayout(false);
             this.gbXray.PerformLayout();
-            this.tabPgAliasChapter.ResumeLayout(false);
+            this.tabPgExtras.ResumeLayout(false);
+            this.groupBox8.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
             this.groupBox5.ResumeLayout(false);
@@ -929,7 +978,7 @@
         private System.Windows.Forms.CheckBox chkDownloadAliases;
         private System.Windows.Forms.CheckBox chkEditBiography;
         private System.Windows.Forms.CheckBox chkEnableEdit;
-        private System.Windows.Forms.CheckBox chkOverwrite;
+        private System.Windows.Forms.CheckBox chkOverwriteAP;
         private System.Windows.Forms.CheckBox chkPageCount;
         private System.Windows.Forms.CheckBox chkPromptAsin;
         private System.Windows.Forms.CheckBox chkRaw;
@@ -975,7 +1024,7 @@
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.RadioButton rdoGoodreads;
         private System.Windows.Forms.RadioButton rdoShelfari;
-        private System.Windows.Forms.TabPage tabPgAliasChapter;
+        private System.Windows.Forms.TabPage tabPgExtras;
         private System.Windows.Forms.TabPage tabPgAmazon;
         private System.Windows.Forms.TabPage tabPgDirectories;
         private System.Windows.Forms.TabPage tabPgGeneral;
@@ -988,5 +1037,10 @@
         private System.Windows.Forms.TextBox txtReal;
 
         #endregion
+
+        private System.Windows.Forms.CheckBox chkOverwriteSA;
+        private System.Windows.Forms.CheckBox chkOverwriteEA;
+        private System.Windows.Forms.GroupBox groupBox8;
+        private System.Windows.Forms.CheckBox chkAutoBuildAP;
     }
 }

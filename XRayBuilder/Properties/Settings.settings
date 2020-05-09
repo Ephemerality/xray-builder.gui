@@ -41,9 +41,6 @@
     <Setting Name="useSubDirectories" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="overwrite" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
     <Setting Name="docDir" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
@@ -108,10 +105,22 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="downloadAP" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="roentgenRegion" Type="System.String" Scope="User">
       <Value Profile="(Default)">com</Value>
+    </Setting>
+    <Setting Name="overwriteAP" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="overwriteEA" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="overwriteSA" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="autoBuildAP" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

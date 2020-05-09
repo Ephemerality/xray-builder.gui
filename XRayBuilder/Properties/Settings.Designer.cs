@@ -181,18 +181,6 @@ namespace XRayBuilderGUI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool overwrite {
-            get {
-                return ((bool)(this["overwrite"]));
-            }
-            set {
-                this["overwrite"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string docDir {
             get {
@@ -442,7 +430,7 @@ namespace XRayBuilderGUI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool downloadAP {
             get {
                 return ((bool)(this["downloadAP"]));
@@ -461,6 +449,54 @@ namespace XRayBuilderGUI.Properties {
             }
             set {
                 this["roentgenRegion"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool overwriteAP {
+            get {
+                return ((bool)(this["overwriteAP"]));
+            }
+            set {
+                this["overwriteAP"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool overwriteEA {
+            get {
+                return ((bool)(this["overwriteEA"]));
+            }
+            set {
+                this["overwriteEA"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool overwriteSA {
+            get {
+                return ((bool)(this["overwriteSA"]));
+            }
+            set {
+                this["overwriteSA"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool autoBuildAP {
+            get {
+                return ((bool)(this["autoBuildAP"]));
+            }
+            set {
+                this["autoBuildAP"] = value;
             }
         }
     }

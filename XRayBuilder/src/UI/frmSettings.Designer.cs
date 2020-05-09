@@ -547,9 +547,9 @@
             // 
             this.chkAutoBuildAP.Location = new System.Drawing.Point(14, 19);
             this.chkAutoBuildAP.Name = "chkAutoBuildAP";
-            this.chkAutoBuildAP.Size = new System.Drawing.Size(184, 43);
+            this.chkAutoBuildAP.Size = new System.Drawing.Size(184, 31);
             this.chkAutoBuildAP.TabIndex = 24;
-            this.chkAutoBuildAP.Text = "Build from downloaded or existing Start/End Actions when possible";
+            this.chkAutoBuildAP.Text = "Build from downloaded End Actions when one is available";
             this.chkAutoBuildAP.UseVisualStyleBackColor = true;
             // 
             // groupBox6

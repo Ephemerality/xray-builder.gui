@@ -172,7 +172,7 @@ namespace XRayBuilderGUI.UI
                                                "in Calibre, and may help file creation.");
             toolTip1.SetToolTip(chkSearchAsin, "If enabled, search results will be filtered so that non-Kindle Edition books are removed");
             toolTip1.SetToolTip(chkEditBiography, "If enabled, allows editing the Author's biography before it's used.");
-            toolTip1.SetToolTip(chkAutoBuildAP, "When set, the Author Profile will be built using Start/End Actions files instead of using Amazon.");
+            toolTip1.SetToolTip(chkAutoBuildAP, "When set, the Author Profile will be built using a downloaded End Actions file instead of scraping Amazon, if one is available.");
 
             var regions = new List<AmazonRegion>(regionTLDs.Count);
             foreach (var (name, tld) in regionTLDs)

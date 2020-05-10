@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using Sentry;
 using SimpleInjector;
 using XRayBuilder.Core.DataSources.Amazon.Bootstrap;
+using XRayBuilder.Core.DataSources.Roentgen.Bootstrap;
 using XRayBuilder.Core.DataSources.Secondary.Bootstrap;
 using XRayBuilder.Core.Extras.Bootstrap;
 using XRayBuilder.Core.Libraries;
@@ -57,6 +58,7 @@ namespace XRayBuilderGUI
             builder.Register<BootstrapSecondary>();
             builder.Register<BootstrapUI>();
             builder.Register<BootstrapXRay>();
+            builder.Register<BootstrapRoentgen>();
 
             builder.Build();
         }

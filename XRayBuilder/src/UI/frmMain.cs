@@ -58,7 +58,7 @@ namespace XRayBuilderGUI.UI
         private readonly KfxXrayService _kfxXrayService;
         private readonly IStartActionsArtifactService _startActionsArtifactService;
         private readonly IEndActionsArtifactService _endActionsArtifactService;
-        private readonly RoentgenClient _roentgenClient;
+        private readonly IRoentgenClient _roentgenClient;
         private readonly IEndActionsAuthorConverter _endActionsAuthorConverter;
 
         // TODO: Fix up these paths
@@ -83,7 +83,7 @@ namespace XRayBuilderGUI.UI
             KfxXrayService kfxXrayService,
             IStartActionsArtifactService startActionsArtifactService,
             IEndActionsArtifactService endActionsArtifactService,
-            RoentgenClient roentgenClient,
+            IRoentgenClient roentgenClient,
             IEndActionsAuthorConverter endActionsAuthorConverter)
         {
             InitializeComponent();

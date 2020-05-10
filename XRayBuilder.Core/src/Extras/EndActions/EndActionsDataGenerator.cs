@@ -27,7 +27,7 @@ namespace XRayBuilder.Core.Extras.EndActions
         private readonly IHttpClient _httpClient;
         private readonly IAmazonClient _amazonClient;
         private readonly IAmazonInfoParser _amazonInfoParser;
-        private readonly RoentgenClient _roentgenClient;
+        private readonly IRoentgenClient _roentgenClient;
 
         private List<BookInfo> custAlsoBought = new List<BookInfo>();
         private BookInfo curBook;
@@ -45,7 +45,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             IHttpClient httpClient,
             IAmazonClient amazonClient,
             IAmazonInfoParser amazonInfoParser,
-            RoentgenClient roentgenClient)
+            IRoentgenClient roentgenClient)
         {
             curBook = book;
             _dataSource = dataSource;

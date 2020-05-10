@@ -65,7 +65,7 @@ namespace XRayBuilder.Test.Extras.EndActions
                 PromptAsin = false,
                 SaveHtml = false,
                 UseNewVersion = true
-            }, _logger, _httpClient, _amazonClient, _amazonInfoParser);
+            }, _logger, _httpClient, _amazonClient, _amazonInfoParser, null);
 
             var endActionsResponse = await endActionsDataGenerator.GenerateNewFormatData(authorProfileResponse, null, metadata, null, CancellationToken.None);
             Assert.NotNull(endActionsResponse);

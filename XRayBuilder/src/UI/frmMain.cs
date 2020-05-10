@@ -21,6 +21,7 @@ using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Progress;
+using XRayBuilder.Core.Libraries.Serialization.Json.Util;
 using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
 using XRayBuilder.Core.Model;
 using XRayBuilder.Core.Unpack;
@@ -58,6 +59,7 @@ namespace XRayBuilderGUI.UI
         private readonly IStartActionsArtifactService _startActionsArtifactService;
         private readonly IEndActionsArtifactService _endActionsArtifactService;
         private readonly RoentgenClient _roentgenClient;
+        private readonly IEndActionsAuthorConverter _endActionsAuthorConverter;
 
         // TODO: Fix up these paths
         private string EaPath = "";
@@ -81,7 +83,8 @@ namespace XRayBuilderGUI.UI
             KfxXrayService kfxXrayService,
             IStartActionsArtifactService startActionsArtifactService,
             IEndActionsArtifactService endActionsArtifactService,
-            RoentgenClient roentgenClient)
+            RoentgenClient roentgenClient,
+            IEndActionsAuthorConverter endActionsAuthorConverter)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
@@ -101,6 +104,7 @@ namespace XRayBuilderGUI.UI
             _startActionsArtifactService = startActionsArtifactService;
             _endActionsArtifactService = endActionsArtifactService;
             _roentgenClient = roentgenClient;
+            _endActionsAuthorConverter = endActionsAuthorConverter;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
         }
@@ -466,143 +470,206 @@ namespace XRayBuilderGUI.UI
 
                 var outputDir = OutputDirectory(bookInfo.Author, bookInfo.Title, bookInfo.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text), true);
 
-                _logger.Log("Attempting to build Author Profile...");
-
                 ApPath = $@"{outputDir}\AuthorProfile.profile.{bookInfo.Asin}.asc";
-
-                // TODO: Load existing ap to use for end actions / start actions
-                if (!Settings.Default.overwrite && File.Exists(ApPath))
+                SaPath = $@"{outputDir}\StartActions.data.{bookInfo.Asin}.asc";
+                EaPath = $@"{outputDir}\EndActions.data.{bookInfo.Asin}.asc";
+                var saExists = File.Exists(SaPath);
+                var eaExists = File.Exists(EaPath);
+                var apExists = File.Exists(ApPath);
+                var needSa = !saExists || _settings.overwriteSA;
+                var needEa = !eaExists || _settings.overwriteEA;
+                var needAp = !apExists || _settings.overwriteAP;
+                if (!needAp && !needSa && !needEa)
                 {
-                    _logger.Log("AuthorProfile file already exists... Skipping!\r\n" +
-                                "Please review the settings page if you want to overwite any existing files.");
+                    _logger.Log("All extras files already exist and none of the \"overwrite\" settings are enabled!\r\nCanceling the build process...");
                     return;
                 }
 
-                var authorProfileResponse = await _authorProfileGenerator.GenerateAsync(new AuthorProfileGenerator.Request
+                async Task<TActions> DownloadActionsArtifact<TActions>(string type, Func<string, string, CancellationToken, Task<TActions>> download) where TActions : class
                 {
-                    Book = bookInfo,
-                    Settings = new AuthorProfileGenerator.Settings
+                    _logger.Log($"Attempting to download {type} Actions...");
+                    try
                     {
-                        AmazonTld = _settings.amazonTLD,
-                        SaveBio = _settings.saveBio,
-                        UseNewVersion = _settings.useNewVersion,
-                        EditBiography = _settings.editBiography,
-                        SaveHtml = _settings.saveHtml
+                        var actions = await download(metadata.Asin, _settings.roentgenRegion, _cancelTokens.Token);
+                        _logger.Log($"Successfully downloaded pre-made {type} Actions!");
+                        return actions;
                     }
-                }, _cancelTokens.Token);
-
-                if (authorProfileResponse == null)
-                    return;
-
-                var authorProfileOutput = JsonConvert.SerializeObject(AuthorProfileGenerator.CreateAp(authorProfileResponse, bookInfo.Asin));
-
-                try
-                {
-                    File.WriteAllText(ApPath, authorProfileOutput);
-                    _logger.Log($"Author Profile file created successfully!\r\nSaved to {ApPath}");
-                }
-                catch (Exception ex)
-                {
-                    _logger.Log($"An error occurred while writing the Author Profile file: {ex.Message}\r\n{ex.StackTrace}");
-                    return;
+                    catch (Exception e)
+                    {
+                        _logger.Log($"No pre-made {type} Actions available (message: {e.Message}), one will be built instead...");
+                        return null;
+                    }
                 }
 
-                _logger.Log("Attempting to build Start Actions and End Actions...");
-
-                string AsinPrompt(string title, string author)
+                if (_settings.downloadSA && needSa)
                 {
-                    var frmAsin = _diContainer.GetInstance<frmASIN>();
-                    frmAsin.Text = "Series Information";
-                    frmAsin.lblTitle.Text = title;
-                    frmAsin.lblAuthor.Text = author;
-                    frmAsin.tbAsin.Text = "";
-                    frmAsin.ShowDialog();
-                    return frmAsin.tbAsin.Text;
+                    // todo fix duplication for saving
+                    try
+                    {
+                        var startActions = await DownloadActionsArtifact("Start", _roentgenClient.DownloadStartActionsAsync);
+                        if (startActions != null)
+                        {
+                            _logger.Log("Writing Start Actions to file...");
+                            File.WriteAllText(SaPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(startActions)));
+                            _logger.Log($"Start Actions file created successfully!\r\nSaved to {SaPath}");
+                            needSa = false;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Log($"An error occurred creating the Start Actions: {ex.Message}\r\n{ex.StackTrace}");
+                    }
                 }
 
-                var ea = new EndActionsDataGenerator(bookInfo, _dataSource, new XRayBuilder.Core.Extras.EndActions.EndActionsDataGenerator.Settings
+                EndActions endActions = null;
+                // If the EA file exists, need to either download if desired or load existing if needed for AP
+                if (_settings.downloadEA && needEa)
                 {
-                    AmazonTld = _settings.amazonTLD,
-                    UseNewVersion = _settings.useNewVersion,
-                    PromptAsin = _settings.promptASIN,
-                    SaveHtml = _settings.saveHtml,
-                    EstimatePageCount = _settings.pageCount
-                }, _logger, _httpClient, _amazonClient, _amazonInfoParser, _roentgenClient);
+                    try
+                    {
+                        endActions = await DownloadActionsArtifact("End", _roentgenClient.DownloadEndActionsAsync);
+                        _logger.Log("Writing End Actions to file...");
+                        File.WriteAllText(EaPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(endActions)));
+                        _logger.Log($"End Actions file created successfully!\r\nSaved to {EaPath}");
+                        needEa = false;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Log($"An error occurred creating the End Actions: {ex.Message}\r\n{ex.StackTrace}");
+                    }
+                }
+                else if (eaExists && _settings.autoBuildAP && needAp)
+                {
+                    endActions = JsonUtil.DeserializeFile<EndActions>(EaPath);
+                    _logger.Log($"Loaded existing End Actions from {EaPath}");
+                }
 
-                var endActionsResponse = _settings.useNewVersion
-                    ? await ea.GenerateNewFormatData(authorProfileResponse, AsinPrompt, metadata, _progress, _cancelTokens.Token)
-                    : await ea.GenerateOld(_cancelTokens.Token);
-
-                if (endActionsResponse == null)
+                if (!needAp && !needSa && !needEa)
+                {
+                    _logger.Log("All extras downloaded/built and none need to be overwritten, stopping here!");
                     return;
+                }
 
-                if (!_settings.overwrite && File.Exists(EaPath))
+                AuthorProfileGenerator.Response authorProfileResponse;
+                _logger.Log("Attempting to build Author Profile...");
+                if ((needSa || needAp) && endActions != null && _settings.autoBuildAP)
                 {
-                    _logger.Log("Error: EndActions file already exists... Skipping!\r\n" +
-                                "Please review the settings page if you want to overwite any existing files.");
+                    authorProfileResponse = await _endActionsAuthorConverter.ConvertAsync(endActions, _cancelTokens.Token);
+                    _logger.Log("Built Author Profile from the existing End Actions file!");
                 }
                 else
                 {
-                    // Todo actions response/request stuff could still be cleaned up
-                    var endActionsRequest = new EndActionsArtifactService.Request(
-                        bookAsin: endActionsResponse.Book.Asin,
-                        bookImageUrl: endActionsResponse.Book.ImageUrl,
-                        bookDatabaseName: endActionsResponse.Book.Databasename,
-                        bookGuid: endActionsResponse.Book.Guid,
-                        bookErl: metadata.RawMlSize,
-                        bookAmazonRating: endActionsResponse.Book.AmazonRating,
-                        bookSeriesInfo: endActionsResponse.Book.Series,
-                        author: authorProfileResponse.Name,
-                        authorAsin: authorProfileResponse.Asin,
-                        authorImageUrl: authorProfileResponse.ImageUrl,
-                        authorBiography: authorProfileResponse.Biography,
-                        authorOtherBooks: authorProfileResponse.OtherBooks,
-                        userPenName: _settings.penName,
-                        userRealName: _settings.realName,
-                        customerAlsoBought: endActionsResponse.CustomerAlsoBought);
+                    authorProfileResponse = await _authorProfileGenerator.GenerateAsync(new AuthorProfileGenerator.Request
+                    {
+                        Book = bookInfo,
+                        Settings = new AuthorProfileGenerator.Settings
+                        {
+                            AmazonTld = _settings.amazonTLD,
+                            SaveBio = _settings.saveBio,
+                            UseNewVersion = _settings.useNewVersion,
+                            EditBiography = _settings.editBiography,
+                            SaveHtml = _settings.saveHtml
+                        }
+                    }, _cancelTokens.Token);
 
-                    var endActionsContent = _settings.useNewVersion
-                        ? _endActionsArtifactService.GenerateNew(endActionsRequest)
-                        : _endActionsArtifactService.GenerateOld(endActionsRequest);
-
-                    _logger.Log("Writing EndActions to file...");
-                    EaPath = $@"{outputDir}\EndActions.data.{bookInfo.Asin}.asc";
-                    File.WriteAllText(EaPath, endActionsContent);
-                    _logger.Log($"EndActions file created successfully!\r\nSaved to {EaPath}");
+                    if (authorProfileResponse == null)
+                        return;
                 }
 
-                // TODO: Separate out SA logic
-                SaPath = $@"{outputDir}\StartActions.data.{bookInfo.Asin}.asc";
-                StartActions startActions = null;
-                if (_settings.downloadSA)
+                if (needAp)
                 {
-                    _logger.Log("Attempting to download Start Actions...");
                     try
                     {
-                        startActions = await _roentgenClient.DownloadStartActionsAsync(metadata.Asin, _cancelTokens.Token);
-                        _logger.Log("Successfully downloaded pre-made Start Actions!");
+                        var authorProfileOutput = JsonConvert.SerializeObject(AuthorProfileGenerator.CreateAp(authorProfileResponse, bookInfo.Asin));
+                        File.WriteAllText(ApPath, authorProfileOutput);
+                        _logger.Log($"Author Profile file created successfully!\r\nSaved to {ApPath}");
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        _logger.Log("No pre-made Start Actions available, building instead...");
+                        _logger.Log($"An error occurred while writing the Author Profile file: {ex.Message}\r\n{ex.StackTrace}");
+                        return;
                     }
                 }
 
-                startActions ??= _startActionsArtifactService.GenerateStartActions(endActionsResponse.Book, authorProfileResponse);
+                if (needSa || needEa)
+                {
+                    _logger.Log("Attempting to build Start and/or End Actions...");
 
-                _logger.Log("Writing StartActions to file...");
-                try
-                {
-                    File.WriteAllText(SaPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(startActions)));
+                    string AsinPrompt(string title, string author)
+                    {
+                        var frmAsin = _diContainer.GetInstance<frmASIN>();
+                        frmAsin.Text = "Series Information";
+                        frmAsin.lblTitle.Text = title;
+                        frmAsin.lblAuthor.Text = author;
+                        frmAsin.tbAsin.Text = "";
+                        frmAsin.ShowDialog();
+                        return frmAsin.tbAsin.Text;
+                    }
+
+                    var ea = new EndActionsDataGenerator(bookInfo, _dataSource, new XRayBuilder.Core.Extras.EndActions.EndActionsDataGenerator.Settings
+                    {
+                        AmazonTld = _settings.amazonTLD,
+                        UseNewVersion = _settings.useNewVersion,
+                        PromptAsin = _settings.promptASIN,
+                        SaveHtml = _settings.saveHtml,
+                        EstimatePageCount = _settings.pageCount
+                    }, _logger, _httpClient, _amazonClient, _amazonInfoParser, _roentgenClient);
+
+                    var endActionsResponse = _settings.useNewVersion
+                        ? await ea.GenerateNewFormatData(authorProfileResponse, AsinPrompt, metadata, _progress, _cancelTokens.Token)
+                        : await ea.GenerateOld(_cancelTokens.Token);
+
+                    if (endActionsResponse == null)
+                        return;
+
+                    if (needEa)
+                    {
+                        // Todo actions response/request stuff could still be cleaned up
+                        var endActionsRequest = new EndActionsArtifactService.Request(
+                            bookAsin: endActionsResponse.Book.Asin,
+                            bookImageUrl: endActionsResponse.Book.ImageUrl,
+                            bookDatabaseName: endActionsResponse.Book.Databasename,
+                            bookGuid: endActionsResponse.Book.Guid,
+                            bookErl: metadata.RawMlSize,
+                            bookAmazonRating: endActionsResponse.Book.AmazonRating,
+                            bookSeriesInfo: endActionsResponse.Book.Series,
+                            author: authorProfileResponse.Name,
+                            authorAsin: authorProfileResponse.Asin,
+                            authorImageUrl: authorProfileResponse.ImageUrl,
+                            authorBiography: authorProfileResponse.Biography,
+                            authorOtherBooks: authorProfileResponse.OtherBooks,
+                            userPenName: _settings.penName,
+                            userRealName: _settings.realName,
+                            customerAlsoBought: endActionsResponse.CustomerAlsoBought);
+
+                        var endActionsContent = _settings.useNewVersion
+                            ? _endActionsArtifactService.GenerateNew(endActionsRequest)
+                            : _endActionsArtifactService.GenerateOld(endActionsRequest);
+
+                        _logger.Log("Writing EndActions to file...");
+                        File.WriteAllText(EaPath, endActionsContent);
+                        _logger.Log($"EndActions file created successfully!\r\nSaved to {EaPath}");
+                    }
+
+                    if (needSa)
+                    {
+                        var startActions = _startActionsArtifactService.GenerateStartActions(endActionsResponse.Book, authorProfileResponse);
+
+                        _logger.Log("Writing Start Actions to file...");
+                        try
+                        {
+                            File.WriteAllText(SaPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(startActions)));
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.Log("An error occurred creating the Start Actions: " + ex.Message + "\r\n" + ex.StackTrace);
+                        }
+
+                        _logger.Log($"Start Actions file created successfully!\r\nSaved to {SaPath}");
+                    }
                 }
-                catch (Exception ex)
-                {
-                    _logger.Log("An error occurred creating the StartActions: " + ex.Message + "\r\n" + ex.StackTrace);
-                }
-                _logger.Log($"StartActions file created successfully!\r\nSaved to {SaPath}");
 
                 cmsPreview.Items[3].Enabled = true;
-
                 cmsPreview.Items[1].Enabled = true;
 
                 CheckFiles(bookInfo.Author, bookInfo.Title, bookInfo.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));

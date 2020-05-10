@@ -74,12 +74,20 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
             }
         }
 
-        public Task<Term[]> DownloadTermsAsync(string asin, CancellationToken cancellationToken)
+        public Task<Term[]> DownloadTermsAsync(string asin, string regionTld, CancellationToken cancellationToken)
         {
             return HandleDownloadExceptionsAsync(async () =>
             {
-                var response = await _httpClient.GetStringAsync($"{BaseUrl}{DownloadEndpoint}", cancellationToken);
-                return XmlUtil.Deserialize<Term[]>(response);
+                var request = new StringContent(JsonUtil.Serialize(new DownloadRequest
+                {
+                    Asin = asin,
+                    Type = DownloadRequest.TypeEnum.Terms,
+                    Region = regionTld
+                }), Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync($"{BaseUrl}{DownloadEndpoint}", request, cancellationToken);
+                var responseStream = await response.Content.ReadAsStreamAsync();
+                var responseString = await new StreamReader(responseStream, Encoding.UTF8).ReadToEndAsync();
+                return XmlUtil.Deserialize<Term[]>(responseString);
             });
         }
 

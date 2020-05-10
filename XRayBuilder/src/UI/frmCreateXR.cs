@@ -6,8 +6,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilder.Core.DataSources.Amazon;
+using XRayBuilder.Core.DataSources.Roentgen.Logic;
 using XRayBuilder.Core.Libraries.Images.Util;
 using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
 using XRayBuilder.Core.XRay.Artifacts;
@@ -22,12 +25,14 @@ namespace XRayBuilderGUI.UI
         private readonly ITermsService _termsService;
         private readonly IAliasesRepository _aliasesRepository;
         private readonly IAmazonClient _amazonClient;
+        private readonly IRoentgenClient _roentgenClient;
 
-        public frmCreateXR(ITermsService termsService, IAliasesRepository aliasesRepository, IAmazonClient amazonClient)
+        public frmCreateXR(ITermsService termsService, IAliasesRepository aliasesRepository, IAmazonClient amazonClient, IRoentgenClient roentgenClient)
         {
             _termsService = termsService;
             _aliasesRepository = aliasesRepository;
             _amazonClient = amazonClient;
+            _roentgenClient = roentgenClient;
             InitializeComponent();
 
             var dgvType = dgvTerms.GetType();
@@ -116,14 +121,6 @@ namespace XRayBuilderGUI.UI
                 return;
             var filetype = Path.GetExtension(openFile.FileName);
             txtAsin.Text = _amazonClient.ParseAsin(openFile.FileName) ?? "";
-            // todo another path to centralize
-            var aliasFile = $@"{Environment.CurrentDirectory}\ext\{txtAsin.Text}.aliases";
-            var d = new Dictionary<string, string>();
-            dgvTerms.Rows.Clear();
-            txtName.Text = "";
-            txtAliases.Text = "";
-            txtDescription.Text = "";
-            txtLink.Text = "";
             try
             {
                 switch (filetype)
@@ -138,49 +135,62 @@ namespace XRayBuilderGUI.UI
                         MessageBox.Show($"Error: Bad file type \"{filetype}\"");
                         break;
                 }
-                foreach (var t in _terms)
-                {
-                    var typeImage = t.Type == "character" ? Resources.character : Resources.setting;
-                    dgvTerms.Rows.Add(
-                        typeImage,
-                        t.TermName,
-                        "",
-                        t.Desc,
-                        t.DescUrl,
-                        t.DescSrc,
-                        t.Match,
-                        t.MatchCase,
-                        false,
-                        t.RegexAliases);
-                }
-                _terms.Clear();
-
-                if (!File.Exists(aliasFile))
-                    return;
-                using (var streamReader = new StreamReader(aliasFile, Encoding.UTF8))
-                {
-                    while (!streamReader.EndOfStream)
-                    {
-                        var input = streamReader.ReadLine();
-                        var temp = input?.Split('|')
-                                   ?? throw new IOException("Empty or invalid file.");
-                        if (temp.Length <= 1 || temp[0] == "" || temp[0].Substring(0, 1) == "#")
-                            continue;
-                        var temp2 = input.Substring(input.IndexOf('|') + 1);
-                        if (!d.ContainsKey(temp[0]))
-                            d.Add(temp[0], temp2);
-                    }
-                }
-                foreach (DataGridViewRow row in dgvTerms.Rows)
-                {
-                    var name = row.Cells[1].Value.ToString();
-                    if (d.TryGetValue(name, out var aliases))
-                        row.Cells[2].Value = aliases;
-                }
+                ReloadTerms();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error:\r\n{ex.Message}\r\n{ex.StackTrace}");
+            }
+        }
+
+        private void ReloadTerms()
+        {
+            // todo another path to centralize
+            var aliasFile = $@"{Environment.CurrentDirectory}\ext\{txtAsin.Text}.aliases";
+            var d = new Dictionary<string, string>();
+            dgvTerms.Rows.Clear();
+            txtName.Text = "";
+            txtAliases.Text = "";
+            txtDescription.Text = "";
+            txtLink.Text = "";
+            foreach (var t in _terms)
+            {
+                var typeImage = t.Type == "character" ? Resources.character : Resources.setting;
+                dgvTerms.Rows.Add(
+                    typeImage,
+                    t.TermName,
+                    "",
+                    t.Desc,
+                    t.DescUrl,
+                    t.DescSrc,
+                    t.Match,
+                    t.MatchCase,
+                    false,
+                    t.RegexAliases);
+            }
+            _terms.Clear();
+
+            if (!File.Exists(aliasFile))
+                return;
+            using (var streamReader = new StreamReader(aliasFile, Encoding.UTF8))
+            {
+                while (!streamReader.EndOfStream)
+                {
+                    var input = streamReader.ReadLine();
+                    var temp = input?.Split('|')
+                               ?? throw new IOException("Empty or invalid file.");
+                    if (temp.Length <= 1 || temp[0] == "" || temp[0].Substring(0, 1) == "#")
+                        continue;
+                    var temp2 = input.Substring(input.IndexOf('|') + 1);
+                    if (!d.ContainsKey(temp[0]))
+                        d.Add(temp[0], temp2);
+                }
+            }
+            foreach (DataGridViewRow row in dgvTerms.Rows)
+            {
+                var name = row.Cells[1].Value.ToString();
+                if (d.TryGetValue(name, out var aliases))
+                    row.Cells[2].Value = aliases;
             }
         }
 
@@ -252,6 +262,7 @@ namespace XRayBuilderGUI.UI
             _toolTip1.SetToolTip(btnClear, "Clear the term list.");
             _toolTip1.SetToolTip(btnOpenXml, "Open an existing term XML of TXT file.\r\nIf an alias file with a matching ASIN\r\nis found, aliases wil automatically be\r\npopulated.");
             _toolTip1.SetToolTip(btnSaveXML, "Save the term list to an XML file. Any\r\nassociated aliases will be saved to an\r\nASIN.aliases file in the /ext folder.");
+            _toolTip1.SetToolTip(btnDownloadTerms, "Download terms from Roentgen if any are available.\r\nExisting terms will be cleared!");
         }
 
         private void tsmDelete_Click(object sender, EventArgs e)
@@ -306,6 +317,46 @@ namespace XRayBuilderGUI.UI
             txtDescription.Text = "";
             txtLink.Text = "";
             _terms.Clear();
+        }
+
+        private void ToggleInterface(bool enabled)
+        {
+            foreach (var c in Controls.OfType<Button>())
+                c.Enabled = enabled;
+        }
+
+        private async void btnDownloadTerms_Click(object sender, EventArgs e)
+        {
+            if (!AmazonClient.IsAsin(txtAsin.Text))
+            {
+                MessageBox.Show($"'{txtAsin.Text} is not a valid ASIN.\r\nRoentgen requires one!");
+                return;
+            }
+
+            ToggleInterface(false);
+            await DownloadTermsAsync(txtAsin.Text);
+            ToggleInterface(true);
+        }
+
+        private async Task DownloadTermsAsync(string asin)
+        {
+            try
+            {
+                var terms = await _roentgenClient.DownloadTermsAsync(asin, Settings.Default.roentgenRegion, CancellationToken.None);
+                if (terms == null)
+                {
+                    MessageBox.Show("No terms were available for this book :(");
+                    return;
+                }
+
+                _terms = terms.ToList();
+                ReloadTerms();
+                MessageBox.Show($"Successfully downloaded {terms.Length} terms from Roentgen!");
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Failed to download terms: {e.Message}");
+            }
         }
     }
 }

@@ -101,6 +101,8 @@
             this.chkRoentgenEndActions = new System.Windows.Forms.CheckBox();
             this.chkRoentgenStartActions = new System.Windows.Forms.CheckBox();
             this.listSettings = new System.Windows.Forms.ListBox();
+            this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.chkIncludeTopics = new System.Windows.Forms.CheckBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -125,6 +127,7 @@
             this.tabPgRoentgen.SuspendLayout();
             this.groupBox7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            this.groupBox9.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSupport
@@ -785,6 +788,7 @@
             // 
             // tabPgRoentgen
             // 
+            this.tabPgRoentgen.Controls.Add(this.groupBox9);
             this.tabPgRoentgen.Controls.Add(this.groupBox7);
             this.tabPgRoentgen.Location = new System.Drawing.Point(4, 5);
             this.tabPgRoentgen.Name = "tabPgRoentgen";
@@ -805,7 +809,7 @@
             this.groupBox7.Controls.Add(this.chkRoentgenStartActions);
             this.groupBox7.Location = new System.Drawing.Point(6, 7);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(378, 245);
+            this.groupBox7.Size = new System.Drawing.Size(378, 83);
             this.groupBox7.TabIndex = 27;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Pre-built Downloads";
@@ -814,7 +818,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(9, 94);
+            this.label4.Location = new System.Drawing.Point(107, 68);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(44, 13);
             this.label4.TabIndex = 39;
@@ -825,7 +829,7 @@
             // 
             this.cmbRoentgenRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbRoentgenRegion.FormattingEnabled = true;
-            this.cmbRoentgenRegion.Location = new System.Drawing.Point(59, 91);
+            this.cmbRoentgenRegion.Location = new System.Drawing.Point(174, 74);
             this.cmbRoentgenRegion.Name = "cmbRoentgenRegion";
             this.cmbRoentgenRegion.Size = new System.Drawing.Size(78, 21);
             this.cmbRoentgenRegion.TabIndex = 38;
@@ -854,7 +858,7 @@
             // chkRoentgenAuthorProfile
             // 
             this.chkRoentgenAuthorProfile.AutoSize = true;
-            this.chkRoentgenAuthorProfile.Location = new System.Drawing.Point(197, 147);
+            this.chkRoentgenAuthorProfile.Location = new System.Drawing.Point(260, 64);
             this.chkRoentgenAuthorProfile.Name = "chkRoentgenAuthorProfile";
             this.chkRoentgenAuthorProfile.Size = new System.Drawing.Size(89, 17);
             this.chkRoentgenAuthorProfile.TabIndex = 33;
@@ -902,6 +906,26 @@
             this.listSettings.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listSettings_DrawItem);
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
+            // 
+            // groupBox9
+            // 
+            this.groupBox9.Controls.Add(this.chkIncludeTopics);
+            this.groupBox9.Location = new System.Drawing.Point(6, 96);
+            this.groupBox9.Name = "groupBox9";
+            this.groupBox9.Size = new System.Drawing.Size(200, 100);
+            this.groupBox9.TabIndex = 28;
+            this.groupBox9.TabStop = false;
+            this.groupBox9.Text = "Terms Download";
+            // 
+            // chkIncludeTopics
+            // 
+            this.chkIncludeTopics.AutoSize = true;
+            this.chkIncludeTopics.Location = new System.Drawing.Point(14, 21);
+            this.chkIncludeTopics.Name = "chkIncludeTopics";
+            this.chkIncludeTopics.Size = new System.Drawing.Size(157, 17);
+            this.chkIncludeTopics.TabIndex = 25;
+            this.chkIncludeTopics.Text = "Include topic/location terms";
+            this.chkIncludeTopics.UseVisualStyleBackColor = true;
             // 
             // frmSettings
             // 
@@ -963,6 +987,8 @@
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            this.groupBox9.ResumeLayout(false);
+            this.groupBox9.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1042,5 +1068,7 @@
         private System.Windows.Forms.CheckBox chkOverwriteEA;
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.CheckBox chkAutoBuildAP;
+        private System.Windows.Forms.GroupBox groupBox9;
+        private System.Windows.Forms.CheckBox chkIncludeTopics;
     }
 }

@@ -102,6 +102,8 @@ namespace XRayBuilderGUI.UI
             chkRoentgenEndActions.Checked = Properties.Settings.Default.downloadEA;
             chkRoentgenAuthorProfile.Checked = Properties.Settings.Default.downloadAP;
 
+            chkIncludeTopics.Checked = Properties.Settings.Default.includeTopics;
+
             // Added \r\n to show smaller tooltips
             var toolTip1 = new ToolTip();
             toolTip1.SetToolTip(chkRaw,
@@ -173,6 +175,7 @@ namespace XRayBuilderGUI.UI
             toolTip1.SetToolTip(chkSearchAsin, "If enabled, search results will be filtered so that non-Kindle Edition books are removed");
             toolTip1.SetToolTip(chkEditBiography, "If enabled, allows editing the Author's biography before it's used.");
             toolTip1.SetToolTip(chkAutoBuildAP, "When set, the Author Profile will be built using a downloaded End Actions file instead of scraping Amazon, if one is available.");
+            toolTip1.SetToolTip(chkIncludeTopics, "When downloading terms, include any that are non-characters (topics, locations, etc)");
 
             var regions = new List<AmazonRegion>(regionTLDs.Count);
             foreach (var (name, tld) in regionTLDs)
@@ -241,6 +244,7 @@ namespace XRayBuilderGUI.UI
             Properties.Settings.Default.downloadEA = chkRoentgenEndActions.Checked;
             Properties.Settings.Default.downloadAP = chkRoentgenAuthorProfile.Checked;
             Properties.Settings.Default.roentgenRegion = cmbRoentgenRegion.SelectedValue.ToString();
+            Properties.Settings.Default.includeTopics = chkIncludeTopics.Checked;
             Properties.Settings.Default.Save();
 
             Close();

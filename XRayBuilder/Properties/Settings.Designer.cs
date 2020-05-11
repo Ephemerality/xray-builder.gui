@@ -499,5 +499,17 @@ namespace XRayBuilderGUI.Properties {
                 this["autoBuildAP"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool includeTopics {
+            get {
+                return ((bool)(this["includeTopics"]));
+            }
+            set {
+                this["includeTopics"] = value;
+            }
+        }
     }
 }

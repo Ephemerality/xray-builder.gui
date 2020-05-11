@@ -349,7 +349,7 @@ namespace XRayBuilderGUI.UI
                     return;
                 }
 
-                _terms = terms.ToList();
+                _terms = terms.Where(term => term.Type == "character" || Settings.Default.includeTopics).ToList();
                 ReloadTerms();
                 MessageBox.Show($"Successfully downloaded {terms.Length} terms from Roentgen!");
             }

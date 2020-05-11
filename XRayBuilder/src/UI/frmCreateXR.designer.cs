@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmCreateXR));
             this.lblName = new System.Windows.Forms.Label();
             this.lblAliases = new System.Windows.Forms.Label();
@@ -85,7 +85,7 @@
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize) (this.dgvTerms)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvTerms)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.cmsTerms.SuspendLayout();
@@ -295,6 +295,9 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.Controls.Add(this.label1);
             this.groupBox4.Controls.Add(this.dgvTerms);
             this.groupBox4.Location = new System.Drawing.Point(12, 255);
@@ -310,18 +313,32 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(507, 13);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Double-click an item to remove it and edit it above. Don\'t forget to add it back " + "in!";
+            this.label1.Text = "Double-click an item to remove it and edit it above. Don\'t forget to add it back " +
+    "in!";
             // 
             // dgvTerms
             // 
             this.dgvTerms.AllowUserToAddRows = false;
             this.dgvTerms.AllowUserToDeleteRows = false;
             this.dgvTerms.AllowUserToResizeRows = false;
+            this.dgvTerms.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvTerms.BackgroundColor = System.Drawing.SystemColors.Window;
             this.dgvTerms.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dgvTerms.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             this.dgvTerms.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvTerms.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {this.Column1, this.Column2, this.Column3, this.Column4, this.Column6, this.Column10, this.Column5, this.Column7, this.Column8, this.Column9});
+            this.dgvTerms.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Column1,
+            this.Column2,
+            this.Column3,
+            this.Column4,
+            this.Column6,
+            this.Column10,
+            this.Column5,
+            this.Column7,
+            this.Column8,
+            this.Column9});
             this.dgvTerms.Location = new System.Drawing.Point(14, 32);
             this.dgvTerms.MultiSelect = false;
             this.dgvTerms.Name = "dgvTerms";
@@ -369,8 +386,8 @@
             // 
             // Column10
             // 
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            this.Column10.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.Column10.DefaultCellStyle = dataGridViewCellStyle3;
             this.Column10.HeaderText = "Source";
             this.Column10.Name = "Column10";
             this.Column10.ReadOnly = true;
@@ -418,6 +435,7 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox5.Controls.Add(this.txtAsin);
             this.groupBox5.Controls.Add(this.lblAsin);
             this.groupBox5.Controls.Add(this.txtTitle);
@@ -484,7 +502,8 @@
             // 
             // btnOpenXml
             // 
-            this.btnOpenXml.Image = ((System.Drawing.Image) (resources.GetObject("btnOpenXml.Image")));
+            this.btnOpenXml.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnOpenXml.Image = ((System.Drawing.Image)(resources.GetObject("btnOpenXml.Image")));
             this.btnOpenXml.Location = new System.Drawing.Point(559, 398);
             this.btnOpenXml.Name = "btnOpenXml";
             this.btnOpenXml.Size = new System.Drawing.Size(32, 32);
@@ -494,7 +513,8 @@
             // 
             // btnEditTerm
             // 
-            this.btnEditTerm.Image = ((System.Drawing.Image) (resources.GetObject("btnEditTerm.Image")));
+            this.btnEditTerm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnEditTerm.Image = ((System.Drawing.Image)(resources.GetObject("btnEditTerm.Image")));
             this.btnEditTerm.Location = new System.Drawing.Point(559, 260);
             this.btnEditTerm.Name = "btnEditTerm";
             this.btnEditTerm.Size = new System.Drawing.Size(32, 32);
@@ -504,7 +524,8 @@
             // 
             // btnSaveXML
             // 
-            this.btnSaveXML.Image = ((System.Drawing.Image) (resources.GetObject("btnSaveXML.Image")));
+            this.btnSaveXML.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSaveXML.Image = ((System.Drawing.Image)(resources.GetObject("btnSaveXML.Image")));
             this.btnSaveXML.Location = new System.Drawing.Point(559, 440);
             this.btnSaveXML.Name = "btnSaveXML";
             this.btnSaveXML.Size = new System.Drawing.Size(32, 32);
@@ -514,7 +535,8 @@
             // 
             // btnRemoveTerm
             // 
-            this.btnRemoveTerm.Image = ((System.Drawing.Image) (resources.GetObject("btnRemoveTerm.Image")));
+            this.btnRemoveTerm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRemoveTerm.Image = ((System.Drawing.Image)(resources.GetObject("btnRemoveTerm.Image")));
             this.btnRemoveTerm.Location = new System.Drawing.Point(559, 302);
             this.btnRemoveTerm.Name = "btnRemoveTerm";
             this.btnRemoveTerm.Size = new System.Drawing.Size(32, 32);
@@ -524,7 +546,7 @@
             // 
             // btnAddTerm
             // 
-            this.btnAddTerm.Image = ((System.Drawing.Image) (resources.GetObject("btnAddTerm.Image")));
+            this.btnAddTerm.Image = ((System.Drawing.Image)(resources.GetObject("btnAddTerm.Image")));
             this.btnAddTerm.Location = new System.Drawing.Point(559, 11);
             this.btnAddTerm.Name = "btnAddTerm";
             this.btnAddTerm.Size = new System.Drawing.Size(32, 32);
@@ -536,14 +558,16 @@
             // 
             this.cmsTerms.AutoSize = false;
             this.cmsTerms.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.cmsTerms.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {this.tsmEdit, this.tsmDelete});
+            this.cmsTerms.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmEdit,
+            this.tsmDelete});
             this.cmsTerms.Name = "cmsTerms";
             this.cmsTerms.Size = new System.Drawing.Size(80, 48);
             // 
             // tsmEdit
             // 
             this.tsmEdit.AutoSize = false;
-            this.tsmEdit.Image = ((System.Drawing.Image) (resources.GetObject("tsmEdit.Image")));
+            this.tsmEdit.Image = ((System.Drawing.Image)(resources.GetObject("tsmEdit.Image")));
             this.tsmEdit.Name = "tsmEdit";
             this.tsmEdit.ShowShortcutKeys = false;
             this.tsmEdit.Size = new System.Drawing.Size(79, 22);
@@ -553,7 +577,7 @@
             // tsmDelete
             // 
             this.tsmDelete.AutoSize = false;
-            this.tsmDelete.Image = ((System.Drawing.Image) (resources.GetObject("tsmDelete.Image")));
+            this.tsmDelete.Image = ((System.Drawing.Image)(resources.GetObject("tsmDelete.Image")));
             this.tsmDelete.Name = "tsmDelete";
             this.tsmDelete.Size = new System.Drawing.Size(79, 22);
             this.tsmDelete.Text = "Delete";
@@ -561,7 +585,8 @@
             // 
             // btnClear
             // 
-            this.btnClear.Image = ((System.Drawing.Image) (resources.GetObject("btnClear.Image")));
+            this.btnClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClear.Image = ((System.Drawing.Image)(resources.GetObject("btnClear.Image")));
             this.btnClear.Location = new System.Drawing.Point(559, 344);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(32, 32);
@@ -571,8 +596,9 @@
             // 
             // btnDownloadTerms
             // 
+            this.btnDownloadTerms.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnDownloadTerms.Image = global::XRayBuilderGUI.Properties.Resources.setting;
-            this.btnDownloadTerms.Location = new System.Drawing.Point(559, 130);
+            this.btnDownloadTerms.Location = new System.Drawing.Point(559, 209);
             this.btnDownloadTerms.Name = "btnDownloadTerms";
             this.btnDownloadTerms.Size = new System.Drawing.Size(32, 32);
             this.btnDownloadTerms.TabIndex = 50;
@@ -581,7 +607,8 @@
             // 
             // label2
             // 
-            this.label2.Location = new System.Drawing.Point(559, 162);
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label2.Location = new System.Drawing.Point(559, 241);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(32, 16);
             this.label2.TabIndex = 52;
@@ -605,12 +632,11 @@
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon) (resources.GetObject("$this.Icon")));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(618, 550);
             this.Name = "frmCreateXR";
-            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "X-Ray Terms Creator";
             this.Load += new System.EventHandler(this.frmCreateXR_Load);
@@ -619,13 +645,14 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox4.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize) (this.dgvTerms)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvTerms)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.cmsTerms.ResumeLayout(false);
             this.ResumeLayout(false);
+
         }
 
         private System.Windows.Forms.Button btnAddTerm;

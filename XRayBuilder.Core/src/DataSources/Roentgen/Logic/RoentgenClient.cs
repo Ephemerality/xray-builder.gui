@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -19,6 +20,8 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
     public sealed class RoentgenClient : IRoentgenClient
     {
         private readonly IHttpClient _httpClient;
+
+        private readonly HashSet<string> _preloadCache = new HashSet<string>();
 
         public RoentgenClient(IHttpClient httpClient)
         {
@@ -66,7 +69,10 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
         {
             try
             {
+                if (_preloadCache.Contains(asin))
+                    return;
                 await _httpClient.GetAsync($"{BaseUrl}{PreloadEndpoint(asin)}", cancellationToken);
+                _preloadCache.Add(asin);
             }
             catch
             {

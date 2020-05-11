@@ -311,7 +311,9 @@ namespace XRayBuilderGUI.UI
                 {
                     Functions.RunNotepad(xray.AliasPath);
                 }
-                if (!File.Exists(xray.AliasPath))
+                if (xray.Terms.Any(term => term.Aliases?.Count > 0))
+                    _logger.Log("Character aliases read from the XML file.");
+                else if (!File.Exists(xray.AliasPath))
                     _logger.Log("Aliases file not found.");
                 else
                 {

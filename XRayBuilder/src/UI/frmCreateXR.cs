@@ -159,7 +159,7 @@ namespace XRayBuilderGUI.UI
                 dgvTerms.Rows.Add(
                     typeImage,
                     t.TermName,
-                    "",
+                    t.Aliases?.Count > 0 ? string.Join(",", t.Aliases) : "",
                     t.Desc,
                     t.DescUrl,
                     t.DescSrc,
@@ -172,6 +172,13 @@ namespace XRayBuilderGUI.UI
 
             if (!File.Exists(aliasFile))
                 return;
+
+            if (_terms.Any(term => term.Aliases?.Count > 0))
+            {
+                MessageBox.Show("The XML file already contained aliases, so the .aliases file will be ignored.");
+                return;
+            }
+
             using (var streamReader = new StreamReader(aliasFile, Encoding.UTF8))
             {
                 while (!streamReader.EndOfStream)

@@ -24,7 +24,6 @@ namespace XRayBuilder.Core.XRay.Artifacts
         [JsonProperty("descUrl")]
         public string DescUrl { get; set; }
 
-        [XmlIgnore]
         [JsonIgnore]
         public List<string> Aliases { get; set; } = new List<string>();
 

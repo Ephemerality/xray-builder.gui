@@ -172,6 +172,7 @@ namespace XRayBuilder.Core.Libraries.Http
                     switch (response.StatusCode)
                     {
                         case HttpStatusCode.ServiceUnavailable:
+                        case (HttpStatusCode) 418:
                             await Task.Delay(5000, cancellationToken);
                             continue;
                         // Too many requests

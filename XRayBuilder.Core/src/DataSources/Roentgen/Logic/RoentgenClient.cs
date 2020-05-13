@@ -84,13 +84,19 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
         {
             return HandleDownloadExceptionsAsync(async () =>
             {
-                var request = new StringContent(JsonUtil.Serialize(new DownloadRequest
+                var requestContent = new StringContent(JsonUtil.Serialize(new DownloadRequest
                 {
                     Asin = asin,
                     Type = DownloadRequest.TypeEnum.Terms,
                     Region = regionTld
                 }), Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync($"{BaseUrl}{DownloadEndpoint}", request, cancellationToken);
+                var request = new HttpRequestMessage(HttpMethod.Post, $"{BaseUrl}{DownloadEndpoint}")
+                {
+                    Content = requestContent
+                };
+                // Increase timeout for terms requests
+                request.SetTimeout(TimeSpan.FromSeconds(30));
+                var response = await _httpClient.SendAsync(request, cancellationToken);
                 var responseStream = await response.Content.ReadAsStreamAsync();
                 var responseString = await new StreamReader(responseStream, Encoding.UTF8).ReadToEndAsync();
                 return XmlUtil.Deserialize<Term[]>(responseString);

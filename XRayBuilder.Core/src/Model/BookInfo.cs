@@ -18,22 +18,21 @@ namespace XRayBuilder.Core.Model
         public string AmazonUrl => string.IsNullOrEmpty(Asin)
             ? null
             : $"https://www.amazon.{(string.IsNullOrEmpty(Tld) ? "com" : Tld)}/dp/{Asin}";
-        public string Databasename { get; set; }
-        public string FileName { get; set; }
+        public string Databasename { get; }
         public string Description { get; set; } = "";
         public string ImageUrl { get; set; } = "";
         public double? AmazonRating { get; set; }
         public int Reviews { get; set; }
         public string DataUrl { get; set; } = "";
         // TODO: Shouldn't be here?
-        public string RawmlPath { get; set; } = "";
+        public string RawmlPath { get; } = "";
 
         // TODO: Author class
-        public string AuthorAsin { get; set; } = "";
+        public string AuthorAsin { get; } = "";
         public string AuthorImageUrl { get; set; } = "";
 
         public string GoodreadsId { get; set; } = "";
-        public int Editions { get; set; } = 0;
+        public int Editions { get; set; }
 
         // Added StartAction info
         public int ReadingHours { get; set; }
@@ -47,9 +46,8 @@ namespace XRayBuilder.Core.Model
         public Bitmap CoverImage { get; set; }
 
         // List of clips and their highlight/like count
-        public List<NotableClip> notableClips;
+        public List<NotableClip> NotableClips;
 
-        private readonly IMetadata _metadata;
         private string _guid;
 
         public string Guid
@@ -58,29 +56,15 @@ namespace XRayBuilder.Core.Model
             get => _guid;
         }
 
-        public BookInfo(IMetadata metadata, string dataUrl, string fileName)
+        public BookInfo(IMetadata metadata, string dataUrl)
         {
-            _metadata = metadata;
             Title = metadata.Title;
             Author = metadata.Author;
             Asin = metadata.Asin;
             if (metadata.UniqueId != null)
                 Guid = metadata.UniqueId;
             Databasename = metadata.DbName;
-            FileName = fileName;
             DataUrl = dataUrl;
-        }
-
-        public BookInfo(string title, string author, string asin, string guid, string databasename, string fileName, string dataUrl, string rawmlPath)
-        {
-            Title = title;
-            Author = author;
-            Asin = asin;
-            Guid = guid;
-            Databasename = databasename;
-            FileName = fileName;
-            DataUrl = dataUrl;
-            RawmlPath = rawmlPath;
         }
 
         public BookInfo(string title, string author, string asin)

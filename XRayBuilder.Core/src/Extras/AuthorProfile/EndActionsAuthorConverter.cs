@@ -3,14 +3,13 @@ using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Model;
 
 namespace XRayBuilder.Core.Extras.AuthorProfile
 {
-    public class EndActionsAuthorConverter : IEndActionsAuthorConverter
+    public sealed class EndActionsAuthorConverter : IEndActionsAuthorConverter
     {
         private readonly ILogger _logger;
         private readonly IHttpClient _httpClient;
@@ -21,7 +20,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             _httpClient = httpClient;
         }
 
-        public async Task<AuthorProfileGenerator.Response> ConvertAsync([NotNull] Artifacts.EndActions endActions, CancellationToken cancellationToken)
+        public async Task<AuthorProfileGenerator.Response> ConvertAsync(Artifacts.EndActions endActions, CancellationToken cancellationToken)
         {
             var authorBio = endActions.Data.AuthorBios?.Authors.FirstOrDefault();
             var firstAuthorRec = endActions.Data.AuthorRecs?.Recommendations.FirstOrDefault();

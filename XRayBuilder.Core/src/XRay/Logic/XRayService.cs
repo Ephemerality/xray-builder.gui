@@ -81,10 +81,11 @@ namespace XRayBuilder.Core.XRay.Logic
                 _logger.Log($"Characters exported to {path} for adding aliases.");
             }
 
-            if (xray.SkipShelfari)
-                _logger.Log(string.Format("{0} {1} found in file:", xray.Terms.Count, xray.Terms.Count > 1 ? "Terms" : "Term"));
-            else
-                _logger.Log(string.Format("{0} {1} found on {2}:", xray.Terms.Count, xray.Terms.Count > 1 ? "Terms" : "Term", xray.DataSource.Name));
+            var termsFound = $"{xray.Terms.Count} {(xray.Terms.Count > 1 ? "terms" : "term")} found";
+            var logMessage = xray.SkipShelfari
+                ? $"{termsFound} in file:"
+                : $"{termsFound} on {xray.DataSource.Name}:";
+            _logger.Log(logMessage);
             var str = new StringBuilder(xray.Terms.Count * 32); // Assume that most names will be less than 32 chars
             var termId = 1;
             foreach (var t in xray.Terms)
@@ -274,47 +275,46 @@ namespace XRayBuilder.Core.XRay.Logic
                     //If the location of the highlighted word (character name) within the excerpt is far enough in to get cut off,
                     //this section attempts to shorted the excerpt by locating the start of a sentence that is just far enough away from the highlight.
                     //The length is determined by the space the excerpt takes up rather than its actual length... so 135 is just a guess based on what I've seen.
-                    var lengthLimit = 135;
+                    const int lengthLimit = 135;
                     for (var j = 0; j < locHighlight.Count; j++)
                     {
-                        if (shortEx && locHighlight[j] + lenHighlight[j] > lengthLimit)
-                        {
-                            var start = locHighlight[j];
-                            var at = 0;
-                            long newLoc = -1;
-                            var newLenQuote = 0;
-                            var newLocHighlight = 0;
+                        if (!shortEx || locHighlight[j] + lenHighlight[j] <= lengthLimit)
+                            continue;
+                        var start = locHighlight[j];
+                        long newLoc = -1;
+                        var newLenQuote = 0;
+                        var newLocHighlight = 0;
 
-                            while ((start > -1) && (at > -1))
+                        while (start > -1)
+                        {
+                            var at = node.InnerHtml.LastIndexOfAny(new[] { '.', '?', '!' }, start);
+                            if (at > -1)
                             {
-                                at = node.InnerHtml.LastIndexOfAny(new[] { '.', '?', '!' }, start);
-                                if (at > -1)
+                                start = at - 1;
+                                if (locHighlight[j] + lenHighlight[j] + 1 - at - 2 <= lengthLimit)
                                 {
-                                    start = at - 1;
-                                    if ((locHighlight[j] + lenHighlight[j] + 1 - at - 2) <= lengthLimit)
-                                    {
-                                        newLoc = location + at + 2;
-                                        newLenQuote = lenQuote - at - 2;
-                                        newLocHighlight = locHighlight[j] - at - 2;
-                                        //string newQuote = node.InnerHtml.Substring(at + 2);
-                                    }
-                                    else break;
+                                    newLoc = location + at + 2;
+                                    newLenQuote = lenQuote - at - 2;
+                                    newLocHighlight = locHighlight[j] - at - 2;
                                 }
-                                else break;
+                                else
+                                    break;
                             }
-                            //Only add new locs if shorter excerpt was found
-                            if (newLoc >= 0)
+                            else
+                                break;
+                        }
+                        //Only add new locs if shorter excerpt was found
+                        if (newLoc >= 0)
+                        {
+                            character.Locs.Add(new []
                             {
-                                character.Locs.Add(new []
-                                {
-                                    newLoc + locOffset,
-                                    newLenQuote,
-                                    newLocHighlight,
-                                    lenHighlight[j]
-                                });
-                                locHighlight.RemoveAt(j);
-                                lenHighlight.RemoveAt(j--);
-                            }
+                                newLoc + locOffset,
+                                newLenQuote,
+                                newLocHighlight,
+                                lenHighlight[j]
+                            });
+                            locHighlight.RemoveAt(j);
+                            lenHighlight.RemoveAt(j--);
                         }
                     }
 

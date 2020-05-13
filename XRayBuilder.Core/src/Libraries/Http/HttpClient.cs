@@ -125,7 +125,7 @@ namespace XRayBuilder.Core.Libraries.Http
 
     public sealed class TimeoutHandler : DelegatingHandler
     {
-        public TimeSpan DefaultTimeout { get; set; } = TimeSpan.FromSeconds(15);
+        private readonly TimeSpan _defaultTimeout = TimeSpan.FromSeconds(15);
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
@@ -142,7 +142,7 @@ namespace XRayBuilder.Core.Libraries.Http
 
         private CancellationTokenSource GetCancellationTokenSource(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var timeout = request.GetTimeout() ?? DefaultTimeout;
+            var timeout = request.GetTimeout() ?? _defaultTimeout;
 
             // No need to create a CTS if there's no timeout
             if (timeout == Timeout.InfiniteTimeSpan)
@@ -157,7 +157,7 @@ namespace XRayBuilder.Core.Libraries.Http
     // https://www.thomaslevesque.com/2016/12/08/fun-with-the-httpclient-pipeline/
     public sealed class RetryHandler : DelegatingHandler
     {
-        public int MaxRetries { get; set; } = 3;
+        private const int MaxRetries = 3;
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
@@ -242,7 +242,7 @@ namespace XRayBuilder.Core.Libraries.Http
         }
     }
 
-    public class HttpClientException : Exception
+    public sealed class HttpClientException : Exception
     {
         public HttpClientException(string message, Exception previous = null) : base(message, previous) { }
 

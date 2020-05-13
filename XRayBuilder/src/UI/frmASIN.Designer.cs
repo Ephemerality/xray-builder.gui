@@ -67,7 +67,7 @@
             // lblTitleHead
             // 
             this.lblTitleHead.AutoSize = true;
-            this.lblTitleHead.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTitleHead.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.lblTitleHead.Location = new System.Drawing.Point(19, 9);
             this.lblTitleHead.Name = "lblTitleHead";
             this.lblTitleHead.Size = new System.Drawing.Size(36, 13);
@@ -77,7 +77,7 @@
             // lblAsin
             // 
             this.lblAsin.AutoSize = true;
-            this.lblAsin.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAsin.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.lblAsin.Location = new System.Drawing.Point(15, 52);
             this.lblAsin.Name = "lblAsin";
             this.lblAsin.Size = new System.Drawing.Size(40, 13);
@@ -87,7 +87,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.label1.Location = new System.Drawing.Point(7, 27);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(48, 13);
@@ -116,7 +116,7 @@
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.lblTitle);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Icon = ((System.Drawing.Icon) (resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "frmASIN";
@@ -126,17 +126,16 @@
             this.Text = "Amazon ASIN";
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
-        #endregion
-
         private System.Windows.Forms.Button btnOK;
-        public System.Windows.Forms.TextBox tbAsin;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblAsin;
+        public System.Windows.Forms.Label lblAuthor;
         public System.Windows.Forms.Label lblTitle;
         private System.Windows.Forms.Label lblTitleHead;
-        private System.Windows.Forms.Label lblAsin;
-        private System.Windows.Forms.Label label1;
-        public System.Windows.Forms.Label lblAuthor;
+        public System.Windows.Forms.TextBox tbAsin;
+
+        #endregion
     }
 }

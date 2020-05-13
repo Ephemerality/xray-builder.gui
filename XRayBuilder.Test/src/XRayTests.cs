@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +8,6 @@ using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Extras.Artifacts;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Logging;
-using XRayBuilder.Core.Model;
 using XRayBuilder.Core.Unpack.Mobi;
 using XRayBuilder.Core.XRay.Logic;
 using XRayBuilder.Core.XRay.Logic.Aliases;
@@ -79,12 +76,12 @@ namespace XRayBuilder.Test
     [TestFixture]
     public class DeserializeTests
     {
-        private static List<BookInfo> books = new List<BookInfo>
-        {
-            new BookInfo("A Storm of Swords", "George R. R. Martin",
-                "B000FBFN1U", "171927873", "A_Storm_of_Swords", Path.Combine(Environment.CurrentDirectory, "out"), "https://www.goodreads.com/book/show/62291",
-                @"testfiles\A Storm of Swords - George R. R. Martin.rawml")
-        };
+        // private static List<BookInfo> books = new List<BookInfo>
+        // {
+        //     new BookInfo("A Storm of Swords", "George R. R. Martin",
+        //         "B000FBFN1U", "171927873", "A_Storm_of_Swords", Path.Combine(Environment.CurrentDirectory, "out"), "https://www.goodreads.com/book/show/62291",
+        //         @"testfiles\A Storm of Swords - George R. R. Martin.rawml")
+        // };
 
         // TODO: Compare the actual contents (objects) rather than the string itself due to the order of books changing
         //[Test(), TestCaseSource(nameof(books))]

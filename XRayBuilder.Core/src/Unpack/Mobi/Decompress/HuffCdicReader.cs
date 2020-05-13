@@ -13,13 +13,13 @@ namespace XRayBuilder.Core.Unpack.Mobi.Decompress
         private readonly List<uint> _mincode = new List<uint>();
         private readonly List<Slice> _dictionary = new List<Slice>();
 
-        public override void Initialize(MobiHead mobiHeader, PDBHeader pdbHeader, List<byte[]> headerRecords)
+        public override void Initialize(MobiHead mobiHeader, PdbHeader pdbHeader, List<byte[]> headerRecords)
         {
             try
             {
                 var huffmanRecordOffset = mobiHeader.HuffmanRecordOffset;
                 var huffSect = headerRecords[huffmanRecordOffset];
-                loadHuff(huffSect);
+                LoadHuff(huffSect);
                 var recCount = mobiHeader.HuffmanRecordCount;
                 for (var i = 1; i < recCount; i++)
                 {
@@ -28,11 +28,11 @@ namespace XRayBuilder.Core.Unpack.Mobi.Decompress
                 }
             } catch (Exception ex)
             {
-                throw new UnpackException("Error in HUFF/CDIC decompression: " + ex.Message + "\r\n" + ex.StackTrace);
+                throw new UnpackException($"Error in HUFF/CDIC decompression: {ex.Message}\r\n{ex.StackTrace}");
             }
         }
 
-        private void loadHuff(byte[] data)
+        private void LoadHuff(byte[] data)
         {
             if (!data.Take(8).SequenceEqual(new byte[] { 72, 85, 70, 70, 0, 0, 0, 24 }))
                 throw new Exception("Invalid HUFF header.");
@@ -45,7 +45,7 @@ namespace XRayBuilder.Core.Unpack.Mobi.Decompress
             for (var i = 0; i < 256; i++)
             {
                 Array.Copy(data, off1 + (i * 4), temp4, 0, 4);
-                _dict1.Add(dictUnpack(BitConverter.ToUInt32(temp4.BigEndian(), 0)));
+                _dict1.Add(DictUnpack(BitConverter.ToUInt32(temp4.BigEndian(), 0)));
             }
             for (var i = 0; i < 64; i++)
             {
@@ -68,7 +68,7 @@ namespace XRayBuilder.Core.Unpack.Mobi.Decompress
             }
         }
 
-        private static DictRecord dictUnpack(uint v)
+        private static DictRecord DictUnpack(uint v)
         {
             var codelen = v & 0x1f;
             var term = v & 0x80;

@@ -70,8 +70,8 @@ namespace XRayBuilder.Core.Extras.StartActions
                 }
             };
             startActions.Data.AuthorSubscriptions = startActions.Data.FollowSubscriptions;
-            startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMPASSAGES%", $"{curBook.notableClips?.Count ?? 0}");
-            startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMHIGHLIGHTS%", $"{curBook.notableClips?.Sum(c => c.Likes) ?? 0}");
+            startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMPASSAGES%", $"{curBook.NotableClips?.Count ?? 0}");
+            startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMHIGHLIGHTS%", $"{curBook.NotableClips?.Sum(c => c.Likes) ?? 0}");
             startActions.Data.GrokShelfInfo.Asin = curBook.Asin;
             startActions.Data.BookDescription = Extensions.BookInfoToBook(curBook, true);
             startActions.Data.CurrentBook = startActions.Data.BookDescription;

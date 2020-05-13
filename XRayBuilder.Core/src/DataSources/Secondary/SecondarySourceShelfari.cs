@@ -10,7 +10,6 @@ using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Secondary.Model;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
-using XRayBuilder.Core.Libraries.Primitives.Extensions;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Model;
 using XRayBuilder.Core.XRay.Artifacts;
@@ -36,50 +35,50 @@ namespace XRayBuilder.Core.DataSources.Secondary
         public int UrlLabelPosition { get; } = 150;
         public bool SupportsNotableClips { get; } = true;
 
-        private string FindShelfariURL(HtmlDocument shelfariHtmlDoc, string author, string title)
-        {
-            // Try to find book's page from Shelfari search
-            var listofthings = new List<string>();
-            var listoflinks = new List<string>();
-
-            var nodeResultCheck = shelfariHtmlDoc.DocumentNode.SelectSingleNode("//li[@class='item']/div[@class='text']");
-            if (nodeResultCheck == null)
-                return "";
-            foreach (var bookItems in shelfariHtmlDoc.DocumentNode.SelectNodes("//li[@class='item']/div[@class='text']"))
-            {
-                if (bookItems == null) continue;
-                listofthings.Clear();
-                listoflinks.Clear();
-                for (var i = 1; i < bookItems.ChildNodes.Count; i++)
-                {
-                    if (bookItems.ChildNodes[i].GetAttributeValue("class", "") == "series") continue;
-                    listofthings.Add(bookItems.ChildNodes[i].InnerText.Trim());
-                    listoflinks.Add(bookItems.ChildNodes[i].InnerHtml);
-                }
-                var index = 0;
-                foreach (var line in listofthings)
-                {
-                    // Search for author with spaces removed to avoid situations like "J.R.R. Tolkien" / "J. R. R. Tolkien"
-                    // Ignore Collective Work search result.
-                    // May cause false matches, we'll see.
-                    // Also remove diacritics from titles when matching just in case...
-                    // Searching for Children of Húrin will give a false match on the first pass before diacritics are removed from the search URL
-                    if ((listofthings.Contains("(Author)") || listofthings.Contains("(Author),")) &&
-                        line.RemoveDiacritics().StartsWith(title.RemoveDiacritics(), StringComparison.OrdinalIgnoreCase) &&
-                        (listofthings.Contains(author) || listofthings.Exists(r => r.Replace(" ", "") == author.Replace(" ", ""))))
-                        if (!listoflinks.Any(c => c.Contains("(collective work)")))
-                        {
-                            var shelfariBookUrl = listoflinks[index];
-                            shelfariBookUrl = Regex.Replace(shelfariBookUrl, "<a href=\"", "", RegexOptions.None);
-                            shelfariBookUrl = Regex.Replace(shelfariBookUrl, "\".*?</a>.*", "", RegexOptions.None);
-                            if (shelfariBookUrl.ToLower().StartsWith("http://"))
-                                return shelfariBookUrl;
-                        }
-                    index++;
-                }
-            }
-            return "";
-        }
+        // private string FindShelfariURL(HtmlDocument shelfariHtmlDoc, string author, string title)
+        // {
+        //     // Try to find book's page from Shelfari search
+        //     var listofthings = new List<string>();
+        //     var listoflinks = new List<string>();
+        //
+        //     var nodeResultCheck = shelfariHtmlDoc.DocumentNode.SelectSingleNode("//li[@class='item']/div[@class='text']");
+        //     if (nodeResultCheck == null)
+        //         return "";
+        //     foreach (var bookItems in shelfariHtmlDoc.DocumentNode.SelectNodes("//li[@class='item']/div[@class='text']"))
+        //     {
+        //         if (bookItems == null) continue;
+        //         listofthings.Clear();
+        //         listoflinks.Clear();
+        //         for (var i = 1; i < bookItems.ChildNodes.Count; i++)
+        //         {
+        //             if (bookItems.ChildNodes[i].GetAttributeValue("class", "") == "series") continue;
+        //             listofthings.Add(bookItems.ChildNodes[i].InnerText.Trim());
+        //             listoflinks.Add(bookItems.ChildNodes[i].InnerHtml);
+        //         }
+        //         var index = 0;
+        //         foreach (var line in listofthings)
+        //         {
+        //             // Search for author with spaces removed to avoid situations like "J.R.R. Tolkien" / "J. R. R. Tolkien"
+        //             // Ignore Collective Work search result.
+        //             // May cause false matches, we'll see.
+        //             // Also remove diacritics from titles when matching just in case...
+        //             // Searching for Children of Húrin will give a false match on the first pass before diacritics are removed from the search URL
+        //             if ((listofthings.Contains("(Author)") || listofthings.Contains("(Author),")) &&
+        //                 line.RemoveDiacritics().StartsWith(title.RemoveDiacritics(), StringComparison.OrdinalIgnoreCase) &&
+        //                 (listofthings.Contains(author) || listofthings.Exists(r => r.Replace(" ", "") == author.Replace(" ", ""))))
+        //                 if (!listoflinks.Any(c => c.Contains("(collective work)")))
+        //                 {
+        //                     var shelfariBookUrl = listoflinks[index];
+        //                     shelfariBookUrl = Regex.Replace(shelfariBookUrl, "<a href=\"", "", RegexOptions.None);
+        //                     shelfariBookUrl = Regex.Replace(shelfariBookUrl, "\".*?</a>.*", "", RegexOptions.None);
+        //                     if (shelfariBookUrl.ToLower().StartsWith("http://"))
+        //                         return shelfariBookUrl;
+        //                 }
+        //             index++;
+        //         }
+        //     }
+        //     return "";
+        // }
 
         public Task<IEnumerable<BookInfo>> SearchBookAsync(string author, string title, CancellationToken cancellationToken = default)
         {
@@ -153,16 +152,16 @@ namespace XRayBuilder.Core.DataSources.Secondary
                     };
                     if (tmpString.Contains(":"))
                     {
-                        newTerm.TermName = tmpString.Substring(0, tmpString.IndexOf(":"));
-                        newTerm.Desc = tmpString.Substring(tmpString.IndexOf(":") + 1).Replace("&amp;", "&").Trim();
+                        newTerm.TermName = tmpString.Substring(0, tmpString.IndexOf(":", StringComparison.Ordinal));
+                        newTerm.Desc = tmpString.Substring(tmpString.IndexOf(":", StringComparison.Ordinal) + 1).Replace("&amp;", "&").Trim();
                     }
                     else
                         newTerm.TermName = tmpString;
                     newTerm.DescSrc = "shelfari";
                     //Use either the associated shelfari URL of the term or if none exists, use the book's url
-                    newTerm.DescUrl = (li.InnerHtml.IndexOf("<a href") == 0
-                        ? li.InnerHtml.Substring(9, li.InnerHtml.IndexOf("\"", 9) - 9)
-                        : dataUrl);
+                    newTerm.DescUrl = li.InnerHtml.IndexOf("<a href", StringComparison.Ordinal) == 0
+                        ? li.InnerHtml.Substring(9, li.InnerHtml.IndexOf("\"", 9, StringComparison.Ordinal) - 9)
+                        : dataUrl;
                     if (header == "WikiModule_Glossary")
                         newTerm.MatchCase = false;
                     //Default glossary terms to be case insensitive when searching through book
@@ -181,22 +180,21 @@ namespace XRayBuilder.Core.DataSources.Secondary
             {
                 srcDoc = await _httpClient.GetPageAsync(url, cancellationToken);
             }
-            var result = new List<NotableClip>();
             var quoteNodes = srcDoc.DocumentNode.SelectNodes("//div[@id='WikiModule_Quotations']/div/ul[@class='li_6']/li");
-            if (quoteNodes != null)
-            {
-                foreach (var quoteNode in quoteNodes)
+            if (quoteNodes == null)
+                return Enumerable.Empty<NotableClip>();
+
+            return quoteNodes
+                .Select(quoteNode => quoteNode.SelectSingleNode(".//blockquote"))
+                .Where(node => node != null)
+                .Select(node => node.InnerText)
+                .Select(quote => Regex.Replace(quote, "^(&ldquo;){1,2}", ""))
+                .Select(quote => Regex.Replace(quote, "(&rdquo;){1,2}$", ""))
+                .Select(quote => new NotableClip
                 {
-                    var node = quoteNode.SelectSingleNode(".//blockquote");
-                    if (node == null) continue;
-                    var quote = node.InnerText;
-                    // Remove quotes (sometimes people put unnecessary quotes in the quote as well)
-                    quote = Regex.Replace(quote, "^(&ldquo;){1,2}", "");
-                    quote = Regex.Replace(quote, "(&rdquo;){1,2}$", "");
-                    result.Add(new NotableClip { Text = quote, Likes = 0 });
-                }
-            }
-            return result;
+                    Text = quote,
+                    Likes = 0
+                });
         }
 
         public Task<IEnumerable<BookInfo>> SearchBookByAsinAsync(string asin, CancellationToken cancellationToken = default)

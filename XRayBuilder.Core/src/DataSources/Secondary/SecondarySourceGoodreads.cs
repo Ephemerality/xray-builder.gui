@@ -367,9 +367,9 @@ namespace XRayBuilder.Core.DataSources.Secondary
         public async Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             var grDoc = await _httpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
-            if (curBook.notableClips == null)
+            if (curBook.NotableClips == null)
             {
-                curBook.notableClips = (await GetNotableClipsAsync("", grDoc, progress, cancellationToken).ConfigureAwait(false))?.ToList();
+                curBook.NotableClips = (await GetNotableClipsAsync("", grDoc, progress, cancellationToken).ConfigureAwait(false))?.ToList();
             }
 
             //Add rating and reviews count if missing from Amazon book info

@@ -44,7 +44,7 @@ namespace XRayBuilder.Test.Extras.EndActions
         public async Task Test()
         {
             var metadata = MetadataLoader.Load(@"testfiles\A Storm of Swords - George R. R. Martin.mobi");
-            var book = new BookInfo(metadata, "https://www.goodreads.com/book/show/62291.A_Storm_of_Swords", "");
+            var book = new BookInfo(metadata, "https://www.goodreads.com/book/show/62291.A_Storm_of_Swords");
             var authorProfileResponse = await _authorProfileGenerator.GenerateAsync(new AuthorProfileGenerator.Request
             {
                 Book = book,

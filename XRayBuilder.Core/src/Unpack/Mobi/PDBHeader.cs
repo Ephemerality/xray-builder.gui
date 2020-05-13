@@ -13,7 +13,7 @@ using XRayBuilder.Core.Libraries.Primitives.Extensions;
 
 namespace XRayBuilder.Core.Unpack.Mobi
 {
-    public class PDBHeader
+    public sealed class PdbHeader
     {
         private readonly byte[] _dbName = new byte[32];
         private readonly byte[] _attributeBits = new byte[2];
@@ -33,7 +33,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
 
         public readonly RecordInfo[] RecordMetadata;
 
-        public PDBHeader(FileStream fs)
+        public PdbHeader(FileStream fs)
         {
             fs.Read(_dbName, 0, 32);
             fs.Read(_attributeBits, 0, 2);
@@ -57,7 +57,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
             fs.Read(_unknown, 0, 2);
         }
 
-        public string DBName => Encoding.UTF8.GetString(_dbName).Trim('\0');
+        public string DbName => Encoding.UTF8.GetString(_dbName).Trim('\0');
 
         public int NumRecords => BitConverter.ToInt16(_numRecords.BigEndian(), 0);
 
@@ -102,7 +102,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
         }
     }
 
-    public class RecordInfo
+    public sealed class RecordInfo
     {
         public uint DataOffset { get; set; }
         public byte Attributes { get; set; }

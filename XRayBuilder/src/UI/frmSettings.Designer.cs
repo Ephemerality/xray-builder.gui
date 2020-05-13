@@ -92,6 +92,8 @@
             this.txtPen = new System.Windows.Forms.TextBox();
             this.lblPen = new System.Windows.Forms.Label();
             this.tabPgRoentgen = new System.Windows.Forms.TabPage();
+            this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.chkIncludeTopics = new System.Windows.Forms.CheckBox();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
             this.cmbRoentgenRegion = new System.Windows.Forms.ComboBox();
@@ -101,14 +103,12 @@
             this.chkRoentgenEndActions = new System.Windows.Forms.CheckBox();
             this.chkRoentgenStartActions = new System.Windows.Forms.CheckBox();
             this.listSettings = new System.Windows.Forms.ListBox();
-            this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.chkIncludeTopics = new System.Windows.Forms.CheckBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.gbProcess.SuspendLayout();
             this.gbUnpack.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.pictureBox1)).BeginInit();
             this.gbGeneral.SuspendLayout();
             this.tabPgDirectories.SuspendLayout();
             this.gbDirectories.SuspendLayout();
@@ -125,9 +125,9 @@
             this.gbAmazonPrefs.SuspendLayout();
             this.gbDetails.SuspendLayout();
             this.tabPgRoentgen.SuspendLayout();
-            this.groupBox7.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.groupBox9.SuspendLayout();
+            this.groupBox7.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize) (this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // btnSupport
@@ -265,7 +265,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Image = ((System.Drawing.Image) (resources.GetObject("pictureBox1.Image")));
             this.pictureBox1.Location = new System.Drawing.Point(14, 45);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(14, 14);
@@ -280,8 +280,7 @@
             this.lblNote.Name = "lblNote";
             this.lblNote.Size = new System.Drawing.Size(325, 43);
             this.lblNote.TabIndex = 34;
-            this.lblNote.Text = "Metadata is now gathered internally rather than with KindleUnpack. If you run int" +
-    "o any metadata extraction errors, please report them on the MobileRead thread.";
+            this.lblNote.Text = "Metadata is now gathered internally rather than with KindleUnpack. If you run int" + "o any metadata extraction errors, please report them on the MobileRead thread.";
             // 
             // chkSaveHtml
             // 
@@ -467,7 +466,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.label2.Location = new System.Drawing.Point(168, 20);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(83, 13);
@@ -713,7 +712,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.label1.Location = new System.Drawing.Point(12, 74);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(44, 13);
@@ -755,7 +754,7 @@
             // lblReal
             // 
             this.lblReal.AutoSize = true;
-            this.lblReal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblReal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.lblReal.Location = new System.Drawing.Point(12, 23);
             this.lblReal.Name = "lblReal";
             this.lblReal.Size = new System.Drawing.Size(63, 13);
@@ -779,7 +778,7 @@
             // lblPen
             // 
             this.lblPen.AutoSize = true;
-            this.lblPen.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblPen.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.lblPen.Location = new System.Drawing.Point(15, 56);
             this.lblPen.Name = "lblPen";
             this.lblPen.Size = new System.Drawing.Size(60, 13);
@@ -797,6 +796,26 @@
             this.tabPgRoentgen.TabIndex = 5;
             this.tabPgRoentgen.Text = "tabPgRoentgen";
             this.tabPgRoentgen.UseVisualStyleBackColor = true;
+            // 
+            // groupBox9
+            // 
+            this.groupBox9.Controls.Add(this.chkIncludeTopics);
+            this.groupBox9.Location = new System.Drawing.Point(6, 96);
+            this.groupBox9.Name = "groupBox9";
+            this.groupBox9.Size = new System.Drawing.Size(200, 100);
+            this.groupBox9.TabIndex = 28;
+            this.groupBox9.TabStop = false;
+            this.groupBox9.Text = "Terms Download";
+            // 
+            // chkIncludeTopics
+            // 
+            this.chkIncludeTopics.AutoSize = true;
+            this.chkIncludeTopics.Location = new System.Drawing.Point(14, 21);
+            this.chkIncludeTopics.Name = "chkIncludeTopics";
+            this.chkIncludeTopics.Size = new System.Drawing.Size(157, 17);
+            this.chkIncludeTopics.TabIndex = 25;
+            this.chkIncludeTopics.Text = "Include topic/location terms";
+            this.chkIncludeTopics.UseVisualStyleBackColor = true;
             // 
             // groupBox7
             // 
@@ -817,7 +836,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.label4.Location = new System.Drawing.Point(107, 68);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(44, 13);
@@ -837,7 +856,7 @@
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
+            this.pictureBox2.Image = ((System.Drawing.Image) (resources.GetObject("pictureBox2.Image")));
             this.pictureBox2.Location = new System.Drawing.Point(123, 25);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(14, 14);
@@ -852,8 +871,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(229, 48);
             this.label3.TabIndex = 36;
-            this.label3.Text = "When these settings are enabled, pre-built versions of the files will be download" +
-    "ed if they are available. Requires a valid ASIN.";
+            this.label3.Text = "When these settings are enabled, pre-built versions of the files will be download" + "ed if they are available. Requires a valid ASIN.";
             // 
             // chkRoentgenAuthorProfile
             // 
@@ -892,13 +910,7 @@
             this.listSettings.FormattingEnabled = true;
             this.listSettings.IntegralHeight = false;
             this.listSettings.ItemHeight = 20;
-            this.listSettings.Items.AddRange(new object[] {
-            "General",
-            "Directories",
-            "X-Ray",
-            "Extras",
-            "Amazon",
-            "Roentgen"});
+            this.listSettings.Items.AddRange(new object[] {"General", "Directories", "X-Ray", "Extras", "Amazon", "Roentgen"});
             this.listSettings.Location = new System.Drawing.Point(12, 12);
             this.listSettings.Name = "listSettings";
             this.listSettings.Size = new System.Drawing.Size(130, 253);
@@ -906,26 +918,6 @@
             this.listSettings.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listSettings_DrawItem);
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
-            // 
-            // groupBox9
-            // 
-            this.groupBox9.Controls.Add(this.chkIncludeTopics);
-            this.groupBox9.Location = new System.Drawing.Point(6, 96);
-            this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(200, 100);
-            this.groupBox9.TabIndex = 28;
-            this.groupBox9.TabStop = false;
-            this.groupBox9.Text = "Terms Download";
-            // 
-            // chkIncludeTopics
-            // 
-            this.chkIncludeTopics.AutoSize = true;
-            this.chkIncludeTopics.Location = new System.Drawing.Point(14, 21);
-            this.chkIncludeTopics.Name = "chkIncludeTopics";
-            this.chkIncludeTopics.Size = new System.Drawing.Size(157, 17);
-            this.chkIncludeTopics.TabIndex = 25;
-            this.chkIncludeTopics.Text = "Include topic/location terms";
-            this.chkIncludeTopics.UseVisualStyleBackColor = true;
             // 
             // frmSettings
             // 
@@ -940,7 +932,7 @@
             this.Controls.Add(this.btnLogs);
             this.Controls.Add(this.btnSave);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Icon = ((System.Drawing.Icon) (resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "frmSettings";
@@ -957,7 +949,7 @@
             this.gbProcess.PerformLayout();
             this.gbUnpack.ResumeLayout(false);
             this.gbUnpack.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.pictureBox1)).EndInit();
             this.gbGeneral.ResumeLayout(false);
             this.gbGeneral.PerformLayout();
             this.tabPgDirectories.ResumeLayout(false);
@@ -984,13 +976,12 @@
             this.gbDetails.ResumeLayout(false);
             this.gbDetails.PerformLayout();
             this.tabPgRoentgen.ResumeLayout(false);
-            this.groupBox7.ResumeLayout(false);
-            this.groupBox7.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.groupBox9.ResumeLayout(false);
             this.groupBox9.PerformLayout();
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize) (this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
-
         }
 
         private System.Windows.Forms.Button btnBrowseOut;
@@ -1000,11 +991,15 @@
         private System.Windows.Forms.Button btnSupport;
         private System.Windows.Forms.CheckBox chkAlias;
         private System.Windows.Forms.CheckBox chkAndroid;
+        private System.Windows.Forms.CheckBox chkAutoBuildAP;
         private System.Windows.Forms.CheckBox chkChapters;
         private System.Windows.Forms.CheckBox chkDownloadAliases;
         private System.Windows.Forms.CheckBox chkEditBiography;
         private System.Windows.Forms.CheckBox chkEnableEdit;
+        private System.Windows.Forms.CheckBox chkIncludeTopics;
         private System.Windows.Forms.CheckBox chkOverwriteAP;
+        private System.Windows.Forms.CheckBox chkOverwriteEA;
+        private System.Windows.Forms.CheckBox chkOverwriteSA;
         private System.Windows.Forms.CheckBox chkPageCount;
         private System.Windows.Forms.CheckBox chkPromptAsin;
         private System.Windows.Forms.CheckBox chkRaw;
@@ -1037,6 +1032,8 @@
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.GroupBox groupBox8;
+        private System.Windows.Forms.GroupBox groupBox9;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
@@ -1050,9 +1047,9 @@
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.RadioButton rdoGoodreads;
         private System.Windows.Forms.RadioButton rdoShelfari;
-        private System.Windows.Forms.TabPage tabPgExtras;
         private System.Windows.Forms.TabPage tabPgAmazon;
         private System.Windows.Forms.TabPage tabPgDirectories;
+        private System.Windows.Forms.TabPage tabPgExtras;
         private System.Windows.Forms.TabPage tabPgGeneral;
         private System.Windows.Forms.TabPage tabPgRoentgen;
         private System.Windows.Forms.TabPage tabPgXray;
@@ -1063,12 +1060,5 @@
         private System.Windows.Forms.TextBox txtReal;
 
         #endregion
-
-        private System.Windows.Forms.CheckBox chkOverwriteSA;
-        private System.Windows.Forms.CheckBox chkOverwriteEA;
-        private System.Windows.Forms.GroupBox groupBox8;
-        private System.Windows.Forms.CheckBox chkAutoBuildAP;
-        private System.Windows.Forms.GroupBox groupBox9;
-        private System.Windows.Forms.CheckBox chkIncludeTopics;
     }
 }

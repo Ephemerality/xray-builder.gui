@@ -204,7 +204,7 @@ namespace XRayBuilderGUI.UI
             ToggleInterface(true);
         }
 
-        public async Task<IMetadata> GetAndValidateMetadata(string mobiFile, bool saveRawMl, CancellationToken cancellationToken)
+        private async Task<IMetadata> GetAndValidateMetadataAsync(string mobiFile, bool saveRawMl, CancellationToken cancellationToken)
         {
             _logger.Log("Extracting metadata...");
             try
@@ -213,7 +213,7 @@ namespace XRayBuilderGUI.UI
                 UIFunctions.EbokTagPromptOrThrow(metadata, mobiFile);
                 try
                 {
-                    await CheckAndFixIncorrectAsinOrThrow(metadata, mobiFile);
+                    await CheckAndFixIncorrectAsinOrThrowAsync(metadata, mobiFile, cancellationToken);
                 }
                 catch (Exception ex)
                 {
@@ -272,7 +272,7 @@ namespace XRayBuilderGUI.UI
 
             prgBar.Value = 0;
 
-            var metadata = await GetAndValidateMetadata(txtMobi.Text, _settings.saverawml, _cancelTokens.Token);
+            var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, _settings.saverawml, _cancelTokens.Token);
             if (metadata == null)
                 return;
 
@@ -460,7 +460,7 @@ namespace XRayBuilderGUI.UI
                 return;
             }
 
-            var metadata = await GetAndValidateMetadata(txtMobi.Text, _settings.saverawml, _cancelTokens.Token);
+            var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, _settings.saverawml, _cancelTokens.Token);
             if (metadata == null)
                 return;
 
@@ -468,7 +468,7 @@ namespace XRayBuilderGUI.UI
             _logger.Log($"Book's {_dataSource.Name} URL: {txtGoodreads.Text}");
             try
             {
-                var bookInfo = new BookInfo(metadata, txtGoodreads.Text, txtMobi.Text);
+                var bookInfo = new BookInfo(metadata, txtGoodreads.Text);
 
                 var outputDir = OutputDirectory(bookInfo.Author, bookInfo.Title, bookInfo.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text), true);
 
@@ -750,7 +750,7 @@ namespace XRayBuilderGUI.UI
             }
 
             //this.TopMost = true;
-            using var metadata = await GetAndValidateMetadata(txtMobi.Text, false, _cancelTokens.Token);
+            using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
             if (metadata == null)
                 return;
 
@@ -947,7 +947,7 @@ namespace XRayBuilderGUI.UI
             txtGoodreads.Text = "";
             prgBar.Value = 0;
 
-            var metadata = await GetAndValidateMetadata(txtMobi.Text, false, _cancelTokens.Token);
+            var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
             if (metadata == null)
             {
                 txtMobi.Text = "";
@@ -995,22 +995,22 @@ namespace XRayBuilderGUI.UI
 
         private async void tmiAuthorProfile_Click(object sender, EventArgs e)
         {
-            await ShowPreview(PreviewProviderFactory.PreviewType.AuthorProfile, ApPath);
+            await ShowPreviewAsync(PreviewProviderFactory.PreviewType.AuthorProfile, ApPath, _cancelTokens.Token);
         }
 
         private async void tmiStartAction_Click(object sender, EventArgs e)
         {
-            await ShowPreview(PreviewProviderFactory.PreviewType.StartActions, SaPath);
+            await ShowPreviewAsync(PreviewProviderFactory.PreviewType.StartActions, SaPath, _cancelTokens.Token);
         }
 
         private async void tmiEndAction_Click(object sender, EventArgs e)
         {
-            await ShowPreview(PreviewProviderFactory.PreviewType.EndActions, EaPath);
+            await ShowPreviewAsync(PreviewProviderFactory.PreviewType.EndActions, EaPath, _cancelTokens.Token);
         }
 
         private async void tmiXray_Click(object sender, EventArgs e)
         {
-            await ShowPreview(PreviewProviderFactory.PreviewType.XRay, XrPath);
+            await ShowPreviewAsync(PreviewProviderFactory.PreviewType.XRay, XrPath, _cancelTokens.Token);
         }
 
         private void btnUnpack_Click(object sender, EventArgs e)
@@ -1104,7 +1104,7 @@ namespace XRayBuilderGUI.UI
         private async void btnCreate_Click(object sender, EventArgs e)
         {
             var frmCreateXr = _diContainer.GetInstance<frmCreateXR>();
-            var metadata = await GetAndValidateMetadata(txtMobi.Text, false, _cancelTokens.Token);
+            var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
             if (metadata != null)
             {
                 // TODO DONT ACCESS THESE CONTROLS DIRECTLY
@@ -1146,7 +1146,7 @@ namespace XRayBuilderGUI.UI
             }
         }
 
-        private async Task ShowPreview(PreviewProviderFactory.PreviewType type, string filePath)
+        private async Task ShowPreviewAsync(PreviewProviderFactory.PreviewType type, string filePath, CancellationToken cancellationToken)
         {
             var previewProvider = _previewProviderFactory.Get(type);
 
@@ -1166,7 +1166,7 @@ namespace XRayBuilderGUI.UI
             try
             {
                 var previewForm = previewProvider.GenForm();
-                await previewForm.Populate(selPath, _cancelTokens.Token);
+                await previewForm.Populate(selPath, cancellationToken);
                 previewForm.ShowDialog();
 
             }
@@ -1176,7 +1176,7 @@ namespace XRayBuilderGUI.UI
             }
         }
 
-        private async Task CheckAndFixIncorrectAsinOrThrow(IMetadata metadata, string bookPath)
+        private async Task CheckAndFixIncorrectAsinOrThrowAsync(IMetadata metadata, string bookPath, CancellationToken cancellationToken)
         {
             if (AmazonClient.IsAsin(metadata.Asin))
                 return;
@@ -1186,12 +1186,12 @@ namespace XRayBuilderGUI.UI
                 throw new Exception($"Invalid Amazon ASIN detected: {metadata.Asin}!\r\nKindle may not display an X-Ray for this book.\r\nYou must either use Calibre's Quality Check plugin (Fix ASIN for Kindle Fire) or a MOBI editor (exth 113 and optionally 504) to change this.");
             }
 
-            var dialogResult = MessageBox.Show($"Invalid Amazon ASIN detected: {metadata.Asin}!\nKindle may not display an X-Ray for this book.\nDo you want to fix it?\r\n(This will modify the book meaning it will need to be re-copied to your Kindle device)\r\nTHIS FEATURE IS EXPERIMETAL AND COULD DESTROY YOUR BOOK!", "Incorrect ASIN", MessageBoxButtons.YesNo);
+            var dialogResult = MessageBox.Show($"Invalid Amazon ASIN detected: {metadata.Asin}!\nKindle may not display an X-Ray for this book.\nDo you want to fix it?\r\n(This will modify the book meaning it will need to be re-copied to your Kindle device)\r\nTHIS FEATURE IS EXPERIMENTAL AND COULD DESTROY YOUR BOOK!", "Incorrect ASIN", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.No)
                 return;
 
             _logger.Log($"Searching Amazon for {metadata.Title} by {metadata.Author}...");
-            var amazonSearchResult = await _amazonClient.SearchBook(metadata.Title, metadata.Author, _settings.amazonTLD, _cancelTokens.Token);
+            var amazonSearchResult = await _amazonClient.SearchBook(metadata.Title, metadata.Author, _settings.amazonTLD, cancellationToken);
             if (amazonSearchResult != null)
             {
                 // Prompt if book is correct. If not, prompt for manual entry
@@ -1210,6 +1210,8 @@ namespace XRayBuilderGUI.UI
                     }
                 }
             }
+            else
+                _logger.Log("Unable to automatically find a matching ASIN for this book on Amazon :(");
 
             // TODO: manual entry
         }

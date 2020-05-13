@@ -76,7 +76,9 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
                 readContents = streamReader.ReadToEnd();
 
             var xray = JObject.Parse(readContents);
-            return xray["terms"].Children().Select(token => token.ToObject<Term>());
+            return xray["terms"] == null
+                ? Enumerable.Empty<Term>()
+                : xray["terms"].Children().Select(token => token.ToObject<Term>());
         }
 
         /// <summary>

@@ -37,7 +37,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
         private readonly IAmazonInfoParser _amazonInfoParser;
         private readonly ILogger _logger;
 
-        private const int MaxParallelism = 5;
+        // private const int MaxParallelism = 5;
         private readonly Regex _regexAsin = new Regex("(?<asin>B[A-Z0-9]{9})", RegexOptions.Compiled);
         private readonly Regex _regexAsinUrl = new Regex("(/e/(?<asin>B\\w+)[/?]|dp/(?<asin>B[A-Z0-9]{9})/|/gp/product/(?<asin>B[A-Z0-9]{9}))", RegexOptions.Compiled);
         private readonly Regex _regexIgnoreHeaders = new Regex(@"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -57,7 +57,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
         public string Url(string tld, string asin) => $"https://www.amazon.{tld}/dp/{asin}";
 
-        public async Task<AuthorSearchResults> SearchAuthor(string author, string bookAsin, string TLD, bool saveHtml, CancellationToken cancellationToken = default)
+        public async Task<AuthorSearchResults> SearchAuthor(string author, string bookAsin, string TLD, bool saveHtml, CancellationToken cancellationToken)
         {
             //Generate Author search URL from author's name
             var newAuthor = Functions.FixAuthor(author);
@@ -328,15 +328,14 @@ namespace XRayBuilder.Core.DataSources.Amazon
         }
 
         // TODO: All calls to Amazon should check for the captcha page (or ideally avoid it somehow)
-        public async Task<BookInfo> SearchBook(string title, string author, string TLD, CancellationToken cancellationToken = default)
+        public async Task<BookInfo> SearchBook(string title, string author, string TLD, CancellationToken cancellationToken)
         {
             BookInfo result = null;
 
-            if (title.IndexOf(" (") >= 0)
-                title = title.Substring(0, title.IndexOf(" ("));
+            if (title.IndexOf(" (", StringComparison.Ordinal) >= 0)
+                title = title.Substring(0, title.IndexOf(" (", StringComparison.Ordinal));
             //Search "all" Amazon
-            var searchUrl = string.Format(@"https://www.amazon.{0}/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords={1}",
-                TLD, Uri.EscapeDataString(title + " " + author));
+            var searchUrl = $@"https://www.amazon.{TLD}/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords={Uri.EscapeDataString($"{title} {author}")}";
             var searchDoc = await _httpClient.GetPageAsync(searchUrl, cancellationToken);
             var node = searchDoc.DocumentNode.SelectSingleNode("//li[@id='result_0']");
             var nodeASIN = node?.SelectSingleNode(".//a[@title='Kindle Edition']");
@@ -365,7 +364,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             return result;
         }
 
-        public async IAsyncEnumerable<BookInfo> EnhanceBookInfos(IEnumerable<BookInfo> books, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<BookInfo> EnhanceBookInfos(IEnumerable<BookInfo> books, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             foreach (var book in books.Where(book => book != null))
             {

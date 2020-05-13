@@ -158,7 +158,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
             return ((MemoryStream) writer.BaseStream).ToArray();
         }
 
-        public MobiHead(FileStream fs, uint mobiHeaderSize)
+        public MobiHead(Stream fs, uint mobiHeaderSize)
         {
             var reader = new EndianBinaryReader(EndianBitConverter.Big, fs);
             Identifier = Encoding.UTF8.GetString(reader.ReadBytes(4)).Trim('\0');

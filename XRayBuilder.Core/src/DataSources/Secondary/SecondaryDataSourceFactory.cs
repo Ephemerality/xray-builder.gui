@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using JetBrains.Annotations;
 using XRayBuilder.Core.Libraries;
 
 namespace XRayBuilder.Core.DataSources.Secondary
 {
+    [UsedImplicitly]
     public sealed class SecondaryDataSourceFactory : Factory<SecondaryDataSourceFactory.Enum, ISecondarySource>
     {
         public SecondaryDataSourceFactory(

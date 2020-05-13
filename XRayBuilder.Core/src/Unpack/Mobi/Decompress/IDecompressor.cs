@@ -9,13 +9,13 @@ namespace XRayBuilder.Core.Unpack.Mobi.Decompress
         /// <summary>
         /// Initialize the decompressor using any necessary values from the <paramref name="mobiHeader"/>, <paramref name="pdbHeader"/>, and <paramref name="headerRecords"/>
         /// </summary>
-        void Initialize(MobiHead mobiHeader, PDBHeader pdbHeader, List<byte[]> headerRecords);
+        void Initialize(MobiHead mobiHeader, PdbHeader pdbHeader, List<byte[]> headerRecords);
         byte[] Unpack(byte[] data);
     }
 
     public abstract class Decompressor : IDecompressor
     {
-        public virtual void Initialize(MobiHead mobiHeader, PDBHeader pdbHeader, List<byte[]> headerRecords)
+        public virtual void Initialize(MobiHead mobiHeader, PdbHeader pdbHeader, List<byte[]> headerRecords)
         {
         }
 

@@ -30,7 +30,7 @@ namespace XRayBuilder.Core.Libraries
                 (new[] { " - ", "--" }, "—"),
                 (new[] { @"\t|\n|\r|•", @"\s+"}, " "),
                 (new[] { @"\. …$"}, "."),
-                (new[] {"@", "#", @"\$", "%", "_", }, "")
+                (new[] {"@", "#", @"\$", "%", "_"}, "")
             };
             foreach (var (s, r) in replacements)
             {
@@ -74,17 +74,17 @@ namespace XRayBuilder.Core.Libraries
             return $"Running X-Ray Builder GUI v{version}. Log started on {date} at {time}.\r\n";
         }
 
-        public static string GetPageCount(string rawML, BookInfo bookInfo)
+        public static string GetPageCount(string rawMl, BookInfo bookInfo)
         {
             string output;
             double lineCount = 0;
-            if (!File.Exists(rawML) || bookInfo == null)
+            if (!File.Exists(rawMl) || bookInfo == null)
             {
-                output = "Error: RawML could not be found, aborting.\r\nPath: " + rawML;
+                output = "Error: RawML could not be found, aborting.\r\nPath: " + rawMl;
                 return output;
             }
             var bookDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
-            bookDoc.Load(rawML, Encoding.UTF8);
+            bookDoc.Load(rawMl, Encoding.UTF8);
             var booklineNodes = bookDoc.DocumentNode.SelectNodes("//p") ?? bookDoc.DocumentNode.SelectNodes("//div");
             if (booklineNodes == null)
             {
@@ -168,29 +168,6 @@ namespace XRayBuilder.Core.Libraries
                     output.Append(input[i]);
             }
             return output.ToString();
-        }
-
-        public static bool CleanUp(string folderPath)
-        {
-            if (!Directory.Exists(folderPath))
-                return false;
-
-            var files = Directory.GetFiles(folderPath, "*", SearchOption.AllDirectories);
-            var dirs = Directory.GetDirectories(folderPath, "*", SearchOption.AllDirectories);
-
-            foreach (var file in files)
-            {
-                File.SetAttributes(file, FileAttributes.Normal);
-                File.Delete(file);
-            }
-
-            foreach (var dir in dirs)
-            {
-                CleanUp(dir);
-            }
-            Thread.Sleep(1);
-            Directory.Delete(folderPath, false);
-            return true;
         }
 
         /// <summary>

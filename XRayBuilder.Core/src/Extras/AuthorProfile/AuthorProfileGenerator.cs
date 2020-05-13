@@ -15,7 +15,7 @@ using XRayBuilder.Core.Model;
 
 namespace XRayBuilder.Core.Extras.AuthorProfile
 {
-    public class AuthorProfileGenerator : IAuthorProfileGenerator
+    public sealed class AuthorProfileGenerator : IAuthorProfileGenerator
     {
         private readonly IHttpClient _httpClient;
         private readonly ILogger _logger;
@@ -171,7 +171,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                     {
                         _logger.Log("Saving biography to " + bioFile);
                         using var streamWriter = new StreamWriter(bioFile, false, System.Text.Encoding.UTF8);
-                        streamWriter.Write(biography);
+                        await streamWriter.WriteAsync(biography);
                     }
                     catch (Exception ex)
                     {
@@ -236,11 +236,11 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                 OtherBooks = bookBag.ToArray(),
                 Biography = biography,
                 Image = ApAuthorImage,
-                ImageUrl = searchResults.ImageUrl,
+                ImageUrl = searchResults.ImageUrl
             };
         }
 
-        public class Settings
+        public sealed class Settings
         {
             public string AmazonTld { get; set; }
             public bool UseNewVersion { get; set; }
@@ -249,14 +249,14 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             public bool SaveHtml { get; set; }
         }
 
-        public class Request
+        public sealed class Request
         {
             public BookInfo Book { get; set; }
             public Settings Settings { get; set; }
 
         }
 
-        public class Response
+        public sealed class Response
         {
             public string Asin { get; set; }
             public string Name { get; set; }

@@ -19,7 +19,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
 {
     public sealed class Metadata : IMetadata
     {
-        private PDBHeader _pdb;
+        private PdbHeader _pdb;
         private PalmDocHeader _pdh;
         private MobiHead _mobiHeader;
         private PalmDocHeader _palmDocHeaderKf8;
@@ -41,7 +41,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
         private void Initialize(FileStream fs)
         {
             fs.Seek(0, SeekOrigin.Begin);
-            _pdb = new PDBHeader(fs);
+            _pdb = new PdbHeader(fs);
             _pdh = _activePdh = new PalmDocHeader(fs);
             _mobiHeader = _activeMobiHeader = new MobiHead(fs, _pdb.MobiHeaderSize)
             {
@@ -117,9 +117,9 @@ namespace XRayBuilder.Core.Unpack.Mobi
 
         private static string GetImageType(byte[] data)
         {
-            if ((data[6] == 'J' && data[7] == 'F' && data[8] == 'I' && data[9] == 'F')
-                || (data[6] == 'E' && data[7] == 'x' && data[8] == 'i' && data[9] == 'f')
-                || (data[0] == 0xFF && data[1] == 0xD8 && data[data.Length - 2] == 0xFF && data[data.Length - 1] == 0xD9))
+            if (data[6] == 'J' && data[7] == 'F' && data[8] == 'I' && data[9] == 'F'
+                || data[6] == 'E' && data[7] == 'x' && data[8] == 'i' && data[9] == 'f'
+                || data[0] == 0xFF && data[1] == 0xD8 && data[data.Length - 2] == 0xFF && data[data.Length - 1] == 0xD9)
                 return "jpeg";
             if (data[0] == 0x89 && data[1] == 'P' && data[2] == 'N' && data[3] == 'G')
                 return "png";
@@ -132,7 +132,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
             ? _activeMobiHeader.ExtHeader.Asin
             : _activeMobiHeader.ExtHeader.Asin2;
 
-        public string DbName => _pdb.DBName;
+        public string DbName => _pdb.DbName;
 
         public string UniqueId => _activeMobiHeader.UniqueId.ToString();
         public bool CanModify => true;

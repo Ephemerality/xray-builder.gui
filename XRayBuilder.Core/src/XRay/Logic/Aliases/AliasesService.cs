@@ -44,10 +44,10 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             try
             {
                 using var streamReader = new StreamReader(Environment.CurrentDirectory + @"\dist\BaseSplitIgnore.txt", Encoding.UTF8);
-                var CustomSplitIgnore = streamReader.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.None)
+                var customSplitIgnore = streamReader.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.None)
                     .Where(r => !r.StartsWith("//")).ToArray();
-                if (CustomSplitIgnore.Length >= 1)
-                    _commonTitles = CustomSplitIgnore;
+                if (customSplitIgnore.Length >= 1)
+                    _commonTitles = customSplitIgnore;
                 logger.Log("Splitting aliases using custom common titles file...");
             }
             catch (Exception ex)

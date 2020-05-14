@@ -286,10 +286,10 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                     {
                         Asin = response.Asin,
                         Bio = response.Biography,
-                        ImageHeight = response.Image.Height,
+                        ImageHeight = response.Image?.Height ?? 0,
                         Name = response.Name,
                         OtherBookAsins = response.OtherBooks.Select(book => book.Asin).ToArray(),
-                        Picture = response.Image.ToBase64(ImageFormat.Jpeg)
+                        Picture = response.Image?.ToBase64(ImageFormat.Jpeg)
                     }
                 }
             };

@@ -25,7 +25,8 @@ namespace XRayBuilder.Core.Unpack.KFX
             KfxAttachable
         }
 
-        public long RawMlSize { get; private set; }
+        // Default size / book ERL is -1
+        public long RawMlSize => -1;
 
         public Image CoverImage
         {

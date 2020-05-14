@@ -100,7 +100,7 @@ namespace XRayBuilder.Core.Unpack.KFX
                 ?.FirstOrDefault(md => md.GetField(KfxSymbols.Category)?.StringValue == "kindle_title_metadata")
                 ?.GetField<IonList>(KfxSymbols.Metadata)
                 ?.Where(kvp => kvp.GetField(KfxSymbols.Value) is IonString)
-                .ToDictionary(metadataValue => metadataValue.GetField(KfxSymbols.Key).StringValue,
+                .ToLookup(metadataValue => metadataValue.GetField(KfxSymbols.Key).StringValue,
                     metadataValue => metadataValue.GetField(KfxSymbols.Value).StringValue);
 
             if (metadata == null)
@@ -108,16 +108,16 @@ namespace XRayBuilder.Core.Unpack.KFX
 
             Metadata = new KfxMetadata
             {
-                Asin = metadata.GetOrDefault("ASIN"),
-                AssetId = metadata.GetOrDefault("asset_id"),
-                Author = metadata.GetOrDefault("author"),
-                CdeContentType = metadata.GetOrDefault("cde_content_type"),
-                ContentId = metadata.GetOrDefault("content_id"),
-                CoverImage = metadata.GetOrDefault("cover_image"),
-                IssueDate = metadata.GetOrDefault("issue_date"),
-                Language = metadata.GetOrDefault("language"),
-                Publisher = metadata.GetOrDefault("publisher"),
-                Title = metadata.GetOrDefault("title")
+                Asin = metadata["ASIN"].FirstOrDefault(),
+                AssetId = metadata["asset_id"].FirstOrDefault(),
+                Author = metadata["author"].FirstOrDefault(),
+                CdeContentType = metadata["cde_content_type"].FirstOrDefault(),
+                ContentId = metadata["content_id"].FirstOrDefault(),
+                CoverImage = metadata["cover_image"].FirstOrDefault(),
+                IssueDate = metadata["issue_date"].FirstOrDefault(),
+                Language = metadata["language"].FirstOrDefault(),
+                Publisher = metadata["publisher"].FirstOrDefault(),
+                Title = metadata["title"].FirstOrDefault()
             };
         }
 

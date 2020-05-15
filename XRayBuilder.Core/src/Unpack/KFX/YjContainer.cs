@@ -8,7 +8,6 @@ using System.Linq;
 using Amazon.IonDotnet.Tree;
 using Amazon.IonDotnet.Tree.Impl;
 using JetBrains.Annotations;
-using XRayBuilder.Core.Libraries.Enumerables.Extensions;
 
 namespace XRayBuilder.Core.Unpack.KFX
 {

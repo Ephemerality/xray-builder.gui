@@ -163,7 +163,7 @@ namespace XRayBuilderGUI.UI
             foreach (var c in Controls.OfType<Button>())
                 c.Enabled = enabled;
             txtMobi.Enabled = enabled;
-            txtXMLFile.Enabled = enabled;
+            txtXMLFile.Enabled = enabled && rdoFile.Checked;
             txtGoodreads.Enabled = enabled;
             rdoFile.Enabled = enabled;
             rdoGoodreads.Enabled = enabled;
@@ -289,6 +289,10 @@ namespace XRayBuilderGUI.UI
                 Task<XRay> xrayTask;
                 if (rdoGoodreads.Checked)
                     xrayTask = _xrayService.CreateXRayAsync(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _dataSource, _progress, _cancelTokens.Token);
+                else if (rdoRoentgen.Checked)
+                {
+                    xrayTask = _xrayService.CreateXRayAsync()
+                }
                 else
                 {
                     // TODO Set datasource properly
@@ -435,20 +439,17 @@ namespace XRayBuilderGUI.UI
                 MessageBox.Show("Specified book was not found.", "Book Not Found");
                 return;
             }
-            if (rdoGoodreads.Checked)
+            if (txtGoodreads.Text == "")
             {
-                if (txtGoodreads.Text == "")
-                {
-                    MessageBox.Show($"No {_dataSource.Name} link was specified.", $"Missing {_dataSource.Name} Link");
-                    return;
-                }
-                if (!txtGoodreads.Text.ToLower().Contains(_settings.dataSource.ToLower()))
-                {
-                    MessageBox.Show($"Invalid {_dataSource.Name} link was specified.\r\n"
-                        + $"If you do not want to use {_dataSource.Name}, you can change the data source in Settings."
-                        , $"Invalid {_dataSource.Name} Link");
-                    return;
-                }
+                MessageBox.Show($"No {_dataSource.Name} link was specified.", $"Missing {_dataSource.Name} Link");
+                return;
+            }
+            if (!txtGoodreads.Text.ToLower().Contains(_settings.dataSource.ToLower()))
+            {
+                MessageBox.Show($"Invalid {_dataSource.Name} link was specified.\r\n"
+                    + $"If you do not want to use {_dataSource.Name}, you can change the data source in Settings."
+                    , $"Invalid {_dataSource.Name} Link");
+                return;
             }
             if (_settings.realName.Trim().Length == 0 || _settings.penName.Trim().Length == 0)
             {
@@ -834,22 +835,22 @@ namespace XRayBuilderGUI.UI
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //this.WindowState = FormWindowState.Maximized;
             ActiveControl = lblGoodreads;
             _tooltip.SetToolTip(btnBrowseMobi, "Open a Kindle book.");
             _tooltip.SetToolTip(btnBrowseOutput, "Open the default output directory.");
             _tooltip.SetToolTip(btnOneClick, "One Click to try to build the Start\r\nAction, Author Profile, End Action\r\nand X-Ray files for this book.");
             _tooltip.SetToolTip(btnBrowseXML, "Open a supported XML or TXT file containing characters and topics.");
-            _tooltip.SetToolTip(btnKindleExtras,
-                "Try to build the Start Action, Author Profile,\r\nand End Action files for this book.");
-            _tooltip.SetToolTip(btnBuild,
-                "Try to build the X-Ray file for this book.");
+            _tooltip.SetToolTip(btnKindleExtras, "Try to build the Start Action, Author Profile,\r\nand End Action files for this book.");
+            _tooltip.SetToolTip(btnBuild, "Try to build the X-Ray file for this book.");
             _tooltip.SetToolTip(btnSettings, "Configure X-Ray Builder GUI.");
             _tooltip.SetToolTip(btnPreview, "View a preview of the generated files.");
             _tooltip.SetToolTip(btnUnpack, "Save the rawML (raw markup) of the book\r\nin the output directory so you can review it.");
-            _tooltip.SetToolTip(btnExtractTerms,
-                "Extract an existing X-Ray file to an XML file.\r\nThis can be useful if you have characters and\r\nterms you want to reuse.");
+            _tooltip.SetToolTip(btnExtractTerms, "Extract an existing X-Ray file to an XML file.\r\nThis can be useful if you have characters and\r\nterms you want to reuse.");
             _tooltip.SetToolTip(btnCreate, "Create an XML file containing characters\r\nand settings, or edit an existing XML file.");
+
+            _tooltip.SetToolTip(rdoGoodreads, "Use the above link as a terms source.");
+            _tooltip.SetToolTip(rdoRoentgen, "Download terms from Roentgen if any are available.");
+            _tooltip.SetToolTip(rdoFile, "Load terms from the selected file.");
 
             _tooltip.SetToolTip(pbFile1, "Start Actions");
             _tooltip.SetToolTip(pbFile2, "Author Profile");
@@ -919,25 +920,16 @@ namespace XRayBuilderGUI.UI
 
         private void rdoSource_CheckedChanged(object sender, EventArgs e)
         {
-            if (((RadioButton)sender).Text != "File")
+            if (((RadioButton)sender).Text == "File")
             {
-                lblGoodreads.Visible = !lblGoodreads.Visible;
-                txtGoodreads.Visible = !txtGoodreads.Visible;
-                lblXMLFile.Visible = !lblXMLFile.Visible;
-                txtXMLFile.Visible = !txtXMLFile.Visible;
-                txtGoodreads.Visible = !txtGoodreads.Visible;
-                btnBrowseXML.Visible = !btnBrowseXML.Visible;
-                btnSearchGoodreads.Visible = !btnSearchGoodreads.Visible;
-                btnKindleExtras.Enabled = !btnKindleExtras.Enabled;
-                btnOneClick.Enabled = !btnOneClick.Enabled;
+                txtXMLFile.Enabled = true;
+                btnBrowseXML.Enabled = true;
             }
-
-            lblGoodreads.Left = ((RadioButton) sender).Text switch
+            else
             {
-                "Shelfari" => 150,
-                "Goodreads" => 134,
-                _ => lblGoodreads.Left
-            };
+                txtXMLFile.Enabled = false;
+                btnBrowseXML.Enabled = false;
+            }
         }
 
         private async void txtMobi_TextChanged(object sender, EventArgs e)

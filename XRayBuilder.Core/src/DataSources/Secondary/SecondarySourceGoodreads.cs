@@ -34,7 +34,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
         public string Name => "Goodreads";
         public bool SearchEnabled { get; } = true;
-        public int UrlLabelPosition { get; } = 134;
+        public int UrlLabelPosition { get; } = 6;
         public bool SupportsNotableClips { get; } = true;
 
         private readonly Regex _regexBookId = new Regex(@"/book/show/(?<id>[0-9]+)", RegexOptions.Compiled);

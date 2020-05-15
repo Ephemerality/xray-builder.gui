@@ -1,55 +1,34 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using XRayBuilder.Core.DataSources.Roentgen.Logic;
 using XRayBuilder.Core.DataSources.Secondary.Model;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Progress;
-using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
 using XRayBuilder.Core.Model;
 using XRayBuilder.Core.XRay.Artifacts;
-using XRayBuilder.Core.XRay.Logic.Terms;
 
 namespace XRayBuilder.Core.DataSources.Secondary
 {
-    public sealed class SecondarySourceFile : ISecondarySource
+    public sealed class SecondarySourceRoentgen : ISecondarySource
     {
+        private readonly IRoentgenClient _roentgenClient;
         private readonly ILogger _logger;
-        private readonly ITermsService _termsService;
 
-        public SecondarySourceFile(ILogger logger, ITermsService termsService)
+        public SecondarySourceRoentgen(IRoentgenClient roentgenClient, ILogger logger)
         {
+            _roentgenClient = roentgenClient;
             _logger = logger;
-            _termsService = termsService;
         }
 
-        public string Name { get; } = "File";
+        public string Name { get; } = "Roentgen";
         public bool SearchEnabled { get; } = false;
         public int UrlLabelPosition { get; } = 0;
         public bool SupportsNotableClips { get; } = false;
 
-        public Task<IEnumerable<Term>> GetTermsAsync(string xmlFile, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
-        {
-            _logger.Log("Loading terms from file...");
-            var filetype = Path.GetExtension(xmlFile);
-            switch (filetype)
-            {
-                case ".xml":
-                    return Task.FromResult((IEnumerable<Term>) XmlUtil.DeserializeFile<Term[]>(xmlFile));
-                case ".txt":
-                    return Task.FromResult(_termsService.ReadTermsFromTxt(xmlFile));
-                default:
-                    _logger.Log("Error: Bad file type \"" + filetype + "\"");
-                    break;
-            }
-
-            return Task.FromResult(Enumerable.Empty<Term>());
-        }
-
-        #region Unsupported
         public Task<IEnumerable<BookInfo>> SearchBookAsync(string author, string title, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
@@ -70,6 +49,28 @@ namespace XRayBuilder.Core.DataSources.Secondary
             throw new NotSupportedException();
         }
 
+        public async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var terms = await _roentgenClient.DownloadTermsAsync(asin, tld, cancellationToken);
+                if (terms == null)
+                {
+                    _logger.Log("No terms were available for this book :(");
+                    return Enumerable.Empty<Term>();
+                }
+
+                terms = terms.Where(term => term.Type == "character" || includeTopics).ToArray();
+                _logger.Log($"Successfully downloaded {terms.Length} terms from Roentgen!");
+                return terms;
+            }
+            catch (Exception e)
+            {
+                _logger.Log($"Failed to download terms: {e.Message}");
+                return Enumerable.Empty<Term>();
+            }
+        }
+
         public Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
@@ -79,6 +80,5 @@ namespace XRayBuilder.Core.DataSources.Secondary
         {
             throw new NotSupportedException();
         }
-        #endregion
     }
 }

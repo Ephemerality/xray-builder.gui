@@ -84,9 +84,9 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
         /// <summary>
         /// Downloads terms from the <paramref name="dataSource"/> and saves them to <paramref name="outFile"/>
         /// </summary>
-        public async Task DownloadAndSaveAsync(ISecondarySource dataSource, string dataUrl, string outFile, IProgressBar progress, CancellationToken token = default)
+        public async Task DownloadAndSaveAsync(ISecondarySource dataSource, string dataUrl, string outFile, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken token = default)
         {
-            var terms = (await dataSource.GetTermsAsync(dataUrl, progress, token)).ToArray();
+            var terms = (await dataSource.GetTermsAsync(dataUrl, asin, tld, includeTopics, progress, token)).ToArray();
             if (terms.Length == 0)
                 throw new Exception($"No terms were found on {dataSource.Name}");
             XmlUtil.SerializeToFile(terms, outFile);

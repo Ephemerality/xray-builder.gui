@@ -40,13 +40,15 @@ namespace XRayBuilder.Core.XRay.Logic
             string db,
             string guid,
             string asin,
+            string tld,
+            bool includeTopics,
             ISecondarySource dataSource,
             IProgressBar progress,
             CancellationToken token = default)
         {
             var xray = new XRay(dataLocation, db, guid, asin, dataSource)
             {
-                Terms = (await dataSource.GetTermsAsync(dataLocation, progress, token)).ToList()
+                Terms = (await dataSource.GetTermsAsync(dataLocation, asin, tld, includeTopics, progress, token)).ToList()
             };
             if (dataSource.SupportsNotableClips)
             {

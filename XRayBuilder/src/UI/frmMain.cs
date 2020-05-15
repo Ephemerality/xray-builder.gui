@@ -288,16 +288,14 @@ namespace XRayBuilderGUI.UI
             {
                 Task<XRay> xrayTask;
                 if (rdoGoodreads.Checked)
-                    xrayTask = _xrayService.CreateXRayAsync(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _dataSource, _progress, _cancelTokens.Token);
+                    xrayTask = _xrayService.CreateXRayAsync(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.amazonTLD, _settings.includeTopics, _dataSource, _progress, _cancelTokens.Token);
                 else if (rdoRoentgen.Checked)
-                {
-                    xrayTask = _xrayService.CreateXRayAsync()
-                }
+                    xrayTask = _xrayService.CreateXRayAsync(null, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.roentgenRegion, _settings.includeTopics, _diContainer.GetInstance<SecondarySourceRoentgen>(), _progress, _cancelTokens.Token);
                 else
                 {
                     // TODO Set datasource properly
                     var fileDataSource = _diContainer.GetInstance<SecondaryDataSourceFactory>().Get(SecondaryDataSourceFactory.Enum.File);
-                    xrayTask = _xrayService.CreateXRayAsync(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, fileDataSource, _progress, _cancelTokens.Token);
+                    xrayTask = _xrayService.CreateXRayAsync(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.amazonTLD, _settings.includeTopics, fileDataSource, _progress, _cancelTokens.Token);
                 }
 
                 xray = await Task.Run(() => xrayTask).ConfigureAwait(false);
@@ -710,8 +708,29 @@ namespace XRayBuilderGUI.UI
             var path = $@"{Environment.CurrentDirectory}\xml\{Path.GetFileNameWithoutExtension(txtMobi.Text)}.xml";
             try
             {
-                _logger.Log($@"Exporting terms from {_dataSource.Name}...");
-                await Task.Run(() => _termsService.DownloadAndSaveAsync(_dataSource, txtGoodreads.Text, path, _progress, _cancelTokens.Token));
+                if (rdoGoodreads.Checked)
+                {
+                    _logger.Log($@"Exporting terms from {_dataSource.Name}...");
+                    await Task.Run(() => _termsService.DownloadAndSaveAsync(_dataSource, txtGoodreads.Text, path, null, null, _settings.includeTopics, _progress, _cancelTokens.Token));
+                }
+                else if (rdoRoentgen.Checked)
+                {
+                    try
+                    {
+                        _logger.Log($@"Exporting terms from Roentgen...");
+                        using var metadata = MetadataLoader.Load(txtMobi.Text);
+                        await Task.Run(() => _termsService.DownloadAndSaveAsync(_diContainer.GetInstance<SecondarySourceRoentgen>(), null, path, metadata.Asin, _settings.roentgenRegion, _settings.includeTopics, _progress, _cancelTokens.Token));
+                    }
+                    catch (Exception ex) when (ex.Message.Contains("No terms"))
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    _logger.Log("Can't export terms from a file...");
+                    return;
+                }
                 _logger.Log($"Character data has been successfully saved to: {path}");
                 txtXMLFile.Text = path;
             }
@@ -826,7 +845,11 @@ namespace XRayBuilderGUI.UI
             _settings.mobiFile = txtMobi.Text;
             _settings.xmlFile = txtXMLFile.Text;
             _settings.Goodreads = txtGoodreads.Text;
-            _settings.buildSource = rdoGoodreads.Checked ? "Goodreads" : "XML";
+            _settings.buildSource = rdoGoodreads.Checked
+                ? "Goodreads"
+                : rdoRoentgen.Checked
+                    ? "Roentgen"
+                    : "XML";
             _settings.Save();
             if (txtOutput.Text.Trim().Length != 0)
                 File.WriteAllText(_currentLog, txtOutput.Text);
@@ -878,9 +901,10 @@ namespace XRayBuilderGUI.UI
             txtGoodreads.Text = _settings.Goodreads;
             if (_settings.buildSource == "Goodreads")
                 rdoGoodreads.Checked = true;
+            else if (_settings.buildSource == "Roentgen")
+                rdoRoentgen.Checked = true;
             else
                 rdoFile.Checked = true;
-            SetDatasourceLabels();
         }
 
         private void SetDatasourceLabels()
@@ -893,7 +917,10 @@ namespace XRayBuilderGUI.UI
             lblGoodreads.Left = _dataSource.UrlLabelPosition;
             rdoGoodreads.Text = _dataSource.Name;
             lblGoodreads.Text = $"{_dataSource.Name} URL:";
-            _tooltip.SetToolTip(btnDownloadTerms, $"Save {_dataSource.Name} info to an XML file.");
+            if (rdoGoodreads.Checked)
+                _tooltip.SetToolTip(btnDownloadTerms, $"Save {_dataSource.Name} terms to an XML file.");
+            else if (rdoRoentgen.Checked)
+                _tooltip.SetToolTip(btnDownloadTerms, $"Save Roentgen terms to an XML file.");
             _tooltip.SetToolTip(btnSearchGoodreads, _dataSource.SearchEnabled
                 ? $"Try to search for this book on {_dataSource.Name}."
                 : $"Search is disabled when {_dataSource.Name} is selected as a data source.");
@@ -924,12 +951,15 @@ namespace XRayBuilderGUI.UI
             {
                 txtXMLFile.Enabled = true;
                 btnBrowseXML.Enabled = true;
+                btnDownloadTerms.Enabled = false;
             }
             else
             {
                 txtXMLFile.Enabled = false;
                 btnBrowseXML.Enabled = false;
+                btnDownloadTerms.Enabled = true;
             }
+            SetDatasourceLabels();
         }
 
         private async void txtMobi_TextChanged(object sender, EventArgs e)

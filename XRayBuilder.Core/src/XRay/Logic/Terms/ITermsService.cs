@@ -25,7 +25,7 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
         /// <summary>
         /// Downloads terms from the <paramref name="dataSource"/> and saves them to <paramref name="outFile"/>
         /// </summary>
-        Task DownloadAndSaveAsync(ISecondarySource dataSource, string dataUrl, string outFile, IProgressBar progress, CancellationToken token = default);
+        Task DownloadAndSaveAsync(ISecondarySource dataSource, string dataUrl, string outFile, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken token = default);
 
         /// <summary>
         /// Read terms from a <param-ref name="txtFile"/>

@@ -37,7 +37,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXmlPreviewDataTest(Book book)
         {
-            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, _file, null, CancellationToken.None);
+            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, "com", true, _file, null, CancellationToken.None);
             string outpath = Path.Combine(Environment.CurrentDirectory, "out", $"XRAY.{book.Asin}.previewData");
             _previewDataExporter.Export(xray, outpath);
             FileAssert.AreEqual($"testfiles\\XRAY.{book.Asin}.previewData", outpath);

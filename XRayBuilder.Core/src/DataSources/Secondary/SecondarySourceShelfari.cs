@@ -118,7 +118,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
             throw new NotSupportedException();
         }
 
-        public async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, IProgressBar progress, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
         {
             _logger.Log("Downloading Shelfari page...");
             var terms = new List<Term>();

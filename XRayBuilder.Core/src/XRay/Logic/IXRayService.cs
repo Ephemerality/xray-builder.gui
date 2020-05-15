@@ -17,6 +17,8 @@ namespace XRayBuilder.Core.XRay.Logic
             string db,
             string guid,
             string asin,
+            string tld,
+            bool includeTopics,
             ISecondarySource dataSource,
             IProgressBar progress,
             CancellationToken token = default);

@@ -90,7 +90,7 @@ namespace XRayBuilder.Test.DataSources
         [Test]
         public async Task GetTermsTest()
         {
-            var results = (await _goodreads.GetTermsAsync("https://www.goodreads.com/book/show/13497.A_Feast_for_Crows", null)).ToArray();
+            var results = (await _goodreads.GetTermsAsync("https://www.goodreads.com/book/show/13497.A_Feast_for_Crows", null, "com", true, null)).ToArray();
             Assert.AreEqual(results.Length, 15);
         }
 

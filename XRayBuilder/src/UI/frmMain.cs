@@ -54,7 +54,7 @@ namespace XRayBuilderGUI.UI
         private readonly ITermsService _termsService;
         private readonly Container _diContainer;
         // TODO Different type handling should come from some sort of factory or whatever
-        private readonly KfxXrayService _kfxXrayService;
+        private readonly IKfxXrayService _kfxXrayService;
         private readonly IStartActionsArtifactService _startActionsArtifactService;
         private readonly IEndActionsArtifactService _endActionsArtifactService;
         private readonly IRoentgenClient _roentgenClient;
@@ -78,7 +78,7 @@ namespace XRayBuilderGUI.UI
             XRayExporterFactory xrayExporterFactory,
             IXRayService xrayService,
             ITermsService termsService,
-            KfxXrayService kfxXrayService,
+            IKfxXrayService kfxXrayService,
             IStartActionsArtifactService startActionsArtifactService,
             IEndActionsArtifactService endActionsArtifactService,
             IRoentgenClient roentgenClient,

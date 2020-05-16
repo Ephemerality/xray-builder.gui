@@ -13,7 +13,7 @@ namespace XRayBuilder.Core.XRay.Logic
     /// Handles adding locations and highlights to an X-Ray.
     /// Supports UTF8 instead of the 1252 encoding
     /// </summary>
-    public class KfxXrayService
+    public sealed class KfxXrayService : IKfxXrayService
     {
         private readonly ILogger _logger;
 

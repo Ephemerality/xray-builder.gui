@@ -19,6 +19,7 @@ namespace XRayBuilder.Core.XRay.Bootstrap
         {
             container.AutoregisterConcreteFromInterface<IXRayExporter>(Lifestyle.Singleton);
             container.RegisterSingleton<IXRayService, XRayService>();
+            container.RegisterSingleton<IKfxXrayService, KfxXrayService>();
             container.RegisterSingleton<ITermsService, TermsService>();
             container.RegisterSingleton<IAliasesService, AliasesService>();
             container.RegisterSingleton<IAliasesRepository, AliasesRepository>();

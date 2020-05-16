@@ -42,7 +42,7 @@
             this.lblID = new System.Windows.Forms.Label();
             this.pbCover = new System.Windows.Forms.PictureBox();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbCover)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.pbCover)).BeginInit();
             this.SuspendLayout();
             // 
             // cbResults
@@ -141,7 +141,7 @@
             // lblTitle
             // 
             this.lblTitle.AutoEllipsis = true;
-            this.lblTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.lblTitle.Location = new System.Drawing.Point(70, 20);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(284, 13);
@@ -191,7 +191,7 @@
             this.Controls.Add(this.lblMessage1);
             this.Controls.Add(this.cbResults);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Icon = ((System.Drawing.Icon) (resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "frmGR";
@@ -202,24 +202,24 @@
             this.Load += new System.EventHandler(this.frmGR_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbCover)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.pbCover)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
-        #endregion
-        public System.Windows.Forms.Label lblMessage1;
         private System.Windows.Forms.Button btnOK;
         public System.Windows.Forms.ComboBox cbResults;
-        public System.Windows.Forms.Label lblMessage2;
         private System.Windows.Forms.GroupBox groupBox1;
-        public System.Windows.Forms.Label lblID;
-        public System.Windows.Forms.PictureBox pbCover;
         public System.Windows.Forms.Label lblAuthor;
-        public System.Windows.Forms.Label lblTitle;
         public System.Windows.Forms.Label lblEditions;
+        public System.Windows.Forms.Label lblID;
+        public System.Windows.Forms.Label lblMessage1;
+        public System.Windows.Forms.Label lblMessage2;
         public System.Windows.Forms.Label lblRating;
+        public System.Windows.Forms.Label lblTitle;
         public System.Windows.Forms.LinkLabel linkID;
+        public System.Windows.Forms.PictureBox pbCover;
+
+        #endregion
     }
 }

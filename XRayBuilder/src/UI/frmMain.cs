@@ -272,7 +272,7 @@ namespace XRayBuilderGUI.UI
 
             prgBar.Value = 0;
 
-            var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, _settings.saverawml, _cancelTokens.Token);
+            using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, _settings.saverawml, _cancelTokens.Token);
             if (metadata == null)
                 return;
 
@@ -459,7 +459,7 @@ namespace XRayBuilderGUI.UI
                 return;
             }
 
-            var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, _settings.saverawml, _cancelTokens.Token);
+            using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, _settings.saverawml, _cancelTokens.Token);
             if (metadata == null)
                 return;
 
@@ -970,7 +970,7 @@ namespace XRayBuilderGUI.UI
             txtGoodreads.Text = "";
             prgBar.Value = 0;
 
-            var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
+            using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
             if (metadata == null)
             {
                 txtMobi.Text = "";
@@ -1128,7 +1128,7 @@ namespace XRayBuilderGUI.UI
         private async void btnCreate_Click(object sender, EventArgs e)
         {
             var frmCreateXr = _diContainer.GetInstance<frmCreateXR>();
-            var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
+            using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
             if (metadata != null)
                 frmCreateXr.SetMetadata(metadata.Asin, metadata.Author, metadata.Title);
             frmCreateXr.ShowDialog();

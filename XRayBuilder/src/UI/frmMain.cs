@@ -905,6 +905,7 @@ namespace XRayBuilderGUI.UI
                 rdoRoentgen.Checked = true;
             else
                 rdoFile.Checked = true;
+            SetDatasourceLabels();
         }
 
         private void SetDatasourceLabels()
@@ -993,6 +994,7 @@ namespace XRayBuilderGUI.UI
             CheckFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));
             btnBuild.Enabled = metadata.XRaySupported;
             btnOneClick.Enabled = metadata.XRaySupported;
+            btnUnpack.Enabled = metadata.RawMlSupported;
 
             try
             {

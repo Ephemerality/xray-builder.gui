@@ -1130,12 +1130,7 @@ namespace XRayBuilderGUI.UI
             var frmCreateXr = _diContainer.GetInstance<frmCreateXR>();
             var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
             if (metadata != null)
-            {
-                // TODO DONT ACCESS THESE CONTROLS DIRECTLY
-                frmCreateXr.txtAuthor.Text = metadata.Author;
-                frmCreateXr.txtTitle.Text = metadata.Title;
-                frmCreateXr.txtAsin.Text = metadata.Asin;
-            }
+                frmCreateXr.SetMetadata(metadata.Asin, metadata.Author, metadata.Title);
             frmCreateXr.ShowDialog();
         }
 

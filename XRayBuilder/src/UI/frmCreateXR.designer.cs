@@ -682,12 +682,12 @@
         private System.Windows.Forms.ToolStripMenuItem tsmDelete;
         private System.Windows.Forms.ToolStripMenuItem tsmEdit;
         private System.Windows.Forms.TextBox txtAliases;
-        public System.Windows.Forms.TextBox txtAsin;
-        public System.Windows.Forms.TextBox txtAuthor;
+        private System.Windows.Forms.TextBox txtAsin;
+        private System.Windows.Forms.TextBox txtAuthor;
         private System.Windows.Forms.TextBox txtDescription;
         private System.Windows.Forms.TextBox txtLink;
         private System.Windows.Forms.TextBox txtName;
-        public System.Windows.Forms.TextBox txtTitle;
+        private System.Windows.Forms.TextBox txtTitle;
 
         #endregion
     }

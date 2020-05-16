@@ -40,6 +40,13 @@ namespace XRayBuilderGUI.UI
             pi?.SetValue(dgvTerms, true, null);
         }
 
+        public void SetMetadata(string asin, string author, string title)
+        {
+            txtAuthor.Text = author;
+            txtTitle.Text = title;
+            txtAsin.Text = asin;
+        }
+
         private readonly ToolTip _toolTip1 = new ToolTip();
         private List<Term> _terms = new List<Term>(100);
 

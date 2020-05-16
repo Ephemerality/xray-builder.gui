@@ -47,7 +47,6 @@ namespace XRayBuilderGUI.UI
         private readonly IAmazonClient _amazonClient;
         private readonly IAuthorProfileGenerator _authorProfileGenerator;
         private readonly PreviewProviderFactory _previewProviderFactory;
-        private readonly IAmazonInfoParser _amazonInfoParser;
         private readonly IAliasesRepository _aliasesRepository;
         private readonly IXRayService _xrayService;
         private readonly XRayExporterFactory _xrayExporterFactory;
@@ -74,7 +73,6 @@ namespace XRayBuilderGUI.UI
             IAuthorProfileGenerator authorProfileGenerator,
             IAmazonClient amazonClient,
             PreviewProviderFactory previewProviderFactory,
-            IAmazonInfoParser amazonInfoParser,
             IAliasesRepository aliasesRepository,
             IPreviewDataExporter previewDataExporter,
             XRayExporterFactory xrayExporterFactory,
@@ -94,7 +92,6 @@ namespace XRayBuilderGUI.UI
             _authorProfileGenerator = authorProfileGenerator;
             _amazonClient = amazonClient;
             _previewProviderFactory = previewProviderFactory;
-            _amazonInfoParser = amazonInfoParser;
             _aliasesRepository = aliasesRepository;
             _previewDataExporter = previewDataExporter;
             _xrayExporterFactory = xrayExporterFactory;
@@ -607,18 +604,19 @@ namespace XRayBuilderGUI.UI
                         return frmAsin.tbAsin.Text;
                     }
 
-                    var ea = new EndActionsDataGenerator(bookInfo, _dataSource, new XRayBuilder.Core.Extras.EndActions.EndActionsDataGenerator.Settings
+                    var endActionsSettings = new EndActionsDataGenerator.Settings
                     {
                         AmazonTld = _settings.amazonTLD,
                         UseNewVersion = _settings.useNewVersion,
                         PromptAsin = _settings.promptASIN,
                         SaveHtml = _settings.saveHtml,
                         EstimatePageCount = _settings.pageCount
-                    }, _logger, _httpClient, _amazonClient, _amazonInfoParser, _roentgenClient);
+                    };
 
+                    var endActionsDataGenerator = _diContainer.GetInstance<IEndActionsDataGenerator>();
                     var endActionsResponse = _settings.useNewVersion
-                        ? await ea.GenerateNewFormatData(authorProfileResponse, AsinPrompt, metadata, _progress, _cancelTokens.Token)
-                        : await ea.GenerateOld(_cancelTokens.Token);
+                        ? await endActionsDataGenerator.GenerateNewFormatData(bookInfo, endActionsSettings, _dataSource, authorProfileResponse, AsinPrompt, metadata, _progress, _cancelTokens.Token)
+                        : await endActionsDataGenerator.GenerateOld(bookInfo, endActionsSettings, _cancelTokens.Token);
 
                     if (endActionsResponse == null)
                         return;

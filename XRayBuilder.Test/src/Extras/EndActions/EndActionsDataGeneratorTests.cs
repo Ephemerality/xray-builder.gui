@@ -58,16 +58,18 @@ namespace XRayBuilder.Test.Extras.EndActions
                 }
             }, CancellationToken.None);
 
-            var endActionsDataGenerator = new EndActionsDataGenerator(book, _secondarySourceGoodreads, new EndActionsDataGenerator.Settings
+            var endActionsDataGenerator = new EndActionsDataGenerator(_logger, _httpClient, _amazonClient, _amazonInfoParser, null);
+
+            var settings = new EndActionsDataGenerator.Settings
             {
                 AmazonTld = "com",
                 EstimatePageCount = false,
                 PromptAsin = false,
                 SaveHtml = false,
                 UseNewVersion = true
-            }, _logger, _httpClient, _amazonClient, _amazonInfoParser, null);
+            };
 
-            var endActionsResponse = await endActionsDataGenerator.GenerateNewFormatData(authorProfileResponse, null, metadata, null, CancellationToken.None);
+            var endActionsResponse = await endActionsDataGenerator.GenerateNewFormatData(book, settings, _secondarySourceGoodreads, authorProfileResponse, null, metadata, null, CancellationToken.None);
             Assert.NotNull(endActionsResponse);
 
             var content = _endActionsArtifactService.GenerateNew(new EndActionsArtifactService.Request(

@@ -18,6 +18,7 @@ namespace XRayBuilder.Core.Extras.Bootstrap
             container.RegisterSingleton<IStartActionsArtifactService, StartActionsArtifactService>();
             container.RegisterSingleton<IEndActionsArtifactService, EndActionsArtifactService>();
             container.RegisterSingleton<IEndActionsAuthorConverter, EndActionsAuthorConverter>();
+            container.RegisterSingleton<IEndActionsDataGenerator, EndActionsDataGenerator>();
         }
     }
 }

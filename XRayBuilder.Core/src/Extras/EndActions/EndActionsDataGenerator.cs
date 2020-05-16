@@ -21,7 +21,7 @@ using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilder.Core.Extras.EndActions
 {
-    public sealed class EndActionsDataGenerator
+    public sealed class EndActionsDataGenerator : IEndActionsDataGenerator
     {
         private readonly ILogger _logger;
         private readonly IHttpClient _httpClient;
@@ -29,27 +29,13 @@ namespace XRayBuilder.Core.Extras.EndActions
         private readonly IAmazonInfoParser _amazonInfoParser;
         private readonly IRoentgenClient _roentgenClient;
 
-        private List<BookInfo> custAlsoBought = new List<BookInfo>();
-        private BookInfo curBook;
-
-        private readonly ISecondarySource _dataSource;
-        private readonly Settings _settings;
-
-        //Requires an already-built AuthorProfile and the BaseEndActions.txt file
-        // TODO Move non-DI params from constructor to function
         public EndActionsDataGenerator(
-            BookInfo book,
-            ISecondarySource dataSource,
-            Settings settings,
             ILogger logger,
             IHttpClient httpClient,
             IAmazonClient amazonClient,
             IAmazonInfoParser amazonInfoParser,
             IRoentgenClient roentgenClient)
         {
-            curBook = book;
-            _dataSource = dataSource;
-            _settings = settings;
             _logger = logger;
             _httpClient = httpClient;
             _amazonClient = amazonClient;
@@ -61,11 +47,13 @@ namespace XRayBuilder.Core.Extras.EndActions
         /// Generate the necessities for the old format
         /// TODO Remove anything that gets generated for the new version
         /// </summary>
-        public async Task<Response> GenerateOld(CancellationToken cancellationToken = default)
+        public async Task<Response> GenerateOld(BookInfo curBook, Settings settings, CancellationToken cancellationToken = default)
         {
+            var custAlsoBought = new List<BookInfo>();
+
             _logger.Log("Attempting to find book on Amazon...");
             //Generate Book search URL from book's ASIN
-            var ebookLocation = string.Format(@"https://www.amazon.{0}/dp/{1}", _settings.AmazonTld, curBook.Asin);
+            var ebookLocation = $@"https://www.amazon.{settings.AmazonTld}/dp/{curBook.Asin}";
 
             // Search Amazon for book
             //_logger.Log(String.Format("Book's Amazon page URL: {0}", ebookLocation));
@@ -81,7 +69,7 @@ namespace XRayBuilder.Core.Extras.EndActions
                 return null;
             }
             _logger.Log("Book found on Amazon!");
-            if (_settings.SaveHtml)
+            if (settings.SaveHtml)
             {
                 try
                 {
@@ -144,7 +132,7 @@ namespace XRayBuilder.Core.Extras.EndActions
                             _amazonClient.ParseAsin(nodeUrl)));
                     }
 
-                    if (_settings.UseNewVersion)
+                    if (settings.UseNewVersion)
                     {
                         await foreach (var _ in _amazonClient.EnhanceBookInfos(possibleBooks, cancellationToken))
                         {
@@ -214,12 +202,12 @@ namespace XRayBuilder.Core.Extras.EndActions
             };
         }
 
-        private async Task<BookInfo> SearchOrPrompt(BookInfo book, Func<string, string, string> asinPrompt, CancellationToken cancellationToken = default)
+        private async Task<BookInfo> SearchOrPrompt(BookInfo book, Func<string, string, string> asinPrompt, Settings settings, CancellationToken cancellationToken = default)
         {
             // If the asin was available from another source, use it
             if (!string.IsNullOrEmpty(book.Asin))
             {
-                var response = await _amazonInfoParser.GetAndParseAmazonDocument($"https://www.amazon.{_settings.AmazonTld}/dp/{book.Asin}", cancellationToken);
+                var response = await _amazonInfoParser.GetAndParseAmazonDocument($"https://www.amazon.{settings.AmazonTld}/dp/{book.Asin}", cancellationToken);
                 response.ApplyToBookInfo(book);
 
                 return book;
@@ -229,8 +217,8 @@ namespace XRayBuilder.Core.Extras.EndActions
             try
             {
 
-                newBook = await _amazonClient.SearchBook(book.Title, book.Author, _settings.AmazonTld, cancellationToken);
-                if (newBook == null && _settings.PromptAsin && asinPrompt != null)
+                newBook = await _amazonClient.SearchBook(book.Title, book.Author, settings.AmazonTld, cancellationToken);
+                if (newBook == null && settings.PromptAsin && asinPrompt != null)
                 {
                     _logger.Log($"ASIN prompt for {book.Title}...");
                     var asin = asinPrompt(book.Title, book.Author);
@@ -242,7 +230,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             }
             catch
             {
-                _logger.Log($"Failed to find {book.Title} on Amazon.{_settings.AmazonTld}, trying again with Amazon.com.");
+                _logger.Log($"Failed to find {book.Title} on Amazon.{settings.AmazonTld}, trying again with Amazon.com.");
                 newBook = await _amazonClient.SearchBook(book.Title, book.Author, "com", cancellationToken);
             }
 
@@ -255,7 +243,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             return newBook;
         }
 
-        private async Task ExpandSeriesMetadata(AuthorProfileGenerator.Response authorProfile, SeriesInfo series, Func<string, string, string> asinPrompt, CancellationToken cancellationToken = default)
+        private async Task ExpandSeriesMetadata(AuthorProfileGenerator.Response authorProfile, SeriesInfo series, Settings settings, Func<string, string, string> asinPrompt, CancellationToken cancellationToken = default)
         {
             // Search author's other books for the book (assumes next in series was written by the same author...)
             // Returns the first one found, though there should probably not be more than 1 of the same name anyway
@@ -264,7 +252,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             async Task<BookInfo> FromApOrSearch(BookInfo book, CancellationToken ct)
             {
                 return authorProfile.OtherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.Title, $@"^{book.Title}(?: \(.*\))?$"))
-                    ?? await SearchOrPrompt(book, asinPrompt, ct);
+                    ?? await SearchOrPrompt(book, asinPrompt, settings, ct);
             }
 
             // TODO: Don't juggle around bookinfos
@@ -285,6 +273,9 @@ namespace XRayBuilder.Core.Extras.EndActions
         /// </summary>
         [ItemCanBeNull]
         public async Task<Response> GenerateNewFormatData(
+            BookInfo curBook,
+            Settings settings,
+            ISecondarySource dataSource,
             AuthorProfileGenerator.Response authorProfile,
             Func<string, string, string> asinPrompt,
             IMetadata metadata,
@@ -293,20 +284,21 @@ namespace XRayBuilder.Core.Extras.EndActions
         {
             // Generate old stuff first, ignore response since curBook and custAlsoBought are shared
             // todo make them not shared
-            if (await GenerateOld(cancellationToken) == null)
+            var oldResponse = await GenerateOld(curBook, settings, cancellationToken);
+            if (oldResponse == null)
                 return null;
 
             try
             {
-                await _dataSource.GetExtrasAsync(curBook, progress, cancellationToken);
-                curBook.Series = await _dataSource.GetSeriesInfoAsync(curBook.DataUrl, cancellationToken);
+                await dataSource.GetExtrasAsync(curBook, progress, cancellationToken);
+                curBook.Series = await dataSource.GetSeriesInfoAsync(curBook.DataUrl, cancellationToken);
 
                 if (curBook.Series == null || curBook.Series.Total == 0)
                     _logger.Log("The book was not found to be part of a series.");
                 else if (curBook.Series.Next == null && curBook.Series.Position != curBook.Series.Total.ToString())// && !curBook.Series.Position?.Contains(".") == true)
                     _logger.Log("An error occurred finding the next book in series. The book may not be part of a series, or it is the latest release.");
                 else
-                    await ExpandSeriesMetadata(authorProfile, curBook.Series, asinPrompt, cancellationToken);
+                    await ExpandSeriesMetadata(authorProfile, curBook.Series, settings, asinPrompt, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -360,12 +352,12 @@ namespace XRayBuilder.Core.Extras.EndActions
 
             try
             {
-                if (!await _dataSource.GetPageCountAsync(curBook, cancellationToken))
+                if (!await dataSource.GetPageCountAsync(curBook, cancellationToken))
                 {
                     var metadataCount = metadata.GetPageCount();
                     if (metadataCount.HasValue)
                         curBook.PagesInBook = metadataCount.Value;
-                    else if (_settings.EstimatePageCount)
+                    else if (settings.EstimatePageCount)
                     {
                         _logger.Log("No page count found on Goodreads or in metadata. Attempting to estimate page count...");
                         _logger.Log(Functions.GetPageCount(curBook.RawmlPath, curBook));
@@ -383,7 +375,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             return new Response
             {
                 Book = curBook,
-                CustomerAlsoBought = custAlsoBought.ToArray()
+                CustomerAlsoBought = oldResponse.CustomerAlsoBought
             };
         }
 

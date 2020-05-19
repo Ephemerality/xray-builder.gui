@@ -288,7 +288,7 @@ namespace XRayBuilderGUI.UI
                 if (rdoGoodreads.Checked)
                     xrayTask = _xrayService.CreateXRayAsync(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.amazonTLD, _settings.includeTopics, _dataSource, _progress, _cancelTokens.Token);
                 else if (rdoRoentgen.Checked)
-                    xrayTask = _xrayService.CreateXRayAsync(null, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.roentgenRegion, _settings.includeTopics, _diContainer.GetInstance<SecondarySourceRoentgen>(), _progress, _cancelTokens.Token);
+                    xrayTask = _xrayService.CreateXRayAsync(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.roentgenRegion, _settings.includeTopics, _diContainer.GetInstance<SecondarySourceRoentgen>(), _progress, _cancelTokens.Token);
                 else
                 {
                     // TODO Set datasource properly

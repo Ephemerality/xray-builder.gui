@@ -164,6 +164,7 @@ namespace XRayBuilderGUI.UI
             txtGoodreads.Enabled = enabled;
             rdoFile.Enabled = enabled;
             rdoGoodreads.Enabled = enabled;
+            rdoRoentgen.Enabled = enabled;
             btnCancel.Enabled = !enabled;
             // If process was canceled and we're disabling the interface for another time, reset token source
             if (enabled == false && _cancelTokens.IsCancellationRequested)

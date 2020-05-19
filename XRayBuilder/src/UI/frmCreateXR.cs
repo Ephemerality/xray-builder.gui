@@ -365,7 +365,7 @@ namespace XRayBuilderGUI.UI
 
                 _terms = terms.Where(term => term.Type == "character" || Settings.Default.includeTopics).ToList();
                 ReloadTerms();
-                MessageBox.Show($"Successfully downloaded {terms.Length} terms from Roentgen!");
+                MessageBox.Show($"Successfully downloaded {_terms.Count} terms from Roentgen!");
             }
             catch (Exception e)
             {

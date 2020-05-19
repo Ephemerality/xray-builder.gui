@@ -298,6 +298,13 @@ namespace XRayBuilderGUI.UI
 
                 xray = await Task.Run(() => xrayTask).ConfigureAwait(false);
 
+                if (xray.Terms.Count == 0
+                    && DialogResult.No == MessageBox.Show("No terms were available, do you want to continue the build anyway?", "No Terms", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2))
+                {
+                    _logger.Log("Cancelling...");
+                    return;
+                }
+
                 _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath, _settings.overwriteAliases, _settings.splitAliases);
 
                 if (_settings.enableEdit && DialogResult.Yes ==

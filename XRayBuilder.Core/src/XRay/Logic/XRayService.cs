@@ -271,7 +271,7 @@ namespace XRayBuilder.Core.XRay.Logic
                     }
                     if (locHighlight.Count == 0 || locHighlight.Count != lenHighlight.Count) //something went wrong
                     {
-                        _logger.Log($"An error occurred while searching for start of highlight.\r\nWas looking for (or one of the aliases of): {character.TermName}\r\nSearching in: {node.InnerHtml}");
+                        // _logger.Log($"An error occurred while searching for start of highlight.\r\nWas looking for (or one of the aliases of): {character.TermName}\r\nSearching in: {node.InnerHtml}");
                         continue;
                     }
 

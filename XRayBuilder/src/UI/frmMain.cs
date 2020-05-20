@@ -698,7 +698,7 @@ namespace XRayBuilderGUI.UI
 
         private async void btnDownloadTerms_Click(object sender, EventArgs e)
         {
-            if (txtGoodreads.Text == "")
+            if (rdoGoodreads.Checked && txtGoodreads.Text == "")
             {
                 MessageBox.Show("No link was specified.", "Missing Link");
                 return;

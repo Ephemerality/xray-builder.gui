@@ -37,6 +37,8 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             "Viscount", "Viscountess", "Wg Cdr", "Jr", "Sr", "Sheriff", "Special Agent", "Detective", "Lt" };
         #endregion
 
+        private readonly Regex _sanitizePattern;
+
         public AliasesService(ILogger logger)
         {
             //Try to load custom common titles from BaseSplitIgnore.txt
@@ -55,11 +57,12 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
                     "Ensure you extracted it to the same directory as the program.\r\n" +
                     ex.Message + "\r\nUsing built-in default terms...");
             }
+
+            _sanitizePattern = new Regex($@"( ?({string.Join("|", _commonTitles)})\.? )|(^[A-Z]\. )|( [A-Z]\.)|("")|(“)|(”)|(,)|(')");
         }
 
         public IEnumerable<KeyValuePair<string, string[]>> GenerateAliases(IEnumerable<Term> characters)
         {
-            var sanitizePattern = new Regex($@"( ?({string.Join("|", _commonTitles)})\.? )|(^[A-Z]\. )|( [A-Z]\.)|("")|(“)|(”)|(,)|(')");
             var aliasesByTermName = new Dictionary<string, string[]>();
 
             foreach (var character in characters)
@@ -71,39 +74,9 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
                     continue;
                 }
 
-                var aliases = new List<string>();
-                var textInfo = new CultureInfo("en-US", false).TextInfo;
-
-                var sanitizedName = sanitizePattern.Replace(character.TermName, string.Empty);
-                if (sanitizedName != character.TermName)
-                    aliases.Add(sanitizedName);
-
-                sanitizedName = Regex.Replace(sanitizedName, @"\s+", " ");
-                sanitizedName = Regex.Replace(sanitizedName, @"( ?V?I{0,3}$)", string.Empty);
-                sanitizedName = Regex.Replace(sanitizedName, @"(\(aka )", "(");
-
-                var bracketedName = Regex.Match(sanitizedName, @"(.*)(\()(.*)(\))");
-                if (bracketedName.Success)
-                {
-                    aliases.Add(bracketedName.Groups[3].Value);
-                    aliases.Add(bracketedName.Groups[1].Value.TrimEnd());
-                    sanitizedName = sanitizedName.Replace(bracketedName.Groups[2].Value, "")
-                        .Replace(bracketedName.Groups[4].Value, "");
-                }
-
-                if (sanitizedName.Contains(" "))
-                {
-                    sanitizedName = sanitizedName.Replace(" &amp;", "").Replace(" &", "");
-                    var words = sanitizedName.Split(' ');
-                    string FixAllCaps(string word) => word.ToUpper() == word ? textInfo.ToTitleCase(word.ToLower()) : word;
-                    aliases.AddRange(words.Select(FixAllCaps));
-                }
-
                 // Filter out any already-existing aliases from other terms
-                var dedupedAliases = aliases
+                var dedupedAliases = GenerateAliasesForTerm(character)
                     .Where(alias => !aliasesByTermName.Values.SelectMany(existingAliases => existingAliases).Contains(alias))
-                    // also remove any entries that are also in the ignore list
-                    .Where(alias => !_commonTitles.Contains(alias))
                     .ToArray();
 
                 if (dedupedAliases.Length > 0)
@@ -111,6 +84,40 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             }
 
             return aliasesByTermName;
+        }
+
+        private IEnumerable<string> GenerateAliasesForTerm(Term term)
+        {
+            var aliases = new List<string>();
+            var textInfo = new CultureInfo("en-US", false).TextInfo;
+
+            var sanitizedName = _sanitizePattern.Replace(term.TermName, string.Empty);
+            if (sanitizedName != term.TermName)
+                aliases.Add(sanitizedName);
+
+            sanitizedName = Regex.Replace(sanitizedName, @"\s+", " ");
+            sanitizedName = Regex.Replace(sanitizedName, @"( ?V?I{0,3}$)", string.Empty);
+            sanitizedName = Regex.Replace(sanitizedName, @"(\(aka )", "(");
+
+            var bracketedName = Regex.Match(sanitizedName, @"(.*)(\()(.*)(\))");
+            if (bracketedName.Success)
+            {
+                aliases.Add(bracketedName.Groups[3].Value);
+                aliases.Add(bracketedName.Groups[1].Value.TrimEnd());
+                sanitizedName = sanitizedName.Replace(bracketedName.Groups[2].Value, "")
+                    .Replace(bracketedName.Groups[4].Value, "");
+            }
+
+            if (sanitizedName.Contains(" "))
+            {
+                sanitizedName = sanitizedName.Replace(" &amp;", "").Replace(" &", "");
+                var words = sanitizedName.Split(' ');
+                string FixAllCaps(string word) => word.ToUpper() == word ? textInfo.ToTitleCase(word.ToLower()) : word;
+                aliases.AddRange(words.Select(FixAllCaps));
+            }
+
+            // also remove any entries that are also in the ignore list
+            return aliases.Where(alias => !_commonTitles.Contains(alias));
         }
     }
 }

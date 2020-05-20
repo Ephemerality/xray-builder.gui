@@ -12,7 +12,6 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
 {
     public sealed class AliasesService : IAliasesService
     {
-        // TODO: Load from file, possibly localized, or anything better than this
         #region CommonTitles
         private readonly string[] _commonTitles = { "Mr", "Mrs", "Ms", "Miss", "Dr", "Herr", "Monsieur", "Hr", "Frau",
             "A V M", "Admiraal", "Admiral", "Alderman", "Alhaji", "Ambassador", "Baron", "Barones", "Brig",

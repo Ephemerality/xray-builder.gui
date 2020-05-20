@@ -301,7 +301,10 @@ namespace XRayBuilder.Core.DataSources.Secondary
                 if (tempNode.Id.Contains("_aliases")) // If present, add any aliases found
                 {
                     var aliasStr = tempNode.InnerText.Replace("[close]", "").Trim();
-                    result.Aliases.AddRange(aliasStr.Split(new [] { ", " }, StringSplitOptions.RemoveEmptyEntries));
+                    var newAliases = aliasStr.Split(new[] {", "}, StringSplitOptions.RemoveEmptyEntries)
+                        .Where(alias => alias != result.TermName)
+                        .ToHashSet();
+                    result.Aliases.AddRange(newAliases);
                 }
                 else
                     result.Desc = tempNode.InnerText.Replace("[close]", "").Trim();

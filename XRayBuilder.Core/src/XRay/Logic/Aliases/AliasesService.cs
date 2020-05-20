@@ -102,6 +102,8 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
                 // Filter out any already-existing aliases from other terms
                 var dedupedAliases = aliases
                     .Where(alias => !aliasesByTermName.Values.SelectMany(existingAliases => existingAliases).Contains(alias))
+                    // also remove any entries that are also in the ignore list
+                    .Where(alias => !_commonTitles.Contains(alias))
                     .ToArray();
 
                 if (dedupedAliases.Length > 0)

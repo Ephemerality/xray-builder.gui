@@ -6,7 +6,9 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
+using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Amazon.Model;
 using XRayBuilder.Core.DataSources.Roentgen.Model;
 using XRayBuilder.Core.Extras.Artifacts;
@@ -34,6 +36,7 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
         private string SeriesEndpoint(string asin) => $"/next/{asin}";
         private string PreloadEndpoint(string asin) => $"/preload/{asin}";
 
+        [ItemCanBeNull]
         private async Task<T> HandleDownloadExceptionsAsync<T>(Func<Task<T>> downloadTask) where T : class
         {
             try
@@ -84,6 +87,9 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
         {
             return HandleDownloadExceptionsAsync(async () =>
             {
+                if (!AmazonClient.IsAsin(asin))
+                    return null;
+
                 var requestContent = new StringContent(JsonUtil.Serialize(new DownloadRequest
                 {
                     Asin = asin,
@@ -113,8 +119,11 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
             return HandleDownloadExceptionsAsync(() => DownloadArtifactAsync<AuthorProfile>(asin, regionTld, DownloadRequest.TypeEnum.AuthorProfile, cancellationToken));
         }
 
-        private async Task<T> DownloadArtifactAsync<T>(string asin, string regionTld, DownloadRequest.TypeEnum type, CancellationToken cancellationToken)
+        private async Task<T> DownloadArtifactAsync<T>(string asin, string regionTld, DownloadRequest.TypeEnum type, CancellationToken cancellationToken) where T : class
         {
+            if (!AmazonClient.IsAsin(asin))
+                return null;
+
             var request = new StringContent(JsonUtil.Serialize(new DownloadRequest
             {
                 Asin = asin,

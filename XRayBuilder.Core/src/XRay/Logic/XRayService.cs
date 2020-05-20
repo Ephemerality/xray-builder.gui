@@ -209,7 +209,9 @@ namespace XRayBuilder.Core.XRay.Logic
                         // Search for character name and aliases
                         // If there is an apostrophe, attempt to match 's at the end of the term
                         // Match end of word, then search for any lingering punctuation
-                        search.Insert(0, character.TermName);
+                        search.Add(character.TermName);
+                        // Search list should be in descending order by length, even the term name itself
+                        search = search.OrderByDescending(s => s.Length).ToList();
                         if ((character.MatchCase && (search.Any(node.InnerText.Contains) || search.Any(node.InnerHtml.Contains)))
                             || (!character.MatchCase && (search.Any(node.InnerText.ContainsIgnorecase) || search.Any(node.InnerHtml.ContainsIgnorecase)))
                                 || (ignoreSoftHypen && (character.MatchCase && search.Any(noSoftHypen.Contains))

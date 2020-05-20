@@ -497,6 +497,12 @@ namespace XRayBuilderGUI.UI
                     try
                     {
                         var actions = await download(metadata.Asin, _settings.roentgenRegion, _cancelTokens.Token);
+                        if (actions == null)
+                        {
+                            _logger.Log($"No pre-made {type} Actions available, one will be built instead...");
+                            return null;
+                        }
+
                         _logger.Log($"Successfully downloaded pre-made {type} Actions!");
                         return actions;
                     }

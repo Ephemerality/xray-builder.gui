@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace XRayBuilder.Core.Libraries.Enumerables.Extensions
 {
@@ -28,5 +29,8 @@ namespace XRayBuilder.Core.Libraries.Enumerables.Extensions
             key = tuple.Key;
             value = tuple.Value;
         }
+
+        public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> keyValuePairs)
+            => keyValuePairs.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
     }
 }

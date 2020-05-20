@@ -82,6 +82,8 @@
             this.btnClear = new System.Windows.Forms.Button();
             this.btnDownloadTerms = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
+            this.btnGenerateAliases = new System.Windows.Forms.Button();
+            this.btnClearAliases = new System.Windows.Forms.Button();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -581,7 +583,7 @@
             // 
             this.btnDownloadTerms.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnDownloadTerms.Image = global::XRayBuilderGUI.Properties.Resources.setting;
-            this.btnDownloadTerms.Location = new System.Drawing.Point(559, 209);
+            this.btnDownloadTerms.Location = new System.Drawing.Point(559, 133);
             this.btnDownloadTerms.Name = "btnDownloadTerms";
             this.btnDownloadTerms.Size = new System.Drawing.Size(32, 32);
             this.btnDownloadTerms.TabIndex = 50;
@@ -591,17 +593,41 @@
             // label2
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label2.Location = new System.Drawing.Point(559, 241);
+            this.label2.Location = new System.Drawing.Point(559, 165);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(32, 16);
             this.label2.TabIndex = 52;
             this.label2.Text = "New!";
+            // 
+            // btnGenerateAliases
+            // 
+            this.btnGenerateAliases.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnGenerateAliases.Image = ((System.Drawing.Image) (resources.GetObject("btnGenerateAliases.Image")));
+            this.btnGenerateAliases.Location = new System.Drawing.Point(559, 184);
+            this.btnGenerateAliases.Name = "btnGenerateAliases";
+            this.btnGenerateAliases.Size = new System.Drawing.Size(32, 32);
+            this.btnGenerateAliases.TabIndex = 53;
+            this.btnGenerateAliases.UseVisualStyleBackColor = true;
+            this.btnGenerateAliases.Click += new System.EventHandler(this.btnGenerateAliases_Click);
+            // 
+            // btnClearAliases
+            // 
+            this.btnClearAliases.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClearAliases.Image = ((System.Drawing.Image) (resources.GetObject("btnClearAliases.Image")));
+            this.btnClearAliases.Location = new System.Drawing.Point(559, 222);
+            this.btnClearAliases.Name = "btnClearAliases";
+            this.btnClearAliases.Size = new System.Drawing.Size(32, 32);
+            this.btnClearAliases.TabIndex = 54;
+            this.btnClearAliases.UseVisualStyleBackColor = true;
+            this.btnClearAliases.Click += new System.EventHandler(this.btnClearAliases_Click);
             // 
             // frmCreateXR
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(602, 511);
+            this.Controls.Add(this.btnClearAliases);
+            this.Controls.Add(this.btnGenerateAliases);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.btnDownloadTerms);
             this.Controls.Add(this.btnClear);
@@ -639,8 +665,10 @@
 
         private System.Windows.Forms.Button btnAddTerm;
         private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.Button btnClearAliases;
         private System.Windows.Forms.Button btnDownloadTerms;
         private System.Windows.Forms.Button btnEditTerm;
+        private System.Windows.Forms.Button btnGenerateAliases;
         private System.Windows.Forms.Button btnLink;
         private System.Windows.Forms.Button btnOpenXml;
         private System.Windows.Forms.Button btnRemoveTerm;

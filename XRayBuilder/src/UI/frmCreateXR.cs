@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Roentgen.Logic;
+using XRayBuilder.Core.Libraries.Enumerables.Extensions;
 using XRayBuilder.Core.Libraries.Images.Util;
 using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
 using XRayBuilder.Core.XRay.Artifacts;
@@ -26,13 +27,20 @@ namespace XRayBuilderGUI.UI
         private readonly IAliasesRepository _aliasesRepository;
         private readonly IAmazonClient _amazonClient;
         private readonly IRoentgenClient _roentgenClient;
+        private readonly IAliasesService _aliasesService;
 
-        public frmCreateXR(ITermsService termsService, IAliasesRepository aliasesRepository, IAmazonClient amazonClient, IRoentgenClient roentgenClient)
+        public frmCreateXR(
+            ITermsService termsService,
+            IAliasesRepository aliasesRepository,
+            IAmazonClient amazonClient,
+            IRoentgenClient roentgenClient,
+            IAliasesService aliasesService)
         {
             _termsService = termsService;
             _aliasesRepository = aliasesRepository;
             _amazonClient = amazonClient;
             _roentgenClient = roentgenClient;
+            _aliasesService = aliasesService;
             InitializeComponent();
 
             var dgvType = dgvTerms.GetType();
@@ -289,19 +297,17 @@ namespace XRayBuilderGUI.UI
             btnEditTerm_Click(sender, e);
         }
 
-        private void CreateTerms()
+        private IEnumerable<Term> GetTermsFromGrid()
         {
-            if (!Directory.Exists($@"{Environment.CurrentDirectory}\xml\"))
-                Directory.CreateDirectory($@"{Environment.CurrentDirectory}\xml\");
-            var outfile = Environment.CurrentDirectory + $@"\xml\{txtAsin.Text}.entities.xml";
-            _terms.Clear();
             var termId = 1;
             foreach (DataGridViewRow row in dgvTerms.Rows)
             {
-                _terms.Add(new Term
+                yield return new Term
                 {
                     Id = termId++,
-                    Type = ImageUtil.AreEqual((Bitmap) row.Cells[0].Value, Resources.character) ? "character" : "topic",
+                    Type = ImageUtil.AreEqual((Bitmap) row.Cells[0].Value, Resources.character)
+                        ? "character"
+                        : "topic",
                     TermName = row.Cells[1].Value?.ToString() ?? "",
                     Aliases = !string.IsNullOrEmpty(row.Cells[2].Value?.ToString())
                         ? row.Cells[2].Value.ToString().Split(',').Distinct().ToList()
@@ -312,8 +318,17 @@ namespace XRayBuilderGUI.UI
                     Match = (bool?) row.Cells[6].Value ?? false,
                     MatchCase = (bool?) row.Cells[7].Value ?? false,
                     RegexAliases = (bool?) row.Cells[9].Value ?? false
-                });
+                };
             }
+        }
+
+        private void CreateTerms()
+        {
+            if (!Directory.Exists($@"{Environment.CurrentDirectory}\xml\"))
+                Directory.CreateDirectory($@"{Environment.CurrentDirectory}\xml\");
+            var outfile = Environment.CurrentDirectory + $@"\xml\{txtAsin.Text}.entities.xml";
+            _terms.Clear();
+            _terms = GetTermsFromGrid().ToList();
             XmlUtil.SerializeToFile(_terms, outfile);
         }
 
@@ -372,6 +387,36 @@ namespace XRayBuilderGUI.UI
             {
                 MessageBox.Show($"Failed to download terms: {e.Message}");
             }
+        }
+
+        private void btnGenerateAliases_Click(object sender, EventArgs e)
+        {
+            if (dgvTerms.Rows.Count < 0)
+                return;
+
+            var aliasesByTerm = _aliasesService.GenerateAliases(GetTermsFromGrid()).ToDictionary();
+            foreach (DataGridViewRow row in dgvTerms.Rows)
+            {
+                var name = row.Cells[1].Value.ToString();
+                if (aliasesByTerm.TryGetValue(name, out var aliases) && aliases.Any())
+                {
+                    row.Cells[2].Value = string.IsNullOrEmpty((string) row.Cells[2].Value)
+                        ? string.Join(",", aliases)
+                        : $"{row.Cells[2].Value}{string.Join(",", aliases)}";
+                }
+            }
+        }
+
+        private void btnClearAliases_Click(object sender, EventArgs e)
+        {
+            if (dgvTerms.Rows.Count < 0)
+                return;
+
+            if (DialogResult.No == MessageBox.Show("Are you sure you want to clear all aliases?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2))
+                return;
+
+            foreach (DataGridViewRow row in dgvTerms.Rows)
+                row.Cells[2].Value = "";
         }
     }
 }

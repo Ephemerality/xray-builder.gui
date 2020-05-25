@@ -92,11 +92,11 @@
             this.txtPen = new System.Windows.Forms.TextBox();
             this.lblPen = new System.Windows.Forms.Label();
             this.tabPgRoentgen = new System.Windows.Forms.TabPage();
+            this.cmbRoentgenRegion = new System.Windows.Forms.ComboBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.chkIncludeTopics = new System.Windows.Forms.CheckBox();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.cmbRoentgenRegion = new System.Windows.Forms.ComboBox();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.label3 = new System.Windows.Forms.Label();
             this.chkRoentgenAuthorProfile = new System.Windows.Forms.CheckBox();
@@ -787,6 +787,8 @@
             // 
             // tabPgRoentgen
             // 
+            this.tabPgRoentgen.Controls.Add(this.cmbRoentgenRegion);
+            this.tabPgRoentgen.Controls.Add(this.label4);
             this.tabPgRoentgen.Controls.Add(this.groupBox9);
             this.tabPgRoentgen.Controls.Add(this.groupBox7);
             this.tabPgRoentgen.Location = new System.Drawing.Point(4, 5);
@@ -797,12 +799,31 @@
             this.tabPgRoentgen.Text = "tabPgRoentgen";
             this.tabPgRoentgen.UseVisualStyleBackColor = true;
             // 
+            // cmbRoentgenRegion
+            // 
+            this.cmbRoentgenRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbRoentgenRegion.FormattingEnabled = true;
+            this.cmbRoentgenRegion.Location = new System.Drawing.Point(264, 92);
+            this.cmbRoentgenRegion.Name = "cmbRoentgenRegion";
+            this.cmbRoentgenRegion.Size = new System.Drawing.Size(120, 21);
+            this.cmbRoentgenRegion.TabIndex = 38;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.label4.Location = new System.Drawing.Point(214, 95);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(44, 13);
+            this.label4.TabIndex = 39;
+            this.label4.Text = "Region:";
+            // 
             // groupBox9
             // 
             this.groupBox9.Controls.Add(this.chkIncludeTopics);
-            this.groupBox9.Location = new System.Drawing.Point(6, 96);
+            this.groupBox9.Location = new System.Drawing.Point(8, 87);
             this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(200, 100);
+            this.groupBox9.Size = new System.Drawing.Size(200, 49);
             this.groupBox9.TabIndex = 28;
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Terms Download";
@@ -819,8 +840,6 @@
             // 
             // groupBox7
             // 
-            this.groupBox7.Controls.Add(this.label4);
-            this.groupBox7.Controls.Add(this.cmbRoentgenRegion);
             this.groupBox7.Controls.Add(this.pictureBox2);
             this.groupBox7.Controls.Add(this.label3);
             this.groupBox7.Controls.Add(this.chkRoentgenAuthorProfile);
@@ -828,31 +847,10 @@
             this.groupBox7.Controls.Add(this.chkRoentgenStartActions);
             this.groupBox7.Location = new System.Drawing.Point(6, 7);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(378, 83);
+            this.groupBox7.Size = new System.Drawing.Size(378, 74);
             this.groupBox7.TabIndex = 27;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Pre-built Downloads";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
-            this.label4.Location = new System.Drawing.Point(107, 68);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(44, 13);
-            this.label4.TabIndex = 39;
-            this.label4.Text = "Region:";
-            this.label4.Visible = false;
-            // 
-            // cmbRoentgenRegion
-            // 
-            this.cmbRoentgenRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbRoentgenRegion.FormattingEnabled = true;
-            this.cmbRoentgenRegion.Location = new System.Drawing.Point(174, 74);
-            this.cmbRoentgenRegion.Name = "cmbRoentgenRegion";
-            this.cmbRoentgenRegion.Size = new System.Drawing.Size(78, 21);
-            this.cmbRoentgenRegion.TabIndex = 38;
-            this.cmbRoentgenRegion.Visible = false;
             // 
             // pictureBox2
             // 
@@ -876,7 +874,7 @@
             // chkRoentgenAuthorProfile
             // 
             this.chkRoentgenAuthorProfile.AutoSize = true;
-            this.chkRoentgenAuthorProfile.Location = new System.Drawing.Point(260, 64);
+            this.chkRoentgenAuthorProfile.Location = new System.Drawing.Point(106, 54);
             this.chkRoentgenAuthorProfile.Name = "chkRoentgenAuthorProfile";
             this.chkRoentgenAuthorProfile.Size = new System.Drawing.Size(89, 17);
             this.chkRoentgenAuthorProfile.TabIndex = 33;
@@ -976,6 +974,7 @@
             this.gbDetails.ResumeLayout(false);
             this.gbDetails.PerformLayout();
             this.tabPgRoentgen.ResumeLayout(false);
+            this.tabPgRoentgen.PerformLayout();
             this.groupBox9.ResumeLayout(false);
             this.groupBox9.PerformLayout();
             this.groupBox7.ResumeLayout(false);

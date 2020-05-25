@@ -11,7 +11,7 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
     {
         Task<StartActions> DownloadStartActionsAsync(string asin, string regionTld, CancellationToken cancellationToken);
         Task<NextBookResult> DownloadNextInSeriesAsync(string asin, CancellationToken cancellationToken);
-        Task PreloadAsync(string asin, CancellationToken cancellationToken);
+        Task PreloadAsync(string asin, string regionTld, CancellationToken cancellationToken);
         [ItemCanBeNull]
         Task<Term[]> DownloadTermsAsync(string asin, string regionTld, CancellationToken cancellationToken);
         [ItemCanBeNull]

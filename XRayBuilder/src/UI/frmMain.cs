@@ -1014,7 +1014,7 @@ namespace XRayBuilderGUI.UI
                 {
                     // Fire and forget
                     #pragma warning disable 4014
-                    Task.Run(() => _roentgenClient.PreloadAsync(metadata.Asin, _cancelTokens.Token)).ConfigureAwait(false);
+                    Task.Run(() => _roentgenClient.PreloadAsync(metadata.Asin, _settings.roentgenRegion, _cancelTokens.Token)).ConfigureAwait(false);
                     #pragma warning restore 4014
                 }
             }

@@ -23,7 +23,7 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
     {
         private readonly IHttpClient _httpClient;
 
-        private readonly HashSet<string> _preloadCache = new HashSet<string>();
+        private readonly HashSet<PreloadCacheKey> _preloadCache = new HashSet<PreloadCacheKey>();
 
         public RoentgenClient(IHttpClient httpClient)
         {
@@ -34,7 +34,7 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
         private const string DownloadEndpoint = "/download";
         private string StartActionsEndpoint(string asin) => $"/startactions/{asin}";
         private string SeriesEndpoint(string asin) => $"/next/{asin}";
-        private string PreloadEndpoint(string asin) => $"/preload/{asin}";
+        private string PreloadEndpoint(string asin, string regionTld) => $"/preload/{asin}/{regionTld}";
 
         [ItemCanBeNull]
         private async Task<T> HandleDownloadExceptionsAsync<T>(Func<Task<T>> downloadTask) where T : class
@@ -68,14 +68,15 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
             });
         }
 
-        public async Task PreloadAsync(string asin, CancellationToken cancellationToken)
+        public async Task PreloadAsync(string asin, string regionTld, CancellationToken cancellationToken)
         {
             try
             {
-                if (_preloadCache.Contains(asin))
+                var cacheKey = new PreloadCacheKey(asin, regionTld);
+                if (_preloadCache.Contains(cacheKey))
                     return;
-                await _httpClient.GetAsync($"{BaseUrl}{PreloadEndpoint(asin)}", cancellationToken);
-                _preloadCache.Add(asin);
+                await _httpClient.GetAsync($"{BaseUrl}{PreloadEndpoint(asin, regionTld)}", cancellationToken);
+                _preloadCache.Add(cacheKey);
             }
             catch
             {
@@ -94,7 +95,7 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
                 {
                     Asin = asin,
                     Type = DownloadRequest.TypeEnum.Terms,
-                    Region = regionTld
+                    RegionTld = regionTld
                 }), Encoding.UTF8, "application/json");
                 var request = new HttpRequestMessage(HttpMethod.Post, $"{BaseUrl}{DownloadEndpoint}")
                 {
@@ -128,7 +129,7 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
             {
                 Asin = asin,
                 Type = type,
-                Region = regionTld
+                RegionTld = regionTld
             }), Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync($"{BaseUrl}{DownloadEndpoint}", request, cancellationToken);
             var responseStream = await response.Content.ReadAsStreamAsync();

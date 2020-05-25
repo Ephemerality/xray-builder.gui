@@ -4,7 +4,7 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Model
     {
         public string Asin { get; set; }
         public TypeEnum Type { get; set; }
-        public string Region { get; set; }
+        public string RegionTld { get; set; }
 
         public enum TypeEnum
         {

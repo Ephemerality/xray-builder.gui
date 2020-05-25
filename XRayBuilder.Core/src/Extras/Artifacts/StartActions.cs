@@ -305,7 +305,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
             public int PagesInBook { get; set; }
         }
 
-        public class DataJson
+        public sealed class DataJson
         {
             [JsonProperty("seriesPosition")]
             public SeriesPosition SeriesPosition { get; set; }
@@ -333,6 +333,12 @@ namespace XRayBuilder.Core.Extras.Artifacts
 
             [JsonProperty("authorFeaturedRecs", NullValueHandling = NullValueHandling.Ignore)]
             public Recs AuthorFeaturedRecs { get; set; }
+
+            [JsonProperty("citationFeaturedRecs", DefaultValueHandling = DefaultValueHandling.Ignore)]
+            public Recs CitationFeaturedRecs { get; set; }
+
+            [JsonProperty("leftNavCitationRecs", DefaultValueHandling = DefaultValueHandling.Ignore)]
+            public Recs LeftNavCitationRecs { get; set; }
 
             [JsonProperty("currentBook")]
             public Book CurrentBook { get; set; }

@@ -29,7 +29,7 @@ namespace XRayBuilder.Core.XRay
 
         public XRay(string shelfari, string db, string guid, string asin, ISecondarySource dataSource)
         {
-            if (shelfari == "" || db == "" || guid == "" || asin == "")
+            if ((shelfari == "" && !(dataSource is SecondarySourceRoentgen)) || db == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
 
             if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))

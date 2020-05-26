@@ -103,12 +103,13 @@
             this.chkRoentgenEndActions = new System.Windows.Forms.CheckBox();
             this.chkRoentgenStartActions = new System.Windows.Forms.CheckBox();
             this.listSettings = new System.Windows.Forms.ListBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.gbProcess.SuspendLayout();
             this.gbUnpack.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize) (this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.gbGeneral.SuspendLayout();
             this.tabPgDirectories.SuspendLayout();
             this.gbDirectories.SuspendLayout();
@@ -127,7 +128,7 @@
             this.tabPgRoentgen.SuspendLayout();
             this.groupBox9.SuspendLayout();
             this.groupBox7.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize) (this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // btnSupport
@@ -265,7 +266,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = ((System.Drawing.Image) (resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
             this.pictureBox1.Location = new System.Drawing.Point(14, 45);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(14, 14);
@@ -280,7 +281,8 @@
             this.lblNote.Name = "lblNote";
             this.lblNote.Size = new System.Drawing.Size(325, 43);
             this.lblNote.TabIndex = 34;
-            this.lblNote.Text = "Metadata is now gathered internally rather than with KindleUnpack. If you run int" + "o any metadata extraction errors, please report them on the MobileRead thread.";
+            this.lblNote.Text = "Metadata is now gathered internally rather than with KindleUnpack. If you run int" +
+    "o any metadata extraction errors, please report them on the MobileRead thread.";
             // 
             // chkSaveHtml
             // 
@@ -466,7 +468,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(168, 20);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(83, 13);
@@ -712,7 +714,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(12, 74);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(44, 13);
@@ -754,7 +756,7 @@
             // lblReal
             // 
             this.lblReal.AutoSize = true;
-            this.lblReal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.lblReal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblReal.Location = new System.Drawing.Point(12, 23);
             this.lblReal.Name = "lblReal";
             this.lblReal.Size = new System.Drawing.Size(63, 13);
@@ -778,7 +780,7 @@
             // lblPen
             // 
             this.lblPen.AutoSize = true;
-            this.lblPen.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.lblPen.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblPen.Location = new System.Drawing.Point(15, 56);
             this.lblPen.Name = "lblPen";
             this.lblPen.Size = new System.Drawing.Size(60, 13);
@@ -787,6 +789,7 @@
             // 
             // tabPgRoentgen
             // 
+            this.tabPgRoentgen.Controls.Add(this.label5);
             this.tabPgRoentgen.Controls.Add(this.cmbRoentgenRegion);
             this.tabPgRoentgen.Controls.Add(this.label4);
             this.tabPgRoentgen.Controls.Add(this.groupBox9);
@@ -803,16 +806,16 @@
             // 
             this.cmbRoentgenRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbRoentgenRegion.FormattingEnabled = true;
-            this.cmbRoentgenRegion.Location = new System.Drawing.Point(264, 92);
+            this.cmbRoentgenRegion.Location = new System.Drawing.Point(59, 142);
             this.cmbRoentgenRegion.Name = "cmbRoentgenRegion";
-            this.cmbRoentgenRegion.Size = new System.Drawing.Size(120, 21);
+            this.cmbRoentgenRegion.Size = new System.Drawing.Size(149, 21);
             this.cmbRoentgenRegion.TabIndex = 38;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
-            this.label4.Location = new System.Drawing.Point(214, 95);
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(9, 145);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(44, 13);
             this.label4.TabIndex = 39;
@@ -854,7 +857,7 @@
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Image = ((System.Drawing.Image) (resources.GetObject("pictureBox2.Image")));
+            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
             this.pictureBox2.Location = new System.Drawing.Point(123, 25);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(14, 14);
@@ -869,7 +872,8 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(229, 48);
             this.label3.TabIndex = 36;
-            this.label3.Text = "When these settings are enabled, pre-built versions of the files will be download" + "ed if they are available. Requires a valid ASIN.";
+            this.label3.Text = "When these settings are enabled, pre-built versions of the files will be download" +
+    "ed if they are available. Requires a valid ASIN.";
             // 
             // chkRoentgenAuthorProfile
             // 
@@ -908,7 +912,13 @@
             this.listSettings.FormattingEnabled = true;
             this.listSettings.IntegralHeight = false;
             this.listSettings.ItemHeight = 20;
-            this.listSettings.Items.AddRange(new object[] {"General", "Directories", "X-Ray", "Extras", "Amazon", "Roentgen"});
+            this.listSettings.Items.AddRange(new object[] {
+            "General",
+            "Directories",
+            "X-Ray",
+            "Extras",
+            "Amazon",
+            "Roentgen"});
             this.listSettings.Location = new System.Drawing.Point(12, 12);
             this.listSettings.Name = "listSettings";
             this.listSettings.Size = new System.Drawing.Size(130, 253);
@@ -916,6 +926,15 @@
             this.listSettings.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listSettings_DrawItem);
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
+            // 
+            // label5
+            // 
+            this.label5.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.label5.Location = new System.Drawing.Point(9, 172);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(199, 32);
+            this.label5.TabIndex = 40;
+            this.label5.Text = "Files will be downloaded in the language of the selected region, when possible.";
             // 
             // frmSettings
             // 
@@ -930,7 +949,7 @@
             this.Controls.Add(this.btnLogs);
             this.Controls.Add(this.btnSave);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon) (resources.GetObject("$this.Icon")));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "frmSettings";
@@ -947,7 +966,7 @@
             this.gbProcess.PerformLayout();
             this.gbUnpack.ResumeLayout(false);
             this.gbUnpack.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize) (this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.gbGeneral.ResumeLayout(false);
             this.gbGeneral.PerformLayout();
             this.tabPgDirectories.ResumeLayout(false);
@@ -979,8 +998,9 @@
             this.groupBox9.PerformLayout();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize) (this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
+
         }
 
         private System.Windows.Forms.Button btnBrowseOut;
@@ -1059,5 +1079,7 @@
         private System.Windows.Forms.TextBox txtReal;
 
         #endregion
+
+        private System.Windows.Forms.Label label5;
     }
 }

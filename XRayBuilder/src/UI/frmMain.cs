@@ -540,10 +540,13 @@ namespace XRayBuilderGUI.UI
                     try
                     {
                         endActions = await DownloadActionsArtifact("End", _roentgenClient.DownloadEndActionsAsync);
-                        _logger.Log("Writing End Actions to file...");
-                        File.WriteAllText(EaPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(endActions)));
-                        _logger.Log($"End Actions file created successfully!\r\nSaved to {EaPath}");
-                        needEa = false;
+                        if (endActions != null)
+                        {
+                            _logger.Log("Writing End Actions to file...");
+                            File.WriteAllText(EaPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(endActions)));
+                            _logger.Log($"End Actions file created successfully!\r\nSaved to {EaPath}");
+                            needEa = false;
+                        }
                     }
                     catch (Exception ex)
                     {

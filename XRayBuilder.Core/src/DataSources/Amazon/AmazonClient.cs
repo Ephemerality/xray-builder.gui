@@ -349,6 +349,20 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 node = searchDoc.DocumentNode.SelectSingleNode("//div[contains(@class, 's-result-item')]");
                 nodeASIN = node?.SelectSingleNode(".//a[contains(text(),'Kindle')]");
             }
+            if (nodeASIN == null)
+            {
+                var possibleNodes = searchDoc.DocumentNode.SelectNodes("//div[contains(@class, 's-result-item')]")
+                    .Where(n => !string.IsNullOrEmpty(n.GetAttributeValue("data-asin", "")))
+                    .ToArray();
+                var (selectedNode, index) = possibleNodes
+                    .Select((n, i) => (n.SelectSingleNode(".//a[contains(text(),'Kindle')]"), i))
+                    .FirstOrDefault(tuple => tuple.Item1 != null);
+                if (selectedNode != null)
+                {
+                    node = possibleNodes[index];
+                    nodeASIN = selectedNode;
+                }
+            }
             //At least attempt to verify it might be the same book?
             // TODO improve the detection here
             if (node != null && nodeASIN != null

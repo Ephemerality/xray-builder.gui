@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Reflection;
 using System.Windows.Forms;
-using Sentry;
 using SimpleInjector;
 using XRayBuilder.Core.DataSources.Amazon.Bootstrap;
 using XRayBuilder.Core.DataSources.Roentgen.Bootstrap;
@@ -29,13 +27,6 @@ namespace XRayBuilderGUI
         [STAThread]
         private static void Main()
         {
-            using var _ = SentrySdk.Init(options =>
-            {
-                if (string.IsNullOrEmpty(Properties.Settings.Default.sentryDest))
-                    return;
-                options.Dsn = new Dsn(Properties.Settings.Default.sentryDest);
-                options.Release = $"x-ray-builder@{Assembly.GetExecutingAssembly().GetName().Version}";
-            });
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             try

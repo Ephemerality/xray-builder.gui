@@ -1,21 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using XRayBuilder.Core.DataSources.Secondary;
+using XRayBuilder.Core.Extras.Artifacts;
+using XRayBuilder.Core.Libraries;
+using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Unpack.Mobi;
+using XRayBuilder.Core.XRay.Logic;
+using XRayBuilder.Core.XRay.Logic.Aliases;
+using XRayBuilder.Core.XRay.Logic.Chapters;
+using XRayBuilder.Core.XRay.Logic.Terms;
 using XRayBuilder.Test.XRay;
-using XRayBuilderGUI.DataSources.Secondary;
-using XRayBuilderGUI.Extras.Artifacts;
-using XRayBuilderGUI.Libraries;
-using XRayBuilderGUI.Libraries.Logging;
-using XRayBuilderGUI.Model;
-using XRayBuilderGUI.XRay.Logic;
-using XRayBuilderGUI.XRay.Logic.Aliases;
-using XRayBuilderGUI.XRay.Logic.Chapters;
-using EndActions = XRayBuilderGUI.Extras.EndActions.EndActions;
 
 namespace XRayBuilder.Test
 {
@@ -26,50 +24,64 @@ namespace XRayBuilder.Test
         private SecondarySourceFile _file;
         private ChaptersService _chaptersService;
         private IXRayService _xrayService;
+        private ITermsService _termsService;
 
         [SetUp]
         public void Setup()
         {
             _logger = new Logger();
-            _file = new SecondarySourceFile(_logger);
+            _termsService = new TermsService();
+            _file = new SecondarySourceFile(_logger, _termsService);
             _chaptersService = new ChaptersService(_logger);
-            _xrayService = new XRayService(new AliasesService(_logger), _logger, _chaptersService);
+            _xrayService = new XRayService(_logger, _chaptersService, new AliasesRepository(_logger, new AliasesService(_logger)));
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXMLTest(Book book)
         {
-            var xray = await _xrayService.CreateXRayAsync(book.xml, book.db, book.guid, book.asin, 0, _file, null, CancellationToken.None);
+            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, "com", true, _file, null, CancellationToken.None);
             Assert.NotNull(xray);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXMLAliasTest(Book book)
         {
-            var xray = await _xrayService.CreateXRayAsync(book.xml, book.db, book.guid, book.asin, 0, _file, null, CancellationToken.None);
-            _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath);
-            FileAssert.AreEqual($"ext\\{book.asin}.aliases", $"testfiles\\{book.asin}.aliases");
+            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, "com", true, _file, null, CancellationToken.None);
+            _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath, true, false);
+            FileAssert.AreEqual($"ext\\{book.Asin}.aliases", $"testfiles\\{book.Asin}.aliases");
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
-        public async Task XRayXMLExpandRawMLTest(Book book)
+        public async Task XRayXMLExpandRawMLNewVersionTest(Book book)
         {
-            var xray = await _xrayService.CreateXRayAsync(book.xml, book.db, book.guid, book.asin, 0, _file, null, CancellationToken.None);
+            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, "com", true, _file, null, CancellationToken.None);
             xray.Unattended = true;
-            Assert.AreEqual(xray.ExpandFromRawMl(new FileStream(book.rawml, FileMode.Open), null, null, CancellationToken.None, false, false), 0);
-            FileAssert.AreEqual($"ext\\{book.asin}.chapters", $"testfiles\\{book.asin}.chapters");
+            var fakeMetadata = new Metadata();
+            using var fs = new FileStream(book.Rawml, FileMode.Open);
+            _xrayService.ExpandFromRawMl(xray, fakeMetadata, fs, false, true, true, 0, true, null, null, CancellationToken.None, false, false);
+        }
+
+        [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
+        public async Task XRayXMLExpandRawMLOldVersionTest(Book book)
+        {
+            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, "com", true, _file, null, CancellationToken.None);
+            xray.Unattended = true;
+            var fakeMetadata = new Metadata();
+            using var fs = new FileStream(book.Rawml, FileMode.Open);
+            _xrayService.ExpandFromRawMl(xray, fakeMetadata, fs, false, false, true, 0, true, null, null, CancellationToken.None, false, false);
+            FileAssert.AreEqual($"ext\\{book.Asin}.chapters", $"testfiles\\{book.Asin}.chapters");
         }
     }
 
     [TestFixture]
     public class DeserializeTests
     {
-        private static List<BookInfo> books = new List<BookInfo>
-        {
-            new BookInfo("A Storm of Swords", "George R. R. Martin",
-                "B000FBFN1U", "171927873", "A_Storm_of_Swords", Path.Combine(Environment.CurrentDirectory, "out"), "https://www.goodreads.com/book/show/62291",
-                @"testfiles\A Storm of Swords - George R. R. Martin.rawml")
-        };
+        // private static List<BookInfo> books = new List<BookInfo>
+        // {
+        //     new BookInfo("A Storm of Swords", "George R. R. Martin",
+        //         "B000FBFN1U", "171927873", "A_Storm_of_Swords", Path.Combine(Environment.CurrentDirectory, "out"), "https://www.goodreads.com/book/show/62291",
+        //         @"testfiles\A Storm of Swords - George R. R. Martin.rawml")
+        // };
 
         // TODO: Compare the actual contents (objects) rather than the string itself due to the order of books changing
         //[Test(), TestCaseSource(nameof(books))]
@@ -125,19 +137,13 @@ namespace XRayBuilder.Test
 
     public class Book
     {
-        public string rawml;
-        public string xml;
-        public string db;
-        public string guid;
-        public string asin;
-
-        public Book(string rawml, string xml, string db, string guid, string asin)
-        {
-            this.rawml = rawml;
-            this.xml = xml;
-            this.db = db;
-            this.guid = guid;
-            this.asin = asin;
-        }
+        public string Rawml { get; set; }
+        public string Xml { get; set; }
+        public string Db { get; set; }
+        public string Guid { get; set; }
+        public string Asin { get; set; }
+        public string Bookpath { get; set; }
+        public string Author { get; set; }
+        public string Title { get; set; }
     }
 }

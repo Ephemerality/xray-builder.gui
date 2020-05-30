@@ -4,32 +4,38 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using SimpleInjector;
-using XRayBuilderGUI.DataSources.Amazon;
-using XRayBuilderGUI.DataSources.Secondary;
-using XRayBuilderGUI.Extras.Artifacts;
-using XRayBuilderGUI.Extras.AuthorProfile;
-using XRayBuilderGUI.Libraries;
-using XRayBuilderGUI.Libraries.Http;
-using XRayBuilderGUI.Libraries.Logging;
-using XRayBuilderGUI.Libraries.Progress;
-using XRayBuilderGUI.Model;
+using XRayBuilder.Core.DataSources.Amazon;
+using XRayBuilder.Core.DataSources.Logic;
+using XRayBuilder.Core.DataSources.Roentgen.Logic;
+using XRayBuilder.Core.DataSources.Secondary;
+using XRayBuilder.Core.Extras.Artifacts;
+using XRayBuilder.Core.Extras.AuthorProfile;
+using XRayBuilder.Core.Extras.EndActions;
+using XRayBuilder.Core.Extras.StartActions;
+using XRayBuilder.Core.Libraries;
+using XRayBuilder.Core.Libraries.Http;
+using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Libraries.Progress;
+using XRayBuilder.Core.Libraries.Serialization.Json.Util;
+using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
+using XRayBuilder.Core.Model;
+using XRayBuilder.Core.Unpack;
+using XRayBuilder.Core.Unpack.KFX;
+using XRayBuilder.Core.Unpack.Mobi;
+using XRayBuilder.Core.XRay;
+using XRayBuilder.Core.XRay.Logic;
+using XRayBuilder.Core.XRay.Logic.Aliases;
+using XRayBuilder.Core.XRay.Logic.Export;
+using XRayBuilder.Core.XRay.Logic.Terms;
+using XRayBuilder.Core.XRay.Model.Export;
+using XRayBuilder.Core.XRay.Util;
 using XRayBuilderGUI.Properties;
-using XRayBuilderGUI.UI.Preview.Logic;
-using XRayBuilderGUI.Unpack;
-using XRayBuilderGUI.XRay;
-using XRayBuilderGUI.XRay.Logic;
-using XRayBuilderGUI.XRay.Logic.Aliases;
-using XRayBuilderGUI.XRay.Logic.Chapters;
-using XRayBuilderGUI.XRay.Logic.Export;
-using XRayBuilderGUI.XRay.Logic.Terms;
-using XRayBuilderGUI.XRay.Model.Export;
-using EndActions = XRayBuilderGUI.Extras.EndActions.EndActions;
+using XRayBuilderGUI.UI.Preview.Model;
 
 namespace XRayBuilderGUI.UI
 {
@@ -41,14 +47,18 @@ namespace XRayBuilderGUI.UI
         private readonly IAmazonClient _amazonClient;
         private readonly IAuthorProfileGenerator _authorProfileGenerator;
         private readonly PreviewProviderFactory _previewProviderFactory;
-        private readonly IAmazonInfoParser _amazonInfoParser;
         private readonly IAliasesRepository _aliasesRepository;
-        private readonly ChaptersService _chaptersService;
         private readonly IXRayService _xrayService;
         private readonly XRayExporterFactory _xrayExporterFactory;
         private readonly IPreviewDataExporter _previewDataExporter;
         private readonly ITermsService _termsService;
         private readonly Container _diContainer;
+        // TODO Different type handling should come from some sort of factory or whatever
+        private readonly IKfxXrayService _kfxXrayService;
+        private readonly IStartActionsArtifactService _startActionsArtifactService;
+        private readonly IEndActionsArtifactService _endActionsArtifactService;
+        private readonly IRoentgenClient _roentgenClient;
+        private readonly IEndActionsAuthorConverter _endActionsAuthorConverter;
 
         // TODO: Fix up these paths
         private string EaPath = "";
@@ -63,13 +73,16 @@ namespace XRayBuilderGUI.UI
             IAuthorProfileGenerator authorProfileGenerator,
             IAmazonClient amazonClient,
             PreviewProviderFactory previewProviderFactory,
-            IAmazonInfoParser amazonInfoParser,
             IAliasesRepository aliasesRepository,
             IPreviewDataExporter previewDataExporter,
             XRayExporterFactory xrayExporterFactory,
-            ChaptersService chaptersService,
             IXRayService xrayService,
-            ITermsService termsService)
+            ITermsService termsService,
+            IKfxXrayService kfxXrayService,
+            IStartActionsArtifactService startActionsArtifactService,
+            IEndActionsArtifactService endActionsArtifactService,
+            IRoentgenClient roentgenClient,
+            IEndActionsAuthorConverter endActionsAuthorConverter)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
@@ -79,13 +92,16 @@ namespace XRayBuilderGUI.UI
             _authorProfileGenerator = authorProfileGenerator;
             _amazonClient = amazonClient;
             _previewProviderFactory = previewProviderFactory;
-            _amazonInfoParser = amazonInfoParser;
             _aliasesRepository = aliasesRepository;
             _previewDataExporter = previewDataExporter;
             _xrayExporterFactory = xrayExporterFactory;
-            _chaptersService = chaptersService;
             _xrayService = xrayService;
             _termsService = termsService;
+            _kfxXrayService = kfxXrayService;
+            _startActionsArtifactService = startActionsArtifactService;
+            _endActionsArtifactService = endActionsArtifactService;
+            _roentgenClient = roentgenClient;
+            _endActionsAuthorConverter = endActionsAuthorConverter;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
         }
@@ -118,7 +134,7 @@ namespace XRayBuilderGUI.UI
                 _logger.Log("Warning: The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.");
 
             if (string.IsNullOrEmpty(outputDir))
-                outputDir = Functions.GetBookOutputDirectory(author, title, create);
+                outputDir = Functions.GetBookOutputDirectory(author, title, create, _settings.outDir);
 
             if (_settings.outputToSidecar)
                 outputDir = Path.Combine(outputDir, $"{fileName}.sdr");
@@ -144,10 +160,11 @@ namespace XRayBuilderGUI.UI
             foreach (var c in Controls.OfType<Button>())
                 c.Enabled = enabled;
             txtMobi.Enabled = enabled;
-            txtXMLFile.Enabled = enabled;
+            txtXMLFile.Enabled = enabled && rdoFile.Checked;
             txtGoodreads.Enabled = enabled;
             rdoFile.Enabled = enabled;
             rdoGoodreads.Enabled = enabled;
+            rdoRoentgen.Enabled = enabled;
             btnCancel.Enabled = !enabled;
             // If process was canceled and we're disabling the interface for another time, reset token source
             if (enabled == false && _cancelTokens.IsCancellationRequested)
@@ -185,6 +202,44 @@ namespace XRayBuilderGUI.UI
             ToggleInterface(true);
         }
 
+        private async Task<IMetadata> GetAndValidateMetadataAsync(string mobiFile, bool saveRawMl, CancellationToken cancellationToken)
+        {
+            _logger.Log("Extracting metadata...");
+            try
+            {
+                var metadata = MetadataLoader.Load(mobiFile);
+                UIFunctions.EbokTagPromptOrThrow(metadata, mobiFile);
+                try
+                {
+                    await CheckAndFixIncorrectAsinOrThrowAsync(metadata, mobiFile, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log($"Failed to validate/fix ASIN: {ex.Message}\r\nContinuing anyway...", LogLevel.Error);
+                }
+
+                if (!Settings.Default.useNewVersion && metadata.DbName.Length == 31)
+                {
+                    MessageBox.Show($"WARNING: Database Name is the maximum length. If \"{metadata.DbName}\" is the full book title, this should not be an issue.\r\nIf the title is supposed to be longer than that, you may get an error on your Kindle (WG on firmware < 5.6).\r\nThis can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n");
+                }
+
+                if (saveRawMl && metadata.RawMlSupported)
+                {
+                    _logger.Log("Saving rawML to dmp directory...");
+                    metadata.SaveRawMl(UIFunctions.RawMlPath(Path.GetFileNameWithoutExtension(mobiFile)));
+                }
+                _logger.Log($"Got metadata!\r\nDatabase Name: {metadata.DbName}\r\nUniqueID: {metadata.UniqueId}\r\nASIN: {metadata.Asin}");
+
+                return metadata;
+            }
+            catch (Exception ex)
+            {
+                _logger.Log($"An error occurred extracting metadata: {ex.Message}\r\n{ex.StackTrace}");
+            }
+
+            return null;
+        }
+
         private async Task btnBuild_Run()
         {
             //Check current settings
@@ -215,8 +270,7 @@ namespace XRayBuilderGUI.UI
 
             prgBar.Value = 0;
 
-            // todo this is crap
-            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.saverawml, _logger));
+            using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, _settings.saverawml, _cancelTokens.Token);
             if (metadata == null)
                 return;
 
@@ -225,30 +279,33 @@ namespace XRayBuilderGUI.UI
             if (_cancelTokens.IsCancellationRequested) return;
             _logger.Log("Attempting to build X-Ray...");
 
-            //If AZW3 file use AZW3 offset, if checked. Checked by default.
-            var AZW3 = Path.GetExtension(txtMobi.Text) == ".azw3" && _settings.overrideOffset;
-            _logger.Log($"Offset: {(AZW3 ? $"{_settings.offsetAZW3} (AZW3)" : _settings.offset.ToString())}");
-
             //Create X-Ray and attempt to create the base file (essentially the same as the site)
-            XRay.XRay xray;
+            XRay xray;
             SetDatasourceLabels(); // Reset the dataSource for the new build process
             try
             {
-                Task<XRay.XRay> xrayTask;
+                Task<XRay> xrayTask;
                 if (rdoGoodreads.Checked)
-                    xrayTask = _xrayService.CreateXRayAsync(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin,
-                        AZW3 ? _settings.offsetAZW3 : _settings.offset, _dataSource, _progress, _cancelTokens.Token);
+                    xrayTask = _xrayService.CreateXRayAsync(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.amazonTLD, _settings.includeTopics, _dataSource, _progress, _cancelTokens.Token);
+                else if (rdoRoentgen.Checked)
+                    xrayTask = _xrayService.CreateXRayAsync(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.roentgenRegion, _settings.includeTopics, _diContainer.GetInstance<SecondarySourceRoentgen>(), _progress, _cancelTokens.Token);
                 else
                 {
                     // TODO Set datasource properly
                     var fileDataSource = _diContainer.GetInstance<SecondaryDataSourceFactory>().Get(SecondaryDataSourceFactory.Enum.File);
-                    xrayTask = _xrayService.CreateXRayAsync(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin,
-                        AZW3 ? _settings.offsetAZW3 : _settings.offset, fileDataSource, _progress, _cancelTokens.Token);
+                    xrayTask = _xrayService.CreateXRayAsync(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.amazonTLD, _settings.includeTopics, fileDataSource, _progress, _cancelTokens.Token);
                 }
 
                 xray = await Task.Run(() => xrayTask).ConfigureAwait(false);
 
-                _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath);
+                if (xray.Terms.Count == 0
+                    && DialogResult.No == MessageBox.Show("No terms were available, do you want to continue the build anyway?", "No Terms", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2))
+                {
+                    _logger.Log("Cancelling...");
+                    return;
+                }
+
+                _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath, _settings.overwriteAliases, _settings.splitAliases);
 
                 if (_settings.enableEdit && DialogResult.Yes ==
                     MessageBox.Show(
@@ -261,7 +318,9 @@ namespace XRayBuilderGUI.UI
                 {
                     Functions.RunNotepad(xray.AliasPath);
                 }
-                if (!File.Exists(xray.AliasPath))
+                if (xray.Terms.Any(term => term.Aliases?.Count > 0))
+                    _logger.Log("Character aliases read from the XML file.");
+                else if (!File.Exists(xray.AliasPath))
                     _logger.Log("Aliases file not found.");
                 else
                 {
@@ -271,11 +330,23 @@ namespace XRayBuilderGUI.UI
 
                 _logger.Log("Initial X-Ray built, adding locations and chapters...");
                 //Expand the X-Ray file from the unpacked mobi
-                if (await Task.Run(() => xray.ExpandFromRawMl(metadata.GetRawMlStream(), SafeShow, _progress, _cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion)).ConfigureAwait(false) > 0)
+                Task buildTask;
+                switch (metadata)
                 {
-                    _logger.Log("Build canceled or error occurred while processing locations and chapters.");
-                    return;
+                    case Metadata _:
+                        // ReSharper disable twice AccessToDisposedClosure
+                        buildTask = Task.Run(() => _xrayService.ExpandFromRawMl(xray, metadata, metadata.GetRawMlStream(), _settings.enableEdit, _settings.useNewVersion, _settings.skipNoLikes, _settings.minClipLen, _settings.overwriteChapters, SafeShow, _progress, _cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion));
+                        break;
+                    case KfxContainer kfx:
+                        if (!_settings.useNewVersion)
+                            throw new Exception("Building the old format of X-Ray is not supported with KFX books");
+
+                        buildTask = Task.Run(() => _kfxXrayService.AddLocations(xray, kfx, _settings.skipNoLikes, _settings.minClipLen, _progress, _cancelTokens.Token));
+                        break;
+                    default:
+                        throw new NotSupportedException();
                 }
+                await buildTask.ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {
@@ -328,7 +399,7 @@ namespace XRayBuilderGUI.UI
 
             if (_settings.useNewVersion)
             {
-                XrPath = $@"{outFolder}\XRAY.entities.{metadata.Asin}";
+                XrPath = $@"{outFolder}\XRAY.entities.{metadata.Asin}.asc";
 
                 //Save the new XRAY.ASIN.previewData file
                 try
@@ -345,7 +416,7 @@ namespace XRayBuilderGUI.UI
 
             _logger.Log($"X-Ray file created successfully!\r\nSaved to {newPath}");
 
-            checkFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));
+            CheckFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));
 
             if (_settings.playSound)
             {
@@ -371,20 +442,17 @@ namespace XRayBuilderGUI.UI
                 MessageBox.Show("Specified book was not found.", "Book Not Found");
                 return;
             }
-            if (rdoGoodreads.Checked)
+            if (txtGoodreads.Text == "")
             {
-                if (txtGoodreads.Text == "")
-                {
-                    MessageBox.Show($"No {_dataSource.Name} link was specified.", $"Missing {_dataSource.Name} Link");
-                    return;
-                }
-                if (!txtGoodreads.Text.ToLower().Contains(_settings.dataSource.ToLower()))
-                {
-                    MessageBox.Show($"Invalid {_dataSource.Name} link was specified.\r\n"
-                        + $"If you do not want to use {_dataSource.Name}, you can change the data source in Settings."
-                        , $"Invalid {_dataSource.Name} Link");
-                    return;
-                }
+                MessageBox.Show($"No {_dataSource.Name} link was specified.", $"Missing {_dataSource.Name} Link");
+                return;
+            }
+            if (!txtGoodreads.Text.ToLower().Contains(_settings.dataSource.ToLower()))
+            {
+                MessageBox.Show($"Invalid {_dataSource.Name} link was specified.\r\n"
+                    + $"If you do not want to use {_dataSource.Name}, you can change the data source in Settings."
+                    , $"Invalid {_dataSource.Name} Link");
+                return;
             }
             if (_settings.realName.Trim().Length == 0 || _settings.penName.Trim().Length == 0)
             {
@@ -396,7 +464,7 @@ namespace XRayBuilderGUI.UI
                 return;
             }
 
-            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, _settings.saverawml, _logger));
+            using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, _settings.saverawml, _cancelTokens.Token);
             if (metadata == null)
                 return;
 
@@ -404,150 +472,223 @@ namespace XRayBuilderGUI.UI
             _logger.Log($"Book's {_dataSource.Name} URL: {txtGoodreads.Text}");
             try
             {
-                var bookInfo = new BookInfo(metadata, txtGoodreads.Text, txtMobi.Text);
+                var bookInfo = new BookInfo(metadata, txtGoodreads.Text);
 
                 var outputDir = OutputDirectory(bookInfo.Author, bookInfo.Title, bookInfo.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text), true);
 
-                _logger.Log("Attempting to build Author Profile...");
-
                 ApPath = $@"{outputDir}\AuthorProfile.profile.{bookInfo.Asin}.asc";
-
-                // TODO: Load existing ap to use for end actions / start actions
-                if (!Settings.Default.overwrite && File.Exists(ApPath))
-                {
-                    _logger.Log("AuthorProfile file already exists... Skipping!\r\n" +
-                                "Please review the settings page if you want to overwite any existing files.");
-                    return;
-                }
-
-                var response = await _authorProfileGenerator.GenerateAsync(new AuthorProfileGenerator.Request
-                {
-                    Book = bookInfo,
-                    Settings = new AuthorProfileGenerator.Settings
-                    {
-                        AmazonTld = _settings.amazonTLD,
-                        SaveBio = _settings.saveBio,
-                        UseNewVersion = _settings.useNewVersion,
-                        EditBiography = _settings.editBiography
-                    }
-                }, _cancelTokens.Token);
-
-                if (response == null)
-                    return;
-
-                var authorProfileOutput = JsonConvert.SerializeObject(AuthorProfileGenerator.CreateAp(response, bookInfo.Asin));
-
-                try
-                {
-                    File.WriteAllText(ApPath, authorProfileOutput);
-                    _logger.Log($"Author Profile file created successfully!\r\nSaved to {ApPath}");
-                }
-                catch (Exception ex)
-                {
-                    _logger.Log($"An error occurred while writing the Author Profile file: {ex.Message}\r\n{ex.StackTrace}");
-                    return;
-                }
-
                 SaPath = $@"{outputDir}\StartActions.data.{bookInfo.Asin}.asc";
-                _logger.Log("Attempting to build Start Actions and End Actions...");
-
-                string AsinPrompt(string title, string author)
+                EaPath = $@"{outputDir}\EndActions.data.{bookInfo.Asin}.asc";
+                var saExists = File.Exists(SaPath);
+                var eaExists = File.Exists(EaPath);
+                var apExists = File.Exists(ApPath);
+                var needSa = !saExists || _settings.overwriteSA;
+                var needEa = !eaExists || _settings.overwriteEA;
+                var needAp = !apExists || _settings.overwriteAP;
+                if (!needAp && !needSa && !needEa)
                 {
-                    var frmAsin = _diContainer.GetInstance<frmASIN>();
-                    frmAsin.Text = "Series Information";
-                    frmAsin.lblTitle.Text = title;
-                    frmAsin.lblAuthor.Text = author;
-                    frmAsin.tbAsin.Text = "";
-                    frmAsin.ShowDialog();
-                    return frmAsin.tbAsin.Text;
+                    _logger.Log("All extras files already exist and none of the \"overwrite\" settings are enabled!\r\nCanceling the build process...");
+                    return;
                 }
 
-                var ea = new EndActions(response, bookInfo, metadata.RawMlSize, _dataSource, new EndActions.Settings
+                async Task<TActions> DownloadActionsArtifact<TActions>(string type, Func<string, string, CancellationToken, Task<TActions>> download) where TActions : class
                 {
-                    AmazonTld = _settings.amazonTLD,
-                    Android = _settings.android,
-                    OutDir = _settings.outDir,
-                    OutputToSidecar = _settings.outputToSidecar,
-                    PenName = _settings.penName,
-                    RealName = _settings.realName,
-                    UseNewVersion = _settings.useNewVersion,
-                    UseSubDirectories = _settings.useSubDirectories,
-                    PromptAsin = _settings.promptASIN
-                }, AsinPrompt, _logger, _httpClient, _amazonClient, _amazonInfoParser);
-                if (!await ea.Generate()) return;
-
-                if (_settings.useNewVersion)
-                {
-                    await ea.GenerateNewFormatData(_progress, _cancelTokens.Token);
-
-                    // TODO: Do the templates differently
-                    Extras.Artifacts.EndActions eaBase;
+                    _logger.Log($"Attempting to download {type} Actions...");
                     try
                     {
-                        var template = File.ReadAllText($@"{Environment.CurrentDirectory}\dist\BaseEndActions.json", Encoding.UTF8);
-                        eaBase = JsonConvert.DeserializeObject<Extras.Artifacts.EndActions>(template);
-                    }
-                    catch (FileNotFoundException)
-                    {
-                        _logger.Log(@"Unable to find dist\BaseEndActions.json, make sure it has been extracted!");
-                        return;
+                        var actions = await download(metadata.Asin, _settings.roentgenRegion, _cancelTokens.Token);
+                        if (actions == null)
+                        {
+                            _logger.Log($"No pre-made {type} Actions available, one will be built instead...");
+                            return null;
+                        }
+
+                        _logger.Log($"Successfully downloaded pre-made {type} Actions!");
+                        return actions;
                     }
                     catch (Exception e)
                     {
-                        _logger.Log($@"An error occurred while loading dist\BaseEndActions.json (make sure any new versions have been extracted!)\r\n{e.Message}\r\n{e.StackTrace}");
-                        return;
+                        _logger.Log($"No pre-made {type} Actions available (message: {e.Message}), one will be built instead...");
+                        return null;
                     }
+                }
 
-                    await ea.GenerateEndActionsFromBase(eaBase);
-
-                    StartActions sa;
+                if (_settings.downloadSA && needSa)
+                {
+                    // todo fix duplication for saving
                     try
                     {
-                        var template = File.ReadAllText($@"{Environment.CurrentDirectory}\dist\BaseStartActions.json", Encoding.UTF8);
-                        sa = JsonConvert.DeserializeObject<StartActions>(template);
-                    }
-                    catch (FileNotFoundException)
-                    {
-                        _logger.Log(@"Unable to find dist\BaseStartActions.json, make sure it has been extracted!");
-                        return;
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.Log($@"An error occurred while loading dist\BaseStartActions.json (make sure any new versions have been extracted!)\r\n{e.Message}\r\n{e.StackTrace}");
-                        return;
-                    }
-
-                    // TODO: Separate out SA logic
-                    string saContent = null;
-                    if (_settings.downloadSA)
-                    {
-                        _logger.Log("Attempting to download Start Actions...");
-                        try
+                        var startActions = await DownloadActionsArtifact("Start", _roentgenClient.DownloadStartActionsAsync);
+                        if (startActions != null)
                         {
-                            saContent = await _amazonClient.DownloadStartActions(metadata.Asin);
-                            _logger.Log("Successfully downloaded pre-made Start Actions!");
-                        }
-                        catch
-                        {
-                            _logger.Log("No pre-made Start Actions available, building...");
+                            _logger.Log("Writing Start Actions to file...");
+                            File.WriteAllText(SaPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(startActions)));
+                            _logger.Log($"Start Actions file created successfully!\r\nSaved to {SaPath}");
+                            needSa = false;
                         }
                     }
-                    if (string.IsNullOrEmpty(saContent))
-                        saContent = ea.GenerateStartActionsFromBase(sa);
+                    catch (Exception ex)
+                    {
+                        _logger.Log($"An error occurred creating the Start Actions: {ex.Message}\r\n{ex.StackTrace}");
+                    }
+                }
 
-                    _logger.Log("Writing StartActions to file...");
-                    File.WriteAllText(ea.SaPath, saContent);
-                    _logger.Log($"StartActions file created successfully!\r\nSaved to {SaPath}");
+                EndActions endActions = null;
+                // If the EA file exists, need to either download if desired or load existing if needed for AP
+                if (_settings.downloadEA && needEa)
+                {
+                    try
+                    {
+                        endActions = await DownloadActionsArtifact("End", _roentgenClient.DownloadEndActionsAsync);
+                        if (endActions != null)
+                        {
+                            _logger.Log("Writing End Actions to file...");
+                            File.WriteAllText(EaPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(endActions)));
+                            _logger.Log($"End Actions file created successfully!\r\nSaved to {EaPath}");
+                            needEa = false;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Log($"An error occurred creating the End Actions: {ex.Message}\r\n{ex.StackTrace}");
+                    }
+                }
+                else if (eaExists && _settings.autoBuildAP && needAp)
+                {
+                    endActions = JsonUtil.DeserializeFile<EndActions>(EaPath);
+                    _logger.Log($"Loaded existing End Actions from {EaPath}");
+                }
 
-                    cmsPreview.Items[3].Enabled = true;
-                    EaPath = $@"{outputDir}\EndActions.data.{bookInfo.Asin}.asc";
+                if (!needAp && !needSa && !needEa)
+                {
+                    _logger.Log("All extras downloaded/built and none need to be overwritten, stopping here!");
+                    return;
+                }
+
+                AuthorProfileGenerator.Response authorProfileResponse;
+                _logger.Log("Attempting to build Author Profile...");
+                if ((needSa || needAp) && endActions != null && _settings.autoBuildAP)
+                {
+                    authorProfileResponse = await _endActionsAuthorConverter.ConvertAsync(endActions, _cancelTokens.Token);
+                    _logger.Log("Built Author Profile from the existing End Actions file!");
                 }
                 else
-                    ea.GenerateOld();
+                {
+                    authorProfileResponse = await _authorProfileGenerator.GenerateAsync(new AuthorProfileGenerator.Request
+                    {
+                        Book = bookInfo,
+                        Settings = new AuthorProfileGenerator.Settings
+                        {
+                            AmazonTld = _settings.amazonTLD,
+                            SaveBio = _settings.saveBio,
+                            UseNewVersion = _settings.useNewVersion,
+                            EditBiography = _settings.editBiography,
+                            SaveHtml = _settings.saveHtml
+                        }
+                    }, _cancelTokens.Token);
 
+                    if (authorProfileResponse == null)
+                        return;
+                }
+
+                if (needAp)
+                {
+                    try
+                    {
+                        var authorProfileOutput = JsonConvert.SerializeObject(AuthorProfileGenerator.CreateAp(authorProfileResponse, bookInfo.Asin));
+                        File.WriteAllText(ApPath, authorProfileOutput);
+                        _logger.Log($"Author Profile file created successfully!\r\nSaved to {ApPath}");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Log($"An error occurred while writing the Author Profile file: {ex.Message}\r\n{ex.StackTrace}");
+                        return;
+                    }
+                }
+
+                if (needSa || needEa)
+                {
+                    _logger.Log("Attempting to build Start and/or End Actions...");
+
+                    string AsinPrompt(string title, string author)
+                    {
+                        var frmAsin = _diContainer.GetInstance<frmASIN>();
+                        frmAsin.Text = "Series Information";
+                        frmAsin.lblTitle.Text = title;
+                        frmAsin.lblAuthor.Text = author;
+                        frmAsin.tbAsin.Text = "";
+                        frmAsin.ShowDialog();
+                        return frmAsin.tbAsin.Text;
+                    }
+
+                    var endActionsSettings = new EndActionsDataGenerator.Settings
+                    {
+                        AmazonTld = _settings.amazonTLD,
+                        UseNewVersion = _settings.useNewVersion,
+                        PromptAsin = _settings.promptASIN,
+                        SaveHtml = _settings.saveHtml,
+                        EstimatePageCount = _settings.pageCount
+                    };
+
+                    var endActionsDataGenerator = _diContainer.GetInstance<IEndActionsDataGenerator>();
+                    var endActionsResponse = _settings.useNewVersion
+                        ? await endActionsDataGenerator.GenerateNewFormatData(bookInfo, endActionsSettings, _dataSource, authorProfileResponse, AsinPrompt, metadata, _progress, _cancelTokens.Token)
+                        : await endActionsDataGenerator.GenerateOld(bookInfo, endActionsSettings, _cancelTokens.Token);
+
+                    if (endActionsResponse == null)
+                        return;
+
+                    if (needEa)
+                    {
+                        // Todo actions response/request stuff could still be cleaned up
+                        var endActionsRequest = new EndActionsArtifactService.Request(
+                            bookAsin: endActionsResponse.Book.Asin,
+                            bookImageUrl: endActionsResponse.Book.ImageUrl,
+                            bookDatabaseName: endActionsResponse.Book.Databasename,
+                            bookGuid: endActionsResponse.Book.Guid,
+                            bookErl: metadata.RawMlSize,
+                            bookAmazonRating: endActionsResponse.Book.AmazonRating,
+                            bookSeriesInfo: endActionsResponse.Book.Series,
+                            author: authorProfileResponse.Name,
+                            authorAsin: authorProfileResponse.Asin,
+                            authorImageUrl: authorProfileResponse.ImageUrl,
+                            authorBiography: authorProfileResponse.Biography,
+                            authorOtherBooks: authorProfileResponse.OtherBooks,
+                            userPenName: _settings.penName,
+                            userRealName: _settings.realName,
+                            customerAlsoBought: endActionsResponse.CustomerAlsoBought);
+
+                        var endActionsContent = _settings.useNewVersion
+                            ? _endActionsArtifactService.GenerateNew(endActionsRequest)
+                            : _endActionsArtifactService.GenerateOld(endActionsRequest);
+
+                        _logger.Log("Writing EndActions to file...");
+                        File.WriteAllText(EaPath, endActionsContent);
+                        _logger.Log($"EndActions file created successfully!\r\nSaved to {EaPath}");
+                    }
+
+                    if (needSa)
+                    {
+                        var startActions = _startActionsArtifactService.GenerateStartActions(endActionsResponse.Book, authorProfileResponse);
+
+                        _logger.Log("Writing Start Actions to file...");
+                        try
+                        {
+                            File.WriteAllText(SaPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(startActions)));
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.Log("An error occurred creating the Start Actions: " + ex.Message + "\r\n" + ex.StackTrace);
+                        }
+
+                        _logger.Log($"Start Actions file created successfully!\r\nSaved to {SaPath}");
+                    }
+                }
+
+                cmsPreview.Items[3].Enabled = true;
                 cmsPreview.Items[1].Enabled = true;
 
-                checkFiles(bookInfo.Author, bookInfo.Title, bookInfo.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));
+                CheckFiles(bookInfo.Author, bookInfo.Title, bookInfo.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));
                 if (_settings.playSound)
                 {
                     var player = new System.Media.SoundPlayer($@"{Environment.CurrentDirectory}\done.wav");
@@ -566,7 +707,7 @@ namespace XRayBuilderGUI.UI
 
         private async void btnDownloadTerms_Click(object sender, EventArgs e)
         {
-            if (txtGoodreads.Text == "")
+            if (rdoGoodreads.Checked && txtGoodreads.Text == "")
             {
                 MessageBox.Show("No link was specified.", "Missing Link");
                 return;
@@ -582,16 +723,35 @@ namespace XRayBuilderGUI.UI
             var path = $@"{Environment.CurrentDirectory}\xml\{Path.GetFileNameWithoutExtension(txtMobi.Text)}.xml";
             try
             {
-                txtXMLFile.Text = path;
-
-                var xray = new XRay.XRay(txtGoodreads.Text, _dataSource, _logger, _chaptersService);
-                var result = await Task.Run(() => xray.SaveXml(path, _progress, _cancelTokens.Token));
-                if (result == 1)
-                    _logger.Log("Warning: Unable to download character data as no character data found on Goodreads.");
-                else if (result == 2)
-                    _logger.Log("Download cancelled.");
+                if (rdoGoodreads.Checked)
+                {
+                    _logger.Log($@"Exporting terms from {_dataSource.Name}...");
+                    await Task.Run(() => _termsService.DownloadAndSaveAsync(_dataSource, txtGoodreads.Text, path, null, null, _settings.includeTopics, _progress, _cancelTokens.Token));
+                }
+                else if (rdoRoentgen.Checked)
+                {
+                    try
+                    {
+                        _logger.Log($@"Exporting terms from Roentgen...");
+                        using var metadata = MetadataLoader.Load(txtMobi.Text);
+                        await Task.Run(() => _termsService.DownloadAndSaveAsync(_diContainer.GetInstance<SecondarySourceRoentgen>(), null, path, metadata.Asin, _settings.roentgenRegion, _settings.includeTopics, _progress, _cancelTokens.Token));
+                    }
+                    catch (Exception ex) when (ex.Message.Contains("No terms"))
+                    {
+                        return;
+                    }
+                }
                 else
-                    _logger.Log($"Character data has been successfully saved to: {path}");
+                {
+                    _logger.Log("Can't export terms from a file...");
+                    return;
+                }
+                _logger.Log($"Character data has been successfully saved to: {path}");
+                txtXMLFile.Text = path;
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.Log("Download cancelled.");
             }
             catch (Exception ex)
             {
@@ -625,24 +785,25 @@ namespace XRayBuilderGUI.UI
             }
 
             //this.TopMost = true;
-            using var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, false, _logger));
+            using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
             if (metadata == null)
                 return;
 
             try
             {
-                var books = new BookInfo[0];
-                if (_settings.searchByAsin)
-                    books = (await _dataSource.SearchBookByAsinAsync(metadata.Asin)).ToArray();
+                var bookSearchService = _diContainer.GetInstance<IBookSearchService>();
+                var books = await bookSearchService.SearchSecondarySourceAsync(_dataSource,
+                    new BookSearchService.Parameters
+                    {
+                        Asin = _settings.searchByAsin ? metadata.Asin : null,
+                        Author = metadata.Author,
+                        Title = metadata.Title
+                    }, _cancelTokens.Token);
 
                 if (books.Length <= 0)
                 {
-                    books = (await _dataSource.SearchBookAsync(metadata.Author, metadata.Title)).ToArray();
-                    if (books.Length <= 0)
-                    {
-                        _logger.Log($"Unable to find this book on {_dataSource.Name}!\nEnsure the book's title ({metadata.Title}) is accurate!");
-                        return;
-                    }
+                    _logger.Log($"Unable to find this book on {_dataSource.Name}!\nEnsure the book's title ({metadata.Title}) is accurate!");
+                    return;
                 }
 
                 string bookUrl;
@@ -650,10 +811,6 @@ namespace XRayBuilderGUI.UI
                     bookUrl = books[0].DataUrl;
                 else
                 {
-                    books = books.OrderByDescending(book => book.Reviews)
-                        .ThenByDescending(book => book.Editions)
-                        .ToArray();
-
                     // Pre-load cover images
                     foreach (var book in books.Where(book => !string.IsNullOrEmpty(book.ImageUrl)))
                     {
@@ -703,7 +860,11 @@ namespace XRayBuilderGUI.UI
             _settings.mobiFile = txtMobi.Text;
             _settings.xmlFile = txtXMLFile.Text;
             _settings.Goodreads = txtGoodreads.Text;
-            _settings.buildSource = rdoGoodreads.Checked ? "Goodreads" : "XML";
+            _settings.buildSource = rdoGoodreads.Checked
+                ? "Goodreads"
+                : rdoRoentgen.Checked
+                    ? "Roentgen"
+                    : "XML";
             _settings.Save();
             if (txtOutput.Text.Trim().Length != 0)
                 File.WriteAllText(_currentLog, txtOutput.Text);
@@ -712,22 +873,22 @@ namespace XRayBuilderGUI.UI
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //this.WindowState = FormWindowState.Maximized;
             ActiveControl = lblGoodreads;
             _tooltip.SetToolTip(btnBrowseMobi, "Open a Kindle book.");
             _tooltip.SetToolTip(btnBrowseOutput, "Open the default output directory.");
             _tooltip.SetToolTip(btnOneClick, "One Click to try to build the Start\r\nAction, Author Profile, End Action\r\nand X-Ray files for this book.");
             _tooltip.SetToolTip(btnBrowseXML, "Open a supported XML or TXT file containing characters and topics.");
-            _tooltip.SetToolTip(btnKindleExtras,
-                "Try to build the Start Action, Author Profile,\r\nand End Action files for this book.");
-            _tooltip.SetToolTip(btnBuild,
-                "Try to build the X-Ray file for this book.");
+            _tooltip.SetToolTip(btnKindleExtras, "Try to build the Start Action, Author Profile,\r\nand End Action files for this book.");
+            _tooltip.SetToolTip(btnBuild, "Try to build the X-Ray file for this book.");
             _tooltip.SetToolTip(btnSettings, "Configure X-Ray Builder GUI.");
             _tooltip.SetToolTip(btnPreview, "View a preview of the generated files.");
             _tooltip.SetToolTip(btnUnpack, "Save the rawML (raw markup) of the book\r\nin the output directory so you can review it.");
-            _tooltip.SetToolTip(btnExtractTerms,
-                "Extract an existing X-Ray file to an XML file.\r\nThis can be useful if you have characters and\r\nterms you want to reuse.");
+            _tooltip.SetToolTip(btnExtractTerms, "Extract an existing X-Ray file to an XML file.\r\nThis can be useful if you have characters and\r\nterms you want to reuse.");
             _tooltip.SetToolTip(btnCreate, "Create an XML file containing characters\r\nand settings, or edit an existing XML file.");
+
+            _tooltip.SetToolTip(rdoGoodreads, "Use the above link as a terms source.");
+            _tooltip.SetToolTip(rdoRoentgen, "Download terms from Roentgen if any are available.");
+            _tooltip.SetToolTip(rdoFile, "Load terms from the selected file.");
 
             _tooltip.SetToolTip(pbFile1, "Start Actions");
             _tooltip.SetToolTip(pbFile2, "Author Profile");
@@ -755,6 +916,8 @@ namespace XRayBuilderGUI.UI
             txtGoodreads.Text = _settings.Goodreads;
             if (_settings.buildSource == "Goodreads")
                 rdoGoodreads.Checked = true;
+            else if (_settings.buildSource == "Roentgen")
+                rdoRoentgen.Checked = true;
             else
                 rdoFile.Checked = true;
             SetDatasourceLabels();
@@ -770,7 +933,10 @@ namespace XRayBuilderGUI.UI
             lblGoodreads.Left = _dataSource.UrlLabelPosition;
             rdoGoodreads.Text = _dataSource.Name;
             lblGoodreads.Text = $"{_dataSource.Name} URL:";
-            _tooltip.SetToolTip(btnDownloadTerms, $"Save {_dataSource.Name} info to an XML file.");
+            if (rdoGoodreads.Checked)
+                _tooltip.SetToolTip(btnDownloadTerms, $"Save {_dataSource.Name} terms to an XML file.");
+            else if (rdoRoentgen.Checked)
+                _tooltip.SetToolTip(btnDownloadTerms, $"Save Roentgen terms to an XML file.");
             _tooltip.SetToolTip(btnSearchGoodreads, _dataSource.SearchEnabled
                 ? $"Try to search for this book on {_dataSource.Name}."
                 : $"Search is disabled when {_dataSource.Name} is selected as a data source.");
@@ -797,35 +963,29 @@ namespace XRayBuilderGUI.UI
 
         private void rdoSource_CheckedChanged(object sender, EventArgs e)
         {
-            if (((RadioButton)sender).Text != "File")
+            if (((RadioButton)sender).Text == "File")
             {
-                lblGoodreads.Visible = !lblGoodreads.Visible;
-                txtGoodreads.Visible = !txtGoodreads.Visible;
-                lblXMLFile.Visible = !lblXMLFile.Visible;
-                txtXMLFile.Visible = !txtXMLFile.Visible;
-                txtGoodreads.Visible = !txtGoodreads.Visible;
-                btnBrowseXML.Visible = !btnBrowseXML.Visible;
-                btnSearchGoodreads.Visible = !btnSearchGoodreads.Visible;
-                btnKindleExtras.Enabled = !btnKindleExtras.Enabled;
-                btnOneClick.Enabled = !btnOneClick.Enabled;
+                txtXMLFile.Enabled = true;
+                btnBrowseXML.Enabled = true;
+                btnDownloadTerms.Enabled = false;
             }
-
-            lblGoodreads.Left = ((RadioButton) sender).Text switch
+            else
             {
-                "Shelfari" => 150,
-                "Goodreads" => 134,
-                _ => lblGoodreads.Left
-            };
+                txtXMLFile.Enabled = false;
+                btnBrowseXML.Enabled = false;
+                btnDownloadTerms.Enabled = true;
+            }
+            SetDatasourceLabels();
         }
 
-        private void txtMobi_TextChanged(object sender, EventArgs e)
+        private async void txtMobi_TextChanged(object sender, EventArgs e)
         {
             if (txtMobi.Text == "" || !File.Exists(txtMobi.Text))
                 return;
             txtGoodreads.Text = "";
             prgBar.Value = 0;
 
-            var metadata = UIFunctions.GetAndValidateMetadata(txtMobi.Text, false, _logger);
+            using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
             if (metadata == null)
             {
                 txtMobi.Text = "";
@@ -846,18 +1006,24 @@ namespace XRayBuilderGUI.UI
             txtAsin.Text = metadata.Asin;
             _tooltip.SetToolTip(txtAsin, _amazonClient.Url(_settings.amazonTLD, txtAsin.Text));
 
-            checkFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));
-            btnBuild.Enabled = metadata.RawMlSupported;
-            btnOneClick.Enabled = metadata.RawMlSupported;
+            CheckFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));
+            btnBuild.Enabled = metadata.XRaySupported;
+            btnOneClick.Enabled = metadata.XRaySupported;
+            btnUnpack.Enabled = metadata.RawMlSupported;
 
             try
             {
-                // Directory.Delete(randomFile, true);
+                if (AmazonClient.IsAsin(metadata.Asin))
+                {
+                    // Fire and forget
+                    #pragma warning disable 4014
+                    Task.Run(() => _roentgenClient.PreloadAsync(metadata.Asin, _settings.roentgenRegion, _cancelTokens.Token)).ConfigureAwait(false);
+                    #pragma warning restore 4014
+                }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.Log($"An error occurred while trying to delete temporary files: {ex.Message}\r\n{ex.StackTrace}\r\n"
-                    + "Try deleting these files manually.");
+                // Ignored
             }
         }
 
@@ -868,22 +1034,22 @@ namespace XRayBuilderGUI.UI
 
         private async void tmiAuthorProfile_Click(object sender, EventArgs e)
         {
-            await ShowPreview(PreviewProviderFactory.PreviewType.AuthorProfile, ApPath);
+            await ShowPreviewAsync(PreviewProviderFactory.PreviewType.AuthorProfile, ApPath, _cancelTokens.Token);
         }
 
         private async void tmiStartAction_Click(object sender, EventArgs e)
         {
-            await ShowPreview(PreviewProviderFactory.PreviewType.StartActions, SaPath);
+            await ShowPreviewAsync(PreviewProviderFactory.PreviewType.StartActions, SaPath, _cancelTokens.Token);
         }
 
         private async void tmiEndAction_Click(object sender, EventArgs e)
         {
-            await ShowPreview(PreviewProviderFactory.PreviewType.EndActions, EaPath);
+            await ShowPreviewAsync(PreviewProviderFactory.PreviewType.EndActions, EaPath, _cancelTokens.Token);
         }
 
         private async void tmiXray_Click(object sender, EventArgs e)
         {
-            await ShowPreview(PreviewProviderFactory.PreviewType.XRay, XrPath);
+            await ShowPreviewAsync(PreviewProviderFactory.PreviewType.XRay, XrPath, _cancelTokens.Token);
         }
 
         private void btnUnpack_Click(object sender, EventArgs e)
@@ -941,13 +1107,14 @@ namespace XRayBuilderGUI.UI
             }
             try
             {
+                // TODO This should be based on the file not the setting
                 var terms = newVer == XRayUtil.XRayVersion.New
                     ? _termsService.ExtractTermsNew(new SQLiteConnection($"Data Source={selPath}; Version=3;"), true)
                     : _termsService.ExtractTermsOld(selPath);
                 if (!Directory.Exists(Environment.CurrentDirectory + @"\xml\"))
                     Directory.CreateDirectory(Environment.CurrentDirectory + @"\xml\");
                 var outfile = Environment.CurrentDirectory + @"\xml\" + Path.GetFileNameWithoutExtension(selPath) + ".xml";
-                Functions.Save(terms.ToList(), outfile);
+                XmlUtil.SerializeToFile(terms.ToList(), outfile);
                 _logger.Log("Character data has been successfully extracted and saved to: " + outfile);
             }
             catch (Exception ex)
@@ -975,40 +1142,33 @@ namespace XRayBuilderGUI.UI
 
         private async void btnCreate_Click(object sender, EventArgs e)
         {
-            var frmCreateXr = new frmCreateXR();
-            var metadata = await Task.Run(() => UIFunctions.GetAndValidateMetadata(txtMobi.Text, false, _logger));
+            var frmCreateXr = _diContainer.GetInstance<frmCreateXR>();
+            using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
             if (metadata != null)
-            {
-                // TODO DONT ACCESS THESE CONTROLS DIRECTLY
-                frmCreateXr.txtAuthor.Text = metadata.Author;
-                frmCreateXr.txtTitle.Text = metadata.Title;
-                frmCreateXr.txtAsin.Text = metadata.Asin;
-            }
+                frmCreateXr.SetMetadata(metadata.Asin, metadata.Author, metadata.Title);
             frmCreateXr.ShowDialog();
         }
 
-        // TODO: Fix this mess
-        private void checkFiles(string author, string title, string fileName, string asin)
+        // TODO: Fix this mess - paths really need to come from a single source...
+        private void CheckFiles(string author, string title, string fileName, string asin)
         {
             var bookOutputDir = OutputDirectory(author, Functions.RemoveInvalidFileChars(title), asin, fileName, false);
 
-            if (File.Exists(bookOutputDir + @"\StartActions.data." + asin + ".asc"))
-                pbFile1.Image = Resources.file_on;
-            else
-                pbFile1.Image = Resources.file_off;
-            if (File.Exists(bookOutputDir + @"\AuthorProfile.profile." + asin + ".asc"))
-                pbFile2.Image = Resources.file_on;
-            else
-                pbFile2.Image = Resources.file_off;
-            if (File.Exists(bookOutputDir + @"\EndActions.data." + asin + ".asc"))
-                pbFile3.Image = Resources.file_on;
-            else
-                pbFile3.Image = Resources.file_off;
-            XrPath = bookOutputDir + @"\XRAY.entities." + asin + ".asc";
-            if (File.Exists(XrPath))
-                pbFile4.Image = Resources.file_on;
-            else
-                pbFile4.Image = Resources.file_off;
+            pbFile1.Image = File.Exists(bookOutputDir + @"\StartActions.data." + asin + ".asc")
+                ? Resources.file_on
+                : Resources.file_off;
+
+            pbFile2.Image = File.Exists(bookOutputDir + @"\AuthorProfile.profile." + asin + ".asc")
+                ? Resources.file_on
+                : Resources.file_off;
+
+            pbFile3.Image = File.Exists(bookOutputDir + @"\EndActions.data." + asin + ".asc")
+                ? Resources.file_on
+                : Resources.file_off;
+
+            pbFile4.Image = File.Exists(bookOutputDir + @"\XRAY.entities." + asin + ".asc")
+                ? Resources.file_on
+                : Resources.file_off;
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
@@ -1020,7 +1180,7 @@ namespace XRayBuilderGUI.UI
             }
         }
 
-        private async Task ShowPreview(PreviewProviderFactory.PreviewType type, string filePath)
+        private async Task ShowPreviewAsync(PreviewProviderFactory.PreviewType type, string filePath, CancellationToken cancellationToken)
         {
             var previewProvider = _previewProviderFactory.Get(type);
 
@@ -1040,7 +1200,7 @@ namespace XRayBuilderGUI.UI
             try
             {
                 var previewForm = previewProvider.GenForm();
-                await previewForm.Populate(selPath, _cancelTokens.Token);
+                await previewForm.Populate(selPath, cancellationToken);
                 previewForm.ShowDialog();
 
             }
@@ -1048,6 +1208,46 @@ namespace XRayBuilderGUI.UI
             {
                 _logger.Log("Error:\r\n" + ex.Message + "\r\n" + ex.StackTrace);
             }
+        }
+
+        private async Task CheckAndFixIncorrectAsinOrThrowAsync(IMetadata metadata, string bookPath, CancellationToken cancellationToken)
+        {
+            if (AmazonClient.IsAsin(metadata.Asin))
+                return;
+
+            if (!metadata.CanModify && DialogResult.No == MessageBox.Show($"Invalid Amazon ASIN detected: {metadata.Asin}!\nKindle may not display an X-Ray for this book.\nDo you wish to continue?", "Incorrect ASIN", MessageBoxButtons.YesNo))
+            {
+                throw new Exception($"Invalid Amazon ASIN detected: {metadata.Asin}!\r\nKindle may not display an X-Ray for this book.\r\nYou must either use Calibre's Quality Check plugin (Fix ASIN for Kindle Fire) or a MOBI editor (exth 113 and optionally 504) to change this.");
+            }
+
+            var dialogResult = MessageBox.Show($"Invalid Amazon ASIN detected: {metadata.Asin}!\nKindle may not display an X-Ray for this book.\nDo you want to fix it?\r\n(This will modify the book meaning it will need to be re-copied to your Kindle device)\r\nTHIS FEATURE IS EXPERIMENTAL AND COULD DESTROY YOUR BOOK!", "Incorrect ASIN", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.No)
+                return;
+
+            _logger.Log($"Searching Amazon for {metadata.Title} by {metadata.Author}...");
+            var amazonSearchResult = await _amazonClient.SearchBook(metadata.Title, metadata.Author, _settings.amazonTLD, cancellationToken);
+            if (amazonSearchResult != null)
+            {
+                // Prompt if book is correct. If not, prompt for manual entry
+                dialogResult = MessageBox.Show($"Found the following book on Amazon:\r\nTitle: {amazonSearchResult.Title}\r\nAuthor: {amazonSearchResult.Author}\r\nASIN: {amazonSearchResult.Asin}\r\n\r\nDoes this seem correct? If so, the shown ASIN will be used.", "Amazon Search Result", MessageBoxButtons.YesNoCancel);
+                switch (dialogResult)
+                {
+                    case DialogResult.Cancel:
+                        return;
+                    case DialogResult.Yes:
+                    {
+                        metadata.SetAsin(amazonSearchResult.Asin);
+                        using var fs = new FileStream(bookPath, FileMode.Create);
+                        metadata.Save(fs);
+                        _logger.Log($"Successfully updated the ASIN to {metadata.Asin}! Be sure to copy this new version of the book to your Kindle device.");
+                        return;
+                    }
+                }
+            }
+            else
+                _logger.Log("Unable to automatically find a matching ASIN for this book on Amazon :(");
+
+            // TODO: manual entry
         }
     }
 }

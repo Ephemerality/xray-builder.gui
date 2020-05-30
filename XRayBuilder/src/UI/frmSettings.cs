@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
-using XRayBuilderGUI.Libraries.Enumerables.Extensions;
+using XRayBuilder.Core.Libraries.Enumerables.Extensions;
 
 namespace XRayBuilderGUI.UI
 {
@@ -16,13 +17,16 @@ namespace XRayBuilderGUI.UI
             { "France", "fr" }, { "Germany", "de" }, { "India", "in" }, { "Italy", "it" }, { "Japan", "co.jp" },
             { "Mexico", "com.mx" }, { "Netherlands", "nl" }, { "Spain", "es" }, { "USA", "com" }, { "UK", "co.uk" }
         };
+        private readonly Dictionary<string, string> roentgenRegionTLDs = new Dictionary<string, string> {
+            { "Germany", "de" }, { "USA", "com" }
+        };
 
         public frmSettings()
         {
             InitializeComponent();
         }
 
-        class AmazonRegion
+        private sealed class AmazonRegion
         {
             public string Name { get; }
             public string TLD { get; }
@@ -65,7 +69,6 @@ namespace XRayBuilderGUI.UI
             chkRaw.Checked = Properties.Settings.Default.saverawml;
             chkSoftHyphen.Checked = Properties.Settings.Default.ignoresofthyphen;
             chkUseNew.Checked = Properties.Settings.Default.useNewVersion;
-            txtOffset.Text = Properties.Settings.Default.offset.ToString();
             chkAndroid.Checked = Properties.Settings.Default.android;
             txtReal.Text = Properties.Settings.Default.realName;
             txtPen.Text = Properties.Settings.Default.penName;
@@ -73,33 +76,38 @@ namespace XRayBuilderGUI.UI
             chkSubDirectories.Checked = Properties.Settings.Default.useSubDirectories;
             chkSkipNoLikes.Checked = Properties.Settings.Default.skipNoLikes;
             txtMinClipLen.Text = Properties.Settings.Default.minClipLen.ToString();
-            chkOverwrite.Checked = Properties.Settings.Default.overwrite;
             chkAlias.Checked = Properties.Settings.Default.overwriteAliases;
             chkChapters.Checked = Properties.Settings.Default.overwriteChapters;
             chkSaveHtml.Checked = Properties.Settings.Default.saveHtml;
             chkSplitAliases.Checked = Properties.Settings.Default.splitAliases;
             chkSound.Checked = Properties.Settings.Default.playSound;
             chkDownloadAliases.Checked = Properties.Settings.Default.downloadAliases;
-            chkOverrideOffset.Checked = Properties.Settings.Default.overrideOffset;
-            txtAZWOffset.Text = Properties.Settings.Default.offsetAZW3.ToString();
             chkPageCount.Checked = Properties.Settings.Default.pageCount;
             chkSaveBio.Checked = Properties.Settings.Default.saveBio;
             if (Properties.Settings.Default.dataSource == "Goodreads")
                 rdoGoodreads.Checked = true;
             else
                 rdoShelfari.Checked = true;
+
+            chkOverwriteAP.Checked = Properties.Settings.Default.overwriteAP;
+            chkOverwriteEA.Checked = Properties.Settings.Default.overwriteEA;
+            chkOverwriteSA.Checked = Properties.Settings.Default.overwriteSA;
+            chkAutoBuildAP.Checked = Properties.Settings.Default.autoBuildAP;
             chkPromptAsin.Checked = Properties.Settings.Default.promptASIN;
-            chkDownloadSA.Checked = Properties.Settings.Default.downloadSA;
             chkSearchAsin.Checked = Properties.Settings.Default.searchByAsin;
             chkEditBiography.Checked = Properties.Settings.Default.editBiography;
             chkUseSidecar.Checked = Properties.Settings.Default.outputToSidecar;
+
+            chkRoentgenStartActions.Checked = Properties.Settings.Default.downloadSA;
+            chkRoentgenEndActions.Checked = Properties.Settings.Default.downloadEA;
+            chkRoentgenAuthorProfile.Checked = Properties.Settings.Default.downloadAP;
+
+            chkIncludeTopics.Checked = Properties.Settings.Default.includeTopics;
 
             // Added \r\n to show smaller tooltips
             var toolTip1 = new ToolTip();
             toolTip1.SetToolTip(chkRaw,
                 "Save the rawML (raw markup) of the book\r\nin the output directory so you can review it.");
-            toolTip1.SetToolTip(txtOffset,
-                "This offset will be applied to every\r\nbook location (usually a negative\r\nnumber). Must be an integer.");
             toolTip1.SetToolTip(chkSoftHyphen,
                 "Ignore soft hyphens (Unicode U+00AD)\r\n" +
                 "while searching for terms. This may\r\n" +
@@ -129,7 +137,9 @@ namespace XRayBuilderGUI.UI
             toolTip1.SetToolTip(chkSubDirectories, "Save generated files to an\r\n\"Author\\Filename\" subdirectory.");
             toolTip1.SetToolTip(chkUseSidecar, "Save generated files to a sidecar subdirectory based on the filename.");
             toolTip1.SetToolTip(btnLogs, "Open the log files directory.");
-            toolTip1.SetToolTip(chkOverwrite, "Overwrite existing Author Profile,\r\nStart and End Actions files.");
+            toolTip1.SetToolTip(chkOverwriteAP, "Overwrite existing Author Profile files.");
+            toolTip1.SetToolTip(chkOverwriteEA, "Overwrite existing End Actions files.");
+            toolTip1.SetToolTip(chkOverwriteSA, "Overwrite existing Start Actions files.");
             toolTip1.SetToolTip(chkAlias, "Overwrite existing alias files.");
             toolTip1.SetToolTip(chkChapters, "Overwrite existing chapter files.");
             toolTip1.SetToolTip(chkSaveHtml, "Save parsed HTML files. This is generally used\r\n" +
@@ -145,7 +155,6 @@ namespace XRayBuilderGUI.UI
                                                     "aliases will be overwritten with the ones downloaded.");
             toolTip1.SetToolTip(btnSupport, "Visit the MobileRead forum for\r\n" +
                                         "support, bug reports, or questions.");
-            toolTip1.SetToolTip(chkOverrideOffset, "This offset will be applied to every\r\nAWZ3 book location (usually -16).\r\nMust be an integer.");
             toolTip1.SetToolTip(chkPageCount, "Try to estimate books page count (based\r\n" +
                                               "on user_none accurate APNX generation).\r\n" +
                                               "If no page count is found online, an\r\n" +
@@ -165,6 +174,8 @@ namespace XRayBuilderGUI.UI
                                                "in Calibre, and may help file creation.");
             toolTip1.SetToolTip(chkSearchAsin, "If enabled, search results will be filtered so that non-Kindle Edition books are removed");
             toolTip1.SetToolTip(chkEditBiography, "If enabled, allows editing the Author's biography before it's used.");
+            toolTip1.SetToolTip(chkAutoBuildAP, "When set, the Author Profile will be built using a downloaded End Actions file instead of scraping Amazon, if one is available.");
+            toolTip1.SetToolTip(chkIncludeTopics, "When downloading terms, include any that are non-characters (topics, locations, etc)");
 
             var regions = new List<AmazonRegion>(regionTLDs.Count);
             foreach (var (name, tld) in regionTLDs)
@@ -173,6 +184,14 @@ namespace XRayBuilderGUI.UI
             cmbRegion.DisplayMember = "Name";
             cmbRegion.ValueMember = "TLD";
             cmbRegion.SelectedValue = Properties.Settings.Default.amazonTLD;
+
+            var roentgenRegions = roentgenRegionTLDs
+                .Select(kvp => new AmazonRegion(kvp.Key, kvp.Value))
+                .ToArray();
+            cmbRoentgenRegion.DataSource = roentgenRegions;
+            cmbRoentgenRegion.DisplayMember = "Name";
+            cmbRoentgenRegion.ValueMember = "TLD";
+            cmbRoentgenRegion.SelectedValue = Properties.Settings.Default.roentgenRegion;
         }
 
         private void btnBrowseOut_Click(object sender, EventArgs e)
@@ -182,16 +201,6 @@ namespace XRayBuilderGUI.UI
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            if (!int.TryParse(txtOffset.Text, out var offset))
-            {
-                MessageBox.Show("The offset must be an integer.", "Offset Error");
-                return;
-            }
-            if (!int.TryParse(txtAZWOffset.Text, out var offsetAZW))
-            {
-                MessageBox.Show("The offset must be an integer.", "Offset Error");
-                return;
-            }
             if (txtReal.Text.Trim().Length == 0 || txtPen.Text.Trim().Length == 0)
             {
                 MessageBox.Show("Both Real and Pen names are required for\r\nEnd Action file creation.");
@@ -209,29 +218,33 @@ namespace XRayBuilderGUI.UI
             Properties.Settings.Default.android = chkAndroid.Checked;
             Properties.Settings.Default.skipNoLikes = chkSkipNoLikes.Checked;
             Properties.Settings.Default.minClipLen = minClipLen;
-            Properties.Settings.Default.offset = offset;
             Properties.Settings.Default.realName = txtReal.Text;
             Properties.Settings.Default.penName = txtPen.Text;
             Properties.Settings.Default.enableEdit = chkEnableEdit.Checked;
             Properties.Settings.Default.useSubDirectories = chkSubDirectories.Checked;
-            Properties.Settings.Default.overwrite = chkOverwrite.Checked;
+            Properties.Settings.Default.overwriteAP = chkOverwriteAP.Checked;
+            Properties.Settings.Default.overwriteEA = chkOverwriteEA.Checked;
+            Properties.Settings.Default.overwriteSA = chkOverwriteSA.Checked;
             Properties.Settings.Default.overwriteAliases = chkAlias.Checked;
             Properties.Settings.Default.overwriteChapters = chkChapters.Checked;
+            Properties.Settings.Default.autoBuildAP = chkAutoBuildAP.Checked;
             Properties.Settings.Default.saveHtml = chkSaveHtml.Checked;
             Properties.Settings.Default.splitAliases = chkSplitAliases.Checked;
             Properties.Settings.Default.playSound = chkSound.Checked;
             Properties.Settings.Default.downloadAliases = chkDownloadAliases.Checked;
-            Properties.Settings.Default.overrideOffset = chkOverrideOffset.Checked;
-            Properties.Settings.Default.offsetAZW3 = offsetAZW;
             Properties.Settings.Default.pageCount = chkPageCount.Checked;
             Properties.Settings.Default.saveBio = chkSaveBio.Checked;
             Properties.Settings.Default.amazonTLD = cmbRegion.SelectedValue.ToString();
             Properties.Settings.Default.dataSource = rdoGoodreads.Checked ? "Goodreads" : "Shelfari";
             Properties.Settings.Default.promptASIN = chkPromptAsin.Checked;
-            Properties.Settings.Default.downloadSA = chkDownloadSA.Checked;
             Properties.Settings.Default.searchByAsin = chkSearchAsin.Checked;
             Properties.Settings.Default.editBiography = chkEditBiography.Checked;
             Properties.Settings.Default.outputToSidecar = chkUseSidecar.Checked;
+            Properties.Settings.Default.downloadSA = chkRoentgenStartActions.Checked;
+            Properties.Settings.Default.downloadEA = chkRoentgenEndActions.Checked;
+            Properties.Settings.Default.downloadAP = chkRoentgenAuthorProfile.Checked;
+            Properties.Settings.Default.roentgenRegion = cmbRoentgenRegion.SelectedValue.ToString();
+            Properties.Settings.Default.includeTopics = chkIncludeTopics.Checked;
             Properties.Settings.Default.Save();
 
             Close();
@@ -298,9 +311,9 @@ namespace XRayBuilderGUI.UI
 
         private void chkOverwrite_CheckedChanged(object sender, EventArgs e)
         {
-            chkAlias.Enabled = chkOverwrite.Checked;
-            chkChapters.Enabled = chkOverwrite.Checked;
-            if (!chkOverwrite.Checked)
+            chkAlias.Enabled = chkOverwriteAP.Checked;
+            chkChapters.Enabled = chkOverwriteAP.Checked;
+            if (!chkOverwriteAP.Checked)
             {
                 chkAlias.Checked = false;
                 chkChapters.Checked = false;
@@ -342,12 +355,7 @@ namespace XRayBuilderGUI.UI
         private void chkDownloadAliases_CheckedChanged(object sender, EventArgs e)
         {
             if (chkDownloadAliases.Checked)
-                chkOverwrite.Checked = false;
-        }
-
-        private void chkOverrideOffset_CheckedChanged(object sender, EventArgs e)
-        {
-            txtAZWOffset.Enabled = chkOverrideOffset.Checked;
+                chkOverwriteAP.Checked = false;
         }
     }
 }

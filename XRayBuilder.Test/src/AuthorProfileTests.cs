@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
 using NUnit.Framework;
-using XRayBuilderGUI.DataSources.Amazon;
-using XRayBuilderGUI.Extras.AuthorProfile;
-using XRayBuilderGUI.Libraries.Http;
-using XRayBuilderGUI.Libraries.Logging;
-using XRayBuilderGUI.Model;
+using XRayBuilder.Core.DataSources.Amazon;
+using XRayBuilder.Core.Extras.AuthorProfile;
+using XRayBuilder.Core.Libraries.Http;
+using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Model;
 
 namespace XRayBuilder.Test
 {
@@ -40,7 +40,8 @@ namespace XRayBuilder.Test
                         AmazonTld = "com",
                         SaveBio = false,
                         UseNewVersion = true,
-                        EditBiography = false
+                        EditBiography = false,
+                        SaveHtml = false
                     }
                 });
             Assert.NotNull(response);
@@ -67,6 +68,7 @@ namespace XRayBuilder.Test
                         EditBiography = false
                     }
                 });
+            Assert.NotNull(response);
             Assert.AreEqual(response.Asin, "B000APIGH4");
             Assert.AreEqual(response.Name, "George R. R. Martin");
             Assert.NotNull(response.Image);

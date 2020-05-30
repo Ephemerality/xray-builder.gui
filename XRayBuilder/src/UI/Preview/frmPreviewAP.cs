@@ -4,8 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json.Linq;
-using XRayBuilderGUI.Libraries.Images.Extensions;
-using XRayBuilderGUI.Libraries.Images.Util;
+using XRayBuilder.Core.Libraries.Images.Extensions;
+using XRayBuilder.Core.Libraries.Images.Util;
 using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI.UI.Preview

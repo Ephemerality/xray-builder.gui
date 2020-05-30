@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Windows.Forms;
-using XRayBuilderGUI.DataSources.Amazon;
+using XRayBuilder.Core.DataSources.Amazon;
 
 namespace XRayBuilderGUI.UI
 {
     public partial class frmASIN : Form
     {
-        public frmASIN(IAmazonClient amazonClient)
+        public frmASIN()
         {
             InitializeComponent();
         }
@@ -33,9 +33,7 @@ namespace XRayBuilderGUI.UI
             if (AmazonClient.IsAsin(tbAsin.Text))
                 return true;
 
-            MessageBox.Show("This does not appear to be a valid ASIN." +
-                                "\r\nAre you sure it is correct?",
-                                "Invalid ASIN", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+            MessageBox.Show("This does not appear to be a valid ASIN.\r\nAre you sure it is correct?", "Invalid ASIN", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
             return false;
         }
     }

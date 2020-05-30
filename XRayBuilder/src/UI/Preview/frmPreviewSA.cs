@@ -4,11 +4,11 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using XRayBuilderGUI.Extras.Artifacts;
-using XRayBuilderGUI.Libraries;
-using XRayBuilderGUI.Libraries.Enumerables.Extensions;
-using XRayBuilderGUI.Libraries.Http;
-using XRayBuilderGUI.Libraries.Language.Pluralization;
+using XRayBuilder.Core.Extras.Artifacts;
+using XRayBuilder.Core.Libraries.Enumerables.Extensions;
+using XRayBuilder.Core.Libraries.Http;
+using XRayBuilder.Core.Libraries.Language.Pluralization;
+using XRayBuilder.Core.Libraries.Serialization.Json.Util;
 using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI.UI.Preview
@@ -27,7 +27,7 @@ namespace XRayBuilderGUI.UI.Preview
 
         public async Task Populate(string inputFile, CancellationToken cancellationToken = default)
         {
-            var startActions = Functions.JsonDeserializeFile<StartActions>(inputFile);
+            var startActions = JsonUtil.DeserializeFile<StartActions>(inputFile);
 
             ilOtherBooks.Images.Clear();
             dgvOtherBooks.Rows.Clear();

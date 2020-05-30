@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows.Forms;
-using XRayBuilderGUI.Libraries.Language.Pluralization;
-using XRayBuilderGUI.Model;
+using XRayBuilder.Core.Libraries.Language.Pluralization;
+using XRayBuilder.Core.Model;
 using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI.UI
@@ -21,12 +21,10 @@ namespace XRayBuilderGUI.UI
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            if (keyData == Keys.Enter)
-            {
-                Close();
-                return true;
-            }
-            return base.ProcessCmdKey(ref msg, keyData);
+            if (keyData != Keys.Enter)
+                return base.ProcessCmdKey(ref msg, keyData);
+            Close();
+            return true;
         }
 
         private void btnOK_Click(object sender, EventArgs e)
@@ -39,7 +37,7 @@ namespace XRayBuilderGUI.UI
             var i = cbResults.SelectedIndex == -1 ? 0 : cbResults.SelectedIndex;
             pbCover.Image = _bookList[i].CoverImage ?? Resources.missing_image;
             lblTitle.Text = _bookList[i].Title;
-            lblAuthor.Text = "by " + _bookList[i].Author;
+            lblAuthor.Text = $"by {_bookList[i].Author}";
             lblRating.Text = $"{_bookList[i].AmazonRating:#.#} average rating " + PluralUtil.Pluralize($"({_bookList[i].Reviews:rating})");
             lblEditions.Text = PluralUtil.Pluralize($"{_bookList[i].Editions:edition}");
             linkID.Text = _bookList[i].GoodreadsId;
@@ -48,7 +46,7 @@ namespace XRayBuilderGUI.UI
 
         private void linkID_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start(@"http://www.goodreads.com/book/show/" + linkID.Text);
+            Process.Start($@"http://www.goodreads.com/book/show/{linkID.Text}");
         }
 
         private void frmGR_Load(object sender, EventArgs e)

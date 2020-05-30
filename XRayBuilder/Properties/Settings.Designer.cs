@@ -12,7 +12,7 @@ namespace XRayBuilderGUI.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.2.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.5.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -68,18 +68,6 @@ namespace XRayBuilderGUI.Properties {
             }
             set {
                 this["saverawml"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int offset {
-            get {
-                return ((int)(this["offset"]));
-            }
-            set {
-                this["offset"] = value;
             }
         }
         
@@ -193,18 +181,6 @@ namespace XRayBuilderGUI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool overwrite {
-            get {
-                return ((bool)(this["overwrite"]));
-            }
-            set {
-                this["overwrite"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string docDir {
             get {
@@ -296,18 +272,6 @@ namespace XRayBuilderGUI.Properties {
             }
             set {
                 this["overrideOffset"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("-16")]
-        public int offsetAZW3 {
-            get {
-                return ((int)(this["offsetAZW3"]));
-            }
-            set {
-                this["offsetAZW3"] = value;
             }
         }
         
@@ -440,6 +404,111 @@ namespace XRayBuilderGUI.Properties {
             }
             set {
                 this["outputToSidecar"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string sentryDest {
+            get {
+                return ((string)(this["sentryDest"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool downloadEA {
+            get {
+                return ((bool)(this["downloadEA"]));
+            }
+            set {
+                this["downloadEA"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool downloadAP {
+            get {
+                return ((bool)(this["downloadAP"]));
+            }
+            set {
+                this["downloadAP"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("com")]
+        public string roentgenRegion {
+            get {
+                return ((string)(this["roentgenRegion"]));
+            }
+            set {
+                this["roentgenRegion"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool overwriteAP {
+            get {
+                return ((bool)(this["overwriteAP"]));
+            }
+            set {
+                this["overwriteAP"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool overwriteEA {
+            get {
+                return ((bool)(this["overwriteEA"]));
+            }
+            set {
+                this["overwriteEA"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool overwriteSA {
+            get {
+                return ((bool)(this["overwriteSA"]));
+            }
+            set {
+                this["overwriteSA"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool autoBuildAP {
+            get {
+                return ((bool)(this["autoBuildAP"]));
+            }
+            set {
+                this["autoBuildAP"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool includeTopics {
+            get {
+                return ((bool)(this["includeTopics"]));
+            }
+            set {
+                this["includeTopics"] = value;
             }
         }
     }

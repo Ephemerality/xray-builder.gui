@@ -3,8 +3,8 @@ using System.Data.SQLite;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using XRayBuilderGUI.XRay;
-using XRayBuilderGUI.XRay.Logic.Terms;
+using XRayBuilder.Core.XRay.Logic.Terms;
+using XRayBuilder.Core.XRay.Util;
 
 namespace XRayBuilderGUI.UI.Preview
 {
@@ -34,20 +34,20 @@ namespace XRayBuilderGUI.UI.Preview
 
             foreach (var t in terms)
             {
-                var p = new XRayPanel(t.Type, t.TermName, Math.Max((int) t.Occurrences.Count, (int) t.Locs.Count).ToString(), t.Desc);
-                if (t.Type == "character")
-                    flpPeople.Controls.Add(p);
-                if (t.Type == "topic")
-                    flpTerms.Controls.Add(p);
+                var p = new XRayPanel(t.Type, t.TermName, Math.Max(t.Occurrences.Count, t.Locs.Count).ToString(), t.Desc);
+                var controls = t.Type switch
+                {
+                    "character" => flpPeople.Controls,
+                    "topic" => flpTerms.Controls,
+                    _ => null
+                };
+                controls?.Add(p);
             }
             tcXray.SelectedIndex = 0;
-            return Task.Delay(1, cancellationToken);
+            return Task.CompletedTask;
         }
 
-        public new void ShowDialog()
-        {
-            base.ShowDialog();
-        }
+        public new void ShowDialog() => base.ShowDialog();
 
         private void flpPeople_Scroll(object sender, ScrollEventArgs e)
         {

@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using XRayBuilderGUI.Libraries.Primitives.Extensions;
+using XRayBuilder.Core.Libraries.Primitives.Extensions;
 
 namespace XRayBuilder.Test.Libraries.Primitives.Extensions
 {

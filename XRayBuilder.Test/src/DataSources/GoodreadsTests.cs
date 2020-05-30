@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using XRayBuilderGUI.DataSources.Amazon;
-using XRayBuilderGUI.DataSources.Secondary;
-using XRayBuilderGUI.Libraries.Http;
-using XRayBuilderGUI.Libraries.Logging;
-using XRayBuilderGUI.Model;
+using XRayBuilder.Core.DataSources.Amazon;
+using XRayBuilder.Core.DataSources.Secondary;
+using XRayBuilder.Core.Libraries.Http;
+using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Model;
 
 namespace XRayBuilder.Test.DataSources
 {
@@ -72,7 +72,8 @@ namespace XRayBuilder.Test.DataSources
         public async Task SearchBookAsinTest()
         {
             var result = await _goodreads.SearchBookASINById("13497");
-            Assert.AreEqual(result, "B000FCKGPC");
+            var possibleAsins = new[] {"B000FCKGPC", "BINU9MFSUG"};
+            Assert.IsTrue(possibleAsins.Contains(result), $"{result} was not expected");
         }
 
         [Test]
@@ -89,7 +90,7 @@ namespace XRayBuilder.Test.DataSources
         [Test]
         public async Task GetTermsTest()
         {
-            var results = (await _goodreads.GetTermsAsync("https://www.goodreads.com/book/show/13497.A_Feast_for_Crows", null)).ToArray();
+            var results = (await _goodreads.GetTermsAsync("https://www.goodreads.com/book/show/13497.A_Feast_for_Crows", null, "com", true, null)).ToArray();
             Assert.AreEqual(results.Length, 15);
         }
 
@@ -106,7 +107,7 @@ namespace XRayBuilder.Test.DataSources
             var book = new BookInfo("", "", "") { DataUrl = "https://www.goodreads.com/book/show/13497.A_Feast_for_Crows" };
             await _goodreads.GetExtrasAsync(book);
             Assert.Greater(book.AmazonRating, 0);
-            Assert.GreaterOrEqual(book.notableClips.Count, 500);
+            Assert.GreaterOrEqual(book.NotableClips.Count, 500);
             Assert.GreaterOrEqual(book.Reviews, 1);
         }
     }

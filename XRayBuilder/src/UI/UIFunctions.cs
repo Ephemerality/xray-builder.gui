@@ -72,10 +72,10 @@ namespace XRayBuilderGUI.UI
                 ctrl.GetType().InvokeMember(name, System.Reflection.BindingFlags.SetProperty, null, ctrl, new[] { value });
         }
 
-        public static object GetPropertyTS(this Control ctrl, string name)
+        public static object GetPropertyThreadSafe(this Control ctrl, string name)
         {
             return ctrl.InvokeRequired
-                ? ctrl.Invoke(new Func<object>(() => ctrl.GetPropertyTS(name)))
+                ? ctrl.Invoke(new Func<object>(() => ctrl.GetPropertyThreadSafe(name)))
                 : ctrl.GetType().InvokeMember(name, System.Reflection.BindingFlags.GetProperty, null, ctrl, null);
         }
     }

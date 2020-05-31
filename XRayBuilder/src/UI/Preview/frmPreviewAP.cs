@@ -1,16 +1,16 @@
-﻿using System.IO;
-using System.Text;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Newtonsoft.Json.Linq;
+using XRayBuilder.Core.Extras.Artifacts;
 using XRayBuilder.Core.Libraries.Images.Extensions;
 using XRayBuilder.Core.Libraries.Images.Util;
+using XRayBuilder.Core.Libraries.Serialization.Json.Util;
 using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI.UI.Preview
 {
-    public partial class frmPreviewAP : Form, IPreviewForm
+    public sealed partial class frmPreviewAP : Form, IPreviewForm
     {
         public frmPreviewAP()
         {
@@ -19,32 +19,26 @@ namespace XRayBuilderGUI.UI.Preview
 
         public Task Populate(string inputFile, CancellationToken cancellationToken = default)
         {
-            string input;
-            using (var streamReader = new StreamReader(inputFile, Encoding.UTF8))
-                input = streamReader.ReadToEnd();
-
             dgvOtherBooks.Rows.Clear();
 
-            var ap = JObject.Parse(input);
-            var tempData = ap["u"]?[0];
-            if (tempData != null)
+            var authorProfile = JsonUtil.DeserializeFile<AuthorProfile>(inputFile);
+            var author = authorProfile.Authors?.FirstOrDefault();
+            if (author != null)
             {
-                lblAuthorMore.Text = $" Kindle Books By {tempData["n"]}";
+                lblAuthorMore.Text = $" Kindle Books By {author.Name}";
                 Text = $"About {lblAuthorMore.Text}";
-                lblBiography.Text = tempData["b"]?.ToString() ?? "";
-                var image64 = tempData["i"]?.ToString() ?? "";
-                if (image64 != "")
-                    pbAuthorImage.Image = ImageUtil.Base64ToImage(image64).ToGrayscale3();
+                lblBiography.Text = author.Bio ?? "";
+                if (author.Picture != null)
+                    pbAuthorImage.Image = ImageUtil.Base64ToImage(author.Picture).ToGrayscale3();
             }
 
-            tempData = ap["o"];
-            if (tempData != null)
+            if (authorProfile.OtherBooks != null)
             {
-                foreach (var rec in tempData)
-                    dgvOtherBooks.Rows.Add(" " + rec["t"], Resources.arrow_right);
+                foreach (var book in authorProfile.OtherBooks)
+                    dgvOtherBooks.Rows.Add(book.Title, Resources.arrow_right);
             }
 
-            return Task.Delay(1, cancellationToken);
+            return Task.CompletedTask;
         }
 
         public new void ShowDialog()

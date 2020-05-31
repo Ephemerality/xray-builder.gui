@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Drawing.Printing;
 using Newtonsoft.Json;
 
 namespace XRayBuilder.Core.Extras.Artifacts
 {
-    public class StartActions
+    public sealed class StartActions
     {
         [JsonProperty("bookInfo")]
         public BookInformation BookInfo { get; set; }
@@ -17,7 +18,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
         [JsonProperty("data")]
         public DataJson Data { get; set; }
 
-        public class BookInformation
+        public sealed class BookInformation
         {
             [JsonProperty("class")]
             public string Class { get; set; } = "bookInfo";
@@ -47,7 +48,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
             public int Erl { get; set; }
         }
 
-        public class WidgetOptions
+        public sealed class WidgetOptions
         {
             [JsonProperty("dataKey", NullValueHandling = NullValueHandling.Ignore)]
             public string DataKey { get; set; }
@@ -125,7 +126,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
             public bool? ShowBadges { get; set; }
         }
 
-        public class WidgetStrings
+        public sealed class WidgetStrings
         {
             [JsonProperty("imagesDescription", NullValueHandling = NullValueHandling.Ignore)]
             public Dictionary<string, string> ImagesDescription { get; set; }
@@ -149,7 +150,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
             public Dictionary<string, string> PanelRowTitle { get; set; }
         }
 
-        public class Widget
+        public sealed class Widget
         {
             [JsonProperty("id")]
             public string Id { get; set; }
@@ -167,13 +168,13 @@ namespace XRayBuilder.Core.Extras.Artifacts
             public WidgetStrings Strings { get; set; }
         }
 
-        public class FooterJson
+        public sealed class FooterJson
         {
             [JsonProperty("widgetSlots")]
             public string[][] WidgetSlots { get; set; }
         }
 
-        public class BodyJson
+        public sealed class BodyJson
         {
             [JsonProperty("titleKey", NullValueHandling = NullValueHandling.Ignore)]
             public string TitleKey { get; set; }
@@ -182,7 +183,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
             public string[][] WidgetSlots { get; set; }
         }
 
-        public class WidgetPlacements
+        public sealed class WidgetPlacements
         {
             [JsonProperty("footer")]
             public FooterJson[] Footer { get; set; }
@@ -191,13 +192,13 @@ namespace XRayBuilder.Core.Extras.Artifacts
             public BodyJson[] Body { get; set; }
         }
 
-        public class LayoutOptions
+        public sealed class LayoutOptions
         {
             [JsonProperty("providesHeaderInfo")]
             public bool? ProvidesHeaderInfo { get; set; }
         }
 
-        public class Layout
+        public sealed class Layout
         {
             [JsonProperty("metricsTag")]
             public string MetricsTag { get; set; }
@@ -218,7 +219,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
             public string[] RequiredWidgets { get; set; }
         }
 
-        public class SeriesPosition
+        public sealed class SeriesPosition
         {
             [JsonProperty("class")]
             public string Class { get; set; } = "seriesPosition";
@@ -233,7 +234,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
             public string SeriesName { get; set; }
         }
 
-        public class AuthorSubscriptions
+        public sealed class AuthorSubscriptions
         {
             [JsonProperty("class")]
             public string Class { get; set; } = "authorSubscriptionInfoList";
@@ -242,7 +243,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
             public Subscription[] Subscriptions { get; set; }
         }
 
-        public class WelcomeText
+        public sealed class WelcomeText
         {
             [JsonProperty("class")]
             public string Class { get; set; }
@@ -254,7 +255,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
             public Dictionary<string, string> LocalizedSubtext { get; set; }
         }
 
-        public class PopularHighlightsText
+        public sealed class PopularHighlightsText
         {
             [JsonProperty("class")]
             public string Class { get; set; }
@@ -281,7 +282,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
             public bool IsAutoshelvingEnabled { get; set; }
         }
 
-        public class ReadingTime
+        public sealed class ReadingTime
         {
             [JsonProperty("class")]
             public string Class { get; set; } = "time";
@@ -296,7 +297,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
             public Dictionary<string, string> FormattedTime { get; set; }
         }
 
-        public class ReadingPages
+        public sealed class ReadingPages
         {
             [JsonProperty("class")]
             public string Class { get; set; } = "pages";
@@ -354,6 +355,33 @@ namespace XRayBuilder.Core.Extras.Artifacts
 
             [JsonProperty("readingPages")]
             public ReadingPages ReadingPages { get; set; }
+
+            [JsonProperty("kuUrlAction", DefaultValueHandling = DefaultValueHandling.Ignore)]
+            public UrlAction KindleUnlimitedUrlAction { get; set; }
+
+            [JsonProperty("kuTeaserData", DefaultValueHandling = DefaultValueHandling.Ignore)]
+            public DynamicButton KindleUnlimitedTeaserData { get; set; }
+        }
+
+        public sealed class UrlAction
+        {
+            [JsonProperty("class")]
+            public string Class { get; set; } = "urlAction";
+
+            [JsonProperty("url")]
+            public string Url { get; set; }
+        }
+
+        public sealed class DynamicButton
+        {
+            [JsonProperty("class")]
+            public string Class { get; set; } = "dynamicButton";
+
+            [JsonProperty("localizedText")]
+            public Dictionary<string, string> LocalizedText { get; set; }
+
+            [JsonProperty("localizedButtonText")]
+            public Dictionary<string, string> LocalizedButtonText { get; set; }
         }
     }
 }

@@ -1,7 +1,12 @@
 # X-Ray Builder GUI
-A C# application that processes e-books to create an X-Ray file for the Amazon Kindle (Paperwhite, Voyage, Fire).  
+A C# application that processes e-books to create an X-Ray file for the Amazon Kindle (Paperwhite, Voyage, Fire, Android app, etc).  
 X-Ray files are built complete with chapter locations, excerpts, and notable clips.  
-Thanks to darrenmcg, Author Profile, Start Actions, and End Actions files can also be built.
+
+It will also build some extra metadata files:
+* Author Profile - Enables "About the author" button
+* Start Actions - "About this book" info which usually has a description of the book, author, and some recommendations
+* End Actions - Pops up when you're done reading the book to provide recommendations on what to read next
+
 
 ## Acknowledgements
 * New GUI, Shelfari/Goodreads search, previews, Start/End Actions, Author Profile, and various other new features by darrenmcg/Psycho Reptile  

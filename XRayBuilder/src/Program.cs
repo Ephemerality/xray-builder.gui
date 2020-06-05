@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows.Forms;
 using SimpleInjector;
+using XRayBuilder.Core.Bootstrap;
+using XRayBuilder.Core.Config;
 using XRayBuilder.Core.DataSources.Amazon.Bootstrap;
 using XRayBuilder.Core.DataSources.Roentgen.Bootstrap;
 using XRayBuilder.Core.DataSources.Secondary.Bootstrap;
@@ -57,6 +59,15 @@ namespace XRayBuilderGUI
             builder.Register<BootstrapUI>();
             builder.Register<BootstrapXRay>();
             builder.Register<BootstrapRoentgen>();
+            builder.Register<BootstrapXRayBuilder>();
+
+            _container.RegisterSingleton(() => new XRayBuilderConfig
+            {
+                UseSubdirectories = Properties.Settings.Default.useSubDirectories,
+                BaseOutputDirectory = Properties.Settings.Default.outDir,
+                BuildForAndroid = Properties.Settings.Default.android,
+                OutputToSidecar = Properties.Settings.Default.outputToSidecar
+            });
 
             builder.Build();
         }

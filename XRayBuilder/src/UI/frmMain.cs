@@ -23,6 +23,7 @@ using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Libraries.Serialization.Json.Util;
 using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
+using XRayBuilder.Core.Logic;
 using XRayBuilder.Core.Model;
 using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.Unpack.KFX;
@@ -59,12 +60,7 @@ namespace XRayBuilderGUI.UI
         private readonly IEndActionsArtifactService _endActionsArtifactService;
         private readonly IRoentgenClient _roentgenClient;
         private readonly IEndActionsAuthorConverter _endActionsAuthorConverter;
-
-        // TODO: Fix up these paths
-        private string EaPath = "";
-        private string SaPath = "";
-        private string ApPath = "";
-        private string XrPath = "";
+        private readonly IDirectoryService _directoryService;
 
         public frmMain(
             ILogger logger,
@@ -82,7 +78,8 @@ namespace XRayBuilderGUI.UI
             IStartActionsArtifactService startActionsArtifactService,
             IEndActionsArtifactService endActionsArtifactService,
             IRoentgenClient roentgenClient,
-            IEndActionsAuthorConverter endActionsAuthorConverter)
+            IEndActionsAuthorConverter endActionsAuthorConverter,
+            IDirectoryService directoryService)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
@@ -102,6 +99,7 @@ namespace XRayBuilderGUI.UI
             _endActionsArtifactService = endActionsArtifactService;
             _roentgenClient = roentgenClient;
             _endActionsAuthorConverter = endActionsAuthorConverter;
+            _directoryService = directoryService;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
         }
@@ -115,44 +113,11 @@ namespace XRayBuilderGUI.UI
         private CancellationTokenSource _cancelTokens = new CancellationTokenSource();
         private ISecondarySource _dataSource;
 
-        public DialogResult SafeShow(string msg, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton def)
+        private IMetadata _openedMetadata;
+
+        private DialogResult SafeShow(string msg, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton def)
         {
             return (DialogResult)Invoke(new Func<DialogResult>(() => MessageBox.Show(this, msg, caption, buttons, icon, def)));
-        }
-
-        // todo consolidate output path building
-        public string OutputDirectory(string author, string title, string asin, string fileName, bool create)
-        {
-            var outputDir = "";
-
-            if (_settings.android)
-                outputDir = $@"{_settings.outDir}\Android\{asin}";
-            else if (!_settings.useSubDirectories)
-                outputDir = _settings.outDir;
-
-            if (!Functions.ValidateFilename(author, title))
-                _logger.Log("Warning: The author and/or title metadata fields contain invalid characters.\r\nThe book's output directory may not match what your Kindle is expecting.");
-
-            if (string.IsNullOrEmpty(outputDir))
-                outputDir = Functions.GetBookOutputDirectory(author, title, create, _settings.outDir);
-
-            if (_settings.outputToSidecar)
-                outputDir = Path.Combine(outputDir, $"{fileName}.sdr");
-
-            if (create)
-            {
-                try
-                {
-                    Directory.CreateDirectory(outputDir);
-                }
-                catch (Exception ex)
-                {
-                    _logger.Log("An error occurred creating output directory: " + ex.Message + "\r\nFiles will be placed in the default output directory.");
-                    outputDir = _settings.outDir;
-                }
-            }
-
-            return outputDir;
         }
 
         private void ToggleInterface(bool enabled)
@@ -230,6 +195,7 @@ namespace XRayBuilderGUI.UI
                 }
                 _logger.Log($"Got metadata!\r\nDatabase Name: {metadata.DbName}\r\nUniqueID: {metadata.UniqueId}\r\nASIN: {metadata.Asin}");
 
+                _openedMetadata = metadata;
                 return metadata;
             }
             catch (Exception ex)
@@ -360,30 +326,12 @@ namespace XRayBuilderGUI.UI
             }
 
             _logger.Log("Saving X-Ray to file...");
-            string outFolder;
-            try
-            {
-                if (_settings.android)
-                {
-                    outFolder = $@"{_settings.outDir}\Android\{metadata.Asin}";
-                    Directory.CreateDirectory(outFolder);
-                }
-                else
-                {
-                    outFolder = OutputDirectory(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text), true);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Log($"Failed to create output directory: {ex.Message}\r\n{ex.StackTrace}\r\nFiles will be placed in the default output directory.");
-                outFolder = _settings.outDir;
-            }
-            var newPath = $"{outFolder}\\{xray.XRayName(_settings.android)}";
+            var xrayPath = _directoryService.GetFilePath(FileType.XRay, metadata, Path.GetFileNameWithoutExtension(txtMobi.Text), true);
 
             try
             {
                 var xrayExporter = _xrayExporterFactory.Get(_settings.useNewVersion ? XRayExporterFactory.Enum.Sqlite : XRayExporterFactory.Enum.Json);
-                xrayExporter.Export(xray, newPath, _progress, _cancelTokens.Token);
+                xrayExporter.Export(xray, xrayPath, _progress, _cancelTokens.Token);
             }
             catch (OperationCanceledException)
             {
@@ -399,12 +347,10 @@ namespace XRayBuilderGUI.UI
 
             if (_settings.useNewVersion)
             {
-                XrPath = $@"{outFolder}\XRAY.entities.{metadata.Asin}.asc";
-
                 //Save the new XRAY.ASIN.previewData file
                 try
                 {
-                    var pdPath = $@"{outFolder}\XRAY.{metadata.Asin}.previewData";
+                    var pdPath = _directoryService.GetFilePath(FileType.XRayPreview, metadata, Path.GetFileNameWithoutExtension(txtMobi.Text), true);
                     _previewDataExporter.Export(xray, pdPath);
                     _logger.Log($"X-Ray previewData file created successfully!\r\nSaved to {pdPath}");
                 }
@@ -414,9 +360,9 @@ namespace XRayBuilderGUI.UI
                 }
             }
 
-            _logger.Log($"X-Ray file created successfully!\r\nSaved to {newPath}");
+            _logger.Log($"X-Ray file created successfully!\r\nSaved to {xrayPath}");
 
-            CheckFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));
+            CheckFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text), metadata.DbName, metadata.Guid);
 
             if (_settings.playSound)
             {
@@ -474,14 +420,15 @@ namespace XRayBuilderGUI.UI
             {
                 var bookInfo = new BookInfo(metadata, txtGoodreads.Text);
 
-                var outputDir = OutputDirectory(bookInfo.Author, bookInfo.Title, bookInfo.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text), true);
+                var outputDir = _directoryService.GetDirectory(bookInfo.Author, bookInfo.Title, bookInfo.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text), true);
 
-                ApPath = $@"{outputDir}\AuthorProfile.profile.{bookInfo.Asin}.asc";
-                SaPath = $@"{outputDir}\StartActions.data.{bookInfo.Asin}.asc";
-                EaPath = $@"{outputDir}\EndActions.data.{bookInfo.Asin}.asc";
-                var saExists = File.Exists(SaPath);
-                var eaExists = File.Exists(EaPath);
-                var apExists = File.Exists(ApPath);
+                // TODO path stuff is still ugly
+                var apPath = Path.Combine(outputDir, _directoryService.GetFilename(FileType.AuthorProfile, bookInfo.Asin, metadata.DbName, metadata.Guid));
+                var saPath = Path.Combine(outputDir, _directoryService.GetFilename(FileType.StartActions, bookInfo.Asin, metadata.DbName, metadata.Guid));
+                var eaPath = Path.Combine(outputDir, _directoryService.GetFilename(FileType.EndActions, bookInfo.Asin, metadata.DbName, metadata.Guid));
+                var saExists = File.Exists(saPath);
+                var eaExists = File.Exists(eaPath);
+                var apExists = File.Exists(apPath);
                 var needSa = !saExists || _settings.overwriteSA;
                 var needEa = !eaExists || _settings.overwriteEA;
                 var needAp = !apExists || _settings.overwriteAP;
@@ -522,8 +469,8 @@ namespace XRayBuilderGUI.UI
                         if (startActions != null)
                         {
                             _logger.Log("Writing Start Actions to file...");
-                            File.WriteAllText(SaPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(startActions)));
-                            _logger.Log($"Start Actions file created successfully!\r\nSaved to {SaPath}");
+                            File.WriteAllText(saPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(startActions)));
+                            _logger.Log($"Start Actions file created successfully!\r\nSaved to {saPath}");
                             needSa = false;
                         }
                     }
@@ -543,8 +490,8 @@ namespace XRayBuilderGUI.UI
                         if (endActions != null)
                         {
                             _logger.Log("Writing End Actions to file...");
-                            File.WriteAllText(EaPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(endActions)));
-                            _logger.Log($"End Actions file created successfully!\r\nSaved to {EaPath}");
+                            File.WriteAllText(eaPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(endActions)));
+                            _logger.Log($"End Actions file created successfully!\r\nSaved to {eaPath}");
                             needEa = false;
                         }
                     }
@@ -555,8 +502,8 @@ namespace XRayBuilderGUI.UI
                 }
                 else if (eaExists && _settings.autoBuildAP && needAp)
                 {
-                    endActions = JsonUtil.DeserializeFile<EndActions>(EaPath);
-                    _logger.Log($"Loaded existing End Actions from {EaPath}");
+                    endActions = JsonUtil.DeserializeFile<EndActions>(eaPath);
+                    _logger.Log($"Loaded existing End Actions from {eaPath}");
                 }
 
                 if (!needAp && !needSa && !needEa)
@@ -596,8 +543,8 @@ namespace XRayBuilderGUI.UI
                     try
                     {
                         var authorProfileOutput = JsonConvert.SerializeObject(AuthorProfileGenerator.CreateAp(authorProfileResponse, bookInfo.Asin));
-                        File.WriteAllText(ApPath, authorProfileOutput);
-                        _logger.Log($"Author Profile file created successfully!\r\nSaved to {ApPath}");
+                        File.WriteAllText(apPath, authorProfileOutput);
+                        _logger.Log($"Author Profile file created successfully!\r\nSaved to {apPath}");
                     }
                     catch (Exception ex)
                     {
@@ -663,8 +610,8 @@ namespace XRayBuilderGUI.UI
                             : _endActionsArtifactService.GenerateOld(endActionsRequest);
 
                         _logger.Log("Writing EndActions to file...");
-                        File.WriteAllText(EaPath, endActionsContent);
-                        _logger.Log($"EndActions file created successfully!\r\nSaved to {EaPath}");
+                        File.WriteAllText(eaPath, endActionsContent);
+                        _logger.Log($"EndActions file created successfully!\r\nSaved to {eaPath}");
                     }
 
                     if (needSa)
@@ -674,21 +621,17 @@ namespace XRayBuilderGUI.UI
                         _logger.Log("Writing Start Actions to file...");
                         try
                         {
-                            File.WriteAllText(SaPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(startActions)));
+                            File.WriteAllText(saPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(startActions)));
                         }
                         catch (Exception ex)
                         {
                             _logger.Log("An error occurred creating the Start Actions: " + ex.Message + "\r\n" + ex.StackTrace);
                         }
 
-                        _logger.Log($"Start Actions file created successfully!\r\nSaved to {SaPath}");
+                        _logger.Log($"Start Actions file created successfully!\r\nSaved to {saPath}");
                     }
                 }
 
-                cmsPreview.Items[3].Enabled = true;
-                cmsPreview.Items[1].Enabled = true;
-
-                CheckFiles(bookInfo.Author, bookInfo.Title, bookInfo.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));
                 if (_settings.playSound)
                 {
                     var player = new System.Media.SoundPlayer($@"{Environment.CurrentDirectory}\done.wav");
@@ -701,7 +644,7 @@ namespace XRayBuilderGUI.UI
             }
             finally
             {
-                metadata.Dispose();
+                CheckFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text), metadata.DbName, metadata.Guid);
             }
         }
 
@@ -984,6 +927,7 @@ namespace XRayBuilderGUI.UI
                 return;
             txtGoodreads.Text = "";
             prgBar.Value = 0;
+            _openedMetadata = null;
 
             using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
             if (metadata == null)
@@ -1006,7 +950,7 @@ namespace XRayBuilderGUI.UI
             txtAsin.Text = metadata.Asin;
             _tooltip.SetToolTip(txtAsin, _amazonClient.Url(_settings.amazonTLD, txtAsin.Text));
 
-            CheckFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text));
+            CheckFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text), metadata.DbName, metadata.Guid);
             btnBuild.Enabled = metadata.XRaySupported;
             btnOneClick.Enabled = metadata.XRaySupported;
             btnUnpack.Enabled = metadata.RawMlSupported;
@@ -1034,22 +978,34 @@ namespace XRayBuilderGUI.UI
 
         private async void tmiAuthorProfile_Click(object sender, EventArgs e)
         {
-            await ShowPreviewAsync(PreviewProviderFactory.PreviewType.AuthorProfile, ApPath, _cancelTokens.Token);
+            var path = _openedMetadata != null
+                ? _directoryService.GetFilePath(FileType.AuthorProfile, _openedMetadata, Path.GetFileNameWithoutExtension(txtMobi.Text), false)
+                : "";
+            await ShowPreviewAsync(PreviewProviderFactory.PreviewType.AuthorProfile, path, _cancelTokens.Token);
         }
 
         private async void tmiStartAction_Click(object sender, EventArgs e)
         {
-            await ShowPreviewAsync(PreviewProviderFactory.PreviewType.StartActions, SaPath, _cancelTokens.Token);
+            var path = _openedMetadata != null
+                ? _directoryService.GetFilePath(FileType.StartActions, _openedMetadata, Path.GetFileNameWithoutExtension(txtMobi.Text), false)
+                : "";
+            await ShowPreviewAsync(PreviewProviderFactory.PreviewType.StartActions, path, _cancelTokens.Token);
         }
 
         private async void tmiEndAction_Click(object sender, EventArgs e)
         {
-            await ShowPreviewAsync(PreviewProviderFactory.PreviewType.EndActions, EaPath, _cancelTokens.Token);
+            var path = _openedMetadata != null
+                ? _directoryService.GetFilePath(FileType.EndActions, _openedMetadata, Path.GetFileNameWithoutExtension(txtMobi.Text), false)
+                : "";
+            await ShowPreviewAsync(PreviewProviderFactory.PreviewType.EndActions, path, _cancelTokens.Token);
         }
 
         private async void tmiXray_Click(object sender, EventArgs e)
         {
-            await ShowPreviewAsync(PreviewProviderFactory.PreviewType.XRay, XrPath, _cancelTokens.Token);
+            var path = _openedMetadata != null
+                ? _directoryService.GetFilePath(FileType.XRay, _openedMetadata, Path.GetFileNameWithoutExtension(txtMobi.Text), false)
+                : "";
+            await ShowPreviewAsync(PreviewProviderFactory.PreviewType.XRay, path, _cancelTokens.Token);
         }
 
         private void btnUnpack_Click(object sender, EventArgs e)
@@ -1149,26 +1105,23 @@ namespace XRayBuilderGUI.UI
             frmCreateXr.ShowDialog();
         }
 
-        // TODO: Fix this mess - paths really need to come from a single source...
-        private void CheckFiles(string author, string title, string fileName, string asin)
+        private void CheckFiles(string author, string title, string asin, string fileName, string databaseName, string guid)
         {
-            var bookOutputDir = OutputDirectory(author, Functions.RemoveInvalidFileChars(title), asin, fileName, false);
+            static Image SetPreviewAndPickImage(ToolStripItem toolStripItem, string path)
+            {
+                var fileExists = File.Exists(path);
 
-            pbFile1.Image = File.Exists(bookOutputDir + @"\StartActions.data." + asin + ".asc")
-                ? Resources.file_on
-                : Resources.file_off;
+                toolStripItem.Enabled = fileExists;
 
-            pbFile2.Image = File.Exists(bookOutputDir + @"\AuthorProfile.profile." + asin + ".asc")
-                ? Resources.file_on
-                : Resources.file_off;
+                return fileExists
+                    ? Resources.file_on
+                    : Resources.file_off;
+            }
 
-            pbFile3.Image = File.Exists(bookOutputDir + @"\EndActions.data." + asin + ".asc")
-                ? Resources.file_on
-                : Resources.file_off;
-
-            pbFile4.Image = File.Exists(bookOutputDir + @"\XRAY.entities." + asin + ".asc")
-                ? Resources.file_on
-                : Resources.file_off;
+            pbFile1.Image = SetPreviewAndPickImage(cmsPreview.Items[2], _directoryService.GetFilePath(FileType.StartActions, author, title, asin, fileName, databaseName, guid, false));
+            pbFile2.Image = SetPreviewAndPickImage(cmsPreview.Items[0], _directoryService.GetFilePath(FileType.AuthorProfile, author, title, asin, fileName, databaseName, guid, false));
+            pbFile3.Image = SetPreviewAndPickImage(cmsPreview.Items[1], _directoryService.GetFilePath(FileType.EndActions, author, title, asin, fileName, databaseName, guid, false));
+            pbFile4.Image = SetPreviewAndPickImage(cmsPreview.Items[3], _directoryService.GetFilePath(FileType.XRay, author, title, asin, fileName, databaseName, guid, false));
         }
 
         private void btnCancel_Click(object sender, EventArgs e)

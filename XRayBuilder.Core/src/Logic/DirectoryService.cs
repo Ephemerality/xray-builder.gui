@@ -18,25 +18,25 @@ namespace XRayBuilder.Core.Logic
             _config = config;
         }
 
-        public string GetFilename(FileType fileType, string asin, string databaseName, string guid)
-            => fileType switch
+        public string GetArtifactFilename(ArtifactType artifactType, string asin, string databaseName, string guid)
+            => artifactType switch
             {
-                FileType.XRay => _config.BuildForAndroid
+                ArtifactType.XRay => _config.BuildForAndroid
                     ? $"XRAY.{asin}.{(databaseName == null ? "" : $"{databaseName}_")}{guid ?? ""}.db"
                     : $"XRAY.entities.{asin}.asc",
-                FileType.XRayPreview => $"XRAY.{asin}.previewData",
-                FileType.AuthorProfile => $"AuthorProfile.profile.{asin}.asc",
-                FileType.EndActions => $"EndActions.data.{asin}.asc",
-                FileType.StartActions => $"StartActions.data.{asin}.asc",
+                ArtifactType.XRayPreview => $"XRAY.{asin}.previewData",
+                ArtifactType.AuthorProfile => $"AuthorProfile.profile.{asin}.asc",
+                ArtifactType.EndActions => $"EndActions.data.{asin}.asc",
+                ArtifactType.StartActions => $"StartActions.data.{asin}.asc",
                 _ => ""
             };
 
         // TODO Maybe just pass a whole IMetadata instead?
-        public string GetFilePath(FileType fileType, string author, string title, string asin, string bookFilename, string databaseName, string guid, bool create)
-            => Path.Combine(GetDirectory(author, title, asin, bookFilename, create), GetFilename(fileType, asin, databaseName, guid));
+        public string GetArtifactPath(ArtifactType artifactType, string author, string title, string asin, string bookFilename, string databaseName, string guid, bool create)
+            => Path.Combine(GetDirectory(author, title, asin, bookFilename, create), GetArtifactFilename(artifactType, asin, databaseName, guid));
 
-        public string GetFilePath(FileType fileType, IMetadata metadata, string bookFilename, bool create)
-            => Path.Combine(GetDirectory(metadata.Author, metadata.Title, metadata.Asin, bookFilename, create), GetFilename(fileType, metadata.Asin, metadata.DbName, metadata.Guid));
+        public string GetArtifactPath(ArtifactType artifactType, IMetadata metadata, string bookFilename, bool create)
+            => Path.Combine(GetDirectory(metadata.Author, metadata.Title, metadata.Asin, bookFilename, create), GetArtifactFilename(artifactType, metadata.Asin, metadata.DbName, metadata.Guid));
 
         public string GetDirectory(string author, string title, string asin, string bookFilename, bool create)
         {
@@ -72,7 +72,7 @@ namespace XRayBuilder.Core.Logic
         }
     }
 
-    public enum FileType
+    public enum ArtifactType
     {
         XRay = 1,
         XRayPreview,

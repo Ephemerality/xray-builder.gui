@@ -326,7 +326,7 @@ namespace XRayBuilderGUI.UI
             }
 
             _logger.Log("Saving X-Ray to file...");
-            var xrayPath = _directoryService.GetFilePath(FileType.XRay, metadata, Path.GetFileNameWithoutExtension(txtMobi.Text), true);
+            var xrayPath = _directoryService.GetArtifactPath(ArtifactType.XRay, metadata, Path.GetFileNameWithoutExtension(txtMobi.Text), true);
 
             try
             {
@@ -350,7 +350,7 @@ namespace XRayBuilderGUI.UI
                 //Save the new XRAY.ASIN.previewData file
                 try
                 {
-                    var pdPath = _directoryService.GetFilePath(FileType.XRayPreview, metadata, Path.GetFileNameWithoutExtension(txtMobi.Text), true);
+                    var pdPath = _directoryService.GetArtifactPath(ArtifactType.XRayPreview, metadata, Path.GetFileNameWithoutExtension(txtMobi.Text), true);
                     _previewDataExporter.Export(xray, pdPath);
                     _logger.Log($"X-Ray previewData file created successfully!\r\nSaved to {pdPath}");
                 }
@@ -423,9 +423,9 @@ namespace XRayBuilderGUI.UI
                 var outputDir = _directoryService.GetDirectory(bookInfo.Author, bookInfo.Title, bookInfo.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text), true);
 
                 // TODO path stuff is still ugly
-                var apPath = Path.Combine(outputDir, _directoryService.GetFilename(FileType.AuthorProfile, bookInfo.Asin, metadata.DbName, metadata.Guid));
-                var saPath = Path.Combine(outputDir, _directoryService.GetFilename(FileType.StartActions, bookInfo.Asin, metadata.DbName, metadata.Guid));
-                var eaPath = Path.Combine(outputDir, _directoryService.GetFilename(FileType.EndActions, bookInfo.Asin, metadata.DbName, metadata.Guid));
+                var apPath = Path.Combine(outputDir, _directoryService.GetArtifactFilename(ArtifactType.AuthorProfile, bookInfo.Asin, metadata.DbName, metadata.Guid));
+                var saPath = Path.Combine(outputDir, _directoryService.GetArtifactFilename(ArtifactType.StartActions, bookInfo.Asin, metadata.DbName, metadata.Guid));
+                var eaPath = Path.Combine(outputDir, _directoryService.GetArtifactFilename(ArtifactType.EndActions, bookInfo.Asin, metadata.DbName, metadata.Guid));
                 var saExists = File.Exists(saPath);
                 var eaExists = File.Exists(eaPath);
                 var apExists = File.Exists(apPath);
@@ -979,7 +979,7 @@ namespace XRayBuilderGUI.UI
         private async void tmiAuthorProfile_Click(object sender, EventArgs e)
         {
             var path = _openedMetadata != null
-                ? _directoryService.GetFilePath(FileType.AuthorProfile, _openedMetadata, Path.GetFileNameWithoutExtension(txtMobi.Text), false)
+                ? _directoryService.GetArtifactPath(ArtifactType.AuthorProfile, _openedMetadata, Path.GetFileNameWithoutExtension(txtMobi.Text), false)
                 : "";
             await ShowPreviewAsync(PreviewProviderFactory.PreviewType.AuthorProfile, path, _cancelTokens.Token);
         }
@@ -987,7 +987,7 @@ namespace XRayBuilderGUI.UI
         private async void tmiStartAction_Click(object sender, EventArgs e)
         {
             var path = _openedMetadata != null
-                ? _directoryService.GetFilePath(FileType.StartActions, _openedMetadata, Path.GetFileNameWithoutExtension(txtMobi.Text), false)
+                ? _directoryService.GetArtifactPath(ArtifactType.StartActions, _openedMetadata, Path.GetFileNameWithoutExtension(txtMobi.Text), false)
                 : "";
             await ShowPreviewAsync(PreviewProviderFactory.PreviewType.StartActions, path, _cancelTokens.Token);
         }
@@ -995,7 +995,7 @@ namespace XRayBuilderGUI.UI
         private async void tmiEndAction_Click(object sender, EventArgs e)
         {
             var path = _openedMetadata != null
-                ? _directoryService.GetFilePath(FileType.EndActions, _openedMetadata, Path.GetFileNameWithoutExtension(txtMobi.Text), false)
+                ? _directoryService.GetArtifactPath(ArtifactType.EndActions, _openedMetadata, Path.GetFileNameWithoutExtension(txtMobi.Text), false)
                 : "";
             await ShowPreviewAsync(PreviewProviderFactory.PreviewType.EndActions, path, _cancelTokens.Token);
         }
@@ -1003,7 +1003,7 @@ namespace XRayBuilderGUI.UI
         private async void tmiXray_Click(object sender, EventArgs e)
         {
             var path = _openedMetadata != null
-                ? _directoryService.GetFilePath(FileType.XRay, _openedMetadata, Path.GetFileNameWithoutExtension(txtMobi.Text), false)
+                ? _directoryService.GetArtifactPath(ArtifactType.XRay, _openedMetadata, Path.GetFileNameWithoutExtension(txtMobi.Text), false)
                 : "";
             await ShowPreviewAsync(PreviewProviderFactory.PreviewType.XRay, path, _cancelTokens.Token);
         }
@@ -1118,10 +1118,10 @@ namespace XRayBuilderGUI.UI
                     : Resources.file_off;
             }
 
-            pbFile1.Image = SetPreviewAndPickImage(cmsPreview.Items[2], _directoryService.GetFilePath(FileType.StartActions, author, title, asin, fileName, databaseName, guid, false));
-            pbFile2.Image = SetPreviewAndPickImage(cmsPreview.Items[0], _directoryService.GetFilePath(FileType.AuthorProfile, author, title, asin, fileName, databaseName, guid, false));
-            pbFile3.Image = SetPreviewAndPickImage(cmsPreview.Items[1], _directoryService.GetFilePath(FileType.EndActions, author, title, asin, fileName, databaseName, guid, false));
-            pbFile4.Image = SetPreviewAndPickImage(cmsPreview.Items[3], _directoryService.GetFilePath(FileType.XRay, author, title, asin, fileName, databaseName, guid, false));
+            pbFile1.Image = SetPreviewAndPickImage(cmsPreview.Items[2], _directoryService.GetArtifactPath(ArtifactType.StartActions, author, title, asin, fileName, databaseName, guid, false));
+            pbFile2.Image = SetPreviewAndPickImage(cmsPreview.Items[0], _directoryService.GetArtifactPath(ArtifactType.AuthorProfile, author, title, asin, fileName, databaseName, guid, false));
+            pbFile3.Image = SetPreviewAndPickImage(cmsPreview.Items[1], _directoryService.GetArtifactPath(ArtifactType.EndActions, author, title, asin, fileName, databaseName, guid, false));
+            pbFile4.Image = SetPreviewAndPickImage(cmsPreview.Items[3], _directoryService.GetArtifactPath(ArtifactType.XRay, author, title, asin, fileName, databaseName, guid, false));
         }
 
         private void btnCancel_Click(object sender, EventArgs e)

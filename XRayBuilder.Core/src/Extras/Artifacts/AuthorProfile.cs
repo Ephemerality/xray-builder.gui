@@ -2,7 +2,7 @@
 
 namespace XRayBuilder.Core.Extras.Artifacts
 {
-    public class AuthorProfile
+    public sealed class AuthorProfile
     {
         [JsonProperty("u")]
         public Author[] Authors { get; set; }
@@ -16,7 +16,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
         [JsonProperty("o")]
         public Book[] OtherBooks { get; set; }
 
-        public class Author
+        public sealed class Author
         {
             [JsonProperty("y")]
             public int ImageHeight { get; set; }
@@ -37,7 +37,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
             public string Picture { get; set; }
         }
 
-        public class Book
+        public sealed class Book
         {
             [JsonProperty("e")]
             public int E { get; set; }

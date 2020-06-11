@@ -9,10 +9,10 @@ using XRayBuilder.Core.Libraries.Primitives.Extensions;
 
 namespace XRayBuilderGUI.UI
 {
-    public class RtfLogger
+    public sealed class RtfLogger
     {
         private readonly RichTextBox _ctrl;
-        public bool Enabled = true;
+        public readonly bool Enabled = true;
 
         public RtfLogger(RichTextBox ctrl)
         {

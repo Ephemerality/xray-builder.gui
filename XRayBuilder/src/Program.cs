@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Reflection;
 using System.Windows.Forms;
-using Sentry;
 using SimpleInjector;
+using XRayBuilder.Core.Bootstrap;
+using XRayBuilder.Core.Config;
 using XRayBuilder.Core.DataSources.Amazon.Bootstrap;
 using XRayBuilder.Core.DataSources.Roentgen.Bootstrap;
 using XRayBuilder.Core.DataSources.Secondary.Bootstrap;
@@ -29,13 +29,6 @@ namespace XRayBuilderGUI
         [STAThread]
         private static void Main()
         {
-            using var _ = SentrySdk.Init(options =>
-            {
-                if (string.IsNullOrEmpty(Properties.Settings.Default.sentryDest))
-                    return;
-                options.Dsn = new Dsn(Properties.Settings.Default.sentryDest);
-                options.Release = $"x-ray-builder@{Assembly.GetExecutingAssembly().GetName().Version}";
-            });
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             try
@@ -66,6 +59,15 @@ namespace XRayBuilderGUI
             builder.Register<BootstrapUI>();
             builder.Register<BootstrapXRay>();
             builder.Register<BootstrapRoentgen>();
+            builder.Register<BootstrapXRayBuilder>();
+
+            _container.RegisterSingleton(() => new XRayBuilderConfig
+            {
+                UseSubdirectories = Properties.Settings.Default.useSubDirectories,
+                BaseOutputDirectory = Properties.Settings.Default.outDir,
+                BuildForAndroid = Properties.Settings.Default.android,
+                OutputToSidecar = Properties.Settings.Default.outputToSidecar
+            });
 
             builder.Build();
         }

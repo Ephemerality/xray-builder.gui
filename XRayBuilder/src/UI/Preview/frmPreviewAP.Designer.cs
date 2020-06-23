@@ -1,6 +1,6 @@
 ﻿namespace XRayBuilderGUI.UI.Preview
 {
-    partial class frmPreviewAP
+    sealed partial class frmPreviewAP
     {
         /// <summary>
         /// Required designer variable.
@@ -39,8 +39,8 @@
             this.lblBiography = new System.Windows.Forms.Label();
             this.ilOtherBooks = new System.Windows.Forms.ImageList(this.components);
             this.pbAuthorImage = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvOtherBooks)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAuthorImage)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.dgvOtherBooks)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.pbAuthorImage)).BeginInit();
             this.SuspendLayout();
             // 
             // dgvOtherBooks
@@ -54,14 +54,12 @@
             this.dgvOtherBooks.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
             this.dgvOtherBooks.ClipboardCopyMode = System.Windows.Forms.DataGridViewClipboardCopyMode.Disable;
             this.dgvOtherBooks.ColumnHeadersVisible = false;
-            this.dgvOtherBooks.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Column1,
-            this.Column2});
+            this.dgvOtherBooks.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {this.Column1, this.Column2});
             this.dgvOtherBooks.Location = new System.Drawing.Point(14, 138);
             this.dgvOtherBooks.Name = "dgvOtherBooks";
             this.dgvOtherBooks.ReadOnly = true;
             this.dgvOtherBooks.RowHeadersVisible = false;
-            this.dgvOtherBooks.RowTemplate.DefaultCellStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.dgvOtherBooks.RowTemplate.DefaultCellStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.dgvOtherBooks.RowTemplate.DividerHeight = 1;
             this.dgvOtherBooks.RowTemplate.Height = 32;
             this.dgvOtherBooks.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -91,7 +89,7 @@
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle2.NullValue = ((object)(resources.GetObject("dataGridViewCellStyle2.NullValue")));
+            dataGridViewCellStyle2.NullValue = ((object) (resources.GetObject("dataGridViewCellStyle2.NullValue")));
             dataGridViewCellStyle2.Padding = new System.Windows.Forms.Padding(4, 0, 0, 0);
             dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.ControlText;
@@ -107,9 +105,9 @@
             // lblAuthorMore
             // 
             this.lblAuthorMore.AutoEllipsis = true;
-            this.lblAuthorMore.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
-            this.lblAuthorMore.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAuthorMore.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
+            this.lblAuthorMore.BackColor = System.Drawing.Color.FromArgb(((int) (((byte) (89)))), ((int) (((byte) (89)))), ((int) (((byte) (89)))));
+            this.lblAuthorMore.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.lblAuthorMore.ForeColor = System.Drawing.Color.FromArgb(((int) (((byte) (230)))), ((int) (((byte) (230)))), ((int) (((byte) (230)))));
             this.lblAuthorMore.Location = new System.Drawing.Point(14, 113);
             this.lblAuthorMore.Name = "lblAuthorMore";
             this.lblAuthorMore.Size = new System.Drawing.Size(574, 20);
@@ -120,7 +118,7 @@
             // lblBiography
             // 
             this.lblBiography.AutoEllipsis = true;
-            this.lblBiography.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblBiography.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.lblBiography.Location = new System.Drawing.Point(81, 21);
             this.lblBiography.Name = "lblBiography";
             this.lblBiography.Size = new System.Drawing.Size(507, 83);
@@ -135,7 +133,7 @@
             // 
             // pbAuthorImage
             // 
-            this.pbAuthorImage.Image = ((System.Drawing.Image)(resources.GetObject("pbAuthorImage.Image")));
+            this.pbAuthorImage.Image = ((System.Drawing.Image) (resources.GetObject("pbAuthorImage.Image")));
             this.pbAuthorImage.Location = new System.Drawing.Point(14, 14);
             this.pbAuthorImage.Name = "pbAuthorImage";
             this.pbAuthorImage.Size = new System.Drawing.Size(60, 90);
@@ -160,20 +158,19 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Abouth [author]";
-            ((System.ComponentModel.ISupportInitialize)(this.dgvOtherBooks)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAuthorImage)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.dgvOtherBooks)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.pbAuthorImage)).EndInit();
             this.ResumeLayout(false);
-
         }
 
-        #endregion
-
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewImageColumn Column2;
         private System.Windows.Forms.DataGridView dgvOtherBooks;
+        private System.Windows.Forms.ImageList ilOtherBooks;
         private System.Windows.Forms.Label lblAuthorMore;
         private System.Windows.Forms.Label lblBiography;
         private System.Windows.Forms.PictureBox pbAuthorImage;
-        private System.Windows.Forms.ImageList ilOtherBooks;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        private System.Windows.Forms.DataGridViewImageColumn Column2;
+
+        #endregion
     }
 }

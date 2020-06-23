@@ -16,6 +16,10 @@ namespace XRayBuilder.Core.Unpack
         string Title { get; }
         string UniqueId { get; }
         /// <summary>
+        /// Converted version of <see cref="UniqueId"/>
+        /// </summary>
+        string Guid { get; }
+        /// <summary>
         /// Indicates whether or not the metadata can be modified and saved
         /// </summary>
         bool CanModify { get; }

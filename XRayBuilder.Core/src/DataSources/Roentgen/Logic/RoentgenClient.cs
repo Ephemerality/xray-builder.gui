@@ -55,7 +55,7 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
             return HandleDownloadExceptionsAsync(async () =>
             {
                 var response = await _httpClient.GetStringAsync($"{BaseUrl}{StartActionsEndpoint(asin)}", cancellationToken);
-                return JsonUtil.Deserialize<StartActions>(response);
+                return JsonUtil.Deserialize<StartActions>(response, false);
             });
         }
 
@@ -134,7 +134,7 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
             var response = await _httpClient.PostAsync($"{BaseUrl}{DownloadEndpoint}", request, cancellationToken);
             var responseStream = await response.Content.ReadAsStreamAsync();
             var responseString = await new StreamReader(responseStream, Encoding.UTF8).ReadToEndAsync();
-            return JsonUtil.Deserialize<T>(responseString);
+            return JsonUtil.Deserialize<T>(responseString, false);
         }
     }
 }

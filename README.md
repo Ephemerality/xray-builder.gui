@@ -7,12 +7,6 @@ It will also build some extra metadata files:
 * Start Actions - "About this book" info which usually has a description of the book, author, and some recommendations
 * End Actions - Pops up when you're done reading the book to provide recommendations on what to read next
 
-
-## Acknowledgements
-* New GUI, Shelfari/Goodreads search, previews, Start/End Actions, Author Profile, and various other new features by darrenmcg/Psycho Reptile  
-* [Original X-Ray script by shinew](http://www.mobileread.com/forums/showthread.php?t=157770)  
-* [jhowell's KFX in/output plugins for Calibre](https://www.mobileread.com/forums/showthread.php?t=272407)
-
 ## Requirements
 * Windows  
 * .NET Framework 4.6.2  
@@ -21,3 +15,10 @@ It will also build some extra metadata files:
 ## Instructions and Binary Downloads
 * Furthur instructions are available within the appplication's help button.
 * Instructions and support are available in the thread on MobileRead: http://www.mobileread.com/forums/showthread.php?t=245754
+
+## Acknowledgements
+* New GUI, Shelfari/Goodreads search, previews, Start/End Actions, Author Profile, and various other new features by darrenmcg/Psycho Reptile  
+* [Original X-Ray script by shinew](http://www.mobileread.com/forums/showthread.php?t=157770)  
+* [jhowell's KFX in/output plugins for Calibre](https://www.mobileread.com/forums/showthread.php?t=272407)
+* JetBrains for their Open Source license program  
+[<img src="./jetbrains-variant-4.svg">](https://www.jetbrains.com/?from=X-RayBuilder)

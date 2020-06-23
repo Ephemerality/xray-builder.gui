@@ -74,6 +74,7 @@ namespace XRayBuilder.Core.Unpack.KFX
         public string DbName => Metadata.AssetId;
         public string Title => Metadata.Title;
         public string UniqueId => null;
+        public string Guid => null;
         public bool CanModify => false;
 
         private KfxMetadata Metadata { get; set; }

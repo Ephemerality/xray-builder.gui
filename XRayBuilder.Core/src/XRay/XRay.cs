@@ -29,13 +29,13 @@ namespace XRayBuilder.Core.XRay
 
         public XRay(string shelfari, string db, string guid, string asin, ISecondarySource dataSource)
         {
-            if ((shelfari == "" && !(dataSource is SecondarySourceRoentgen)) || db == "" || guid == "" || asin == "")
+            if ((shelfari == "" && !(dataSource is SecondarySourceRoentgen)) || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
 
             if (!shelfari.ToLower().StartsWith("http://") && !shelfari.ToLower().StartsWith("https://"))
                 shelfari = "https://" + shelfari;
             DataUrl = shelfari;
-            DatabaseName = db;
+            DatabaseName = string.IsNullOrEmpty(db) ? null : db;
             if (guid != null)
                 Guid = guid;
             Asin = asin;
@@ -45,9 +45,9 @@ namespace XRayBuilder.Core.XRay
         // TODO fix this constructor crap
         public XRay(string xml, string db, string guid, string asin, ISecondarySource dataSource, bool xmlUgh)
         {
-            if (xml == "" || db == "" || guid == "" || asin == "")
+            if (xml == "" || guid == "" || asin == "")
                 throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
-            DatabaseName = db;
+            DatabaseName = string.IsNullOrEmpty(db) ? null : db;
             Guid = guid;
             Asin = asin;
             DataSource = dataSource;

@@ -86,6 +86,8 @@ namespace XRayBuilder.Core.Unpack.Mobi
 
         public string Asin2 => GetTextRecordByType(504);
 
+        public string Isbn => GetTextRecordByType(104);
+
         public int CoverOffset => BitConverter.ToInt32(GetRecordBytesByType(201)?.BigEndian() ?? new byte[] { 255, 255, 255, 255 }, 0);
 
         [CanBeNull]

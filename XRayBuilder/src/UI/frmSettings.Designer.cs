@@ -55,8 +55,6 @@
             this.btnBrowseOut = new System.Windows.Forms.Button();
             this.tabPgXray = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.rdoShelfari = new System.Windows.Forms.RadioButton();
-            this.rdoGoodreads = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.chkSoftHyphen = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -92,6 +90,7 @@
             this.txtPen = new System.Windows.Forms.TextBox();
             this.lblPen = new System.Windows.Forms.Label();
             this.tabPgRoentgen = new System.Windows.Forms.TabPage();
+            this.label5 = new System.Windows.Forms.Label();
             this.cmbRoentgenRegion = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
@@ -103,7 +102,7 @@
             this.chkRoentgenEndActions = new System.Windows.Forms.CheckBox();
             this.chkRoentgenStartActions = new System.Windows.Forms.CheckBox();
             this.listSettings = new System.Windows.Forms.ListBox();
-            this.label5 = new System.Windows.Forms.Label();
+            this.cmbSecondaryDataSource = new System.Windows.Forms.ComboBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -401,37 +400,13 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.rdoShelfari);
-            this.groupBox2.Controls.Add(this.rdoGoodreads);
+            this.groupBox2.Controls.Add(this.cmbSecondaryDataSource);
             this.groupBox2.Location = new System.Drawing.Point(202, 12);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(182, 74);
             this.groupBox2.TabIndex = 27;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Data Provider";
-            // 
-            // rdoShelfari
-            // 
-            this.rdoShelfari.AutoSize = true;
-            this.rdoShelfari.Location = new System.Drawing.Point(17, 45);
-            this.rdoShelfari.Name = "rdoShelfari";
-            this.rdoShelfari.Size = new System.Drawing.Size(139, 17);
-            this.rdoShelfari.TabIndex = 1;
-            this.rdoShelfari.TabStop = true;
-            this.rdoShelfari.Text = "Shelfari (via archive.org)";
-            this.rdoShelfari.UseVisualStyleBackColor = true;
-            // 
-            // rdoGoodreads
-            // 
-            this.rdoGoodreads.AutoSize = true;
-            this.rdoGoodreads.Checked = true;
-            this.rdoGoodreads.Location = new System.Drawing.Point(17, 18);
-            this.rdoGoodreads.Name = "rdoGoodreads";
-            this.rdoGoodreads.Size = new System.Drawing.Size(77, 17);
-            this.rdoGoodreads.TabIndex = 0;
-            this.rdoGoodreads.TabStop = true;
-            this.rdoGoodreads.Text = "Goodreads";
-            this.rdoGoodreads.UseVisualStyleBackColor = true;
             // 
             // groupBox4
             // 
@@ -802,6 +777,15 @@
             this.tabPgRoentgen.Text = "tabPgRoentgen";
             this.tabPgRoentgen.UseVisualStyleBackColor = true;
             // 
+            // label5
+            // 
+            this.label5.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.label5.Location = new System.Drawing.Point(9, 172);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(199, 32);
+            this.label5.TabIndex = 40;
+            this.label5.Text = "Files will be downloaded in the language of the selected region, when possible.";
+            // 
             // cmbRoentgenRegion
             // 
             this.cmbRoentgenRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -927,14 +911,18 @@
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
             // 
-            // label5
+            // cmbSecondaryDataSource
             // 
-            this.label5.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label5.Location = new System.Drawing.Point(9, 172);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(199, 32);
-            this.label5.TabIndex = 40;
-            this.label5.Text = "Files will be downloaded in the language of the selected region, when possible.";
+            this.cmbSecondaryDataSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbSecondaryDataSource.FormattingEnabled = true;
+            this.cmbSecondaryDataSource.Items.AddRange(new object[] {
+            "Goodreads",
+            "Shelfari",
+            "LibraryThing"});
+            this.cmbSecondaryDataSource.Location = new System.Drawing.Point(6, 31);
+            this.cmbSecondaryDataSource.Name = "cmbSecondaryDataSource";
+            this.cmbSecondaryDataSource.Size = new System.Drawing.Size(170, 21);
+            this.cmbSecondaryDataSource.TabIndex = 0;
             // 
             // frmSettings
             // 
@@ -974,7 +962,6 @@
             this.gbDirectories.PerformLayout();
             this.tabPgXray.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox3.ResumeLayout(false);
@@ -1064,8 +1051,6 @@
         private System.Windows.Forms.ListBox listSettings;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox pictureBox2;
-        private System.Windows.Forms.RadioButton rdoGoodreads;
-        private System.Windows.Forms.RadioButton rdoShelfari;
         private System.Windows.Forms.TabPage tabPgAmazon;
         private System.Windows.Forms.TabPage tabPgDirectories;
         private System.Windows.Forms.TabPage tabPgExtras;
@@ -1081,5 +1066,6 @@
         #endregion
 
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ComboBox cmbSecondaryDataSource;
     }
 }

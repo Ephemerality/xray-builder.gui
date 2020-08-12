@@ -84,11 +84,6 @@ namespace XRayBuilderGUI.UI
             chkDownloadAliases.Checked = Properties.Settings.Default.downloadAliases;
             chkPageCount.Checked = Properties.Settings.Default.pageCount;
             chkSaveBio.Checked = Properties.Settings.Default.saveBio;
-            if (Properties.Settings.Default.dataSource == "Goodreads")
-                rdoGoodreads.Checked = true;
-            else
-                rdoShelfari.Checked = true;
-
             chkOverwriteAP.Checked = Properties.Settings.Default.overwriteAP;
             chkOverwriteEA.Checked = Properties.Settings.Default.overwriteEA;
             chkOverwriteSA.Checked = Properties.Settings.Default.overwriteSA;
@@ -97,6 +92,7 @@ namespace XRayBuilderGUI.UI
             chkSearchAsin.Checked = Properties.Settings.Default.searchByAsin;
             chkEditBiography.Checked = Properties.Settings.Default.editBiography;
             chkUseSidecar.Checked = Properties.Settings.Default.outputToSidecar;
+            cmbSecondaryDataSource.Text = Properties.Settings.Default.dataSource;
 
             chkRoentgenStartActions.Checked = Properties.Settings.Default.downloadSA;
             chkRoentgenEndActions.Checked = Properties.Settings.Default.downloadEA;
@@ -159,10 +155,7 @@ namespace XRayBuilderGUI.UI
                                               "on user_none accurate APNX generation).\r\n" +
                                               "If no page count is found online, an\r\n" +
                                               "estimation will be used.");
-            toolTip1.SetToolTip(rdoGoodreads, "Search for books and download\r\n" +
-                                              "all data from Goodreads.");
-            toolTip1.SetToolTip(rdoShelfari, "Search for books and download\r\n" +
-                                              "all data from Shelfari.");
+            toolTip1.SetToolTip(cmbSecondaryDataSource, "Determines from which non-Amazon source terms and metadata will be downloaded.");
             toolTip1.SetToolTip(chkSaveBio, "If checked, author biographies will be saved to the \\ext folder\r\n" +
                                             "and opened in Notepad before continuing to build Author Profiles.\r\n" +
                                             "Must be enabled for a saved biography to be loaded.");
@@ -235,7 +228,7 @@ namespace XRayBuilderGUI.UI
             Properties.Settings.Default.pageCount = chkPageCount.Checked;
             Properties.Settings.Default.saveBio = chkSaveBio.Checked;
             Properties.Settings.Default.amazonTLD = cmbRegion.SelectedValue.ToString();
-            Properties.Settings.Default.dataSource = rdoGoodreads.Checked ? "Goodreads" : "Shelfari";
+            Properties.Settings.Default.dataSource = cmbSecondaryDataSource.Text;
             Properties.Settings.Default.promptASIN = chkPromptAsin.Checked;
             Properties.Settings.Default.searchByAsin = chkSearchAsin.Checked;
             Properties.Settings.Default.editBiography = chkEditBiography.Checked;

@@ -735,13 +735,7 @@ namespace XRayBuilderGUI.UI
             try
             {
                 var bookSearchService = _diContainer.GetInstance<IBookSearchService>();
-                var books = await bookSearchService.SearchSecondarySourceAsync(_dataSource,
-                    new BookSearchService.Parameters
-                    {
-                        Asin = _settings.searchByAsin ? metadata.Asin : null,
-                        Author = metadata.Author,
-                        Title = metadata.Title
-                    }, _cancelTokens.Token);
+                var books = await bookSearchService.SearchSecondarySourceAsync(_dataSource, metadata, _cancelTokens.Token);
 
                 if (books.Length <= 0)
                 {

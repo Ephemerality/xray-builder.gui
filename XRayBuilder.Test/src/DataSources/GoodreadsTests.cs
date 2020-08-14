@@ -1,11 +1,14 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using NSubstitute;
 using NUnit.Framework;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Model;
+using XRayBuilder.Core.Unpack;
+using XRayBuilder.Core.Unpack.Mobi;
 
 namespace XRayBuilder.Test.DataSources
 {
@@ -37,7 +40,10 @@ namespace XRayBuilder.Test.DataSources
         [Test]
         public async Task SearchBookTest()
         {
-            var results = (await _goodreads.SearchBookAsync("George R. R. Martin", "A Feast for Crows")).ToArray();
+            var testMetadata = Substitute.For<IMetadata>();
+            testMetadata.Author.Returns("George R. R. Martin");
+            testMetadata.Title.Returns("A Feast for Crows");
+            var results = (await _goodreads.SearchBookAsync(testMetadata)).ToArray();
             Assert.GreaterOrEqual(results.Length, 1);
             var first = results.First();
             Assert.AreEqual(first.Author, "George R.R. Martin");

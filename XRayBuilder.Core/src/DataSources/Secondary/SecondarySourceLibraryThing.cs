@@ -5,6 +5,7 @@ using HtmlAgilityPack;
 using XRayBuilder.Core.DataSources.Secondary.Model;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Model;
+using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Artifacts;
 
 namespace XRayBuilder.Core.DataSources.Secondary
@@ -16,7 +17,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
         public int UrlLabelPosition { get; } = 6;
         public bool SupportsNotableClips { get; } = true;
 
-        public Task<IEnumerable<BookInfo>> SearchBookAsync(string author, string title, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
         {
             throw new System.NotImplementedException();
         }
@@ -42,11 +43,6 @@ namespace XRayBuilder.Core.DataSources.Secondary
         }
 
         public Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task<IEnumerable<BookInfo>> SearchBookByAsinAsync(string asin, CancellationToken cancellationToken = default)
         {
             throw new System.NotImplementedException();
         }

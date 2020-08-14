@@ -19,6 +19,7 @@ using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Primitives.Extensions;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Model;
+using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Artifacts;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
@@ -51,21 +52,18 @@ namespace XRayBuilder.Core.DataSources.Secondary
         private string SearchUrl(string author, string title) => $"https://www.goodreads.com/search?q={author}%20{title}";
         private string SearchUrlAsin(string asin) => $"https://www.goodreads.com/search?q={asin}";
 
-        public async Task<IEnumerable<BookInfo>> SearchBookByAsinAsync(string asin, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
         {
-            asin = Uri.EscapeDataString(asin);
+            // Try by ASIN first, then fall back on author/title
+            if (!string.IsNullOrEmpty(metadata.Asin))
+            {
+                return ParseSearchResults(await _httpClient.GetPageAsync(SearchUrlAsin(Uri.EscapeDataString(metadata.Asin)), cancellationToken));
+            }
 
-            var goodreadsHtmlDoc = await _httpClient.GetPageAsync(SearchUrlAsin(asin), cancellationToken);
-            return ParseSearchResults(goodreadsHtmlDoc);
-        }
+            var title = Uri.EscapeDataString(metadata.Title);
+            var author = Uri.EscapeDataString(Functions.FixAuthor(metadata.Author));
 
-        public async Task<IEnumerable<BookInfo>> SearchBookAsync(string author, string title, CancellationToken cancellationToken = default)
-        {
-            title = Uri.EscapeDataString(title);
-            author = Uri.EscapeDataString(Functions.FixAuthor(author));
-
-            var goodreadsHtmlDoc = await _httpClient.GetPageAsync(SearchUrl(author, title), cancellationToken);
-            return ParseSearchResults(goodreadsHtmlDoc);
+            return ParseSearchResults(await _httpClient.GetPageAsync(SearchUrl(author, title), cancellationToken));
         }
 
         private IEnumerable<BookInfo> ParseSearchResults(HtmlDocument goodreadsHtmlDoc)

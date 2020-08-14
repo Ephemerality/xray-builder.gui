@@ -36,8 +36,6 @@
             this.lblSeperator = new System.Windows.Forms.Label();
             this.tabSettings = new System.Windows.Forms.TabControl();
             this.tabPgGeneral = new System.Windows.Forms.TabPage();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.chkSearchAsin = new System.Windows.Forms.CheckBox();
             this.gbProcess = new System.Windows.Forms.GroupBox();
             this.chkPageCount = new System.Windows.Forms.CheckBox();
             this.gbUnpack = new System.Windows.Forms.GroupBox();
@@ -55,6 +53,7 @@
             this.btnBrowseOut = new System.Windows.Forms.Button();
             this.tabPgXray = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.cmbSecondaryDataSource = new System.Windows.Forms.ComboBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.chkSoftHyphen = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -102,10 +101,8 @@
             this.chkRoentgenEndActions = new System.Windows.Forms.CheckBox();
             this.chkRoentgenStartActions = new System.Windows.Forms.CheckBox();
             this.listSettings = new System.Windows.Forms.ListBox();
-            this.cmbSecondaryDataSource = new System.Windows.Forms.ComboBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.gbProcess.SuspendLayout();
             this.gbUnpack.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -198,7 +195,6 @@
             // 
             // tabPgGeneral
             // 
-            this.tabPgGeneral.Controls.Add(this.groupBox1);
             this.tabPgGeneral.Controls.Add(this.gbProcess);
             this.tabPgGeneral.Controls.Add(this.gbUnpack);
             this.tabPgGeneral.Controls.Add(this.gbGeneral);
@@ -209,26 +205,6 @@
             this.tabPgGeneral.TabIndex = 0;
             this.tabPgGeneral.Text = "tabPage1";
             this.tabPgGeneral.UseVisualStyleBackColor = true;
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.chkSearchAsin);
-            this.groupBox1.Location = new System.Drawing.Point(6, 208);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(378, 48);
-            this.groupBox1.TabIndex = 39;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Data Provider";
-            // 
-            // chkSearchAsin
-            // 
-            this.chkSearchAsin.AutoSize = true;
-            this.chkSearchAsin.Location = new System.Drawing.Point(14, 19);
-            this.chkSearchAsin.Name = "chkSearchAsin";
-            this.chkSearchAsin.Size = new System.Drawing.Size(222, 17);
-            this.chkSearchAsin.TabIndex = 34;
-            this.chkSearchAsin.Text = "Allow search by ASIN before author + title";
-            this.chkSearchAsin.UseVisualStyleBackColor = true;
             // 
             // gbProcess
             // 
@@ -407,6 +383,19 @@
             this.groupBox2.TabIndex = 27;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Data Provider";
+            // 
+            // cmbSecondaryDataSource
+            // 
+            this.cmbSecondaryDataSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbSecondaryDataSource.FormattingEnabled = true;
+            this.cmbSecondaryDataSource.Items.AddRange(new object[] {
+            "Goodreads",
+            "Shelfari",
+            "LibraryThing"});
+            this.cmbSecondaryDataSource.Location = new System.Drawing.Point(6, 31);
+            this.cmbSecondaryDataSource.Name = "cmbSecondaryDataSource";
+            this.cmbSecondaryDataSource.Size = new System.Drawing.Size(170, 21);
+            this.cmbSecondaryDataSource.TabIndex = 0;
             // 
             // groupBox4
             // 
@@ -911,19 +900,6 @@
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
             // 
-            // cmbSecondaryDataSource
-            // 
-            this.cmbSecondaryDataSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbSecondaryDataSource.FormattingEnabled = true;
-            this.cmbSecondaryDataSource.Items.AddRange(new object[] {
-            "Goodreads",
-            "Shelfari",
-            "LibraryThing"});
-            this.cmbSecondaryDataSource.Location = new System.Drawing.Point(6, 31);
-            this.cmbSecondaryDataSource.Name = "cmbSecondaryDataSource";
-            this.cmbSecondaryDataSource.Size = new System.Drawing.Size(170, 21);
-            this.cmbSecondaryDataSource.TabIndex = 0;
-            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -948,8 +924,6 @@
             this.Load += new System.EventHandler(this.frmSettingsNew_Load);
             this.tabSettings.ResumeLayout(false);
             this.tabPgGeneral.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.gbProcess.ResumeLayout(false);
             this.gbProcess.PerformLayout();
             this.gbUnpack.ResumeLayout(false);
@@ -1014,7 +988,6 @@
         private System.Windows.Forms.CheckBox chkRoentgenStartActions;
         private System.Windows.Forms.CheckBox chkSaveBio;
         private System.Windows.Forms.CheckBox chkSaveHtml;
-        private System.Windows.Forms.CheckBox chkSearchAsin;
         private System.Windows.Forms.CheckBox chkSkipNoLikes;
         private System.Windows.Forms.CheckBox chkSoftHyphen;
         private System.Windows.Forms.CheckBox chkSound;
@@ -1031,7 +1004,6 @@
         private System.Windows.Forms.GroupBox gbProcess;
         private System.Windows.Forms.GroupBox gbUnpack;
         private System.Windows.Forms.GroupBox gbXray;
-        private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.GroupBox groupBox4;

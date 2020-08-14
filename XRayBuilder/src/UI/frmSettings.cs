@@ -89,7 +89,6 @@ namespace XRayBuilderGUI.UI
             chkOverwriteSA.Checked = Properties.Settings.Default.overwriteSA;
             chkAutoBuildAP.Checked = Properties.Settings.Default.autoBuildAP;
             chkPromptAsin.Checked = Properties.Settings.Default.promptASIN;
-            chkSearchAsin.Checked = Properties.Settings.Default.searchByAsin;
             chkEditBiography.Checked = Properties.Settings.Default.editBiography;
             chkUseSidecar.Checked = Properties.Settings.Default.outputToSidecar;
             cmbSecondaryDataSource.Text = Properties.Settings.Default.dataSource;
@@ -165,7 +164,6 @@ namespace XRayBuilderGUI.UI
                                                "in a series cannot automatically be found.\r\n" +
                                                "This is useful if you have the metadata available\r\n" +
                                                "in Calibre, and may help file creation.");
-            toolTip1.SetToolTip(chkSearchAsin, "If enabled, search results will be filtered so that non-Kindle Edition books are removed");
             toolTip1.SetToolTip(chkEditBiography, "If enabled, allows editing the Author's biography before it's used.");
             toolTip1.SetToolTip(chkAutoBuildAP, "When set, the Author Profile will be built using a downloaded End Actions file instead of scraping Amazon, if one is available.");
             toolTip1.SetToolTip(chkIncludeTopics, "When downloading terms, include any that are non-characters (topics, locations, etc)");
@@ -230,7 +228,6 @@ namespace XRayBuilderGUI.UI
             Properties.Settings.Default.amazonTLD = cmbRegion.SelectedValue.ToString();
             Properties.Settings.Default.dataSource = cmbSecondaryDataSource.Text;
             Properties.Settings.Default.promptASIN = chkPromptAsin.Checked;
-            Properties.Settings.Default.searchByAsin = chkSearchAsin.Checked;
             Properties.Settings.Default.editBiography = chkEditBiography.Checked;
             Properties.Settings.Default.outputToSidecar = chkUseSidecar.Checked;
             Properties.Settings.Default.downloadSA = chkRoentgenStartActions.Checked;

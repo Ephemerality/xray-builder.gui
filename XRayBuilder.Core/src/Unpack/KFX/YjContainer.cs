@@ -73,6 +73,7 @@ namespace XRayBuilder.Core.Unpack.KFX
         public string CdeContentType => Metadata.CdeContentType;
         public string DbName => Metadata.AssetId;
         public string Title => Metadata.Title;
+        public string Isbn => null;
         public string UniqueId => null;
         public string Guid => null;
         public bool CanModify => false;

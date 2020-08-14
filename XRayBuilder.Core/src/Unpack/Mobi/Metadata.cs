@@ -129,6 +129,8 @@ namespace XRayBuilder.Core.Unpack.Mobi
 
         public bool IsAzw3 => _activeMobiHeader?.Version >= 8;
 
+        public string Isbn => _activeMobiHeader.ExtHeader.Isbn;
+
         public string Asin => _activeMobiHeader.ExtHeader.Asin != ""
             ? _activeMobiHeader.ExtHeader.Asin
             : _activeMobiHeader.ExtHeader.Asin2;

@@ -264,7 +264,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             if (series.Next == null)
             {
                 _logger.Log("Book was found to be part of a series, but an error occurred finding the next book.\r\n"
-                    + "Please report this book and the Goodreads URL and output log to improve parsing (if it's a real book).");
+                    + "Please report this book, the URL, and output log to improve parsing (if it's a real book).");
             }
         }
 
@@ -359,11 +359,11 @@ namespace XRayBuilder.Core.Extras.EndActions
                         curBook.PagesInBook = metadataCount.Value;
                     else if (settings.EstimatePageCount)
                     {
-                        _logger.Log("No page count found on Goodreads or in metadata. Attempting to estimate page count...");
+                        _logger.Log($"No page count found on {dataSource.Name} or in metadata. Attempting to estimate page count...");
                         _logger.Log(Functions.GetPageCount(curBook.RawmlPath, curBook));
                     }
                     else
-                        _logger.Log("No page count found on Goodreads or in metadata");
+                        _logger.Log($"No page count found on {dataSource.Name} or in metadata");
                 }
             }
             catch (Exception ex)

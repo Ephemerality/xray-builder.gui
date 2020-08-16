@@ -102,10 +102,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
                     {
                         newBook.AmazonRating = float.Parse(matchId.Groups[1].Value);
                         // Try with current culture, then one that uses . as a separator, then US
-                        var numReviews = matchId.Groups[2].Value.TryParseInt(NumberStyles.AllowThousands, CultureInfo.CurrentCulture)
-                                         ?? matchId.Groups[2].Value.TryParseInt(NumberStyles.AllowThousands, new CultureInfo("nl-NL"))
-                                         ?? matchId.Groups[2].Value.TryParseInt(NumberStyles.AllowThousands, new CultureInfo("en-US"));
-                        newBook.Reviews = numReviews ?? 0;
+                        newBook.Reviews = matchId.Groups[2].Value.TryParseInt() ?? 0;
                         newBook.Editions = int.Parse(matchId.Groups[3].Value);
                     }
                 }

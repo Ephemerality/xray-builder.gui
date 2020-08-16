@@ -27,6 +27,13 @@ namespace XRayBuilder.Core.Libraries.Primitives.Extensions
                 : _pluralizer.Pluralize(value);
         }
 
+        public static int? TryParseInt(this string s)
+        {
+            return s.TryParseInt(NumberStyles.AllowThousands, CultureInfo.CurrentCulture)
+                   ?? s.TryParseInt(NumberStyles.AllowThousands, new CultureInfo("nl-NL"))
+                   ?? s.TryParseInt(NumberStyles.AllowThousands, new CultureInfo("en-US"));
+        }
+
         public static int? TryParseInt(this string s, NumberStyles style, IFormatProvider provider)
         {
             return int.TryParse(s, style, provider, out var result)

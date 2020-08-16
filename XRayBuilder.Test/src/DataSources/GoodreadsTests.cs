@@ -8,7 +8,6 @@ using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Model;
 using XRayBuilder.Core.Unpack;
-using XRayBuilder.Core.Unpack.Mobi;
 
 namespace XRayBuilder.Test.DataSources
 {

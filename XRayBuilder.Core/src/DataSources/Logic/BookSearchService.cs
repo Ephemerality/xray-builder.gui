@@ -15,10 +15,16 @@ namespace XRayBuilder.Core.DataSources.Logic
     public class BookSearchService : IBookSearchService
     {
         public async Task<BookInfo[]> SearchSecondarySourceAsync(ISecondarySource dataSource, IMetadata metadata, CancellationToken cancellationToken = default)
-            => (await dataSource.SearchBookAsync(metadata, cancellationToken))
-                .OrderByDescending(book => book.Reviews)
-                .ThenByDescending(book => book.Editions)
+        {
+            var results = (await dataSource.SearchBookAsync(metadata, cancellationToken)).ToArray();
+            if (results.Length == 1)
+                return results;
+
+            return results
+                .OrderByDescending(book => book.Editions)
+                .ThenByDescending(book => book.Reviews)
                 .ToArray();
+        }
 
         public sealed class Parameters
         {

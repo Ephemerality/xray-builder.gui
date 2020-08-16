@@ -22,7 +22,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
 
         public async Task<AuthorProfileGenerator.Response> ConvertAsync(Artifacts.EndActions endActions, CancellationToken cancellationToken)
         {
-            var authorBio = endActions.Data.AuthorBios?.Authors.FirstOrDefault();
+            var authorBio = endActions.Data.AuthorBios?.Authors?.FirstOrDefault();
             var firstAuthorRec = endActions.Data.AuthorRecs?.Recommendations.FirstOrDefault();
 
             var asin = authorBio?.Asin ?? firstAuthorRec?.Asin;

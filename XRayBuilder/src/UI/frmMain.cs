@@ -762,7 +762,7 @@ namespace XRayBuilderGUI.UI
                     }
 
                     _logger.Log($"Warning: Multiple results returned from {_dataSource.Name}...");
-                    var frmG = new frmGR(books);
+                    var frmG = new frmGR(books, _dataSource);
                     frmG.ShowDialog();
                     bookUrl = books[frmG.cbResults.SelectedIndex].DataUrl;
                 }

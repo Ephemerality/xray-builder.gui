@@ -252,6 +252,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             async Task<BookInfo> FromApOrSearch(BookInfo book, CancellationToken ct)
             {
                 return authorProfile.OtherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.Title, $@"^{book.Title}(?: \(.*\))?$"))
+                    ?? authorProfile.OtherBooks.FirstOrDefault(bk => book.Asin != null && bk.Asin == book.Asin)
                     ?? await SearchOrPrompt(book, asinPrompt, settings, ct);
             }
 

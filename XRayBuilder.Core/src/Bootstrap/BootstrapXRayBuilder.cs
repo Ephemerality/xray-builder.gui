@@ -1,4 +1,5 @@
 using SimpleInjector;
+using XRayBuilder.Core.DataSources.Logic;
 using XRayBuilder.Core.Libraries.Bootstrap.Model;
 using XRayBuilder.Core.Logic;
 
@@ -13,6 +14,7 @@ namespace XRayBuilder.Core.Bootstrap
         public void Register(Container container)
         {
             container.RegisterSingleton<IDirectoryService, DirectoryService>();
+            container.RegisterSingleton<IBookSearchService, BookSearchService>();
         }
     }
 }

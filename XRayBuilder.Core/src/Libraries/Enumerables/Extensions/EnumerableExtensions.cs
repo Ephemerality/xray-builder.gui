@@ -1,3 +1,4 @@
+#if NETFRAMEWORK
 using System.Collections.Generic;
 
 namespace XRayBuilder.Core.Libraries.Enumerables.Extensions
@@ -7,3 +8,4 @@ namespace XRayBuilder.Core.Libraries.Enumerables.Extensions
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> enumerable) => new HashSet<T>(enumerable);
     }
 }
+#endif

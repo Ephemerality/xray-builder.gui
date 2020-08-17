@@ -1,17 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
     <PropertyGroup>
-        <TargetFramework>net462</TargetFramework>
+        <TargetFrameworks>net462;netcoreapp3.1</TargetFrameworks>
         <LangVersion>latest</LangVersion>
-        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <AssemblyVersion>2.1.1.0</AssemblyVersion>
         <FileVersion>2.1.1.0</FileVersion>
+        <UseWindowsForms>true</UseWindowsForms>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="AsyncEnumerator" Version="4.0.2" />
         <PackageReference Include="HtmlAgilityPack" Version="1.11.23" />
         <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
-        <PackageReference Include="JonSkeet.MiscUtil" Version="0.2.0" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
         <PackageReference Include="Pluralize.NET" Version="1.0.2" />
         <PackageReference Include="SimpleInjector" Version="4.9.2" />
@@ -33,15 +32,14 @@
                 <Reference Include="Microsoft.CSharp" />
                 <Reference Include="System.Deployment" />
                 <Reference Include="System.Windows.Forms" />
+                <PackageReference Include="JonSkeet.MiscUtil" Version="0.2.0" />
             </ItemGroup>
         </When>
         <Otherwise>
-            <PropertyGroup>
-                <UseWindowsForms>true</UseWindowsForms>
-            </PropertyGroup>
             <ItemGroup>
                 <PackageReference Include="Microsoft.Windows.Compatibility" Version="3.1.0-preview3.19551.4" />
                 <PackageReference Include="Pluralize.NET.Core" Version="1.0.0" />
+                <PackageReference Include="JTForks.MiscUtil" Version="1.285.0" />
             </ItemGroup>
         </Otherwise>
     </Choose>

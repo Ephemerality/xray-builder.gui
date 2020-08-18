@@ -52,6 +52,19 @@ namespace XRayBuilder.Core.DataSources.Secondary
         private string SearchUrl(string author, string title) => $"https://www.goodreads.com/search?q={author}%20{title}";
         private string SearchUrlAsin(string asin) => $"https://www.goodreads.com/search?q={asin}";
 
+        public bool IsMatchingUrl(string url)
+        {
+            try
+            {
+                var uri = new Uri(url);
+                return uri.Host.ToLowerInvariant().EndsWith("goodreads.com");
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         public async Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
         {
             // Try by ASIN first, then fall back on author/title

@@ -115,5 +115,13 @@ namespace XRayBuilder.Test.DataSources
             Assert.GreaterOrEqual(book.NotableClips.Count, 500);
             Assert.GreaterOrEqual(book.Reviews, 1);
         }
+
+        [TestCase("https://www.goodreads.com/book/show/4214.Life_of_Pi", true)]
+        [TestCase("https://www.amazon.com/dp/B000000", false)]
+        [TestCase("/usr/home/something/file.txt", false)]
+        public void IsMatchingUrlTest(string url, bool expected)
+        {
+            Assert.AreEqual(expected, _goodreads.IsMatchingUrl(url));
+        }
     }
 }

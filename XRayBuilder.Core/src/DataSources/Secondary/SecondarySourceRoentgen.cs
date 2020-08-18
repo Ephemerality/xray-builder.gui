@@ -30,6 +30,11 @@ namespace XRayBuilder.Core.DataSources.Secondary
         public int UrlLabelPosition { get; } = 0;
         public bool SupportsNotableClips { get; } = false;
 
+        public bool IsMatchingUrl(string url)
+        {
+            return false;
+        }
+
         public Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();

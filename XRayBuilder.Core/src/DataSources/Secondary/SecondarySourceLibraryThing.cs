@@ -63,6 +63,19 @@ namespace XRayBuilder.Core.DataSources.Secondary
         private string GetSearchCookies()
             => $"LTAnonSessionID={_random.Next()}; LTUnifiedCookie=%7B%22areyouhuman%22%3A1%7D; cookie_from=https%3A%2F%2Fwww.librarything.com%2F; canuseStaticDomain=0; gdpr_notice_clicked=1";
 
+        public bool IsMatchingUrl(string url)
+        {
+            try
+            {
+                var uri = new Uri(url);
+                return uri.Host.ToLowerInvariant().EndsWith("librarything.com");
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         public async Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
         {
             if (!string.IsNullOrEmpty(metadata.Isbn))

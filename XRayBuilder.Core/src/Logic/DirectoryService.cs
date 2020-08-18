@@ -10,9 +10,9 @@ namespace XRayBuilder.Core.Logic
     public sealed class DirectoryService : IDirectoryService
     {
         private readonly ILogger _logger;
-        private readonly XRayBuilderConfig _config;
+        private readonly IXRayBuilderConfig _config;
 
-        public DirectoryService(ILogger logger, XRayBuilderConfig config)
+        public DirectoryService(ILogger logger, IXRayBuilderConfig config)
         {
             _logger = logger;
             _config = config;

@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 using XRayBuilder.Core.Model;
 
@@ -29,6 +30,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
         [JsonProperty("class")]
         public string Class { get; set; } = "authorBioList";
 
+        [CanBeNull]
         [JsonProperty("authors")]
         public Author[] Authors { get; set; }
     }

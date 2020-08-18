@@ -30,6 +30,19 @@ namespace XRayBuilder.Core.Libraries.Http
             Timeout = System.Threading.Timeout.InfiniteTimeSpan;
         }
 
+        public HttpClient(ILogger logger, bool allowRedirect) : base(
+            new HttpClientHandler
+                {
+                    UseCookies = false,
+                    AutomaticDecompression = DecompressionMethods.GZip,
+                    AllowAutoRedirect = allowRedirect
+                }.DecorateWith(new TimeoutHandler())
+                .DecorateWith(new RetryHandler())
+                .DecorateWith(new AmazonHandler(logger)))
+        {
+            Timeout = System.Threading.Timeout.InfiniteTimeSpan;
+        }
+
         public async Task<string> GetStringAsync(string url, CancellationToken cancellationToken = default)
         {
             var response = await GetStreamAsync(url, cancellationToken);

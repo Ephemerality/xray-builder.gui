@@ -12,6 +12,7 @@ using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Model;
+using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Artifacts;
 
 namespace XRayBuilder.Core.DataSources.Secondary
@@ -80,7 +81,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
         //     return "";
         // }
 
-        public Task<IEnumerable<BookInfo>> SearchBookAsync(string author, string title, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -196,8 +197,5 @@ namespace XRayBuilder.Core.DataSources.Secondary
                     Likes = 0
                 });
         }
-
-        public Task<IEnumerable<BookInfo>> SearchBookByAsinAsync(string asin, CancellationToken cancellationToken = default)
-            => Task.FromResult(Enumerable.Empty<BookInfo>());
     }
 }

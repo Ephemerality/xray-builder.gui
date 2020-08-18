@@ -1,6 +1,7 @@
 using SimpleInjector;
 using XRayBuilder.Core.Libraries.Bootstrap.Model;
 using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Libraries.Logging.Bootstrap;
 
 namespace XRayBuilder.Core.Libraries.Http.Bootstrap
 {
@@ -8,6 +9,7 @@ namespace XRayBuilder.Core.Libraries.Http.Bootstrap
     {
         public void Register(IBootstrapBuilder builder)
         {
+            builder.Register<BootstrapLogging>();
         }
 
         public void Register(Container container)

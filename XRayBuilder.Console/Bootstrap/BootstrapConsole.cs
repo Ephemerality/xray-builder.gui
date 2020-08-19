@@ -1,5 +1,11 @@
 using SimpleInjector;
+using XRayBuilder.Console.Logic;
+using XRayBuilder.Core.Bootstrap;
+using XRayBuilder.Core.DataSources.Amazon.Bootstrap;
+using XRayBuilder.Core.DataSources.Roentgen.Bootstrap;
+using XRayBuilder.Core.DataSources.Secondary.Bootstrap;
 using XRayBuilder.Core.Libraries.Bootstrap.Model;
+using XRayBuilder.Core.XRay.Bootstrap;
 
 namespace XRayBuilder.Console.Bootstrap
 {
@@ -7,12 +13,16 @@ namespace XRayBuilder.Console.Bootstrap
     {
         public void Register(IBootstrapBuilder builder)
         {
-            throw new System.NotImplementedException();
+            builder.Register<BootstrapAmazon>();
+            builder.Register<BootstrapSecondary>();
+            builder.Register<BootstrapXRay>();
+            builder.Register<BootstrapRoentgen>();
+            builder.Register<BootstrapXRayBuilder>();
         }
 
         public void Register(Container container)
         {
-            throw new System.NotImplementedException();
+            container.RegisterSingleton<XRay>();
         }
     }
 }

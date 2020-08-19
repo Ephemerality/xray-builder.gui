@@ -1,15 +1,11 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 using SimpleInjector;
+using XRayBuilder.Console.Bootstrap;
 using XRayBuilder.Console.Command;
-using XRayBuilder.Core.Bootstrap;
 using XRayBuilder.Core.Config;
-using XRayBuilder.Core.DataSources.Amazon.Bootstrap;
-using XRayBuilder.Core.DataSources.Roentgen.Bootstrap;
-using XRayBuilder.Core.DataSources.Secondary.Bootstrap;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Bootstrap.Logic;
 using XRayBuilder.Core.Libraries.SimpleInjector.Extensions;
-using XRayBuilder.Core.XRay.Bootstrap;
 
 namespace XRayBuilder.Console
 {
@@ -59,11 +55,7 @@ namespace XRayBuilder.Console
             container.RegisterSingleton(() => xrayBuilderConfig);
 
             var builder = new BootstrapBuilder(container);
-            builder.Register<BootstrapAmazon>();
-            builder.Register<BootstrapSecondary>();
-            builder.Register<BootstrapXRay>();
-            builder.Register<BootstrapRoentgen>();
-            builder.Register<BootstrapXRayBuilder>();
+            builder.Register<BootstrapConsole>();
 
             return builder.Build();
         }

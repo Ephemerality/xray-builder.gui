@@ -12,14 +12,16 @@ namespace XRayBuilder.Core.DataSources.Secondary
             SecondarySourceShelfari shelfari,
             SecondarySourceGoodreads goodreads,
             SecondarySourceFile file,
-            SecondarySourceLibraryThing libraryThing)
+            SecondarySourceLibraryThing libraryThing,
+            SecondarySourceRoentgen roentgen)
         {
             Dictionary = new Dictionary<Enum, ISecondarySource>
             {
                 {Enum.Shelfari, shelfari},
                 {Enum.Goodreads, goodreads},
                 {Enum.File, file},
-                {Enum.LibraryThing, libraryThing}
+                {Enum.LibraryThing, libraryThing},
+                {Enum.Roentgen, roentgen}
             };
         }
 
@@ -28,7 +30,8 @@ namespace XRayBuilder.Core.DataSources.Secondary
             Shelfari,
             Goodreads,
             File,
-            LibraryThing
+            LibraryThing,
+            Roentgen
         }
 
         protected override Dictionary<Enum, ISecondarySource> Dictionary { get; }

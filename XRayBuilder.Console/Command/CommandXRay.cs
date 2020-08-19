@@ -26,7 +26,9 @@ namespace XRayBuilder.Console.Command
             var xrayOptions = new XRayBuildOptions
             {
                 DataUrl = cli.Option("--dataurl", "URL (or path to an XML/TXT file) from which the terms should be loaded. If not specified, terms will come from Roentgen if possible.", CommandOptionType.SingleValue),
-                AliasFile = cli.Option("--aliases", "Optional path to an alias file. If not specified, the default path will be used.", CommandOptionType.SingleValue)
+                AliasFile = cli.Option("--aliases", "Optional path to an alias file. If not specified, the default path will be used.", CommandOptionType.SingleValue),
+                IncludeTopics = cli.Option("--topics", "When set, topics will be included with the set of imported terms. Default is false.", CommandOptionType.NoValue),
+                SplitAliases = cli.Option("--splitaliases", "When set, aliases will be automatically split apart using a set of common titles, prefixes, etc.", CommandOptionType.NoValue)
             };
             cli.OnExecute(cancellationToken => OnExecute(xrayOptions, cancellationToken));
         }
@@ -35,6 +37,8 @@ namespace XRayBuilder.Console.Command
         {
             public CommandOption DataUrl { get; set; }
             public CommandOption AliasFile { get; set; }
+            public CommandOption IncludeTopics { get; set; }
+            public CommandOption SplitAliases { get; set; }
         }
 
         private async Task<int> OnExecute(XRayBuildOptions xrayBuildOptions, CancellationToken cancellationToken)

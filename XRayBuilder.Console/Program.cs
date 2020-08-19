@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.CommandLineUtils;
+﻿using System.Threading.Tasks;
+using McMaster.Extensions.CommandLineUtils;
 using SimpleInjector;
 using XRayBuilder.Console.Bootstrap;
 using XRayBuilder.Console.Command;
@@ -11,7 +12,7 @@ namespace XRayBuilder.Console
 {
     internal static class Program
     {
-        private static int Main(string[] args)
+        private static Task<int> Main(string[] args)
         {
             var cli = new CommandLineApplication
             {
@@ -32,13 +33,13 @@ namespace XRayBuilder.Console
                 cli.Command(command.Name, app => command.Configure(app));
             }
 
-            return cli.Execute(args);
+            return cli.ExecuteAsync(args);
         }
 
         private static BaseOptions AddBaseConfig(CommandLineApplication cli)
             => new BaseOptions
             {
-                Book = cli.Argument("book", "Path to the book to be processed (mobi, azw3, kfx only)."),
+                Book = cli.Argument("book", "Path to the book to be processed (mobi, azw3, kfx only).").IsRequired(),
                 Android = cli.Option("--android", "Build the X-Ray for Android.", CommandOptionType.NoValue),
                 BaseOutputDirectory = cli.Option("-o|--output", "Specify the base output directory. Default is /out.", CommandOptionType.SingleValue),
                 OutputToSidecar = cli.Option("--sidecar", "Output to a sidecar directory within the output directory, eg Book.sdr", CommandOptionType.NoValue),

@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.CommandLineUtils;
+using McMaster.Extensions.CommandLineUtils;
 using SimpleInjector;
 using XRayBuilder.Console.Extensions;
 using XRayBuilder.Core.Config;

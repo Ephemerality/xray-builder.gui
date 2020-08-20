@@ -60,7 +60,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
             return $"/ajax_newsearch.php?search={author}%20{title}&searchtype=newwork_titles&page=1&sortchoice=0&optionidpotential=0&optionidreal=0&randomnumber={_random.Next()}";
         }
 
-        private string GetSearchCookies()
+        private string GetCookies()
             => $"LTAnonSessionID={_random.Next()}; LTUnifiedCookie=%7B%22areyouhuman%22%3A1%7D; cookie_from=https%3A%2F%2Fwww.librarything.com%2F; canuseStaticDomain=0; gdpr_notice_clicked=1";
 
         public bool IsMatchingUrl(string url)
@@ -87,9 +87,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
                 }
             }
 
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{BaseUrl}{SearchEndpoint(metadata.Author, metadata.Title)}");
-            request.Headers.Add("Cookie", GetSearchCookies());
-            var result = await _httpClient.SendAsync(request, cancellationToken);
+            var result = await GetAsync($"{BaseUrl}{SearchEndpoint(metadata.Author, metadata.Title)}", cancellationToken);
             var response = JsonUtil.Deserialize<SearchResultPayload>(await result.Content.ReadAsStringAsync());
             var htmlPayload = Encoding.UTF8.GetString(Convert.FromBase64String(response.Text));
 
@@ -141,7 +139,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
         {
             try
             {
-                await _httpClient.GetAsync($"{BaseUrl}{IsbnSearchEndpoint(isbn)}", cancellationToken);
+                await GetAsync($"{BaseUrl}{IsbnSearchEndpoint(isbn)}", cancellationToken);
             }
             catch (HttpClientException ex) when (ex.Response.StatusCode == HttpStatusCode.Found)
             {
@@ -160,7 +158,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
         public async Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
         {
-            var page = await _httpClient.GetPageAsync(dataUrl, cancellationToken);
+            var page = await GetPageAsync(dataUrl, cancellationToken);
             var seriesNode = page.DocumentNode
                 .SelectSingleNode("//div[@id='seriesforwork_container']/h2[contains(text(), 'Belongs to Series')]")
                 ?.NextSibling;
@@ -174,7 +172,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
             var seriesIndex = int.Parse(seriesMatch.Groups["index"].Value);
             seriesUrl = $"{BaseUrl}{seriesUrl}";
 
-            var seriesPage = await _httpClient.GetPageAsync(seriesUrl, cancellationToken);
+            var seriesPage = await GetPageAsync(seriesUrl, cancellationToken);
             var coreNode = seriesPage.DocumentNode.SelectSingleNode("//h2[contains(text(), 'Core')]")?.NextSibling;
             if (coreNode == null)
                 return null;
@@ -227,7 +225,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
         public async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
         {
             _logger.Log($"Downloading {Name} page...");
-            var page = await _httpClient.GetPageAsync(dataUrl, cancellationToken);
+            var page = await GetPageAsync(dataUrl, cancellationToken);
             var characterNodes = page.DocumentNode.SelectNodes("//div[@class='fwikiItem divcharacternames']//a");
             _logger.Log($"Gathering term information from {Name}... ({characterNodes.Count})");
             progress?.Set(0, characterNodes.Count);
@@ -275,7 +273,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
         private async Task<Term> GetTermAsync(string termName, string relativeUrl, CancellationToken cancellationToken = default)
         {
             var url = $"{BaseUrl}{relativeUrl}";
-            var charDoc = await _httpClient.GetPageAsync(url, cancellationToken);
+            var charDoc = await GetPageAsync(url, cancellationToken);
             var description = charDoc.DocumentNode.SelectSingleNode("//div[@class='fwikiItem divdescription']")?.InnerText.Clean();
 
             return new Term
@@ -291,6 +289,25 @@ namespace XRayBuilder.Core.DataSources.Secondary
         public Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
+        }
+
+        public async Task<HtmlDocument> GetPageAsync(string url, CancellationToken cancellationToken)
+        {
+            var htmlDoc = new HtmlDocument
+            {
+                OptionAutoCloseOnEnd = true
+            };
+            var result = await GetAsync(url, cancellationToken);
+            var stream = await result.Content.ReadAsStreamAsync();
+            htmlDoc.Load(stream, Encoding.UTF8);
+            return htmlDoc;
+        }
+
+        private Task<HttpResponseMessage> GetAsync(string url, CancellationToken cancellationToken)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Post, url);
+            request.Headers.Add("Cookie", GetCookies());
+            return _httpClient.SendAsync(request, cancellationToken);
         }
     }
 }

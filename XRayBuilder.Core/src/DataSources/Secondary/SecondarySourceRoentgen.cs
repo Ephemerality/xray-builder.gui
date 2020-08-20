@@ -30,9 +30,11 @@ namespace XRayBuilder.Core.DataSources.Secondary
         public int UrlLabelPosition { get; } = 0;
         public bool SupportsNotableClips { get; } = false;
 
+        public const string FakeUrl = "https://roentgen";
+
         public bool IsMatchingUrl(string url)
         {
-            return false;
+            return url.Equals(FakeUrl);
         }
 
         public Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)

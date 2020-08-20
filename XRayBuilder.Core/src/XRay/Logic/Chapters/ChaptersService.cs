@@ -31,7 +31,7 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
         public void HandleChapters(XRay xray, string asin, long mlLen, HtmlDocument doc, string rawMl, bool overwriteChapters, SafeShowDelegate safeShow, bool unattended, bool enableEdit)
         {
             //Similar to aliases, if chapters definition exists, load it. Otherwise, attempt to build it from the book
-            var chapterFile = $@"{Environment.CurrentDirectory}\ext\{asin}.chapters";
+            var chapterFile = $@"{AppDomain.CurrentDomain.BaseDirectory}\ext\{asin}.chapters";
             if (File.Exists(chapterFile) && !overwriteChapters)
             {
                 try
@@ -115,7 +115,7 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
 
         private void SaveChapters(XRay xray)
         {
-            var path = Environment.CurrentDirectory + @"\ext\";
+            var path = AppDomain.CurrentDomain.BaseDirectory + @"\ext\";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             using var streamWriter = new StreamWriter($"{path}{xray.Asin}.chapters", false, Encoding.UTF8);
@@ -125,10 +125,10 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
 
         private IEnumerable<Chapter> LoadChapters(string asin)
         {
-            var path = Environment.CurrentDirectory + @"\ext\" + asin + ".chapters";
+            var path = AppDomain.CurrentDomain.BaseDirectory + @"\ext\" + asin + ".chapters";
             if (!File.Exists(path))
                 throw new Exception($"Chapters file does not exist: {path}");
-            using var streamReader = new StreamReader(Environment.CurrentDirectory + @"\ext\" + asin + ".chapters", Encoding.UTF8);
+            using var streamReader = new StreamReader(AppDomain.CurrentDomain.BaseDirectory + @"\ext\" + asin + ".chapters", Encoding.UTF8);
             while (!streamReader.EndOfStream)
             {
                 var tmp = streamReader.ReadLine()?.Split('|');

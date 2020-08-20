@@ -111,7 +111,7 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
         public void SaveCharactersToFile(IEnumerable<Term> terms, string asin, bool splitAliases)
         {
             // todo service should handle this
-            var path = $@"{Environment.CurrentDirectory}\ext\";
+            var path = $@"{AppDomain.CurrentDomain.BaseDirectory}\ext\";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 

@@ -66,7 +66,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
 //                try
 //                {
 //                    _logger.Log("Saving author's Amazon webpage...");
-//                    File.WriteAllText(Environment.CurrentDirectory + string.Format(@"\dmp\{0}.authorpageHtml.txt", request.Book.Asin),
+//                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + string.Format(@"\dmp\{0}.authorpageHtml.txt", request.Book.Asin),
 //                        searchResults.AuthorHtmlDoc.DocumentNode.InnerHtml);
 //                }
 //                catch (Exception ex)
@@ -99,7 +99,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
 
             // TODO: Separate out biography stuff
             string biography = null;
-            var bioFile = Environment.CurrentDirectory + @"\ext\" + authorAsin + ".bio";
+            var bioFile = AppDomain.CurrentDomain.BaseDirectory + @"\ext\" + authorAsin + ".bio";
             var readFromFile = false;
             if (request.Settings.SaveBio && File.Exists(bioFile))
             {

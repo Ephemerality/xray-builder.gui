@@ -65,7 +65,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             }
             catch (Exception ex)
             {
-                _logger.Log(string.Format("An error ocurred while downloading book's Amazon page: {0}\r\nYour ASIN may not be correct.", ex.Message));
+                _logger.Log($"An error ocurred while downloading book's Amazon page: {ex.Message}\r\nYour ASIN may not be correct.");
                 return null;
             }
             _logger.Log("Book found on Amazon!");
@@ -74,13 +74,11 @@ namespace XRayBuilder.Core.Extras.EndActions
                 try
                 {
                     _logger.Log("Saving book's Amazon webpage...");
-                    File.WriteAllText(Environment.CurrentDirectory +
-                                      string.Format(@"\dmp\{0}.bookpageHtml.txt", curBook.Asin),
-                        bookHtmlDoc.DocumentNode.InnerHtml);
+                    await File.WriteAllTextAsync($@"{AppDomain.CurrentDomain.BaseDirectory}\dmp\{curBook.Asin}.bookpageHtml.txt", bookHtmlDoc.DocumentNode.InnerHtml, cancellationToken);
                 }
                 catch (Exception ex)
                 {
-                    _logger.Log(string.Format("An error ocurred saving bookpageHtml.txt: {0}", ex.Message));
+                    _logger.Log($"An error ocurred saving bookpageHtml.txt: {ex.Message}");
                 }
             }
 
@@ -91,7 +89,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             }
             catch (Exception ex)
             {
-                _logger.Log(string.Format("An error ocurred parsing Amazon info: {0}", ex.Message));
+                _logger.Log($"An error ocurred parsing Amazon info: {ex.Message}");
                 return null;
             }
 

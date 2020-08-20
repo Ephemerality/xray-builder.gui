@@ -21,7 +21,7 @@ namespace XRayBuilder.Core.Extras.StartActions
         {
             try
             {
-                var template = File.ReadAllText($@"{Environment.CurrentDirectory}\dist\BaseStartActions.json", Encoding.UTF8);
+                var template = File.ReadAllText($@"{AppDomain.CurrentDomain.BaseDirectory}\dist\BaseStartActions.json", Encoding.UTF8);
                 _baseStartActions = JsonConvert.DeserializeObject<Artifacts.StartActions>(template);
             }
             catch (FileNotFoundException)

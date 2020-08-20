@@ -100,7 +100,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
 
             // TODO: Separate out biography stuff
             string biography = null;
-            var bioFile = AppDomain.CurrentDomain.BaseDirectory + @"\ext\" + authorAsin + ".bio";
+            var bioFile = $@"{AppDomain.CurrentDomain.BaseDirectory}ext\{authorAsin}.bio";
             var readFromFile = false;
             if (request.Settings.SaveBio && File.Exists(bioFile))
             {

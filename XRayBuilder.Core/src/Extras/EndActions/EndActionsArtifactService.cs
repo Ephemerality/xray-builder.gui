@@ -26,7 +26,7 @@ namespace XRayBuilder.Core.Extras.EndActions
 
             try
             {
-                var template = File.ReadAllText($@"{AppDomain.CurrentDomain.BaseDirectory}\dist\BaseEndActions.json", Encoding.UTF8);
+                var template = File.ReadAllText($@"{AppDomain.CurrentDomain.BaseDirectory}dist\BaseEndActions.json", Encoding.UTF8);
                 _baseEndActions = JsonConvert.DeserializeObject<Artifacts.EndActions>(template);
             }
             catch (FileNotFoundException)

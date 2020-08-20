@@ -74,8 +74,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 try
                 {
                     _logger.Log("Saving Amazon's author search webpage...");
-                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + $"\\dmp\\{bookAsin}.authorsearchHtml.txt",
-                        authorSearchDoc.DocumentNode.InnerHtml);
+                    File.WriteAllText($@"{AppDomain.CurrentDomain.BaseDirectory}dmp\{bookAsin}.authorsearchHtml.txt", authorSearchDoc.DocumentNode.InnerHtml);
                 }
                 catch (Exception ex)
                 {

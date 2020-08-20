@@ -55,7 +55,7 @@ namespace XRayBuilder.Core.XRay
         }
 
         // TODO directory service to handle default paths
-        public string AliasPath => $@"{AppDomain.CurrentDomain.BaseDirectory}\ext\{Asin}.aliases";
+        public string AliasPath => $@"{AppDomain.CurrentDomain.BaseDirectory}ext\{Asin}.aliases";
 
         public string Guid
         {

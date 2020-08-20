@@ -74,7 +74,7 @@ namespace XRayBuilder.Core.Extras.EndActions
                 try
                 {
                     _logger.Log("Saving book's Amazon webpage...");
-                    var path = $@"{AppDomain.CurrentDomain.BaseDirectory}\dmp\{curBook.Asin}.bookpageHtml.txt";
+                    var path = $@"{AppDomain.CurrentDomain.BaseDirectory}dmp\{curBook.Asin}.bookpageHtml.txt";
 #if NETCOREAPP3_1
                     await File.WriteAllTextAsync(path, bookHtmlDoc.DocumentNode.InnerHtml, cancellationToken);
 #else

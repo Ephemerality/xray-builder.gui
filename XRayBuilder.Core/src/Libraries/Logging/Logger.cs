@@ -28,7 +28,7 @@ namespace XRayBuilder.Core.Libraries.Logging
     {
         public event LogEventHandler LogEvent;
 
-        public void Log(string message, LogLevel level = LogLevel.Auto)
+        public void Log(string message, LogLevel level = LogLevel.Info)
         {
             Console.WriteLine($"{level}: {message}");
             LogEvent?.Invoke(new LogEventArgs
@@ -42,7 +42,7 @@ namespace XRayBuilder.Core.Libraries.Logging
     public interface ILogger
     {
         event LogEventHandler LogEvent;
-        void Log(string message, LogLevel level = LogLevel.Auto);
+        void Log(string message, LogLevel level = LogLevel.Info);
     }
 
     public enum LogLevel

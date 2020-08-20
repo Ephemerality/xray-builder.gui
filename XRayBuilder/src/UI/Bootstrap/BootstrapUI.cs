@@ -1,5 +1,6 @@
 using SimpleInjector;
 using XRayBuilder.Core.Libraries.Bootstrap.Model;
+using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.SimpleInjector.Extensions;
 using XRayBuilderGUI.UI.Preview;
 using XRayBuilderGUI.UI.Preview.Model;
@@ -19,6 +20,7 @@ namespace XRayBuilderGUI.UI.Bootstrap
             container.RegisterSingleton<PreviewProviderFactory>();
             container.AutoregisterConcreteFromAbstract<PreviewProvider>(Lifestyle.Singleton);
             container.AutoregisterDisposableTransientConcreteFromInterface<IPreviewForm>("Manually disposed");
+            container.RegisterSingleton<ILogger, Logger>();
         }
     }
 }

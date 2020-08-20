@@ -26,16 +26,16 @@ namespace XRayBuilder.Core.Extras.EndActions
 
             try
             {
-                var template = File.ReadAllText($@"{AppDomain.CurrentDomain.BaseDirectory}dist\BaseEndActions.json", Encoding.UTF8);
+                var template = File.ReadAllText($"{AppDomain.CurrentDomain.BaseDirectory}dist/BaseEndActions.json", Encoding.UTF8);
                 _baseEndActions = JsonConvert.DeserializeObject<Artifacts.EndActions>(template);
             }
             catch (FileNotFoundException)
             {
-                throw new InitializationException(@"Unable to find dist\BaseEndActions.json, make sure it has been extracted!");
+                throw new InitializationException("Unable to find dist/BaseEndActions.json, make sure it has been extracted!");
             }
             catch (Exception e)
             {
-                throw new InitializationException($@"An error occurred while loading dist\BaseEndActions.json (make sure any new versions have been extracted!)\r\n{e.Message}\r\n{e.StackTrace}", e);
+                throw new InitializationException($"An error occurred while loading dist/BaseEndActions.json (make sure any new versions have been extracted!)\r\n{e.Message}\r\n{e.StackTrace}", e);
             }
         }
 

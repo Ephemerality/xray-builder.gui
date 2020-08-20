@@ -29,7 +29,8 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
         public void HandleChapters(XRay xray, string asin, long mlLen, HtmlDocument doc, string rawMl, bool overwriteChapters, [CanBeNull] Func<bool> editChaptersCallback)
         {
             //Similar to aliases, if chapters definition exists, load it. Otherwise, attempt to build it from the book
-            var chapterFile = $@"{AppDomain.CurrentDomain.BaseDirectory}ext\{asin}.chapters";
+            // todo directory service
+            var chapterFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext", $"{asin}.chapters");
             if (File.Exists(chapterFile) && !overwriteChapters)
             {
                 try
@@ -110,20 +111,20 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
 
         private void SaveChapters(XRay xray)
         {
-            var path = $@"{AppDomain.CurrentDomain.BaseDirectory}ext\";
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext");
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            using var streamWriter = new StreamWriter($"{path}{xray.Asin}.chapters", false, Encoding.UTF8);
+            using var streamWriter = new StreamWriter(Path.Combine(path, $"{xray.Asin}.chapters"), false, Encoding.UTF8);
             foreach (var chapter in xray.Chapters)
                 streamWriter.WriteLine($"{chapter.Name}|{chapter.Start}|{chapter.End}");
         }
 
         private IEnumerable<Chapter> LoadChapters(string asin)
         {
-            var path = $@"{AppDomain.CurrentDomain.BaseDirectory}ext\{asin}.chapters";
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext", $"{asin}.chapters");
             if (!File.Exists(path))
                 throw new Exception($"Chapters file does not exist: {path}");
-            using var streamReader = new StreamReader($@"{AppDomain.CurrentDomain.BaseDirectory}ext\{asin}.chapters", Encoding.UTF8);
+            using var streamReader = new StreamReader(path, Encoding.UTF8);
             while (!streamReader.EndOfStream)
             {
                 var tmp = streamReader.ReadLine()?.Split('|');

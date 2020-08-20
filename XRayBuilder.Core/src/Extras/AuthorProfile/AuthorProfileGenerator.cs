@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
@@ -100,7 +99,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
 
             // TODO: Separate out biography stuff
             string biography = null;
-            var bioFile = $@"{AppDomain.CurrentDomain.BaseDirectory}ext\{authorAsin}.bio";
+            var bioFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext", $"{authorAsin}.bio");
             var readFromFile = false;
             if (request.Settings.SaveBio && File.Exists(bioFile))
             {

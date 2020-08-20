@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.DataSources.Secondary.Model;
 using XRayBuilder.Core.Libraries;
@@ -55,7 +56,7 @@ namespace XRayBuilder.Core.XRay
         }
 
         // TODO directory service to handle default paths
-        public string AliasPath => $@"{AppDomain.CurrentDomain.BaseDirectory}ext\{Asin}.aliases";
+        public string AliasPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext", $"{Asin}.aliases");
 
         public string Guid
         {

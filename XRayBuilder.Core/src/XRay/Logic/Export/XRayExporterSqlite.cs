@@ -53,7 +53,7 @@ namespace XRayBuilder.Core.XRay.Logic.Export
             string sql;
             try
             {
-                using var streamReader = new StreamReader($@"{AppDomain.CurrentDomain.BaseDirectory}dist\BaseDB.sql", Encoding.UTF8);
+                using var streamReader = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dist/BaseDB.sql"), Encoding.UTF8);
                 sql = streamReader.ReadToEnd();
             }
             catch (Exception ex)

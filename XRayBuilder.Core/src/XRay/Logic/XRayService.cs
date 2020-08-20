@@ -79,6 +79,7 @@ namespace XRayBuilder.Core.XRay.Logic
 
             if (!aliasesDownloaded && (!File.Exists(path) || overwriteAliases))
             {
+                // todo the passed in path isn't even used....
                 _aliasesRepository.SaveCharactersToFile(xray.Terms, xray.Asin, splitAliases);
                 _logger.Log($"Characters exported to {path} for adding aliases.");
             }

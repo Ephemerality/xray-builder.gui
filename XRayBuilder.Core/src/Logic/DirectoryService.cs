@@ -43,7 +43,7 @@ namespace XRayBuilder.Core.Logic
             var outputDir = "";
 
             if (_config.BuildForAndroid)
-                outputDir = $@"{_config.BaseOutputDirectory}\Android\{asin}";
+                outputDir = $"{_config.BaseOutputDirectory}/Android/{asin}";
             else if (!_config.UseSubdirectories)
                 outputDir = _config.BaseOutputDirectory;
 

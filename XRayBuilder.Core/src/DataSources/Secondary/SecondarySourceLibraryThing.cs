@@ -276,12 +276,13 @@ namespace XRayBuilder.Core.DataSources.Secondary
         {
             var url = $"{BaseUrl}{relativeUrl}";
             var charDoc = await _httpClient.GetPageAsync(url, cancellationToken);
+            var description = charDoc.DocumentNode.SelectSingleNode("//div[@class='fwikiItem divdescription']")?.InnerText.Clean();
 
             return new Term
             {
                 Type = "character",
                 DescSrc = Name,
-                Desc = charDoc.DocumentNode.SelectSingleNode("//div[@class='fwikiItem divdescription']").InnerText.Clean(),
+                Desc = description,
                 TermName = termName,
                 DescUrl = url
             };

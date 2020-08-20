@@ -34,6 +34,7 @@ namespace XRayBuilder.Core.Libraries.Bootstrap.Logic
         public Container Build()
         {
             _registrar.RegisterSegments(_segments, _container);
+            _container.Options.ResolveUnregisteredConcreteTypes = false;
             _container.Verify();
             return _container;
         }

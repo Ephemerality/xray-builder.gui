@@ -6,6 +6,7 @@ using XRayBuilder.Core.XRay.Logic.Aliases;
 using XRayBuilder.Core.XRay.Logic.Chapters;
 using XRayBuilder.Core.XRay.Logic.Export;
 using XRayBuilder.Core.XRay.Logic.Terms;
+using XRayBuilder.Core.XRay.Model.Export;
 
 namespace XRayBuilder.Core.XRay.Bootstrap
 {
@@ -25,6 +26,7 @@ namespace XRayBuilder.Core.XRay.Bootstrap
             container.RegisterSingleton<IAliasesRepository, AliasesRepository>();
             container.RegisterSingleton<IPreviewDataExporter, PreviewDataExporter>();
             container.RegisterSingleton<ChaptersService>();
+            container.RegisterSingleton<XRayExporterFactory>();
         }
     }
 }

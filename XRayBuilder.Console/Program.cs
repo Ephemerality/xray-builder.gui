@@ -52,7 +52,6 @@ namespace XRayBuilder.Console
         {
             var container = new Container();
 
-            container.AutoregisterConcreteFromInterface(typeof(IFactory<,>), Lifestyle.Singleton);
             container.RegisterSingleton(() => xrayBuilderConfig);
 
             var builder = new BootstrapBuilder(container);

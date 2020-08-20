@@ -21,6 +21,7 @@ namespace XRayBuilder.Core.DataSources.Secondary.Bootstrap
         public void Register(Container container)
         {
             container.AutoregisterConcreteFromInterface<ISecondarySource>(Lifestyle.Singleton);
+            container.RegisterSingleton<SecondaryDataSourceFactory>();
         }
     }
 }

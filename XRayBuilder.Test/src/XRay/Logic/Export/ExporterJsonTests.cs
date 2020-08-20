@@ -46,7 +46,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             var metadata = new Metadata(fs);
             _aliasesRepository.LoadAliasesForXRay(xray);
             using var bookFs = new FileStream(book.Rawml, FileMode.Open);
-            _xrayService.ExpandFromRawMl(xray, metadata, bookFs, false, false, true, 0, true, null, null, CancellationToken.None, false, false);
+            _xrayService.ExpandFromRawMl(xray, metadata, bookFs, false, true, 0, true, null, null, CancellationToken.None, false, false);
             string filename = xray.XRayName();
             string outpath = Path.Combine(Environment.CurrentDirectory, "out", filename);
             xray.CreatedAt = new DateTime(2019, 11, 2, 13, 19, 18, DateTimeKind.Utc);

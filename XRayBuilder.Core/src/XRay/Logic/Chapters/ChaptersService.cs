@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using HtmlAgilityPack;
 using JetBrains.Annotations;
 using XRayBuilder.Core.Libraries;
@@ -27,8 +26,7 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
         /// <summary>
         /// Read the chapters or search for them and apply them to the given <param name="xray"></param>
         /// </summary>
-        // TODO Do something about unattended/dialog stuff
-        public void HandleChapters(XRay xray, string asin, long mlLen, HtmlDocument doc, string rawMl, bool overwriteChapters, SafeShowDelegate safeShow, bool unattended, bool enableEdit)
+        public void HandleChapters(XRay xray, string asin, long mlLen, HtmlDocument doc, string rawMl, bool overwriteChapters, [CanBeNull] Func<bool> editChaptersCallback)
         {
             //Similar to aliases, if chapters definition exists, load it. Otherwise, attempt to build it from the book
             var chapterFile = $@"{AppDomain.CurrentDomain.BaseDirectory}\ext\{asin}.chapters";
@@ -66,24 +64,21 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
                     _logger.Log($"No chapters detected.\r\nYou can create a file at {chapterFile} if you want to define chapters manually.");
             }
 
-            if (!unattended && enableEdit)
-                if (DialogResult.Yes ==
-                    safeShow("Would you like to open the chapters file in notepad for editing?", "Chapters",
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
-                {
-                    Functions.RunNotepad(chapterFile);
-                    xray.Chapters.Clear();
+            if (editChaptersCallback != null && editChaptersCallback())
+            {
+                Functions.RunNotepad(chapterFile);
+                xray.Chapters.Clear();
 
-                    try
-                    {
-                        xray.Chapters = LoadChapters(asin).ToList();
-                        _logger.Log("Reloaded chapters from edited file.");
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Log($"An error occurred reading chapters from {chapterFile}: {ex.Message}");
-                    }
+                try
+                {
+                    xray.Chapters = LoadChapters(asin).ToList();
+                    _logger.Log("Reloaded chapters from edited file.");
                 }
+                catch (Exception ex)
+                {
+                    _logger.Log($"An error occurred reading chapters from {chapterFile}: {ex.Message}");
+                }
+            }
 
             //If no chapters were found, add a default chapter that spans the entire book
             //Define srl and erl so "progress bar" shows up correctly

@@ -58,7 +58,7 @@ namespace XRayBuilder.Test
             xray.Unattended = true;
             var fakeMetadata = new Metadata();
             using var fs = new FileStream(book.Rawml, FileMode.Open);
-            _xrayService.ExpandFromRawMl(xray, fakeMetadata, fs, false, true, true, 0, true, null, null, CancellationToken.None, false, false);
+            _xrayService.ExpandFromRawMl(xray, fakeMetadata, fs, true, true, 0, true, null, null, CancellationToken.None, false, false);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
@@ -68,7 +68,7 @@ namespace XRayBuilder.Test
             xray.Unattended = true;
             var fakeMetadata = new Metadata();
             using var fs = new FileStream(book.Rawml, FileMode.Open);
-            _xrayService.ExpandFromRawMl(xray, fakeMetadata, fs, false, false, true, 0, true, null, null, CancellationToken.None, false, false);
+            _xrayService.ExpandFromRawMl(xray, fakeMetadata, fs, false, true, 0, true, null, null, CancellationToken.None, false, false);
             FileAssert.AreEqual($"ext\\{book.Asin}.chapters", $"testfiles\\{book.Asin}.chapters");
         }
     }

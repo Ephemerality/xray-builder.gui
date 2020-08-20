@@ -1,7 +1,8 @@
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Unpack;
@@ -31,18 +32,14 @@ namespace XRayBuilder.Core.XRay.Logic
             XRay xray,
             IMetadata metadata,
             Stream rawMlStream,
-            bool enableEdit,
             bool useNewVersion,
             bool skipNoLikes,
             int minClipLen,
             bool overwriteChapters,
-            SafeShowDelegate safeShow,
+            [CanBeNull] Func<bool> editChaptersCallback,
             IProgressBar progress,
             CancellationToken token,
             bool ignoreSoftHypen = false,
             bool shortEx = true);
     }
-
-    // TODO: Make this not rely on Windows.Forms
-    public delegate DialogResult SafeShowDelegate(string msg, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton def);
 }

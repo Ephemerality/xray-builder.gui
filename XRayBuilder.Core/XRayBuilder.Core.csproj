@@ -1,10 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFrameworks>net462;netcoreapp3.1</TargetFrameworks>
         <LangVersion>latest</LangVersion>
         <AssemblyVersion>2.1.1.0</AssemblyVersion>
         <FileVersion>2.1.1.0</FileVersion>
-        <UseWindowsForms>true</UseWindowsForms>
     </PropertyGroup>
 
     <ItemGroup>
@@ -31,7 +30,6 @@
                 <Reference Include="System.Data.DataSetExtensions" />
                 <Reference Include="Microsoft.CSharp" />
                 <Reference Include="System.Deployment" />
-                <Reference Include="System.Windows.Forms" />
                 <PackageReference Include="JonSkeet.MiscUtil" Version="0.2.0" />
             </ItemGroup>
         </When>

@@ -104,12 +104,11 @@ namespace XRayBuilder.Core.XRay.Logic
             XRay xray,
             IMetadata metadata,
             Stream rawMlStream,
-            bool enableEdit,
             bool useNewVersion,
             bool skipNoLikes,
             int minClipLen,
             bool overwriteChapters,
-            SafeShowDelegate safeShow,
+            Func<bool> editChaptersCallback,
             IProgressBar progress,
             CancellationToken token,
             bool ignoreSoftHypen = false,
@@ -137,7 +136,8 @@ namespace XRayBuilder.Core.XRay.Logic
                 var readContents = streamReader.ReadToEnd();
                 var utf8Doc = new HtmlDocument();
                 utf8Doc.LoadHtml(readContents);
-                _chaptersService.HandleChapters(xray, xray.Asin, rawMlStream.Length, utf8Doc, readContents, overwriteChapters, safeShow, xray.Unattended, enableEdit);
+
+                _chaptersService.HandleChapters(xray, xray.Asin, rawMlStream.Length, utf8Doc, readContents, overwriteChapters, editChaptersCallback);
             }
             else
             {

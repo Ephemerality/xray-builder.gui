@@ -119,7 +119,7 @@ namespace XRayBuilder.Console.Logic
                 Task buildTask = metadata switch
                 {
                     // ReSharper disable AccessToDisposedClosure
-                    Metadata _ => Task.Run(() => _xrayService.ExpandFromRawMl(xray, metadata, metadata.GetRawMlStream(), false, true, true, 25, true, null, _progress, cancellationToken, true, false), cancellationToken),
+                    Metadata _ => Task.Run(() => _xrayService.ExpandFromRawMl(xray, metadata, metadata.GetRawMlStream(), true, true, 25, true, null, _progress, cancellationToken, true, false), cancellationToken),
                     KfxContainer kfx => Task.Run(() => _kfxXrayService.AddLocations(xray, kfx, true, 25, _progress, cancellationToken), cancellationToken),
                     _ => throw new NotSupportedException()
                 };

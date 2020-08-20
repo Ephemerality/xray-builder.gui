@@ -161,7 +161,7 @@ namespace XRayBuilderGUI.UI
         private void ReloadTerms()
         {
             // todo another path to centralize
-            var aliasFile = $@"{Environment.CurrentDirectory}\ext\{txtAsin.Text}.aliases";
+            var aliasFile = $@"{AppDomain.CurrentDomain.BaseDirectory}ext\{txtAsin.Text}.aliases";
             var d = new Dictionary<string, string>();
             dgvTerms.Rows.Clear();
             txtName.Text = "";

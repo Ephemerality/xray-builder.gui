@@ -12,8 +12,12 @@
   
   <ItemGroup>
     <ProjectReference Include="..\XRayBuilder.Core\XRayBuilder.Core.csproj" />
-    <Content Include="..\XRayBuilder\dist\BaseSplitIgnore.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="..\XRayBuilder\dist\BaseSplitIgnore.txt" Link="dist\BaseSplitIgnore.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="..\XRayBuilder\dist\BaseDB.sql" Link="dist\BaseDB.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Visible>false</Visible>
     </Content>
   </ItemGroup>

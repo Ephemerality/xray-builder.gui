@@ -7,6 +7,7 @@ using XRayBuilder.Core.DataSources.Roentgen.Bootstrap;
 using XRayBuilder.Core.DataSources.Secondary.Bootstrap;
 using XRayBuilder.Core.Libraries.Bootstrap.Model;
 using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.XRay.Bootstrap;
 
 namespace XRayBuilder.Console.Bootstrap
@@ -25,6 +26,7 @@ namespace XRayBuilder.Console.Bootstrap
         public void Register(Container container)
         {
             container.RegisterSingleton<XRay>();
+            container.RegisterSingleton<IProgressBar, ProgressConsole>();
             container.RegisterSingleton<ILogger, ConsoleLogger>();
         }
     }

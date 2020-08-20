@@ -29,6 +29,12 @@ namespace XRayBuilder.Console
                 cli.Command(command.Name, app => command.Configure(app));
             }
 
+            cli.OnExecute(() =>
+            {
+                cli.ShowHelp();
+                return 1;
+            });
+
             return cli.ExecuteAsync(args);
         }
 

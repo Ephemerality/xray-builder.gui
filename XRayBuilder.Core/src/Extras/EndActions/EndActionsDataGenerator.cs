@@ -74,7 +74,12 @@ namespace XRayBuilder.Core.Extras.EndActions
                 try
                 {
                     _logger.Log("Saving book's Amazon webpage...");
-                    await File.WriteAllTextAsync($@"{AppDomain.CurrentDomain.BaseDirectory}\dmp\{curBook.Asin}.bookpageHtml.txt", bookHtmlDoc.DocumentNode.InnerHtml, cancellationToken);
+                    var path = $@"{AppDomain.CurrentDomain.BaseDirectory}\dmp\{curBook.Asin}.bookpageHtml.txt";
+#if NETCOREAPP3_1
+                    await File.WriteAllTextAsync(path, bookHtmlDoc.DocumentNode.InnerHtml, cancellationToken);
+#else
+                    File.WriteAllText(path, bookHtmlDoc.DocumentNode.InnerHtml);
+#endif
                 }
                 catch (Exception ex)
                 {

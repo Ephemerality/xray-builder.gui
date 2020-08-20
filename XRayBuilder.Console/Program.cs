@@ -4,9 +4,7 @@ using SimpleInjector;
 using XRayBuilder.Console.Bootstrap;
 using XRayBuilder.Console.Command;
 using XRayBuilder.Core.Config;
-using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Bootstrap.Logic;
-using XRayBuilder.Core.Libraries.SimpleInjector.Extensions;
 
 namespace XRayBuilder.Console
 {
@@ -22,11 +20,9 @@ namespace XRayBuilder.Console
             };
             cli.HelpOption("-h|--help");
 
-            var baseConfigOptions = AddBaseConfig(cli);
-
             var commands = new[]
             {
-                new CommandXRay(baseConfigOptions, Bootstrap)
+                new CommandXRay(ConfigureBaseOptions, Bootstrap)
             };
             foreach (var command in commands)
             {
@@ -36,7 +32,7 @@ namespace XRayBuilder.Console
             return cli.ExecuteAsync(args);
         }
 
-        private static BaseOptions AddBaseConfig(CommandLineApplication cli)
+        private static BaseOptions ConfigureBaseOptions(CommandLineApplication cli)
             => new BaseOptions
             {
                 Book = cli.Argument("book", "Path to the book to be processed (mobi, azw3, kfx only).").IsRequired(),

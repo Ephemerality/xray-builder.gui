@@ -39,7 +39,9 @@ namespace XRayBuilder.Console
         }
 
         private static BaseOptions ConfigureBaseOptions(CommandLineApplication cli)
-            => new BaseOptions
+        {
+            cli.HelpOption("-h|--help");
+            return new BaseOptions
             {
                 Book = cli.Argument("book", "Path to the book to be processed (mobi, azw3, kfx only).").IsRequired(),
                 Android = cli.Option("--android", "Build the X-Ray for Android.", CommandOptionType.NoValue),
@@ -49,6 +51,7 @@ namespace XRayBuilder.Console
                 FixAsin = cli.Option("--fixasin", "When specified, invalid ASINs will be searched on Amazon and fixed, if possible. (This will modify the book meaning it will need to be re-copied to your Kindle device) -- THIS FEATURE IS EXPERIMENTAL AND COULD DESTROY YOUR BOOK", CommandOptionType.NoValue),
                 AmazonTld = cli.Option("--tld", "Amazon TLD, eg com, co,uk, de, etc. Default is com.", CommandOptionType.SingleValue)
             };
+        }
 
         private static Container Bootstrap(IXRayBuilderConfig xrayBuilderConfig)
         {

@@ -56,7 +56,7 @@ namespace XRayBuilder.Console.Command
                 BuildForAndroid = baseOptions.Android.HasValue(),
                 OutputToSidecar = baseOptions.OutputToSidecar.HasValue()
             };
-            using var container = _bootstrap(config);
+            await using var container = _bootstrap(config);
             var logger = container.GetInstance<ILogger>();
 
             var bookPath = (string) baseOptions.Book.Value;

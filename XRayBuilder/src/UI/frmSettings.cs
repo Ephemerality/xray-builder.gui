@@ -35,18 +35,6 @@ namespace XRayBuilderGUI.UI
             InitializeComponent();
         }
 
-        private sealed class AmazonRegion
-        {
-            public string Name { get; }
-            public string TLD { get; }
-
-            public AmazonRegion(string name, string tld)
-            {
-                Name = name;
-                TLD = tld;
-            }
-        }
-
         //http://stackoverflow.com/questions/2612487/how-to-fix-the-flickering-in-user-controls
         protected override CreateParams CreateParams
         {
@@ -147,14 +135,14 @@ namespace XRayBuilderGUI.UI
                 .Select(kvp => new AmazonRegion(kvp.Key, kvp.Value))
                 .ToArray();
             cmbRoentgenRegion.DataSource = roentgenRegions;
-            cmbRoentgenRegion.DisplayMember = "Name";
-            cmbRoentgenRegion.ValueMember = "TLD";
+            cmbRoentgenRegion.DisplayMember = nameof(AmazonRegion.Name);
+            cmbRoentgenRegion.ValueMember = nameof(AmazonRegion.Tld);
             cmbRoentgenRegion.SelectedValue = Settings.Default.roentgenRegion;
 
             var languages = _languageFactory.GetValues().ToArray();
             cmbLanguage.DataSource = languages;
-            cmbLanguage.DisplayMember = "Label";
-            cmbLanguage.ValueMember = "Language";
+            cmbLanguage.DisplayMember = nameof(ILanguage.Label);
+            cmbLanguage.ValueMember = nameof(ILanguage.Language);
             cmbLanguage.SelectedValue = _languageFactory.Get(Settings.Default.Language)!.Language;
         }
 
@@ -167,11 +155,15 @@ namespace XRayBuilderGUI.UI
         {
             if (txtReal.Text.Trim().Length == 0 || txtPen.Text.Trim().Length == 0)
             {
-                MessageBox.Show("Both Real and Pen names are required for\r\nEnd Action file creation.");
+                MessageBox.Show($"Both Real and Pen names are required for{Environment.NewLine}End Action file creation.", "Missing Name", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                listSettings.SelectedIndex = 4;
+                return;
             }
+
             if (!int.TryParse(txtMinClipLen.Text, out var minClipLen))
             {
-                MessageBox.Show("Length must be an integer.", "Length Error");
+                MessageBox.Show("Notable clip minimum length must be an integer.", "Length Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                listSettings.SelectedIndex = 2;
                 return;
             }
 
@@ -234,21 +226,22 @@ namespace XRayBuilderGUI.UI
             }
         }
 
+        /// <summary>
+        /// Handle escape key since there's no cancel button
+        /// </summary>
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            if (keyData == Keys.Escape)
-            {
-                Close();
-                return true;
-            }
-            return base.ProcessCmdKey(ref msg, keyData);
+            if (keyData != Keys.Escape)
+                return base.ProcessCmdKey(ref msg, keyData);
+            Close();
+            return true;
         }
 
         private void btnLogs_Click(object sender, EventArgs e)
         {
             if (!Directory.Exists($@"{Environment.CurrentDirectory}\log"))
             {
-                MessageBox.Show(MainStrings.LogDirectoryDoesNotExist, MainStrings.LogDirectoryNotFoundTitle);
+                MessageBox.Show(MainStrings.LogDirectoryDoesNotExist, MainStrings.LogDirectoryNotFoundTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -258,18 +251,18 @@ namespace XRayBuilderGUI.UI
 
         private void btnClearLogs_Click(object sender, EventArgs e)
         {
-            if (DialogResult.Yes == MessageBox.Show($@"{MainStrings.DeleteLogFilesConfirmation}{Environment.NewLine}{MainStrings.ActionCannotBeUndone}", MainStrings.AreYouSure, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
+            if (DialogResult.Yes != MessageBox.Show($@"{MainStrings.DeleteLogFilesConfirmation}{Environment.NewLine}{MainStrings.ActionCannotBeUndone}", MainStrings.AreYouSure, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
+                return;
+
+            try
             {
-                try
-                {
-                    Array.ForEach(Directory.GetFiles($@"{Environment.CurrentDirectory}\log"), File.Delete);
-                    btnClearLogs.Text = MainStrings.ClearLogsTitle;
-                    btnClearLogs.Enabled = false;
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show(MainStrings.ErrorDeletingLogFiles, MainStrings.UnableToDeleteLogFilesCaption);
-                }
+                Array.ForEach(Directory.GetFiles($@"{Environment.CurrentDirectory}\log"), File.Delete);
+                btnClearLogs.Text = MainStrings.ClearLogsTitle;
+                btnClearLogs.Enabled = false;
+            }
+            catch (Exception)
+            {
+                MessageBox.Show(MainStrings.ErrorDeletingLogFiles, MainStrings.UnableToDeleteLogFilesCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -300,7 +293,7 @@ namespace XRayBuilderGUI.UI
 
         private void listSettings_MeasureItem(object sender, MeasureItemEventArgs e)
         {
-            e.ItemHeight = 20;
+            e.ItemHeight = 30;
         }
 
         private void listSettings_SelectedIndexChanged(object sender, EventArgs e)
@@ -313,5 +306,7 @@ namespace XRayBuilderGUI.UI
             if (chkDownloadAliases.Checked)
                 chkOverwriteAP.Checked = false;
         }
+
+        private sealed record AmazonRegion(string Name, string Tld);
     }
 }

@@ -51,6 +51,13 @@ namespace XRayBuilder.Core.DataSources.Secondary
         }
 
         #region Unsupported
+
+        public bool IsMatchingUrl(string url)
+        {
+            var lower = url.ToLowerInvariant();
+            return File.Exists(url) && (lower.EndsWith(".xml") || lower.EndsWith(".txt"));
+        }
+
         public Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();

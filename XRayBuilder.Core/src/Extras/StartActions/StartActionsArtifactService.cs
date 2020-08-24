@@ -21,16 +21,16 @@ namespace XRayBuilder.Core.Extras.StartActions
         {
             try
             {
-                var template = File.ReadAllText($@"{Environment.CurrentDirectory}\dist\BaseStartActions.json", Encoding.UTF8);
+                var template = File.ReadAllText($"{AppDomain.CurrentDomain.BaseDirectory}dist/BaseStartActions.json", Encoding.UTF8);
                 _baseStartActions = JsonConvert.DeserializeObject<Artifacts.StartActions>(template);
             }
             catch (FileNotFoundException)
             {
-                throw new InitializationException(@"Unable to find dist\BaseStartActions.json, make sure it has been extracted!");
+                throw new InitializationException("Unable to find dist/BaseStartActions.json, make sure it has been extracted!");
             }
             catch (Exception e)
             {
-                throw new InitializationException($@"An error occurred while loading dist\BaseStartActions.json (make sure any new versions have been extracted!)\r\n{e.Message}\r\n{e.StackTrace}", e);
+                throw new InitializationException($"An error occurred while loading dist/BaseStartActions.json (make sure any new versions have been extracted!)\r\n{e.Message}\r\n{e.StackTrace}", e);
             }
         }
 

@@ -111,11 +111,11 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
         public void SaveCharactersToFile(IEnumerable<Term> terms, string asin, bool splitAliases)
         {
             // todo service should handle this
-            var path = $@"{Environment.CurrentDirectory}\ext\";
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext");
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
-            var aliasFile = $"{path}{asin}.aliases";
+            var aliasFile = Path.Combine(path, $"{asin}.aliases");
 
             using var streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8);
 

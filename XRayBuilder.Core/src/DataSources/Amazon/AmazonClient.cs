@@ -74,8 +74,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 try
                 {
                     _logger.Log("Saving Amazon's author search webpage...");
-                    File.WriteAllText(Environment.CurrentDirectory + $"\\dmp\\{bookAsin}.authorsearchHtml.txt",
-                        authorSearchDoc.DocumentNode.InnerHtml);
+                    File.WriteAllText($"{AppDomain.CurrentDomain.BaseDirectory}dmp/{bookAsin}.authorsearchHtml.txt", authorSearchDoc.DocumentNode.InnerHtml);
                 }
                 catch (Exception ex)
                 {
@@ -335,7 +334,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             if (title.IndexOf(" (", StringComparison.Ordinal) >= 0)
                 title = title.Substring(0, title.IndexOf(" (", StringComparison.Ordinal));
             //Search "all" Amazon
-            var searchUrl = $@"https://www.amazon.{TLD}/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords={Uri.EscapeDataString($"{title} {author}")}";
+            var searchUrl = $"https://www.amazon.{TLD}/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords={Uri.EscapeDataString($"{title} {author}")}";
             var searchDoc = await _httpClient.GetPageAsync(searchUrl, cancellationToken);
             var node = searchDoc.DocumentNode.SelectSingleNode("//li[@id='result_0']");
             var nodeASIN = node?.SelectSingleNode(".//a[@title='Kindle Edition']");

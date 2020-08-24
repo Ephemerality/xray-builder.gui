@@ -44,7 +44,8 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             //Try to load custom common titles from BaseSplitIgnore.txt
             try
             {
-                using var streamReader = new StreamReader(Environment.CurrentDirectory + @"\dist\BaseSplitIgnore.txt", Encoding.UTF8);
+                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dist", "BaseSplitIgnore.txt");
+                using var streamReader = new StreamReader(path, Encoding.UTF8);
                 var customSplitIgnore = streamReader.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.None)
                     .Where(r => !r.StartsWith("//")).ToArray();
                 if (customSplitIgnore.Length >= 1)

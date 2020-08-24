@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SimpleInjector;
 using XRayBuilder.Core.Libraries.Bootstrap.Model;
@@ -10,6 +11,8 @@ namespace XRayBuilder.Core.Libraries.Bootstrap.Logic
         private readonly IBootstrapRegistrar _registrar = new BootstrapRegistrar();
         private readonly Container _container;
 
+        private readonly HashSet<Type> _types = new HashSet<Type>();
+
         public BootstrapBuilder(Container container)
         {
             _container = container;
@@ -17,6 +20,12 @@ namespace XRayBuilder.Core.Libraries.Bootstrap.Logic
 
         public void Register<TBootstrapSegment>() where TBootstrapSegment : IBootstrapSegment, new()
         {
+            var type = typeof(TBootstrapSegment);
+            if (_types.Contains(type))
+                return;
+
+            _types.Add(type);
+
             var segment = new TBootstrapSegment();
             segment.Register(this);
             _segments.Add(segment);
@@ -25,6 +34,7 @@ namespace XRayBuilder.Core.Libraries.Bootstrap.Logic
         public Container Build()
         {
             _registrar.RegisterSegments(_segments, _container);
+            _container.Options.ResolveUnregisteredConcreteTypes = false;
             _container.Verify();
             return _container;
         }

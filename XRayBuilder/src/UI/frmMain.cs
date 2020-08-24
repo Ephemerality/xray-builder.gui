@@ -345,8 +345,16 @@ namespace XRayBuilderGUI.UI
                 switch (metadata)
                 {
                     case Metadata _:
+                        bool EditChaptersCallback()
+                        {
+                            if (xray.Unattended || !_settings.enableEdit)
+                                return false;
+
+                            return DialogResult.Yes == SafeShow("Would you like to open the chapters file in notepad for editing?", "Chapters",
+                                MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+                        }
                         // ReSharper disable twice AccessToDisposedClosure
-                        buildTask = Task.Run(() => _xrayService.ExpandFromRawMl(xray, metadata, metadata.GetRawMlStream(), _settings.enableEdit, _settings.useNewVersion, _settings.skipNoLikes, _settings.minClipLen, _settings.overwriteChapters, SafeShow, _progress, _cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion));
+                        buildTask = Task.Run(() => _xrayService.ExpandFromRawMl(xray, metadata, metadata.GetRawMlStream(), _settings.useNewVersion, _settings.skipNoLikes, _settings.minClipLen, _settings.overwriteChapters, EditChaptersCallback, _progress, _cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion));
                         break;
                     case KfxContainer kfx:
                         if (!_settings.useNewVersion)
@@ -584,6 +592,13 @@ namespace XRayBuilderGUI.UI
                 }
                 else
                 {
+                    bool EditBioCallback(string message)
+                    {
+                        if (!_settings.editBiography)
+                            return false;
+
+                        return DialogResult.Yes == MessageBox.Show(message, "Biography", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+                    }
                     authorProfileResponse = await _authorProfileGenerator.GenerateAsync(new AuthorProfileGenerator.Request
                     {
                         Book = bookInfo,
@@ -595,7 +610,7 @@ namespace XRayBuilderGUI.UI
                             EditBiography = _settings.editBiography,
                             SaveHtml = _settings.saveHtml
                         }
-                    }, _cancelTokens.Token);
+                    }, EditBioCallback, _cancelTokens.Token);
 
                     if (authorProfileResponse == null)
                         return;

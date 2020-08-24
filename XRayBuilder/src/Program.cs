@@ -9,7 +9,6 @@ using XRayBuilder.Core.Extras.Bootstrap;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Bootstrap.Logic;
 using XRayBuilder.Core.Libraries.Http.Bootstrap;
-using XRayBuilder.Core.Libraries.Logging.Bootstrap;
 using XRayBuilder.Core.Libraries.SimpleInjector.Extensions;
 using XRayBuilder.Core.Model.Exceptions;
 using XRayBuilder.Core.XRay.Bootstrap;
@@ -57,7 +56,6 @@ namespace XRayBuilderGUI
 
             var builder = new BootstrapBuilder(_container);
 
-            builder.Register<BootstrapLogging>();
             builder.Register<BootstrapHttp>();
             builder.Register<BootstrapExtras>();
             builder.Register<BootstrapAmazon>();

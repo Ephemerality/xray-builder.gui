@@ -29,7 +29,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
         }
 
         // TODO: Review this...
-        public async Task<Response> GenerateAsync(Request request, CancellationToken cancellationToken = default)
+        public async Task<Response> GenerateAsync(Request request, Func<string, bool> editBioCallback, CancellationToken cancellationToken = default)
         {
             AuthorSearchResults searchResults = null;
             // Attempt to download from the alternate site, if present. If it fails in some way, try .com
@@ -66,7 +66,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
 //                try
 //                {
 //                    _logger.Log("Saving author's Amazon webpage...");
-//                    File.WriteAllText(Environment.CurrentDirectory + string.Format(@"\dmp\{0}.authorpageHtml.txt", request.Book.Asin),
+//                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + string.Format(@"\dmp\{0}.authorpageHtml.txt", request.Book.Asin),
 //                        searchResults.AuthorHtmlDoc.DocumentNode.InnerHtml);
 //                }
 //                catch (Exception ex)
@@ -99,7 +99,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
 
             // TODO: Separate out biography stuff
             string biography = null;
-            var bioFile = Environment.CurrentDirectory + @"\ext\" + authorAsin + ".bio";
+            var bioFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext", $"{authorAsin}.bio");
             var readFromFile = false;
             if (request.Settings.SaveBio && File.Exists(bioFile))
             {
@@ -142,14 +142,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                     ? "Would you like to edit the existing biography?"
                     : "Author biography found on Amazon! Would you like to edit it?";
 
-            // TODO: No dialogs here
-
-            if (request.Settings.EditBiography
-                && System.Windows.Forms.DialogResult.Yes ==
-                System.Windows.Forms.MessageBox.Show(
-                    message, "Biography",
-                    System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question,
-                    System.Windows.Forms.MessageBoxDefaultButton.Button2))
+            if (editBioCallback != null && editBioCallback(message))
             {
                 if (!File.Exists(bioFile))
                     File.WriteAllText(bioFile, string.Empty);
@@ -179,8 +172,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                         return null;
                     }
                 }
-                if (System.Windows.Forms.DialogResult.Yes == System.Windows.Forms.MessageBox.Show("Would you like to open the biography file in notepad for editing?", "Biography",
-                   System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question, System.Windows.Forms.MessageBoxDefaultButton.Button2))
+                if (editBioCallback != null && editBioCallback("Would you like to open the biography file in notepad for editing?"))
                 {
                     Functions.RunNotepad(bioFile);
                     biography = ReadBio(bioFile);

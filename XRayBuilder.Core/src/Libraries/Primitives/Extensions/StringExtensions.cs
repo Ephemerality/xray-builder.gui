@@ -1,5 +1,7 @@
 #if NETFRAMEWORK
 using Pluralize.NET;
+#else
+using Pluralize.NET.Core;
 #endif
 using System;
 using System.Globalization;

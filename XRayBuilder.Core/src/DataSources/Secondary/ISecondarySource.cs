@@ -19,6 +19,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
         bool SearchEnabled { get; }
         int UrlLabelPosition { get; }
         bool SupportsNotableClips { get; }
+        bool IsMatchingUrl(string url);
         Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default);
         Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default);
         Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default);

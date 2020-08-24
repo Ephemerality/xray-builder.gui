@@ -73,5 +73,13 @@ namespace XRayBuilder.Test.DataSources
 
             Assert.AreEqual(expectedCount, results.Length);
         }
+
+        [TestCase("http://www.librarything.com/work/3203347", true)]
+        [TestCase("https://www.amazon.com/dp/B000000", false)]
+        [TestCase("/usr/home/something/file.txt", false)]
+        public void IsMatchingUrlTest(string url, bool expected)
+        {
+            Assert.AreEqual(expected, _libraryThing.IsMatchingUrl(url));
+        }
     }
 }

@@ -81,6 +81,11 @@ namespace XRayBuilder.Core.DataSources.Secondary
         //     return "";
         // }
 
+        public bool IsMatchingUrl(string url)
+        {
+            return false;
+        }
+
         public Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();

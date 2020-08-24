@@ -19,13 +19,10 @@ namespace XRayBuilderGUI.UI
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            if (keyData == Keys.Enter)
-            {
-                if (CheckAsin())
-                    Close();
-                return true;
-            }
-            return base.ProcessCmdKey(ref msg, keyData);
+            if (keyData != Keys.Enter) return base.ProcessCmdKey(ref msg, keyData);
+            if (CheckAsin())
+                Close();
+            return true;
         }
 
         private bool CheckAsin()
@@ -33,7 +30,10 @@ namespace XRayBuilderGUI.UI
             if (AmazonClient.IsAsin(tbAsin.Text))
                 return true;
 
-            MessageBox.Show("This does not appear to be a valid ASIN.\r\nAre you sure it is correct?", "Invalid ASIN", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+            MessageBox.Show(@"This does not appear to be a valid ASIN." +
+                            Environment.NewLine +
+                            @"Are you sure it is correct?", @"Invalid ASIN", MessageBoxButtons.RetryCancel,
+                MessageBoxIcon.Error);
             return false;
         }
     }

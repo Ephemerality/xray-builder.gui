@@ -159,7 +159,6 @@
     <Content Include="dist\done.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Icon.ico" />
     <None Include="dist\BaseEndActions.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

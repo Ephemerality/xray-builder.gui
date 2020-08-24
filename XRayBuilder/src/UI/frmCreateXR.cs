@@ -29,6 +29,12 @@ namespace XRayBuilderGUI.UI
         private readonly IRoentgenClient _roentgenClient;
         private readonly IAliasesService _aliasesService;
 
+        // There is private method ClearAllSelections in ToolStrip class,
+        // which removes selections from items. You can invoke it via reflection:
+        // https://stackoverflow.com/a/10341622
+        private readonly MethodInfo _method =
+            typeof(ToolStrip).GetMethod("ClearAllSelections", BindingFlags.NonPublic | BindingFlags.Instance);
+
         public frmCreateXR(
             ITermsService termsService,
             IAliasesRepository aliasesRepository,
@@ -43,9 +49,35 @@ namespace XRayBuilderGUI.UI
             _aliasesService = aliasesService;
             InitializeComponent();
 
+            toolStrip.Renderer = new CustomToolStripProfessionalRenderer();
+
             var dgvType = dgvTerms.GetType();
             var pi = dgvType.GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic);
             pi?.SetValue(dgvTerms, true, null);
+        }
+
+        private class CustomToolStripProfessionalRenderer : ToolStripProfessionalRenderer
+        {
+            public CustomToolStripProfessionalRenderer()
+                : base(new CustomProfessionalColorTable())
+            {
+            }
+
+            protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
+            {
+                // Don't draw a border
+            }
+        }
+
+        private class CustomProfessionalColorTable : ProfessionalColorTable
+        {
+            private readonly Color _toolStripColor = Color.FromArgb(240, 240, 240);
+
+            public override Color ToolStripGradientBegin => _toolStripColor;
+
+            public override Color ToolStripGradientMiddle => _toolStripColor;
+
+            public override Color ToolStripGradientEnd => _toolStripColor;
         }
 
         public void SetMetadata(string asin, string author, string title)
@@ -55,7 +87,6 @@ namespace XRayBuilderGUI.UI
             txtAsin.Text = asin;
         }
 
-        private readonly ToolTip _toolTip1 = new ToolTip();
         private List<Term> _terms = new List<Term>(100);
 
         private void btnAddTerm_Click(object sender, EventArgs e)
@@ -82,10 +113,12 @@ namespace XRayBuilderGUI.UI
         private void btnEditTerm_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(txtName.Text) && DialogResult.Cancel == MessageBox.Show(
-                $"The current term ({txtName.Text}) has not been added to the list!\r\n" +
-                "Click Cancel if you want a chance to add the term first.\r\n" +
-                "Press Ok to overwrite the current term with selected one from the term list.",
-                $"Unsaved changes to {txtName.Text}",
+                $@"The current term ({txtName.Text}) has not been added to the list!" +
+                Environment.NewLine +
+                @"Click Cancel if you want a chance to add the term first." +
+                Environment.NewLine +
+                @"Press OK to overwrite the current term with selected one from the term list.",
+                $@"Unsaved changes to {txtName.Text}",
                 MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2))
             {
                 return;
@@ -120,7 +153,9 @@ namespace XRayBuilderGUI.UI
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occured opening this link: {ex.Message}\r\n{ex.StackTrace}");
+                MessageBox.Show($@"An error occured opening this link: {ex.Message}" +
+                                Environment.NewLine +
+                                $@"{ex.StackTrace}");
             }
         }
 
@@ -128,8 +163,8 @@ namespace XRayBuilderGUI.UI
         {
             var openFile = new OpenFileDialog
             {
-                Title = "Open XML or TXT file",
-                Filter = "XML files (*.xml)|*.xml|TXT files (*.txt)|*.txt",
+                Title = @"Open XML or TXT file",
+                Filter = @"XML files (*.xml)|*.xml|TXT files (*.txt)|*.txt",
                 InitialDirectory = $@"{Environment.CurrentDirectory}\xml\"
             };
             if (openFile.ShowDialog() != DialogResult.OK)
@@ -147,14 +182,16 @@ namespace XRayBuilderGUI.UI
                         _terms = _termsService.ReadTermsFromTxt(openFile.FileName).ToList();
                         break;
                     default:
-                        MessageBox.Show($"Error: Bad file type \"{filetype}\"");
+                        MessageBox.Show($@"Error: Bad file type ""{filetype}""");
                         break;
                 }
                 ReloadTerms();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error:\r\n{ex.Message}\r\n{ex.StackTrace}");
+                MessageBox.Show($@"Error: {ex.Message}" +
+                                Environment.NewLine +
+                                @"{ex.StackTrace}");
             }
         }
 
@@ -190,7 +227,9 @@ namespace XRayBuilderGUI.UI
 
             if (_terms.Any(term => term.Aliases?.Count > 0))
             {
-                MessageBox.Show("The XML file already contained aliases, so the .aliases file will be ignored.");
+                MessageBox.Show(@"The XML file already contained aliases," +
+                                Environment.NewLine +
+                                @"so the .aliases file will be ignored.");
                 return;
             }
 
@@ -228,7 +267,8 @@ namespace XRayBuilderGUI.UI
                 return;
             if (txtAuthor.Text == "")
             {
-                MessageBox.Show("An author's name is required to save the X-Ray file.", "Missing Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(@"An author's name is required to save the X-Ray file.",
+                    @"Missing Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
             if (txtTitle.Text == "")
@@ -261,11 +301,9 @@ namespace XRayBuilderGUI.UI
 
         private void dgvTerms_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (e.RowIndex != -1 && e.ColumnIndex != -1 && e.Button == MouseButtons.Right)
-            {
-                var relativeMousePosition = dgvTerms.PointToClient(Cursor.Position);
-                cmsTerms.Show(dgvTerms, relativeMousePosition);
-            }
+            if (e.RowIndex == -1 || e.ColumnIndex == -1 || e.Button != MouseButtons.Right) return;
+            var relativeMousePosition = dgvTerms.PointToClient(Cursor.Position);
+            cmsTerms.Show(dgvTerms, relativeMousePosition);
         }
 
         private void frmCreateXR_Load(object sender, EventArgs e)
@@ -277,14 +315,38 @@ namespace XRayBuilderGUI.UI
             txtLink.Text = "";
             for (var i = 5; i <= 9; i++)
                 dgvTerms.Columns[i].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            _toolTip1.SetToolTip(btnAddTerm, "Add this character or\r\ntopic to the term list.");
-            _toolTip1.SetToolTip(btnLink, "Open this link in your\r\ndefault browser.");
-            _toolTip1.SetToolTip(btnEditTerm, "Edit the selected term. It will be\r\nremoved from the list and used to fill\r\nin the information above. Don't\r\nforget to add to the list when done.");
-            _toolTip1.SetToolTip(btnRemoveTerm, "Remove the selected term from the\r\nterm list. This action is irreversible.");
-            _toolTip1.SetToolTip(btnClear, "Clear the term list.");
-            _toolTip1.SetToolTip(btnOpenXml, "Open an existing term XML of TXT file.\r\nIf an alias file with a matching ASIN\r\nis found, aliases wil automatically be\r\npopulated.");
-            _toolTip1.SetToolTip(btnSaveXML, "Save the term list to an XML file. Any\r\nassociated aliases will be saved to an\r\nASIN.aliases file in the /ext folder.");
-            _toolTip1.SetToolTip(btnDownloadTerms, "Download terms from Roentgen if any are available.\r\nExisting terms will be cleared!");
+            btnAddTerm.ToolTipText = @"Add this character or" +
+                                     Environment.NewLine +
+                                     @"topic to the term list.";
+            btnLink.ToolTipText = @"Open this link in your" +
+                                  Environment.NewLine +
+                                  @"default browser.";
+            btnEditTerm.ToolTipText = @"Edit the selected term. It will be" +
+                                      Environment.NewLine +
+                                      @"removed from the list and used to fill" +
+                                      Environment.NewLine +
+                                      @"in the information above. Don't" +
+                                      Environment.NewLine +
+                                      @"forget to add to the list when done.";
+            btnRemoveTerm.ToolTipText = @"Remove the selected term from the" +
+                                        Environment.NewLine +
+                                        @"term list. This action is irreversible.";
+            btnClear.ToolTipText = @"Clear the term list.";
+            btnOpenXml.ToolTipText = @"Open an existing term XML of TXT file." +
+                                     Environment.NewLine +
+                                     @"If an alias file with a matching ASIN" +
+                                     Environment.NewLine +
+                                     @"is found, aliases wil automatically be" +
+                                     Environment.NewLine +
+                                     @"populated.";
+            btnSaveXML.ToolTipText = @"Save the term list to an XML file. Any" +
+                                     Environment.NewLine +
+                                     @"associated aliases will be saved to an" +
+                                     Environment.NewLine +
+                                     @"ASIN.aliases file in the \ext folder.";
+            btnDownloadTerms.ToolTipText = @"Download terms from Roentgen if any are available." +
+                                           Environment.NewLine +
+                                           @"Existing terms will be cleared!";
         }
 
         private void tsmDelete_Click(object sender, EventArgs e)
@@ -337,7 +399,11 @@ namespace XRayBuilderGUI.UI
             if (dgvTerms.Rows.Count <= 0)
                 return;
 
-            if (DialogResult.OK != MessageBox.Show("Clearing the term list is irreversible!", "Are you sure?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2))
+            if (DialogResult.OK != MessageBox.Show(@"Clearing the term list is irreversible!",
+                @"Are you sure?",
+                MessageBoxButtons.OKCancel,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2))
                 return;
 
             dgvTerms.Rows.Clear();
@@ -350,15 +416,20 @@ namespace XRayBuilderGUI.UI
 
         private void ToggleInterface(bool enabled)
         {
-            foreach (var c in Controls.OfType<Button>())
-                c.Enabled = enabled;
+            _method.Invoke(toolStrip, null);
+            toolStrip.Enabled = enabled;
         }
 
         private async void btnDownloadTerms_Click(object sender, EventArgs e)
         {
             if (!AmazonClient.IsAsin(txtAsin.Text))
             {
-                MessageBox.Show($"'{txtAsin.Text} is not a valid ASIN.\r\nRoentgen requires one!");
+                MessageBox.Show($@"{txtAsin.Text} is not a valid ASIN." +
+                                Environment.NewLine +
+                                @"Roentgen requires one!",
+                    @"Invalid ASIN",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
                 return;
             }
 
@@ -412,7 +483,11 @@ namespace XRayBuilderGUI.UI
             if (dgvTerms.Rows.Count < 0)
                 return;
 
-            if (DialogResult.No == MessageBox.Show("Are you sure you want to clear all aliases?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2))
+            if (DialogResult.No == MessageBox.Show(@"Are you sure you want to clear all aliases?",
+                @"Are you sure?",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2))
                 return;
 
             foreach (DataGridViewRow row in dgvTerms.Rows)

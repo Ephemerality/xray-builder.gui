@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
@@ -12,17 +12,36 @@ namespace XRayBuilderGUI.UI
             InitializeComponent();
 
             var assembly = Assembly.GetExecutingAssembly();
-            var builtAt = new FileInfo(assembly.Location).LastWriteTime.ToString(CultureInfo.InvariantCulture);
+            var built = new FileInfo(assembly.Location).LastWriteTime;
             var title = assembly.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? "";
             if (string.IsNullOrEmpty(title))
                 title = Path.GetFileNameWithoutExtension(assembly.CodeBase);
 
-            labelProductName.Text = assembly.GetCustomAttribute<AssemblyProductAttribute>()?.Product ?? "";
-            labelVersion.Text = $"Version {assembly.GetName().Version}";
-            labelBuilt.Text = $"Build Date {builtAt}";
-            labelCopyright.Text = assembly.GetCustomAttribute<AssemblyCopyrightAttribute>()?.Copyright ?? "";
-            textBoxDescription.Text = assembly.GetCustomAttribute<AssemblyDescriptionAttribute>()?.Description ?? "";
-            Text = $"About {title}";
+            lblName.Text = assembly.GetCustomAttribute<AssemblyProductAttribute>()?.Product ?? "";
+            lblVersion.Text = $@"Version {assembly.GetName().Version}";
+            lblBuild.Text = $@"Built on {built.ToLongDateString()} at {built.ToShortTimeString()}";
+            lblCopyright.Text = assembly.GetCustomAttribute<AssemblyCopyrightAttribute>()?.Copyright ?? "";
+            lblDescription.Text = assembly.GetCustomAttribute<AssemblyDescriptionAttribute>()?.Description ?? "";
+            Text = $@"About {title}";
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData != Keys.Escape) return base.ProcessCmdKey(ref msg, keyData);
+            Close();
+            return true;
+        }
+
+        private void lnklblIcons_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            try
+            {
+                Process.Start("https://icons8.com");
+            }
+            catch
+            {
+                // ignored
+            }
         }
     }
 }

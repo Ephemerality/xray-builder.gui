@@ -19,7 +19,7 @@ namespace XRayBuilderGUI.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -103,9 +103,9 @@ namespace XRayBuilderGUI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap file_off {
+        internal static System.Drawing.Bitmap file_exists {
             get {
-                object obj = ResourceManager.GetObject("file_off", resourceCulture);
+                object obj = ResourceManager.GetObject("file_exists", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -113,9 +113,9 @@ namespace XRayBuilderGUI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap file_on {
+        internal static System.Drawing.Bitmap file_missing {
             get {
-                object obj = ResourceManager.GetObject("file_on", resourceCulture);
+                object obj = ResourceManager.GetObject("file_missing", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

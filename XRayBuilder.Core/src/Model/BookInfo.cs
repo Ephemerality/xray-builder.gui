@@ -24,8 +24,6 @@ namespace XRayBuilder.Core.Model
         public double? AmazonRating { get; set; }
         public int Reviews { get; set; }
         public string DataUrl { get; set; } = "";
-        // TODO: Shouldn't be here?
-        public string RawmlPath { get; } = "";
 
         // TODO: Author class
         public string AuthorAsin { get; } = "";

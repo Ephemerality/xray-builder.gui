@@ -191,7 +191,7 @@ namespace XRayBuilderGUI.UI
                 if (saveRawMl && metadata.RawMlSupported)
                 {
                     _logger.Log("Saving rawML to dmp directory...");
-                    metadata.SaveRawMl(UIFunctions.RawMlPath(Path.GetFileNameWithoutExtension(mobiFile)));
+                    metadata.SaveRawMl(_directoryService.GetRawmlPath(mobiFile));
                 }
                 _logger.Log($"Got metadata!\r\nDatabase Name: {metadata.DbName}\r\nUniqueID: {metadata.UniqueId}\r\nASIN: {metadata.Asin}");
 
@@ -1033,7 +1033,7 @@ namespace XRayBuilderGUI.UI
 
             _logger.Log("Extracting raw markup...");
             using var metadata = MetadataLoader.Load(txtMobi.Text);
-            var rawMlPath = UIFunctions.RawMlPath(Path.GetFileNameWithoutExtension(txtMobi.Text));
+            var rawMlPath = _directoryService.GetRawmlPath(txtMobi.Text);
             metadata.SaveRawMl(rawMlPath);
             _logger.Log($"Extracted to {rawMlPath}!\r\n");
         }

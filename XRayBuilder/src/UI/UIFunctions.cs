@@ -57,8 +57,6 @@ namespace XRayBuilderGUI.UI
                 }
             }
         }
-
-        public static string RawMlPath(string filename) => Path.Combine(Environment.CurrentDirectory, "dmp", $"{filename}.rawml");
     }
 
     // ReSharper disable once InconsistentNaming

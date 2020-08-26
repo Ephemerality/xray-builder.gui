@@ -18,6 +18,9 @@ namespace XRayBuilder.Core.Logic
             _config = config;
         }
 
+        public string GetRawmlPath(string filePath)
+            => Path.Combine(Environment.CurrentDirectory, "dmp", $"{Path.GetFileNameWithoutExtension(filePath)}.rawml");
+
         public string GetArtifactFilename(ArtifactType artifactType, string asin, string databaseName, string guid)
             => artifactType switch
             {
@@ -31,7 +34,6 @@ namespace XRayBuilder.Core.Logic
                 _ => ""
             };
 
-        // TODO Maybe just pass a whole IMetadata instead?
         public string GetArtifactPath(ArtifactType artifactType, string author, string title, string asin, string bookFilename, string databaseName, string guid, bool create)
             => Path.Combine(GetDirectory(author, title, asin, bookFilename, create), GetArtifactFilename(artifactType, asin, databaseName, guid));
 

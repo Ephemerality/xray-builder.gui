@@ -361,11 +361,12 @@ namespace XRayBuilder.Core.Extras.EndActions
                     var metadataCount = metadata.GetPageCount();
                     if (metadataCount.HasValue)
                         curBook.PagesInBook = metadataCount.Value;
-                    else if (settings.EstimatePageCount)
-                    {
-                        _logger.Log($"No page count found on {dataSource.Name} or in metadata. Attempting to estimate page count...");
-                        _logger.Log(Functions.GetPageCount(curBook.RawmlPath, curBook));
-                    }
+                    // else if (settings.EstimatePageCount)
+                    // {
+                    //     // TODO Estimation should be done in a place that has knowledge of the book's file and knows for sure that the rawml will exist
+                    //     _logger.Log($"No page count found on {dataSource.Name} or in metadata. Attempting to estimate page count...");
+                    //     _logger.Log(Functions.GetPageCount(curBook.RawmlPath, curBook));
+                    // }
                     else
                         _logger.Log($"No page count found on {dataSource.Name} or in metadata");
                 }

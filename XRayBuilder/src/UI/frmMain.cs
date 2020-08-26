@@ -271,7 +271,8 @@ namespace XRayBuilderGUI.UI
                     return;
                 }
 
-                _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath, _settings.overwriteAliases, _settings.splitAliases);
+                var aliasPath = _directoryService.GetAliasPath(xray.Asin);
+                _xrayService.ExportAndDisplayTerms(xray, aliasPath, _settings.overwriteAliases, _settings.splitAliases);
 
                 if (_settings.enableEdit && DialogResult.Yes ==
                     MessageBox.Show(
@@ -282,16 +283,16 @@ namespace XRayBuilderGUI.UI
                         MessageBoxIcon.Question,
                         MessageBoxDefaultButton.Button2))
                 {
-                    Functions.RunNotepad(xray.AliasPath);
+                    Functions.RunNotepad(aliasPath);
                 }
                 if (xray.Terms.Any(term => term.Aliases?.Count > 0))
                     _logger.Log("Character aliases read from the XML file.");
-                else if (!File.Exists(xray.AliasPath))
+                else if (!File.Exists(aliasPath))
                     _logger.Log("Aliases file not found.");
                 else
                 {
                     _aliasesRepository.LoadAliasesForXRay(xray);
-                    _logger.Log($"Character aliases read from {xray.AliasPath}.");
+                    _logger.Log($"Character aliases read from {aliasPath}.");
                 }
 
                 _logger.Log("Initial X-Ray built, adding locations and chapters...");

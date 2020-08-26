@@ -52,7 +52,7 @@ namespace XRayBuilder.Console.Command
                 UseSubdirectories = baseOptions.UseSubdirectories.HasValue(),
                 BaseOutputDirectory = baseOptions.BaseOutputDirectory.HasValue()
                     ? baseOptions.BaseOutputDirectory.Value()
-                    : $"{AppDomain.CurrentDomain.BaseDirectory}out",
+                    : $"{AppDomain.CurrentDomain.BaseDirectory ?? Environment.CurrentDirectory}out",
                 BuildForAndroid = baseOptions.Android.HasValue(),
                 OutputToSidecar = baseOptions.OutputToSidecar.HasValue()
             };

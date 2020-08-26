@@ -8,6 +8,7 @@ using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Extras.Artifacts;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Logic;
 using XRayBuilder.Core.Unpack.Mobi;
 using XRayBuilder.Core.XRay.Logic;
 using XRayBuilder.Core.XRay.Logic.Aliases;
@@ -25,6 +26,7 @@ namespace XRayBuilder.Test
         private ChaptersService _chaptersService;
         private IXRayService _xrayService;
         private ITermsService _termsService;
+        private IDirectoryService _directoryService;
 
         [SetUp]
         public void Setup()
@@ -33,7 +35,8 @@ namespace XRayBuilder.Test
             _termsService = new TermsService();
             _file = new SecondarySourceFile(_logger, _termsService);
             _chaptersService = new ChaptersService(_logger);
-            _xrayService = new XRayService(_logger, _chaptersService, new AliasesRepository(_logger, new AliasesService(_logger)));
+            _directoryService = new DirectoryService(_logger, null);
+            _xrayService = new XRayService(_logger, _chaptersService, new AliasesRepository(_logger, new AliasesService(_logger), _directoryService));
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
@@ -47,7 +50,7 @@ namespace XRayBuilder.Test
         public async Task XRayXMLAliasTest(Book book)
         {
             var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, "com", true, _file, null, CancellationToken.None);
-            _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath, true, false);
+            _xrayService.ExportAndDisplayTerms(xray, _directoryService.GetAliasPath(book.Asin), true, false);
             FileAssert.AreEqual($"ext\\{book.Asin}.aliases", $"testfiles\\{book.Asin}.aliases");
         }
 

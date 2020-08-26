@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using XRayBuilder.Core.Libraries.Enumerables.Extensions;
 using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Logic;
 using XRayBuilder.Core.XRay.Artifacts;
 
 namespace XRayBuilder.Core.XRay.Logic.Aliases
@@ -14,17 +15,19 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
     {
         private readonly ILogger _logger;
         private readonly IAliasesService _aliasesService;
+        private readonly IDirectoryService _directoryService;
 
-        public AliasesRepository(ILogger logger, IAliasesService aliasesService)
+        public AliasesRepository(ILogger logger, IAliasesService aliasesService, IDirectoryService directoryService)
         {
             _logger = logger;
             _aliasesService = aliasesService;
+            _directoryService = directoryService;
         }
 
         // todo make this better
         public void LoadAliasesForXRay(XRay xray)
         {
-            var aliasesByTermName = LoadAliasesFromFile(xray.AliasPath);
+            var aliasesByTermName = LoadAliasesFromFile(_directoryService.GetAliasPath(xray.Asin));
             if (aliasesByTermName == null)
                 return;
 
@@ -110,14 +113,7 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
 
         public void SaveCharactersToFile(IEnumerable<Term> terms, string asin, bool splitAliases)
         {
-            // todo service should handle this
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext");
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-
-            var aliasFile = Path.Combine(path, $"{asin}.aliases");
-
-            using var streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8);
+            using var streamWriter = new StreamWriter(_directoryService.GetAliasPath(asin), false, Encoding.UTF8);
 
             var sortedTerms = terms
                 .OrderBy(term => term.Type)

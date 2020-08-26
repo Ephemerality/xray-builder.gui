@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Logic;
 using XRayBuilder.Core.Unpack.Mobi;
 using XRayBuilder.Core.XRay.Logic;
 using XRayBuilder.Core.XRay.Logic.Aliases;
@@ -23,6 +24,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         private ChaptersService _chaptersService;
         private IXRayService _xrayService;
         private ITermsService _termsService;
+        private IDirectoryService _directoryService;
 
         [SetUp]
         public void Setup()
@@ -31,7 +33,8 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             _termsService = new TermsService();
             _file = new SecondarySourceFile(_logger, _termsService);
             _xrayExporter = new XRayExporterSqlite(_logger);
-            _aliasesRepository = new AliasesRepository(_logger, new AliasesService(_logger));
+            _directoryService = new DirectoryService(_logger, null);
+            _aliasesRepository = new AliasesRepository(_logger, new AliasesService(_logger), _directoryService);
             _chaptersService = new ChaptersService(_logger);
             _xrayService = new XRayService(_logger, _chaptersService, _aliasesRepository);
         }
@@ -41,7 +44,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         {
             var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, "com", true, _file, null, CancellationToken.None);
             xray.Unattended = true;
-            _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath, true, false);
+            _xrayService.ExportAndDisplayTerms(xray, _directoryService.GetAliasPath(book.Asin), true, false);
             var fakeMetadata = new Metadata();
             _aliasesRepository.LoadAliasesForXRay(xray);
             using var fs = new FileStream(book.Rawml, FileMode.Open);

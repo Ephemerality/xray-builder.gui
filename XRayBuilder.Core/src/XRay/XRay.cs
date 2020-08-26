@@ -55,9 +55,6 @@ namespace XRayBuilder.Core.XRay
             SkipShelfari = true;
         }
 
-        // TODO directory service to handle default paths
-        public string AliasPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext", $"{Asin}.aliases");
-
         public string Guid
         {
             private set => _guid = Functions.ConvertGuid(value);

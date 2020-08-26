@@ -75,7 +75,7 @@ namespace XRayBuilder.Core.XRay.Logic
                         if (highlights.Count == 0)
                             continue;
 
-                        var highlightOccurrences = highlights.SelectMany(highlightGroup => highlightGroup.Select(highlight => new[] {highlightGroup.Key, highlight}));
+                        var highlightOccurrences = highlights.SelectMany(highlightGroup => highlightGroup.Select(highlight => new Occurrence(highlightGroup.Key, highlight)));
                         character.Occurrences.AddRange(highlightOccurrences);
 
                         // Check excerpts

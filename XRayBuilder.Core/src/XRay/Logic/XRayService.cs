@@ -334,7 +334,7 @@ namespace XRayBuilder.Core.XRay.Logic
                             lenHighlight[j]
                         });
                         // For new format
-                        character.Occurrences.Add(new[] { location + locOffset + locHighlight[j], lenHighlight[j] });
+                        character.Occurrences.Add(new Occurrence(location + locOffset + locHighlight[j], lenHighlight[j]));
                     }
                     var exCheck = xray.Excerpts.Where(t => t.Start.Equals(location + locOffset)).ToArray();
                     if (exCheck.Length > 0)

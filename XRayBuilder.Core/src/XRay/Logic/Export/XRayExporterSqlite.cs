@@ -118,11 +118,11 @@ namespace XRayBuilder.Core.XRay.Logic.Export
                 command2.Parameters.Add("@entity", DbType.Int32).Value = t.Id;
                 command2.ExecuteNonQuery();
 
-                foreach (var loc in t.Occurrences)
+                foreach (var occurrence in t.Occurrences)
                 {
                     command3.Parameters.Add("@entity", DbType.Int32).Value = t.Id;
-                    command3.Parameters.Add("@start", DbType.Int32).Value = loc[0];
-                    command3.Parameters.Add("@length", DbType.Int32).Value = loc[1];
+                    command3.Parameters.Add("@start", DbType.Int32).Value = occurrence.Offset;
+                    command3.Parameters.Add("@length", DbType.Int32).Value = occurrence.Length;
                     command3.ExecuteNonQuery();
                 }
                 progress?.Add(1);

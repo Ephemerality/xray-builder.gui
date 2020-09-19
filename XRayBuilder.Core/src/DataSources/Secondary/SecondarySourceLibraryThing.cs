@@ -182,7 +182,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
                 var columns = node.SelectNodes("./td");
                 if (columns.Count != 2 || !_orderRegex.IsMatch(columns[1].InnerText))
                     return null;
-                var authorTitleNodes = columns[0].SelectNodes("./a");
+                var authorTitleNodes = columns[0].SelectNodes(".//a");
                 if (authorTitleNodes.Count != 2)
                     return null;
                 var url = authorTitleNodes[0].GetAttributeValue("href", null);

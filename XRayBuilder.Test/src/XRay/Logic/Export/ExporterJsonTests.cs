@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using XRayBuilder.Core.Config;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Logic;
@@ -26,13 +27,13 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         private ITermsService _termsService;
         private IDirectoryService _directoryService;
 
-        [SetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
             _logger = new Logger();
             _termsService = new TermsService();
             _file = new SecondarySourceFile(_logger, _termsService);
-            _directoryService = new DirectoryService(_logger, null);
+            _directoryService = new DirectoryService(_logger, new XRayBuilderConfig());
             _aliasesRepository = new AliasesRepository(_logger, new AliasesService(_logger), _directoryService);
             _xrayExporter = new XRayExporterJson();
             _chaptersService = new ChaptersService(_logger);
@@ -50,8 +51,8 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             _aliasesRepository.LoadAliasesForXRay(xray);
             using var bookFs = new FileStream(book.Rawml, FileMode.Open);
             _xrayService.ExpandFromRawMl(xray, metadata, bookFs, false, true, 0, true, null, null, CancellationToken.None, false, false);
-            string filename = xray.XRayName();
-            string outpath = Path.Combine(Environment.CurrentDirectory, "out", filename);
+            var filename = _directoryService.GetArtifactFilename(ArtifactType.XRay, book.Asin, book.Db, book.Guid);
+            var outpath = Path.Combine(Environment.CurrentDirectory, "out", filename);
             xray.CreatedAt = new DateTime(2019, 11, 2, 13, 19, 18, DateTimeKind.Utc);
             _xrayExporter.Export(xray, outpath, null, CancellationToken.None);
             FileAssert.AreEqual($"testfiles\\XRAY.entities.{book.Asin}_old.asc", outpath);

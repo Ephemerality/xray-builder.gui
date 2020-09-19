@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.DataSources.Secondary.Model;
 using XRayBuilder.Core.Libraries;
@@ -43,27 +42,10 @@ namespace XRayBuilder.Core.XRay
             DataSource = dataSource;
         }
 
-        // TODO fix this constructor crap
-        public XRay(string xml, string db, string guid, string asin, ISecondarySource dataSource, bool xmlUgh)
-        {
-            if (xml == "" || guid == "" || asin == "")
-                throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
-            DatabaseName = string.IsNullOrEmpty(db) ? null : db;
-            Guid = guid;
-            Asin = asin;
-            DataSource = dataSource;
-            SkipShelfari = true;
-        }
-
         public string Guid
         {
             private set => _guid = Functions.ConvertGuid(value);
             get => _guid;
         }
-
-        public string XRayName(bool android = false) =>
-            android
-                ? $"XRAY.{Asin}.{(DatabaseName == null ? "" : $"{DatabaseName}_")}{Guid ?? ""}.db"
-                : $"XRAY.entities.{Asin}.asc";
     }
 }

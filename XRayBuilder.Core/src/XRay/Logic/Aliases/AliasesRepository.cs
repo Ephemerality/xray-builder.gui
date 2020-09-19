@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+#if NETFRAMEWORK
 using XRayBuilder.Core.Libraries.Enumerables.Extensions;
+#endif
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Logic;
 using XRayBuilder.Core.XRay.Artifacts;

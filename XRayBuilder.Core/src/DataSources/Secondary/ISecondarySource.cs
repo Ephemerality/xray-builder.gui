@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
-using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Secondary.Model;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Model;

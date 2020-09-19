@@ -69,7 +69,11 @@ namespace XRayBuilder.Core.XRay.Logic
                         var currentOffset = offset;
                         var highlights = searchList
                             .Select(search => Regex.Matches(contentChunk.ContentText, $@"{Quotes}?\b{search}{_punctuationMarks}", regexOptions))
+#if NETFRAMEWORK
                             .SelectMany(matches => matches.Cast<Match>())
+#else
+                            .SelectMany(matches => matches)
+#endif
                             .ToLookup(match => currentOffset + match.Index, match => match.Length);
 
                         if (highlights.Count == 0)

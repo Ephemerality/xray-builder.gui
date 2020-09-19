@@ -1,4 +1,3 @@
-using System;
 using SimpleInjector;
 using XRayBuilder.Console.Logic;
 using XRayBuilder.Core.Bootstrap;

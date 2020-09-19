@@ -6,11 +6,13 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Dasync.Collections;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Images.Extensions;
 using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Model;
 
 namespace XRayBuilder.Core.Extras.AuthorProfile
@@ -29,7 +31,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
         }
 
         // TODO: Review this...
-        public async Task<Response> GenerateAsync(Request request, Func<string, bool> editBioCallback, CancellationToken cancellationToken = default)
+        public async Task<Response> GenerateAsync(Request request, Func<string, bool> editBioCallback, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             AuthorSearchResults searchResults = null;
             // Attempt to download from the alternate site, if present. If it fails in some way, try .com
@@ -202,11 +204,14 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                 _logger.Log("Gathering metadata for author's other books...");
                 try
                 {
-                    await foreach (var book in _amazonClient.EnhanceBookInfos(searchResults.Books, cancellationToken))
-                    {
-                        // todo progress
-                        bookBag.Add(book);
-                    }
+                    progress?.Set(0, searchResults.Books.Length);
+                    await _amazonClient
+                        .EnhanceBookInfos(searchResults.Books, cancellationToken)
+                        .ForEachAsync(book =>
+                        {
+                            bookBag.Add(book);
+                            progress?.Add(1);
+                        }, cancellationToken);
                 }
                 catch (Exception ex)
                 {

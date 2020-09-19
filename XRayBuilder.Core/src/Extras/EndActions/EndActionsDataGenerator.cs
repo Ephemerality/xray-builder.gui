@@ -295,6 +295,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             try
             {
                 await dataSource.GetExtrasAsync(curBook, progress, cancellationToken);
+                progress?.Set(0);
                 curBook.Series = await dataSource.GetSeriesInfoAsync(curBook.DataUrl, cancellationToken);
 
                 if (curBook.Series == null || curBook.Series.Total == 0)

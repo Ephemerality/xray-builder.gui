@@ -56,7 +56,7 @@ namespace XRayBuilder.Test.Extras.EndActions
                     EditBiography = false,
                     SaveHtml = false
                 }
-            }, _ => false, CancellationToken.None);
+            }, _ => false, null, CancellationToken.None);
 
             var endActionsDataGenerator = new EndActionsDataGenerator(_logger, _httpClient, _amazonClient, _amazonInfoParser, null);
 

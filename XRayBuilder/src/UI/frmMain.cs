@@ -548,7 +548,7 @@ namespace XRayBuilderGUI.UI
                             EditBiography = _settings.editBiography,
                             SaveHtml = _settings.saveHtml
                         }
-                    }, EditBioCallback, _cancelTokens.Token);
+                    }, EditBioCallback, _progress, _cancelTokens.Token);
 
                     if (authorProfileResponse == null)
                         return;

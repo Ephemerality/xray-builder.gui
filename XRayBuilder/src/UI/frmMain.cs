@@ -250,16 +250,20 @@ namespace XRayBuilderGUI.UI
             SetDatasourceLabels(); // Reset the dataSource for the new build process
             try
             {
+                var selectedSource = _dataSource;
                 Task<XRay> xrayTask;
                 if (rdoGoodreads.Checked)
-                    xrayTask = _xrayService.CreateXRayAsync(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.amazonTLD, _settings.includeTopics, _dataSource, _progress, _cancelTokens.Token);
+                    xrayTask = _xrayService.CreateXRayAsync(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.amazonTLD, _settings.includeTopics, selectedSource, _progress, _cancelTokens.Token);
                 else if (rdoRoentgen.Checked)
-                    xrayTask = _xrayService.CreateXRayAsync(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.roentgenRegion, _settings.includeTopics, _diContainer.GetInstance<SecondarySourceRoentgen>(), _progress, _cancelTokens.Token);
+                {
+                    selectedSource = _diContainer.GetInstance<SecondarySourceRoentgen>();
+                    xrayTask = _xrayService.CreateXRayAsync(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.roentgenRegion, _settings.includeTopics, selectedSource, _progress, _cancelTokens.Token);
+                }
                 else
                 {
                     // TODO Set datasource properly
-                    var fileDataSource = _diContainer.GetInstance<SecondaryDataSourceFactory>().Get(SecondaryDataSourceFactory.Enum.File);
-                    xrayTask = _xrayService.CreateXRayAsync(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.amazonTLD, _settings.includeTopics, fileDataSource, _progress, _cancelTokens.Token);
+                    selectedSource = _diContainer.GetInstance<SecondaryDataSourceFactory>().Get(SecondaryDataSourceFactory.Enum.File);
+                    xrayTask = _xrayService.CreateXRayAsync(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.amazonTLD, _settings.includeTopics, selectedSource, _progress, _cancelTokens.Token);
                 }
 
                 xray = await Task.Run(() => xrayTask).ConfigureAwait(false);
@@ -272,7 +276,7 @@ namespace XRayBuilderGUI.UI
                 }
 
                 var aliasPath = _directoryService.GetAliasPath(xray.Asin);
-                _xrayService.ExportAndDisplayTerms(xray, aliasPath, _settings.overwriteAliases, _settings.splitAliases);
+                _xrayService.ExportAndDisplayTerms(xray, selectedSource, aliasPath, _settings.overwriteAliases, _settings.splitAliases);
 
                 if (_settings.enableEdit && DialogResult.Yes ==
                     MessageBox.Show(

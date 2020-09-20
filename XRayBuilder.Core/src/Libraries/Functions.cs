@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
+using JetBrains.Annotations;
 using XRayBuilder.Core.Model;
 
 namespace XRayBuilder.Core.Libraries
@@ -172,8 +173,12 @@ namespace XRayBuilder.Core.Libraries
         /// <summary>
         /// Process GUID. If in decimal form, convert to hex.
         /// </summary>
+        [CanBeNull]
         public static string ConvertGuid(string guid)
         {
+            if (guid == null)
+                return null;
+
             if (Regex.IsMatch(guid, "/[a-zA-Z]/", RegexOptions.Compiled))
                 guid = guid.ToUpper();
             else

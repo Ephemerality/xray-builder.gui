@@ -103,7 +103,7 @@ namespace XRayBuilder.Console.Logic
                 }
 
                 var aliasPath = _directoryService.GetAliasPath(xray.Asin);
-                _xrayService.ExportAndDisplayTerms(xray, aliasPath, false, request.SplitAliases);
+                _xrayService.ExportAndDisplayTerms(xray, dataSource, aliasPath, false, request.SplitAliases);
 
                 if (xray.Terms.Any(term => term.Aliases?.Count > 0))
                     _logger.Log("Character aliases read from the XML file.");

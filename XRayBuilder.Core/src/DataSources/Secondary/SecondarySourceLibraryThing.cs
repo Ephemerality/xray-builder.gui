@@ -25,7 +25,7 @@ using XRayBuilder.Core.XRay.Artifacts;
 
 namespace XRayBuilder.Core.DataSources.Secondary
 {
-    public sealed class SecondarySourceLibraryThing : ISecondarySource
+    public sealed class SecondarySourceLibraryThing : SecondarySource
     {
         private readonly ILogger _logger;
         private readonly IHttpClient _httpClient;
@@ -38,10 +38,10 @@ namespace XRayBuilder.Core.DataSources.Secondary
             _random = new Random();
         }
 
-        public string Name { get; } = "LibraryThing";
-        public bool SearchEnabled { get; } = true;
-        public int UrlLabelPosition { get; } = 6;
-        public bool SupportsNotableClips { get; } = false;
+        public override string Name { get; } = "LibraryThing";
+        public override bool SearchEnabled { get; } = true;
+        public override int UrlLabelPosition { get; } = 6;
+        public override bool SupportsNotableClips { get; } = false;
 
         private const string BaseUrl = "https://www.librarything.com";
         private string IsbnSearchEndpoint(string isbn) => $"/isbn/{isbn}";
@@ -63,7 +63,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
         private string GetCookies()
             => $"LTAnonSessionID={_random.Next()}; LTUnifiedCookie=%7B%22areyouhuman%22%3A1%7D; cookie_from=https%3A%2F%2Fwww.librarything.com%2F; canuseStaticDomain=0; gdpr_notice_clicked=1";
 
-        public bool IsMatchingUrl(string url)
+        public override bool IsMatchingUrl(string url)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
             }
         }
 
-        public async Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
         {
             if (!string.IsNullOrEmpty(metadata.Isbn))
             {
@@ -156,7 +156,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
             return null;
         }
 
-        public async Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
+        public override async Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
         {
             var page = await GetPageAsync(dataUrl, cancellationToken);
             var seriesNode = page.DocumentNode
@@ -216,13 +216,13 @@ namespace XRayBuilder.Core.DataSources.Secondary
             };
         }
 
-        public Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
+        public override Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
             => Task.FromResult(false);
 
-        public Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
+        public override Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
             => Task.CompletedTask;
 
-        public async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
         {
             _logger.Log($"Downloading {Name} page...");
             var page = await GetPageAsync(dataUrl, cancellationToken);
@@ -286,7 +286,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
             };
         }
 
-        public Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
+        public override Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }

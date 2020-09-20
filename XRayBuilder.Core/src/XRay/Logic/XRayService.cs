@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Secondary;
+using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Primitives.Extensions;
 using XRayBuilder.Core.Libraries.Progress;
@@ -46,10 +47,23 @@ namespace XRayBuilder.Core.XRay.Logic
             IProgressBar progress,
             CancellationToken token = default)
         {
-            var xray = new XRay(dataLocation, db, guid, asin, dataSource)
+            if (dataLocation == "" && !(dataSource is SecondarySourceRoentgen) || guid == "" || asin == "")
+                throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
+
+            dataLocation = dataSource.SanitizeDataLocation(dataLocation);
+
+            var terms = (await dataSource.GetTermsAsync(dataLocation, asin, tld, includeTopics, progress, token)).ToList();
+
+            var xray = new XRay
             {
-                Terms = (await dataSource.GetTermsAsync(dataLocation, asin, tld, includeTopics, progress, token)).ToList()
+                DatabaseName = string.IsNullOrEmpty(db) ? null : db,
+                Guid = Functions.ConvertGuid(guid),
+                Asin = asin,
+                DataUrl = dataLocation,
+                Terms = terms
             };
+
+
             if (dataSource.SupportsNotableClips)
             {
                 _logger.Log("Downloading notable clips...");
@@ -64,7 +78,7 @@ namespace XRayBuilder.Core.XRay.Logic
         }
 
         // TODO Remove path from here when directory service is done
-        public void ExportAndDisplayTerms(XRay xray, string path, bool overwriteAliases, bool splitAliases)
+        public void ExportAndDisplayTerms(XRay xray, ISecondarySource dataSource, string path, bool overwriteAliases, bool splitAliases)
         {
             //Export available terms to a file to make it easier to create aliases or import the modified aliases if they exist
             //Could potentially just attempt to automate the creation of aliases, but in some cases it is very subjective...
@@ -85,10 +99,7 @@ namespace XRayBuilder.Core.XRay.Logic
             }
 
             var termsFound = $"{xray.Terms.Count} {(xray.Terms.Count > 1 ? "terms" : "term")} found";
-            var logMessage = xray.SkipShelfari
-                ? $"{termsFound} in file:"
-                : $"{termsFound} on {xray.DataSource.Name}:";
-            _logger.Log(logMessage);
+            _logger.Log($"{termsFound} on {dataSource.Name}:");
             var str = new StringBuilder(xray.Terms.Count * 32); // Assume that most names will be less than 32 chars
             var termId = 1;
             foreach (var t in xray.Terms)

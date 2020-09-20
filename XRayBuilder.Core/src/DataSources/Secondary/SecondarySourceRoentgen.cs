@@ -14,7 +14,7 @@ using XRayBuilder.Core.XRay.Artifacts;
 
 namespace XRayBuilder.Core.DataSources.Secondary
 {
-    public sealed class SecondarySourceRoentgen : ISecondarySource
+    public sealed class SecondarySourceRoentgen : SecondarySource
     {
         private readonly IRoentgenClient _roentgenClient;
         private readonly ILogger _logger;
@@ -25,39 +25,39 @@ namespace XRayBuilder.Core.DataSources.Secondary
             _logger = logger;
         }
 
-        public string Name { get; } = "Roentgen";
-        public bool SearchEnabled { get; } = false;
-        public int UrlLabelPosition { get; } = 0;
-        public bool SupportsNotableClips { get; } = false;
+        public override string Name { get; } = "Roentgen";
+        public override bool SearchEnabled { get; } = false;
+        public override int UrlLabelPosition { get; } = 0;
+        public override bool SupportsNotableClips { get; } = false;
 
         public const string FakeUrl = "https://roentgen";
 
-        public bool IsMatchingUrl(string url)
+        public override bool IsMatchingUrl(string url)
         {
             return url.Equals(FakeUrl);
         }
 
-        public Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
+        public override Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }
 
-        public Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
+        public override Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }
 
-        public Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
+        public override Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }
 
-        public Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
+        public override Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }
 
-        public async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -79,7 +79,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
             }
         }
 
-        public Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
+        public override Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }

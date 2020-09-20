@@ -45,7 +45,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         {
             var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, "com", true, _file, null, CancellationToken.None);
             xray.Unattended = true;
-            _xrayService.ExportAndDisplayTerms(xray, _directoryService.GetAliasPath(book.Asin), true, false);
+            _xrayService.ExportAndDisplayTerms(xray, _file, _directoryService.GetAliasPath(book.Asin), true, false);
             using var fs = new FileStream(book.Bookpath, FileMode.Open, FileAccess.Read);
             var metadata = new Metadata(fs);
             _aliasesRepository.LoadAliasesForXRay(xray);

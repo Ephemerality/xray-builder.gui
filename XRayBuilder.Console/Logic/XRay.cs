@@ -177,7 +177,7 @@ namespace XRayBuilder.Console.Logic
                     _logger.Log($"Failed to validate/fix ASIN: {ex.Message}\r\nContinuing anyway...", LogLevel.Error);
                 }
 
-                _logger.Log($"Got metadata!\r\nDatabase Name: {metadata.DbName}\r\nUniqueID: {metadata.UniqueId}\r\nASIN: {metadata.Asin}");
+                _logger.Log($"Got metadata!\r\nASIN: {metadata.Asin}");
 
                 return metadata;
             }

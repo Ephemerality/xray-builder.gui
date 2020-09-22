@@ -502,5 +502,17 @@ namespace XRayBuilderGUI.Properties {
                 this["Language"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool editDescription {
+            get {
+                return ((bool)(this["editDescription"]));
+            }
+            set {
+                this["editDescription"] = value;
+            }
+        }
     }
 }

@@ -86,7 +86,7 @@ namespace XRayBuilder.Core.Extras.EndActions
                     new Author
                     {
                         // TODO: Check mismatched fields from curbook and authorprofile
-                        Asin = request.BookAsin,
+                        Asin = request.AuthorAsin,
                         Name = request.Author,
                         Bio = request.AuthorBiography,
                         ImageUrl = request.AuthorImageUrl

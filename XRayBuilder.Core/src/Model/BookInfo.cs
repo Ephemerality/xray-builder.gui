@@ -36,8 +36,10 @@ namespace XRayBuilder.Core.Model
         // Added StartAction info
         public int ReadingHours { get; set; }
         public int ReadingMinutes { get; set; }
-        public int PagesInBook { get; set; }
+        public int PageCount { get; set; }
         public SeriesInfo Series { get; set; } = new SeriesInfo();
+
+        public int ImageCount { get; set; }
 
         /// <summary>
         /// Used to store the cover image once downloaded (manually)
@@ -59,6 +61,7 @@ namespace XRayBuilder.Core.Model
                 Guid = Functions.ConvertGuid(metadata.UniqueId);
             Databasename = metadata.DbName;
             DataUrl = dataUrl;
+            ImageCount = metadata.ImageCount;
         }
 
         public BookInfo(string title, string author, string asin)

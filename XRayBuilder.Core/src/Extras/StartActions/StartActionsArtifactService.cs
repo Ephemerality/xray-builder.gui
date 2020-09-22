@@ -99,7 +99,7 @@ namespace XRayBuilder.Core.Extras.StartActions
             startActions.Data.ReadingTime.FormattedTime.Replace("%HOURS%", curBook.ReadingHours.ToString());
             startActions.Data.ReadingTime.FormattedTime.Replace("%MINUTES%", curBook.ReadingMinutes.ToString());
             startActions.Data.PreviousBookInTheSeries = Extensions.BookInfoToBook(curBook.Series?.Previous, true);
-            startActions.Data.ReadingPages.PagesInBook = curBook.PagesInBook;
+            startActions.Data.ReadingPages.PagesInBook = curBook.PageCount;
 
             return startActions;
         }

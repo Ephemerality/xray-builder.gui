@@ -307,7 +307,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
 
         public sealed class DataJson
         {
-            [JsonProperty("seriesPosition")]
+            [JsonProperty("seriesPosition", NullValueHandling = NullValueHandling.Ignore)]
             public SeriesPosition SeriesPosition { get; set; }
 
             [JsonProperty("followSubscriptions")]
@@ -346,7 +346,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
             [JsonProperty("readingTime")]
             public ReadingTime ReadingTime { get; set; }
 
-            [JsonProperty("previousBookInTheSeries")]
+            [JsonProperty("previousBookInTheSeries", NullValueHandling = NullValueHandling.Ignore)]
             public Book PreviousBookInTheSeries { get; set; }
 
             [JsonProperty("authorSubscriptions")]

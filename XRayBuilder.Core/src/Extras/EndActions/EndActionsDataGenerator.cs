@@ -328,13 +328,13 @@ namespace XRayBuilder.Core.Extras.EndActions
 
             if (curBook.Series != null)
             {
-                _logger.Log($"\nSeries URL: {curBook.Series.Url}");
+                _logger.Log($"Series URL: {curBook.Series.Url}");
                 if (!string.IsNullOrEmpty(curBook.Series.Name))
                     _logger.Log($"This is book {curBook.Series.Position} of {curBook.Series.Total} in the {curBook.Series.Name} series");
                 if (curBook.Series.Previous != null)
                     _logger.Log($"Preceded by: {curBook.Series.Previous.Title}");
                 if (curBook.Series.Next != null)
-                    _logger.Log($"Followed by: {curBook.Series.Next.Title}\n");
+                    _logger.Log($"Followed by: {curBook.Series.Next.Title}");
             }
 
             try
@@ -343,7 +343,7 @@ namespace XRayBuilder.Core.Extras.EndActions
                 {
                     var metadataCount = metadata.GetPageCount();
                     if (metadataCount.HasValue)
-                        curBook.PagesInBook = metadataCount.Value;
+                        curBook.PageCount = metadataCount.Value;
                     // else if (settings.EstimatePageCount)
                     // {
                     //     // TODO Estimation should be done in a place that has knowledge of the book's file and knows for sure that the rawml will exist
@@ -384,6 +384,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             public bool PromptAsin { get; set; }
             public bool EstimatePageCount { get; set; }
             public bool SaveHtml { get; set; }
+            public bool EditDescription { get; set; }
         }
     }
 }

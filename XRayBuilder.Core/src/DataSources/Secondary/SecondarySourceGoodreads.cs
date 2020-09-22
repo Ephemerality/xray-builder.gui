@@ -39,6 +39,8 @@ namespace XRayBuilder.Core.DataSources.Secondary
         public override bool SupportsNotableClips { get; } = true;
 
         private readonly Regex _regexBookId = new Regex(@"/book/show/(?<id>[0-9]+)", RegexOptions.Compiled);
+        private readonly Regex _regexEditions = new(@"editions/(?<editions>[0-9]*)-", RegexOptions.Compiled);
+        private readonly Regex _regexPages = new(@"(?<pages>(\d+)|(\d+,\d+)) pages", RegexOptions.Compiled);
 
         public SecondarySourceGoodreads(ILogger logger, IHttpClient httpClient, IAmazonClient amazonClient)
         {
@@ -213,10 +215,10 @@ namespace XRayBuilder.Core.DataSources.Secondary
             {
                 var bookHtmlDoc = await _httpClient.GetPageAsync(BookUrl(id), cancellationToken);
                 var link = bookHtmlDoc.DocumentNode.SelectSingleNode("//div[@class='otherEditionsActions']/a");
-                var match = Regex.Match(link.GetAttributeValue("href", ""), @"editions/([0-9]*)-");
+                var match = _regexEditions.Match(link.GetAttributeValue("href", ""));
                 if (match.Success)
                 {
-                    var kindleEditionsUrl = string.Format("https://www.goodreads.com/work/editions/{0}?utf8=%E2%9C%93&sort=num_ratings&filter_by_format=Kindle+Edition", match.Groups[1].Value);
+                    var kindleEditionsUrl = $"https://www.goodreads.com/work/editions/{match.Groups["editions"].Value}?utf8=%E2%9C%93&sort=num_ratings&filter_by_format=Kindle+Edition";
                     bookHtmlDoc = await _httpClient.GetPageAsync(kindleEditionsUrl, cancellationToken);
                     var bookNodes = bookHtmlDoc.DocumentNode.SelectNodes("//div[@class='elementList clearFix']");
                     var asin = bookNodes?.Select(book => _amazonClient.ParseAsin(book.InnerHtml))
@@ -242,23 +244,42 @@ namespace XRayBuilder.Core.DataSources.Secondary
             var pagesNode = bookPage.DocumentNode.SelectSingleNode("//div[@id='details']");
             if (pagesNode == null)
                 return false;
-            var match = Regex.Match(pagesNode.InnerText, @"((\d+)|(\d+,\d+)) pages");
-            if (match.Success)
+            var match = _regexPages.Match(pagesNode.InnerText);
+            if (!match.Success)
+                return false;
+
+            var minutes = int.Parse(match.Groups[1].Value, NumberStyles.AllowThousands) * 1.098507462686567;
+            var span = TimeSpan.FromMinutes(minutes);
+
+            var d = PluralUtil.Pluralize($"{span.Days:day}");
+            var h = PluralUtil.Pluralize($"{span.Hours:hour}");
+            var m = PluralUtil.Pluralize($"{span.Minutes:minute}");
+            var p = match.Groups["pages"].Value;
+
+            curBook.PageCount = int.Parse(p, NumberStyles.AllowThousands, CultureInfo.InvariantCulture);
+            curBook.ReadingHours = span.Hours;
+            curBook.ReadingMinutes = span.Minutes;
+
+            // todo clean up this section
+            if (span.Days > 1)
             {
-                var minutes = int.Parse(match.Groups[1].Value, NumberStyles.AllowThousands) * 1.2890625;
-                var span = TimeSpan.FromMinutes(minutes);
-                // Functions.Pluralize($"{BookList[i].editions:edition}")
-                _logger.Log(string.Format("Typical time to read: {0}, {1}, and {2} ({3} pages)",
-                    PluralUtil.Pluralize($"{span.Days:day}"),
-                    PluralUtil.Pluralize($"{span.Hours:hour}"),
-                    PluralUtil.Pluralize($"{span.Minutes:minute}"),
-                    match.Groups[1].Value));
-                curBook.PagesInBook = int.Parse(match.Groups[1].Value);
-                curBook.ReadingHours = span.Hours;
-                curBook.ReadingMinutes = span.Minutes;
+                _logger.Log($"Typical time to read: {d}, {h}, and {m} ({p} pages)");
                 return true;
             }
-            return false;
+
+            if (span.Hours > 1)
+            {
+                _logger.Log($"Typical time to read: {h}, and {m} ({p} pages)");
+                return true;
+            }
+
+            if (span.Minutes <= 1)
+            {
+                _logger.Log($"Typical time to read: {m} ({p} pages)");
+                return true;
+            }
+
+            return true;
         }
 
         public override async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)

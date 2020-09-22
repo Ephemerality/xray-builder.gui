@@ -16,6 +16,8 @@ namespace XRayBuilder.Core.DataSources.Amazon
         private readonly ILogger _logger;
         private readonly IHttpClient _httpClient;
 
+        private readonly Regex _numbersRegex = new(@"(\d+)", RegexOptions.Compiled);
+
         public AmazonInfoParser(ILogger logger, IHttpClient httpClient)
         {
             _logger = logger;
@@ -28,6 +30,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             public string Description { get; set; }
             public int Reviews { get; set; }
             public float Rating { get; set; }
+            public int Pages { get; set; }
 
             public void ApplyToBookInfo(BookInfo bookInfo)
             {
@@ -35,6 +38,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 bookInfo.Description = Description;
                 bookInfo.Reviews = Reviews;
                 bookInfo.AmazonRating = Rating;
+                bookInfo.PageCount = Pages;
             }
         }
 
@@ -145,6 +149,29 @@ namespace XRayBuilder.Core.DataSources.Amazon
             {
                 throw new AggregateException($"Error finding book ratings. If you want, you can report the book's Amazon URL to help with parsing.\r\nError: {ex.Message}\r\n{ex.StackTrace}", ex);
             }
+            #endregion
+
+            #region Pages
+
+            var pagesNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='aboutEbooksSection']/table/tr/td");
+            if (!string.IsNullOrEmpty(pagesNode?.InnerText))
+            {
+                var match = _numbersRegex.Match(pagesNode.InnerText);
+                if (!match.Success)
+                {
+                    pagesNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='productDetailsTable']/tr/td");
+                    if (!string.IsNullOrEmpty(pagesNode?.InnerText))
+                    {
+                        var lengthNode = pagesNode.SelectSingleNode(".//li[contains(text(),'pages')]");
+                        if (lengthNode != null)
+                            match = _numbersRegex.Match(lengthNode.InnerText);
+                    }
+                }
+
+                if (match.Success)
+                    response.Pages = int.Parse(match.Value);
+            }
+
             #endregion
 
             return response;

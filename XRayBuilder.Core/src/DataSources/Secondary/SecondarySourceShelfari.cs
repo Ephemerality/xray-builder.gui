@@ -105,10 +105,10 @@ namespace XRayBuilder.Core.DataSources.Secondary
             var match1 = Regex.Match(node1.InnerText, @"Page Count: ((\d+)|(\d+,\d+))");
             if (match1.Success)
             {
-                var minutes = int.Parse(match1.Groups[1].Value, NumberStyles.AllowThousands) * 1.2890625;
+                var minutes = int.Parse(match1.Groups[1].Value, NumberStyles.AllowThousands) * 1.098507462686567;
                 var span = TimeSpan.FromMinutes(minutes);
                 _logger.Log(string.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)", span.Hours, span.Minutes, match1.Groups[1].Value));
-                curBook.PagesInBook = int.Parse(match1.Groups[1].Value);
+                curBook.PageCount = int.Parse(match1.Groups[1].Value);
                 curBook.ReadingHours = span.Hours;
                 curBook.ReadingMinutes = span.Minutes;
                 return true;

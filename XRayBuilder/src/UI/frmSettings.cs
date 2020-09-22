@@ -17,14 +17,14 @@ namespace XRayBuilderGUI.UI
         private readonly LanguageFactory _languageFactory;
 
         // TODO: Should be elsewhere maybe
-        private readonly Dictionary<string, string> regionTLDs = new Dictionary<string, string>
+        private readonly Dictionary<string, string> _regionTlDs = new()
         {
             { "Australia", "com.au" }, { "Brazil", "com.br" }, { "Canada", "ca" }, { "China", "cn" },
             { "France", "fr" }, { "Germany", "de" }, { "India", "in" }, { "Italy", "it" }, { "Japan", "co.jp" },
             { "Mexico", "com.mx" }, { "Netherlands", "nl" }, { "Spain", "es" }, { "USA", "com" }, { "UK", "co.uk" }
         };
 
-        private readonly Dictionary<string, string> roentgenRegionTLDs = new Dictionary<string, string>
+        private readonly Dictionary<string, string> roentgenRegionTLDs = new()
         {
             { "Germany", "de" }, { "USA", "com" }
         };
@@ -83,6 +83,7 @@ namespace XRayBuilderGUI.UI
             chkAutoBuildAP.Checked = Settings.Default.autoBuildAP;
             chkPromptAsin.Checked = Settings.Default.promptASIN;
             chkEditBiography.Checked = Settings.Default.editBiography;
+            chkEditDescription.Checked = Settings.Default.editDescription;
             chkUseSidecar.Checked = Settings.Default.outputToSidecar;
             cmbSecondaryDataSource.Text = Settings.Default.dataSource;
 
@@ -122,9 +123,10 @@ namespace XRayBuilderGUI.UI
             toolTip1.SetToolTip(chkEditBiography, MainStrings.EditBioTooltip);
             toolTip1.SetToolTip(chkAutoBuildAP, MainStrings.AutoBuildAuthorProfileTooltip);
             toolTip1.SetToolTip(chkIncludeTopics, MainStrings.IncludeTopicsTooltip);
+            toolTip1.SetToolTip(chkEditDescription, $"If enabled, allows editing the book's{Environment.NewLine}description before it's used.");
 
-            var regions = new List<AmazonRegion>(regionTLDs.Count);
-            foreach (var (name, tld) in regionTLDs)
+            var regions = new List<AmazonRegion>(_regionTlDs.Count);
+            foreach (var (name, tld) in _regionTlDs)
                 regions.Add(new AmazonRegion(name, tld));
             cmbRegion.DataSource = regions;
             cmbRegion.DisplayMember = "Name";
@@ -200,6 +202,7 @@ namespace XRayBuilderGUI.UI
             Settings.Default.dataSource = cmbSecondaryDataSource.Text;
             Settings.Default.promptASIN = chkPromptAsin.Checked;
             Settings.Default.editBiography = chkEditBiography.Checked;
+            Settings.Default.editDescription = chkEditDescription.Checked;
             Settings.Default.outputToSidecar = chkUseSidecar.Checked;
             Settings.Default.downloadSA = chkRoentgenStartActions.Checked;
             Settings.Default.downloadEA = chkRoentgenEndActions.Checked;

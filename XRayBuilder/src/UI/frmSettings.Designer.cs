@@ -106,6 +106,7 @@ namespace XRayBuilderGUI.UI
             this.chkRoentgenStartActions = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.listSettings = new System.Windows.Forms.ListBox();
+            this.chkEditDescription = new System.Windows.Forms.CheckBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.cbLanguage.SuspendLayout();
@@ -196,6 +197,7 @@ namespace XRayBuilderGUI.UI
             // tabPgGeneral
             // 
             this.tabPgGeneral.Controls.Add(this.cbLanguage);
+            this.tabPgGeneral.Controls.Add(this.groupBox2);
             this.tabPgGeneral.Controls.Add(this.gbProcess);
             this.tabPgGeneral.Controls.Add(this.gbUnpack);
             this.tabPgGeneral.Controls.Add(this.gbGeneral);
@@ -224,6 +226,28 @@ namespace XRayBuilderGUI.UI
             this.cmbLanguage.Name = "cmbLanguage";
             this.cmbLanguage.Size = new System.Drawing.Size(160, 23);
             this.cmbLanguage.TabIndex = 0;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.cmbSecondaryDataSource);
+            this.groupBox2.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox2.Location = new System.Drawing.Point(4, 276);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(504, 75);
+            this.groupBox2.TabIndex = 39;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Data Provider";
+            // 
+            // cmbSecondaryDataSource
+            // 
+            this.cmbSecondaryDataSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbSecondaryDataSource.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbSecondaryDataSource.FormattingEnabled = true;
+            this.cmbSecondaryDataSource.Items.AddRange(new object[] {"Goodreads", "Shelfari", "LibraryThing"});
+            this.cmbSecondaryDataSource.Location = new System.Drawing.Point(18, 28);
+            this.cmbSecondaryDataSource.Name = "cmbSecondaryDataSource";
+            this.cmbSecondaryDataSource.Size = new System.Drawing.Size(138, 28);
+            this.cmbSecondaryDataSource.TabIndex = 0;
             // 
             // gbProcess
             // 
@@ -390,7 +414,6 @@ namespace XRayBuilderGUI.UI
             // 
             // tabPgXray
             // 
-            this.tabPgXray.Controls.Add(this.groupBox2);
             this.tabPgXray.Controls.Add(this.groupBox4);
             this.tabPgXray.Controls.Add(this.groupBox3);
             this.tabPgXray.Controls.Add(this.gbXray);
@@ -400,28 +423,6 @@ namespace XRayBuilderGUI.UI
             this.tabPgXray.TabIndex = 2;
             this.tabPgXray.Text = "tabPage3";
             this.tabPgXray.UseVisualStyleBackColor = true;
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.cmbSecondaryDataSource);
-            this.groupBox2.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
-            this.groupBox2.Location = new System.Drawing.Point(4, 223);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(504, 75);
-            this.groupBox2.TabIndex = 27;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "X-Ray Data Provider";
-            // 
-            // cmbSecondaryDataSource
-            // 
-            this.cmbSecondaryDataSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbSecondaryDataSource.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
-            this.cmbSecondaryDataSource.FormattingEnabled = true;
-            this.cmbSecondaryDataSource.Items.AddRange(new object[] {"Goodreads", "Shelfari", "LibraryThing"});
-            this.cmbSecondaryDataSource.Location = new System.Drawing.Point(18, 28);
-            this.cmbSecondaryDataSource.Name = "cmbSecondaryDataSource";
-            this.cmbSecondaryDataSource.Size = new System.Drawing.Size(138, 23);
-            this.cmbSecondaryDataSource.TabIndex = 0;
             // 
             // groupBox4
             // 
@@ -689,13 +690,14 @@ namespace XRayBuilderGUI.UI
             // 
             // gbAmazonPrefs
             // 
+            this.gbAmazonPrefs.Controls.Add(this.chkEditDescription);
             this.gbAmazonPrefs.Controls.Add(this.chkEditBiography);
             this.gbAmazonPrefs.Controls.Add(this.chkPromptAsin);
             this.gbAmazonPrefs.Controls.Add(this.chkSaveBio);
             this.gbAmazonPrefs.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.gbAmazonPrefs.Location = new System.Drawing.Point(4, 174);
             this.gbAmazonPrefs.Name = "gbAmazonPrefs";
-            this.gbAmazonPrefs.Size = new System.Drawing.Size(504, 129);
+            this.gbAmazonPrefs.Size = new System.Drawing.Size(504, 162);
             this.gbAmazonPrefs.TabIndex = 29;
             this.gbAmazonPrefs.TabStop = false;
             this.gbAmazonPrefs.Text = "Preferences";
@@ -976,6 +978,17 @@ namespace XRayBuilderGUI.UI
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
             // 
+            // chkEditDescription
+            // 
+            this.chkEditDescription.AutoSize = true;
+            this.chkEditDescription.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkEditDescription.Location = new System.Drawing.Point(18, 124);
+            this.chkEditDescription.Name = "chkEditDescription";
+            this.chkEditDescription.Size = new System.Drawing.Size(173, 24);
+            this.chkEditDescription.TabIndex = 32;
+            this.chkEditDescription.Text = "Edit book description";
+            this.chkEditDescription.UseVisualStyleBackColor = true;
+            // 
             // frmSettings
             // 
             this.AcceptButton = this.btnSave;
@@ -1088,7 +1101,6 @@ namespace XRayBuilderGUI.UI
         private System.Windows.Forms.GroupBox gbProcess;
         private System.Windows.Forms.GroupBox gbUnpack;
         private System.Windows.Forms.GroupBox gbXray;
-        private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.GroupBox groupBox5;
@@ -1121,9 +1133,11 @@ namespace XRayBuilderGUI.UI
         #endregion
 
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.ComboBox cmbSecondaryDataSource;
         private System.Windows.Forms.PictureBox pictureBox3;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox gbOptions;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.ComboBox cmbSecondaryDataSource;
+        private System.Windows.Forms.CheckBox chkEditDescription;
     }
 }

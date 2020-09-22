@@ -176,10 +176,10 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             }
 
             var message = biography == null
-                ? "No author biography found on Amazon!\r\nWould you like to create one?"
+                ? $"No author biography found on Amazon!{Environment.NewLine}Would you like to create one?"
                 : readFromFile
                     ? "Would you like to edit the existing biography?"
-                    : "Author biography found on Amazon! Would you like to edit it?";
+                    : $"Author biography found on Amazon!{Environment.NewLine}Would you like to edit it?";
 
             if (editBioCallback != null && editBioCallback(message))
             {
@@ -245,7 +245,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             }
             catch (Exception ex)
             {
-                _logger.Log(string.Format("An error occurred downloading the author image: {0}", ex.Message));
+                _logger.Log($"An error occurred downloading the author image: {ex.Message}");
             }
 
             var bookBag = new ConcurrentBag<BookInfo>();
@@ -277,7 +277,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             }
             else
             {
-                _logger.Log("Unable to find other books by this author. If there should be some, check the Amazon URL to ensure it is correct.");
+                _logger.Log($"Unable to find other books by {request.Book.Author}. If there should be some, check the Amazon URL to ensure it is correct.");
             }
 
             _logger.Log("Writing Author Profile to file…");

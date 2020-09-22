@@ -34,7 +34,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             _previewDataExporter = new PreviewDataExporter();
             _chaptersService = new ChaptersService(_logger);
             _directoryService = new DirectoryService(_logger, null);
-            _xrayService = new XRayService(_logger, _chaptersService, new AliasesRepository(_logger, new AliasesService(_logger), _directoryService));
+            _xrayService = new XRayService(_logger, _chaptersService, new AliasesRepository(_logger, new AliasesService(_logger), _directoryService), _directoryService);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]

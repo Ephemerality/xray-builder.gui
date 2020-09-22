@@ -21,6 +21,7 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
         /// <summary>
         /// Write any characters and their aliases from <paramref name="terms"/> to an alias file for <paramref name="asin"/>
         /// </summary>
-        void SaveCharactersToFile(IEnumerable<Term> terms, string asin, bool splitAliases);
+        [CanBeNull]
+        string SaveCharactersToFile(IEnumerable<Term> terms, string asin, bool splitAliases);
     }
 }

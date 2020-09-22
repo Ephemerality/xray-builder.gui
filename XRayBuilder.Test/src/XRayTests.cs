@@ -36,7 +36,7 @@ namespace XRayBuilder.Test
             _file = new SecondarySourceFile(_logger, _termsService);
             _chaptersService = new ChaptersService(_logger);
             _directoryService = new DirectoryService(_logger, null);
-            _xrayService = new XRayService(_logger, _chaptersService, new AliasesRepository(_logger, new AliasesService(_logger), _directoryService));
+            _xrayService = new XRayService(_logger, _chaptersService, new AliasesRepository(_logger, new AliasesService(_logger), _directoryService), _directoryService);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
@@ -50,7 +50,7 @@ namespace XRayBuilder.Test
         public async Task XRayXMLAliasTest(Book book)
         {
             var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, "com", true, _file, null, CancellationToken.None);
-            _xrayService.ExportAndDisplayTerms(xray, _file, _directoryService.GetAliasPath(book.Asin), true, false);
+            _xrayService.ExportAndDisplayTerms(xray, _file, true, false);
             FileAssert.AreEqual($"ext\\{book.Asin}.aliases", $"testfiles\\{book.Asin}.aliases");
         }
 

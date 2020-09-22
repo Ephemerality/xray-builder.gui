@@ -13,6 +13,7 @@ using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Primitives.Extensions;
 using XRayBuilder.Core.Libraries.Progress;
+using XRayBuilder.Core.Logic;
 using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Logic.Aliases;
 using XRayBuilder.Core.XRay.Logic.Chapters;
@@ -27,12 +28,14 @@ namespace XRayBuilder.Core.XRay.Logic
         private readonly ChaptersService _chaptersService;
         private readonly IAliasesRepository _aliasesRepository;
         private readonly Encoding _encoding;
+        private readonly IDirectoryService _directoryService;
 
-        public XRayService(ILogger logger, ChaptersService chaptersService, IAliasesRepository aliasesRepository)
+        public XRayService(ILogger logger, ChaptersService chaptersService, IAliasesRepository aliasesRepository, IDirectoryService directoryService)
         {
             _logger = logger;
             _chaptersService = chaptersService;
             _aliasesRepository = aliasesRepository;
+            _directoryService = directoryService;
             _encoding = CodePagesEncodingProvider.Instance.GetEncoding(1252);
         }
 
@@ -77,8 +80,7 @@ namespace XRayBuilder.Core.XRay.Logic
             return xray;
         }
 
-        // TODO Remove path from here when directory service is done
-        public void ExportAndDisplayTerms(XRay xray, ISecondarySource dataSource, string path, bool overwriteAliases, bool splitAliases)
+        public void ExportAndDisplayTerms(XRay xray, ISecondarySource dataSource, bool overwriteAliases, bool splitAliases)
         {
             //Export available terms to a file to make it easier to create aliases or import the modified aliases if they exist
             //Could potentially just attempt to automate the creation of aliases, but in some cases it is very subjective...
@@ -90,12 +92,13 @@ namespace XRayBuilder.Core.XRay.Logic
             //{
             //    aliasesDownloaded = await AttemptAliasDownload();
             //}
-
-            if (!aliasesDownloaded && (!File.Exists(path) || overwriteAliases))
+            var aliasPath = _directoryService.GetAliasPath(xray.Asin);
+            if (!aliasesDownloaded && (!File.Exists(aliasPath) || overwriteAliases))
             {
-                // todo the passed in path isn't even used....
-                _aliasesRepository.SaveCharactersToFile(xray.Terms, xray.Asin, splitAliases);
-                _logger.Log($"Characters exported to {path} for adding aliases.");
+                // overwrite path in case it waas changed within the service
+                aliasPath = _aliasesRepository.SaveCharactersToFile(xray.Terms, xray.Asin, splitAliases);
+                if (aliasPath != null)
+                    _logger.Log($"Characters exported to {aliasPath} for adding aliases.");
             }
 
             var termsFound = $"{xray.Terms.Count} {(xray.Terms.Count > 1 ? "terms" : "term")} found";

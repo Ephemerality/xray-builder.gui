@@ -37,7 +37,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             _directoryService = new DirectoryService(_logger, new XRayBuilderConfig());
             _aliasesRepository = new AliasesRepository(_logger, new AliasesService(_logger), _directoryService);
             _chaptersService = new ChaptersService(_logger);
-            _xrayService = new XRayService(_logger, _chaptersService, _aliasesRepository);
+            _xrayService = new XRayService(_logger, _chaptersService, _aliasesRepository, _directoryService);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
@@ -45,7 +45,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         {
             var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, "com", true, _file, null, CancellationToken.None);
             xray.Unattended = true;
-            _xrayService.ExportAndDisplayTerms(xray, _file, _directoryService.GetAliasPath(book.Asin), true, false);
+            _xrayService.ExportAndDisplayTerms(xray, _file, true, false);
             var fakeMetadata = new Metadata();
             _aliasesRepository.LoadAliasesForXRay(xray);
             using var fs = new FileStream(book.Rawml, FileMode.Open);

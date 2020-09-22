@@ -113,9 +113,10 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             return aliasesByTermName;
         }
 
-        public void SaveCharactersToFile(IEnumerable<Term> terms, string asin, bool splitAliases)
+        public string SaveCharactersToFile(IEnumerable<Term> terms, string asin, bool splitAliases)
         {
-            using var streamWriter = new StreamWriter(_directoryService.GetAliasPath(asin), false, Encoding.UTF8);
+            var aliasPath = _directoryService.GetAliasPath(asin);
+            using var streamWriter = new StreamWriter(aliasPath, false, Encoding.UTF8);
 
             var sortedTerms = terms
                 .OrderBy(term => term.Type)
@@ -137,7 +138,10 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             catch (Exception ex)
             {
                 _logger.Log("An error occurred while saving the aliases.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                return null;
             }
+
+            return aliasPath;
         }
     }
 }

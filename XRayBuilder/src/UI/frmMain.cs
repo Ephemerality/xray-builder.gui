@@ -276,7 +276,7 @@ namespace XRayBuilderGUI.UI
                 }
 
                 var aliasPath = _directoryService.GetAliasPath(xray.Asin);
-                _xrayService.ExportAndDisplayTerms(xray, selectedSource, aliasPath, _settings.overwriteAliases, _settings.splitAliases);
+                _xrayService.ExportAndDisplayTerms(xray, selectedSource, _settings.overwriteAliases, _settings.splitAliases);
 
                 if (_settings.enableEdit && DialogResult.Yes ==
                     MessageBox.Show(

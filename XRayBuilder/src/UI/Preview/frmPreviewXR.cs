@@ -18,6 +18,13 @@ namespace XRayBuilderGUI.UI.Preview
             InitializeComponent();
         }
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData != Keys.Escape) return base.ProcessCmdKey(ref msg, keyData);
+            Close();
+            return true;
+        }
+
         // TODO: Add notable clips
         public Task Populate(string filePath, CancellationToken cancellationToken = default)
         {

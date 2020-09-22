@@ -23,17 +23,20 @@ namespace XRayBuilderGUI.UI
 {
     public partial class frmCreateXR : Form
     {
-        private readonly ITermsService _termsService;
         private readonly IAliasesRepository _aliasesRepository;
-        private readonly IAmazonClient _amazonClient;
-        private readonly IRoentgenClient _roentgenClient;
         private readonly IAliasesService _aliasesService;
+        private readonly IAmazonClient _amazonClient;
 
         // There is private method ClearAllSelections in ToolStrip class,
         // which removes selections from items. You can invoke it via reflection:
         // https://stackoverflow.com/a/10341622
         private readonly MethodInfo _method =
             typeof(ToolStrip).GetMethod("ClearAllSelections", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        private readonly IRoentgenClient _roentgenClient;
+        private readonly ITermsService _termsService;
+
+        private List<Term> _terms = new List<Term>(100);
 
         public frmCreateXR(
             ITermsService termsService,
@@ -56,38 +59,12 @@ namespace XRayBuilderGUI.UI
             pi?.SetValue(dgvTerms, true, null);
         }
 
-        private class CustomToolStripProfessionalRenderer : ToolStripProfessionalRenderer
-        {
-            public CustomToolStripProfessionalRenderer()
-                : base(new CustomProfessionalColorTable())
-            {
-            }
-
-            protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
-            {
-                // Don't draw a border
-            }
-        }
-
-        private class CustomProfessionalColorTable : ProfessionalColorTable
-        {
-            private readonly Color _toolStripColor = Color.FromArgb(240, 240, 240);
-
-            public override Color ToolStripGradientBegin => _toolStripColor;
-
-            public override Color ToolStripGradientMiddle => _toolStripColor;
-
-            public override Color ToolStripGradientEnd => _toolStripColor;
-        }
-
         public void SetMetadata(string asin, string author, string title)
         {
             txtAuthor.Text = author;
             txtTitle.Text = title;
             txtAsin.Text = asin;
         }
-
-        private List<Term> _terms = new List<Term>(100);
 
         private void btnAddTerm_Click(object sender, EventArgs e)
         {
@@ -120,26 +97,24 @@ namespace XRayBuilderGUI.UI
                 @"Press OK to overwrite the current term with selected one from the term list.",
                 $@"Unsaved changes to {txtName.Text}",
                 MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2))
-            {
                 return;
-            }
 
             var row = dgvTerms.SelectedRows.Cast<DataGridViewRow>().FirstOrDefault();
             if (row == null)
                 return;
 
-            rdoCharacter.Checked = ImageUtil.AreEqual((Bitmap)row.Cells[0].Value, Resources.character);
-            rdoTopic.Checked = ImageUtil.AreEqual((Bitmap)row.Cells[0].Value, Resources.setting);
+            rdoCharacter.Checked = ImageUtil.AreEqual((Bitmap) row.Cells[0].Value, Resources.character);
+            rdoTopic.Checked = ImageUtil.AreEqual((Bitmap) row.Cells[0].Value, Resources.setting);
             txtName.Text = row.Cells[1].Value?.ToString() ?? "";
             txtAliases.Text = row.Cells[2].Value?.ToString() ?? "";
             txtDescription.Text = row.Cells[3].Value?.ToString() ?? "";
             txtLink.Text = row.Cells[4].Value?.ToString() ?? "";
             rdoGoodreads.Checked = row.Cells[5].Value?.ToString() == "Goodreads";
             rdoWikipedia.Checked = row.Cells[5].Value?.ToString() == "Wikipedia";
-            chkMatch.Checked = (bool?)row.Cells[6].Value ?? false;
-            chkCase.Checked = (bool?)row.Cells[7].Value ?? false;
+            chkMatch.Checked = (bool?) row.Cells[6].Value ?? false;
+            chkCase.Checked = (bool?) row.Cells[7].Value ?? false;
             //chkDelete.Checked = (bool)row.Cells[8].Value;
-            chkRegex.Checked = (bool?)row.Cells[9].Value ?? false;
+            chkRegex.Checked = (bool?) row.Cells[9].Value ?? false;
             dgvTerms.Rows.Remove(row);
         }
 
@@ -153,9 +128,10 @@ namespace XRayBuilderGUI.UI
             }
             catch (Exception ex)
             {
-                MessageBox.Show($@"An error occured opening this link: {ex.Message}" +
-                                Environment.NewLine +
-                                $@"{ex.StackTrace}");
+                MessageBox.Show(@"An error occured opening this link:" +
+                                Environment.NewLine + $@"{ex.Message}" +
+                                Environment.NewLine + $@"{ex.StackTrace}",
+                    @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -182,16 +158,19 @@ namespace XRayBuilderGUI.UI
                         _terms = _termsService.ReadTermsFromTxt(openFile.FileName).ToList();
                         break;
                     default:
-                        MessageBox.Show($@"Error: Bad file type ""{filetype}""");
+                        MessageBox.Show($@"Unsupported file type : {filetype}",
+                            @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         break;
                 }
+
                 ReloadTerms();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($@"Error: {ex.Message}" +
-                                Environment.NewLine +
-                                @"{ex.StackTrace}");
+                MessageBox.Show(@"An error occured:" +
+                                Environment.NewLine + $@"{ex.Message}" +
+                                Environment.NewLine + $@"{ex.StackTrace}",
+                    @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -220,6 +199,7 @@ namespace XRayBuilderGUI.UI
                     false,
                     t.RegexAliases);
             }
+
             _terms.Clear();
 
             if (!File.Exists(aliasFile))
@@ -229,7 +209,8 @@ namespace XRayBuilderGUI.UI
             {
                 MessageBox.Show(@"The XML file already contained aliases," +
                                 Environment.NewLine +
-                                @"so the .aliases file will be ignored.");
+                                @"so the .aliases file will be ignored.",
+                    @"Pre-Existing Aliases", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
@@ -247,6 +228,7 @@ namespace XRayBuilderGUI.UI
                         d.Add(temp[0], temp2);
                 }
             }
+
             foreach (DataGridViewRow row in dgvTerms.Rows)
             {
                 var name = row.Cells[1].Value.ToString();
@@ -271,26 +253,34 @@ namespace XRayBuilderGUI.UI
                     @"Missing Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
             if (txtTitle.Text == "")
             {
-                MessageBox.Show("A title is required to save the X-Ray file.", "Missing Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(@"A title is required to save the X-Ray file.", @"Missing Information",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
             if (txtAsin.Text == "")
             {
-                MessageBox.Show("An ASIN is required to save the aliases file.", "Missing Information", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(@"An ASIN is required to save the aliases file.", @"Missing Information",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
             try
             {
                 CreateTerms();
                 _aliasesRepository.SaveCharactersToFile(_terms, txtAsin.Text, Settings.Default.splitAliases);
-                MessageBox.Show("X-Ray entities and Alias files created sucessfully!");
+                MessageBox.Show(@"X-Ray entities and Alias files created successfully!",
+                    @"Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred saving the files: {ex.Message}\r\n{ex.StackTrace}",
-                    "Save XML", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(@"An error occurred saving the XML files:" +
+                                Environment.NewLine + $@"{ex.Message}" +
+                                Environment.NewLine + $@"{ex.StackTrace}",
+                    @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -363,7 +353,6 @@ namespace XRayBuilderGUI.UI
         {
             var termId = 1;
             foreach (DataGridViewRow row in dgvTerms.Rows)
-            {
                 yield return new Term
                 {
                     Id = termId++,
@@ -381,7 +370,6 @@ namespace XRayBuilderGUI.UI
                     MatchCase = (bool?) row.Cells[7].Value ?? false,
                     RegexAliases = (bool?) row.Cells[9].Value ?? false
                 };
-            }
         }
 
         private void CreateTerms()
@@ -427,7 +415,7 @@ namespace XRayBuilderGUI.UI
                 MessageBox.Show($@"{txtAsin.Text} is not a valid ASIN." +
                                 Environment.NewLine +
                                 @"Roentgen requires one!",
-                    @"Invalid ASIN",
+                    @"Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
                 return;
@@ -442,21 +430,25 @@ namespace XRayBuilderGUI.UI
         {
             try
             {
-                var terms = await _roentgenClient.DownloadTermsAsync(asin, Settings.Default.roentgenRegion, CancellationToken.None);
+                var terms = await _roentgenClient.DownloadTermsAsync(asin, Settings.Default.roentgenRegion,
+                    CancellationToken.None);
                 if (terms == null)
                 {
-                    MessageBox.Show("No terms were available for this book :(");
+                    MessageBox.Show(@"No terms were available for this book.",
+                        @"No Data Found", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
                 _terms = terms.Where(term => term.Type == "character" || Settings.Default.includeTopics).ToList();
                 var trueCount = _terms.Count;
                 ReloadTerms();
-                MessageBox.Show($"Successfully downloaded {trueCount} terms from Roentgen!");
+                MessageBox.Show($@"Successfully downloaded {trueCount} terms from Roentgen!",
+                    @"Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception e)
             {
-                MessageBox.Show($"Failed to download terms: {e.Message}");
+                MessageBox.Show(@"Failed to download terms:" + Environment.NewLine + $@"{e.Message}",
+                    @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -470,11 +462,9 @@ namespace XRayBuilderGUI.UI
             {
                 var name = row.Cells[1].Value.ToString();
                 if (aliasesByTerm.TryGetValue(name, out var aliases) && aliases.Any())
-                {
                     row.Cells[2].Value = string.IsNullOrEmpty((string) row.Cells[2].Value)
                         ? string.Join(",", aliases)
                         : $"{row.Cells[2].Value}{string.Join(",", aliases)}";
-                }
             }
         }
 
@@ -483,7 +473,9 @@ namespace XRayBuilderGUI.UI
             if (dgvTerms.Rows.Count < 0)
                 return;
 
-            if (DialogResult.No == MessageBox.Show(@"Are you sure you want to clear all aliases?",
+            if (DialogResult.No == MessageBox.Show(@"Are you sure you want to clear all aliases?" +
+                                                   Environment.NewLine +
+                                                   @"This action can not be undone.",
                 @"Are you sure?",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Warning,
@@ -492,6 +484,30 @@ namespace XRayBuilderGUI.UI
 
             foreach (DataGridViewRow row in dgvTerms.Rows)
                 row.Cells[2].Value = "";
+        }
+
+        private class CustomToolStripProfessionalRenderer : ToolStripProfessionalRenderer
+        {
+            public CustomToolStripProfessionalRenderer()
+                : base(new CustomProfessionalColorTable())
+            {
+            }
+
+            protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
+            {
+                // Don't draw a border
+            }
+        }
+
+        private class CustomProfessionalColorTable : ProfessionalColorTable
+        {
+            private readonly Color _toolStripColor = Color.FromArgb(240, 240, 240);
+
+            public override Color ToolStripGradientBegin => _toolStripColor;
+
+            public override Color ToolStripGradientMiddle => _toolStripColor;
+
+            public override Color ToolStripGradientEnd => _toolStripColor;
         }
     }
 }

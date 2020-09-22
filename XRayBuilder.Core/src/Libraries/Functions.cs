@@ -5,7 +5,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using HtmlAgilityPack;
 using XRayBuilder.Core.Model;
 
@@ -13,6 +12,14 @@ namespace XRayBuilder.Core.Libraries
 {
     public static class Functions
     {
+        public static bool IsActualBook(string title, string curTitle)
+        {
+            var pattern =
+                $@"{curTitle}|(series|reading) order|box set|complete series|checklist|edition|especial|\([0-9]+ book series\)";
+            var match = Regex.Match(title, pattern, RegexOptions.IgnoreCase);
+            return !match.Success;
+        }
+
         public static string ReadFromFile(string file)
         {
             using var streamReader = new StreamReader(file, Encoding.UTF8);
@@ -69,8 +76,8 @@ namespace XRayBuilder.Core.Libraries
         public static string TimeStamp()
         {
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            var time = string.Format("{0:HH:mm:ss}", DateTime.Now);
-            var date = string.Format("{0:dd/MM/yyyy}", DateTime.Now);
+            var time = $"{DateTime.Now:HH:mm:ss}";
+            var date = $"{DateTime.Now:dd/MM/yyyy}";
             return $"Running X-Ray Builder GUI v{version}. Log started on {date} at {time}.\r\n";
         }
 
@@ -107,7 +114,7 @@ namespace XRayBuilder.Core.Libraries
                 output = "An error occurred while estimating page count!";
                 return output;
             }
-            var minutes = pageCount * 1.2890625;
+            var minutes = pageCount * 1.098507462686567;
             var span = TimeSpan.FromMinutes(minutes);
             bookInfo.PagesInBook = pageCount;
             bookInfo.ReadingHours = span.Hours;

@@ -113,7 +113,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
 
             if (string.IsNullOrEmpty(biography) && !string.IsNullOrEmpty(searchResults.Biography))
             {
-                //Trim authour biography to less than 1000 characters and/or replace more problematic characters.
+                //Trim author biography to less than 1000 characters and/or replace more problematic characters.
                 if (searchResults.Biography.Trim().Length > 0)
                 {
                     if (searchResults.Biography.Length > 1000)
@@ -130,7 +130,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                         biography = searchResults.Biography;
 
                     biography = biography.Clean();
-                    if (request.Settings.SaveBio)
+                    if (request.Settings.SaveBio || request.Settings.EditBiography)
                         File.WriteAllText(bioFile, biography);
                     _logger.Log("Author biography found on Amazon!");
                 }
@@ -140,7 +140,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                 ? "No author biography found on Amazon!\r\nWould you like to create one?"
                 : readFromFile
                     ? "Would you like to edit the existing biography?"
-                    : "Author biography found on Amazon! Would you like to edit it?";
+                    : "Author biography found on Amazon!\r\nWould you like to edit it?";
 
             if (editBioCallback != null && editBioCallback(message))
             {
@@ -193,13 +193,18 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             }
             catch (Exception ex)
             {
-                _logger.Log(string.Format("An error occurred downloading the author image: {0}", ex.Message));
+                _logger.Log($"An error occurred downloading the author image: {ex.Message}");
             }
 
             var bookBag = new ConcurrentBag<BookInfo>();
             if (searchResults.Books != null && request.Settings.UseNewVersion)
             {
-                _logger.Log("Gathering metadata for author's other books...");
+                if (searchResults.Books.Length != 0)
+                {
+                    _logger.Log(searchResults.Books.Length > 1
+                        ? $"Gathering metadata for {searchResults.Books.Length} other books by {request.Book.Author}..."
+                        : $"Gathering metadata for another books by {request.Book.Author}...");
+                }
                 try
                 {
                     await foreach (var book in _amazonClient.EnhanceBookInfos(searchResults.Books, cancellationToken))
@@ -216,7 +221,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             }
             else
             {
-                _logger.Log("Unable to find other books by this author. If there should be some, check the Amazon URL to ensure it is correct.");
+                _logger.Log($"Unable to find other books by {request.Book.Author}. If there should be some, check the Amazon URL to ensure it is correct.");
             }
 
             _logger.Log("Writing Author Profile to file...");

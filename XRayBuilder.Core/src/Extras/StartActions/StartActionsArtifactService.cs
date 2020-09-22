@@ -16,7 +16,7 @@ namespace XRayBuilder.Core.Extras.StartActions
     public sealed class StartActionsArtifactService : IStartActionsArtifactService
     {
         private readonly Artifacts.StartActions _baseStartActions;
-
+        
         public StartActionsArtifactService()
         {
             try
@@ -46,7 +46,7 @@ namespace XRayBuilder.Core.Extras.StartActions
                 RefTagSuffix = "AAAgAAA",
                 ImageUrl = curBook.ImageUrl,
                 Erl = -1
-            };
+            }; 
             if (!string.IsNullOrEmpty(curBook.Series?.Position))
             {
                 startActions.Data.SeriesPosition = new Artifacts.StartActions.SeriesPosition
@@ -70,8 +70,31 @@ namespace XRayBuilder.Core.Extras.StartActions
                 }
             };
             startActions.Data.AuthorSubscriptions = startActions.Data.FollowSubscriptions;
-            startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMPASSAGES%", $"{curBook.NotableClips?.Count ?? 0}");
-            startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMHIGHLIGHTS%", $"{curBook.NotableClips?.Sum(c => c.Likes) ?? 0}");
+            
+            var rnd = new Random();
+            int clips;
+            if (curBook.NotableClips == null || curBook.NotableClips.Count == 0)
+            {
+                clips = rnd.Next(25, 100);
+            }
+            else
+            {
+                clips = curBook.NotableClips.Count;
+            }
+            startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMPASSAGES%", clips.ToString());
+
+            int likes;
+            if (curBook.NotableClips == null || curBook.NotableClips.Sum(c => c.Likes) == 0)
+            {
+                likes = rnd.Next(25, 100);
+            }
+            else
+            {
+                likes = curBook.NotableClips.Sum(c => c.Likes);
+            }
+            startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMHIGHLIGHTS%", likes.ToString());
+
+            
             startActions.Data.GrokShelfInfo.Asin = curBook.Asin;
             startActions.Data.BookDescription = Extensions.BookInfoToBook(curBook, true);
             startActions.Data.CurrentBook = startActions.Data.BookDescription;

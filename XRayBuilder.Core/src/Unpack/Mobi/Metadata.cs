@@ -80,6 +80,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
                 var imgtype = coverOffset == -1 ? "" : GetImageType(buffer);
                 if (imgtype != "")
                 {
+                    ImageCount++;
                     if (firstImage == -1)
                         firstImage = i;
                     if (i != firstImage + coverOffset)
@@ -150,6 +151,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
         public long RawMlSize => _activePdh.TextLength;
 
         public Image CoverImage { get; private set; }
+        public int ImageCount { get; private set; }
 
         public string CdeContentType => _activeMobiHeader.ExtHeader.CdeType;
 

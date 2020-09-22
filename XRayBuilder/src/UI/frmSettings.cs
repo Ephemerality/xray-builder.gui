@@ -79,6 +79,7 @@ namespace XRayBuilderGUI.UI
             chkAutoBuildAP.Checked = Settings.Default.autoBuildAP;
             chkPromptAsin.Checked = Settings.Default.promptASIN;
             chkEditBiography.Checked = Settings.Default.editBiography;
+            chkEditDescription.Checked = Settings.Default.editDescription;
             chkUseSidecar.Checked = Settings.Default.outputToSidecar;
             cmbSecondaryDataSource.Text = Settings.Default.dataSource;
 
@@ -122,7 +123,7 @@ namespace XRayBuilderGUI.UI
                 "Open Notepad to enable editing of\r\n" +
                 "detected Chapters and Aliases\r\n" +
                 "before final X-Ray creation.");
-            toolTip1.SetToolTip(chkSubDirectories, "Save generated files to an\r\n\"Author\\Filename\" subdirectory.");
+            toolTip1.SetToolTip(chkSubDirectories,"Save generated files to an\r\n\"Author\\Filename\" sub directory.");
             toolTip1.SetToolTip(chkUseSidecar, "Save generated files to a\r\nsidecar subdirectory based\r\non the filename.");
             toolTip1.SetToolTip(btnLogs, "Open the log files directory.");
             toolTip1.SetToolTip(chkOverwriteAP, "Overwrite existing Author Profile files.");
@@ -164,6 +165,8 @@ namespace XRayBuilderGUI.UI
             toolTip1.SetToolTip(chkEditBiography,
                 "If enabled, allows editing the Author's\r\n" +
                 "biography before it's used.");
+            toolTip1.SetToolTip(chkEditDescription, "If enabled, allows editing the book's\r\n" +
+                                                   "description before it's used.");
             toolTip1.SetToolTip(chkAutoBuildAP,
                 "When enabled, the Author Profile will be\r\n" +
                 "built using a downloaded End Actions file,\r\n" +
@@ -241,6 +244,7 @@ namespace XRayBuilderGUI.UI
             Settings.Default.dataSource = cmbSecondaryDataSource.Text;
             Settings.Default.promptASIN = chkPromptAsin.Checked;
             Settings.Default.editBiography = chkEditBiography.Checked;
+            Settings.Default.editDescription = chkEditDescription.Checked;
             Settings.Default.outputToSidecar = chkUseSidecar.Checked;
             Settings.Default.downloadSA = chkRoentgenStartActions.Checked;
             Settings.Default.downloadEA = chkRoentgenEndActions.Checked;

@@ -17,7 +17,7 @@ namespace XRayBuilderGUI.UI
         {
             InitializeComponent();
             _bookList = bookList;
-            lblID.Text = $"{source.Name} ID:";
+            lblID.Text = $@"{source.Name} ID:";
             linkID.Location = new Point(lblID.Location.X + lblID.Width - 4, linkID.Location.Y);
         }
 
@@ -41,8 +41,8 @@ namespace XRayBuilderGUI.UI
             var i = cbResults.SelectedIndex == -1 ? 0 : cbResults.SelectedIndex;
             pbCover.Image = _bookList[i].CoverImage ?? Resources.missing_image;
             lblTitle.Text = _bookList[i].Title;
-            lblAuthor.Text = $"by {_bookList[i].Author}";
-            lblRating.Text = $"{_bookList[i].AmazonRating:#.#} average rating " + PluralUtil.Pluralize($"({_bookList[i].Reviews:rating})");
+            lblAuthor.Text = $@"by {_bookList[i].Author}";
+            lblRating.Text = $@"{_bookList[i].AmazonRating:#.#} average rating " + PluralUtil.Pluralize($"({_bookList[i].Reviews:rating})");
             lblEditions.Text = PluralUtil.Pluralize($"{_bookList[i].Editions:edition}");
             linkID.Text = _bookList[i].GoodreadsId;
             _toolTip1.SetToolTip(linkID, _bookList[i].DataUrl);
@@ -55,7 +55,7 @@ namespace XRayBuilderGUI.UI
 
         private void frmGR_Load(object sender, EventArgs e)
         {
-            lblMessage1.Text = $"{_bookList.Length} matches for this book were found on Goodreads.";
+            lblMessage1.Text = $@"{_bookList.Length} matches for this book were found on Goodreads.";
             cbResults.Items.Clear();
             foreach (var book in _bookList)
                 cbResults.Items.Add(book.Title);

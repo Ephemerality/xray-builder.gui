@@ -78,7 +78,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 }
                 catch (Exception ex)
                 {
-                    _logger.Log(string.Format("An error ocurred saving authorsearchHtml.txt: {0}", ex.Message));
+                    _logger.Log($"An error occurred saving authorsearchHtml.txt: {ex.Message}");
                 }
             }
 

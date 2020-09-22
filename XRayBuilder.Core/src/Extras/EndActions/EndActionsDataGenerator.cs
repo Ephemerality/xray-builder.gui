@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using XRayBuilder.Core.DataSources;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Roentgen.Logic;
 using XRayBuilder.Core.DataSources.Secondary;
@@ -65,7 +64,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             }
             catch (Exception ex)
             {
-                _logger.Log($"An error ocurred while downloading book's Amazon page: {ex.Message}\r\nYour ASIN may not be correct.");
+                _logger.Log($"An error occured while downloading book's Amazon page: {ex.Message}\r\nYour ASIN may not be correct.");
                 return null;
             }
             _logger.Log("Book found on Amazon!");
@@ -83,7 +82,7 @@ namespace XRayBuilder.Core.Extras.EndActions
                 }
                 catch (Exception ex)
                 {
-                    _logger.Log($"An error ocurred saving bookpageHtml.txt: {ex.Message}");
+                    _logger.Log($"An error occurred saving bookpageHtml.txt: {ex.Message}");
                 }
             }
 
@@ -94,103 +93,107 @@ namespace XRayBuilder.Core.Extras.EndActions
             }
             catch (Exception ex)
             {
-                _logger.Log($"An error ocurred parsing Amazon info: {ex.Message}");
+                _logger.Log($"An error occurred parsing Amazon info: {ex.Message}");
                 return null;
             }
 
-            _logger.Log("Gathering recommended book metadata...");
+            string ReadDesc(string file)
+            {
+                try
+                {
+                    var fileText = Functions.ReadFromFile(file);
+                    if (string.IsNullOrEmpty(fileText))
+                        _logger.Log("Found description file, but it is empty!\r\n" + file);
+                    else
+                        _logger.Log("Using description from " + file + ".");
+
+                    return fileText;
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log("An error occurred while opening " + file + "\r\n" + ex.Message + "\r\n" +
+                               ex.StackTrace);
+                }
+
+                return null;
+            }
+
+            var descFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext", $"{curBook.Asin}.desc");
+            if (settings.EditDescription)
+            {
+                if (!File.Exists(descFile) || File.ReadAllText(descFile).Length == 0)
+                    File.WriteAllText(descFile, curBook.Description);
+                _logger.Log("Displaying book description for editing...");
+                Functions.RunNotepad(descFile);
+                curBook.Description = ReadDesc(descFile);
+            }
+
+            _logger.Log("Parsing related books...");
             //Parse Recommended Author titles and ASINs
+            custAlsoBought.Clear();
             try
             {
-                var recList = bookHtmlDoc.DocumentNode.SelectNodes("//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card a-float-left']");
+                var recList = bookHtmlDoc.DocumentNode.SelectNodes(
+                    "//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card a-float-left']")
+                    ??
+                    bookHtmlDoc.DocumentNode.SelectNodes(
+                        "//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card aok-float-left']");
                 if (recList != null)
                 {
-                    var possibleBooks = new List<BookInfo>();
-                    foreach (var item in recList.Where(item => item != null))
-                    {
-                        var nodeTitle = item.SelectSingleNode(".//div/a");
-                        var nodeTitleCheck = nodeTitle.GetAttributeValue("title", "");
-                        var nodeUrl = nodeTitle.GetAttributeValue("href", "");
-                        if (nodeTitleCheck == "")
-                        {
-                            nodeTitle = item.SelectSingleNode(".//div/a");
-                            //Remove CR, LF and TAB
-                            nodeTitleCheck = nodeTitle.InnerText.Clean();
-                        }
-                        //Check for duplicate by title
-                        if (possibleBooks.Any(bk => bk.Title.Contains(nodeTitleCheck)))
-                            continue;
-
-                        var cleanAuthor = item.SelectSingleNode(".//div/div").InnerText.Clean();
-                        //Exclude the current book title from other books search
-                        var match = Regex.Match(nodeTitleCheck, curBook.Title, RegexOptions.IgnoreCase);
-                        if (match.Success)
-                            continue;
-                        match = Regex.Match(nodeTitleCheck,
-                            @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)",
-                            RegexOptions.IgnoreCase);
-                        if (match.Success)
-                            continue;
-                        possibleBooks.Add(new BookInfo(nodeTitleCheck, cleanAuthor,
-                            _amazonClient.ParseAsin(nodeUrl)));
-                    }
-
-                    if (settings.UseNewVersion)
-                    {
-                        await foreach (var _ in _amazonClient.EnhanceBookInfos(possibleBooks, cancellationToken))
-                        {
-                            // todo progress
-                        }
-                    }
-
-                    custAlsoBought.AddRange(possibleBooks);
+                    custAlsoBought.AddRange(ParseBookList(recList, curBook));
                 }
+
                 //Add sponsored related, if they exist...
                 var otherItems =
-                    bookHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='view_to_purchase-sims-feature']");
+                    bookHtmlDoc.DocumentNode.SelectSingleNode(
+                        "//*[contains(@id, 'desktop-dp-sims_purchase-similarities-esp')]")
+                    ??
+                    bookHtmlDoc.DocumentNode.SelectSingleNode(
+                        "//*[@id='desktop-dp-sims_purchase-similarities-sims-feature']")
+                    ??
+                    bookHtmlDoc.DocumentNode.SelectSingleNode(
+                        "//*[contains(@id, 'dp-sims_OnlineDpSimsPurchaseStrategy-sims')]");
                 if (otherItems != null)
                 {
-                    recList = otherItems.SelectNodes(".//li[@class='a-spacing-medium p13n-sc-list-item']");
+                    recList = otherItems.SelectNodes(".//li");
                     if (recList != null)
-                    {
-                        var possibleBooks = new List<BookInfo>();
-                        // TODO: This entire foreach is pretty much the exact same as the one above...
-                        foreach (var result in recList.Where(result => result != null))
-                        {
-                            var otherBook =
-                                result.SelectSingleNode(".//div[@class='a-fixed-left-grid-col a-col-left']/a");
-                            if (otherBook == null)
-                                continue;
-                            var sponsAsin = _amazonClient.ParseAsinFromUrl(otherBook.GetAttributeValue("href", ""));
-                            if (sponsAsin == null)
-                                continue;
-
-                            otherBook = otherBook.SelectSingleNode(".//img");
-                            var match = Regex.Match(otherBook.GetAttributeValue("alt", ""),
-                                @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)",
-                                RegexOptions.IgnoreCase);
-                            if (match.Success)
-                                continue;
-                            var sponsTitle = otherBook.GetAttributeValue("alt", "");
-                            //Check for duplicate by title
-                            if (custAlsoBought.Any(bk => bk.Title.Contains(sponsTitle)) || possibleBooks.Any(bk => bk.Title.Contains(sponsTitle)))
-                                continue;
-                            otherBook = result.SelectSingleNode(".//a[@class='a-size-small a-link-child']")
-                                ?? result.SelectSingleNode(".//span[@class='a-size-small a-color-base']")
-                                ?? throw new FormatChangedException("Amazon", "Sponsored book author");
-                            // TODO: Throw more format changed exceptions to make it obvious that the site changed
-                            var sponsAuthor = otherBook.InnerText.Trim();
-                            possibleBooks.Add(new BookInfo(sponsTitle, sponsAuthor, sponsAsin));
-                        }
-
-                        await foreach (var _ in _amazonClient.EnhanceBookInfos(possibleBooks, cancellationToken))
-                        {
-                            // todo progress
-                        }
-
-                        custAlsoBought.AddRange(possibleBooks);
-                    }
+                        custAlsoBought.AddRange(ParseBookList(recList, curBook));
                 }
+
+                otherItems = bookHtmlDoc.DocumentNode.SelectSingleNode("//*[@id='view_to_purchase-sims-feature']")
+                             ??
+                             bookHtmlDoc.DocumentNode.SelectSingleNode(
+                                 "//*[@id='desktop-dp-sims_vtp-60-sims-feature']");
+                if (otherItems != null)
+                {
+                    recList = otherItems.SelectNodes(".//li");
+                    if (recList != null)
+                        custAlsoBought.AddRange(ParseBookList(recList, curBook));
+                }
+
+                otherItems = bookHtmlDoc.DocumentNode.SelectSingleNode(
+                                 "//div[@id='desktop-dp-sims_session-similarities-sims-feature']") ??
+                             bookHtmlDoc.DocumentNode.SelectSingleNode(
+                                 "//div[@id='desktop-dp-sims_session-similarities-brand-protection-sims-feature']");
+                if (otherItems != null)
+                {
+                    recList = otherItems.SelectNodes(".//li");
+                    if (recList != null)
+                        custAlsoBought.AddRange(ParseBookList(recList, curBook));
+                }
+
+                if (custAlsoBought.Count != 0)
+                {
+                    _logger.Log(custAlsoBought.Count > 1
+                        ? $"Gathering metadata for {custAlsoBought.Count} related books..."
+                        : "Gathering metadata for a related book...");
+                }
+
+                await foreach (var _ in _amazonClient.EnhanceBookInfos(custAlsoBought, cancellationToken))
+                {
+                    // todo progress
+                }
+                
             }
             catch (Exception ex)
             {
@@ -203,6 +206,42 @@ namespace XRayBuilder.Core.Extras.EndActions
                 Book = curBook,
                 CustomerAlsoBought = custAlsoBought.ToArray()
             };
+        }
+
+        private List<BookInfo> ParseBookList(HtmlAgilityPack.HtmlNodeCollection books, BookInfo curBook)
+        {
+            string asin = string.Empty, author = string.Empty, title = string.Empty;
+            var results = new List<BookInfo>();
+
+            foreach (var book in books.Where(item => item != null))
+            {
+                var asinNode = book.SelectSingleNode(".//a[@class='a-link-normal']");
+                if (asinNode != null)
+                {
+                    var parsedAsin = _amazonClient.ParseAsinFromUrl(asinNode.GetAttributeValue("href", ""));
+                    if (string.IsNullOrEmpty(parsedAsin)) continue;
+                    
+                    // Check for duplicate by ASIN and ASIN does match current book's ASIN
+                    if (parsedAsin == curBook.Asin ||
+                        results.Any(bk => bk.Asin.Contains(parsedAsin)))
+                        continue;
+
+                    asin = parsedAsin;
+                    title = HtmlAgilityPack.HtmlEntity.DeEntitize(asinNode.InnerText.Trim());
+
+                    // Check title is not an eSpecial, reading order, series etc...
+                    if (!Functions.IsActualBook(title, curBook.Title)) continue;
+                }
+
+                var authorNode = book.SelectSingleNode(".//a[@class='a-size-small a-link-child']");
+                if (authorNode != null)
+                    author = authorNode.InnerText.Clean();
+
+                if (string.IsNullOrEmpty(author) && string.IsNullOrEmpty(asin)) continue;
+
+                results.Add(new BookInfo(title, author, asin));
+            }
+            return results;
         }
 
         private async Task<BookInfo> SearchOrPrompt(BookInfo book, Func<string, string, string> asinPrompt, Settings settings, CancellationToken cancellationToken = default)
@@ -345,13 +384,13 @@ namespace XRayBuilder.Core.Extras.EndActions
 
             if (curBook.Series != null)
             {
-                _logger.Log($"\nSeries URL: {curBook.Series.Url}");
+                _logger.Log($"Series URL: {curBook.Series.Url}");
                 if (!string.IsNullOrEmpty(curBook.Series.Name))
                     _logger.Log($"This is book {curBook.Series.Position} of {curBook.Series.Total} in the {curBook.Series.Name} series");
                 if (curBook.Series.Previous != null)
                     _logger.Log($"Preceded by: {curBook.Series.Previous.Title}");
                 if (curBook.Series.Next != null)
-                    _logger.Log($"Followed by: {curBook.Series.Next.Title}\n");
+                    _logger.Log($"Followed by: {curBook.Series.Next.Title}");
             }
 
             try
@@ -400,6 +439,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             public bool PromptAsin { get; set; }
             public bool EstimatePageCount { get; set; }
             public bool SaveHtml { get; set; }
+            public bool EditDescription { get; set; }
         }
     }
 }

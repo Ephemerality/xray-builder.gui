@@ -40,6 +40,8 @@ namespace XRayBuilder.Core.Model
         public int PagesInBook { get; set; }
         public SeriesInfo Series { get; set; } = new SeriesInfo();
 
+        public int ImageCount { get; set; }
+
         /// <summary>
         /// Used to store the cover image once downloaded (manually)
         /// </summary>
@@ -65,6 +67,7 @@ namespace XRayBuilder.Core.Model
                 Guid = metadata.UniqueId;
             Databasename = metadata.DbName;
             DataUrl = dataUrl;
+            ImageCount = metadata.ImageCount;
         }
 
         public BookInfo(string title, string author, string asin)

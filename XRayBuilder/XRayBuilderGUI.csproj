@@ -166,24 +166,13 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\cancel.png" />
-    <None Include="Resources\file-on.png" />
-    <None Include="Resources\file-off.png" />
     <None Include="doc\Help.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\setting.png" />
-    <None Include="Resources\character.png" />
     <None Include="Resources\terms.png" />
     <None Include="Resources\people.png" />
-    <None Include="Resources\arrow-right.png" />
     <None Include="Resources\seperator.png" />
     <None Include="Resources\missing-image.png" />
-    <None Include="Resources\STAR5.png" />
-    <None Include="Resources\STAR4.png" />
-    <None Include="Resources\STAR3.png" />
-    <None Include="Resources\STAR2.png" />
-    <None Include="Resources\STAR1.png" />
-    <None Include="Resources\STAR0.png" />
     <EmbeddedResource Update="src\UI\frmAbout.resx">
       <DependentUpon>frmAbout.cs</DependentUpon>
     </EmbeddedResource>
@@ -245,7 +234,6 @@
     <Content Include="doc\XML Documentation.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Resources\AI.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IonDotnet\Amazon.IonDotnet\Amazon.IonDotnet.csproj" />

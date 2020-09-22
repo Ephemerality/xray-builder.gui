@@ -28,6 +28,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             public string Description { get; set; }
             public int Reviews { get; set; }
             public float Rating { get; set; }
+            public int Pages { get; set; }
 
             public void ApplyToBookInfo(BookInfo bookInfo)
             {
@@ -35,6 +36,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 bookInfo.Description = Description;
                 bookInfo.Reviews = Reviews;
                 bookInfo.AmazonRating = Rating;
+                bookInfo.PagesInBook = Pages;
             }
         }
 
@@ -146,6 +148,32 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 throw new AggregateException("Error finding book ratings. If you want, you can report the book's Amazon URL to help with parsing.\r\n" +
                     "Error: " + ex.Message + "\r\n" + ex.StackTrace, ex);
             }
+            #endregion
+
+            #region Pages
+
+            var pagesNode =
+                bookDoc.DocumentNode.SelectSingleNode("//*[@id='aboutEbooksSection']/table/tr/td");
+            if (pagesNode == null || pagesNode.InnerText == "") return response;
+            {
+                var match = Regex.Match(pagesNode.InnerText.Trim(), @"(\d+)");
+                if (match.Success)
+                {
+                    response.Pages = int.Parse(match.Value);
+                }
+                else
+                {
+                    pagesNode =
+                        bookDoc.DocumentNode.SelectSingleNode("//*[@id='productDetailsTable']/tr/td");
+                    if (pagesNode == null || pagesNode.InnerText == "") return response;
+                    var lengthNode = pagesNode.SelectSingleNode(".//li[contains(text(),'pages')]");
+                    if (lengthNode == null) return response;
+                    match = Regex.Match(lengthNode.InnerText.Trim(), @"(\d+)");
+                    if (match.Success)
+                        response.Pages = int.Parse(match.Value);
+                }
+            }
+
             #endregion
 
             return response;

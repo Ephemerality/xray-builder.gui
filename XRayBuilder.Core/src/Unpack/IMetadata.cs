@@ -20,6 +20,7 @@ namespace XRayBuilder.Core.Unpack
         /// </summary>
         string Guid { get; }
         string Isbn { get; }
+        int ImageCount { get; }
         /// <summary>
         /// Indicates whether or not the metadata can be modified and saved
         /// </summary>

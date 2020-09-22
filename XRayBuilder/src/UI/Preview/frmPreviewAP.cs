@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilder.Core.Extras.Artifacts;
-using XRayBuilder.Core.Libraries.Images.Extensions;
 using XRayBuilder.Core.Libraries.Images.Util;
 using XRayBuilder.Core.Libraries.Serialization.Json.Util;
 using XRayBuilderGUI.Properties;
@@ -17,6 +16,13 @@ namespace XRayBuilderGUI.UI.Preview
             InitializeComponent();
         }
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData != Keys.Escape) return base.ProcessCmdKey(ref msg, keyData);
+            Close();
+            return true;
+        }
+
         public Task Populate(string inputFile, CancellationToken cancellationToken = default)
         {
             dgvOtherBooks.Rows.Clear();
@@ -25,18 +31,16 @@ namespace XRayBuilderGUI.UI.Preview
             var author = authorProfile.Authors?.FirstOrDefault();
             if (author != null)
             {
-                lblAuthorMore.Text = $" Kindle Books By {author.Name}";
-                Text = $"About {lblAuthorMore.Text}";
+                lblAuthorMore.Text = $@"Kindle Books By {author.Name}";
+                Text = $@"About {author.Name}";
                 lblBiography.Text = author.Bio ?? "";
                 if (author.Picture != null)
-                    pbAuthorImage.Image = ImageUtil.Base64ToImage(author.Picture).ToGrayscale3();
+                    pbAuthorImage.Image = ImageUtil.Base64ToImage(author.Picture);//.ToGrayscale3();
             }
 
-            if (authorProfile.OtherBooks != null)
-            {
-                foreach (var book in authorProfile.OtherBooks)
-                    dgvOtherBooks.Rows.Add(book.Title, Resources.arrow_right);
-            }
+            if (authorProfile.OtherBooks == null) return Task.CompletedTask;
+            foreach (var book in authorProfile.OtherBooks)
+                dgvOtherBooks.Rows.Add(book.Title);
 
             return Task.CompletedTask;
         }

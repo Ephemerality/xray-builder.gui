@@ -213,7 +213,16 @@ namespace XRayBuilderGUI.UI
 
                 if (!Settings.Default.useNewVersion && metadata.DbName.Length == 31)
                 {
-                    MessageBox.Show($"WARNING: Database Name is the maximum length. If \"{metadata.DbName}\" is the full book title, this should not be an issue.\r\nIf the title is supposed to be longer than that, you may get an error on your Kindle (WG on firmware < 5.6).\r\nThis can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n");
+                    MessageBox.Show($@"If ""{metadata.DbName}"" is the full book title, this should not be an issue." +
+                                    Environment.NewLine + 
+                                    @"If the title is supposed to be longer than that," +
+                                    Environment.NewLine + 
+                                    @"you may get an error on your Kindle (WG on firmware < 5.6)." +
+                                    Environment.NewLine + Environment.NewLine +
+                                    @"This can be resolved by either shortening the title in Calibre" +
+                                    Environment.NewLine + 
+                                    @"or manually changing the database name.",
+                        @"Database Name is the maximum length!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 if (saveRawMl && metadata.RawMlSupported)
@@ -221,7 +230,7 @@ namespace XRayBuilderGUI.UI
                     _logger.Log("Saving rawML to dmp directory...");
                     metadata.SaveRawMl(UIFunctions.RawMlPath(Path.GetFileNameWithoutExtension(mobiFile)));
                 }
-                _logger.Log($"Got metadata!\r\nDatabase Name: {metadata.DbName}\r\nUniqueID: {metadata.UniqueId}\r\nASIN: {metadata.Asin}");
+                _logger.Log($"Got metadata!\r\nASIN: {metadata.Asin}");
 
                 _openedMetadata = metadata;
                 return metadata;
@@ -239,9 +248,9 @@ namespace XRayBuilderGUI.UI
             //Check current settings
             if (!File.Exists(txtMobi.Text))
             {
-                MessageBox.Show(@"Specified book was not found.", @"Book Not Found",
+                MessageBox.Show(@"Specified book was not found.", @"Error",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                    MessageBoxIcon.Error);
                 return;
             }
             if (rdoGoodreads.Checked && txtGoodreads.Text == "")
@@ -251,9 +260,9 @@ namespace XRayBuilderGUI.UI
                                 @$"Search for this book on {_dataSource.Name}" +
                                 Environment.NewLine +
                                 @"before trying to process it.",
-                    $@"Missing {_dataSource.Name} Link",
+                    @"Error",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                    MessageBoxIcon.Error);
                 return;
             }
             if (!Directory.Exists(_settings.outDir))
@@ -261,21 +270,22 @@ namespace XRayBuilderGUI.UI
                 MessageBox.Show(@"Specified output directory does not exist." +
                                 Environment.NewLine +
                                 @"Please review the settings page.",
-                    @"Output Directory Not found",
+                    @"Error",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);                return;
+                    MessageBoxIcon.Error);
+                return;
             }
             if (_settings.realName.Trim().Length == 0 || _settings.penName.Trim().Length == 0)
             {
                 MessageBox.Show(
-                    @"Both Real and Pen names are required for End Action" +
+                    @"Both Real and Pen Amazon names are required for End Action" +
                     Environment.NewLine +
                     @"file creation. This information allows you to rate this" +
                     Environment.NewLine +
                     @"book on Amazon. Please review the settings page.",
-                    @"Amazon Customer Details Not found",
+                    @"Error",
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                    MessageBoxIcon.Error);
                 return;
             }
 
@@ -310,7 +320,7 @@ namespace XRayBuilderGUI.UI
                 xray = await Task.Run(() => xrayTask).ConfigureAwait(false);
 
                 if (xray.Terms.Count == 0
-                    && DialogResult.No == MessageBox.Show("No terms were available, do you want to continue the build anyway?", "No Terms", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2))
+                    && DialogResult.No == MessageBox.Show(@"No terms were available, do you want to continue the build anyway?", @"No Terms", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2))
                 {
                     _logger.Log("Cancelling...");
                     return;
@@ -320,9 +330,15 @@ namespace XRayBuilderGUI.UI
 
                 if (_settings.enableEdit && DialogResult.Yes ==
                     MessageBox.Show(
-                        "Terms have been exported to an alias file or already exist in that file. Would you like to open the file in notepad for editing?\r\n"
-                        + "See the MobileRead forum thread (link in Settings) for more information on building aliases.",
-                        "Aliases",
+                        @"Terms have been exported to an alias file or already exist in that file." +
+                        Environment.NewLine +
+                        Environment.NewLine +
+                        @"Would you like to open the file in notepad for editing?" +
+                        Environment.NewLine +
+                        @"See the MobileRead forum thread (link in Settings)" +
+                        Environment.NewLine +
+                        @"for more information on building aliases.",
+                        @"Edit Aliases",
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Question,
                         MessageBoxDefaultButton.Button2))
@@ -638,7 +654,7 @@ namespace XRayBuilderGUI.UI
                     string AsinPrompt(string title, string author)
                     {
                         var frmAsin = _diContainer.GetInstance<frmASIN>();
-                        frmAsin.Text = "Series Information";
+                        frmAsin.Text = @"Series Information";
                         frmAsin.lblTitle.Text = title;
                         frmAsin.lblAuthor.Text = author;
                         frmAsin.tbAsin.Text = "";
@@ -652,7 +668,8 @@ namespace XRayBuilderGUI.UI
                         UseNewVersion = _settings.useNewVersion,
                         PromptAsin = _settings.promptASIN,
                         SaveHtml = _settings.saveHtml,
-                        EstimatePageCount = _settings.pageCount
+                        EstimatePageCount = _settings.pageCount,
+                        EditDescription = _settings.editDescription
                     };
 
                     var endActionsDataGenerator = _diContainer.GetInstance<IEndActionsDataGenerator>();
@@ -926,7 +943,7 @@ namespace XRayBuilderGUI.UI
             _tooltip.SetToolTip(rdoGoodreads, "Use the above link as a terms source.");
             _tooltip.SetToolTip(rdoRoentgen, "Download terms from Roentgen if any are available.");
             _tooltip.SetToolTip(rdoFile, "Load terms from the selected file.");
-            btnSource.ToolTipText = @"Select the build source" +
+            btnXraySource.ToolTipText = @"Select the build source" +
                                       Environment.NewLine +
                                       @"for X-Ray creation.";
 
@@ -1347,9 +1364,22 @@ namespace XRayBuilderGUI.UI
             UIFunctions.OpenDirectory(Environment.CurrentDirectory + @"\xml");
         }
 
-        private void btnPreview_Click(object sender, EventArgs e)
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (txtOutput.SelectionLength > 0)
+                Clipboard.SetText(txtOutput.SelectedText, TextDataFormat.Text);
+        }
 
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            txtOutput.Text = string.Empty;
+        }
+
+        private void clearAndSaveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (txtOutput.Text.Trim().Length == 0) return;
+            File.WriteAllText(_currentLog, txtOutput.Text);
+            txtOutput.Text = string.Empty;
         }
     }
 }

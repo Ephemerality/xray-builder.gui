@@ -21,6 +21,7 @@ namespace XRayBuilderGUI.UI.Bootstrap
             container.AutoregisterConcreteFromAbstract<PreviewProvider>(Lifestyle.Singleton);
             container.AutoregisterDisposableTransientConcreteFromInterface<IPreviewForm>("Manually disposed");
             container.RegisterSingleton<ILogger, Logger>();
+            container.RegisterTransientIgnore<frmCreateXR>("Disposed by application");
         }
     }
 }

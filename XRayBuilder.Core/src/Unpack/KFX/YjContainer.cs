@@ -78,6 +78,8 @@ namespace XRayBuilder.Core.Unpack.KFX
         public string Guid => null;
         public bool CanModify => false;
 
+        public int ImageCount => Metadata.ImageCount;
+
         private KfxMetadata Metadata { get; set; }
 
         private class KfxMetadata
@@ -92,6 +94,7 @@ namespace XRayBuilder.Core.Unpack.KFX
             public string Language { get; set; }
             public string Publisher { get; set; }
             public string Title { get; set; }
+            public int ImageCount { get; set; }
         }
 
         protected void SetMetadata()

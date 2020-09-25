@@ -96,10 +96,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
         public override async Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
         {
-            if (sourceHtmlDoc == null)
-            {
-                sourceHtmlDoc = await _httpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
-            }
+            sourceHtmlDoc ??= await _httpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
             var pageNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_FirstEdition']");
             var node1 = pageNode?.SelectSingleNode(".//div/div");
             if (node1 == null)
@@ -129,10 +126,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
             _logger.Log("Downloading Shelfari page...");
             var terms = new List<Term>();
 
-            if (sourceHtmlDoc == null)
-            {
-                sourceHtmlDoc = await _httpClient.GetPageAsync(dataUrl, cancellationToken);
-            }
+            sourceHtmlDoc ??= await _httpClient.GetPageAsync(dataUrl, cancellationToken);
 
             //Constants for wiki processing
             var sections = new Dictionary<string, string>

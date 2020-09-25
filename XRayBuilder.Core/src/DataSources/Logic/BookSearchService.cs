@@ -25,13 +25,5 @@ namespace XRayBuilder.Core.DataSources.Logic
                 .ThenByDescending(book => book.Reviews)
                 .ToArray();
         }
-
-        public sealed class Parameters
-        {
-            public string Title { get; set; }
-            public string Author { get; set; }
-            [CanBeNull]
-            public string Asin { get; set; }
-        }
     }
 }

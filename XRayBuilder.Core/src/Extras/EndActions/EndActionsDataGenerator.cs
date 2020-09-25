@@ -327,8 +327,7 @@ namespace XRayBuilder.Core.Extras.EndActions
                             _logger.Log("According to Amazon, this book is not part of a series.");
                             break;
                         case "ERR000":
-                            if (curBook.Series == null)
-                                curBook.Series = new SeriesInfo();
+                            curBook.Series ??= new SeriesInfo();
                             curBook.Series.Next =
                                 new BookInfo(seriesResult.NextBook.Title.TitleName,
                                     Functions.FixAuthor(seriesResult.NextBook.Authors.FirstOrDefault()?.AuthorName),

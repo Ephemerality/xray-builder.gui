@@ -100,9 +100,11 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
                 var cleanTitle = titleNode.InnerText.Trim().Replace("&amp;", "&").Replace("%27", "'").Replace("%20", " ");
 
-                var newBook = new BookInfo(cleanTitle, authorNode.InnerText.Trim(), null);
+                var newBook = new BookInfo(cleanTitle, authorNode.InnerText.Trim(), null)
+                {
+                    GoodreadsId = ParseBookIdFromUrl(link.OuterHtml)
+                };
 
-                newBook.GoodreadsId = ParseBookIdFromUrl(link.OuterHtml);
                 newBook.DataUrl = BookUrl(newBook.GoodreadsId);
 
                 newBook.ImageUrl = coverNode.GetAttributeValue("src", "");
@@ -325,10 +327,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
         /// </summary>
         public override async Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
-            if (srcDoc == null)
-            {
-                srcDoc = await _httpClient.GetPageAsync(url, cancellationToken);
-            }
+            srcDoc ??= await _httpClient.GetPageAsync(url, cancellationToken);
             var quoteNode = srcDoc.DocumentNode.SelectSingleNode("//div[@class='h2Container gradientHeaderContainer']/h2/a[starts-with(.,'Quotes from')]");
             if (quoteNode == null) return null;
             var quoteURL = $"https://www.goodreads.com{quoteNode.GetAttributeValue("href", "")}?page={{0}}";

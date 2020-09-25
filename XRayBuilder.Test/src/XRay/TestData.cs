@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using XRayBuilder.Core.DataSources.Secondary;
 
 namespace XRayBuilder.Test.XRay
 {

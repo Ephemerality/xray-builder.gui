@@ -549,8 +549,7 @@ namespace XRayBuilderGUI.UI
                             AmazonTld = _settings.amazonTLD,
                             SaveBio = _settings.saveBio,
                             UseNewVersion = _settings.useNewVersion,
-                            EditBiography = _settings.editBiography,
-                            SaveHtml = _settings.saveHtml
+                            EditBiography = _settings.editBiography
                         }
                     }, EditBioCallback, _progress, _cancelTokens.Token);
 
@@ -593,7 +592,6 @@ namespace XRayBuilderGUI.UI
                         AmazonTld = _settings.amazonTLD,
                         UseNewVersion = _settings.useNewVersion,
                         PromptAsin = _settings.promptASIN,
-                        SaveHtml = _settings.saveHtml,
                         EstimatePageCount = _settings.pageCount
                     };
 

@@ -53,8 +53,7 @@ namespace XRayBuilder.Test.Extras.EndActions
                     AmazonTld = "com",
                     SaveBio = false,
                     UseNewVersion = true,
-                    EditBiography = false,
-                    SaveHtml = false
+                    EditBiography = false
                 }
             }, _ => false, null, CancellationToken.None);
 

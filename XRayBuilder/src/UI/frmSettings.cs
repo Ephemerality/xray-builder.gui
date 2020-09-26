@@ -78,7 +78,6 @@ namespace XRayBuilderGUI.UI
             txtMinClipLen.Text = Properties.Settings.Default.minClipLen.ToString();
             chkAlias.Checked = Properties.Settings.Default.overwriteAliases;
             chkChapters.Checked = Properties.Settings.Default.overwriteChapters;
-            chkSaveHtml.Checked = Properties.Settings.Default.saveHtml;
             chkSplitAliases.Checked = Properties.Settings.Default.splitAliases;
             chkSound.Checked = Properties.Settings.Default.playSound;
             chkDownloadAliases.Checked = Properties.Settings.Default.downloadAliases;
@@ -137,8 +136,6 @@ namespace XRayBuilderGUI.UI
             toolTip1.SetToolTip(chkOverwriteSA, "Overwrite existing Start Actions files.");
             toolTip1.SetToolTip(chkAlias, "Overwrite existing alias files.");
             toolTip1.SetToolTip(chkChapters, "Overwrite existing chapter files.");
-            toolTip1.SetToolTip(chkSaveHtml, "Save parsed HTML files. This is generally used\r\n" +
-                                         "for debugging and can be left unchecked.");
             toolTip1.SetToolTip(chkSplitAliases, "Automatically split character names\r\n" +
                 "into aliases. This can have undesired\r\n" +
                 "consequences, so use with caution!!!");
@@ -219,7 +216,6 @@ namespace XRayBuilderGUI.UI
             Properties.Settings.Default.overwriteAliases = chkAlias.Checked;
             Properties.Settings.Default.overwriteChapters = chkChapters.Checked;
             Properties.Settings.Default.autoBuildAP = chkAutoBuildAP.Checked;
-            Properties.Settings.Default.saveHtml = chkSaveHtml.Checked;
             Properties.Settings.Default.splitAliases = chkSplitAliases.Checked;
             Properties.Settings.Default.playSound = chkSound.Checked;
             Properties.Settings.Default.downloadAliases = chkDownloadAliases.Checked;

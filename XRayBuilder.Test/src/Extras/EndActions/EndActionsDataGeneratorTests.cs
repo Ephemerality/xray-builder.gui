@@ -75,7 +75,7 @@ namespace XRayBuilder.Test.Extras.EndActions
                 bookAsin: endActionsResponse.Book.Asin,
                 bookImageUrl: endActionsResponse.Book.ImageUrl,
                 bookDatabaseName: endActionsResponse.Book.Databasename,
-                bookGuid: endActionsResponse.Book.Guid,
+                bookGuid: endActionsResponse.Book.Guid ?? "",
                 bookErl: metadata.RawMlSize,
                 bookAmazonRating: endActionsResponse.Book.AmazonRating,
                 bookSeriesInfo: endActionsResponse.Book.Series,

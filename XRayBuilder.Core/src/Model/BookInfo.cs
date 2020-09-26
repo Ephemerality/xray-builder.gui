@@ -47,13 +47,8 @@ namespace XRayBuilder.Core.Model
         // List of clips and their highlight/like count
         public List<NotableClip> NotableClips;
 
-        private string _guid;
-
-        public string Guid
-        {
-            private set => _guid = Functions.ConvertGuid(value);
-            get => _guid;
-        }
+        [CanBeNull]
+        public string Guid { get; set; }
 
         public BookInfo(IMetadata metadata, string dataUrl)
         {
@@ -61,7 +56,7 @@ namespace XRayBuilder.Core.Model
             Author = metadata.Author;
             Asin = metadata.Asin;
             if (metadata.UniqueId != null)
-                Guid = metadata.UniqueId;
+                Guid = Functions.ConvertGuid(metadata.UniqueId);
             Databasename = metadata.DbName;
             DataUrl = dataUrl;
         }

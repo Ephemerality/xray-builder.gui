@@ -169,16 +169,18 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
             async Task<BookInfo> ParseSeriesBook(HtmlNode bookNode)
             {
-                var book = new BookInfo("", "", "");
-                var title = bookNode.SelectSingleNode(".//div[@class='u-paddingBottomXSmall']/a");
-                book.Title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", "", RegexOptions.Compiled);
-                book.Title = WebUtility.HtmlDecode(book.Title);
-                book.GoodreadsId = ParseBookIdFromUrl(title.GetAttributeValue("href", ""));
+                var titleNode = bookNode.SelectSingleNode(".//div[@class='u-paddingBottomXSmall']/a");
+                if (titleNode == null)
+                    return null;
+                var title = Regex.Replace(titleNode.InnerText.Trim(), @" \(.*\)", "", RegexOptions.Compiled);
+                title = WebUtility.HtmlDecode(title);
+                var goodreadsId = ParseBookIdFromUrl(titleNode.GetAttributeValue("href", ""));
                 // TODO: move this ASIN search somewhere else
-                if (!string.IsNullOrEmpty(book.GoodreadsId))
-                    book.Asin = await SearchBookASINById(book.GoodreadsId, cancellationToken).ConfigureAwait(false);
-                book.Author = bookNode.SelectSingleNode(".//span[@itemprop='author']//a")?.InnerText.Trim() ?? "";
-                return book;
+                if (string.IsNullOrEmpty(goodreadsId))
+                    return null;
+                var asin = await SearchBookASINById(goodreadsId, cancellationToken).ConfigureAwait(false);
+                var author = bookNode.SelectSingleNode(".//span[@itemprop='author']//a")?.InnerText.Trim() ?? "";
+                return new BookInfo(title, author, asin);
             }
 
             foreach (var bookNode in bookNodes)

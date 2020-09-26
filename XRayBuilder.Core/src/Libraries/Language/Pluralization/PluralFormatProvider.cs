@@ -8,6 +8,6 @@ namespace XRayBuilder.Core.Libraries.Language.Pluralization
         public object GetFormat(Type formatType) => this;
 
         public string Format(string format, object arg, IFormatProvider formatProvider)
-            => arg + " " + format.Plural((int) arg);
+            => $"{arg} {format.Plural((int) arg)}";
     }
 }

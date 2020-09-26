@@ -124,7 +124,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             }
             catch (Exception ex)
             {
-                _logger.Log("An error occurred parsing the book's amazon page: " + ex.Message + ex.StackTrace);
+                _logger.Log($"An error occurred parsing the book's amazon page: {ex.Message}{ex.StackTrace}");
                 return null;
             }
         }
@@ -258,7 +258,7 @@ namespace XRayBuilder.Core.Extras.EndActions
                     _logger.Log("An error occurred finding next book in series: Goodreads URL not found.\r\n" +
                                "If reading from a file, you can switch the source to Goodreads to specify a URL, then switch back to File.");
                 else
-                    _logger.Log("An error occurred finding next book in series: " + ex.Message + "\r\n" + ex.StackTrace);
+                    _logger.Log($"An error occurred finding next book in series: {ex.Message}\r\n{ex.StackTrace}");
                 throw;
             }
 
@@ -320,7 +320,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             }
             catch (Exception ex)
             {
-                _logger.Log("An error occurred while searching for or estimating the page count: " + ex.Message + "\r\n" + ex.StackTrace);
+                _logger.Log($"An error occurred while searching for or estimating the page count: {ex.Message}\r\n{ex.StackTrace}");
                 throw;
             }
 

@@ -29,11 +29,12 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
                 xrayDb.Open();
 
             using var command = xrayDb.CreateCommand();
-            command.CommandText = "SELECT entity.id,entity.label,entity.type,entity.count,entity_description.text,string.text as sourcetxt FROM entity"
-                                  + " LEFT JOIN entity_description ON entity.id = entity_description.entity"
-                                  + " LEFT JOIN source ON entity_description.source = source.id"
-                                  + " LEFT JOIN string ON source.label = string.id AND string.language = 'en'"
-                                  + " WHERE entity.has_info_card = '1'";
+            command.CommandText = @"
+                SELECT entity.id,entity.label,entity.type,entity.count,entity_description.text,string.text as sourcetxt FROM entity
+                LEFT JOIN entity_description ON entity.id = entity_description.entity
+                LEFT JOIN source ON entity_description.source = source.id
+                LEFT JOIN string ON source.label = string.id AND string.language = 'en'
+                WHERE entity.has_info_card = '1'";
             var reader = command.ExecuteReader();
 
             while (reader.Read())

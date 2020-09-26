@@ -286,8 +286,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
                 catch (Exception ex)
                 {
                     if (ex.Message.Contains("(404)"))
-                        _logger.Log("Error getting page for character. URL: " + "https://www.goodreads.com" + charNode.GetAttributeValue("href", "")
-                            + "\r\nMessage: " + ex.Message + "\r\n" + ex.StackTrace);
+                        _logger.Log($"Error getting page for character. URL: https://www.goodreads.com{charNode.GetAttributeValue("href", "")}\r\nMessage: {ex.Message}\r\n{ex.StackTrace}");
                 }
             }, MaxConcurrentRequests, cancellationToken);
             return terms.ToList();

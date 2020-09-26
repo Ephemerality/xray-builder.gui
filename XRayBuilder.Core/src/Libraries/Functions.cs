@@ -80,7 +80,7 @@ namespace XRayBuilder.Core.Libraries
             double lineCount = 0;
             if (!File.Exists(rawMl) || bookInfo == null)
             {
-                output = "Error: RawML could not be found, aborting.\r\nPath: " + rawMl;
+                output = $"Error: RawML could not be found, aborting.\r\nPath: {rawMl}";
                 return output;
             }
             var bookDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
@@ -146,7 +146,7 @@ namespace XRayBuilder.Core.Libraries
             if (author.Contains(','))
             {
                 var parts = author.Split(',');
-                author = parts[1].Trim() + " " + parts[0].Trim();
+                author = $"{parts[1].Trim()} {parts[0].Trim()}";
             }
             return author;
         }

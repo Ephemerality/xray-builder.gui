@@ -90,11 +90,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                     .ToArray();
                 if (possibleNodes == null || (node = possibleNodes.FirstOrDefault()) == null)
                 {
-                    _logger.Log($"An error occurred finding author's page on Amazon.{TLD}." +
-                                "\r\nUnable to create Author Profile." +
-                                "\r\nEnsure the author metadata field matches the author's name exactly." +
-                                $"\r\nSearch results can be viewed at {amazonAuthorSearchUrl}" +
-                                "\r\nSometimes Amazon just doesn't return the author and trying a few times will work.");
+                    _logger.Log($"An error occurred finding author's page on Amazon.{TLD}.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at {amazonAuthorSearchUrl}\r\nSometimes Amazon just doesn't return the author and trying a few times will work.");
                     return null;
                 }
             }
@@ -123,7 +119,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
             if (node == null || string.IsNullOrEmpty(properAuthor) || properAuthor.IndexOf('/', 1) < 3 || string.IsNullOrEmpty(authorAsin))
             {
-                _logger.Log("Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: " + amazonAuthorSearchUrl);
+                _logger.Log($"Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: {amazonAuthorSearchUrl}");
                 return null;
             }
             properAuthor = properAuthor.Substring(1, properAuthor.IndexOf('/', 1) - 1);

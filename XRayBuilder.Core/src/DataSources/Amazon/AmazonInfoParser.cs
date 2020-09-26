@@ -115,7 +115,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                     if (lastPunc > lastSpace)
                         description = description.Substring(0, lastPunc + 1);
                     else
-                        description = description.Substring(0, lastSpace) + '\u2026';
+                        description = $"{description.Substring(0, lastSpace)}{'\u2026'}";
                 }
                 description = System.Net.WebUtility.HtmlDecode(description);
                 response.Description = description.Clean();
@@ -143,8 +143,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             }
             catch (Exception ex)
             {
-                throw new AggregateException("Error finding book ratings. If you want, you can report the book's Amazon URL to help with parsing.\r\n" +
-                    "Error: " + ex.Message + "\r\n" + ex.StackTrace, ex);
+                throw new AggregateException($"Error finding book ratings. If you want, you can report the book's Amazon URL to help with parsing.\r\nError: {ex.Message}\r\n{ex.StackTrace}", ex);
             }
             #endregion
 

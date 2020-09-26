@@ -140,7 +140,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
             foreach (var header in sections.Keys)
             {
                 var characterNodes =
-                    sourceHtmlDoc.DocumentNode.SelectNodes("//div[@id='" + header + "']//ul[@class='li_6']/li");
+                    sourceHtmlDoc.DocumentNode.SelectNodes($"//div[@id='{header}']//ul[@class='li_6']/li");
                 if (characterNodes == null) continue; //Skip section if not found on page
                 foreach (var li in characterNodes)
                 {
@@ -166,7 +166,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
                         newTerm.MatchCase = false;
                     //Default glossary terms to be case insensitive when searching through book
                     if (terms.Select(t => t.TermName).Contains(newTerm.TermName))
-                        _logger.Log("Duplicate term \"" + newTerm.TermName + "\" found. Ignoring this duplicate.");
+                        _logger.Log($"Duplicate term \"{newTerm.TermName}\" found. Ignoring this duplicate.");
                     else
                         terms.Add(newTerm);
                 }

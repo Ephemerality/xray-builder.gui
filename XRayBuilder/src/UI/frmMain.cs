@@ -408,9 +408,7 @@ namespace XRayBuilderGUI.UI
             }
             if (!txtGoodreads.Text.ToLower().Contains(_settings.dataSource.ToLower()))
             {
-                MessageBox.Show($"Invalid {_dataSource.Name} link was specified.\r\n"
-                    + $"If you do not want to use {_dataSource.Name}, you can change the data source in Settings."
-                    , $"Invalid {_dataSource.Name} Link");
+                MessageBox.Show($"Invalid {_dataSource.Name} link was specified.\r\nIf you do not want to use {_dataSource.Name}, you can change the data source in Settings.", $"Invalid {_dataSource.Name} Link");
                 return;
             }
             if (_settings.realName.Trim().Length == 0 || _settings.penName.Trim().Length == 0)

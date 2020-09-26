@@ -58,9 +58,9 @@ namespace XRayBuilder.Core.XRay.Logic.Export
             }
             catch (Exception ex)
             {
-                throw new IOException("An error occurred while opening the BaseDB.sql file. Ensure you extracted it to the same directory as the program.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                throw new IOException($"An error occurred while opening the BaseDB.sql file. Ensure you extracted it to the same directory as the program.\r\n{ex.Message}\r\n{ex.StackTrace}");
             }
-            var command = new SQLiteCommand("BEGIN; " + sql + " COMMIT;", db);
+            var command = new SQLiteCommand($"BEGIN; {sql} COMMIT;", db);
             command.ExecuteNonQuery();
             command.Dispose();
             command = new SQLiteCommand("PRAGMA user_version = 1; PRAGMA encoding = utf8; BEGIN;", db);

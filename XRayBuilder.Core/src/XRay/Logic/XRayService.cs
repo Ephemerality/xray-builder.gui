@@ -74,7 +74,7 @@ namespace XRayBuilder.Core.XRay.Logic
             }
             if (xray.Terms.Count == 0)
             {
-                _logger.Log("Warning: No terms found on " + dataSource.Name + ".");
+                _logger.Log($"Warning: No terms found on {dataSource.Name}.");
             }
 
             return xray;

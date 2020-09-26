@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
 using JetBrains.Annotations;
-using XRayBuilder.Core.DataSources;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Roentgen.Logic;
 using XRayBuilder.Core.DataSources.Secondary;
@@ -29,6 +28,8 @@ namespace XRayBuilder.Core.Extras.EndActions
         private readonly IAmazonInfoParser _amazonInfoParser;
         private readonly IRoentgenClient _roentgenClient;
 
+        private readonly Regex _invalidBookTitleRegex = new Regex(@"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
         public EndActionsDataGenerator(
             ILogger logger,
             IHttpClient httpClient,
@@ -49,8 +50,6 @@ namespace XRayBuilder.Core.Extras.EndActions
         /// </summary>
         public async Task<Response> GenerateOld(BookInfo curBook, Settings settings, CancellationToken cancellationToken = default)
         {
-            var custAlsoBought = new List<BookInfo>();
-
             _logger.Log("Attempting to find book on Amazon...");
             //Generate Book search URL from book's ASIN
             var ebookLocation = $@"https://www.amazon.{settings.AmazonTld}/dp/{curBook.Asin}";
@@ -81,111 +80,75 @@ namespace XRayBuilder.Core.Extras.EndActions
                 return null;
             }
 
-            _logger.Log("Gathering recommended book metadata...");
-            //Parse Recommended Author titles and ASINs
             try
             {
-                var recList = bookHtmlDoc.DocumentNode.SelectNodes("//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card a-float-left']");
-                if (recList != null)
+                var listSelectors = new[]
                 {
-                    var possibleBooks = new List<BookInfo>();
-                    foreach (var item in recList.Where(item => item != null))
+                    "//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card a-float-left']",
+                    "//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card aok-float-left']",
+                    "//*[contains(@id, 'desktop-dp-sims_purchase-similarities-esp')]//li",
+                    "//*[@id='desktop-dp-sims_purchase-similarities-sims-feature']//li",
+                    "//*[contains(@id, 'dp-sims_OnlineDpSimsPurchaseStrategy-sims')]//li",
+                    "//*[@id='view_to_purchase-sims-feature']//li",
+                    "//*[@id='desktop-dp-sims_vtp-60-sims-feature']//li",
+                    "//div[@id='desktop-dp-sims_session-similarities-sims-feature']//li",
+                    "//div[@id='desktop-dp-sims_session-similarities-brand-protection-sims-feature']//li"
+                };
+
+                var relatedBooks = listSelectors.SelectMany(selector =>
                     {
-                        var nodeTitle = item.SelectSingleNode(".//div/a");
-                        var nodeTitleCheck = nodeTitle.GetAttributeValue("title", "");
-                        var nodeUrl = nodeTitle.GetAttributeValue("href", "");
-                        if (nodeTitleCheck == "")
-                        {
-                            nodeTitle = item.SelectSingleNode(".//div/a");
-                            //Remove CR, LF and TAB
-                            nodeTitleCheck = nodeTitle.InnerText.Clean();
-                        }
-                        //Check for duplicate by title
-                        if (possibleBooks.Any(bk => bk.Title.Contains(nodeTitleCheck)))
-                            continue;
+                        var listNodes = bookHtmlDoc.DocumentNode.SelectNodes(selector);
+                        return listNodes != null
+                            ? ParseBookList(listNodes)
+                            : Enumerable.Empty<BookInfo>();
+                    }).Where(list => list != null)
+                    .Distinct()
+                    .Where(book => book.Title != curBook.Title && book.Asin != curBook.Asin)
+                    .ToArray();
 
-                        var cleanAuthor = item.SelectSingleNode(".//div/div").InnerText.Clean();
-                        //Exclude the current book title from other books search
-                        var match = Regex.Match(nodeTitleCheck, curBook.Title, RegexOptions.IgnoreCase);
-                        if (match.Success)
-                            continue;
-                        match = Regex.Match(nodeTitleCheck,
-                            @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)",
-                            RegexOptions.IgnoreCase);
-                        if (match.Success)
-                            continue;
-                        possibleBooks.Add(new BookInfo(nodeTitleCheck, cleanAuthor,
-                            _amazonClient.ParseAsin(nodeUrl)));
-                    }
-
-                    if (settings.UseNewVersion)
-                    {
-                        await foreach (var _ in _amazonClient.EnhanceBookInfos(possibleBooks, cancellationToken))
-                        {
-                            // todo progress
-                        }
-                    }
-
-                    custAlsoBought.AddRange(possibleBooks);
-                }
-                //Add sponsored related, if they exist...
-                var otherItems =
-                    bookHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='view_to_purchase-sims-feature']");
-                if (otherItems != null)
+                if (settings.UseNewVersion)
                 {
-                    recList = otherItems.SelectNodes(".//li[@class='a-spacing-medium p13n-sc-list-item']");
-                    if (recList != null)
+                    _logger.Log($"Gathering metadata for {relatedBooks.Length} related book(s)...");
+                    await foreach (var _ in _amazonClient.EnhanceBookInfos(relatedBooks, cancellationToken))
                     {
-                        var possibleBooks = new List<BookInfo>();
-                        // TODO: This entire foreach is pretty much the exact same as the one above...
-                        foreach (var result in recList.Where(result => result != null))
-                        {
-                            var otherBook =
-                                result.SelectSingleNode(".//div[@class='a-fixed-left-grid-col a-col-left']/a");
-                            if (otherBook == null)
-                                continue;
-                            var sponsAsin = _amazonClient.ParseAsinFromUrl(otherBook.GetAttributeValue("href", ""));
-                            if (sponsAsin == null)
-                                continue;
-
-                            otherBook = otherBook.SelectSingleNode(".//img");
-                            var match = Regex.Match(otherBook.GetAttributeValue("alt", ""),
-                                @"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)",
-                                RegexOptions.IgnoreCase);
-                            if (match.Success)
-                                continue;
-                            var sponsTitle = otherBook.GetAttributeValue("alt", "");
-                            //Check for duplicate by title
-                            if (custAlsoBought.Any(bk => bk.Title.Contains(sponsTitle)) || possibleBooks.Any(bk => bk.Title.Contains(sponsTitle)))
-                                continue;
-                            otherBook = result.SelectSingleNode(".//a[@class='a-size-small a-link-child']")
-                                ?? result.SelectSingleNode(".//span[@class='a-size-small a-color-base']")
-                                ?? throw new FormatChangedException("Amazon", "Sponsored book author");
-                            // TODO: Throw more format changed exceptions to make it obvious that the site changed
-                            var sponsAuthor = otherBook.InnerText.Trim();
-                            possibleBooks.Add(new BookInfo(sponsTitle, sponsAuthor, sponsAsin));
-                        }
-
-                        await foreach (var _ in _amazonClient.EnhanceBookInfos(possibleBooks, cancellationToken))
-                        {
-                            // todo progress
-                        }
-
-                        custAlsoBought.AddRange(possibleBooks);
+                        // todo progress
                     }
                 }
+
+                return new Response
+                {
+                    Book = curBook,
+                    CustomerAlsoBought = relatedBooks
+                };
             }
             catch (Exception ex)
             {
                 _logger.Log("An error occurred parsing the book's amazon page: " + ex.Message + ex.StackTrace);
                 return null;
             }
+        }
 
-            return new Response
+        private IEnumerable<BookInfo> ParseBookList(HtmlNodeCollection books)
+        {
+            foreach (var book in books.Where(item => item != null))
             {
-                Book = curBook,
-                CustomerAlsoBought = custAlsoBought.ToArray()
-            };
+                var asinNode = book.SelectSingleNode(".//a[@class='a-link-normal']");
+                if (asinNode == null)
+                    continue;
+
+                var authorNode = book.SelectSingleNode(".//a[@class='a-size-small a-link-child']");
+                if (authorNode == null)
+                    continue;
+
+                var author = authorNode.InnerText.Clean();
+                var title = HtmlEntity.DeEntitize(asinNode.InnerText.Trim());
+                var asin = _amazonClient.ParseAsinFromUrl(asinNode.GetAttributeValue("href", ""));
+
+                if (string.IsNullOrEmpty(author) || string.IsNullOrEmpty(asin) || string.IsNullOrEmpty(title) || _invalidBookTitleRegex.IsMatch(title))
+                    continue;
+
+                yield return new BookInfo(title, author, asin);
+            }
         }
 
         private async Task<BookInfo> SearchOrPrompt(BookInfo book, Func<string, string, string> asinPrompt, Settings settings, CancellationToken cancellationToken = default)

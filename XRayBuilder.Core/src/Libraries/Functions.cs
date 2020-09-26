@@ -31,7 +31,7 @@ namespace XRayBuilder.Core.Libraries
                 (new[] { " - ", "--" }, "—"),
                 (new[] { @"\t|\n|\r|•", @"\s+"}, " "),
                 (new[] { @"\. …$"}, "."),
-                (new[] {"@", "#", @"\$", "%", "_"}, "")
+                (new[] {"@", @"#(?!\d+)", @"\$", "%", "_"}, "")
             };
             foreach (var (s, r) in replacements)
             {

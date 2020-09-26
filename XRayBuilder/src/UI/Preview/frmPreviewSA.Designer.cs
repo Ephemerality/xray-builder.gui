@@ -80,10 +80,10 @@
             // lblVotes
             // 
             this.lblVotes.AutoSize = true;
-            this.lblVotes.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblVotes.Location = new System.Drawing.Point(103, 60);
+            this.lblVotes.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblVotes.Location = new System.Drawing.Point(101, 56);
             this.lblVotes.Name = "lblVotes";
-            this.lblVotes.Size = new System.Drawing.Size(54, 20);
+            this.lblVotes.Size = new System.Drawing.Size(50, 19);
             this.lblVotes.TabIndex = 79;
             this.lblVotes.Text = "(votes)";
             this.lblVotes.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -178,9 +178,9 @@
             // 
             this.lblDescription.AutoEllipsis = true;
             this.lblDescription.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblDescription.Location = new System.Drawing.Point(12, 86);
+            this.lblDescription.Location = new System.Drawing.Point(12, 78);
             this.lblDescription.Name = "lblDescription";
-            this.lblDescription.Size = new System.Drawing.Size(418, 88);
+            this.lblDescription.Size = new System.Drawing.Size(418, 98);
             this.lblDescription.TabIndex = 66;
             this.lblDescription.Text = "Description";
             // 
@@ -251,7 +251,8 @@
             // 
             // pbRating
             // 
-            this.pbRating.Location = new System.Drawing.Point(17, 63);
+            this.pbRating.Image = global::XRayBuilderGUI.Properties.Resources.STAR0;
+            this.pbRating.Location = new System.Drawing.Point(17, 59);
             this.pbRating.Name = "pbRating";
             this.pbRating.Size = new System.Drawing.Size(80, 16);
             this.pbRating.TabIndex = 78;

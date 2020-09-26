@@ -158,7 +158,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                 // if it's null, there was an error. if it's just empty, we'll parse it out instead
                 if (biography == null)
                     return null;
-                if (biography == "")
+                if (!string.IsNullOrEmpty(biography))
                     readFromFile = true;
             }
 

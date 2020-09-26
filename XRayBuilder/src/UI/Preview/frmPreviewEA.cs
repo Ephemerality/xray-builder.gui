@@ -78,7 +78,7 @@ namespace XRayBuilderGUI.UI.Preview
                     _authorUrl =
                         $"https://www.amazon.{_settings.amazonTLD}/{author.Name.Replace(" ", "-")}/e/{author.Asin}";
                     lblAuthor.Text = author.Name;
-                    lblAuthorRecs.Text = $"More by {author.Name}";
+                    lblAuthorRecs.Text = $@"More by {author.Name}";
                     if (!string.IsNullOrEmpty(author.ImageUrl))
                         pbAuthor.Image = await _httpClient.GetImageAsync(author.ImageUrl, false, cancellationToken);
                 }
@@ -86,7 +86,7 @@ namespace XRayBuilderGUI.UI.Preview
                 if (endActions.Data.PublicSharedRating != null)
                 {
                     pbRating.Image =
-                        (Image)Resources.ResourceManager.GetObject($"STAR{endActions.Data.PublicSharedRating:0}");
+                        (Image)Resources.ResourceManager.GetObject($"STAR{Math.Floor(endActions.Data.PublicSharedRating.Value)}");
                 }
                 else
                 {

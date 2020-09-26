@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
@@ -57,7 +56,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
         public string Url(string tld, string asin) => $"https://www.amazon.{tld}/dp/{asin}";
 
-        public async Task<AuthorSearchResults> SearchAuthor(string author, string bookAsin, string TLD, bool saveHtml, CancellationToken cancellationToken)
+        public async Task<AuthorSearchResults> SearchAuthor(string author, string bookAsin, string TLD, CancellationToken cancellationToken)
         {
             //Generate Author search URL from author's name
             var newAuthor = Functions.FixAuthor(author);
@@ -69,19 +68,6 @@ namespace XRayBuilder.Core.DataSources.Amazon
             // Search Amazon for Author
             var authorSearchDoc = await _httpClient.GetPageAsync(amazonAuthorSearchUrl, cancellationToken);
 
-            if (saveHtml)
-            {
-                try
-                {
-                    _logger.Log("Saving Amazon's author search webpage...");
-                    File.WriteAllText($"{AppDomain.CurrentDomain.BaseDirectory}dmp/{bookAsin}.authorsearchHtml.txt", authorSearchDoc.DocumentNode.InnerHtml);
-                }
-                catch (Exception ex)
-                {
-                    _logger.Log($"An error occurred saving authorsearchHtml.txt: {ex.Message}");
-                }
-            }
-
             // Check for captcha
             try
             {
@@ -89,8 +75,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             }
             catch (AmazonCaptchaException)
             {
-                _logger.Log($"Warning: Amazon.{TLD} is requesting a captcha."
-                    + $"You can try visiting Amazon.{TLD} in a real browser first, try another region, or try again later.");
+                _logger.Log($"Warning: Amazon.{TLD} is requesting a captcha.\r\nYou can try visiting Amazon.{TLD} in a real browser first, try another region, or try again later.");
                 return null;
             }
             // Try to find Author's page from Amazon search

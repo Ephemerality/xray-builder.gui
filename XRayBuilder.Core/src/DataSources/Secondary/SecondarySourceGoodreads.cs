@@ -25,7 +25,7 @@ using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilder.Core.DataSources.Secondary
 {
-    public sealed class SecondarySourceGoodreads : ISecondarySource
+    public sealed class SecondarySourceGoodreads : SecondarySource
     {
         private readonly ILogger _logger;
         private readonly IHttpClient _httpClient;
@@ -33,10 +33,10 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
         private const int MaxConcurrentRequests = 10;
 
-        public string Name => "Goodreads";
-        public bool SearchEnabled { get; } = true;
-        public int UrlLabelPosition { get; } = 6;
-        public bool SupportsNotableClips { get; } = true;
+        public override string Name => "Goodreads";
+        public override bool SearchEnabled { get; } = true;
+        public override int UrlLabelPosition { get; } = 6;
+        public override bool SupportsNotableClips { get; } = true;
 
         private readonly Regex _regexBookId = new Regex(@"/book/show/(?<id>[0-9]+)", RegexOptions.Compiled);
 
@@ -52,7 +52,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
         private string SearchUrl(string author, string title) => $"https://www.goodreads.com/search?q={author}%20{title}";
         private string SearchUrlAsin(string asin) => $"https://www.goodreads.com/search?q={asin}";
 
-        public bool IsMatchingUrl(string url)
+        public override bool IsMatchingUrl(string url)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
             }
         }
 
-        public async Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
         {
             // Try by ASIN first, then fall back on author/title
             if (!string.IsNullOrEmpty(metadata.Asin))
@@ -100,9 +100,11 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
                 var cleanTitle = titleNode.InnerText.Trim().Replace("&amp;", "&").Replace("%27", "'").Replace("%20", " ");
 
-                var newBook = new BookInfo(cleanTitle, authorNode.InnerText.Trim(), null);
+                var newBook = new BookInfo(cleanTitle, authorNode.InnerText.Trim(), null)
+                {
+                    GoodreadsId = ParseBookIdFromUrl(link.OuterHtml)
+                };
 
-                newBook.GoodreadsId = ParseBookIdFromUrl(link.OuterHtml);
                 newBook.DataUrl = BookUrl(newBook.GoodreadsId);
 
                 newBook.ImageUrl = coverNode.GetAttributeValue("src", "");
@@ -127,7 +129,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
         /// <summary>
         /// Searches for the next and previous books in a series, if it is part of one.
         /// </summary>
-        public async Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
+        public override async Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
         {
             var series = new SeriesInfo();
             //Search Goodreads for series info
@@ -167,16 +169,21 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
             async Task<BookInfo> ParseSeriesBook(HtmlNode bookNode)
             {
-                var book = new BookInfo("", "", "");
-                var title = bookNode.SelectSingleNode(".//div[@class='u-paddingBottomXSmall']/a");
-                book.Title = Regex.Replace(title.InnerText.Trim(), @" \(.*\)", "", RegexOptions.Compiled);
-                book.Title = WebUtility.HtmlDecode(book.Title);
-                book.GoodreadsId = ParseBookIdFromUrl(title.GetAttributeValue("href", ""));
+                var titleNode = bookNode.SelectSingleNode(".//div[@class='u-paddingBottomXSmall']/a");
+                if (titleNode == null)
+                    return null;
+                var title = Regex.Replace(titleNode.InnerText.Trim(), @" \(.*\)", "", RegexOptions.Compiled);
+                title = WebUtility.HtmlDecode(title);
+                var goodreadsId = ParseBookIdFromUrl(titleNode.GetAttributeValue("href", ""));
                 // TODO: move this ASIN search somewhere else
-                if (!string.IsNullOrEmpty(book.GoodreadsId))
-                    book.Asin = await SearchBookASINById(book.GoodreadsId, cancellationToken).ConfigureAwait(false);
-                book.Author = bookNode.SelectSingleNode(".//span[@itemprop='author']//a")?.InnerText.Trim() ?? "";
-                return book;
+                if (string.IsNullOrEmpty(goodreadsId))
+                    return null;
+                var asin = await SearchBookASINById(goodreadsId, cancellationToken).ConfigureAwait(false);
+                var author = bookNode.SelectSingleNode(".//span[@itemprop='author']//a")?.InnerText.Trim() ?? "";
+                return new BookInfo(title, author, asin)
+                {
+                    GoodreadsId = goodreadsId
+                };
             }
 
             foreach (var bookNode in bookNodes)
@@ -230,7 +237,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
         }
 
         // TODO: This shouldn't modify curbook
-        public async Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
+        public override async Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
         {
             var bookPage = await _httpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
             var pagesNode = bookPage.DocumentNode.SelectSingleNode("//div[@id='details']");
@@ -271,7 +278,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
             return true;
         }
 
-        public async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
         {
             _logger.Log("Downloading Goodreads page...");
             var grDoc = await _httpClient.GetPageAsync(dataUrl, cancellationToken);
@@ -340,12 +347,9 @@ namespace XRayBuilder.Core.DataSources.Secondary
         /// <summary>
         /// Gather the list of quotes & number of times they've been liked -- close enough to "x paragraphs have been highlighted y times" from Amazon
         /// </summary>
-        public async Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
-            if (srcDoc == null)
-            {
-                srcDoc = await _httpClient.GetPageAsync(url, cancellationToken);
-            }
+            srcDoc ??= await _httpClient.GetPageAsync(url, cancellationToken);
             var quoteNode = srcDoc.DocumentNode.SelectSingleNode("//div[@class='h2Container gradientHeaderContainer']/h2/a[starts-with(.,'Quotes from')]");
             if (quoteNode == null) return null;
             var quoteURL = $"https://www.goodreads.com{quoteNode.GetAttributeValue("href", "")}?page={{0}}";
@@ -392,13 +396,10 @@ namespace XRayBuilder.Core.DataSources.Secondary
         /// Scrape any notable quotes from Goodreads and grab ratings if missing from book info
         /// Modifies curBook.
         /// </summary>
-        public async Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
+        public override async Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             var grDoc = await _httpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
-            if (curBook.NotableClips == null)
-            {
-                curBook.NotableClips = (await GetNotableClipsAsync("", grDoc, progress, cancellationToken).ConfigureAwait(false))?.ToList();
-            }
+            curBook.NotableClips ??= (await GetNotableClipsAsync("", grDoc, progress, cancellationToken).ConfigureAwait(false))?.ToList();
 
             //Add rating and reviews count if missing from Amazon book info
             var metaNode = grDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");

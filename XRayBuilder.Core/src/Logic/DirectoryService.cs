@@ -11,12 +11,24 @@ namespace XRayBuilder.Core.Logic
     {
         private readonly ILogger _logger;
         private readonly IXRayBuilderConfig _config;
+        private readonly string _baseDirectory;
 
         public DirectoryService(ILogger logger, IXRayBuilderConfig config)
         {
             _logger = logger;
             _config = config;
+#if NETCOREAPP3_1
+            _baseDirectory = AppDomain.CurrentDomain.BaseDirectory ?? Environment.CurrentDirectory;
+#else
+            _baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+#endif
         }
+
+        public string GetAliasPath(string asin)
+            => Path.Combine(_baseDirectory, "ext", $"{asin}.aliases");
+        
+        public string GetRawmlPath(string filePath)
+            => Path.Combine(_baseDirectory, "dmp", $"{Path.GetFileNameWithoutExtension(filePath)}.rawml");
 
         public string GetArtifactFilename(ArtifactType artifactType, string asin, string databaseName, string guid)
             => artifactType switch

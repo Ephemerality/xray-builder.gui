@@ -18,7 +18,7 @@ using XRayBuilder.Core.XRay.Artifacts;
 namespace XRayBuilder.Core.DataSources.Secondary
 {
     [UsedImplicitly]
-    public sealed class SecondarySourceShelfari : ISecondarySource
+    public sealed class SecondarySourceShelfari : SecondarySource
     {
         private readonly ILogger _logger;
         private readonly IHttpClient _httpClient;
@@ -31,10 +31,10 @@ namespace XRayBuilder.Core.DataSources.Secondary
             _httpClient = httpClient;
         }
 
-        public string Name => "Shelfari";
-        public bool SearchEnabled { get; } = false;
-        public int UrlLabelPosition { get; } = 6;
-        public bool SupportsNotableClips { get; } = true;
+        public override string Name => "Shelfari";
+        public override bool SearchEnabled { get; } = false;
+        public override int UrlLabelPosition { get; } = 6;
+        public override bool SupportsNotableClips { get; } = true;
 
         // private string FindShelfariURL(HtmlDocument shelfariHtmlDoc, string author, string title)
         // {
@@ -81,25 +81,22 @@ namespace XRayBuilder.Core.DataSources.Secondary
         //     return "";
         // }
 
-        public bool IsMatchingUrl(string url)
+        public override bool IsMatchingUrl(string url)
         {
             return false;
         }
 
-        public Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
+        public override Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
-        public Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
+        public override Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
             => Task.FromResult((SeriesInfo) null);
 
-        public async Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
+        public override async Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
         {
-            if (sourceHtmlDoc == null)
-            {
-                sourceHtmlDoc = await _httpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
-            }
+            sourceHtmlDoc ??= await _httpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
             var pageNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_FirstEdition']");
             var node1 = pageNode?.SelectSingleNode(".//div/div");
             if (node1 == null)
@@ -119,20 +116,17 @@ namespace XRayBuilder.Core.DataSources.Secondary
             return false;
         }
 
-        public Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
+        public override Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }
 
-        public async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
         {
             _logger.Log("Downloading Shelfari page...");
             var terms = new List<Term>();
 
-            if (sourceHtmlDoc == null)
-            {
-                sourceHtmlDoc = await _httpClient.GetPageAsync(dataUrl, cancellationToken);
-            }
+            sourceHtmlDoc ??= await _httpClient.GetPageAsync(dataUrl, cancellationToken);
 
             //Constants for wiki processing
             var sections = new Dictionary<string, string>
@@ -180,7 +174,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
             return terms;
         }
 
-        public async Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             if (srcDoc == null)
             {

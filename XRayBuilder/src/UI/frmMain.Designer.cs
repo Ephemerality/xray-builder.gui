@@ -38,6 +38,11 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.prgBar = new System.Windows.Forms.ProgressBar();
             this.txtOutput = new System.Windows.Forms.RichTextBox();
+            this.cmsLog = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
+            this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearAndSaveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.lblFiles = new System.Windows.Forms.Label();
             this.txtAsin = new System.Windows.Forms.LinkLabel();
             this.txtAuthor = new System.Windows.Forms.Label();
@@ -58,11 +63,12 @@
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.btnBuild = new System.Windows.Forms.ToolStripButton();
             this.btnXraySource = new System.Windows.Forms.ToolStripDropDownButton();
-            this.tsbtnSourceFile = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsbtnSourceGoodreads = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsbtnSourceRoentgen = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnXraySourceFile = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnXraySourceGoodreads = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnXraySourceRoentgen = new System.Windows.Forms.ToolStripMenuItem();
             this.btnCreate = new System.Windows.Forms.ToolStripButton();
             this.btnDownloadTerms = new System.Windows.Forms.ToolStripButton();
+            this.btnBrowseXML = new System.Windows.Forms.ToolStripButton();
             this.btnExtractTerms = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnPreview = new System.Windows.Forms.ToolStripDropDownButton();
@@ -70,7 +76,6 @@
             this.tmiEndAction = new System.Windows.Forms.ToolStripMenuItem();
             this.tmiStartAction = new System.Windows.Forms.ToolStripMenuItem();
             this.tmiXray = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnBrowseXML = new System.Windows.Forms.ToolStripButton();
             this.btnUnpack = new System.Windows.Forms.ToolStripButton();
             this.btnBrowseFolders = new System.Windows.Forms.ToolStripDropDownButton();
             this.btnBrowseOutput = new System.Windows.Forms.ToolStripMenuItem();
@@ -92,13 +97,9 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.pbFile1 = new System.Windows.Forms.PictureBox();
             this.pbCover = new System.Windows.Forms.PictureBox();
-            this.cmsLog = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
-            this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.clearAndSaveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.cmsLog.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.toolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbFile4)).BeginInit();
@@ -106,7 +107,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.pbFile2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbFile1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbCover)).BeginInit();
-            this.cmsLog.SuspendLayout();
             this.SuspendLayout();
             // 
             // lblGoodreads
@@ -192,6 +192,50 @@
             this.txtOutput.TabIndex = 61;
             this.txtOutput.Text = "";
             this.txtOutput.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.txtOutput_LinkClicked);
+            // 
+            // cmsLog
+            // 
+            this.cmsLog.AutoSize = false;
+            this.cmsLog.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.cmsLog.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.copyToolStripMenuItem,
+            this.toolStripSeparator,
+            this.clearToolStripMenuItem,
+            this.clearAndSaveToolStripMenuItem});
+            this.cmsLog.Name = "cmsLog";
+            this.cmsLog.ShowImageMargin = false;
+            this.cmsLog.ShowItemToolTips = false;
+            this.cmsLog.Size = new System.Drawing.Size(122, 82);
+            this.cmsLog.Text = "Poop";
+            // 
+            // copyToolStripMenuItem
+            // 
+            this.copyToolStripMenuItem.AutoSize = false;
+            this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(121, 24);
+            this.copyToolStripMenuItem.Text = "Copy";
+            this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator
+            // 
+            this.toolStripSeparator.Name = "toolStripSeparator";
+            this.toolStripSeparator.Size = new System.Drawing.Size(118, 6);
+            // 
+            // clearToolStripMenuItem
+            // 
+            this.clearToolStripMenuItem.AutoSize = false;
+            this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(121, 24);
+            this.clearToolStripMenuItem.Text = "Clear";
+            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
+            // 
+            // clearAndSaveToolStripMenuItem
+            // 
+            this.clearAndSaveToolStripMenuItem.AutoSize = false;
+            this.clearAndSaveToolStripMenuItem.Name = "clearAndSaveToolStripMenuItem";
+            this.clearAndSaveToolStripMenuItem.Size = new System.Drawing.Size(121, 24);
+            this.clearAndSaveToolStripMenuItem.Text = "Save and Clear";
+            this.clearAndSaveToolStripMenuItem.Click += new System.EventHandler(this.clearAndSaveToolStripMenuItem_Click);
             // 
             // lblFiles
             // 
@@ -359,10 +403,10 @@
             this.btnXraySource,
             this.btnCreate,
             this.btnDownloadTerms,
+            this.btnBrowseXML,
             this.btnExtractTerms,
             this.toolStripSeparator1,
             this.btnPreview,
-            this.btnBrowseXML,
             this.btnUnpack,
             this.btnBrowseFolders,
             this.btnSettings,
@@ -442,9 +486,9 @@
             // btnXraySource
             // 
             this.btnXraySource.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsbtnSourceFile,
-            this.tsbtnSourceGoodreads,
-            this.tsbtnSourceRoentgen});
+            this.btnXraySourceFile,
+            this.btnXraySourceGoodreads,
+            this.btnXraySourceRoentgen});
             this.btnXraySource.Image = ((System.Drawing.Image)(resources.GetObject("btnXraySource.Image")));
             this.btnXraySource.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnXraySource.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -455,23 +499,23 @@
             this.btnXraySource.Text = "Source";
             this.btnXraySource.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
-            // tsbtnSourceFile
+            // btnXraySourceFile
             // 
-            this.tsbtnSourceFile.Name = "tsbtnSourceFile";
-            this.tsbtnSourceFile.Size = new System.Drawing.Size(165, 26);
-            this.tsbtnSourceFile.Text = "File";
+            this.btnXraySourceFile.Name = "btnXraySourceFile";
+            this.btnXraySourceFile.Size = new System.Drawing.Size(224, 26);
+            this.btnXraySourceFile.Text = "File";
             // 
-            // tsbtnSourceGoodreads
+            // btnXraySourceGoodreads
             // 
-            this.tsbtnSourceGoodreads.Name = "tsbtnSourceGoodreads";
-            this.tsbtnSourceGoodreads.Size = new System.Drawing.Size(165, 26);
-            this.tsbtnSourceGoodreads.Text = "Goodreads";
+            this.btnXraySourceGoodreads.Name = "btnXraySourceGoodreads";
+            this.btnXraySourceGoodreads.Size = new System.Drawing.Size(224, 26);
+            this.btnXraySourceGoodreads.Text = "Goodreads";
             // 
-            // tsbtnSourceRoentgen
+            // btnXraySourceRoentgen
             // 
-            this.tsbtnSourceRoentgen.Name = "tsbtnSourceRoentgen";
-            this.tsbtnSourceRoentgen.Size = new System.Drawing.Size(165, 26);
-            this.tsbtnSourceRoentgen.Text = "Roentgen";
+            this.btnXraySourceRoentgen.Name = "btnXraySourceRoentgen";
+            this.btnXraySourceRoentgen.Size = new System.Drawing.Size(224, 26);
+            this.btnXraySourceRoentgen.Text = "Roentgen";
             // 
             // btnCreate
             // 
@@ -498,6 +542,20 @@
             this.btnDownloadTerms.Text = "Download";
             this.btnDownloadTerms.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnDownloadTerms.Click += new System.EventHandler(this.btnDownloadTerms_Click);
+            // 
+            // btnBrowseXML
+            // 
+            this.btnBrowseXML.AutoSize = false;
+            this.btnBrowseXML.Image = ((System.Drawing.Image)(resources.GetObject("btnBrowseXML.Image")));
+            this.btnBrowseXML.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.btnBrowseXML.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnBrowseXML.Margin = new System.Windows.Forms.Padding(4, 10, 0, 10);
+            this.btnBrowseXML.Name = "btnBrowseXML";
+            this.btnBrowseXML.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.btnBrowseXML.Size = new System.Drawing.Size(86, 80);
+            this.btnBrowseXML.Text = "Open File";
+            this.btnBrowseXML.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnBrowseXML.Click += new System.EventHandler(this.btnBrowseXML_Click);
             // 
             // btnExtractTerms
             // 
@@ -562,20 +620,6 @@
             this.tmiXray.Size = new System.Drawing.Size(184, 26);
             this.tmiXray.Text = "X-Ray";
             this.tmiXray.Click += new System.EventHandler(this.tmiXray_Click);
-            // 
-            // btnBrowseXML
-            // 
-            this.btnBrowseXML.AutoSize = false;
-            this.btnBrowseXML.Image = ((System.Drawing.Image)(resources.GetObject("btnBrowseXML.Image")));
-            this.btnBrowseXML.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.btnBrowseXML.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnBrowseXML.Margin = new System.Windows.Forms.Padding(4, 10, 0, 10);
-            this.btnBrowseXML.Name = "btnBrowseXML";
-            this.btnBrowseXML.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.btnBrowseXML.Size = new System.Drawing.Size(86, 80);
-            this.btnBrowseXML.Text = "Open File";
-            this.btnBrowseXML.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.btnBrowseXML.Click += new System.EventHandler(this.btnBrowseXML_Click);
             // 
             // btnUnpack
             // 
@@ -786,50 +830,6 @@
             this.pbCover.TabIndex = 0;
             this.pbCover.TabStop = false;
             // 
-            // cmsLog
-            // 
-            this.cmsLog.AutoSize = false;
-            this.cmsLog.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.cmsLog.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.copyToolStripMenuItem,
-            this.toolStripSeparator,
-            this.clearToolStripMenuItem,
-            this.clearAndSaveToolStripMenuItem});
-            this.cmsLog.Name = "cmsLog";
-            this.cmsLog.ShowImageMargin = false;
-            this.cmsLog.ShowItemToolTips = false;
-            this.cmsLog.Size = new System.Drawing.Size(122, 82);
-            this.cmsLog.Text = "Poop";
-            // 
-            // copyToolStripMenuItem
-            // 
-            this.copyToolStripMenuItem.AutoSize = false;
-            this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(121, 24);
-            this.copyToolStripMenuItem.Text = "Copy";
-            this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator
-            // 
-            this.toolStripSeparator.Name = "toolStripSeparator";
-            this.toolStripSeparator.Size = new System.Drawing.Size(118, 6);
-            // 
-            // clearToolStripMenuItem
-            // 
-            this.clearToolStripMenuItem.AutoSize = false;
-            this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            this.clearToolStripMenuItem.Size = new System.Drawing.Size(121, 24);
-            this.clearToolStripMenuItem.Text = "Clear";
-            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
-            // 
-            // clearAndSaveToolStripMenuItem
-            // 
-            this.clearAndSaveToolStripMenuItem.AutoSize = false;
-            this.clearAndSaveToolStripMenuItem.Name = "clearAndSaveToolStripMenuItem";
-            this.clearAndSaveToolStripMenuItem.Size = new System.Drawing.Size(121, 24);
-            this.clearAndSaveToolStripMenuItem.Text = "Save and Clear";
-            this.clearAndSaveToolStripMenuItem.Click += new System.EventHandler(this.clearAndSaveToolStripMenuItem_Click);
-            // 
             // frmMain
             // 
             this.AllowDrop = true;
@@ -870,6 +870,7 @@
             this.groupBox1.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.cmsLog.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.toolStrip.ResumeLayout(false);
@@ -879,7 +880,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.pbFile2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbFile1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbCover)).EndInit();
-            this.cmsLog.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -929,9 +929,9 @@
         private System.Windows.Forms.ToolStripButton btnUnpack;
         private System.Windows.Forms.ToolStripButton btnExtractTerms;
         private System.Windows.Forms.ToolStripDropDownButton btnXraySource;
-        private System.Windows.Forms.ToolStripMenuItem tsbtnSourceFile;
-        private System.Windows.Forms.ToolStripMenuItem tsbtnSourceGoodreads;
-        private System.Windows.Forms.ToolStripMenuItem tsbtnSourceRoentgen;
+        private System.Windows.Forms.ToolStripMenuItem btnXraySourceFile;
+        private System.Windows.Forms.ToolStripMenuItem btnXraySourceGoodreads;
+        private System.Windows.Forms.ToolStripMenuItem btnXraySourceRoentgen;
         private System.Windows.Forms.ToolStripDropDownButton btnBrowseFolders;
         private System.Windows.Forms.ToolStripMenuItem btnBrowseOutput;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;

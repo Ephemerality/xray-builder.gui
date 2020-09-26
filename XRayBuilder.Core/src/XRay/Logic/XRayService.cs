@@ -9,9 +9,11 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Secondary;
+using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Primitives.Extensions;
 using XRayBuilder.Core.Libraries.Progress;
+using XRayBuilder.Core.Logic;
 using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Logic.Aliases;
 using XRayBuilder.Core.XRay.Logic.Chapters;
@@ -26,12 +28,14 @@ namespace XRayBuilder.Core.XRay.Logic
         private readonly ChaptersService _chaptersService;
         private readonly IAliasesRepository _aliasesRepository;
         private readonly Encoding _encoding;
+        private readonly IDirectoryService _directoryService;
 
-        public XRayService(ILogger logger, ChaptersService chaptersService, IAliasesRepository aliasesRepository)
+        public XRayService(ILogger logger, ChaptersService chaptersService, IAliasesRepository aliasesRepository, IDirectoryService directoryService)
         {
             _logger = logger;
             _chaptersService = chaptersService;
             _aliasesRepository = aliasesRepository;
+            _directoryService = directoryService;
             _encoding = CodePagesEncodingProvider.Instance.GetEncoding(1252);
         }
 
@@ -46,10 +50,22 @@ namespace XRayBuilder.Core.XRay.Logic
             IProgressBar progress,
             CancellationToken token = default)
         {
-            var xray = new XRay(dataLocation, db, guid, asin, dataSource)
+            if (dataLocation == "" && !(dataSource is SecondarySourceRoentgen) || guid == "" || asin == "")
+                throw new ArgumentException("Error initializing X-Ray, one of the required parameters was blank.");
+
+            dataLocation = dataSource.SanitizeDataLocation(dataLocation);
+
+            var terms = (await dataSource.GetTermsAsync(dataLocation, asin, tld, includeTopics, progress, token)).ToList();
+
+            var xray = new XRay
             {
-                Terms = (await dataSource.GetTermsAsync(dataLocation, asin, tld, includeTopics, progress, token)).ToList()
+                DatabaseName = string.IsNullOrEmpty(db) ? null : db,
+                Guid = Functions.ConvertGuid(guid),
+                Asin = asin,
+                DataUrl = dataLocation,
+                Terms = terms
             };
+
             if (dataSource.SupportsNotableClips)
             {
                 _logger.Log("Downloading notable clips...");
@@ -63,8 +79,7 @@ namespace XRayBuilder.Core.XRay.Logic
             return xray;
         }
 
-        // TODO Remove path from here when directory service is done
-        public void ExportAndDisplayTerms(XRay xray, string path, bool overwriteAliases, bool splitAliases)
+        public void ExportAndDisplayTerms(XRay xray, ISecondarySource dataSource, bool overwriteAliases, bool splitAliases)
         {
             //Export available terms to a file to make it easier to create aliases or import the modified aliases if they exist
             //Could potentially just attempt to automate the creation of aliases, but in some cases it is very subjective...
@@ -77,18 +92,17 @@ namespace XRayBuilder.Core.XRay.Logic
             //    aliasesDownloaded = await AttemptAliasDownload();
             //}
 
-            if (!aliasesDownloaded && (!File.Exists(path) || overwriteAliases))
+            var aliasPath = _directoryService.GetAliasPath(xray.Asin);
+            if (!aliasesDownloaded && (!File.Exists(aliasPath) || overwriteAliases))
             {
-                // todo the passed in path isn't even used....
-                _aliasesRepository.SaveCharactersToFile(xray.Terms, xray.Asin, splitAliases);
-                _logger.Log($"Characters exported to {path} for adding aliases.");
+                // overwrite path in case it waas changed within the service
+                aliasPath = _aliasesRepository.SaveCharactersToFile(xray.Terms, xray.Asin, splitAliases);
+                if (aliasPath != null)
+                    _logger.Log($"Characters exported to {aliasPath} for adding aliases.");
             }
 
             var termsFound = $"{xray.Terms.Count} {(xray.Terms.Count > 1 ? "terms" : "term")} found";
-            var logMessage = xray.SkipShelfari
-                ? $"{termsFound} in file:"
-                : $"{termsFound} on {xray.DataSource.Name}:";
-            _logger.Log(logMessage);
+            _logger.Log($"{termsFound} on {dataSource.Name}:");
             var str = new StringBuilder(xray.Terms.Count * 32); // Assume that most names will be less than 32 chars
             var termId = 1;
             foreach (var t in xray.Terms)
@@ -334,7 +348,7 @@ namespace XRayBuilder.Core.XRay.Logic
                             lenHighlight[j]
                         });
                         // For new format
-                        character.Occurrences.Add(new[] { location + locOffset + locHighlight[j], lenHighlight[j] });
+                        character.Occurrences.Add(new Occurrence(location + locOffset + locHighlight[j], lenHighlight[j]));
                     }
                     var exCheck = xray.Excerpts.Where(t => t.Start.Equals(location + locOffset)).ToArray();
                     if (exCheck.Length > 0)

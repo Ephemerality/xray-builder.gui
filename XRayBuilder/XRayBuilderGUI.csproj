@@ -5,7 +5,7 @@
     <ProjectGuid>{8AA950E7-5FEE-4130-9D30-18B8397E1DD8}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AssemblyName>X-Ray Builder GUI</AssemblyName>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
@@ -93,6 +93,9 @@
   </Choose>
 
   <ItemGroup>
+    <Compile Update="src\UI\frmAbout - Copy.designer.cs">
+      <DependentUpon>frmAbout.cs</DependentUpon>
+    </Compile>
     <Compile Update="src\UI\frmAbout.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -173,6 +176,9 @@
     <None Include="Resources\people.png" />
     <None Include="Resources\seperator.png" />
     <None Include="Resources\missing-image.png" />
+    <EmbeddedResource Update="src\UI\frmAbout - Copy.resx">
+      <DependentUpon>frmAbout.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Update="src\UI\frmAbout.resx">
       <DependentUpon>frmAbout.cs</DependentUpon>
     </EmbeddedResource>

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Logic;
 using XRayBuilder.Core.XRay.Logic;
 using XRayBuilder.Core.XRay.Logic.Aliases;
 using XRayBuilder.Core.XRay.Logic.Chapters;
@@ -22,6 +23,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         private IPreviewDataExporter _previewDataExporter;
         private IXRayService _xrayService;
         private ITermsService _termsService;
+        private IDirectoryService _directoryService;
 
         [SetUp]
         public void Setup()
@@ -31,7 +33,8 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             _file = new SecondarySourceFile(_logger, _termsService);
             _previewDataExporter = new PreviewDataExporter();
             _chaptersService = new ChaptersService(_logger);
-            _xrayService = new XRayService(_logger, _chaptersService, new AliasesRepository(_logger, new AliasesService(_logger)));
+            _directoryService = new DirectoryService(_logger, null);
+            _xrayService = new XRayService(_logger, _chaptersService, new AliasesRepository(_logger, new AliasesService(_logger), _directoryService), _directoryService);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]

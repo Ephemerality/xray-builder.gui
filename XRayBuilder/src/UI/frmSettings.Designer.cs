@@ -42,7 +42,6 @@
             this.gbUnpack = new System.Windows.Forms.GroupBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.lblNote = new System.Windows.Forms.Label();
-            this.chkSaveHtml = new System.Windows.Forms.CheckBox();
             this.chkRaw = new System.Windows.Forms.CheckBox();
             this.gbGeneral = new System.Windows.Forms.GroupBox();
             this.chkSound = new System.Windows.Forms.CheckBox();
@@ -78,6 +77,7 @@
             this.chkEnableEdit = new System.Windows.Forms.CheckBox();
             this.tabPgAmazon = new System.Windows.Forms.TabPage();
             this.gbAmazonPrefs = new System.Windows.Forms.GroupBox();
+            this.chkEditDescription = new System.Windows.Forms.CheckBox();
             this.chkEditBiography = new System.Windows.Forms.CheckBox();
             this.chkPromptAsin = new System.Windows.Forms.CheckBox();
             this.chkSaveBio = new System.Windows.Forms.CheckBox();
@@ -102,7 +102,6 @@
             this.chkRoentgenEndActions = new System.Windows.Forms.CheckBox();
             this.chkRoentgenStartActions = new System.Windows.Forms.CheckBox();
             this.listSettings = new System.Windows.Forms.ListBox();
-            this.chkEditDescription = new System.Windows.Forms.CheckBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -253,7 +252,6 @@
             // 
             this.gbUnpack.Controls.Add(this.pictureBox1);
             this.gbUnpack.Controls.Add(this.lblNote);
-            this.gbUnpack.Controls.Add(this.chkSaveHtml);
             this.gbUnpack.Controls.Add(this.chkRaw);
             this.gbUnpack.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gbUnpack.Location = new System.Drawing.Point(4, 73);
@@ -282,17 +280,6 @@
             this.lblNote.TabIndex = 34;
             this.lblNote.Text = "Metadata is now gathered internally rather than with KindleUnpack. If you run int" +
     "o any metadata extraction errors, please report them on the MobileRead thread.";
-            // 
-            // chkSaveHtml
-            // 
-            this.chkSaveHtml.AutoSize = true;
-            this.chkSaveHtml.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkSaveHtml.Location = new System.Drawing.Point(138, 25);
-            this.chkSaveHtml.Name = "chkSaveHtml";
-            this.chkSaveHtml.Size = new System.Drawing.Size(105, 24);
-            this.chkSaveHtml.TabIndex = 33;
-            this.chkSaveHtml.Text = "Save HTML";
-            this.chkSaveHtml.UseVisualStyleBackColor = true;
             // 
             // chkRaw
             // 
@@ -693,6 +680,17 @@
             this.gbAmazonPrefs.TabStop = false;
             this.gbAmazonPrefs.Text = "Preferences";
             // 
+            // chkEditDescription
+            // 
+            this.chkEditDescription.AutoSize = true;
+            this.chkEditDescription.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkEditDescription.Location = new System.Drawing.Point(18, 124);
+            this.chkEditDescription.Name = "chkEditDescription";
+            this.chkEditDescription.Size = new System.Drawing.Size(173, 24);
+            this.chkEditDescription.TabIndex = 32;
+            this.chkEditDescription.Text = "Edit book description";
+            this.chkEditDescription.UseVisualStyleBackColor = true;
+            // 
             // chkEditBiography
             // 
             this.chkEditBiography.AutoSize = true;
@@ -966,17 +964,6 @@
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
             // 
-            // chkEditDescription
-            // 
-            this.chkEditDescription.AutoSize = true;
-            this.chkEditDescription.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkEditDescription.Location = new System.Drawing.Point(18, 124);
-            this.chkEditDescription.Name = "chkEditDescription";
-            this.chkEditDescription.Size = new System.Drawing.Size(173, 24);
-            this.chkEditDescription.TabIndex = 32;
-            this.chkEditDescription.Text = "Edit book description";
-            this.chkEditDescription.UseVisualStyleBackColor = true;
-            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -1069,7 +1056,6 @@
         private System.Windows.Forms.CheckBox chkRoentgenEndActions;
         private System.Windows.Forms.CheckBox chkRoentgenStartActions;
         private System.Windows.Forms.CheckBox chkSaveBio;
-        private System.Windows.Forms.CheckBox chkSaveHtml;
         private System.Windows.Forms.CheckBox chkSkipNoLikes;
         private System.Windows.Forms.CheckBox chkSoftHyphen;
         private System.Windows.Forms.CheckBox chkSound;

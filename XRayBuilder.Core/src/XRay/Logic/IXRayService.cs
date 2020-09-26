@@ -11,7 +11,7 @@ namespace XRayBuilder.Core.XRay.Logic
 {
     public interface IXRayService
     {
-        void ExportAndDisplayTerms(XRay xray, string path, bool overwriteAliases, bool splitAliases);
+        void ExportAndDisplayTerms(XRay xray, ISecondarySource dataSource, bool overwriteAliases, bool splitAliases);
 
         Task<XRay> CreateXRayAsync(
             string dataLocation,

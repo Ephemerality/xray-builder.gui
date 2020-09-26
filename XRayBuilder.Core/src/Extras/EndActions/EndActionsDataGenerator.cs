@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
 using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Roentgen.Logic;
@@ -16,7 +17,6 @@ using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Model;
 using XRayBuilder.Core.Unpack;
-using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilder.Core.Extras.EndActions
 {
@@ -27,6 +27,8 @@ namespace XRayBuilder.Core.Extras.EndActions
         private readonly IAmazonClient _amazonClient;
         private readonly IAmazonInfoParser _amazonInfoParser;
         private readonly IRoentgenClient _roentgenClient;
+
+        private readonly Regex _invalidBookTitleRegex = new Regex(@"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public EndActionsDataGenerator(
             ILogger logger,
@@ -46,10 +48,8 @@ namespace XRayBuilder.Core.Extras.EndActions
         /// Generate the necessities for the old format
         /// TODO Remove anything that gets generated for the new version
         /// </summary>
-        public async Task<Response> GenerateOld(BookInfo curBook, Settings settings, CancellationToken cancellationToken = default)
+        public async Task<Response> GenerateOld(BookInfo curBook, Settings settings, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
-            var custAlsoBought = new List<BookInfo>();
-
             _logger.Log("Attempting to find book on Amazon...");
             //Generate Book search URL from book's ASIN
             var ebookLocation = $@"https://www.amazon.{settings.AmazonTld}/dp/{curBook.Asin}";
@@ -64,28 +64,11 @@ namespace XRayBuilder.Core.Extras.EndActions
             }
             catch (Exception ex)
             {
-                _logger.Log($"An error occured while downloading book's Amazon page: {ex.Message}\r\nYour ASIN may not be correct.");
+                _logger.Log($"An error occurred while downloading book's Amazon page: {ex.Message}\r\nYour ASIN may not be correct.");
                 return null;
             }
             _logger.Log("Book found on Amazon!");
-            if (settings.SaveHtml)
-            {
-                try
-                {
-                    _logger.Log("Saving book's Amazon webpage...");
-                    var path = $"{AppDomain.CurrentDomain.BaseDirectory}dmp/{curBook.Asin}.bookpageHtml.txt";
-#if NETCOREAPP3_1
-                    await File.WriteAllTextAsync(path, bookHtmlDoc.DocumentNode.InnerHtml, cancellationToken);
-#else
-                    File.WriteAllText(path, bookHtmlDoc.DocumentNode.InnerHtml);
-#endif
-                }
-                catch (Exception ex)
-                {
-                    _logger.Log($"An error occurred saving bookpageHtml.txt: {ex.Message}");
-                }
-            }
-
+            
             try
             {
                 var response = _amazonInfoParser.ParseAmazonDocument(bookHtmlDoc);
@@ -102,17 +85,20 @@ namespace XRayBuilder.Core.Extras.EndActions
                 try
                 {
                     var fileText = Functions.ReadFromFile(file);
+
                     if (string.IsNullOrEmpty(fileText))
                         _logger.Log("Found description file, but it is empty!\r\n" + file);
-                    else
-                        _logger.Log("Using description from " + file + ".");
+                    if (!string.Equals(curBook.Description, fileText))
+                    {
+                        _logger.Log("Using biography from " + file + ".");
+                    }
 
                     return fileText;
                 }
                 catch (Exception ex)
                 {
                     _logger.Log("An error occurred while opening " + file + "\r\n" + ex.Message + "\r\n" +
-                               ex.StackTrace);
+                                ex.StackTrace);
                 }
 
                 return null;
@@ -128,120 +114,76 @@ namespace XRayBuilder.Core.Extras.EndActions
                 curBook.Description = ReadDesc(descFile);
             }
 
-            _logger.Log("Parsing related books...");
-            //Parse Recommended Author titles and ASINs
-            custAlsoBought.Clear();
             try
             {
-                var recList = bookHtmlDoc.DocumentNode.SelectNodes(
-                    "//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card a-float-left']")
-                    ??
-                    bookHtmlDoc.DocumentNode.SelectNodes(
-                        "//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card aok-float-left']");
-                if (recList != null)
+                var listSelectors = new[]
                 {
-                    custAlsoBought.AddRange(ParseBookList(recList, curBook));
+                    "//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card a-float-left']",
+                    "//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card aok-float-left']",
+                    "//*[contains(@id, 'desktop-dp-sims_purchase-similarities-esp')]//li",
+                    "//*[@id='desktop-dp-sims_purchase-similarities-sims-feature']//li",
+                    "//*[contains(@id, 'dp-sims_OnlineDpSimsPurchaseStrategy-sims')]//li",
+                    "//*[@id='view_to_purchase-sims-feature']//li",
+                    "//*[@id='desktop-dp-sims_vtp-60-sims-feature']//li",
+                    "//div[@id='desktop-dp-sims_session-similarities-sims-feature']//li",
+                    "//div[@id='desktop-dp-sims_session-similarities-brand-protection-sims-feature']//li"
+                };
+
+                var relatedBooks = listSelectors.SelectMany(selector =>
+                    {
+                        var listNodes = bookHtmlDoc.DocumentNode.SelectNodes(selector);
+                        return listNodes != null
+                            ? ParseBookList(listNodes)
+                            : Enumerable.Empty<BookInfo>();
+                    }).Where(list => list != null)
+                    .Distinct()
+                    .Where(book => book.Title != curBook.Title && book.Asin != curBook.Asin)
+                    .ToArray();
+
+                if (settings.UseNewVersion)
+                {
+                    _logger.Log($"Gathering metadata for {relatedBooks.Length} related book(s)...");
+                    progress?.Set(0, relatedBooks.Length);
+                    await foreach (var _ in _amazonClient.EnhanceBookInfos(relatedBooks, cancellationToken))
+                    {
+                        progress?.Add(1);
+                    }
                 }
 
-                //Add sponsored related, if they exist...
-                var otherItems =
-                    bookHtmlDoc.DocumentNode.SelectSingleNode(
-                        "//*[contains(@id, 'desktop-dp-sims_purchase-similarities-esp')]")
-                    ??
-                    bookHtmlDoc.DocumentNode.SelectSingleNode(
-                        "//*[@id='desktop-dp-sims_purchase-similarities-sims-feature']")
-                    ??
-                    bookHtmlDoc.DocumentNode.SelectSingleNode(
-                        "//*[contains(@id, 'dp-sims_OnlineDpSimsPurchaseStrategy-sims')]");
-                if (otherItems != null)
+                return new Response
                 {
-                    recList = otherItems.SelectNodes(".//li");
-                    if (recList != null)
-                        custAlsoBought.AddRange(ParseBookList(recList, curBook));
-                }
-
-                otherItems = bookHtmlDoc.DocumentNode.SelectSingleNode("//*[@id='view_to_purchase-sims-feature']")
-                             ??
-                             bookHtmlDoc.DocumentNode.SelectSingleNode(
-                                 "//*[@id='desktop-dp-sims_vtp-60-sims-feature']");
-                if (otherItems != null)
-                {
-                    recList = otherItems.SelectNodes(".//li");
-                    if (recList != null)
-                        custAlsoBought.AddRange(ParseBookList(recList, curBook));
-                }
-
-                otherItems = bookHtmlDoc.DocumentNode.SelectSingleNode(
-                                 "//div[@id='desktop-dp-sims_session-similarities-sims-feature']") ??
-                             bookHtmlDoc.DocumentNode.SelectSingleNode(
-                                 "//div[@id='desktop-dp-sims_session-similarities-brand-protection-sims-feature']");
-                if (otherItems != null)
-                {
-                    recList = otherItems.SelectNodes(".//li");
-                    if (recList != null)
-                        custAlsoBought.AddRange(ParseBookList(recList, curBook));
-                }
-
-                if (custAlsoBought.Count != 0)
-                {
-                    _logger.Log(custAlsoBought.Count > 1
-                        ? $"Gathering metadata for {custAlsoBought.Count} related books..."
-                        : "Gathering metadata for a related book...");
-                }
-
-                await foreach (var _ in _amazonClient.EnhanceBookInfos(custAlsoBought, cancellationToken))
-                {
-                    // todo progress
-                }
-                
+                    Book = curBook,
+                    CustomerAlsoBought = relatedBooks
+                };
             }
             catch (Exception ex)
             {
                 _logger.Log("An error occurred parsing the book's amazon page: " + ex.Message + ex.StackTrace);
                 return null;
             }
-
-            return new Response
-            {
-                Book = curBook,
-                CustomerAlsoBought = custAlsoBought.ToArray()
-            };
         }
 
-        private List<BookInfo> ParseBookList(HtmlAgilityPack.HtmlNodeCollection books, BookInfo curBook)
+        private IEnumerable<BookInfo> ParseBookList(HtmlNodeCollection books)
         {
-            string asin = string.Empty, author = string.Empty, title = string.Empty;
-            var results = new List<BookInfo>();
-
             foreach (var book in books.Where(item => item != null))
             {
                 var asinNode = book.SelectSingleNode(".//a[@class='a-link-normal']");
-                if (asinNode != null)
-                {
-                    var parsedAsin = _amazonClient.ParseAsinFromUrl(asinNode.GetAttributeValue("href", ""));
-                    if (string.IsNullOrEmpty(parsedAsin)) continue;
-                    
-                    // Check for duplicate by ASIN and ASIN does match current book's ASIN
-                    if (parsedAsin == curBook.Asin ||
-                        results.Any(bk => bk.Asin.Contains(parsedAsin)))
-                        continue;
-
-                    asin = parsedAsin;
-                    title = HtmlAgilityPack.HtmlEntity.DeEntitize(asinNode.InnerText.Trim());
-
-                    // Check title is not an eSpecial, reading order, series etc...
-                    if (!Functions.IsActualBook(title, curBook.Title)) continue;
-                }
+                if (asinNode == null)
+                    continue;
 
                 var authorNode = book.SelectSingleNode(".//a[@class='a-size-small a-link-child']");
-                if (authorNode != null)
-                    author = authorNode.InnerText.Clean();
+                if (authorNode == null)
+                    continue;
 
-                if (string.IsNullOrEmpty(author) && string.IsNullOrEmpty(asin)) continue;
+                var author = authorNode.InnerText.Clean();
+                var title = HtmlEntity.DeEntitize(asinNode.InnerText.Trim());
+                var asin = _amazonClient.ParseAsinFromUrl(asinNode.GetAttributeValue("href", ""));
 
-                results.Add(new BookInfo(title, author, asin));
+                if (string.IsNullOrEmpty(author) || string.IsNullOrEmpty(asin) || string.IsNullOrEmpty(title) || _invalidBookTitleRegex.IsMatch(title))
+                    continue;
+
+                yield return new BookInfo(title, author, asin);
             }
-            return results;
         }
 
         private async Task<BookInfo> SearchOrPrompt(BookInfo book, Func<string, string, string> asinPrompt, Settings settings, CancellationToken cancellationToken = default)
@@ -290,7 +232,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             // Search author's other books for the book (assumes next in series was written by the same author...)
             // Returns the first one found, though there should probably not be more than 1 of the same name anyway
             // If not found there, try to get it using the asin from Goodreads or by searching Amazon
-            // Swaps out the basic next/previous from Goodreads w/ full Amazon ones
+            // Swaps out the basic next/previous from Goodreads with full Amazon ones
             async Task<BookInfo> FromApOrSearch(BookInfo book, CancellationToken ct)
             {
                 return authorProfile.OtherBooks.FirstOrDefault(bk => Regex.IsMatch(bk.Title, $@"^{book.Title}(?: \(.*\))?$"))
@@ -327,13 +269,15 @@ namespace XRayBuilder.Core.Extras.EndActions
         {
             // Generate old stuff first, ignore response since curBook and custAlsoBought are shared
             // todo make them not shared
-            var oldResponse = await GenerateOld(curBook, settings, cancellationToken);
+            var oldResponse = await GenerateOld(curBook, settings, progress, cancellationToken);
             if (oldResponse == null)
                 return null;
 
             try
             {
                 await dataSource.GetExtrasAsync(curBook, progress, cancellationToken);
+                progress?.Set(0);
+                _logger.Log("Checking if this book is part of a series...");
                 curBook.Series = await dataSource.GetSeriesInfoAsync(curBook.DataUrl, cancellationToken);
 
                 if (curBook.Series == null || curBook.Series.Total == 0)
@@ -365,8 +309,7 @@ namespace XRayBuilder.Core.Extras.EndActions
                             _logger.Log("According to Amazon, this book is not part of a series.");
                             break;
                         case "ERR000":
-                            if (curBook.Series == null)
-                                curBook.Series = new SeriesInfo();
+                            curBook.Series ??= new SeriesInfo();
                             curBook.Series.Next =
                                 new BookInfo(seriesResult.NextBook.Title.TitleName,
                                     Functions.FixAuthor(seriesResult.NextBook.Authors.FirstOrDefault()?.AuthorName),
@@ -400,11 +343,11 @@ namespace XRayBuilder.Core.Extras.EndActions
                     var metadataCount = metadata.GetPageCount();
                     if (metadataCount.HasValue)
                         curBook.PagesInBook = metadataCount.Value;
-                    else if (settings.EstimatePageCount)
-                    {
-                        _logger.Log($"No page count found on {dataSource.Name} or in metadata. Attempting to estimate page count...");
-                        _logger.Log(Functions.GetPageCount(curBook.RawmlPath, curBook));
-                    }
+                    //else if (settings.EstimatePageCount)
+                    //{
+                    //    _logger.Log($"No page count found on {dataSource.Name} or in metadata. Attempting to estimate page count...");
+                    //    _logger.Log(Functions.GetPageCount(curBook.RawmlPath, curBook));
+                    //}
                     else
                         _logger.Log($"No page count found on {dataSource.Name} or in metadata");
                 }

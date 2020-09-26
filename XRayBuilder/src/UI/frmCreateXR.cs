@@ -14,6 +14,7 @@ using XRayBuilder.Core.DataSources.Roentgen.Logic;
 using XRayBuilder.Core.Libraries.Enumerables.Extensions;
 using XRayBuilder.Core.Libraries.Images.Util;
 using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
+using XRayBuilder.Core.Logic;
 using XRayBuilder.Core.XRay.Artifacts;
 using XRayBuilder.Core.XRay.Logic.Aliases;
 using XRayBuilder.Core.XRay.Logic.Terms;
@@ -26,6 +27,7 @@ namespace XRayBuilderGUI.UI
         private readonly IAliasesRepository _aliasesRepository;
         private readonly IAliasesService _aliasesService;
         private readonly IAmazonClient _amazonClient;
+        private readonly IDirectoryService _directoryService;
 
         // There is private method ClearAllSelections in ToolStrip class,
         // which removes selections from items. You can invoke it via reflection:
@@ -43,13 +45,15 @@ namespace XRayBuilderGUI.UI
             IAliasesRepository aliasesRepository,
             IAmazonClient amazonClient,
             IRoentgenClient roentgenClient,
-            IAliasesService aliasesService)
+            IAliasesService aliasesService,
+            IDirectoryService directoryService)
         {
             _termsService = termsService;
             _aliasesRepository = aliasesRepository;
             _amazonClient = amazonClient;
             _roentgenClient = roentgenClient;
             _aliasesService = aliasesService;
+            _directoryService = directoryService;
             InitializeComponent();
 
             toolStrip.Renderer = new CustomToolStripProfessionalRenderer();
@@ -176,8 +180,7 @@ namespace XRayBuilderGUI.UI
 
         private void ReloadTerms()
         {
-            // todo another path to centralize
-            var aliasFile = $@"{AppDomain.CurrentDomain.BaseDirectory}ext\{txtAsin.Text}.aliases";
+            var aliasFile = _directoryService.GetAliasPath(txtAsin.Text);
             var d = new Dictionary<string, string>();
             dgvTerms.Rows.Clear();
             txtName.Text = "";

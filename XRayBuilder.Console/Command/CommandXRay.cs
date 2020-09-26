@@ -52,11 +52,11 @@ namespace XRayBuilder.Console.Command
                 UseSubdirectories = baseOptions.UseSubdirectories.HasValue(),
                 BaseOutputDirectory = baseOptions.BaseOutputDirectory.HasValue()
                     ? baseOptions.BaseOutputDirectory.Value()
-                    : $"{AppDomain.CurrentDomain.BaseDirectory}out",
+                    : $"{AppDomain.CurrentDomain.BaseDirectory ?? Environment.CurrentDirectory}out",
                 BuildForAndroid = baseOptions.Android.HasValue(),
                 OutputToSidecar = baseOptions.OutputToSidecar.HasValue()
             };
-            using var container = _bootstrap(config);
+            await using var container = _bootstrap(config);
             var logger = container.GetInstance<ILogger>();
 
             var bookPath = (string) baseOptions.Book.Value;

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
+using XRayBuilder.Core.XRay.Model;
 
 namespace XRayBuilder.Core.XRay.Artifacts
 {
@@ -37,8 +38,7 @@ namespace XRayBuilder.Core.XRay.Artifacts
 
         [XmlIgnore]
         [JsonIgnore]
-        // TODO This is dumb
-        public List<int[]> Occurrences { get; set; } = new List<int[]>();
+        public List<Occurrence> Occurrences { get; } = new List<Occurrence>();
 
         [JsonIgnore]
         public bool MatchCase { get; set; }

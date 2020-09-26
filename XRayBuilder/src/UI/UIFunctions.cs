@@ -58,9 +58,13 @@ namespace XRayBuilderGUI.UI
             if (md.CdeContentType == "EBOK")
                 return;
             if (DialogResult.Yes != MessageBox.Show(
-                @"The document type is not set to EBOK. Would you like this to be updated?" +
+                @"The document type is not set to EBOK." +
+                Environment.NewLine + Environment.NewLine +
+                @"Would you like this to be updated?" +
                 Environment.NewLine +
-                @"Caution: This feature is experimental and could potentially ruin your book file.",
+                @"Caution: This feature is experimental" +
+                Environment.NewLine +
+                @"and could potentially ruin your book file.",
                 @"Incorrect Content Type",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Warning)) return;
@@ -80,8 +84,6 @@ namespace XRayBuilderGUI.UI
                     MessageBoxIcon.Warning);
             }
         }
-
-        public static string RawMlPath(string filename) => Path.Combine(Environment.CurrentDirectory, "dmp", $"{filename}.rawml");
     }
 
     // ReSharper disable once InconsistentNaming

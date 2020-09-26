@@ -15,7 +15,7 @@ namespace XRayBuilder.Core.Extras.EndActions
         /// Generate the necessities for the old format
         /// TODO Remove anything that gets generated for the new version
         /// </summary>
-        Task<EndActionsDataGenerator.Response> GenerateOld(BookInfo curBook, EndActionsDataGenerator.Settings settings, CancellationToken cancellationToken = default);
+        Task<EndActionsDataGenerator.Response> GenerateOld(BookInfo curBook, EndActionsDataGenerator.Settings settings, IProgressBar progress = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Generate necessities for the new format (which includes running <see cref="EndActionsDataGenerator.GenerateOld"/> automatically)

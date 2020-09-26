@@ -598,7 +598,7 @@ namespace XRayBuilderGUI.UI
                     var endActionsDataGenerator = _diContainer.GetInstance<IEndActionsDataGenerator>();
                     var endActionsResponse = _settings.useNewVersion
                         ? await endActionsDataGenerator.GenerateNewFormatData(bookInfo, endActionsSettings, _dataSource, authorProfileResponse, AsinPrompt, metadata, _progress, _cancelTokens.Token)
-                        : await endActionsDataGenerator.GenerateOld(bookInfo, endActionsSettings, _cancelTokens.Token);
+                        : await endActionsDataGenerator.GenerateOld(bookInfo, endActionsSettings, _progress, _cancelTokens.Token);
 
                     if (endActionsResponse == null)
                         return;

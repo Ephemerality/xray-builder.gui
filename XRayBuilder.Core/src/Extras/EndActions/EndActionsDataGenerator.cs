@@ -48,7 +48,7 @@ namespace XRayBuilder.Core.Extras.EndActions
         /// Generate the necessities for the old format
         /// TODO Remove anything that gets generated for the new version
         /// </summary>
-        public async Task<Response> GenerateOld(BookInfo curBook, Settings settings, CancellationToken cancellationToken = default)
+        public async Task<Response> GenerateOld(BookInfo curBook, Settings settings, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             _logger.Log("Attempting to find book on Amazon...");
             //Generate Book search URL from book's ASIN
@@ -109,9 +109,10 @@ namespace XRayBuilder.Core.Extras.EndActions
                 if (settings.UseNewVersion)
                 {
                     _logger.Log($"Gathering metadata for {relatedBooks.Length} related book(s)...");
+                    progress?.Set(0, relatedBooks.Length);
                     await foreach (var _ in _amazonClient.EnhanceBookInfos(relatedBooks, cancellationToken))
                     {
-                        // todo progress
+                        progress?.Add(1);
                     }
                 }
 
@@ -234,7 +235,7 @@ namespace XRayBuilder.Core.Extras.EndActions
         {
             // Generate old stuff first, ignore response since curBook and custAlsoBought are shared
             // todo make them not shared
-            var oldResponse = await GenerateOld(curBook, settings, cancellationToken);
+            var oldResponse = await GenerateOld(curBook, settings, progress, cancellationToken);
             if (oldResponse == null)
                 return null;
 

@@ -63,11 +63,12 @@
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.btnBuild = new System.Windows.Forms.ToolStripButton();
             this.btnXraySource = new System.Windows.Forms.ToolStripDropDownButton();
-            this.tsbtnSourceFile = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsbtnSourceGoodreads = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsbtnSourceRoentgen = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnXraySourceFile = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnXraySourceGoodreads = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnXraySourceRoentgen = new System.Windows.Forms.ToolStripMenuItem();
             this.btnCreate = new System.Windows.Forms.ToolStripButton();
             this.btnDownloadTerms = new System.Windows.Forms.ToolStripButton();
+            this.btnBrowseXML = new System.Windows.Forms.ToolStripButton();
             this.btnExtractTerms = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnPreview = new System.Windows.Forms.ToolStripDropDownButton();
@@ -75,7 +76,6 @@
             this.tmiEndAction = new System.Windows.Forms.ToolStripMenuItem();
             this.tmiStartAction = new System.Windows.Forms.ToolStripMenuItem();
             this.tmiXray = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnBrowseXML = new System.Windows.Forms.ToolStripButton();
             this.btnUnpack = new System.Windows.Forms.ToolStripButton();
             this.btnBrowseFolders = new System.Windows.Forms.ToolStripDropDownButton();
             this.btnBrowseOutput = new System.Windows.Forms.ToolStripMenuItem();
@@ -452,7 +452,7 @@
             // 
             // btnXraySource
             // 
-            this.btnXraySource.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {this.tsbtnSourceFile, this.tsbtnSourceGoodreads, this.tsbtnSourceRoentgen});
+            this.btnXraySource.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {this.btnXraySourceFile, this.btnXraySourceGoodreads, this.btnXraySourceRoentgen});
             this.btnXraySource.Image = ((System.Drawing.Image) (resources.GetObject("btnXraySource.Image")));
             this.btnXraySource.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnXraySource.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -463,23 +463,23 @@
             this.btnXraySource.Text = "Source";
             this.btnXraySource.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
-            // tsbtnSourceFile
+            // btnXraySourceFile
             // 
-            this.tsbtnSourceFile.Name = "tsbtnSourceFile";
-            this.tsbtnSourceFile.Size = new System.Drawing.Size(131, 22);
-            this.tsbtnSourceFile.Text = "File";
+            this.btnXraySourceFile.Name = "btnXraySourceFile";
+            this.btnXraySourceFile.Size = new System.Drawing.Size(224, 26);
+            this.btnXraySourceFile.Text = "File";
             // 
-            // tsbtnSourceGoodreads
+            // btnXraySourceGoodreads
             // 
-            this.tsbtnSourceGoodreads.Name = "tsbtnSourceGoodreads";
-            this.tsbtnSourceGoodreads.Size = new System.Drawing.Size(131, 22);
-            this.tsbtnSourceGoodreads.Text = "Goodreads";
+            this.btnXraySourceGoodreads.Name = "btnXraySourceGoodreads";
+            this.btnXraySourceGoodreads.Size = new System.Drawing.Size(224, 26);
+            this.btnXraySourceGoodreads.Text = "Goodreads";
             // 
-            // tsbtnSourceRoentgen
+            // btnXraySourceRoentgen
             // 
-            this.tsbtnSourceRoentgen.Name = "tsbtnSourceRoentgen";
-            this.tsbtnSourceRoentgen.Size = new System.Drawing.Size(131, 22);
-            this.tsbtnSourceRoentgen.Text = "Roentgen";
+            this.btnXraySourceRoentgen.Name = "btnXraySourceRoentgen";
+            this.btnXraySourceRoentgen.Size = new System.Drawing.Size(224, 26);
+            this.btnXraySourceRoentgen.Text = "Roentgen";
             // 
             // btnCreate
             // 
@@ -506,6 +506,20 @@
             this.btnDownloadTerms.Text = "Download";
             this.btnDownloadTerms.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnDownloadTerms.Click += new System.EventHandler(this.btnDownloadTerms_Click);
+            // 
+            // btnBrowseXML
+            // 
+            this.btnBrowseXML.AutoSize = false;
+            this.btnBrowseXML.Image = ((System.Drawing.Image)(resources.GetObject("btnBrowseXML.Image")));
+            this.btnBrowseXML.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.btnBrowseXML.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnBrowseXML.Margin = new System.Windows.Forms.Padding(4, 10, 0, 10);
+            this.btnBrowseXML.Name = "btnBrowseXML";
+            this.btnBrowseXML.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.btnBrowseXML.Size = new System.Drawing.Size(86, 80);
+            this.btnBrowseXML.Text = "Open File";
+            this.btnBrowseXML.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnBrowseXML.Click += new System.EventHandler(this.btnBrowseXML_Click);
             // 
             // btnExtractTerms
             // 
@@ -880,9 +894,9 @@
         private System.Windows.Forms.ToolStripButton btnUnpack;
         private System.Windows.Forms.ToolStripButton btnExtractTerms;
         private System.Windows.Forms.ToolStripDropDownButton btnXraySource;
-        private System.Windows.Forms.ToolStripMenuItem tsbtnSourceFile;
-        private System.Windows.Forms.ToolStripMenuItem tsbtnSourceGoodreads;
-        private System.Windows.Forms.ToolStripMenuItem tsbtnSourceRoentgen;
+        private System.Windows.Forms.ToolStripMenuItem btnXraySourceFile;
+        private System.Windows.Forms.ToolStripMenuItem btnXraySourceGoodreads;
+        private System.Windows.Forms.ToolStripMenuItem btnXraySourceRoentgen;
         private System.Windows.Forms.ToolStripDropDownButton btnBrowseFolders;
         private System.Windows.Forms.ToolStripMenuItem btnBrowseOutput;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;

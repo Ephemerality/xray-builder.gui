@@ -39,6 +39,8 @@ namespace XRayBuilderGUI.UI
             this.tabPgGeneral = new System.Windows.Forms.TabPage();
             this.cbLanguage = new System.Windows.Forms.GroupBox();
             this.cmbLanguage = new System.Windows.Forms.ComboBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.cmbSecondaryDataSource = new System.Windows.Forms.ComboBox();
             this.gbProcess = new System.Windows.Forms.GroupBox();
             this.chkPageCount = new System.Windows.Forms.CheckBox();
             this.gbUnpack = new System.Windows.Forms.GroupBox();
@@ -55,8 +57,6 @@ namespace XRayBuilderGUI.UI
             this.txtOut = new System.Windows.Forms.TextBox();
             this.btnBrowseOut = new System.Windows.Forms.Button();
             this.tabPgXray = new System.Windows.Forms.TabPage();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.cmbSecondaryDataSource = new System.Windows.Forms.ComboBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.chkSoftHyphen = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -81,6 +81,7 @@ namespace XRayBuilderGUI.UI
             this.chkEnableEdit = new System.Windows.Forms.CheckBox();
             this.tabPgAmazon = new System.Windows.Forms.TabPage();
             this.gbAmazonPrefs = new System.Windows.Forms.GroupBox();
+            this.chkEditDescription = new System.Windows.Forms.CheckBox();
             this.chkEditBiography = new System.Windows.Forms.CheckBox();
             this.chkPromptAsin = new System.Windows.Forms.CheckBox();
             this.chkSaveBio = new System.Windows.Forms.CheckBox();
@@ -106,19 +107,18 @@ namespace XRayBuilderGUI.UI
             this.chkRoentgenStartActions = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.listSettings = new System.Windows.Forms.ListBox();
-            this.chkEditDescription = new System.Windows.Forms.CheckBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.cbLanguage.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.gbProcess.SuspendLayout();
             this.gbUnpack.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize) (this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.gbGeneral.SuspendLayout();
             this.tabPgDirectories.SuspendLayout();
             this.gbOptions.SuspendLayout();
             this.gbDirectories.SuspendLayout();
             this.tabPgXray.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.gbXray.SuspendLayout();
@@ -131,10 +131,10 @@ namespace XRayBuilderGUI.UI
             this.gbDetails.SuspendLayout();
             this.tabPgRoentgen.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize) (this.pictureBox3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.groupBox9.SuspendLayout();
             this.groupBox7.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize) (this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // btnSupport
@@ -211,9 +211,9 @@ namespace XRayBuilderGUI.UI
             // cbLanguage
             // 
             this.cbLanguage.Controls.Add(this.cmbLanguage);
-            this.cbLanguage.Location = new System.Drawing.Point(4, 259);
+            this.cbLanguage.Location = new System.Drawing.Point(4, 311);
             this.cbLanguage.Name = "cbLanguage";
-            this.cbLanguage.Size = new System.Drawing.Size(377, 58);
+            this.cbLanguage.Size = new System.Drawing.Size(504, 58);
             this.cbLanguage.TabIndex = 39;
             this.cbLanguage.TabStop = false;
             this.cbLanguage.Text = "Language";
@@ -231,7 +231,7 @@ namespace XRayBuilderGUI.UI
             // 
             this.groupBox2.Controls.Add(this.cmbSecondaryDataSource);
             this.groupBox2.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox2.Location = new System.Drawing.Point(4, 276);
+            this.groupBox2.Location = new System.Drawing.Point(4, 230);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(504, 75);
             this.groupBox2.TabIndex = 39;
@@ -243,19 +243,22 @@ namespace XRayBuilderGUI.UI
             this.cmbSecondaryDataSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbSecondaryDataSource.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmbSecondaryDataSource.FormattingEnabled = true;
-            this.cmbSecondaryDataSource.Items.AddRange(new object[] {"Goodreads", "Shelfari", "LibraryThing"});
+            this.cmbSecondaryDataSource.Items.AddRange(new object[] {
+            "Goodreads",
+            "Shelfari",
+            "LibraryThing"});
             this.cmbSecondaryDataSource.Location = new System.Drawing.Point(18, 28);
             this.cmbSecondaryDataSource.Name = "cmbSecondaryDataSource";
-            this.cmbSecondaryDataSource.Size = new System.Drawing.Size(138, 28);
+            this.cmbSecondaryDataSource.Size = new System.Drawing.Size(138, 23);
             this.cmbSecondaryDataSource.TabIndex = 0;
             // 
             // gbProcess
             // 
             this.gbProcess.Controls.Add(this.chkPageCount);
-            this.gbProcess.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
-            this.gbProcess.Location = new System.Drawing.Point(4, 190);
+            this.gbProcess.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gbProcess.Location = new System.Drawing.Point(4, 170);
             this.gbProcess.Name = "gbProcess";
-            this.gbProcess.Size = new System.Drawing.Size(504, 63);
+            this.gbProcess.Size = new System.Drawing.Size(504, 54);
             this.gbProcess.TabIndex = 38;
             this.gbProcess.TabStop = false;
             this.gbProcess.Text = "eBook Processing";
@@ -263,7 +266,7 @@ namespace XRayBuilderGUI.UI
             // chkPageCount
             // 
             this.chkPageCount.AutoSize = true;
-            this.chkPageCount.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkPageCount.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkPageCount.Location = new System.Drawing.Point(18, 25);
             this.chkPageCount.Name = "chkPageCount";
             this.chkPageCount.Size = new System.Drawing.Size(134, 19);
@@ -276,17 +279,17 @@ namespace XRayBuilderGUI.UI
             this.gbUnpack.Controls.Add(this.pictureBox1);
             this.gbUnpack.Controls.Add(this.lblNote);
             this.gbUnpack.Controls.Add(this.chkRaw);
-            this.gbUnpack.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
-            this.gbUnpack.Location = new System.Drawing.Point(4, 73);
+            this.gbUnpack.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gbUnpack.Location = new System.Drawing.Point(4, 60);
             this.gbUnpack.Name = "gbUnpack";
-            this.gbUnpack.Size = new System.Drawing.Size(504, 111);
+            this.gbUnpack.Size = new System.Drawing.Size(504, 104);
             this.gbUnpack.TabIndex = 37;
             this.gbUnpack.TabStop = false;
             this.gbUnpack.Text = "eBook Unpacking";
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = ((System.Drawing.Image) (resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
             this.pictureBox1.Location = new System.Drawing.Point(18, 61);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(16, 16);
@@ -295,18 +298,19 @@ namespace XRayBuilderGUI.UI
             // 
             // lblNote
             // 
-            this.lblNote.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
-            this.lblNote.ForeColor = System.Drawing.Color.FromArgb(((int) (((byte) (40)))), ((int) (((byte) (110)))), ((int) (((byte) (210)))));
+            this.lblNote.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblNote.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(110)))), ((int)(((byte)(210)))));
             this.lblNote.Location = new System.Drawing.Point(37, 56);
             this.lblNote.Name = "lblNote";
-            this.lblNote.Size = new System.Drawing.Size(425, 47);
+            this.lblNote.Size = new System.Drawing.Size(425, 45);
             this.lblNote.TabIndex = 34;
-            this.lblNote.Text = "Metadata is now gathered internally rather than with KindleUnpack. If you run int" + "o any metadata extraction errors, please report them on the MobileRead thread.";
+            this.lblNote.Text = "Metadata is now gathered internally rather than with KindleUnpack. If you run int" +
+    "o any metadata extraction errors, please report them on the MobileRead thread.";
             // 
             // chkRaw
             // 
             this.chkRaw.AutoSize = true;
-            this.chkRaw.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkRaw.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkRaw.Location = new System.Drawing.Point(18, 25);
             this.chkRaw.Name = "chkRaw";
             this.chkRaw.Size = new System.Drawing.Size(89, 19);
@@ -317,10 +321,10 @@ namespace XRayBuilderGUI.UI
             // gbGeneral
             // 
             this.gbGeneral.Controls.Add(this.chkSound);
-            this.gbGeneral.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.gbGeneral.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gbGeneral.Location = new System.Drawing.Point(4, 5);
             this.gbGeneral.Name = "gbGeneral";
-            this.gbGeneral.Size = new System.Drawing.Size(504, 63);
+            this.gbGeneral.Size = new System.Drawing.Size(504, 52);
             this.gbGeneral.TabIndex = 36;
             this.gbGeneral.TabStop = false;
             this.gbGeneral.Text = "Sounds";
@@ -328,7 +332,7 @@ namespace XRayBuilderGUI.UI
             // chkSound
             // 
             this.chkSound.AutoSize = true;
-            this.chkSound.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkSound.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkSound.Location = new System.Drawing.Point(18, 25);
             this.chkSound.Name = "chkSound";
             this.chkSound.Size = new System.Drawing.Size(235, 19);
@@ -351,7 +355,7 @@ namespace XRayBuilderGUI.UI
             // 
             this.gbOptions.Controls.Add(this.chkUseSidecar);
             this.gbOptions.Controls.Add(this.chkSubDirectories);
-            this.gbOptions.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.gbOptions.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gbOptions.Location = new System.Drawing.Point(4, 85);
             this.gbOptions.Name = "gbOptions";
             this.gbOptions.Size = new System.Drawing.Size(504, 63);
@@ -362,7 +366,7 @@ namespace XRayBuilderGUI.UI
             // chkUseSidecar
             // 
             this.chkUseSidecar.AutoSize = true;
-            this.chkUseSidecar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkUseSidecar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkUseSidecar.Location = new System.Drawing.Point(188, 25);
             this.chkUseSidecar.Name = "chkUseSidecar";
             this.chkUseSidecar.Size = new System.Drawing.Size(135, 19);
@@ -373,7 +377,7 @@ namespace XRayBuilderGUI.UI
             // chkSubDirectories
             // 
             this.chkSubDirectories.AutoSize = true;
-            this.chkSubDirectories.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkSubDirectories.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkSubDirectories.Location = new System.Drawing.Point(18, 25);
             this.chkSubDirectories.Name = "chkSubDirectories";
             this.chkSubDirectories.Size = new System.Drawing.Size(122, 19);
@@ -385,7 +389,7 @@ namespace XRayBuilderGUI.UI
             // 
             this.gbDirectories.Controls.Add(this.txtOut);
             this.gbDirectories.Controls.Add(this.btnBrowseOut);
-            this.gbDirectories.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.gbDirectories.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gbDirectories.Location = new System.Drawing.Point(4, 5);
             this.gbDirectories.Name = "gbDirectories";
             this.gbDirectories.Size = new System.Drawing.Size(504, 74);
@@ -395,7 +399,7 @@ namespace XRayBuilderGUI.UI
             // 
             // txtOut
             // 
-            this.txtOut.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.txtOut.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtOut.Location = new System.Drawing.Point(18, 28);
             this.txtOut.Name = "txtOut";
             this.txtOut.Size = new System.Drawing.Size(424, 23);
@@ -403,7 +407,7 @@ namespace XRayBuilderGUI.UI
             // 
             // btnBrowseOut
             // 
-            this.btnBrowseOut.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.btnBrowseOut.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnBrowseOut.Location = new System.Drawing.Point(458, 27);
             this.btnBrowseOut.Name = "btnBrowseOut";
             this.btnBrowseOut.Size = new System.Drawing.Size(29, 29);
@@ -427,7 +431,7 @@ namespace XRayBuilderGUI.UI
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.chkSoftHyphen);
-            this.groupBox4.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.groupBox4.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox4.Location = new System.Drawing.Point(4, 154);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(504, 63);
@@ -438,7 +442,7 @@ namespace XRayBuilderGUI.UI
             // chkSoftHyphen
             // 
             this.chkSoftHyphen.AutoSize = true;
-            this.chkSoftHyphen.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkSoftHyphen.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkSoftHyphen.Location = new System.Drawing.Point(18, 25);
             this.chkSoftHyphen.Name = "chkSoftHyphen";
             this.chkSoftHyphen.Size = new System.Drawing.Size(131, 19);
@@ -451,7 +455,7 @@ namespace XRayBuilderGUI.UI
             this.groupBox3.Controls.Add(this.label2);
             this.groupBox3.Controls.Add(this.txtMinClipLen);
             this.groupBox3.Controls.Add(this.chkSkipNoLikes);
-            this.groupBox3.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.groupBox3.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox3.Location = new System.Drawing.Point(4, 74);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(504, 74);
@@ -462,7 +466,7 @@ namespace XRayBuilderGUI.UI
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.label2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(296, 31);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(100, 15);
@@ -471,7 +475,7 @@ namespace XRayBuilderGUI.UI
             // 
             // txtMinClipLen
             // 
-            this.txtMinClipLen.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.txtMinClipLen.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtMinClipLen.Location = new System.Drawing.Point(428, 28);
             this.txtMinClipLen.Name = "txtMinClipLen";
             this.txtMinClipLen.Size = new System.Drawing.Size(58, 23);
@@ -481,7 +485,7 @@ namespace XRayBuilderGUI.UI
             // chkSkipNoLikes
             // 
             this.chkSkipNoLikes.AutoSize = true;
-            this.chkSkipNoLikes.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkSkipNoLikes.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkSkipNoLikes.Location = new System.Drawing.Point(18, 30);
             this.chkSkipNoLikes.Name = "chkSkipNoLikes";
             this.chkSkipNoLikes.Size = new System.Drawing.Size(174, 19);
@@ -493,7 +497,7 @@ namespace XRayBuilderGUI.UI
             // 
             this.gbXray.Controls.Add(this.chkAndroid);
             this.gbXray.Controls.Add(this.chkUseNew);
-            this.gbXray.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.gbXray.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gbXray.Location = new System.Drawing.Point(4, 5);
             this.gbXray.Name = "gbXray";
             this.gbXray.Size = new System.Drawing.Size(504, 63);
@@ -504,7 +508,7 @@ namespace XRayBuilderGUI.UI
             // chkAndroid
             // 
             this.chkAndroid.AutoSize = true;
-            this.chkAndroid.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkAndroid.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkAndroid.Location = new System.Drawing.Point(228, 25);
             this.chkAndroid.Name = "chkAndroid";
             this.chkAndroid.Size = new System.Drawing.Size(117, 19);
@@ -516,7 +520,7 @@ namespace XRayBuilderGUI.UI
             // chkUseNew
             // 
             this.chkUseNew.AutoSize = true;
-            this.chkUseNew.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkUseNew.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkUseNew.Location = new System.Drawing.Point(18, 25);
             this.chkUseNew.Name = "chkUseNew";
             this.chkUseNew.Size = new System.Drawing.Size(143, 19);
@@ -539,7 +543,7 @@ namespace XRayBuilderGUI.UI
             // groupBox8
             // 
             this.groupBox8.Controls.Add(this.chkAutoBuildAP);
-            this.groupBox8.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.groupBox8.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox8.Location = new System.Drawing.Point(4, 140);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Size = new System.Drawing.Size(504, 64);
@@ -550,7 +554,7 @@ namespace XRayBuilderGUI.UI
             // chkAutoBuildAP
             // 
             this.chkAutoBuildAP.AutoSize = true;
-            this.chkAutoBuildAP.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkAutoBuildAP.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkAutoBuildAP.Location = new System.Drawing.Point(18, 28);
             this.chkAutoBuildAP.Name = "chkAutoBuildAP";
             this.chkAutoBuildAP.Size = new System.Drawing.Size(217, 19);
@@ -565,7 +569,7 @@ namespace XRayBuilderGUI.UI
             this.groupBox6.Controls.Add(this.chkChapters);
             this.groupBox6.Controls.Add(this.chkAlias);
             this.groupBox6.Controls.Add(this.chkOverwriteAP);
-            this.groupBox6.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.groupBox6.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox6.Location = new System.Drawing.Point(4, 210);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(504, 129);
@@ -576,7 +580,7 @@ namespace XRayBuilderGUI.UI
             // chkOverwriteSA
             // 
             this.chkOverwriteSA.AutoSize = true;
-            this.chkOverwriteSA.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkOverwriteSA.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkOverwriteSA.Location = new System.Drawing.Point(158, 58);
             this.chkOverwriteSA.Name = "chkOverwriteSA";
             this.chkOverwriteSA.Size = new System.Drawing.Size(93, 19);
@@ -587,7 +591,7 @@ namespace XRayBuilderGUI.UI
             // chkOverwriteEA
             // 
             this.chkOverwriteEA.AutoSize = true;
-            this.chkOverwriteEA.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkOverwriteEA.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkOverwriteEA.Location = new System.Drawing.Point(158, 25);
             this.chkOverwriteEA.Name = "chkOverwriteEA";
             this.chkOverwriteEA.Size = new System.Drawing.Size(89, 19);
@@ -598,7 +602,7 @@ namespace XRayBuilderGUI.UI
             // chkChapters
             // 
             this.chkChapters.AutoSize = true;
-            this.chkChapters.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkChapters.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkChapters.Location = new System.Drawing.Point(18, 91);
             this.chkChapters.Name = "chkChapters";
             this.chkChapters.Size = new System.Drawing.Size(73, 19);
@@ -609,7 +613,7 @@ namespace XRayBuilderGUI.UI
             // chkAlias
             // 
             this.chkAlias.AutoSize = true;
-            this.chkAlias.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkAlias.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkAlias.Location = new System.Drawing.Point(18, 58);
             this.chkAlias.Name = "chkAlias";
             this.chkAlias.Size = new System.Drawing.Size(62, 19);
@@ -620,7 +624,7 @@ namespace XRayBuilderGUI.UI
             // chkOverwriteAP
             // 
             this.chkOverwriteAP.AutoSize = true;
-            this.chkOverwriteAP.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkOverwriteAP.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkOverwriteAP.Location = new System.Drawing.Point(18, 25);
             this.chkOverwriteAP.Name = "chkOverwriteAP";
             this.chkOverwriteAP.Size = new System.Drawing.Size(100, 19);
@@ -634,7 +638,7 @@ namespace XRayBuilderGUI.UI
             this.groupBox5.Controls.Add(this.chkDownloadAliases);
             this.groupBox5.Controls.Add(this.chkSplitAliases);
             this.groupBox5.Controls.Add(this.chkEnableEdit);
-            this.groupBox5.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.groupBox5.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox5.Location = new System.Drawing.Point(4, 5);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(504, 129);
@@ -646,7 +650,7 @@ namespace XRayBuilderGUI.UI
             // 
             this.chkDownloadAliases.AutoSize = true;
             this.chkDownloadAliases.Enabled = false;
-            this.chkDownloadAliases.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkDownloadAliases.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkDownloadAliases.Location = new System.Drawing.Point(18, 91);
             this.chkDownloadAliases.Name = "chkDownloadAliases";
             this.chkDownloadAliases.Size = new System.Drawing.Size(117, 19);
@@ -658,7 +662,7 @@ namespace XRayBuilderGUI.UI
             // chkSplitAliases
             // 
             this.chkSplitAliases.AutoSize = true;
-            this.chkSplitAliases.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkSplitAliases.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkSplitAliases.Location = new System.Drawing.Point(18, 58);
             this.chkSplitAliases.Name = "chkSplitAliases";
             this.chkSplitAliases.Size = new System.Drawing.Size(162, 19);
@@ -669,7 +673,7 @@ namespace XRayBuilderGUI.UI
             // chkEnableEdit
             // 
             this.chkEnableEdit.AutoSize = true;
-            this.chkEnableEdit.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkEnableEdit.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkEnableEdit.Location = new System.Drawing.Point(18, 25);
             this.chkEnableEdit.Name = "chkEnableEdit";
             this.chkEnableEdit.Size = new System.Drawing.Size(152, 19);
@@ -694,7 +698,7 @@ namespace XRayBuilderGUI.UI
             this.gbAmazonPrefs.Controls.Add(this.chkEditBiography);
             this.gbAmazonPrefs.Controls.Add(this.chkPromptAsin);
             this.gbAmazonPrefs.Controls.Add(this.chkSaveBio);
-            this.gbAmazonPrefs.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.gbAmazonPrefs.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gbAmazonPrefs.Location = new System.Drawing.Point(4, 174);
             this.gbAmazonPrefs.Name = "gbAmazonPrefs";
             this.gbAmazonPrefs.Size = new System.Drawing.Size(504, 162);
@@ -702,10 +706,21 @@ namespace XRayBuilderGUI.UI
             this.gbAmazonPrefs.TabStop = false;
             this.gbAmazonPrefs.Text = "Preferences";
             // 
+            // chkEditDescription
+            // 
+            this.chkEditDescription.AutoSize = true;
+            this.chkEditDescription.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkEditDescription.Location = new System.Drawing.Point(18, 124);
+            this.chkEditDescription.Name = "chkEditDescription";
+            this.chkEditDescription.Size = new System.Drawing.Size(138, 19);
+            this.chkEditDescription.TabIndex = 32;
+            this.chkEditDescription.Text = "Edit book description";
+            this.chkEditDescription.UseVisualStyleBackColor = true;
+            // 
             // chkEditBiography
             // 
             this.chkEditBiography.AutoSize = true;
-            this.chkEditBiography.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkEditBiography.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkEditBiography.Location = new System.Drawing.Point(18, 91);
             this.chkEditBiography.Name = "chkEditBiography";
             this.chkEditBiography.Size = new System.Drawing.Size(141, 19);
@@ -716,7 +731,7 @@ namespace XRayBuilderGUI.UI
             // chkPromptAsin
             // 
             this.chkPromptAsin.AutoSize = true;
-            this.chkPromptAsin.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkPromptAsin.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkPromptAsin.Location = new System.Drawing.Point(18, 25);
             this.chkPromptAsin.Name = "chkPromptAsin";
             this.chkPromptAsin.Size = new System.Drawing.Size(127, 19);
@@ -727,7 +742,7 @@ namespace XRayBuilderGUI.UI
             // chkSaveBio
             // 
             this.chkSaveBio.AutoSize = true;
-            this.chkSaveBio.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkSaveBio.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkSaveBio.Location = new System.Drawing.Point(18, 58);
             this.chkSaveBio.Name = "chkSaveBio";
             this.chkSaveBio.Size = new System.Drawing.Size(145, 19);
@@ -743,7 +758,7 @@ namespace XRayBuilderGUI.UI
             this.gbDetails.Controls.Add(this.txtPen);
             this.gbDetails.Controls.Add(this.cmbRegion);
             this.gbDetails.Controls.Add(this.lblPen);
-            this.gbDetails.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.gbDetails.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gbDetails.Location = new System.Drawing.Point(4, 5);
             this.gbDetails.Name = "gbDetails";
             this.gbDetails.Size = new System.Drawing.Size(504, 163);
@@ -754,7 +769,7 @@ namespace XRayBuilderGUI.UI
             // lblReal
             // 
             this.lblReal.AutoSize = true;
-            this.lblReal.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.lblReal.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblReal.Location = new System.Drawing.Point(13, 31);
             this.lblReal.Name = "lblReal";
             this.lblReal.Size = new System.Drawing.Size(65, 15);
@@ -763,7 +778,7 @@ namespace XRayBuilderGUI.UI
             // 
             // txtReal
             // 
-            this.txtReal.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.txtReal.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtReal.Location = new System.Drawing.Point(106, 28);
             this.txtReal.Name = "txtReal";
             this.txtReal.Size = new System.Drawing.Size(380, 23);
@@ -772,7 +787,7 @@ namespace XRayBuilderGUI.UI
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(36, 119);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(47, 15);
@@ -781,7 +796,7 @@ namespace XRayBuilderGUI.UI
             // 
             // txtPen
             // 
-            this.txtPen.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.txtPen.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtPen.Location = new System.Drawing.Point(106, 72);
             this.txtPen.Name = "txtPen";
             this.txtPen.Size = new System.Drawing.Size(380, 23);
@@ -790,7 +805,7 @@ namespace XRayBuilderGUI.UI
             // cmbRegion
             // 
             this.cmbRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbRegion.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.cmbRegion.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmbRegion.FormattingEnabled = true;
             this.cmbRegion.Location = new System.Drawing.Point(106, 116);
             this.cmbRegion.Name = "cmbRegion";
@@ -800,7 +815,7 @@ namespace XRayBuilderGUI.UI
             // lblPen
             // 
             this.lblPen.AutoSize = true;
-            this.lblPen.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.lblPen.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblPen.Location = new System.Drawing.Point(19, 75);
             this.lblPen.Name = "lblPen";
             this.lblPen.Size = new System.Drawing.Size(63, 15);
@@ -824,7 +839,7 @@ namespace XRayBuilderGUI.UI
             this.groupBox1.Controls.Add(this.cmbRoentgenRegion);
             this.groupBox1.Controls.Add(this.pictureBox3);
             this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.groupBox1.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(11, 203);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(504, 75);
@@ -835,7 +850,7 @@ namespace XRayBuilderGUI.UI
             // cmbRoentgenRegion
             // 
             this.cmbRoentgenRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbRoentgenRegion.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.cmbRoentgenRegion.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmbRoentgenRegion.FormattingEnabled = true;
             this.cmbRoentgenRegion.Location = new System.Drawing.Point(19, 28);
             this.cmbRoentgenRegion.Name = "cmbRoentgenRegion";
@@ -844,7 +859,7 @@ namespace XRayBuilderGUI.UI
             // 
             // pictureBox3
             // 
-            this.pictureBox3.Image = ((System.Drawing.Image) (resources.GetObject("pictureBox3.Image")));
+            this.pictureBox3.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox3.Image")));
             this.pictureBox3.Location = new System.Drawing.Point(188, 28);
             this.pictureBox3.Name = "pictureBox3";
             this.pictureBox3.Size = new System.Drawing.Size(16, 16);
@@ -854,8 +869,8 @@ namespace XRayBuilderGUI.UI
             // 
             // label5
             // 
-            this.label5.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
-            this.label5.ForeColor = System.Drawing.Color.FromArgb(((int) (((byte) (40)))), ((int) (((byte) (110)))), ((int) (((byte) (210)))));
+            this.label5.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(110)))), ((int)(((byte)(210)))));
             this.label5.Location = new System.Drawing.Point(208, 23);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(257, 38);
@@ -865,7 +880,7 @@ namespace XRayBuilderGUI.UI
             // groupBox9
             // 
             this.groupBox9.Controls.Add(this.chkIncludeTopics);
-            this.groupBox9.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.groupBox9.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox9.Location = new System.Drawing.Point(11, 134);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Size = new System.Drawing.Size(504, 63);
@@ -876,7 +891,7 @@ namespace XRayBuilderGUI.UI
             // chkIncludeTopics
             // 
             this.chkIncludeTopics.AutoSize = true;
-            this.chkIncludeTopics.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkIncludeTopics.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkIncludeTopics.Location = new System.Drawing.Point(18, 25);
             this.chkIncludeTopics.Name = "chkIncludeTopics";
             this.chkIncludeTopics.Size = new System.Drawing.Size(197, 19);
@@ -891,7 +906,7 @@ namespace XRayBuilderGUI.UI
             this.groupBox7.Controls.Add(this.chkRoentgenAuthorProfile);
             this.groupBox7.Controls.Add(this.chkRoentgenEndActions);
             this.groupBox7.Controls.Add(this.chkRoentgenStartActions);
-            this.groupBox7.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.groupBox7.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox7.Location = new System.Drawing.Point(4, 5);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(504, 129);
@@ -901,7 +916,7 @@ namespace XRayBuilderGUI.UI
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Image = ((System.Drawing.Image) (resources.GetObject("pictureBox2.Image")));
+            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
             this.pictureBox2.Location = new System.Drawing.Point(188, 28);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(16, 16);
@@ -911,19 +926,20 @@ namespace XRayBuilderGUI.UI
             // 
             // label3
             // 
-            this.label3.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
-            this.label3.ForeColor = System.Drawing.Color.FromArgb(((int) (((byte) (40)))), ((int) (((byte) (110)))), ((int) (((byte) (210)))));
+            this.label3.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(110)))), ((int)(((byte)(210)))));
             this.label3.Location = new System.Drawing.Point(208, 23);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(283, 59);
             this.label3.TabIndex = 36;
-            this.label3.Text = "When these settings are enabled, pre-built versions of the files will be download" + "ed if they are available. Requires a valid ASIN.";
+            this.label3.Text = "When these settings are enabled, pre-built versions of the files will be download" +
+    "ed if they are available. Requires a valid ASIN.";
             // 
             // chkRoentgenAuthorProfile
             // 
             this.chkRoentgenAuthorProfile.AutoSize = true;
             this.chkRoentgenAuthorProfile.Enabled = false;
-            this.chkRoentgenAuthorProfile.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkRoentgenAuthorProfile.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkRoentgenAuthorProfile.Location = new System.Drawing.Point(18, 91);
             this.chkRoentgenAuthorProfile.Name = "chkRoentgenAuthorProfile";
             this.chkRoentgenAuthorProfile.Size = new System.Drawing.Size(100, 19);
@@ -934,7 +950,7 @@ namespace XRayBuilderGUI.UI
             // chkRoentgenEndActions
             // 
             this.chkRoentgenEndActions.AutoSize = true;
-            this.chkRoentgenEndActions.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkRoentgenEndActions.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkRoentgenEndActions.Location = new System.Drawing.Point(18, 25);
             this.chkRoentgenEndActions.Name = "chkRoentgenEndActions";
             this.chkRoentgenEndActions.Size = new System.Drawing.Size(89, 19);
@@ -945,7 +961,7 @@ namespace XRayBuilderGUI.UI
             // chkRoentgenStartActions
             // 
             this.chkRoentgenStartActions.AutoSize = true;
-            this.chkRoentgenStartActions.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.chkRoentgenStartActions.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkRoentgenStartActions.Location = new System.Drawing.Point(18, 58);
             this.chkRoentgenStartActions.Name = "chkRoentgenStartActions";
             this.chkRoentgenStartActions.Size = new System.Drawing.Size(93, 19);
@@ -956,7 +972,7 @@ namespace XRayBuilderGUI.UI
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.Location = new System.Drawing.Point(9, 145);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(44, 13);
@@ -969,7 +985,13 @@ namespace XRayBuilderGUI.UI
             this.listSettings.FormattingEnabled = true;
             this.listSettings.IntegralHeight = false;
             this.listSettings.ItemHeight = 20;
-            this.listSettings.Items.AddRange(new object[] {"General", "Directories", "X-Ray", "Extras", "Amazon", "Roentgen"});
+            this.listSettings.Items.AddRange(new object[] {
+            "General",
+            "Directories",
+            "X-Ray",
+            "Extras",
+            "Amazon",
+            "Roentgen"});
             this.listSettings.Location = new System.Drawing.Point(17, 17);
             this.listSettings.Name = "listSettings";
             this.listSettings.Size = new System.Drawing.Size(183, 386);
@@ -977,17 +999,6 @@ namespace XRayBuilderGUI.UI
             this.listSettings.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listSettings_DrawItem);
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
-            // 
-            // chkEditDescription
-            // 
-            this.chkEditDescription.AutoSize = true;
-            this.chkEditDescription.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkEditDescription.Location = new System.Drawing.Point(18, 124);
-            this.chkEditDescription.Name = "chkEditDescription";
-            this.chkEditDescription.Size = new System.Drawing.Size(173, 24);
-            this.chkEditDescription.TabIndex = 32;
-            this.chkEditDescription.Text = "Edit book description";
-            this.chkEditDescription.UseVisualStyleBackColor = true;
             // 
             // frmSettings
             // 
@@ -1001,9 +1012,9 @@ namespace XRayBuilderGUI.UI
             this.Controls.Add(this.btnClearLogs);
             this.Controls.Add(this.btnLogs);
             this.Controls.Add(this.btnSave);
-            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon) (resources.GetObject("$this.Icon")));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -1016,11 +1027,12 @@ namespace XRayBuilderGUI.UI
             this.tabSettings.ResumeLayout(false);
             this.tabPgGeneral.ResumeLayout(false);
             this.cbLanguage.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
             this.gbProcess.ResumeLayout(false);
             this.gbProcess.PerformLayout();
             this.gbUnpack.ResumeLayout(false);
             this.gbUnpack.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize) (this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.gbGeneral.ResumeLayout(false);
             this.gbGeneral.PerformLayout();
             this.tabPgDirectories.ResumeLayout(false);
@@ -1029,7 +1041,6 @@ namespace XRayBuilderGUI.UI
             this.gbDirectories.ResumeLayout(false);
             this.gbDirectories.PerformLayout();
             this.tabPgXray.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox3.ResumeLayout(false);
@@ -1050,13 +1061,14 @@ namespace XRayBuilderGUI.UI
             this.gbDetails.PerformLayout();
             this.tabPgRoentgen.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize) (this.pictureBox3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             this.groupBox9.ResumeLayout(false);
             this.groupBox9.PerformLayout();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize) (this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
+
         }
 
         private System.Windows.Forms.GroupBox cbLanguage;

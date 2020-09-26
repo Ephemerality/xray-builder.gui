@@ -877,6 +877,24 @@ namespace XRayBuilderGUI.UI
             txtGoodreads.Size = new Size(groupBox1.Width - txtGoodreads.Location.X - 12, txtGoodreads.Size.Height);
         }
 
+        private void SetSelectedDatasource()
+        {
+            if (rdoGoodreads.Checked)
+            {
+                btnDownloadTerms.ToolTipText = $"Save {_dataSource.Name} terms to an XML file.";
+                btnXraySource.Image = Resources.source_internet;
+            }
+            else if (rdoRoentgen.Checked)
+            {
+                btnDownloadTerms.ToolTipText = "Save Roentgen terms to an XML file.";
+                btnXraySource.Image = Resources.source_roentgen;
+            }
+            else if(rdoFile.Checked)
+            {
+                btnXraySource.Image = Resources.source_file;
+            }
+        }
+
         private void SetDatasourceLabels()
         {
             // todo: use enum directly for setting - consider passing enum vs datasource
@@ -894,6 +912,7 @@ namespace XRayBuilderGUI.UI
             btnSearchGoodreads.ToolTipText = _dataSource.SearchEnabled
                 ? $"Try to search for this book on {_dataSource.Name}."
                 : $"Search is disabled when {_dataSource.Name} is selected as a data source.";
+            SetSelectedDatasource();
         }
 
         private void frmMain_DragDrop(object sender, DragEventArgs e)

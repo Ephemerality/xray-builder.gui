@@ -268,6 +268,8 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                             bookBag.Add(book);
                             progress?.Add(1);
                         }, cancellationToken);
+                    progress?.Set(0, 0);
+                    _logger.Log("Metadata gathering complete!");
                 }
                 catch (Exception ex)
                 {

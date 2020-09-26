@@ -18,7 +18,6 @@ using XRayBuilder.Core.Libraries.Primitives.Extensions;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Model;
 using XRayBuilder.Core.Unpack;
-using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilder.Core.Extras.EndActions
 {
@@ -80,6 +79,41 @@ namespace XRayBuilder.Core.Extras.EndActions
             {
                 _logger.Log($"An error occurred parsing Amazon info: {ex.Message}");
                 return null;
+            }
+
+            string ReadDesc(string file)
+            {
+                try
+                {
+                    var fileText = Functions.ReadFromFile(file);
+
+                    if (string.IsNullOrEmpty(fileText))
+                        _logger.Log($"Found description file, but it is empty!\r\n{file}");
+                    if (!string.Equals(curBook.Description, fileText))
+                        _logger.Log($"Using biography from {file}.");
+
+                    return fileText;
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log($"An error occurred while opening {file}\r\n{ex.Message}\r\n{ex.StackTrace}");
+                }
+
+                return null;
+            }
+
+            var descFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory ?? Environment.CurrentDirectory, "ext", $"{curBook.Asin}.desc");
+            if (settings.EditDescription)
+            {
+                if (!File.Exists(descFile) || new FileInfo(descFile).Length == 0)
+#if NETFRAMEWORK
+                    File.WriteAllText(descFile, curBook.Description);
+#else
+                    await File.WriteAllTextAsync(descFile, curBook.Description, cancellationToken);
+#endif
+                _logger.Log("Displaying book description for editing...");
+                Functions.RunNotepad(descFile);
+                curBook.Description = ReadDesc(descFile);
             }
 
             try

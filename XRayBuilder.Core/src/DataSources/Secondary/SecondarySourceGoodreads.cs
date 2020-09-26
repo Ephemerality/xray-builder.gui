@@ -180,7 +180,10 @@ namespace XRayBuilder.Core.DataSources.Secondary
                     return null;
                 var asin = await SearchBookASINById(goodreadsId, cancellationToken).ConfigureAwait(false);
                 var author = bookNode.SelectSingleNode(".//span[@itemprop='author']//a")?.InnerText.Trim() ?? "";
-                return new BookInfo(title, author, asin);
+                return new BookInfo(title, author, asin)
+                {
+                    GoodreadsId = goodreadsId
+                };
             }
 
             foreach (var bookNode in bookNodes)

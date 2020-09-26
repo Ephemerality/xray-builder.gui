@@ -6,18 +6,22 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using XRayBuilder.Core.Libraries.Enumerables.Extensions;
+using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI.UI
 {
     public partial class frmSettings : Form
     {
         // TODO: Should be elsewhere maybe
-        private readonly Dictionary<string, string> regionTLDs = new Dictionary<string, string> {
+        private readonly Dictionary<string, string> regionTLDs = new Dictionary<string, string>
+        {
             { "Australia", "com.au" }, { "Brazil", "com.br" }, { "Canada", "ca" }, { "China", "cn" },
             { "France", "fr" }, { "Germany", "de" }, { "India", "in" }, { "Italy", "it" }, { "Japan", "co.jp" },
             { "Mexico", "com.mx" }, { "Netherlands", "nl" }, { "Spain", "es" }, { "USA", "com" }, { "UK", "co.uk" }
         };
-        private readonly Dictionary<string, string> roentgenRegionTLDs = new Dictionary<string, string> {
+
+        private readonly Dictionary<string, string> roentgenRegionTLDs = new Dictionary<string, string>
+        {
             { "Germany", "de" }, { "USA", "com" }
         };
 
@@ -44,7 +48,7 @@ namespace XRayBuilderGUI.UI
             get
             {
                 var cp = base.CreateParams;
-                cp.ExStyle |= 0x02000000;  // Turn on WS_EX_COMPOSITED
+                cp.ExStyle |= 0x02000000; // Turn on WS_EX_COMPOSITED
                 return cp;
             }
         }
@@ -53,81 +57,58 @@ namespace XRayBuilderGUI.UI
         {
             listSettings.SelectedIndex = 0;
 
-            if (Directory.Exists(Environment.CurrentDirectory + @"\log"))
+            // todo log directory responsibility should be elsewhere
+            if (Directory.Exists($@"{Environment.CurrentDirectory}\log"))
             {
-                var fileCount = Directory.GetFiles(Environment.CurrentDirectory + @"\log").Length;
+                var fileCount = Directory.GetFiles($@"{Environment.CurrentDirectory}\log").Length;
                 if (fileCount > 0)
-                {
-                    btnClearLogs.Text = string.Format("Clear Logs ({0})", fileCount);
-                }
+                    btnClearLogs.Text = $"Clear Logs ({fileCount})";
                 else
-                {
                     btnClearLogs.Enabled = false;
-                }
             }
-            txtOut.Text = Properties.Settings.Default.outDir;
-            chkRaw.Checked = Properties.Settings.Default.saverawml;
-            chkSoftHyphen.Checked = Properties.Settings.Default.ignoresofthyphen;
-            chkUseNew.Checked = Properties.Settings.Default.useNewVersion;
-            chkAndroid.Checked = Properties.Settings.Default.android;
-            txtReal.Text = Properties.Settings.Default.realName;
-            txtPen.Text = Properties.Settings.Default.penName;
-            chkEnableEdit.Checked = Properties.Settings.Default.enableEdit;
-            chkSubDirectories.Checked = Properties.Settings.Default.useSubDirectories;
-            chkSkipNoLikes.Checked = Properties.Settings.Default.skipNoLikes;
-            txtMinClipLen.Text = Properties.Settings.Default.minClipLen.ToString();
-            chkAlias.Checked = Properties.Settings.Default.overwriteAliases;
-            chkChapters.Checked = Properties.Settings.Default.overwriteChapters;
-            chkSplitAliases.Checked = Properties.Settings.Default.splitAliases;
-            chkSound.Checked = Properties.Settings.Default.playSound;
-            chkDownloadAliases.Checked = Properties.Settings.Default.downloadAliases;
-            chkPageCount.Checked = Properties.Settings.Default.pageCount;
-            chkSaveBio.Checked = Properties.Settings.Default.saveBio;
-            chkOverwriteAP.Checked = Properties.Settings.Default.overwriteAP;
-            chkOverwriteEA.Checked = Properties.Settings.Default.overwriteEA;
-            chkOverwriteSA.Checked = Properties.Settings.Default.overwriteSA;
-            chkAutoBuildAP.Checked = Properties.Settings.Default.autoBuildAP;
-            chkPromptAsin.Checked = Properties.Settings.Default.promptASIN;
-            chkEditBiography.Checked = Properties.Settings.Default.editBiography;
-            chkUseSidecar.Checked = Properties.Settings.Default.outputToSidecar;
-            cmbSecondaryDataSource.Text = Properties.Settings.Default.dataSource;
+            txtOut.Text = Settings.Default.outDir;
+            chkRaw.Checked = Settings.Default.saverawml;
+            chkSoftHyphen.Checked = Settings.Default.ignoresofthyphen;
+            chkUseNew.Checked = Settings.Default.useNewVersion;
+            chkAndroid.Checked = Settings.Default.android;
+            txtReal.Text = Settings.Default.realName;
+            txtPen.Text = Settings.Default.penName;
+            chkEnableEdit.Checked = Settings.Default.enableEdit;
+            chkSubDirectories.Checked = Settings.Default.useSubDirectories;
+            chkSkipNoLikes.Checked = Settings.Default.skipNoLikes;
+            txtMinClipLen.Text = Settings.Default.minClipLen.ToString();
+            chkAlias.Checked = Settings.Default.overwriteAliases;
+            chkChapters.Checked = Settings.Default.overwriteChapters;
+            chkSplitAliases.Checked = Settings.Default.splitAliases;
+            chkSound.Checked = Settings.Default.playSound;
+            chkDownloadAliases.Checked = Settings.Default.downloadAliases;
+            chkPageCount.Checked = Settings.Default.pageCount;
+            chkSaveBio.Checked = Settings.Default.saveBio;
+            chkOverwriteAP.Checked = Settings.Default.overwriteAP;
+            chkOverwriteEA.Checked = Settings.Default.overwriteEA;
+            chkOverwriteSA.Checked = Settings.Default.overwriteSA;
+            chkAutoBuildAP.Checked = Settings.Default.autoBuildAP;
+            chkPromptAsin.Checked = Settings.Default.promptASIN;
+            chkEditBiography.Checked = Settings.Default.editBiography;
+            chkUseSidecar.Checked = Settings.Default.outputToSidecar;
+            cmbSecondaryDataSource.Text = Settings.Default.dataSource;
 
-            chkRoentgenStartActions.Checked = Properties.Settings.Default.downloadSA;
-            chkRoentgenEndActions.Checked = Properties.Settings.Default.downloadEA;
-            chkRoentgenAuthorProfile.Checked = Properties.Settings.Default.downloadAP;
+            chkRoentgenStartActions.Checked = Settings.Default.downloadSA;
+            chkRoentgenEndActions.Checked = Settings.Default.downloadEA;
+            chkRoentgenAuthorProfile.Checked = Settings.Default.downloadAP;
 
-            chkIncludeTopics.Checked = Properties.Settings.Default.includeTopics;
+            chkIncludeTopics.Checked = Settings.Default.includeTopics;
 
-            // Added \r\n to show smaller tooltips
             var toolTip1 = new ToolTip();
-            toolTip1.SetToolTip(chkRaw,
-                "Save the rawML (raw markup) of the book\r\nin the output directory so you can review it.");
-            toolTip1.SetToolTip(chkSoftHyphen,
-                "Ignore soft hyphens (Unicode U+00AD)\r\n" +
-                "while searching for terms. This may\r\n" +
-                "slow down the parsing process slightly.");
-            toolTip1.SetToolTip(chkUseNew,
-                "Write the X-Ray file in the new format for\r\n" +
-                "Paperwhite 2 or Voyage firmware 5.6+. If\r\n" +
-                "you have one of these devices but this\r\n" +
-                "does not work, try the old format.");
-            toolTip1.SetToolTip(chkAndroid,
-                "Changes the naming convention of the X-Ray file\r\n"+
-                "for the Android Kindle app. Forces building with\r\n" +
-                "the new format. Files will be placed in the output\r\n" +
-                "directory within the 'Android' folder.");
-            toolTip1.SetToolTip(chkSkipNoLikes, "Skip notable clips with no likes.\r\n" +
-                                                "Good for filtering out garbage quotes from Goodreads.");
-            toolTip1.SetToolTip(txtMinClipLen, "Minimum length for notable clips.\r\n" +
-                                               "Good for filtering out garbage quotes from Goodreads.");
-            toolTip1.SetToolTip(txtReal, "Required during the EndActions.data file\r\n" +
-                                         "creation. This information allows you to\r\n" +
-                                         "rate this book on Amazon.");
-            toolTip1.SetToolTip(txtPen, "Required during the EndActions.data file\r\n" +
-                                        "creation. This information allows you to\r\n" +
-                                        "rate this book on Amazon.");
-            toolTip1.SetToolTip(chkEnableEdit,
-                "Open Notepad to enable editing of detected Chapters\r\nand Aliases before final X-Ray creation.");
+            toolTip1.SetToolTip(chkRaw, "Save the rawML (raw markup) of the book\r\nin the output directory so you can review it.");
+            toolTip1.SetToolTip(chkSoftHyphen, "Ignore soft hyphens (Unicode U+00AD)\r\nwhile searching for terms. This may\r\nslow down the parsing process slightly.");
+            toolTip1.SetToolTip(chkUseNew, "Write the X-Ray file in the new format for\r\nPaperwhite 2 or Voyage firmware 5.6+. If\r\nyou have one of these devices but this\r\ndoes not work, try the old format.");
+            toolTip1.SetToolTip(chkAndroid, "Changes the naming convention of the X-Ray file\r\nfor the Android Kindle app. Forces building with\r\nthe new format. Files will be placed in the output\r\ndirectory within the 'Android' folder.");
+            toolTip1.SetToolTip(chkSkipNoLikes, "Skip notable clips with no likes.\r\nGood for filtering out garbage quotes from Goodreads.");
+            toolTip1.SetToolTip(txtMinClipLen, "Minimum length for notable clips.\r\nGood for filtering out garbage quotes from Goodreads.");
+            toolTip1.SetToolTip(txtReal, "Required during the EndActions.data file\r\ncreation. This information allows you to\r\nrate this book on Amazon.");
+            toolTip1.SetToolTip(txtPen, "Required during the EndActions.data file\r\ncreation. This information allows you to\r\nrate this book on Amazon.");
+            toolTip1.SetToolTip(chkEnableEdit, "Open Notepad to enable editing of detected Chapters\r\nand Aliases before final X-Ray creation.");
             toolTip1.SetToolTip(chkSubDirectories, "Save generated files to an\r\n\"Author\\Filename\" subdirectory.");
             toolTip1.SetToolTip(chkUseSidecar, "Save generated files to a sidecar subdirectory based on the filename.");
             toolTip1.SetToolTip(btnLogs, "Open the log files directory.");
@@ -136,31 +117,15 @@ namespace XRayBuilderGUI.UI
             toolTip1.SetToolTip(chkOverwriteSA, "Overwrite existing Start Actions files.");
             toolTip1.SetToolTip(chkAlias, "Overwrite existing alias files.");
             toolTip1.SetToolTip(chkChapters, "Overwrite existing chapter files.");
-            toolTip1.SetToolTip(chkSplitAliases, "Automatically split character names\r\n" +
-                "into aliases. This can have undesired\r\n" +
-                "consequences, so use with caution!!!");
-            toolTip1.SetToolTip(chkSound, "Play a sound after generating the Author\r\n" +
-                                        "Profile, End Action and Start Action\r\n" +
-                                        "files, or after generating an X-Ray file.");
-            toolTip1.SetToolTip(chkDownloadAliases, "Attempt to download pre-made aliases if none exist\r\n" +
-                                                    "locally yet. If \"Overwrite aliases\" is enabled, local\r\n" +
-                                                    "aliases will be overwritten with the ones downloaded.");
-            toolTip1.SetToolTip(btnSupport, "Visit the MobileRead forum for\r\n" +
-                                        "support, bug reports, or questions.");
-            toolTip1.SetToolTip(chkPageCount, "Try to estimate books page count (based\r\n" +
-                                              "on user_none accurate APNX generation).\r\n" +
-                                              "If no page count is found online, an\r\n" +
-                                              "estimation will be used.");
+            toolTip1.SetToolTip(chkSplitAliases, "Automatically split character names\r\ninto aliases. This can have undesired\r\nconsequences, so use with caution!!!");
+            toolTip1.SetToolTip(chkSound, "Play a sound after generating the Author\r\nProfile, End Action and Start Action\r\nfiles, or after generating an X-Ray file.");
+            toolTip1.SetToolTip(chkDownloadAliases, "Attempt to download pre-made aliases if none exist\r\nlocally yet. If \"Overwrite aliases\" is enabled, local\r\naliases will be overwritten with the ones downloaded.");
+            toolTip1.SetToolTip(btnSupport, "Visit the MobileRead forum for\r\nsupport, bug reports, or questions.");
+            toolTip1.SetToolTip(chkPageCount, "Try to estimate books page count (based\r\non user_none accurate APNX generation).\r\nIf no page count is found online, an\r\nestimation will be used.");
             toolTip1.SetToolTip(cmbSecondaryDataSource, "Determines from which non-Amazon source terms and metadata will be downloaded.");
-            toolTip1.SetToolTip(chkSaveBio, "If checked, author biographies will be saved to the \\ext folder\r\n" +
-                                            "and opened in Notepad before continuing to build Author Profiles.\r\n" +
-                                            "Must be enabled for a saved biography to be loaded.");
-            toolTip1.SetToolTip(cmbRegion, "Default Amazon page to search.\r\n" +
-                                            "If no results are found, Amazom.com (USA) will be used.");
-            toolTip1.SetToolTip(chkPromptAsin, "Allow ASIN entry if the next or previous book\r\n" +
-                                               "in a series cannot automatically be found.\r\n" +
-                                               "This is useful if you have the metadata available\r\n" +
-                                               "in Calibre, and may help file creation.");
+            toolTip1.SetToolTip(chkSaveBio, "If checked, author biographies will be saved to the \\ext folder\r\nand opened in Notepad before continuing to build Author Profiles.\r\nMust be enabled for a saved biography to be loaded.");
+            toolTip1.SetToolTip(cmbRegion, "Default Amazon page to search.\r\nIf no results are found, Amazom.com (USA) will be used.");
+            toolTip1.SetToolTip(chkPromptAsin, "Allow ASIN entry if the next or previous book\r\nin a series cannot automatically be found.\r\nin Calibre, and may help file creation.This is useful if you have the metadata available\r\n");
             toolTip1.SetToolTip(chkEditBiography, "If enabled, allows editing the Author's biography before it's used.");
             toolTip1.SetToolTip(chkAutoBuildAP, "When set, the Author Profile will be built using a downloaded End Actions file instead of scraping Amazon, if one is available.");
             toolTip1.SetToolTip(chkIncludeTopics, "When downloading terms, include any that are non-characters (topics, locations, etc)");
@@ -171,7 +136,7 @@ namespace XRayBuilderGUI.UI
             cmbRegion.DataSource = regions;
             cmbRegion.DisplayMember = "Name";
             cmbRegion.ValueMember = "TLD";
-            cmbRegion.SelectedValue = Properties.Settings.Default.amazonTLD;
+            cmbRegion.SelectedValue = Settings.Default.amazonTLD;
 
             var roentgenRegions = roentgenRegionTLDs
                 .Select(kvp => new AmazonRegion(kvp.Key, kvp.Value))
@@ -179,7 +144,7 @@ namespace XRayBuilderGUI.UI
             cmbRoentgenRegion.DataSource = roentgenRegions;
             cmbRoentgenRegion.DisplayMember = "Name";
             cmbRoentgenRegion.ValueMember = "TLD";
-            cmbRoentgenRegion.SelectedValue = Properties.Settings.Default.roentgenRegion;
+            cmbRoentgenRegion.SelectedValue = Settings.Default.roentgenRegion;
         }
 
         private void btnBrowseOut_Click(object sender, EventArgs e)
@@ -199,39 +164,39 @@ namespace XRayBuilderGUI.UI
                 return;
             }
 
-            Properties.Settings.Default.outDir = txtOut.Text;
-            Properties.Settings.Default.saverawml = chkRaw.Checked;
-            Properties.Settings.Default.ignoresofthyphen = chkSoftHyphen.Checked;
-            Properties.Settings.Default.useNewVersion = chkUseNew.Checked;
-            Properties.Settings.Default.android = chkAndroid.Checked;
-            Properties.Settings.Default.skipNoLikes = chkSkipNoLikes.Checked;
-            Properties.Settings.Default.minClipLen = minClipLen;
-            Properties.Settings.Default.realName = txtReal.Text;
-            Properties.Settings.Default.penName = txtPen.Text;
-            Properties.Settings.Default.enableEdit = chkEnableEdit.Checked;
-            Properties.Settings.Default.useSubDirectories = chkSubDirectories.Checked;
-            Properties.Settings.Default.overwriteAP = chkOverwriteAP.Checked;
-            Properties.Settings.Default.overwriteEA = chkOverwriteEA.Checked;
-            Properties.Settings.Default.overwriteSA = chkOverwriteSA.Checked;
-            Properties.Settings.Default.overwriteAliases = chkAlias.Checked;
-            Properties.Settings.Default.overwriteChapters = chkChapters.Checked;
-            Properties.Settings.Default.autoBuildAP = chkAutoBuildAP.Checked;
-            Properties.Settings.Default.splitAliases = chkSplitAliases.Checked;
-            Properties.Settings.Default.playSound = chkSound.Checked;
-            Properties.Settings.Default.downloadAliases = chkDownloadAliases.Checked;
-            Properties.Settings.Default.pageCount = chkPageCount.Checked;
-            Properties.Settings.Default.saveBio = chkSaveBio.Checked;
-            Properties.Settings.Default.amazonTLD = cmbRegion.SelectedValue.ToString();
-            Properties.Settings.Default.dataSource = cmbSecondaryDataSource.Text;
-            Properties.Settings.Default.promptASIN = chkPromptAsin.Checked;
-            Properties.Settings.Default.editBiography = chkEditBiography.Checked;
-            Properties.Settings.Default.outputToSidecar = chkUseSidecar.Checked;
-            Properties.Settings.Default.downloadSA = chkRoentgenStartActions.Checked;
-            Properties.Settings.Default.downloadEA = chkRoentgenEndActions.Checked;
-            Properties.Settings.Default.downloadAP = chkRoentgenAuthorProfile.Checked;
-            Properties.Settings.Default.roentgenRegion = cmbRoentgenRegion.SelectedValue.ToString();
-            Properties.Settings.Default.includeTopics = chkIncludeTopics.Checked;
-            Properties.Settings.Default.Save();
+            Settings.Default.outDir = txtOut.Text;
+            Settings.Default.saverawml = chkRaw.Checked;
+            Settings.Default.ignoresofthyphen = chkSoftHyphen.Checked;
+            Settings.Default.useNewVersion = chkUseNew.Checked;
+            Settings.Default.android = chkAndroid.Checked;
+            Settings.Default.skipNoLikes = chkSkipNoLikes.Checked;
+            Settings.Default.minClipLen = minClipLen;
+            Settings.Default.realName = txtReal.Text;
+            Settings.Default.penName = txtPen.Text;
+            Settings.Default.enableEdit = chkEnableEdit.Checked;
+            Settings.Default.useSubDirectories = chkSubDirectories.Checked;
+            Settings.Default.overwriteAP = chkOverwriteAP.Checked;
+            Settings.Default.overwriteEA = chkOverwriteEA.Checked;
+            Settings.Default.overwriteSA = chkOverwriteSA.Checked;
+            Settings.Default.overwriteAliases = chkAlias.Checked;
+            Settings.Default.overwriteChapters = chkChapters.Checked;
+            Settings.Default.autoBuildAP = chkAutoBuildAP.Checked;
+            Settings.Default.splitAliases = chkSplitAliases.Checked;
+            Settings.Default.playSound = chkSound.Checked;
+            Settings.Default.downloadAliases = chkDownloadAliases.Checked;
+            Settings.Default.pageCount = chkPageCount.Checked;
+            Settings.Default.saveBio = chkSaveBio.Checked;
+            Settings.Default.amazonTLD = cmbRegion.SelectedValue.ToString();
+            Settings.Default.dataSource = cmbSecondaryDataSource.Text;
+            Settings.Default.promptASIN = chkPromptAsin.Checked;
+            Settings.Default.editBiography = chkEditBiography.Checked;
+            Settings.Default.outputToSidecar = chkUseSidecar.Checked;
+            Settings.Default.downloadSA = chkRoentgenStartActions.Checked;
+            Settings.Default.downloadEA = chkRoentgenEndActions.Checked;
+            Settings.Default.downloadAP = chkRoentgenAuthorProfile.Checked;
+            Settings.Default.roentgenRegion = cmbRoentgenRegion.SelectedValue.ToString();
+            Settings.Default.includeTopics = chkIncludeTopics.Checked;
+            Settings.Default.Save();
 
             Close();
         }
@@ -268,8 +233,8 @@ namespace XRayBuilderGUI.UI
                 MessageBox.Show("Log directory does not exist.", "Logs Directory Not found");
                 return;
             }
-            else
-                TopMost = false;
+
+            TopMost = false;
             Process.Start(Environment.CurrentDirectory + @"\log");
         }
 
@@ -316,16 +281,8 @@ namespace XRayBuilderGUI.UI
             e.DrawBackground();
             e.DrawFocusRectangle();
 
-            if ((e.State & DrawItemState.Selected) == DrawItemState.Selected)
-            {
-                e.Graphics.DrawString(listSettings.Items[e.Index].ToString(),
-                    Font, Brushes.White, e.Bounds.X + 3, e.Bounds.Y + 3);
-            }
-            else
-            {
-                e.Graphics.DrawString(listSettings.Items[e.Index].ToString(),
-                    Font, Brushes.Black, e.Bounds.X + 3, e.Bounds.Y + 3);
-            }
+            var brush = (e.State & DrawItemState.Selected) != 0 ? Brushes.White : Brushes.Black;
+            e.Graphics.DrawString(listSettings.Items[e.Index].ToString(), Font, brush, e.Bounds.X + 3, e.Bounds.Y + 3);
         }
 
         private void listSettings_MeasureItem(object sender, MeasureItemEventArgs e)

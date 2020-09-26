@@ -93,9 +93,9 @@
             // 
             this.btnFollow.Image = ((System.Drawing.Image)(resources.GetObject("btnFollow.Image")));
             this.btnFollow.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnFollow.Location = new System.Drawing.Point(297, 137);
+            this.btnFollow.Location = new System.Drawing.Point(313, 139);
             this.btnFollow.Name = "btnFollow";
-            this.btnFollow.Size = new System.Drawing.Size(100, 34);
+            this.btnFollow.Size = new System.Drawing.Size(83, 30);
             this.btnFollow.TabIndex = 82;
             this.btnFollow.Text = "Follow ";
             this.btnFollow.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -155,7 +155,8 @@
             // 
             // pbRating
             // 
-            this.pbRating.Location = new System.Drawing.Point(199, 14);
+            this.pbRating.Image = global::XRayBuilderGUI.Properties.Resources.STAR0;
+            this.pbRating.Location = new System.Drawing.Point(192, 15);
             this.pbRating.Name = "pbRating";
             this.pbRating.Size = new System.Drawing.Size(80, 16);
             this.pbRating.TabIndex = 76;
@@ -216,7 +217,7 @@
             this.lblAuthorRecs.Name = "lblAuthorRecs";
             this.lblAuthorRecs.Size = new System.Drawing.Size(383, 20);
             this.lblAuthorRecs.TabIndex = 70;
-            this.lblAuthorRecs.Text = "More by [Author]";
+            this.lblAuthorRecs.Text = "More by Author";
             this.lblAuthorRecs.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pbNextCover

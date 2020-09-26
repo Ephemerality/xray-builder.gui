@@ -86,7 +86,7 @@ namespace XRayBuilderGUI.UI.Preview
                 lblAuthor.Text = bookDescription.Authors.FirstOrDefault() ?? "";
                 lblDescription.Text = bookDescription.Description;
                 if (bookDescription.AmazonRating.HasValue)
-                    pbRating.Image = (Image)Resources.ResourceManager.GetObject($"STAR{bookDescription.AmazonRating:0}");
+                    pbRating.Image = (Image)Resources.ResourceManager.GetObject($"STAR{Math.Floor((decimal) bookDescription.AmazonRating)}");
                 lblVotes.Text = $@"({PluralUtil.Pluralize($"{bookDescription.NumberOfReviews ?? 0:vote}")})";
             }
 

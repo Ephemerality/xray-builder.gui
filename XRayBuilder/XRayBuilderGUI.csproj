@@ -93,6 +93,11 @@
   </Choose>
 
   <ItemGroup>
+    <Compile Update="src\Localization\Main\MainStrings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MainStrings.resx</DependentUpon>
+    </Compile>
     <Compile Update="src\UI\frmAbout.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -185,6 +190,11 @@
     <None Include="Resources\STAR2.png" />
     <None Include="Resources\STAR1.png" />
     <None Include="Resources\STAR0.png" />
+    <EmbeddedResource Update="src\Localization\Main\MainStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MainStrings.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>XRayBuilderGUI.Localization.Main</CustomToolNamespace>
+    </EmbeddedResource>
     <EmbeddedResource Update="src\UI\frmAbout.resx">
       <DependentUpon>frmAbout.cs</DependentUpon>
     </EmbeddedResource>

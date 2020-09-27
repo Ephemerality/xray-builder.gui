@@ -36,6 +36,7 @@ using XRayBuilder.Core.XRay.Logic.Terms;
 using XRayBuilder.Core.XRay.Model.Export;
 using XRayBuilder.Core.XRay.Util;
 using XRayBuilderGUI.Properties;
+using XRayBuilderGUI.Localization.Main;
 using XRayBuilderGUI.UI.Preview.Model;
 
 namespace XRayBuilderGUI.UI
@@ -150,7 +151,7 @@ namespace XRayBuilderGUI.UI
         private void btnBrowseOutput_Click(object sender, EventArgs e)
         {
             if (!Directory.Exists(_settings.outDir))
-                MessageBox.Show(@"Specified output directory does not exist. Please review the settings page.", @"Output Directory Not found");
+                MessageBox.Show(MainStrings.OutputDirNotFoundReviewSettings, MainStrings.OutputDirNotFoundTitle);
             else
                 Process.Start(_settings.outDir);
         }
@@ -169,7 +170,7 @@ namespace XRayBuilderGUI.UI
 
         private async Task<IMetadata> GetAndValidateMetadataAsync(string mobiFile, bool saveRawMl, CancellationToken cancellationToken)
         {
-            _logger.Log("Extracting metadata...");
+            _logger.Log(MainStrings.ExtractingMetadata);
             try
             {
                 var metadata = MetadataLoader.Load(mobiFile);
@@ -185,7 +186,7 @@ namespace XRayBuilderGUI.UI
 
                 if (!Settings.Default.useNewVersion && metadata.DbName.Length == 31)
                 {
-                    MessageBox.Show($"WARNING: Database Name is the maximum length. If \"{metadata.DbName}\" is the full book title, this should not be an issue.\r\nIf the title is supposed to be longer than that, you may get an error on your Kindle (WG on firmware < 5.6).\r\nThis can be resolved by either shortening the title in Calibre or manually changing the database name.\r\n");
+                    MessageBox.Show(string.Format(MainStrings.DatabaseNameLengthWarning, metadata.DbName));
                 }
 
                 if (saveRawMl && metadata.RawMlSupported)

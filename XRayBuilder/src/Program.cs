@@ -13,6 +13,8 @@ using XRayBuilder.Core.Libraries.SimpleInjector.Extensions;
 using XRayBuilder.Core.Model.Exceptions;
 using XRayBuilder.Core.XRay.Bootstrap;
 using XRayBuilderGUI.Config;
+using XRayBuilderGUI.Localization;
+using XRayBuilderGUI.Localization.Main;
 using XRayBuilderGUI.UI;
 using XRayBuilderGUI.UI.Bootstrap;
 
@@ -37,7 +39,7 @@ namespace XRayBuilderGUI
             // SimpleInjector verification throws an InvalidOperationException with an ActivationException that contains the actual exception
             catch (InvalidOperationException e) when (e.InnerException?.InnerException is InitializationException iEx)
             {
-                MessageBox.Show($"Failed to initialize the application:\r\n{iEx.Message}");
+                MessageBox.Show(string.Format(MainStrings.InitializeFailed, iEx.Message));
             }
             Application.Run(_container.GetInstance<frmMain>());
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -15,7 +16,7 @@ namespace XRayBuilderGUI.UI
             return f.ShowDialog() == DialogResult.OK ? f.SelectedPath : defaultFolder;
         }
 
-        public static string GetFile(string title, string defaultFile, string filter = "All files (*.*)|*.*", string initialDir = "")
+        public static string GetFile([Localizable(true)] string title, string defaultFile, string filter = "All files (*.*)|*.*", string initialDir = "")
         {
             using var f = new OpenFileDialog
             {

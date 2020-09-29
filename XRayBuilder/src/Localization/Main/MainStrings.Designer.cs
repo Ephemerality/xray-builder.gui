@@ -61,6 +61,303 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Aliases.
+        /// </summary>
+        internal static string Aliases {
+            get {
+                return ResourceManager.GetString("Aliases", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Aliases file not found..
+        /// </summary>
+        internal static string AliasesFileNotFound {
+            get {
+                return ResourceManager.GetString("AliasesFileNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character aliases read from {0}..
+        /// </summary>
+        internal static string AliasesReadFrom {
+            get {
+                return ResourceManager.GetString("AliasesReadFrom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character aliases read from the XML file..
+        /// </summary>
+        internal static string AliasesReadFromXml {
+            get {
+                return ResourceManager.GetString("AliasesReadFromXml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All extras downloaded/built and none need to be overwritten, stopping here!.
+        /// </summary>
+        internal static string AllExtrasDownloadedStopping {
+            get {
+                return ResourceManager.GetString("AllExtrasDownloadedStopping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All extras files already exist and none of the &quot;&quot;overwrite&quot;&quot; settings are enabled!.
+        /// </summary>
+        internal static string AllExtrasExistNoOverwrite {
+            get {
+                return ResourceManager.GetString("AllExtrasExistNoOverwrite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Amazon Customer Details Not Found.
+        /// </summary>
+        internal static string AmazonCustomerDetailsNotFoundTitle {
+            get {
+                return ResourceManager.GetString("AmazonCustomerDetailsNotFoundTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Amazon Search Result.
+        /// </summary>
+        internal static string AmazonSearchResultTitle {
+            get {
+                return ResourceManager.GetString("AmazonSearchResultTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ASIN.
+        /// </summary>
+        internal static string Asin {
+            get {
+                return ResourceManager.GetString("Asin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attempting to build X-Ray....
+        /// </summary>
+        internal static string AttemptingBuildXRay {
+            get {
+                return ResourceManager.GetString("AttemptingBuildXRay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Author.
+        /// </summary>
+        internal static string Author {
+            get {
+                return ResourceManager.GetString("Author", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Author Profile.
+        /// </summary>
+        internal static string AuthorProfile {
+            get {
+                return ResourceManager.GetString("AuthorProfile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Author Profile file created successfully!.
+        /// </summary>
+        internal static string AuthorProfileCreated {
+            get {
+                return ResourceManager.GetString("AuthorProfileCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Biography.
+        /// </summary>
+        internal static string Biography {
+            get {
+                return ResourceManager.GetString("Biography", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Book found on {0}!.
+        /// </summary>
+        internal static string BookFoundOnSource {
+            get {
+                return ResourceManager.GetString("BookFoundOnSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Specified book was not found..
+        /// </summary>
+        internal static string BookNotFound {
+            get {
+                return ResourceManager.GetString("BookNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Book Not Found.
+        /// </summary>
+        internal static string BookNotFoundTitle {
+            get {
+                return ResourceManager.GetString("BookNotFoundTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Book&apos;s {0} URL.
+        /// </summary>
+        internal static string BooksSourceUrl {
+            get {
+                return ResourceManager.GetString("BooksSourceUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Build cancelled..
+        /// </summary>
+        internal static string BuildCancelled {
+            get {
+                return ResourceManager.GetString("BuildCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Try to build the Start Actions, Author Profile, and End Actions files for this book..
+        /// </summary>
+        internal static string BuildExtrasTooltip {
+            get {
+                return ResourceManager.GetString("BuildExtrasTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attempting to build Author Profile....
+        /// </summary>
+        internal static string BuildingAuthorProfile {
+            get {
+                return ResourceManager.GetString("BuildingAuthorProfile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Building the old format of X-Ray is not supported with KFX books.
+        /// </summary>
+        internal static string BuildingOldFormatNotSupported {
+            get {
+                return ResourceManager.GetString("BuildingOldFormatNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attempting to build Start and/or End Actions....
+        /// </summary>
+        internal static string BuildingStartEndActions {
+            get {
+                return ResourceManager.GetString("BuildingStartEndActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Built Author Profile from the existing End Actions file!.
+        /// </summary>
+        internal static string BuiltAuthorProfileFromExisting {
+            get {
+                return ResourceManager.GetString("BuiltAuthorProfileFromExisting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancelling....
+        /// </summary>
+        internal static string Cancelling {
+            get {
+                return ResourceManager.GetString("Cancelling", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can&apos;t export terms from an XML/TXT file....
+        /// </summary>
+        internal static string CantExportFromFile {
+            get {
+                return ResourceManager.GetString("CantExportFromFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chapters.
+        /// </summary>
+        internal static string Chapters {
+            get {
+                return ResourceManager.GetString("Chapters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character data has been successfully extracted and saved to {0}.
+        /// </summary>
+        internal static string CharacterDataExtractedSavedToPath {
+            get {
+                return ResourceManager.GetString("CharacterDataExtractedSavedToPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character data has been successfully saved to {0}.
+        /// </summary>
+        internal static string CharacterDataSavedTo {
+            get {
+                return ResourceManager.GetString("CharacterDataSavedTo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configure X-Ray Builder..
+        /// </summary>
+        internal static string ConfigureXRayBuilder {
+            get {
+                return ResourceManager.GetString("ConfigureXRayBuilder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Continuing anyway.
+        /// </summary>
+        internal static string ContinuingAnyway {
+            get {
+                return ResourceManager.GetString("ContinuingAnyway", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create an XML file containing characters and settings, or edit an existing XML file..
+        /// </summary>
+        internal static string CreateXmlTooltip {
+            get {
+                return ResourceManager.GetString("CreateXmlTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database Name.
+        /// </summary>
+        internal static string DatabaseName {
+            get {
+                return ResourceManager.GetString("DatabaseName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to WARNING: Database Name is the maximum length. If &quot;{0}&quot; is the full book title, this should not be an issue.
         ///If the title is supposed to be longer than that, you might get an error on your Kindle (WG on firmware &lt; 5.6).
         ///This can be resolved by either shortening the title in Calibre or manually changing the database name.
@@ -69,6 +366,168 @@ namespace XRayBuilderGUI.Localization.Main {
         internal static string DatabaseNameLengthWarning {
             get {
                 return ResourceManager.GetString("DatabaseNameLengthWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Does this seem correct?.
+        /// </summary>
+        internal static string DoesThisSeemCorrect {
+            get {
+                return ResourceManager.GetString("DoesThisSeemCorrect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download cancelled..
+        /// </summary>
+        internal static string DownloadCancelled {
+            get {
+                return ResourceManager.GetString("DownloadCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download terms from Roentgen if any are available..
+        /// </summary>
+        internal static string DownloadFromRoentgen {
+            get {
+                return ResourceManager.GetString("DownloadFromRoentgen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attempting to download {0} Actions....
+        /// </summary>
+        internal static string DownloadingActions {
+            get {
+                return ResourceManager.GetString("DownloadingActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to End Actions.
+        /// </summary>
+        internal static string EndActions {
+            get {
+                return ResourceManager.GetString("EndActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to End Actions file created successfully!.
+        /// </summary>
+        internal static string EndActionsCreated {
+            get {
+                return ResourceManager.GetString("EndActionsCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error.
+        /// </summary>
+        internal static string Error {
+            get {
+                return ResourceManager.GetString("Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred while building the X-Ray.
+        /// </summary>
+        internal static string ErrorBuildingXRay {
+            get {
+                return ResourceManager.GetString("ErrorBuildingXRay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred while creating the new Author Profile, Start Actions, and/or End Actions files.
+        /// </summary>
+        internal static string ErrorCreatingExtras {
+            get {
+                return ResourceManager.GetString("ErrorCreatingExtras", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred while creating the Start Actions.
+        /// </summary>
+        internal static string ErrorCreatingStartActions {
+            get {
+                return ResourceManager.GetString("ErrorCreatingStartActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred creating the End Actions.
+        /// </summary>
+        internal static string ErrorEndActions {
+            get {
+                return ResourceManager.GetString("ErrorEndActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred while extracting metadata.
+        /// </summary>
+        internal static string ErrorExtractingMetadata {
+            get {
+                return ResourceManager.GetString("ErrorExtractingMetadata", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred while saving the previewData file.
+        /// </summary>
+        internal static string ErrorPreviewData {
+            get {
+                return ResourceManager.GetString("ErrorPreviewData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred while saving character data to XML file at {0}.
+        /// </summary>
+        internal static string ErrorSavingXml {
+            get {
+                return ResourceManager.GetString("ErrorSavingXml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred while searching.
+        /// </summary>
+        internal static string ErrorSearching {
+            get {
+                return ResourceManager.GetString("ErrorSearching", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred while writing the Author Profile file.
+        /// </summary>
+        internal static string ErrorWritingAuthorProfile {
+            get {
+                return ResourceManager.GetString("ErrorWritingAuthorProfile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exporting terms from {0}....
+        /// </summary>
+        internal static string ExportingTermsFrom {
+            get {
+                return ResourceManager.GetString("ExportingTermsFrom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Extracted to {0}!.
+        /// </summary>
+        internal static string ExtractedToPath {
+            get {
+                return ResourceManager.GetString("ExtractedToPath", resourceCulture);
             }
         }
         
@@ -82,12 +541,341 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to initialize the application:
-        ///{0}.
+        ///   Looks up a localized string similar to Extracting raw markup....
+        /// </summary>
+        internal static string ExtractingRawMl {
+            get {
+                return ResourceManager.GetString("ExtractingRawMl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Extract an existing X-Ray file to an XML file..
+        /// </summary>
+        internal static string ExtractXRayToXml {
+            get {
+                return ResourceManager.GetString("ExtractXRayToXml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to download cover image.
+        /// </summary>
+        internal static string FailedCoverImageDownload {
+            get {
+                return ResourceManager.GetString("FailedCoverImageDownload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to validate/fix ASIN.
+        /// </summary>
+        internal static string FailedToValidateAsin {
+            get {
+                return ResourceManager.GetString("FailedToValidateAsin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Found the following book on Amazon.
+        /// </summary>
+        internal static string FoundBookAmazon {
+            get {
+                return ResourceManager.GetString("FoundBookAmazon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Got metadata!.
+        /// </summary>
+        internal static string GotMetadata {
+            get {
+                return ResourceManager.GetString("GotMetadata", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Help Document Not Found.
+        /// </summary>
+        internal static string HelpDocumentNotFoundTitle {
+            get {
+                return ResourceManager.GetString("HelpDocumentNotFoundTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Incorrect ASIN.
+        /// </summary>
+        internal static string IncorrectAsinTitle {
+            get {
+                return ResourceManager.GetString("IncorrectAsinTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This information allows you to rate this book on Amazon..
+        /// </summary>
+        internal static string InformationAllowsRatingOnAmazon {
+            get {
+                return ResourceManager.GetString("InformationAllowsRatingOnAmazon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to initialize the application.
         /// </summary>
         internal static string InitializeFailed {
             get {
                 return ResourceManager.GetString("InitializeFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initial X-Ray built, adding locations and chapters....
+        /// </summary>
+        internal static string InitialXRayBuiltAddingChapters {
+            get {
+                return ResourceManager.GetString("InitialXRayBuiltAddingChapters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid Amazon ASIN detected: {0}!
+        ///Kindle may not display an X-Ray for this book.
+        ///Do you want to fix it?
+        ///(This will modify the book meaning it will need to be re-copied to your Kindle device)
+        ///THIS FEATURE IS EXPERIMENTAL AND COULD DESTROY YOUR BOOK!.
+        /// </summary>
+        internal static string InvalidAsinShouldFix {
+            get {
+                return ResourceManager.GetString("InvalidAsinShouldFix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid Amazon ASIN detected: {0}!
+        ///Kindle may not display an X-Ray for this book.
+        ///Do you wish to continue?.
+        /// </summary>
+        internal static string InvalidAsinWarning {
+            get {
+                return ResourceManager.GetString("InvalidAsinWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid {0} file..
+        /// </summary>
+        internal static string InvalidKindleFile {
+            get {
+                return ResourceManager.GetString("InvalidKindleFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid or no file selected..
+        /// </summary>
+        internal static string InvalidOrNoFileSelected {
+            get {
+                return ResourceManager.GetString("InvalidOrNoFileSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid {0} link was specified..
+        /// </summary>
+        internal static string InvalidSourceLink {
+            get {
+                return ResourceManager.GetString("InvalidSourceLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid {0} Link.
+        /// </summary>
+        internal static string InvalidSourceLinkTitle {
+            get {
+                return ResourceManager.GetString("InvalidSourceLinkTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid X-Ray file..
+        /// </summary>
+        internal static string InvalidXRayFile {
+            get {
+                return ResourceManager.GetString("InvalidXRayFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loaded existing End Actions from {0}.
+        /// </summary>
+        internal static string LoadedExistingEndActions {
+            get {
+                return ResourceManager.GetString("LoadedExistingEndActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Load terms from the selected file..
+        /// </summary>
+        internal static string LoadTermsFromFile {
+            get {
+                return ResourceManager.GetString("LoadTermsFromFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warning: Multiple results returned from {0}....
+        /// </summary>
+        internal static string MultipleResultsFromSource {
+            get {
+                return ResourceManager.GetString("MultipleResultsFromSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No link was specified..
+        /// </summary>
+        internal static string NoLinkSpecified {
+            get {
+                return ResourceManager.GetString("NoLinkSpecified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing Link.
+        /// </summary>
+        internal static string NoLinkTitle {
+            get {
+                return ResourceManager.GetString("NoLinkTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No pre-made {0} Actions file available, one will be built instead..
+        /// </summary>
+        internal static string NoPremadeActionsAvailable {
+            get {
+                return ResourceManager.GetString("NoPremadeActionsAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No {0} link was specified..
+        /// </summary>
+        internal static string NoSourceLinkSpecified {
+            get {
+                return ResourceManager.GetString("NoSourceLinkSpecified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing {0} Link.
+        /// </summary>
+        internal static string NoSourceLinkTitle {
+            get {
+                return ResourceManager.GetString("NoSourceLinkTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No terms were available. Do you want to continue building anyway?.
+        /// </summary>
+        internal static string NoTermsAvailable {
+            get {
+                return ResourceManager.GetString("NoTermsAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Terms.
+        /// </summary>
+        internal static string NoTermsTitle {
+            get {
+                return ResourceManager.GetString("NoTermsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One Click button to try to build the Start Actions, Author Profile, End Actions, and X-Ray files for this book..
+        /// </summary>
+        internal static string OneClickTooltip {
+            get {
+                return ResourceManager.GetString("OneClickTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Would you like to open the chapters file in notepad for editing?.
+        /// </summary>
+        internal static string OpenChaptersFileNotepad {
+            get {
+                return ResourceManager.GetString("OpenChaptersFileNotepad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is it opened in another program?.
+        /// </summary>
+        internal static string OpenedInAnotherProgram {
+            get {
+                return ResourceManager.GetString("OpenedInAnotherProgram", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Would you like to open the file in notepad for editing?.
+        /// </summary>
+        internal static string OpenInNotepad {
+            get {
+                return ResourceManager.GetString("OpenInNotepad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open a Kindle book..
+        /// </summary>
+        internal static string OpenKindleBook {
+            get {
+                return ResourceManager.GetString("OpenKindleBook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open a Kindle {0} file....
+        /// </summary>
+        internal static string OpenKindleFile {
+            get {
+                return ResourceManager.GetString("OpenKindleFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open the default output directory..
+        /// </summary>
+        internal static string OpenOutputDirectory {
+            get {
+                return ResourceManager.GetString("OpenOutputDirectory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open a supported XML or TXT file containing characters and topics..
+        /// </summary>
+        internal static string OpenXmlOrTxt {
+            get {
+                return ResourceManager.GetString("OpenXmlOrTxt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open a Kindle X-Ray file....
+        /// </summary>
+        internal static string OpenXRayFile {
+            get {
+                return ResourceManager.GetString("OpenXRayFile", resourceCulture);
             }
         }
         
@@ -101,11 +889,308 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Output Directory Not found.
+        ///   Looks up a localized string similar to Output Directory Not Found.
         /// </summary>
         internal static string OutputDirNotFoundTitle {
             get {
                 return ResourceManager.GetString("OutputDirNotFoundTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Both Real and Pen names are required for End Actions file creation..
+        /// </summary>
+        internal static string PenNamesRequired {
+            get {
+                return ResourceManager.GetString("PenNamesRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully downloaded pre-made {0} Actions file!.
+        /// </summary>
+        internal static string PreMadeActionsDownloaded {
+            get {
+                return ResourceManager.GetString("PreMadeActionsDownloaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to X-Ray previewData file created successfully!.
+        /// </summary>
+        internal static string PreviewData {
+            get {
+                return ResourceManager.GetString("PreviewData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If you do not want to use {0}, you can change the data source in Settings..
+        /// </summary>
+        internal static string ReviewSettingsForSource {
+            get {
+                return ResourceManager.GetString("ReviewSettingsForSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please review the settings page..
+        /// </summary>
+        internal static string ReviewSettingsPage {
+            get {
+                return ResourceManager.GetString("ReviewSettingsPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saved to {0}.
+        /// </summary>
+        internal static string SavedTo {
+            get {
+                return ResourceManager.GetString("SavedTo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save the rawML (raw markup) of the book in the output directory so you can review it..
+        /// </summary>
+        internal static string SaveRawMlTooltip {
+            get {
+                return ResourceManager.GetString("SaveRawMlTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saving raw markup to the dmp directory....
+        /// </summary>
+        internal static string SavingRawml {
+            get {
+                return ResourceManager.GetString("SavingRawml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saving X-Ray to file....
+        /// </summary>
+        internal static string SavingXRay {
+            get {
+                return ResourceManager.GetString("SavingXRay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Searching Amazon for {0} by {1}....
+        /// </summary>
+        internal static string SearchingAmazonForTitleAuthor {
+            get {
+                return ResourceManager.GetString("SearchingAmazonForTitleAuthor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to See the MobileRead forum thread (link in Settings) for more information on building aliases..
+        /// </summary>
+        internal static string SeeMobilereads {
+            get {
+                return ResourceManager.GetString("SeeMobilereads", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Series Information.
+        /// </summary>
+        internal static string SeriesInformation {
+            get {
+                return ResourceManager.GetString("SeriesInformation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If so, the shown ASIN will be used..
+        /// </summary>
+        internal static string ShownAsinUsed {
+            get {
+                return ResourceManager.GetString("ShownAsinUsed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} URL.
+        /// </summary>
+        internal static string SourceUrl {
+            get {
+                return ResourceManager.GetString("SourceUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Specified output directory does not exist..
+        /// </summary>
+        internal static string SpecifiedOutputDirectoryDoesNotExist {
+            get {
+                return ResourceManager.GetString("SpecifiedOutputDirectoryDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start Actions.
+        /// </summary>
+        internal static string StartActions {
+            get {
+                return ResourceManager.GetString("StartActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start Actions file created successfully!.
+        /// </summary>
+        internal static string StartActionsCreated {
+            get {
+                return ResourceManager.GetString("StartActionsCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Terms have been exported to an alias file or already exist in that file..
+        /// </summary>
+        internal static string TermsExportedOrAlreadyExist {
+            get {
+                return ResourceManager.GetString("TermsExportedOrAlreadyExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Title.
+        /// </summary>
+        internal static string Title {
+            get {
+                return ResourceManager.GetString("Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} by {1}.
+        /// </summary>
+        internal static string TitleByAuthor {
+            get {
+                return ResourceManager.GetString("TitleByAuthor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Try to build the X-Ray file for this book..
+        /// </summary>
+        internal static string TryToBuildXRay {
+            get {
+                return ResourceManager.GetString("TryToBuildXRay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to automatically find a matching ASIN for this book on Amazon :(.
+        /// </summary>
+        internal static string UnableToAutomaticallyFindAsinOnAmazon {
+            get {
+                return ResourceManager.GetString("UnableToAutomaticallyFindAsinOnAmazon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to find this book on {0}. Ensure the book&apos;s title ({1}) is accurate!.
+        /// </summary>
+        internal static string UnableToFindBookOnSource {
+            get {
+                return ResourceManager.GetString("UnableToFindBookOnSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to open the supplied help document..
+        /// </summary>
+        internal static string UnableToOpenHelpDocument {
+            get {
+                return ResourceManager.GetString("UnableToOpenHelpDocument", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unique ID.
+        /// </summary>
+        internal static string UniqueID {
+            get {
+                return ResourceManager.GetString("UniqueID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Successfully updated the ASIN to {0}! Be sure to copy this new version of the book to your Kindle device..
+        /// </summary>
+        internal static string UpdatedAsin {
+            get {
+                return ResourceManager.GetString("UpdatedAsin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use the above link as a terms source..
+        /// </summary>
+        internal static string UseLinkAsDataSource {
+            get {
+                return ResourceManager.GetString("UseLinkAsDataSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View a preview of the generated files..
+        /// </summary>
+        internal static string ViewPreviewOfGeneratedFiles {
+            get {
+                return ResourceManager.GetString("ViewPreviewOfGeneratedFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You may want to visit the URL to ensure it is correct..
+        /// </summary>
+        internal static string VisitUrl {
+            get {
+                return ResourceManager.GetString("VisitUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Writing End Actions file....
+        /// </summary>
+        internal static string WritingEndActionsFile {
+            get {
+                return ResourceManager.GetString("WritingEndActionsFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Writing Start Actions file....
+        /// </summary>
+        internal static string WritingStartActionsFile {
+            get {
+                return ResourceManager.GetString("WritingStartActionsFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to X-Ray.
+        /// </summary>
+        internal static string XRay {
+            get {
+                return ResourceManager.GetString("XRay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to X-Ray file created successfully!.
+        /// </summary>
+        internal static string XRayCreated {
+            get {
+                return ResourceManager.GetString("XRayCreated", resourceCulture);
             }
         }
     }

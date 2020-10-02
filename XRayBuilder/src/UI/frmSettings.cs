@@ -67,7 +67,7 @@ namespace XRayBuilderGUI.UI
             {
                 var fileCount = Directory.GetFiles($@"{Environment.CurrentDirectory}\log").Length;
                 if (fileCount > 0)
-                    btnClearLogs.Text = $"Clear Logs ({fileCount})";
+                    btnClearLogs.Text = $@"{MainStrings.ClearLogsTitle} ({fileCount})";
                 else
                     btnClearLogs.Enabled = false;
             }
@@ -243,34 +243,29 @@ namespace XRayBuilderGUI.UI
 
         private void btnLogs_Click(object sender, EventArgs e)
         {
-            if (!Directory.Exists(Environment.CurrentDirectory + @"\log"))
+            if (!Directory.Exists($@"{Environment.CurrentDirectory}\log"))
             {
-                MessageBox.Show("Log directory does not exist.", "Logs Directory Not found");
+                MessageBox.Show(MainStrings.LogDirectoryDoesNotExist, MainStrings.LogDirectoryNotFoundTitle);
                 return;
             }
 
             TopMost = false;
-            Process.Start(Environment.CurrentDirectory + @"\log");
+            Process.Start($@"{Environment.CurrentDirectory}\log");
         }
 
         private void btnClearLogs_Click(object sender, EventArgs e)
         {
-            if (DialogResult.Yes ==
-                MessageBox.Show("Are you sure you want to delete all log files?\r\nThis action can not be undone.",
-                    "Are you sure...",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question,
-                    MessageBoxDefaultButton.Button2))
+            if (DialogResult.Yes == MessageBox.Show($@"{MainStrings.DeleteLogFilesConfirmation}{Environment.NewLine}{MainStrings.ActionCannotBeUndone}", MainStrings.AreYouSure, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
             {
                 try
                 {
-                    Array.ForEach(Directory.GetFiles(Environment.CurrentDirectory + @"\log"), File.Delete);
-                    btnClearLogs.Text = "Clear Logs";
+                    Array.ForEach(Directory.GetFiles($@"{Environment.CurrentDirectory}\log"), File.Delete);
+                    btnClearLogs.Text = MainStrings.ClearLogsTitle;
                     btnClearLogs.Enabled = false;
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show("An error occurred while trying to delete log files.", "Unable to delete Log files");
+                    MessageBox.Show(MainStrings.ErrorDeletingLogFiles, MainStrings.UnableToDeleteLogFilesCaption);
                 }
             }
         }

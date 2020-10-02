@@ -1,4 +1,6 @@
-﻿namespace XRayBuilderGUI.UI
+﻿using XRayBuilderGUI.Localization.Main;
+
+namespace XRayBuilderGUI.UI
 {
     partial class frmSettings
     {

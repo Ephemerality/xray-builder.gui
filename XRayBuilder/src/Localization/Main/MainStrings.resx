@@ -493,7 +493,7 @@ Do you wish to continue?</value>
     <value>Try to build the Start Actions, Author Profile, and End Actions files for this book.</value>
   </data>
   <data name="SaveRawMlTooltip" xml:space="preserve">
-    <value>Save the rawML (raw markup) of the book in the output directory so you can review it.</value>
+    <value>Save the RAWML (raw markup) of the book in the output directory so you can review it.</value>
   </data>
   <data name="CreateXmlTooltip" xml:space="preserve">
     <value>Create an XML file containing characters and settings, or edit an existing XML file.</value>
@@ -524,5 +524,228 @@ Do you wish to continue?</value>
   </data>
   <data name="LogDirectoryDoesNotExist" xml:space="preserve">
     <value>Log directory does not exist.</value>
+  </data>
+  <data name="IgnoreSoftHyphensTooltip" xml:space="preserve">
+    <value>Ignore soft hyphens (Unicode U+00AD) while searching for terms.</value>
+  </data>
+  <data name="WriteXRayNewFormatTooltip" xml:space="preserve">
+    <value>Write the X-Ray file in the new format for Paperwhite 2 or Voyage firmware 5.6+.</value>
+  </data>
+  <data name="BuildXRayForAndroidTooltip" xml:space="preserve">
+    <value>Changes the naming convention of the X-Ray file for the Android Kindle app.</value>
+  </data>
+  <data name="RequiresNewFormat" xml:space="preserve">
+    <value>Requires building in the new format.</value>
+  </data>
+  <data name="FilesInAndroidFolder" xml:space="preserve">
+    <value>Files will be placed in the output directory in an 'Android' folder.</value>
+  </data>
+  <data name="GoodForFilteringQuotes" xml:space="preserve">
+    <value>good for filtering out garbage quotes from Goodreads or other sources</value>
+  </data>
+  <data name="SkipNoLikes" xml:space="preserve">
+    <value>Skip notable clips with no likes.</value>
+  </data>
+  <data name="MinimumQuoteLength" xml:space="preserve">
+    <value>Minimum length for notable clips.</value>
+  </data>
+  <data name="RequiredDuringEndActionsCreation" xml:space="preserve">
+    <value>Required during the End Actions file creation.</value>
+  </data>
+  <data name="EnableEditTooltip" xml:space="preserve">
+    <value>Enables the ability to edit files using Notepad during the build process.</value>
+  </data>
+  <data name="SaveToAuthorSubdirTooltip" xml:space="preserve">
+    <value>Save generated files to an "Author\Filename" subdirectory.</value>
+  </data>
+  <data name="SaveToSidecarSubdirTooltip" xml:space="preserve">
+    <value>Save generated files to a "sidecar" subdirectory based on the filename.</value>
+  </data>
+  <data name="OpenLogFileDirTooltip" xml:space="preserve">
+    <value>Open the log files directory.</value>
+  </data>
+  <data name="OverwriteAuthorProfileTooltip" xml:space="preserve">
+    <value>Overwrite existing Author Profile files.</value>
+  </data>
+  <data name="OverwriteEndActionsTooltip" xml:space="preserve">
+    <value>Overwrite existing End Actions files.</value>
+  </data>
+  <data name="OverwriteStartActionsTooltip" xml:space="preserve">
+    <value>Overwrite existing Start Actions files.</value>
+  </data>
+  <data name="OverwriteAliasesTooltip" xml:space="preserve">
+    <value>Overwrite existing alias files.</value>
+  </data>
+  <data name="OverwriteChaptersTooltip" xml:space="preserve">
+    <value>Overwrite existing chapter files.</value>
+  </data>
+  <data name="AutomaticallySplitAliasesTooltip" xml:space="preserve">
+    <value>Automatically split character names into aliases. This can have undesired consequences, so use it with caution!</value>
+  </data>
+  <data name="PlaySoundTooltip" xml:space="preserve">
+    <value>Play a sound after the build process is complete.</value>
+  </data>
+  <data name="DownloadAliasesTooltip" xml:space="preserve">
+    <value>Attempt to download pre-made aliases if none exist locally yet. If "Overwrite aliases" is enabled, local aliases will be overwritten by the downloaded ones.</value>
+  </data>
+  <data name="VisitForumTooltip" xml:space="preserve">
+    <value>Visit the MobileRead forum for support, bug reports, or questions.</value>
+  </data>
+  <data name="EstimatePageCountTooltip" xml:space="preserve">
+    <value>Try to estimate books page count if no page count is count online (based on user_none's APNX generation project).</value>
+  </data>
+  <data name="SecondarySourceTooltip" xml:space="preserve">
+    <value>Determines from which non-Amazon source terms and metadata will be downloaded.</value>
+  </data>
+  <data name="AmazonRegionTooltip" xml:space="preserve">
+    <value>Default Amazon page to search. If no results are found, Amazom.com (USA) will be used.</value>
+  </data>
+  <data name="SaveBioTooltip" xml:space="preserve">
+    <value>If enabled, author biographies will be saved and opened in Notepad before continuing to build Author Profiles.
+Must be enabled for a saved biography to be loaded.</value>
+  </data>
+  <data name="PromptAsinTooltip" xml:space="preserve">
+    <value>Allow ASIN entry if the next or previous book in a series cannot automatically be found.</value>
+  </data>
+  <data name="EditBioTooltip" xml:space="preserve">
+    <value>If enabled, allows editing the Author's biography before it's used.</value>
+  </data>
+  <data name="AutoBuildAuthorProfileTooltip" xml:space="preserve">
+    <value>When set, the Author Profile will be built using a downloaded End Actions file instead of scraping Amazon, if one is available.</value>
+  </data>
+  <data name="IncludeTopicsTooltip" xml:space="preserve">
+    <value>When downloading terms, include any that are non-characters (topics, locations, etc).</value>
+  </data>
+  <data name="Forum" xml:space="preserve">
+    <value>Forum</value>
+  </data>
+  <data name="Logs" xml:space="preserve">
+    <value>Logs</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="EbookProcessingTitle" xml:space="preserve">
+    <value>eBook Processing</value>
+  </data>
+  <data name="EstimatePageCountTitle" xml:space="preserve">
+    <value>Estimate Page Count</value>
+  </data>
+  <data name="EbookUnpackingTitle" xml:space="preserve">
+    <value>eBook Unpacking</value>
+  </data>
+  <data name="SaveRawmlTitle" xml:space="preserve">
+    <value>Save RAWML</value>
+  </data>
+  <data name="Sounds" xml:space="preserve">
+    <value>Sounds</value>
+  </data>
+  <data name="OutputDirectoryTitle" xml:space="preserve">
+    <value>Output Directory</value>
+  </data>
+  <data name="UseSidecarDirectory" xml:space="preserve">
+    <value>Use sidecar directory</value>
+  </data>
+  <data name="UseSubdirectories" xml:space="preserve">
+    <value>Use subdirectories</value>
+  </data>
+  <data name="DataProviderTitle" xml:space="preserve">
+    <value>Data Provider</value>
+  </data>
+  <data name="Preferences" xml:space="preserve">
+    <value>Preferences</value>
+  </data>
+  <data name="IgnoreSoftHyphensTitle" xml:space="preserve">
+    <value>Ignore Soft Hyphens</value>
+  </data>
+  <data name="NotableClipsTitle" xml:space="preserve">
+    <value>Notable Clips</value>
+  </data>
+  <data name="MinimumLength" xml:space="preserve">
+    <value>Minimum length:</value>
+  </data>
+  <data name="Format" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="BuildForAndroidTitle" xml:space="preserve">
+    <value>Build for Android</value>
+  </data>
+  <data name="UseNewFormatTitle" xml:space="preserve">
+    <value>Use New X-Ray Format</value>
+  </data>
+  <data name="BuildFromEndActions" xml:space="preserve">
+    <value>Build from downloaded End Actions when one is available</value>
+  </data>
+  <data name="OverwriteOptionsTitle" xml:space="preserve">
+    <value>Overwrite Options</value>
+  </data>
+  <data name="AliasesOptionsTitle" xml:space="preserve">
+    <value>Aliases Options</value>
+  </data>
+  <data name="DownloadAliases" xml:space="preserve">
+    <value>Download aliases</value>
+  </data>
+  <data name="AutomaticallySplitAliases" xml:space="preserve">
+    <value>Automatically split aliases</value>
+  </data>
+  <data name="EnableEditingAliases" xml:space="preserve">
+    <value>Enable editing of aliases</value>
+  </data>
+  <data name="EditAuthorBiography" xml:space="preserve">
+    <value>Edit author biography</value>
+  </data>
+  <data name="Show ASIN prompt" xml:space="preserve">
+    <value>Show ASIN prompt</value>
+  </data>
+  <data name="Region" xml:space="preserve">
+    <value>Region:</value>
+  </data>
+  <data name="SaveAuthorBiography" xml:space="preserve">
+    <value>Save author biography</value>
+  </data>
+  <data name="AmazonCustomerDetailsTitle" xml:space="preserve">
+    <value>Amazon Customer Details</value>
+  </data>
+  <data name="RealName" xml:space="preserve">
+    <value>Real Name:</value>
+  </data>
+  <data name="PenName" xml:space="preserve">
+    <value>Pen Name:</value>
+  </data>
+  <data name="FilesDownloadedInSelectedLanguage" xml:space="preserve">
+    <value>Files will be downloaded in the language of the selected region, when possible.</value>
+  </data>
+  <data name="TermsOptions" xml:space="preserve">
+    <value>Terms Options</value>
+  </data>
+  <data name="InclueTopics" xml:space="preserve">
+    <value>Include topic/location terms</value>
+  </data>
+  <data name="PreBuiltDownloadsTitle" xml:space="preserve">
+    <value>Pre-built Downloads</value>
+  </data>
+  <data name="PreBuiltSettingsDescription" xml:space="preserve">
+    <value>When these settings are enabled, pre-built versions of the files will be downloaded if they are available. Requires a valid ASIN.</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="Directories" xml:space="preserve">
+    <value>Directories</value>
+  </data>
+  <data name="Extras" xml:space="preserve">
+    <value>Extras</value>
+  </data>
+  <data name="Amazon" xml:space="preserve">
+    <value>Amazon</value>
+  </data>
+  <data name="Roentgen" xml:space="preserve">
+    <value>Roentgen</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
   </data>
 </root>

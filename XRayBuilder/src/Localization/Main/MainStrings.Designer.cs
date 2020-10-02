@@ -88,6 +88,15 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Aliases Options.
+        /// </summary>
+        internal static string AliasesOptionsTitle {
+            get {
+                return ResourceManager.GetString("AliasesOptionsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Character aliases read from {0}..
         /// </summary>
         internal static string AliasesReadFrom {
@@ -124,11 +133,38 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Amazon.
+        /// </summary>
+        internal static string Amazon {
+            get {
+                return ResourceManager.GetString("Amazon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Amazon Customer Details Not Found.
         /// </summary>
         internal static string AmazonCustomerDetailsNotFoundTitle {
             get {
                 return ResourceManager.GetString("AmazonCustomerDetailsNotFoundTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Amazon Customer Details.
+        /// </summary>
+        internal static string AmazonCustomerDetailsTitle {
+            get {
+                return ResourceManager.GetString("AmazonCustomerDetailsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default Amazon page to search. If no results are found, Amazom.com (USA) will be used..
+        /// </summary>
+        internal static string AmazonRegionTooltip {
+            get {
+                return ResourceManager.GetString("AmazonRegionTooltip", resourceCulture);
             }
         }
         
@@ -196,6 +232,33 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to When set, the Author Profile will be built using a downloaded End Actions file instead of scraping Amazon, if one is available..
+        /// </summary>
+        internal static string AutoBuildAuthorProfileTooltip {
+            get {
+                return ResourceManager.GetString("AutoBuildAuthorProfileTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Automatically split aliases.
+        /// </summary>
+        internal static string AutomaticallySplitAliases {
+            get {
+                return ResourceManager.GetString("AutomaticallySplitAliases", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Automatically split character names into aliases. This can have undesired consequences, so use it with caution!.
+        /// </summary>
+        internal static string AutomaticallySplitAliasesTooltip {
+            get {
+                return ResourceManager.GetString("AutomaticallySplitAliasesTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Biography.
         /// </summary>
         internal static string Biography {
@@ -259,6 +322,24 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Build for Android.
+        /// </summary>
+        internal static string BuildForAndroidTitle {
+            get {
+                return ResourceManager.GetString("BuildForAndroidTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Build from downloaded End Actions when one is available.
+        /// </summary>
+        internal static string BuildFromEndActions {
+            get {
+                return ResourceManager.GetString("BuildFromEndActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Attempting to build Author Profile....
         /// </summary>
         internal static string BuildingAuthorProfile {
@@ -282,6 +363,15 @@ namespace XRayBuilderGUI.Localization.Main {
         internal static string BuildingStartEndActions {
             get {
                 return ResourceManager.GetString("BuildingStartEndActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Changes the naming convention of the X-Ray file for the Android Kindle app..
+        /// </summary>
+        internal static string BuildXRayForAndroidTooltip {
+            get {
+                return ResourceManager.GetString("BuildXRayForAndroidTooltip", resourceCulture);
             }
         }
         
@@ -397,6 +487,15 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Data Provider.
+        /// </summary>
+        internal static string DataProviderTitle {
+            get {
+                return ResourceManager.GetString("DataProviderTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to delete all log files?.
         /// </summary>
         internal static string DeleteLogFilesConfirmation {
@@ -406,11 +505,38 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Directories.
+        /// </summary>
+        internal static string Directories {
+            get {
+                return ResourceManager.GetString("Directories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Does this seem correct?.
         /// </summary>
         internal static string DoesThisSeemCorrect {
             get {
                 return ResourceManager.GetString("DoesThisSeemCorrect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Download aliases.
+        /// </summary>
+        internal static string DownloadAliases {
+            get {
+                return ResourceManager.GetString("DownloadAliases", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attempt to download pre-made aliases if none exist locally yet. If &quot;Overwrite aliases&quot; is enabled, local aliases will be overwritten by the downloaded ones..
+        /// </summary>
+        internal static string DownloadAliasesTooltip {
+            get {
+                return ResourceManager.GetString("DownloadAliasesTooltip", resourceCulture);
             }
         }
         
@@ -438,6 +564,60 @@ namespace XRayBuilderGUI.Localization.Main {
         internal static string DownloadingActions {
             get {
                 return ResourceManager.GetString("DownloadingActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to eBook Processing.
+        /// </summary>
+        internal static string EbookProcessingTitle {
+            get {
+                return ResourceManager.GetString("EbookProcessingTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to eBook Unpacking.
+        /// </summary>
+        internal static string EbookUnpackingTitle {
+            get {
+                return ResourceManager.GetString("EbookUnpackingTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit author biography.
+        /// </summary>
+        internal static string EditAuthorBiography {
+            get {
+                return ResourceManager.GetString("EditAuthorBiography", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If enabled, allows editing the Author&apos;s biography before it&apos;s used..
+        /// </summary>
+        internal static string EditBioTooltip {
+            get {
+                return ResourceManager.GetString("EditBioTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable editing of aliases.
+        /// </summary>
+        internal static string EnableEditingAliases {
+            get {
+                return ResourceManager.GetString("EnableEditingAliases", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enables the ability to edit files using Notepad during the build process..
+        /// </summary>
+        internal static string EnableEditTooltip {
+            get {
+                return ResourceManager.GetString("EnableEditTooltip", resourceCulture);
             }
         }
         
@@ -559,6 +739,24 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Estimate Page Count.
+        /// </summary>
+        internal static string EstimatePageCountTitle {
+            get {
+                return ResourceManager.GetString("EstimatePageCountTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Try to estimate books page count if no page count is count online (based on user_none&apos;s APNX generation project)..
+        /// </summary>
+        internal static string EstimatePageCountTooltip {
+            get {
+                return ResourceManager.GetString("EstimatePageCountTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Exporting terms from {0}....
         /// </summary>
         internal static string ExportingTermsFrom {
@@ -604,6 +802,15 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Extras.
+        /// </summary>
+        internal static string Extras {
+            get {
+                return ResourceManager.GetString("Extras", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to download cover image.
         /// </summary>
         internal static string FailedCoverImageDownload {
@@ -622,11 +829,65 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Files will be downloaded in the language of the selected region, when possible..
+        /// </summary>
+        internal static string FilesDownloadedInSelectedLanguage {
+            get {
+                return ResourceManager.GetString("FilesDownloadedInSelectedLanguage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Files will be placed in the output directory in an &apos;Android&apos; folder..
+        /// </summary>
+        internal static string FilesInAndroidFolder {
+            get {
+                return ResourceManager.GetString("FilesInAndroidFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Format.
+        /// </summary>
+        internal static string Format {
+            get {
+                return ResourceManager.GetString("Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Forum.
+        /// </summary>
+        internal static string Forum {
+            get {
+                return ResourceManager.GetString("Forum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Found the following book on Amazon.
         /// </summary>
         internal static string FoundBookAmazon {
             get {
                 return ResourceManager.GetString("FoundBookAmazon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to General.
+        /// </summary>
+        internal static string General {
+            get {
+                return ResourceManager.GetString("General", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to good for filtering out garbage quotes from Goodreads or other sources.
+        /// </summary>
+        internal static string GoodForFilteringQuotes {
+            get {
+                return ResourceManager.GetString("GoodForFilteringQuotes", resourceCulture);
             }
         }
         
@@ -645,6 +906,42 @@ namespace XRayBuilderGUI.Localization.Main {
         internal static string HelpDocumentNotFoundTitle {
             get {
                 return ResourceManager.GetString("HelpDocumentNotFoundTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ignore Soft Hyphens.
+        /// </summary>
+        internal static string IgnoreSoftHyphensTitle {
+            get {
+                return ResourceManager.GetString("IgnoreSoftHyphensTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ignore soft hyphens (Unicode U+00AD) while searching for terms..
+        /// </summary>
+        internal static string IgnoreSoftHyphensTooltip {
+            get {
+                return ResourceManager.GetString("IgnoreSoftHyphensTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When downloading terms, include any that are non-characters (topics, locations, etc)..
+        /// </summary>
+        internal static string IncludeTopicsTooltip {
+            get {
+                return ResourceManager.GetString("IncludeTopicsTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include topic/location terms.
+        /// </summary>
+        internal static string InclueTopics {
+            get {
+                return ResourceManager.GetString("InclueTopics", resourceCulture);
             }
         }
         
@@ -754,6 +1051,15 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Language.
+        /// </summary>
+        internal static string Language {
+            get {
+                return ResourceManager.GetString("Language", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Loaded existing End Actions from {0}.
         /// </summary>
         internal static string LoadedExistingEndActions {
@@ -786,6 +1092,33 @@ namespace XRayBuilderGUI.Localization.Main {
         internal static string LogDirectoryNotFoundTitle {
             get {
                 return ResourceManager.GetString("LogDirectoryNotFoundTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Logs.
+        /// </summary>
+        internal static string Logs {
+            get {
+                return ResourceManager.GetString("Logs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum length:.
+        /// </summary>
+        internal static string MinimumLength {
+            get {
+                return ResourceManager.GetString("MinimumLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum length for notable clips..
+        /// </summary>
+        internal static string MinimumQuoteLength {
+            get {
+                return ResourceManager.GetString("MinimumQuoteLength", resourceCulture);
             }
         }
         
@@ -840,6 +1173,15 @@ namespace XRayBuilderGUI.Localization.Main {
         internal static string NoSourceLinkTitle {
             get {
                 return ResourceManager.GetString("NoSourceLinkTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Notable Clips.
+        /// </summary>
+        internal static string NotableClipsTitle {
+            get {
+                return ResourceManager.GetString("NotableClipsTitle", resourceCulture);
             }
         }
         
@@ -916,6 +1258,15 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open the log files directory..
+        /// </summary>
+        internal static string OpenLogFileDirTooltip {
+            get {
+                return ResourceManager.GetString("OpenLogFileDirTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open the default output directory..
         /// </summary>
         internal static string OpenOutputDirectory {
@@ -943,6 +1294,15 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Output Directory.
+        /// </summary>
+        internal static string OutputDirectoryTitle {
+            get {
+                return ResourceManager.GetString("OutputDirectoryTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Specified output directory does not exist. Please review the settings page..
         /// </summary>
         internal static string OutputDirNotFoundReviewSettings {
@@ -961,11 +1321,110 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Overwrite existing alias files..
+        /// </summary>
+        internal static string OverwriteAliasesTooltip {
+            get {
+                return ResourceManager.GetString("OverwriteAliasesTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Overwrite existing Author Profile files..
+        /// </summary>
+        internal static string OverwriteAuthorProfileTooltip {
+            get {
+                return ResourceManager.GetString("OverwriteAuthorProfileTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Overwrite existing chapter files..
+        /// </summary>
+        internal static string OverwriteChaptersTooltip {
+            get {
+                return ResourceManager.GetString("OverwriteChaptersTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Overwrite existing End Actions files..
+        /// </summary>
+        internal static string OverwriteEndActionsTooltip {
+            get {
+                return ResourceManager.GetString("OverwriteEndActionsTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Overwrite Options.
+        /// </summary>
+        internal static string OverwriteOptionsTitle {
+            get {
+                return ResourceManager.GetString("OverwriteOptionsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Overwrite existing Start Actions files..
+        /// </summary>
+        internal static string OverwriteStartActionsTooltip {
+            get {
+                return ResourceManager.GetString("OverwriteStartActionsTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pen Name:.
+        /// </summary>
+        internal static string PenName {
+            get {
+                return ResourceManager.GetString("PenName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Both Real and Pen names are required for End Actions file creation..
         /// </summary>
         internal static string PenNamesRequired {
             get {
                 return ResourceManager.GetString("PenNamesRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Play a sound after the build process is complete..
+        /// </summary>
+        internal static string PlaySoundTooltip {
+            get {
+                return ResourceManager.GetString("PlaySoundTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pre-built Downloads.
+        /// </summary>
+        internal static string PreBuiltDownloadsTitle {
+            get {
+                return ResourceManager.GetString("PreBuiltDownloadsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When these settings are enabled, pre-built versions of the files will be downloaded if they are available. Requires a valid ASIN..
+        /// </summary>
+        internal static string PreBuiltSettingsDescription {
+            get {
+                return ResourceManager.GetString("PreBuiltSettingsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preferences.
+        /// </summary>
+        internal static string Preferences {
+            get {
+                return ResourceManager.GetString("Preferences", resourceCulture);
             }
         }
         
@@ -988,6 +1447,51 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allow ASIN entry if the next or previous book in a series cannot automatically be found..
+        /// </summary>
+        internal static string PromptAsinTooltip {
+            get {
+                return ResourceManager.GetString("PromptAsinTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Real Name:.
+        /// </summary>
+        internal static string RealName {
+            get {
+                return ResourceManager.GetString("RealName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Region:.
+        /// </summary>
+        internal static string Region {
+            get {
+                return ResourceManager.GetString("Region", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required during the End Actions file creation..
+        /// </summary>
+        internal static string RequiredDuringEndActionsCreation {
+            get {
+                return ResourceManager.GetString("RequiredDuringEndActionsCreation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Requires building in the new format..
+        /// </summary>
+        internal static string RequiresNewFormat {
+            get {
+                return ResourceManager.GetString("RequiresNewFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to If you do not want to use {0}, you can change the data source in Settings..
         /// </summary>
         internal static string ReviewSettingsForSource {
@@ -1006,6 +1510,43 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Roentgen.
+        /// </summary>
+        internal static string Roentgen {
+            get {
+                return ResourceManager.GetString("Roentgen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save.
+        /// </summary>
+        internal static string Save {
+            get {
+                return ResourceManager.GetString("Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save author biography.
+        /// </summary>
+        internal static string SaveAuthorBiography {
+            get {
+                return ResourceManager.GetString("SaveAuthorBiography", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If enabled, author biographies will be saved and opened in Notepad before continuing to build Author Profiles.
+        ///Must be enabled for a saved biography to be loaded..
+        /// </summary>
+        internal static string SaveBioTooltip {
+            get {
+                return ResourceManager.GetString("SaveBioTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Saved to {0}.
         /// </summary>
         internal static string SavedTo {
@@ -1015,11 +1556,38 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save the rawML (raw markup) of the book in the output directory so you can review it..
+        ///   Looks up a localized string similar to Save RAWML.
+        /// </summary>
+        internal static string SaveRawmlTitle {
+            get {
+                return ResourceManager.GetString("SaveRawmlTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save the RAWML (raw markup) of the book in the output directory so you can review it..
         /// </summary>
         internal static string SaveRawMlTooltip {
             get {
                 return ResourceManager.GetString("SaveRawMlTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save generated files to an &quot;Author\Filename&quot; subdirectory..
+        /// </summary>
+        internal static string SaveToAuthorSubdirTooltip {
+            get {
+                return ResourceManager.GetString("SaveToAuthorSubdirTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save generated files to a &quot;sidecar&quot; subdirectory based on the filename..
+        /// </summary>
+        internal static string SaveToSidecarSubdirTooltip {
+            get {
+                return ResourceManager.GetString("SaveToSidecarSubdirTooltip", resourceCulture);
             }
         }
         
@@ -1051,6 +1619,15 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Determines from which non-Amazon source terms and metadata will be downloaded..
+        /// </summary>
+        internal static string SecondarySourceTooltip {
+            get {
+                return ResourceManager.GetString("SecondarySourceTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to See the MobileRead forum thread (link in Settings) for more information on building aliases..
         /// </summary>
         internal static string SeeMobilereads {
@@ -1069,11 +1646,47 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        internal static string Settings {
+            get {
+                return ResourceManager.GetString("Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show ASIN prompt.
+        /// </summary>
+        internal static string Show_ASIN_prompt {
+            get {
+                return ResourceManager.GetString("Show ASIN prompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to If so, the shown ASIN will be used..
         /// </summary>
         internal static string ShownAsinUsed {
             get {
                 return ResourceManager.GetString("ShownAsinUsed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skip notable clips with no likes..
+        /// </summary>
+        internal static string SkipNoLikes {
+            get {
+                return ResourceManager.GetString("SkipNoLikes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sounds.
+        /// </summary>
+        internal static string Sounds {
+            get {
+                return ResourceManager.GetString("Sounds", resourceCulture);
             }
         }
         
@@ -1119,6 +1732,15 @@ namespace XRayBuilderGUI.Localization.Main {
         internal static string TermsExportedOrAlreadyExist {
             get {
                 return ResourceManager.GetString("TermsExportedOrAlreadyExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Terms Options.
+        /// </summary>
+        internal static string TermsOptions {
+            get {
+                return ResourceManager.GetString("TermsOptions", resourceCulture);
             }
         }
         
@@ -1213,6 +1835,33 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Use New X-Ray Format.
+        /// </summary>
+        internal static string UseNewFormatTitle {
+            get {
+                return ResourceManager.GetString("UseNewFormatTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use sidecar directory.
+        /// </summary>
+        internal static string UseSidecarDirectory {
+            get {
+                return ResourceManager.GetString("UseSidecarDirectory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use subdirectories.
+        /// </summary>
+        internal static string UseSubdirectories {
+            get {
+                return ResourceManager.GetString("UseSubdirectories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to View a preview of the generated files..
         /// </summary>
         internal static string ViewPreviewOfGeneratedFiles {
@@ -1222,11 +1871,29 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Visit the MobileRead forum for support, bug reports, or questions..
+        /// </summary>
+        internal static string VisitForumTooltip {
+            get {
+                return ResourceManager.GetString("VisitForumTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to You may want to visit the URL to ensure it is correct..
         /// </summary>
         internal static string VisitUrl {
             get {
                 return ResourceManager.GetString("VisitUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Write the X-Ray file in the new format for Paperwhite 2 or Voyage firmware 5.6+..
+        /// </summary>
+        internal static string WriteXRayNewFormatTooltip {
+            get {
+                return ResourceManager.GetString("WriteXRayNewFormatTooltip", resourceCulture);
             }
         }
         

@@ -7,7 +7,6 @@ namespace XRayBuilder.Core.Libraries.Language.Localization
     {
         public static void SetAsThreadCulture(this CultureInfo cultureInfo)
         {
-
             Thread.CurrentThread.CurrentUICulture = cultureInfo;
         }
     }

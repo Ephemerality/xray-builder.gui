@@ -176,8 +176,11 @@ namespace XRayBuilderGUI.UI
             }
 
             var language = _languageFactory.Get(cmbLanguage.SelectedValue.ToString());
-            if (language != null)
+            if (language != null && language.Language.ToString() != Settings.Default.Language)
+            {
                 Settings.Default.Language = language.Language.ToString();
+                MessageBox.Show(MainStrings.RestartRequired, MainStrings.RestartRequiredTitle);
+            }
 
             Settings.Default.outDir = txtOut.Text;
             Settings.Default.saverawml = chkRaw.Checked;

@@ -748,4 +748,10 @@ Must be enabled for a saved biography to be loaded.</value>
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="RestartRequiredTitle" xml:space="preserve">
+    <value>Restart Required</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Application must be restarted for changes to take effect!</value>
+  </data>
 </root>

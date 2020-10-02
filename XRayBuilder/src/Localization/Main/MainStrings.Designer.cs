@@ -1492,6 +1492,24 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Application must be restarted for changes to take effect!.
+        /// </summary>
+        internal static string RestartRequired {
+            get {
+                return ResourceManager.GetString("RestartRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Restart Required.
+        /// </summary>
+        internal static string RestartRequiredTitle {
+            get {
+                return ResourceManager.GetString("RestartRequiredTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to If you do not want to use {0}, you can change the data source in Settings..
         /// </summary>
         internal static string ReviewSettingsForSource {

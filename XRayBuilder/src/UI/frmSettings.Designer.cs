@@ -39,8 +39,6 @@
             this.gbProcess = new System.Windows.Forms.GroupBox();
             this.chkPageCount = new System.Windows.Forms.CheckBox();
             this.gbUnpack = new System.Windows.Forms.GroupBox();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.lblNote = new System.Windows.Forms.Label();
             this.chkRaw = new System.Windows.Forms.CheckBox();
             this.gbGeneral = new System.Windows.Forms.GroupBox();
             this.chkSound = new System.Windows.Forms.CheckBox();
@@ -100,11 +98,12 @@
             this.chkRoentgenEndActions = new System.Windows.Forms.CheckBox();
             this.chkRoentgenStartActions = new System.Windows.Forms.CheckBox();
             this.listSettings = new System.Windows.Forms.ListBox();
+            this.cbLanguage = new System.Windows.Forms.GroupBox();
+            this.cmbLanguage = new System.Windows.Forms.ComboBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.gbProcess.SuspendLayout();
             this.gbUnpack.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize) (this.pictureBox1)).BeginInit();
             this.gbGeneral.SuspendLayout();
             this.tabPgDirectories.SuspendLayout();
             this.gbDirectories.SuspendLayout();
@@ -124,6 +123,7 @@
             this.groupBox9.SuspendLayout();
             this.groupBox7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize) (this.pictureBox2)).BeginInit();
+            this.cbLanguage.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSupport
@@ -194,6 +194,7 @@
             // 
             // tabPgGeneral
             // 
+            this.tabPgGeneral.Controls.Add(this.cbLanguage);
             this.tabPgGeneral.Controls.Add(this.gbProcess);
             this.tabPgGeneral.Controls.Add(this.gbUnpack);
             this.tabPgGeneral.Controls.Add(this.gbGeneral);
@@ -208,7 +209,7 @@
             // gbProcess
             // 
             this.gbProcess.Controls.Add(this.chkPageCount);
-            this.gbProcess.Location = new System.Drawing.Point(6, 159);
+            this.gbProcess.Location = new System.Drawing.Point(6, 116);
             this.gbProcess.Name = "gbProcess";
             this.gbProcess.Size = new System.Drawing.Size(378, 48);
             this.gbProcess.TabIndex = 38;
@@ -227,34 +228,13 @@
             // 
             // gbUnpack
             // 
-            this.gbUnpack.Controls.Add(this.pictureBox1);
-            this.gbUnpack.Controls.Add(this.lblNote);
             this.gbUnpack.Controls.Add(this.chkRaw);
             this.gbUnpack.Location = new System.Drawing.Point(6, 66);
             this.gbUnpack.Name = "gbUnpack";
-            this.gbUnpack.Size = new System.Drawing.Size(378, 89);
+            this.gbUnpack.Size = new System.Drawing.Size(378, 44);
             this.gbUnpack.TabIndex = 37;
             this.gbUnpack.TabStop = false;
             this.gbUnpack.Text = "eBook Unpacking";
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = ((System.Drawing.Image) (resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(14, 45);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(14, 14);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 35;
-            this.pictureBox1.TabStop = false;
-            // 
-            // lblNote
-            // 
-            this.lblNote.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lblNote.Location = new System.Drawing.Point(31, 43);
-            this.lblNote.Name = "lblNote";
-            this.lblNote.Size = new System.Drawing.Size(325, 43);
-            this.lblNote.TabIndex = 34;
-            this.lblNote.Text = "Metadata is now gathered internally rather than with KindleUnpack. If you run int" + "o any metadata extraction errors, please report them on the MobileRead thread.";
             // 
             // chkRaw
             // 
@@ -877,6 +857,25 @@
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
             // 
+            // cbLanguage
+            // 
+            this.cbLanguage.Controls.Add(this.cmbLanguage);
+            this.cbLanguage.Location = new System.Drawing.Point(6, 171);
+            this.cbLanguage.Name = "cbLanguage";
+            this.cbLanguage.Size = new System.Drawing.Size(377, 55);
+            this.cbLanguage.TabIndex = 39;
+            this.cbLanguage.TabStop = false;
+            this.cbLanguage.Text = "Language";
+            // 
+            // cmbLanguage
+            // 
+            this.cmbLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbLanguage.FormattingEnabled = true;
+            this.cmbLanguage.Location = new System.Drawing.Point(6, 19);
+            this.cmbLanguage.Name = "cmbLanguage";
+            this.cmbLanguage.Size = new System.Drawing.Size(160, 21);
+            this.cmbLanguage.TabIndex = 0;
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -905,7 +904,6 @@
             this.gbProcess.PerformLayout();
             this.gbUnpack.ResumeLayout(false);
             this.gbUnpack.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize) (this.pictureBox1)).EndInit();
             this.gbGeneral.ResumeLayout(false);
             this.gbGeneral.PerformLayout();
             this.tabPgDirectories.ResumeLayout(false);
@@ -937,8 +935,12 @@
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
             ((System.ComponentModel.ISupportInitialize) (this.pictureBox2)).EndInit();
+            this.cbLanguage.ResumeLayout(false);
             this.ResumeLayout(false);
         }
+
+        private System.Windows.Forms.GroupBox cbLanguage;
+        private System.Windows.Forms.ComboBox cmbLanguage;
 
         private System.Windows.Forms.Button btnBrowseOut;
         private System.Windows.Forms.Button btnClearLogs;
@@ -991,12 +993,10 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label lblNote;
         private System.Windows.Forms.Label lblPen;
         private System.Windows.Forms.Label lblReal;
         private System.Windows.Forms.Label lblSeperator;
         private System.Windows.Forms.ListBox listSettings;
-        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.TabPage tabPgAmazon;
         private System.Windows.Forms.TabPage tabPgDirectories;

@@ -6,12 +6,16 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using XRayBuilder.Core.Libraries.Enumerables.Extensions;
+using XRayBuilder.Core.Libraries.Language.Localization;
+using XRayBuilderGUI.Localization.Main;
 using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI.UI
 {
     public partial class frmSettings : Form
     {
+        private readonly LanguageFactory _languageFactory;
+
         // TODO: Should be elsewhere maybe
         private readonly Dictionary<string, string> regionTLDs = new Dictionary<string, string>
         {
@@ -25,8 +29,9 @@ namespace XRayBuilderGUI.UI
             { "Germany", "de" }, { "USA", "com" }
         };
 
-        public frmSettings()
+        public frmSettings(LanguageFactory languageFactory)
         {
+            _languageFactory = languageFactory;
             InitializeComponent();
         }
 
@@ -145,6 +150,12 @@ namespace XRayBuilderGUI.UI
             cmbRoentgenRegion.DisplayMember = "Name";
             cmbRoentgenRegion.ValueMember = "TLD";
             cmbRoentgenRegion.SelectedValue = Settings.Default.roentgenRegion;
+
+            var languages = _languageFactory.GetValues().ToArray();
+            cmbLanguage.DataSource = languages;
+            cmbLanguage.DisplayMember = "Label";
+            cmbLanguage.ValueMember = "Language";
+            cmbLanguage.SelectedValue = _languageFactory.Get(Settings.Default.Language)!.Language;
         }
 
         private void btnBrowseOut_Click(object sender, EventArgs e)
@@ -163,6 +174,10 @@ namespace XRayBuilderGUI.UI
                 MessageBox.Show("Length must be an integer.", "Length Error");
                 return;
             }
+
+            var language = _languageFactory.Get(cmbLanguage.SelectedValue.ToString());
+            if (language != null)
+                Settings.Default.Language = language.Language.ToString();
 
             Settings.Default.outDir = txtOut.Text;
             Settings.Default.saverawml = chkRaw.Checked;

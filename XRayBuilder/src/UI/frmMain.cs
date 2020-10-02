@@ -789,7 +789,7 @@ namespace XRayBuilderGUI.UI
 
         private void btnSettings_Click(object sender, EventArgs e)
         {
-            var frmSet = new frmSettings();
+            using var frmSet = _diContainer.GetInstance<frmSettings>();
             frmSet.ShowDialog();
             SetDatasourceLabels();
 

@@ -19,7 +19,7 @@ namespace XRayBuilderGUI.Localization.Main {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class MainStrings {
@@ -57,6 +57,15 @@ namespace XRayBuilderGUI.Localization.Main {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This action can not be undone..
+        /// </summary>
+        internal static string ActionCannotBeUndone {
+            get {
+                return ResourceManager.GetString("ActionCannotBeUndone", resourceCulture);
             }
         }
         
@@ -129,6 +138,15 @@ namespace XRayBuilderGUI.Localization.Main {
         internal static string AmazonSearchResultTitle {
             get {
                 return ResourceManager.GetString("AmazonSearchResultTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure?.
+        /// </summary>
+        internal static string AreYouSure {
+            get {
+                return ResourceManager.GetString("AreYouSure", resourceCulture);
             }
         }
         
@@ -322,6 +340,15 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clear Logs.
+        /// </summary>
+        internal static string ClearLogsTitle {
+            get {
+                return ResourceManager.GetString("ClearLogsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Configure X-Ray Builder..
         /// </summary>
         internal static string ConfigureXRayBuilder {
@@ -366,6 +393,15 @@ namespace XRayBuilderGUI.Localization.Main {
         internal static string DatabaseNameLengthWarning {
             get {
                 return ResourceManager.GetString("DatabaseNameLengthWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to delete all log files?.
+        /// </summary>
+        internal static string DeleteLogFilesConfirmation {
+            get {
+                return ResourceManager.GetString("DeleteLogFilesConfirmation", resourceCulture);
             }
         }
         
@@ -456,6 +492,15 @@ namespace XRayBuilderGUI.Localization.Main {
         internal static string ErrorCreatingStartActions {
             get {
                 return ResourceManager.GetString("ErrorCreatingStartActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred while trying to delete log files..
+        /// </summary>
+        internal static string ErrorDeletingLogFiles {
+            get {
+                return ResourceManager.GetString("ErrorDeletingLogFiles", resourceCulture);
             }
         }
         
@@ -723,6 +768,24 @@ namespace XRayBuilderGUI.Localization.Main {
         internal static string LoadTermsFromFile {
             get {
                 return ResourceManager.GetString("LoadTermsFromFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log directory does not exist..
+        /// </summary>
+        internal static string LogDirectoryDoesNotExist {
+            get {
+                return ResourceManager.GetString("LogDirectoryDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log Directory Not found.
+        /// </summary>
+        internal static string LogDirectoryNotFoundTitle {
+            get {
+                return ResourceManager.GetString("LogDirectoryNotFoundTitle", resourceCulture);
             }
         }
         
@@ -1092,6 +1155,15 @@ namespace XRayBuilderGUI.Localization.Main {
         internal static string UnableToAutomaticallyFindAsinOnAmazon {
             get {
                 return ResourceManager.GetString("UnableToAutomaticallyFindAsinOnAmazon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to delete Log files.
+        /// </summary>
+        internal static string UnableToDeleteLogFilesCaption {
+            get {
+                return ResourceManager.GetString("UnableToDeleteLogFilesCaption", resourceCulture);
             }
         }
         

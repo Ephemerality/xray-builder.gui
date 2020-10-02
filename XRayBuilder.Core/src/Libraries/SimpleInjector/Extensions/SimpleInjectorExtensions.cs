@@ -39,7 +39,7 @@ namespace XRayBuilder.Core.Libraries.SimpleInjector.Extensions
             if (!typeof(TInterface).IsInterface)
                 throw new ArgumentException("Type not an interface", nameof(TInterface));
 
-            var types = ReflectionUtil.GetConcreteFromInterface<TInterface>().ToArray();
+            var types = ReflectionUtil.GetConcreteFromInterface<TInterface>();
             foreach (var type in types)
                 container.Register(type, type, lifestyle);
         }
@@ -52,7 +52,7 @@ namespace XRayBuilder.Core.Libraries.SimpleInjector.Extensions
             if (!@interface.IsInterface)
                 throw new ArgumentException("Type not an interface", nameof(@interface));
 
-            var types = ReflectionUtil.GetConcreteFromInterface(@interface).ToArray();
+            var types = ReflectionUtil.GetConcreteFromInterface(@interface);
             foreach (var type in types)
                 container.Register(type, type, lifestyle);
         }
@@ -65,7 +65,7 @@ namespace XRayBuilder.Core.Libraries.SimpleInjector.Extensions
             if (!typeof(TInterface).IsInterface)
                 throw new ArgumentException("Type not an interface", nameof(TInterface));
 
-            var types = ReflectionUtil.GetConcreteFromInterface<TInterface>().ToArray();
+            var types = ReflectionUtil.GetConcreteFromInterface<TInterface>();
             foreach (var type in types)
             {
                 container.Register(type, type, Lifestyle.Transient);
@@ -76,5 +76,11 @@ namespace XRayBuilder.Core.Libraries.SimpleInjector.Extensions
 
         public static void RegisterSingleton<TConcrete>(this Container container) where TConcrete : class
             => container.Register<TConcrete>(Lifestyle.Singleton);
+
+        public static void AutoregisterConcreteCollectionFromInterface<TInterface>(this Container container, Lifestyle lifestyle)
+        {
+            var types = ReflectionUtil.GetConcreteFromInterface<TInterface>();
+            container.Collection.Register(typeof(TInterface), types, lifestyle);
+        }
     }
 }

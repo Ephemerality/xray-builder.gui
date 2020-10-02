@@ -501,4 +501,28 @@ Do you wish to continue?</value>
   <data name="ExtractXRayToXml" xml:space="preserve">
     <value>Extract an existing X-Ray file to an XML file.</value>
   </data>
+  <data name="ErrorDeletingLogFiles" xml:space="preserve">
+    <value>An error occurred while trying to delete log files.</value>
+  </data>
+  <data name="UnableToDeleteLogFilesCaption" xml:space="preserve">
+    <value>Unable to delete Log files</value>
+  </data>
+  <data name="ClearLogsTitle" xml:space="preserve">
+    <value>Clear Logs</value>
+  </data>
+  <data name="AreYouSure" xml:space="preserve">
+    <value>Are you sure?</value>
+  </data>
+  <data name="ActionCannotBeUndone" xml:space="preserve">
+    <value>This action can not be undone.</value>
+  </data>
+  <data name="DeleteLogFilesConfirmation" xml:space="preserve">
+    <value>Are you sure you want to delete all log files?</value>
+  </data>
+  <data name="LogDirectoryNotFoundTitle" xml:space="preserve">
+    <value>Log Directory Not found</value>
+  </data>
+  <data name="LogDirectoryDoesNotExist" xml:space="preserve">
+    <value>Log directory does not exist.</value>
+  </data>
 </root>

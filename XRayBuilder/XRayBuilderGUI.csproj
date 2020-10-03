@@ -93,6 +93,11 @@
   </Choose>
 
   <ItemGroup>
+    <Compile Update="src\Localization\Main\MainStrings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MainStrings.resx</DependentUpon>
+    </Compile>
     <Compile Update="src\UI\frmAbout - Copy.designer.cs">
       <DependentUpon>frmAbout.cs</DependentUpon>
     </Compile>
@@ -176,8 +181,10 @@
     <None Include="Resources\people.png" />
     <None Include="Resources\seperator.png" />
     <None Include="Resources\missing-image.png" />
-    <EmbeddedResource Update="src\UI\frmAbout - Copy.resx">
-      <DependentUpon>frmAbout.cs</DependentUpon>
+    <EmbeddedResource Update="src\Localization\Main\MainStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MainStrings.Designer.cs</LastGenOutput>
+	  <CustomToolNamespace>XRayBuilderGUI.Localization.Main</CustomToolNamespace>
     </EmbeddedResource>
     <EmbeddedResource Update="src\UI\frmAbout.resx">
       <DependentUpon>frmAbout.cs</DependentUpon>

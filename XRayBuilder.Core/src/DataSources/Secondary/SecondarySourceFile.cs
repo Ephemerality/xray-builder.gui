@@ -44,7 +44,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
                 case ".txt":
                     return Task.FromResult(_termsService.ReadTermsFromTxt(xmlFile));
                 default:
-                    _logger.Log("Error: Bad file type \"" + filetype + "\"");
+                    _logger.Log($"Error: Bad file type \"{filetype}\"");
                     break;
             }
 

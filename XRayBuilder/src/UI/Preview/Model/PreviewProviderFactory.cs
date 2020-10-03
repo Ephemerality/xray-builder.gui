@@ -21,7 +21,7 @@ namespace XRayBuilderGUI.UI.Preview.Model
             };
         }
 
-        protected override Dictionary<PreviewType, PreviewProvider> Dictionary { get; }
+        protected override IReadOnlyDictionary<PreviewType, PreviewProvider> Dictionary { get; }
 
         public enum PreviewType
         {

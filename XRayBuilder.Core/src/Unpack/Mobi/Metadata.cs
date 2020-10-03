@@ -226,7 +226,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
                 1 => (IDecompressor) new UncompressedReader(),
                 2 => new PalmDocReader(),
                 17480 => new HuffCdicReader(),
-                _ => throw new UnpackException("Unknown compression type " + _activePdh.Compression + ".")
+                _ => throw new UnpackException($"Unknown compression type {_activePdh.Compression}.")
             };
 
             decomp.Initialize(_mobiHeader, _pdb, _headerRecords);

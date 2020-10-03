@@ -166,7 +166,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
                         newTerm.MatchCase = false;
                     //Default glossary terms to be case insensitive when searching through book
                     if (terms.Select(t => t.TermName).Contains(newTerm.TermName))
-                        _logger.Log("Duplicate term \"" + newTerm.TermName + "\" found. Ignoring this duplicate.");
+                        _logger.Log($"Duplicate term \"{newTerm.TermName}\" found. Ignoring this duplicate.");
                     else
                         terms.Add(newTerm);
                 }

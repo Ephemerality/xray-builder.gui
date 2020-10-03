@@ -70,30 +70,30 @@
             // lblTitleHead
             // 
             this.lblTitleHead.AutoSize = true;
-            this.lblTitleHead.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTitleHead.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTitleHead.Location = new System.Drawing.Point(33, 12);
             this.lblTitleHead.Name = "lblTitleHead";
-            this.lblTitleHead.Size = new System.Drawing.Size(44, 20);
+            this.lblTitleHead.Size = new System.Drawing.Size(42, 20);
             this.lblTitleHead.TabIndex = 4;
             this.lblTitleHead.Text = "Title:";
             // 
             // lblAsin
             // 
             this.lblAsin.AutoSize = true;
-            this.lblAsin.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAsin.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAsin.Location = new System.Drawing.Point(28, 68);
             this.lblAsin.Name = "lblAsin";
-            this.lblAsin.Size = new System.Drawing.Size(49, 20);
+            this.lblAsin.Size = new System.Drawing.Size(47, 20);
             this.lblAsin.TabIndex = 5;
             this.lblAsin.Text = "ASIN:";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(13, 40);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(64, 20);
+            this.label1.Size = new System.Drawing.Size(62, 20);
             this.label1.TabIndex = 7;
             this.label1.Text = "Author:";
             // 

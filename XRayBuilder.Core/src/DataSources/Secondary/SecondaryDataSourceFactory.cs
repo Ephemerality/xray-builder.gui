@@ -34,7 +34,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
             Roentgen
         }
 
-        protected override Dictionary<Enum, ISecondarySource> Dictionary { get; }
+        protected override IReadOnlyDictionary<Enum, ISecondarySource> Dictionary { get; }
 
         [CanBeNull]
         public ISecondarySource GetInferredSource(string urlOrPath)

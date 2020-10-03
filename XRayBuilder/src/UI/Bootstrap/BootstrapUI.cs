@@ -17,11 +17,12 @@ namespace XRayBuilderGUI.UI.Bootstrap
         public void Register(Container container)
         {
             container.RegisterTransientIgnore<frmMain>("Disposed by application");
+            container.RegisterTransientIgnore<frmCreateXR>("Manually disposed");
+            container.RegisterTransientIgnore<frmSettings>("Manually disposed");
             container.RegisterSingleton<PreviewProviderFactory>();
             container.AutoregisterConcreteFromAbstract<PreviewProvider>(Lifestyle.Singleton);
             container.AutoregisterDisposableTransientConcreteFromInterface<IPreviewForm>("Manually disposed");
             container.RegisterSingleton<ILogger, Logger>();
-            container.RegisterTransientIgnore<frmCreateXR>("Disposed by application");
         }
     }
 }

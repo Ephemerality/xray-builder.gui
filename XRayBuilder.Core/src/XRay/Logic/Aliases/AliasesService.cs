@@ -54,9 +54,7 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             }
             catch (Exception ex)
             {
-                logger.Log("An error occurred while opening the BaseSplitIgnore.txt file.\r\n" +
-                    "Ensure you extracted it to the same directory as the program.\r\n" +
-                    ex.Message + "\r\nUsing built-in default terms...");
+                logger.Log($"An error occurred while opening the BaseSplitIgnore.txt file.\r\nEnsure you extracted it to the same directory as the program.\r\n{ex.Message}\r\nUsing built-in default terms...");
             }
 
             _sanitizePattern = new Regex($@"( ?({string.Join("|", _commonTitles)})\.? )|(^[A-Z]\. )|( [A-Z]\.)|("")|(“)|(”)|(,)|(')");

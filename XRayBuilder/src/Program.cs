@@ -12,7 +12,11 @@ using XRayBuilder.Core.Libraries.Http.Bootstrap;
 using XRayBuilder.Core.Libraries.SimpleInjector.Extensions;
 using XRayBuilder.Core.Model.Exceptions;
 using XRayBuilder.Core.XRay.Bootstrap;
+using XRayBuilder.Core.Libraries.Language.Bootstrap;
+using XRayBuilder.Core.Libraries.Language.Localization;
 using XRayBuilderGUI.Config;
+using XRayBuilderGUI.Localization.Main;
+using XRayBuilderGUI.Properties;
 using XRayBuilderGUI.UI;
 using XRayBuilderGUI.UI.Bootstrap;
 
@@ -40,8 +44,24 @@ namespace XRayBuilderGUI
             // SimpleInjector verification throws an InvalidOperationException with an ActivationException that contains the actual exception
             catch (InvalidOperationException e) when (e.InnerException?.InnerException is InitializationException iEx)
             {
-                MessageBox.Show($@"Failed to initialize the application:{"\r\n"}{iEx.Message}");
+                MessageBox.Show($@"{MainStrings.InitializeFailed}:\r\n{iEx.Message}");
             }
+
+            
+            // Use the saved language if it's available, otherwise fall back on the system language if supported, otherwise default to English
+            var languageFactory = _container.GetInstance<LanguageFactory>();
+            var language = languageFactory.Get(Settings.Default.Language)
+                           ?? languageFactory.GetWindowsLanguage()
+                           ?? languageFactory.Get(LanguageFactory.Enum.English);
+
+            if (language.Language.ToString() != Settings.Default.Language)
+            {
+                Settings.Default.Language = language.Language.ToString();
+                Settings.Default.Save();
+            }
+
+            language.CultureInfo.SetAsThreadCulture();
+
             Application.Run(_container.GetInstance<frmMain>());
         }
 
@@ -52,6 +72,7 @@ namespace XRayBuilderGUI
         {
             _container = new Container();
 
+            // TODO this doesn't work due to generic typing on interfaces not working with IsAssignableFrom
             _container.AutoregisterConcreteFromInterface(typeof(IFactory<,>), Lifestyle.Singleton);
 
             var builder = new BootstrapBuilder(_container);
@@ -65,6 +86,7 @@ namespace XRayBuilderGUI
             builder.Register<BootstrapRoentgen>();
             builder.Register<BootstrapXRayBuilder>();
             builder.Register<BootstrapConfig>();
+            builder.Register<BootstrapLanguage>();
 
             builder.Build();
         }

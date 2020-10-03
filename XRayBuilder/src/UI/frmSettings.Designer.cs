@@ -102,6 +102,8 @@
             this.chkRoentgenEndActions = new System.Windows.Forms.CheckBox();
             this.chkRoentgenStartActions = new System.Windows.Forms.CheckBox();
             this.listSettings = new System.Windows.Forms.ListBox();
+            this.cbLanguage = new System.Windows.Forms.GroupBox();
+            this.cmbLanguage = new System.Windows.Forms.ComboBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -129,6 +131,7 @@
             this.groupBox9.SuspendLayout();
             this.groupBox7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            this.cbLanguage.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSupport
@@ -190,6 +193,7 @@
             // 
             // tabPgGeneral
             // 
+            this.tabPgGeneral.Controls.Add(this.cbLanguage);
             this.tabPgGeneral.Controls.Add(this.groupBox2);
             this.tabPgGeneral.Controls.Add(this.gbProcess);
             this.tabPgGeneral.Controls.Add(this.gbUnpack);
@@ -207,7 +211,7 @@
             this.groupBox2.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.Location = new System.Drawing.Point(4, 276);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(504, 75);
+            this.groupBox2.Size = new System.Drawing.Size(243, 75);
             this.groupBox2.TabIndex = 39;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Data Provider";
@@ -223,7 +227,7 @@
             "LibraryThing"});
             this.cmbSecondaryDataSource.Location = new System.Drawing.Point(18, 28);
             this.cmbSecondaryDataSource.Name = "cmbSecondaryDataSource";
-            this.cmbSecondaryDataSource.Size = new System.Drawing.Size(138, 28);
+            this.cmbSecondaryDataSource.Size = new System.Drawing.Size(207, 28);
             this.cmbSecondaryDataSource.TabIndex = 0;
             // 
             // gbProcess
@@ -964,6 +968,31 @@
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
             // 
+            // cbLanguage
+            // 
+            this.cbLanguage.Controls.Add(this.cmbLanguage);
+            this.cbLanguage.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cbLanguage.Location = new System.Drawing.Point(264, 276);
+            this.cbLanguage.Name = "cbLanguage";
+            this.cbLanguage.Size = new System.Drawing.Size(244, 75);
+            this.cbLanguage.TabIndex = 40;
+            this.cbLanguage.TabStop = false;
+            this.cbLanguage.Text = "Language";
+            // 
+            // cmbLanguage
+            // 
+            this.cmbLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbLanguage.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbLanguage.FormattingEnabled = true;
+            this.cmbLanguage.Items.AddRange(new object[] {
+            "Goodreads",
+            "Shelfari",
+            "LibraryThing"});
+            this.cmbLanguage.Location = new System.Drawing.Point(18, 28);
+            this.cmbLanguage.Name = "cmbLanguage";
+            this.cmbLanguage.Size = new System.Drawing.Size(208, 28);
+            this.cmbLanguage.TabIndex = 0;
+            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -1029,6 +1058,7 @@
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            this.cbLanguage.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1109,5 +1139,7 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.ComboBox cmbSecondaryDataSource;
         private System.Windows.Forms.CheckBox chkEditDescription;
+        private System.Windows.Forms.GroupBox cbLanguage;
+        private System.Windows.Forms.ComboBox cmbLanguage;
     }
 }

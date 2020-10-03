@@ -6,12 +6,16 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using XRayBuilder.Core.Libraries.Enumerables.Extensions;
+using XRayBuilder.Core.Libraries.Language.Localization;
+using XRayBuilderGUI.Localization.Main;
 using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI.UI
 {
     public partial class frmSettings : Form
     {
+        private readonly LanguageFactory _languageFactory;
+
         // TODO: Should be elsewhere maybe
         private readonly Dictionary<string, string> regionTLDs = new Dictionary<string, string>
         {
@@ -25,8 +29,9 @@ namespace XRayBuilderGUI.UI
             {"Germany", "de"}, {"USA", "com"}
         };
 
-        public frmSettings()
+        public frmSettings(LanguageFactory languageFactory)
         {
+            _languageFactory = languageFactory;
             InitializeComponent();
         }
 
@@ -47,9 +52,9 @@ namespace XRayBuilderGUI.UI
 
             if (Directory.Exists(Environment.CurrentDirectory + @"\log"))
             {
-                var fileCount = Directory.GetFiles(Environment.CurrentDirectory + @"\log").Length;
+                var fileCount = Directory.GetFiles($@"{Environment.CurrentDirectory}\log").Length;
                 if (fileCount > 0)
-                    btnClearLogs.Text = $@"Clear Logs ({fileCount})";
+                    btnClearLogs.Text = $@"{MainStrings.ClearLogsTitle} ({fileCount})";
                 else
                     btnClearLogs.Enabled = false;
             }
@@ -108,7 +113,7 @@ namespace XRayBuilderGUI.UI
                 "directory within the 'Android' folder.");
             toolTip1.SetToolTip(chkSkipNoLikes, "Skip notable clips with no likes.\r\n" +
                                                 "Enable to for filter out garbage\r\n" +
-                                               "quotes from Goodreads.");
+                                                "quotes from Goodreads.");
             toolTip1.SetToolTip(txtMinClipLen, "Minimum length for notable clips.\r\n" +
                                                "Enable to for filter out garbage\r\n" +
                                                "quotes from Goodreads.");
@@ -122,8 +127,9 @@ namespace XRayBuilderGUI.UI
                 "Open Notepad to enable editing of\r\n" +
                 "detected Chapters and Aliases\r\n" +
                 "before final X-Ray creation.");
-            toolTip1.SetToolTip(chkSubDirectories,"Save generated files to an\r\n\"Author\\Filename\" sub directory.");
-            toolTip1.SetToolTip(chkUseSidecar, "Save generated files to a\r\nsidecar subdirectory based\r\non the filename.");
+            toolTip1.SetToolTip(chkSubDirectories, "Save generated files to an\r\n\"Author\\Filename\" sub directory.");
+            toolTip1.SetToolTip(chkUseSidecar,
+                "Save generated files to a\r\nsidecar subdirectory based\r\non the filename.");
             toolTip1.SetToolTip(btnLogs, "Open the log files directory.");
             toolTip1.SetToolTip(chkOverwriteAP, "Overwrite existing Author Profile files.");
             toolTip1.SetToolTip(chkOverwriteEA, "Overwrite existing End Actions files.");
@@ -163,7 +169,7 @@ namespace XRayBuilderGUI.UI
                 "If enabled, allows editing the Author's\r\n" +
                 "biography before it's used.");
             toolTip1.SetToolTip(chkEditDescription, "If enabled, allows editing the book's\r\n" +
-                                                   "description before it's used.");
+                                                    "description before it's used.");
             toolTip1.SetToolTip(chkAutoBuildAP,
                 "When enabled, the Author Profile will be\r\n" +
                 "built using a downloaded End Actions file,\r\n" +
@@ -187,6 +193,12 @@ namespace XRayBuilderGUI.UI
             cmbRoentgenRegion.DisplayMember = "Name";
             cmbRoentgenRegion.ValueMember = "TLD";
             cmbRoentgenRegion.SelectedValue = Settings.Default.roentgenRegion;
+
+            var languages = _languageFactory.GetValues().ToArray();
+            cmbLanguage.DataSource = languages;
+            cmbLanguage.DisplayMember = "Label";
+            cmbLanguage.ValueMember = "Language";
+            cmbLanguage.SelectedValue = _languageFactory.Get(Settings.Default.Language)!.Language;
         }
 
         private void btnBrowseOut_Click(object sender, EventArgs e)
@@ -208,10 +220,18 @@ namespace XRayBuilderGUI.UI
 
             if (!int.TryParse(txtMinClipLen.Text, out var minClipLen))
             {
-                MessageBox.Show(@"Notable clip minimum length must be an integer.", @"Length Error", MessageBoxButtons.OK,
+                MessageBox.Show(@"Notable clip minimum length must be an integer.", @"Length Error",
+                    MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
                 listSettings.SelectedIndex = 2;
                 return;
+            }
+
+            var language = _languageFactory.Get(cmbLanguage.SelectedValue.ToString());
+            if (language != null && language.Language.ToString() != Settings.Default.Language)
+            {
+                Settings.Default.Language = language.Language.ToString();
+                MessageBox.Show(MainStrings.RestartRequired, MainStrings.RestartRequiredTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
             Settings.Default.outDir = txtOut.Text;
@@ -276,39 +296,37 @@ namespace XRayBuilderGUI.UI
 
         private void btnLogs_Click(object sender, EventArgs e)
         {
-            if (!Directory.Exists(Environment.CurrentDirectory + @"\log"))
+            if (!Directory.Exists($@"{Environment.CurrentDirectory}\log"))
             {
-                MessageBox.Show(@"Log directory does not exist.", @"Log Directory Not found", MessageBoxButtons.OK,
+                MessageBox.Show(MainStrings.LogDirectoryDoesNotExist, MainStrings.LogDirectoryNotFoundTitle,
+                    MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
                 return;
             }
 
-            Process.Start(Environment.CurrentDirectory + @"\log");
+            Process.Start($@"{Environment.CurrentDirectory}\log");
         }
 
         private void btnClearLogs_Click(object sender, EventArgs e)
         {
-            if (DialogResult.Yes != MessageBox.Show(
-                @"Are you sure you want to delete all log files?" + Environment.NewLine +
-                @"This action can not be undone.",
-                @"Are you sure...",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question,
-                MessageBoxDefaultButton.Button2)) return;
-            try
-            {
-                Cursor = Cursors.WaitCursor;
-                Array.ForEach(Directory.GetFiles(Environment.CurrentDirectory + @"\log"), File.Delete);
-                btnClearLogs.Text = @"Clear Logs";
-                btnClearLogs.Enabled = false;
-                Cursor = Cursors.Default;
-            }
-            catch (Exception)
-            {
-                Cursor = Cursors.Default;
-                MessageBox.Show(@"An error occurred while trying to delete log files.", @"Unable to delete Log files",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            if (DialogResult.Yes == MessageBox.Show(
+                $@"{MainStrings.DeleteLogFilesConfirmation}{Environment.NewLine}{MainStrings.ActionCannotBeUndone}",
+                MainStrings.AreYouSure, MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                MessageBoxDefaultButton.Button2))
+                try
+                {
+                    Cursor = Cursors.WaitCursor;
+                    Array.ForEach(Directory.GetFiles($@"{Environment.CurrentDirectory}\log"), File.Delete);
+                    btnClearLogs.Text = MainStrings.ClearLogsTitle;
+                    btnClearLogs.Enabled = false;
+                    Cursor = Cursors.Default;
+                }
+                catch (Exception)
+                {
+                    Cursor = Cursors.Default;
+                    MessageBox.Show(MainStrings.ErrorDeletingLogFiles, MainStrings.UnableToDeleteLogFilesCaption,
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
         }
 
         private void chkOverwrite_CheckedChanged(object sender, EventArgs e)
@@ -330,9 +348,8 @@ namespace XRayBuilderGUI.UI
             e.DrawBackground();
             e.DrawFocusRectangle();
 
-            e.Graphics.DrawString(listSettings.Items[e.Index].ToString(),
-                Font, (e.State & DrawItemState.Selected) == DrawItemState.Selected ? Brushes.White : Brushes.Black,
-                e.Bounds.X + 5, e.Bounds.Y + 5);
+            var brush = (e.State & DrawItemState.Selected) != 0 ? Brushes.White : Brushes.Black;
+            e.Graphics.DrawString(listSettings.Items[e.Index].ToString(), Font, brush, e.Bounds.X + 5, e.Bounds.Y + 5);
         }
 
         private void listSettings_MeasureItem(object sender, MeasureItemEventArgs e)

@@ -95,6 +95,7 @@
             this.groupBox1.Controls.Add(this.lblAuthor);
             this.groupBox1.Controls.Add(this.lblID);
             this.groupBox1.Controls.Add(this.pbCover);
+            this.groupBox1.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(17, 117);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(478, 137);
@@ -106,6 +107,7 @@
             // 
             this.linkID.ActiveLinkColor = System.Drawing.Color.MediumBlue;
             this.linkID.AutoSize = true;
+            this.linkID.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.linkID.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
             this.linkID.LinkColor = System.Drawing.Color.MediumBlue;
             this.linkID.Location = new System.Drawing.Point(194, 101);
@@ -121,6 +123,7 @@
             // lblEditions
             // 
             this.lblEditions.AutoEllipsis = true;
+            this.lblEditions.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblEditions.Location = new System.Drawing.Point(91, 82);
             this.lblEditions.Name = "lblEditions";
             this.lblEditions.Size = new System.Drawing.Size(379, 20);
@@ -131,6 +134,7 @@
             // lblRating
             // 
             this.lblRating.AutoEllipsis = true;
+            this.lblRating.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblRating.Location = new System.Drawing.Point(91, 63);
             this.lblRating.Name = "lblRating";
             this.lblRating.Size = new System.Drawing.Size(379, 20);
@@ -141,7 +145,7 @@
             // lblTitle
             // 
             this.lblTitle.AutoEllipsis = true;
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTitle.Location = new System.Drawing.Point(91, 25);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(379, 20);
@@ -153,6 +157,7 @@
             // lblAuthor
             // 
             this.lblAuthor.AutoEllipsis = true;
+            this.lblAuthor.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAuthor.Location = new System.Drawing.Point(91, 44);
             this.lblAuthor.Name = "lblAuthor";
             this.lblAuthor.Size = new System.Drawing.Size(379, 20);
@@ -164,6 +169,7 @@
             // 
             this.lblID.AutoEllipsis = true;
             this.lblID.AutoSize = true;
+            this.lblID.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblID.Location = new System.Drawing.Point(91, 101);
             this.lblID.Name = "lblID";
             this.lblID.Size = new System.Drawing.Size(104, 20);

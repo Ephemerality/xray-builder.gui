@@ -100,12 +100,12 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
                 //Check for misplaced pipe character in aliases
                 if (temp2[0] != "" && temp2.Any(r => Regex.Match(@"\|", r).Success))
                 {
-                    _logger.Log("An error occurred parsing the alias file. Ignoring term: " + temp[0] + " aliases.\r\nCheck the file is in the correct format: Character Name|Alias1,Alias2,Etc");
+                    _logger.Log($"An error occurred parsing the alias file. Ignoring term: {temp[0]} aliases.\r\nCheck the file is in the correct format: Character Name|Alias1,Alias2,Etc");
                     continue;
                 }
                 if (temp2.Length == 0 || temp2[0] == "") continue;
                 if (aliasesByTermName.ContainsKey(temp[0]))
-                    _logger.Log("Duplicate alias of " + temp[0] + " found. Ignoring the duplicate.");
+                    _logger.Log($"Duplicate alias of {temp[0]} found. Ignoring the duplicate.");
                 else
                     aliasesByTermName.Add(temp[0], temp2);
             }
@@ -137,7 +137,7 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             }
             catch (Exception ex)
             {
-                _logger.Log("An error occurred while saving the aliases.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                _logger.Log($"An error occurred while saving the aliases.\r\n{ex.Message}\r\n{ex.StackTrace}");
                 return null;
             }
 

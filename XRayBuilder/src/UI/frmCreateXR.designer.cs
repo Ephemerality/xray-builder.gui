@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmAbout));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmCreateXR));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.cmsTerms = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tsmEdit = new System.Windows.Forms.ToolStripMenuItem();
@@ -319,6 +319,7 @@
             this.groupBox6.Controls.Add(this.lblTitle);
             this.groupBox6.Controls.Add(this.txtAuthor);
             this.groupBox6.Controls.Add(this.lblAuthor);
+            this.groupBox6.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox6.Location = new System.Drawing.Point(17, 105);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(974, 74);
@@ -328,6 +329,7 @@
             // 
             // txtAsin
             // 
+            this.txtAsin.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtAsin.Location = new System.Drawing.Point(836, 28);
             this.txtAsin.Name = "txtAsin";
             this.txtAsin.Size = new System.Drawing.Size(120, 27);
@@ -336,6 +338,7 @@
             // lblAsin
             // 
             this.lblAsin.AutoSize = true;
+            this.lblAsin.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAsin.Location = new System.Drawing.Point(779, 31);
             this.lblAsin.Name = "lblAsin";
             this.lblAsin.Size = new System.Drawing.Size(45, 20);
@@ -345,6 +348,7 @@
             // 
             // txtTitle
             // 
+            this.txtTitle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtTitle.Location = new System.Drawing.Point(459, 28);
             this.txtTitle.Name = "txtTitle";
             this.txtTitle.Size = new System.Drawing.Size(307, 27);
@@ -353,6 +357,7 @@
             // lblTitle
             // 
             this.lblTitle.AutoSize = true;
+            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTitle.Location = new System.Drawing.Point(406, 31);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(41, 20);
@@ -362,6 +367,7 @@
             // 
             // txtAuthor
             // 
+            this.txtAuthor.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtAuthor.Location = new System.Drawing.Point(83, 28);
             this.txtAuthor.Name = "txtAuthor";
             this.txtAuthor.Size = new System.Drawing.Size(310, 27);
@@ -370,6 +376,7 @@
             // lblAuthor
             // 
             this.lblAuthor.AutoSize = true;
+            this.lblAuthor.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAuthor.Location = new System.Drawing.Point(14, 31);
             this.lblAuthor.Name = "lblAuthor";
             this.lblAuthor.Size = new System.Drawing.Size(57, 20);
@@ -379,9 +386,10 @@
             // 
             // groupBox5
             // 
-            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox5.Controls.Add(this.txtDescription);
+            this.groupBox5.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox5.Location = new System.Drawing.Point(556, 185);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(435, 205);
@@ -391,8 +399,9 @@
             // 
             // txtDescription
             // 
-            this.txtDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtDescription.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtDescription.Location = new System.Drawing.Point(18, 28);
             this.txtDescription.Multiline = true;
             this.txtDescription.Name = "txtDescription";
@@ -404,6 +413,7 @@
             // 
             this.groupBox4.Controls.Add(this.rdoCharacter);
             this.groupBox4.Controls.Add(this.rdoTopic);
+            this.groupBox4.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox4.Location = new System.Drawing.Point(17, 395);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(174, 63);
@@ -414,6 +424,7 @@
             // rdoCharacter
             // 
             this.rdoCharacter.AutoSize = true;
+            this.rdoCharacter.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rdoCharacter.Location = new System.Drawing.Point(18, 24);
             this.rdoCharacter.Name = "rdoCharacter";
             this.rdoCharacter.Size = new System.Drawing.Size(73, 24);
@@ -424,6 +435,7 @@
             // rdoTopic
             // 
             this.rdoTopic.AutoSize = true;
+            this.rdoTopic.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rdoTopic.Location = new System.Drawing.Point(101, 24);
             this.rdoTopic.Name = "rdoTopic";
             this.rdoTopic.Size = new System.Drawing.Size(63, 24);
@@ -437,8 +449,8 @@
             this.dgvTerms.AllowUserToDeleteRows = false;
             this.dgvTerms.AllowUserToOrderColumns = true;
             this.dgvTerms.AllowUserToResizeRows = false;
-            this.dgvTerms.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.dgvTerms.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvTerms.BackgroundColor = System.Drawing.SystemColors.Window;
             this.dgvTerms.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
@@ -555,6 +567,7 @@
             this.groupBox2.Controls.Add(this.chkRegex);
             this.groupBox2.Controls.Add(this.chkMatch);
             this.groupBox2.Controls.Add(this.chkCase);
+            this.groupBox2.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.Location = new System.Drawing.Point(556, 397);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(435, 63);
@@ -566,6 +579,7 @@
             // 
             this.chkDelete.AutoSize = true;
             this.chkDelete.Enabled = false;
+            this.chkDelete.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkDelete.Location = new System.Drawing.Point(232, 25);
             this.chkDelete.Name = "chkDelete";
             this.chkDelete.Size = new System.Drawing.Size(75, 24);
@@ -577,6 +591,7 @@
             // 
             this.chkRegex.AutoSize = true;
             this.chkRegex.Enabled = false;
+            this.chkRegex.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkRegex.Location = new System.Drawing.Point(316, 25);
             this.chkRegex.Name = "chkRegex";
             this.chkRegex.Size = new System.Drawing.Size(72, 24);
@@ -587,6 +602,7 @@
             // chkMatch
             // 
             this.chkMatch.AutoSize = true;
+            this.chkMatch.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkMatch.Location = new System.Drawing.Point(18, 25);
             this.chkMatch.Name = "chkMatch";
             this.chkMatch.Size = new System.Drawing.Size(72, 24);
@@ -597,6 +613,7 @@
             // chkCase
             // 
             this.chkCase.AutoSize = true;
+            this.chkCase.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkCase.Location = new System.Drawing.Point(99, 25);
             this.chkCase.Name = "chkCase";
             this.chkCase.Size = new System.Drawing.Size(124, 24);
@@ -614,6 +631,7 @@
             this.groupBox3.Controls.Add(this.txtName);
             this.groupBox3.Controls.Add(this.lblName);
             this.groupBox3.Controls.Add(this.lblAliases);
+            this.groupBox3.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox3.Location = new System.Drawing.Point(17, 185);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(522, 206);
@@ -623,6 +641,7 @@
             // 
             // txtWildcards
             // 
+            this.txtWildcards.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtWildcards.Location = new System.Drawing.Point(104, 116);
             this.txtWildcards.Name = "txtWildcards";
             this.txtWildcards.Size = new System.Drawing.Size(400, 27);
@@ -631,6 +650,7 @@
             // lblWildcards
             // 
             this.lblWildcards.AutoSize = true;
+            this.lblWildcards.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblWildcards.Location = new System.Drawing.Point(14, 117);
             this.lblWildcards.Name = "lblWildcards";
             this.lblWildcards.Size = new System.Drawing.Size(78, 20);
@@ -640,6 +660,7 @@
             // 
             // txtLink
             // 
+            this.txtLink.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtLink.Location = new System.Drawing.Point(104, 160);
             this.txtLink.Name = "txtLink";
             this.txtLink.Size = new System.Drawing.Size(400, 27);
@@ -648,6 +669,7 @@
             // lblLink
             // 
             this.lblLink.AutoSize = true;
+            this.lblLink.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblLink.Location = new System.Drawing.Point(20, 161);
             this.lblLink.Name = "lblLink";
             this.lblLink.Size = new System.Drawing.Size(72, 20);
@@ -657,6 +679,7 @@
             // 
             // txtAliases
             // 
+            this.txtAliases.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtAliases.Location = new System.Drawing.Point(104, 72);
             this.txtAliases.Name = "txtAliases";
             this.txtAliases.Size = new System.Drawing.Size(400, 27);
@@ -664,6 +687,7 @@
             // 
             // txtName
             // 
+            this.txtName.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtName.Location = new System.Drawing.Point(104, 28);
             this.txtName.Name = "txtName";
             this.txtName.Size = new System.Drawing.Size(400, 27);
@@ -672,6 +696,7 @@
             // lblName
             // 
             this.lblName.AutoSize = true;
+            this.lblName.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblName.Location = new System.Drawing.Point(40, 31);
             this.lblName.Name = "lblName";
             this.lblName.Size = new System.Drawing.Size(52, 20);
@@ -682,6 +707,7 @@
             // lblAliases
             // 
             this.lblAliases.AutoSize = true;
+            this.lblAliases.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAliases.Location = new System.Drawing.Point(34, 73);
             this.lblAliases.Name = "lblAliases";
             this.lblAliases.Size = new System.Drawing.Size(58, 20);
@@ -694,6 +720,7 @@
             this.groupBox1.Controls.Add(this.rdoNone);
             this.groupBox1.Controls.Add(this.rdoWikipedia);
             this.groupBox1.Controls.Add(this.rdoGoodreads);
+            this.groupBox1.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(208, 397);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(331, 63);
@@ -704,6 +731,7 @@
             // rdoNone
             // 
             this.rdoNone.AutoSize = true;
+            this.rdoNone.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rdoNone.Location = new System.Drawing.Point(236, 24);
             this.rdoNone.Name = "rdoNone";
             this.rdoNone.Size = new System.Drawing.Size(66, 24);
@@ -714,6 +742,7 @@
             // rdoWikipedia
             // 
             this.rdoWikipedia.AutoSize = true;
+            this.rdoWikipedia.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rdoWikipedia.Location = new System.Drawing.Point(130, 24);
             this.rdoWikipedia.Name = "rdoWikipedia";
             this.rdoWikipedia.Size = new System.Drawing.Size(97, 24);
@@ -724,6 +753,7 @@
             // rdoGoodreads
             // 
             this.rdoGoodreads.AutoSize = true;
+            this.rdoGoodreads.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rdoGoodreads.Location = new System.Drawing.Point(17, 24);
             this.rdoGoodreads.Name = "rdoGoodreads";
             this.rdoGoodreads.Size = new System.Drawing.Size(103, 24);

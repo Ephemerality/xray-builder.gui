@@ -23,6 +23,6 @@ namespace XRayBuilder.Core.XRay.Model.Export
             Sqlite
         }
 
-        protected override Dictionary<Enum, IXRayExporter> Dictionary { get; }
+        protected override IReadOnlyDictionary<Enum, IXRayExporter> Dictionary { get; }
     }
 }

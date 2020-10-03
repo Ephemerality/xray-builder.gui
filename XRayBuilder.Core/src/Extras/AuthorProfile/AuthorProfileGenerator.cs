@@ -41,13 +41,13 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             }
             catch (Exception ex)
             {
-                _logger.Log("Error searching Amazon." + request.Settings.AmazonTld + ": " + ex.Message + "\r\n" + ex.StackTrace);
+                _logger.Log($"Error searching Amazon.{request.Settings.AmazonTld}: {ex.Message}\r\n{ex.StackTrace}");
             }
             finally
             {
                 if (searchResults == null)
                 {
-                    _logger.Log(string.Format("Failed to find {0} on Amazon." + request.Settings.AmazonTld, request.Book.Author));
+                    _logger.Log($"Failed to find {request.Book.Author} on Amazon.{request.Settings.AmazonTld}");
                     if (request.Settings.AmazonTld != "com")
                     {
                         _logger.Log("Trying again with Amazon.com.");
@@ -84,15 +84,15 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                 {
                     var fileText = Functions.ReadFromFile(file);
                     if (string.IsNullOrEmpty(fileText))
-                        _logger.Log("Found biography file, but it is empty!\r\n" + file);
+                        _logger.Log($"Found biography file, but it is empty!\r\n{file}");
                     else
-                        _logger.Log("Using biography from " + file + ".");
+                        _logger.Log($"Using biography from {file}.");
 
                     return fileText;
                 }
                 catch (Exception ex)
                 {
-                    _logger.Log("An error occurred while opening " + file + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                    _logger.Log($"An error occurred while opening {file}\r\n{ex.Message}\r\n{ex.StackTrace}");
                 }
 
                 return null;
@@ -125,7 +125,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                         if (lastPunc > lastSpace)
                             biography = searchResults.Biography.Substring(0, lastPunc + 1);
                         else
-                            biography = searchResults.Biography.Substring(0, lastSpace) + '\u2026';
+                            biography = $"{searchResults.Biography.Substring(0, lastSpace)}{'\u2026'}";
                     }
                     else
                         biography = searchResults.Biography;
@@ -163,13 +163,13 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                 {
                     try
                     {
-                        _logger.Log("Saving biography to " + bioFile);
+                        _logger.Log($"Saving biography to {bioFile}");
                         using var streamWriter = new StreamWriter(bioFile, false, System.Text.Encoding.UTF8);
                         await streamWriter.WriteAsync(biography);
                     }
                     catch (Exception ex)
                     {
-                        _logger.Log("An error occurred while writing biography.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                        _logger.Log($"An error occurred parsing the book's amazon page: {ex.Message}{ex.StackTrace}");
                         return null;
                     }
                 }

@@ -53,7 +53,7 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
                 }
                 catch (Exception ex)
                 {
-                    _logger.Log("Error searching for chapters: " + ex.Message);
+                    _logger.Log($"Error searching for chapters: {ex.Message}");
                 }
                 //Built chapters list is saved for manual editing
                 if (xray.Chapters.Count > 0)
@@ -221,7 +221,7 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
                 }
                 catch (Exception ex)
                 {
-                    _logger.Log("Error searching for Calibre chapters: " + ex.Message);
+                    _logger.Log($"Error searching for Calibre chapters: {ex.Message}");
                 }
             }
 

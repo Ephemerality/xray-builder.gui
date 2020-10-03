@@ -211,20 +211,23 @@ namespace XRayBuilderGUI.UI
             // cbLanguage
             // 
             this.cbLanguage.Controls.Add(this.cmbLanguage);
-            this.cbLanguage.Location = new System.Drawing.Point(4, 311);
+            this.cbLanguage.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cbLanguage.Location = new System.Drawing.Point(264, 230);
             this.cbLanguage.Name = "cbLanguage";
-            this.cbLanguage.Size = new System.Drawing.Size(504, 58);
-            this.cbLanguage.TabIndex = 39;
+            this.cbLanguage.Size = new System.Drawing.Size(244, 75);
+            this.cbLanguage.TabIndex = 40;
             this.cbLanguage.TabStop = false;
             this.cbLanguage.Text = "Language";
             // 
             // cmbLanguage
             // 
             this.cmbLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbLanguage.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmbLanguage.FormattingEnabled = true;
-            this.cmbLanguage.Location = new System.Drawing.Point(18, 22);
+            this.cmbLanguage.Items.AddRange(new object[] {"Goodreads", "Shelfari", "LibraryThing"});
+            this.cmbLanguage.Location = new System.Drawing.Point(18, 28);
             this.cmbLanguage.Name = "cmbLanguage";
-            this.cmbLanguage.Size = new System.Drawing.Size(160, 23);
+            this.cmbLanguage.Size = new System.Drawing.Size(208, 23);
             this.cmbLanguage.TabIndex = 0;
             // 
             // groupBox2
@@ -233,7 +236,7 @@ namespace XRayBuilderGUI.UI
             this.groupBox2.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.Location = new System.Drawing.Point(4, 230);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(504, 75);
+            this.groupBox2.Size = new System.Drawing.Size(243, 75);
             this.groupBox2.TabIndex = 39;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Data Provider";
@@ -1073,7 +1076,6 @@ namespace XRayBuilderGUI.UI
 
         private System.Windows.Forms.GroupBox cbLanguage;
         private System.Windows.Forms.ComboBox cmbLanguage;
-
         private System.Windows.Forms.Button btnBrowseOut;
         private System.Windows.Forms.Button btnClearLogs;
         private System.Windows.Forms.Button btnLogs;
@@ -1141,9 +1143,6 @@ namespace XRayBuilderGUI.UI
         private System.Windows.Forms.TextBox txtOut;
         private System.Windows.Forms.TextBox txtPen;
         private System.Windows.Forms.TextBox txtReal;
-
-        #endregion
-
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.PictureBox pictureBox3;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -1151,5 +1150,7 @@ namespace XRayBuilderGUI.UI
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.ComboBox cmbSecondaryDataSource;
         private System.Windows.Forms.CheckBox chkEditDescription;
+
+        #endregion
     }
 }

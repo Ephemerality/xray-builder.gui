@@ -134,12 +134,13 @@
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.lblGoodreads);
             this.groupBox1.Controls.Add(this.txtGoodreads);
+            this.groupBox1.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(12, 168);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(1215, 58);
             this.groupBox1.TabIndex = 29;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Main Datasource";
+            this.groupBox1.Text = "Metadata Provider";
             // 
             // txtGoodreads
             // 
@@ -153,6 +154,7 @@
             // 
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox3.Controls.Add(this.txtMobi);
+            this.groupBox3.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox3.Location = new System.Drawing.Point(12, 103);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(1215, 59);
@@ -230,7 +232,7 @@
             // 
             this.lblFiles.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblFiles.AutoSize = true;
-            this.lblFiles.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.lblFiles.Font = new System.Drawing.Font("Segoe UI Semibold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblFiles.Location = new System.Drawing.Point(940, 853);
             this.lblFiles.Name = "lblFiles";
             this.lblFiles.Size = new System.Drawing.Size(33, 13);
@@ -285,7 +287,7 @@
             // 
             this.lblAsin.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblAsin.AutoSize = true;
-            this.lblAsin.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.lblAsin.Font = new System.Drawing.Font("Segoe UI Semibold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.lblAsin.Location = new System.Drawing.Point(940, 832);
             this.lblAsin.Name = "lblAsin";
             this.lblAsin.Size = new System.Drawing.Size(36, 13);
@@ -297,7 +299,7 @@
             // 
             this.lblAuthor.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblAuthor.AutoSize = true;
-            this.lblAuthor.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.lblAuthor.Font = new System.Drawing.Font("Segoe UI Semibold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.lblAuthor.Location = new System.Drawing.Point(940, 811);
             this.lblAuthor.Name = "lblAuthor";
             this.lblAuthor.Size = new System.Drawing.Size(47, 13);
@@ -309,7 +311,7 @@
             // 
             this.lblTitle.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblTitle.AutoSize = true;
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.lblTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.lblTitle.Location = new System.Drawing.Point(940, 790);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(32, 13);
@@ -324,6 +326,7 @@
             this.groupBox4.Controls.Add(this.rdoFile);
             this.groupBox4.Controls.Add(this.rdoGoodreads);
             this.groupBox4.Controls.Add(this.txtXMLFile);
+            this.groupBox4.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox4.Location = new System.Drawing.Point(12, 232);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(1215, 62);
@@ -334,6 +337,7 @@
             // rdoRoentgen
             // 
             this.rdoRoentgen.AutoSize = true;
+            this.rdoRoentgen.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rdoRoentgen.Location = new System.Drawing.Point(131, 23);
             this.rdoRoentgen.Name = "rdoRoentgen";
             this.rdoRoentgen.Size = new System.Drawing.Size(76, 19);
@@ -345,6 +349,7 @@
             // rdoFile
             // 
             this.rdoFile.AutoSize = true;
+            this.rdoFile.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rdoFile.Location = new System.Drawing.Point(234, 23);
             this.rdoFile.Name = "rdoFile";
             this.rdoFile.Size = new System.Drawing.Size(43, 19);
@@ -357,6 +362,7 @@
             // 
             this.rdoGoodreads.AutoSize = true;
             this.rdoGoodreads.Checked = true;
+            this.rdoGoodreads.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rdoGoodreads.Location = new System.Drawing.Point(18, 23);
             this.rdoGoodreads.Name = "rdoGoodreads";
             this.rdoGoodreads.Size = new System.Drawing.Size(82, 19);
@@ -370,6 +376,7 @@
             // 
             this.txtXMLFile.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.txtXMLFile.Enabled = false;
+            this.txtXMLFile.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtXMLFile.Location = new System.Drawing.Point(297, 22);
             this.txtXMLFile.Name = "txtXMLFile";
             this.txtXMLFile.Size = new System.Drawing.Size(900, 23);
@@ -466,19 +473,19 @@
             // btnXraySourceFile
             // 
             this.btnXraySourceFile.Name = "btnXraySourceFile";
-            this.btnXraySourceFile.Size = new System.Drawing.Size(224, 26);
+            this.btnXraySourceFile.Size = new System.Drawing.Size(165, 26);
             this.btnXraySourceFile.Text = "File";
             // 
             // btnXraySourceGoodreads
             // 
             this.btnXraySourceGoodreads.Name = "btnXraySourceGoodreads";
-            this.btnXraySourceGoodreads.Size = new System.Drawing.Size(224, 26);
+            this.btnXraySourceGoodreads.Size = new System.Drawing.Size(165, 26);
             this.btnXraySourceGoodreads.Text = "Goodreads";
             // 
             // btnXraySourceRoentgen
             // 
             this.btnXraySourceRoentgen.Name = "btnXraySourceRoentgen";
-            this.btnXraySourceRoentgen.Size = new System.Drawing.Size(224, 26);
+            this.btnXraySourceRoentgen.Size = new System.Drawing.Size(165, 26);
             this.btnXraySourceRoentgen.Text = "Roentgen";
             // 
             // btnCreate

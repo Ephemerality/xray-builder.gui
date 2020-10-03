@@ -259,6 +259,7 @@ namespace XRayBuilderGUI.UI
 
             try
             {
+                Cursor = Cursors.WaitCursor;
                 Array.ForEach(Directory.GetFiles($@"{Environment.CurrentDirectory}\log"), File.Delete);
                 btnClearLogs.Text = MainStrings.ClearLogsTitle;
                 btnClearLogs.Enabled = false;
@@ -266,6 +267,10 @@ namespace XRayBuilderGUI.UI
             catch (Exception)
             {
                 MessageBox.Show(MainStrings.ErrorDeletingLogFiles, MainStrings.UnableToDeleteLogFilesCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
             }
         }
 
@@ -291,7 +296,7 @@ namespace XRayBuilderGUI.UI
             e.DrawFocusRectangle();
 
             var brush = (e.State & DrawItemState.Selected) != 0 ? Brushes.White : Brushes.Black;
-            e.Graphics.DrawString(listSettings.Items[e.Index].ToString(), Font, brush, e.Bounds.X + 3, e.Bounds.Y + 3);
+            e.Graphics.DrawString(listSettings.Items[e.Index].ToString(), Font, brush, e.Bounds.X + 5, e.Bounds.Y + 5);
         }
 
         private void listSettings_MeasureItem(object sender, MeasureItemEventArgs e)

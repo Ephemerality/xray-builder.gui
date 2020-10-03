@@ -879,19 +879,26 @@ namespace XRayBuilderGUI.UI
 
         private void SetSelectedDatasource()
         {
+            btnXraySourceGoodreads.Checked = false;
+            btnXraySourceRoentgen.Checked = false;
+            btnXraySourceFile.Checked = false;
+
             if (rdoGoodreads.Checked)
             {
                 btnDownloadTerms.ToolTipText = $"Save {_dataSource.Name} terms to an XML file.";
                 btnXraySource.Image = Resources.source_internet;
+                btnXraySourceGoodreads.Checked = true;
             }
             else if (rdoRoentgen.Checked)
             {
                 btnDownloadTerms.ToolTipText = "Save Roentgen terms to an XML file.";
                 btnXraySource.Image = Resources.source_roentgen;
+                btnXraySourceRoentgen.Checked = true;
             }
             else if(rdoFile.Checked)
             {
                 btnXraySource.Image = Resources.source_file;
+                btnXraySourceFile.Checked = true;
             }
         }
 

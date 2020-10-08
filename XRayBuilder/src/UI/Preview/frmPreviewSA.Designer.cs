@@ -69,10 +69,10 @@
             // lblTime
             // 
             this.lblTime.AutoSize = true;
-            this.lblTime.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTime.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTime.Location = new System.Drawing.Point(13, 498);
             this.lblTime.Name = "lblTime";
-            this.lblTime.Size = new System.Drawing.Size(147, 20);
+            this.lblTime.Size = new System.Drawing.Size(143, 20);
             this.lblTime.TabIndex = 82;
             this.lblTime.Text = "Typical time to read";
             this.lblTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -111,10 +111,10 @@
             // lblAboutAuthor
             // 
             this.lblAboutAuthor.AutoSize = true;
-            this.lblAboutAuthor.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAboutAuthor.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAboutAuthor.Location = new System.Drawing.Point(13, 345);
             this.lblAboutAuthor.Name = "lblAboutAuthor";
-            this.lblAboutAuthor.Size = new System.Drawing.Size(131, 20);
+            this.lblAboutAuthor.Size = new System.Drawing.Size(127, 20);
             this.lblAboutAuthor.TabIndex = 74;
             this.lblAboutAuthor.Text = "About the author";
             this.lblAboutAuthor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -155,10 +155,10 @@
             // lblAboutSeries
             // 
             this.lblAboutSeries.AutoSize = true;
-            this.lblAboutSeries.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAboutSeries.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAboutSeries.Location = new System.Drawing.Point(13, 192);
             this.lblAboutSeries.Name = "lblAboutSeries";
-            this.lblAboutSeries.Size = new System.Drawing.Size(124, 20);
+            this.lblAboutSeries.Size = new System.Drawing.Size(119, 20);
             this.lblAboutSeries.TabIndex = 69;
             this.lblAboutSeries.Text = "About the series";
             this.lblAboutSeries.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -197,7 +197,7 @@
             // 
             // lblTitle
             // 
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTitle.Location = new System.Drawing.Point(13, 12);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(417, 20);
@@ -208,10 +208,10 @@
             // lblAuthorMore
             // 
             this.lblAuthorMore.AutoSize = true;
-            this.lblAuthorMore.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAuthorMore.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAuthorMore.Location = new System.Drawing.Point(442, 12);
             this.lblAuthorMore.Name = "lblAuthorMore";
-            this.lblAuthorMore.Size = new System.Drawing.Size(145, 20);
+            this.lblAuthorMore.Size = new System.Drawing.Size(143, 20);
             this.lblAuthorMore.TabIndex = 83;
             this.lblAuthorMore.Text = "More by the author";
             this.lblAuthorMore.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;

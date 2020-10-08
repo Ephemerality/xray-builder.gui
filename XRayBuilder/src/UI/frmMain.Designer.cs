@@ -68,7 +68,6 @@
             this.btnXraySourceRoentgen = new System.Windows.Forms.ToolStripMenuItem();
             this.btnCreate = new System.Windows.Forms.ToolStripButton();
             this.btnDownloadTerms = new System.Windows.Forms.ToolStripButton();
-            this.btnBrowseXML = new System.Windows.Forms.ToolStripButton();
             this.btnExtractTerms = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnPreview = new System.Windows.Forms.ToolStripDropDownButton();
@@ -76,6 +75,7 @@
             this.tmiEndAction = new System.Windows.Forms.ToolStripMenuItem();
             this.tmiStartAction = new System.Windows.Forms.ToolStripMenuItem();
             this.tmiXray = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnBrowseXML = new System.Windows.Forms.ToolStripButton();
             this.btnUnpack = new System.Windows.Forms.ToolStripButton();
             this.btnBrowseFolders = new System.Windows.Forms.ToolStripDropDownButton();
             this.btnBrowseOutput = new System.Windows.Forms.ToolStripMenuItem();
@@ -97,6 +97,8 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.pbFile1 = new System.Windows.Forms.PictureBox();
             this.pbCover = new System.Windows.Forms.PictureBox();
+            this.txtDatasource = new System.Windows.Forms.LinkLabel();
+            this.lblDatasource = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.cmsLog.SuspendLayout();
@@ -134,7 +136,7 @@
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.lblGoodreads);
             this.groupBox1.Controls.Add(this.txtGoodreads);
-            this.groupBox1.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox1.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.groupBox1.Location = new System.Drawing.Point(12, 168);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(1215, 58);
@@ -149,12 +151,13 @@
             this.txtGoodreads.Name = "txtGoodreads";
             this.txtGoodreads.Size = new System.Drawing.Size(1057, 23);
             this.txtGoodreads.TabIndex = 27;
+            this.txtGoodreads.TextChanged += new System.EventHandler(this.txtGoodreads_TextChanged);
             // 
             // groupBox3
             // 
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox3.Controls.Add(this.txtMobi);
-            this.groupBox3.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox3.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.groupBox3.Location = new System.Drawing.Point(12, 103);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(1215, 59);
@@ -232,8 +235,8 @@
             // 
             this.lblFiles.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblFiles.AutoSize = true;
-            this.lblFiles.Font = new System.Drawing.Font("Segoe UI Semibold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFiles.Location = new System.Drawing.Point(940, 853);
+            this.lblFiles.Font = new System.Drawing.Font("Segoe UI Semibold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.lblFiles.Location = new System.Drawing.Point(942, 840);
             this.lblFiles.Name = "lblFiles";
             this.lblFiles.Size = new System.Drawing.Size(33, 13);
             this.lblFiles.TabIndex = 69;
@@ -248,7 +251,7 @@
             this.txtAsin.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.txtAsin.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
             this.txtAsin.LinkColor = System.Drawing.Color.MediumBlue;
-            this.txtAsin.Location = new System.Drawing.Point(1012, 832);
+            this.txtAsin.Location = new System.Drawing.Point(1013, 796);
             this.txtAsin.Name = "txtAsin";
             this.txtAsin.Size = new System.Drawing.Size(31, 13);
             this.txtAsin.TabIndex = 68;
@@ -262,7 +265,7 @@
             this.txtAuthor.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.txtAuthor.AutoSize = true;
             this.txtAuthor.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
-            this.txtAuthor.Location = new System.Drawing.Point(1012, 811);
+            this.txtAuthor.Location = new System.Drawing.Point(1013, 775);
             this.txtAuthor.Name = "txtAuthor";
             this.txtAuthor.Size = new System.Drawing.Size(43, 13);
             this.txtAuthor.TabIndex = 5;
@@ -275,7 +278,7 @@
             this.txtTitle.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.txtTitle.AutoSize = true;
             this.txtTitle.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
-            this.txtTitle.Location = new System.Drawing.Point(1012, 790);
+            this.txtTitle.Location = new System.Drawing.Point(1013, 754);
             this.txtTitle.Name = "txtTitle";
             this.txtTitle.Size = new System.Drawing.Size(29, 13);
             this.txtTitle.TabIndex = 4;
@@ -288,9 +291,9 @@
             this.lblAsin.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblAsin.AutoSize = true;
             this.lblAsin.Font = new System.Drawing.Font("Segoe UI Semibold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
-            this.lblAsin.Location = new System.Drawing.Point(940, 832);
+            this.lblAsin.Location = new System.Drawing.Point(941, 796);
             this.lblAsin.Name = "lblAsin";
-            this.lblAsin.Size = new System.Drawing.Size(36, 13);
+            this.lblAsin.Size = new System.Drawing.Size(34, 13);
             this.lblAsin.TabIndex = 3;
             this.lblAsin.Text = "ASIN:";
             this.lblAsin.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -300,9 +303,9 @@
             this.lblAuthor.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblAuthor.AutoSize = true;
             this.lblAuthor.Font = new System.Drawing.Font("Segoe UI Semibold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
-            this.lblAuthor.Location = new System.Drawing.Point(940, 811);
+            this.lblAuthor.Location = new System.Drawing.Point(941, 775);
             this.lblAuthor.Name = "lblAuthor";
-            this.lblAuthor.Size = new System.Drawing.Size(47, 13);
+            this.lblAuthor.Size = new System.Drawing.Size(44, 13);
             this.lblAuthor.TabIndex = 2;
             this.lblAuthor.Text = "Author:";
             this.lblAuthor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -312,7 +315,7 @@
             this.lblTitle.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblTitle.AutoSize = true;
             this.lblTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
-            this.lblTitle.Location = new System.Drawing.Point(940, 790);
+            this.lblTitle.Location = new System.Drawing.Point(941, 754);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(32, 13);
             this.lblTitle.TabIndex = 1;
@@ -326,7 +329,7 @@
             this.groupBox4.Controls.Add(this.rdoFile);
             this.groupBox4.Controls.Add(this.rdoGoodreads);
             this.groupBox4.Controls.Add(this.txtXMLFile);
-            this.groupBox4.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox4.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.groupBox4.Location = new System.Drawing.Point(12, 232);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(1215, 62);
@@ -337,7 +340,7 @@
             // rdoRoentgen
             // 
             this.rdoRoentgen.AutoSize = true;
-            this.rdoRoentgen.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rdoRoentgen.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.rdoRoentgen.Location = new System.Drawing.Point(131, 23);
             this.rdoRoentgen.Name = "rdoRoentgen";
             this.rdoRoentgen.Size = new System.Drawing.Size(76, 19);
@@ -349,7 +352,7 @@
             // rdoFile
             // 
             this.rdoFile.AutoSize = true;
-            this.rdoFile.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rdoFile.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.rdoFile.Location = new System.Drawing.Point(234, 23);
             this.rdoFile.Name = "rdoFile";
             this.rdoFile.Size = new System.Drawing.Size(43, 19);
@@ -362,7 +365,7 @@
             // 
             this.rdoGoodreads.AutoSize = true;
             this.rdoGoodreads.Checked = true;
-            this.rdoGoodreads.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rdoGoodreads.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.rdoGoodreads.Location = new System.Drawing.Point(18, 23);
             this.rdoGoodreads.Name = "rdoGoodreads";
             this.rdoGoodreads.Size = new System.Drawing.Size(82, 19);
@@ -376,7 +379,7 @@
             // 
             this.txtXMLFile.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.txtXMLFile.Enabled = false;
-            this.txtXMLFile.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtXMLFile.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.txtXMLFile.Location = new System.Drawing.Point(297, 22);
             this.txtXMLFile.Name = "txtXMLFile";
             this.txtXMLFile.Size = new System.Drawing.Size(900, 23);
@@ -473,19 +476,19 @@
             // btnXraySourceFile
             // 
             this.btnXraySourceFile.Name = "btnXraySourceFile";
-            this.btnXraySourceFile.Size = new System.Drawing.Size(165, 26);
+            this.btnXraySourceFile.Size = new System.Drawing.Size(131, 22);
             this.btnXraySourceFile.Text = "File";
             // 
             // btnXraySourceGoodreads
             // 
             this.btnXraySourceGoodreads.Name = "btnXraySourceGoodreads";
-            this.btnXraySourceGoodreads.Size = new System.Drawing.Size(165, 26);
+            this.btnXraySourceGoodreads.Size = new System.Drawing.Size(131, 22);
             this.btnXraySourceGoodreads.Text = "Goodreads";
             // 
             // btnXraySourceRoentgen
             // 
             this.btnXraySourceRoentgen.Name = "btnXraySourceRoentgen";
-            this.btnXraySourceRoentgen.Size = new System.Drawing.Size(165, 26);
+            this.btnXraySourceRoentgen.Size = new System.Drawing.Size(131, 22);
             this.btnXraySourceRoentgen.Text = "Roentgen";
             // 
             // btnCreate
@@ -513,20 +516,6 @@
             this.btnDownloadTerms.Text = "Download";
             this.btnDownloadTerms.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnDownloadTerms.Click += new System.EventHandler(this.btnDownloadTerms_Click);
-            // 
-            // btnBrowseXML
-            // 
-            this.btnBrowseXML.AutoSize = false;
-            this.btnBrowseXML.Image = ((System.Drawing.Image)(resources.GetObject("btnBrowseXML.Image")));
-            this.btnBrowseXML.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.btnBrowseXML.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnBrowseXML.Margin = new System.Windows.Forms.Padding(4, 10, 0, 10);
-            this.btnBrowseXML.Name = "btnBrowseXML";
-            this.btnBrowseXML.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.btnBrowseXML.Size = new System.Drawing.Size(86, 80);
-            this.btnBrowseXML.Text = "Open File";
-            this.btnBrowseXML.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.btnBrowseXML.Click += new System.EventHandler(this.btnBrowseXML_Click);
             // 
             // btnExtractTerms
             // 
@@ -744,7 +733,7 @@
             // 
             this.pbFile4.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pbFile4.Image = ((System.Drawing.Image) (resources.GetObject("pbFile4.Image")));
-            this.pbFile4.Location = new System.Drawing.Point(1099, 855);
+            this.pbFile4.Location = new System.Drawing.Point(1099, 840);
             this.pbFile4.Name = "pbFile4";
             this.pbFile4.Size = new System.Drawing.Size(16, 16);
             this.pbFile4.TabIndex = 73;
@@ -754,7 +743,7 @@
             // 
             this.pbFile3.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pbFile3.Image = ((System.Drawing.Image) (resources.GetObject("pbFile3.Image")));
-            this.pbFile3.Location = new System.Drawing.Point(1071, 855);
+            this.pbFile3.Location = new System.Drawing.Point(1071, 840);
             this.pbFile3.Name = "pbFile3";
             this.pbFile3.Size = new System.Drawing.Size(16, 16);
             this.pbFile3.TabIndex = 72;
@@ -764,7 +753,7 @@
             // 
             this.pbFile2.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pbFile2.Image = ((System.Drawing.Image) (resources.GetObject("pbFile2.Image")));
-            this.pbFile2.Location = new System.Drawing.Point(1043, 855);
+            this.pbFile2.Location = new System.Drawing.Point(1043, 840);
             this.pbFile2.Name = "pbFile2";
             this.pbFile2.Size = new System.Drawing.Size(16, 16);
             this.pbFile2.TabIndex = 71;
@@ -786,7 +775,7 @@
             // 
             this.pbFile1.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pbFile1.Image = ((System.Drawing.Image) (resources.GetObject("pbFile1.Image")));
-            this.pbFile1.Location = new System.Drawing.Point(1016, 855);
+            this.pbFile1.Location = new System.Drawing.Point(1016, 840);
             this.pbFile1.Name = "pbFile1";
             this.pbFile1.Size = new System.Drawing.Size(16, 16);
             this.pbFile1.TabIndex = 70;
@@ -796,12 +785,41 @@
             // 
             this.pbCover.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pbCover.Image = ((System.Drawing.Image) (resources.GetObject("pbCover.Image")));
-            this.pbCover.Location = new System.Drawing.Point(944, 353);
+            this.pbCover.Location = new System.Drawing.Point(945, 317);
             this.pbCover.Name = "pbCover";
             this.pbCover.Size = new System.Drawing.Size(283, 425);
             this.pbCover.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pbCover.TabIndex = 0;
             this.pbCover.TabStop = false;
+            // 
+            // txtDatasource
+            // 
+            this.txtDatasource.ActiveLinkColor = System.Drawing.Color.MediumBlue;
+            this.txtDatasource.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtDatasource.AutoSize = true;
+            this.txtDatasource.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.txtDatasource.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
+            this.txtDatasource.LinkColor = System.Drawing.Color.MediumBlue;
+            this.txtDatasource.Location = new System.Drawing.Point(1013, 818);
+            this.txtDatasource.Name = "txtDatasource";
+            this.txtDatasource.Size = new System.Drawing.Size(110, 13);
+            this.txtDatasource.TabIndex = 76;
+            this.txtDatasource.TabStop = true;
+            this.txtDatasource.Text = "Search datasource...";
+            this.txtDatasource.Visible = false;
+            this.txtDatasource.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.txtDatasource_LinkClicked);
+            // 
+            // lblDatasource
+            // 
+            this.lblDatasource.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblDatasource.AutoSize = true;
+            this.lblDatasource.Font = new System.Drawing.Font("Segoe UI Semibold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.lblDatasource.Location = new System.Drawing.Point(941, 818);
+            this.lblDatasource.Name = "lblDatasource";
+            this.lblDatasource.Size = new System.Drawing.Size(67, 13);
+            this.lblDatasource.TabIndex = 75;
+            this.lblDatasource.Text = "Datasource:";
+            this.lblDatasource.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // frmMain
             // 
@@ -809,6 +827,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1246, 919);
+            this.Controls.Add(this.txtDatasource);
+            this.Controls.Add(this.lblDatasource);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.pbFile4);
             this.Controls.Add(this.pbFile3);
@@ -925,6 +945,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator;
         private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearAndSaveToolStripMenuItem;
+        private System.Windows.Forms.LinkLabel txtDatasource;
+        private System.Windows.Forms.Label lblDatasource;
     }
 }
 

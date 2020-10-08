@@ -97,6 +97,8 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.pbFile1 = new System.Windows.Forms.PictureBox();
             this.pbCover = new System.Windows.Forms.PictureBox();
+            this.txtDatasource = new System.Windows.Forms.LinkLabel();
+            this.lblDatasource = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.cmsLog.SuspendLayout();
@@ -154,6 +156,7 @@
             this.txtGoodreads.Name = "txtGoodreads";
             this.txtGoodreads.Size = new System.Drawing.Size(1057, 27);
             this.txtGoodreads.TabIndex = 27;
+            this.txtGoodreads.TextChanged += new System.EventHandler(this.txtGoodreads_TextChanged);
             // 
             // groupBox3
             // 
@@ -172,7 +175,7 @@
             // 
             this.prgBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.prgBar.Location = new System.Drawing.Point(11, 888);
+            this.prgBar.Location = new System.Drawing.Point(11, 913);
             this.prgBar.Name = "prgBar";
             this.prgBar.Size = new System.Drawing.Size(1178, 21);
             this.prgBar.Step = 1;
@@ -192,7 +195,7 @@
             this.txtOutput.Name = "txtOutput";
             this.txtOutput.ReadOnly = true;
             this.txtOutput.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.txtOutput.Size = new System.Drawing.Size(915, 518);
+            this.txtOutput.Size = new System.Drawing.Size(915, 543);
             this.txtOutput.TabIndex = 61;
             this.txtOutput.Text = "";
             this.txtOutput.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.txtOutput_LinkClicked);
@@ -246,7 +249,7 @@
             this.lblFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblFiles.AutoSize = true;
             this.lblFiles.Font = new System.Drawing.Font("Segoe UI Semibold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFiles.Location = new System.Drawing.Point(940, 853);
+            this.lblFiles.Location = new System.Drawing.Point(940, 878);
             this.lblFiles.Name = "lblFiles";
             this.lblFiles.Size = new System.Drawing.Size(40, 19);
             this.lblFiles.TabIndex = 69;
@@ -261,7 +264,7 @@
             this.txtAsin.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtAsin.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
             this.txtAsin.LinkColor = System.Drawing.Color.MediumBlue;
-            this.txtAsin.Location = new System.Drawing.Point(1012, 832);
+            this.txtAsin.Location = new System.Drawing.Point(1034, 834);
             this.txtAsin.Name = "txtAsin";
             this.txtAsin.Size = new System.Drawing.Size(39, 19);
             this.txtAsin.TabIndex = 68;
@@ -273,11 +276,11 @@
             // txtAuthor
             // 
             this.txtAuthor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtAuthor.AutoSize = true;
+            this.txtAuthor.AutoEllipsis = true;
             this.txtAuthor.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtAuthor.Location = new System.Drawing.Point(1012, 811);
+            this.txtAuthor.Location = new System.Drawing.Point(1034, 812);
             this.txtAuthor.Name = "txtAuthor";
-            this.txtAuthor.Size = new System.Drawing.Size(52, 19);
+            this.txtAuthor.Size = new System.Drawing.Size(190, 19);
             this.txtAuthor.TabIndex = 5;
             this.txtAuthor.Text = "Author";
             this.txtAuthor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -286,11 +289,11 @@
             // txtTitle
             // 
             this.txtTitle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtTitle.AutoSize = true;
+            this.txtTitle.AutoEllipsis = true;
             this.txtTitle.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtTitle.Location = new System.Drawing.Point(1012, 790);
+            this.txtTitle.Location = new System.Drawing.Point(1034, 790);
             this.txtTitle.Name = "txtTitle";
-            this.txtTitle.Size = new System.Drawing.Size(34, 19);
+            this.txtTitle.Size = new System.Drawing.Size(190, 19);
             this.txtTitle.TabIndex = 4;
             this.txtTitle.Text = "Title";
             this.txtTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -301,7 +304,7 @@
             this.lblAsin.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblAsin.AutoSize = true;
             this.lblAsin.Font = new System.Drawing.Font("Segoe UI Semibold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAsin.Location = new System.Drawing.Point(940, 832);
+            this.lblAsin.Location = new System.Drawing.Point(940, 834);
             this.lblAsin.Name = "lblAsin";
             this.lblAsin.Size = new System.Drawing.Size(44, 19);
             this.lblAsin.TabIndex = 3;
@@ -313,7 +316,7 @@
             this.lblAuthor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblAuthor.AutoSize = true;
             this.lblAuthor.Font = new System.Drawing.Font("Segoe UI Semibold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAuthor.Location = new System.Drawing.Point(940, 811);
+            this.lblAuthor.Location = new System.Drawing.Point(940, 812);
             this.lblAuthor.Name = "lblAuthor";
             this.lblAuthor.Size = new System.Drawing.Size(56, 19);
             this.lblAuthor.TabIndex = 2;
@@ -780,7 +783,7 @@
             // 
             this.pbFile4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pbFile4.Image = ((System.Drawing.Image)(resources.GetObject("pbFile4.Image")));
-            this.pbFile4.Location = new System.Drawing.Point(1099, 855);
+            this.pbFile4.Location = new System.Drawing.Point(1116, 880);
             this.pbFile4.Name = "pbFile4";
             this.pbFile4.Size = new System.Drawing.Size(16, 16);
             this.pbFile4.TabIndex = 73;
@@ -790,7 +793,7 @@
             // 
             this.pbFile3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pbFile3.Image = ((System.Drawing.Image)(resources.GetObject("pbFile3.Image")));
-            this.pbFile3.Location = new System.Drawing.Point(1071, 855);
+            this.pbFile3.Location = new System.Drawing.Point(1090, 880);
             this.pbFile3.Name = "pbFile3";
             this.pbFile3.Size = new System.Drawing.Size(16, 16);
             this.pbFile3.TabIndex = 72;
@@ -800,7 +803,7 @@
             // 
             this.pbFile2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pbFile2.Image = ((System.Drawing.Image)(resources.GetObject("pbFile2.Image")));
-            this.pbFile2.Location = new System.Drawing.Point(1043, 855);
+            this.pbFile2.Location = new System.Drawing.Point(1064, 880);
             this.pbFile2.Name = "pbFile2";
             this.pbFile2.Size = new System.Drawing.Size(16, 16);
             this.pbFile2.TabIndex = 71;
@@ -811,7 +814,7 @@
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.Enabled = false;
             this.btnCancel.Image = ((System.Drawing.Image)(resources.GetObject("btnCancel.Image")));
-            this.btnCancel.Location = new System.Drawing.Point(1205, 887);
+            this.btnCancel.Location = new System.Drawing.Point(1205, 912);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(23, 23);
             this.btnCancel.TabIndex = 69;
@@ -822,7 +825,7 @@
             // 
             this.pbFile1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pbFile1.Image = ((System.Drawing.Image)(resources.GetObject("pbFile1.Image")));
-            this.pbFile1.Location = new System.Drawing.Point(1016, 855);
+            this.pbFile1.Location = new System.Drawing.Point(1038, 880);
             this.pbFile1.Name = "pbFile1";
             this.pbFile1.Size = new System.Drawing.Size(16, 16);
             this.pbFile1.TabIndex = 70;
@@ -839,12 +842,43 @@
             this.pbCover.TabIndex = 0;
             this.pbCover.TabStop = false;
             // 
+            // txtDatasource
+            // 
+            this.txtDatasource.ActiveLinkColor = System.Drawing.Color.MediumBlue;
+            this.txtDatasource.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtDatasource.AutoSize = true;
+            this.txtDatasource.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtDatasource.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
+            this.txtDatasource.LinkColor = System.Drawing.Color.MediumBlue;
+            this.txtDatasource.Location = new System.Drawing.Point(1034, 856);
+            this.txtDatasource.Name = "txtDatasource";
+            this.txtDatasource.Size = new System.Drawing.Size(129, 19);
+            this.txtDatasource.TabIndex = 76;
+            this.txtDatasource.TabStop = true;
+            this.txtDatasource.Text = "Search datasource...";
+            this.txtDatasource.Visible = false;
+            this.txtDatasource.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.txtDatasource_LinkClicked);
+            // 
+            // lblDatasource
+            // 
+            this.lblDatasource.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblDatasource.AutoSize = true;
+            this.lblDatasource.Font = new System.Drawing.Font("Segoe UI Semibold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDatasource.Location = new System.Drawing.Point(940, 856);
+            this.lblDatasource.Name = "lblDatasource";
+            this.lblDatasource.Size = new System.Drawing.Size(82, 19);
+            this.lblDatasource.TabIndex = 75;
+            this.lblDatasource.Text = "Datasource:";
+            this.lblDatasource.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // frmMain
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1244, 924);
+            this.ClientSize = new System.Drawing.Size(1244, 949);
+            this.Controls.Add(this.txtDatasource);
+            this.Controls.Add(this.lblDatasource);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.pbFile4);
             this.Controls.Add(this.pbFile3);
@@ -962,6 +996,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator;
         private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearAndSaveToolStripMenuItem;
+        private System.Windows.Forms.LinkLabel txtDatasource;
+        private System.Windows.Forms.Label lblDatasource;
     }
 }
 

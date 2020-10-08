@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -850,6 +851,8 @@ namespace XRayBuilderGUI.UI
                     txtGoodreads.Text = bookUrl;
                     txtGoodreads.Refresh();
                     _logger.Log($@"{string.Format(MainStrings.BookFoundOnSource, _dataSource.Name)}{Environment.NewLine}{string.Format(MainStrings.TitleByAuthor, metadata.Title, metadata.Author)}{Environment.NewLine}{string.Format(MainStrings.SourceUrl, _dataSource.Name)}: {bookUrl}{Environment.NewLine}{MainStrings.VisitUrl}");
+                    
+                    SetDatasourceLink(bookUrl);
                 }
             }
             catch (Exception ex)
@@ -978,6 +981,20 @@ namespace XRayBuilderGUI.UI
             }
         }
 
+        private void SetDatasourceLink(string url)
+        {
+            if (string.IsNullOrEmpty(url))
+            {
+                txtDatasource.Text = string.Empty;
+                return;
+            }
+
+            var matchId = Regex.Match(url, @"(show|work)/(\d+)");
+            if (!matchId.Success) return;
+            _tooltip.SetToolTip(txtDatasource, url);
+            txtDatasource.Visible = true;
+            txtDatasource.Text = matchId.Groups[2].Value;
+        }
 
         private void SetDatasourceLabels()
         {
@@ -992,6 +1009,11 @@ namespace XRayBuilderGUI.UI
             btnSearchGoodreads.ToolTipText = _dataSource.SearchEnabled
                 ? $"Try to search for this book on {_dataSource.Name}."
                 : $"Search is disabled when {_dataSource.Name} is selected as a data source.";
+
+            lblDatasource.Text = $@"{_dataSource.Name}:";
+            txtDatasource.Enabled = _dataSource.SearchEnabled;
+            SetDatasourceLink(txtGoodreads.Text);
+
             SetSelectedDatasource();
         }
 
@@ -1153,6 +1175,7 @@ namespace XRayBuilderGUI.UI
 
         private void txtAsin_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
+            if (string.Equals(txtAsin.Text, "ASIN")) return;
             Process.Start(_amazonClient.Url(_settings.amazonTLD, txtAsin.Text));
         }
 
@@ -1367,6 +1390,17 @@ namespace XRayBuilderGUI.UI
             if (txtOutput.Text.Trim().Length == 0) return;
             File.WriteAllText(_currentLog, txtOutput.Text);
             txtOutput.Text = string.Empty;
+        }
+
+        private void txtDatasource_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (txtDatasource.Text.Contains("Search")) return;
+            Process.Start(txtGoodreads.Text);
+        }
+
+        private void txtGoodreads_TextChanged(object sender, EventArgs e)
+        {
+            SetDatasourceLink(txtGoodreads.Text);
         }
     }
 }

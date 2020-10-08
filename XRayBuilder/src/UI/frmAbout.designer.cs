@@ -63,6 +63,7 @@
             // 
             // btnOk
             // 
+            this.btnOk.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnOk.Location = new System.Drawing.Point(393, 245);
             this.btnOk.Margin = new System.Windows.Forms.Padding(5);
             this.btnOk.Name = "btnOk";
@@ -130,6 +131,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.btnOk;
             this.ClientSize = new System.Drawing.Size(509, 293);
             this.Controls.Add(this.lblDescription);
             this.Controls.Add(this.logoPictureBox);

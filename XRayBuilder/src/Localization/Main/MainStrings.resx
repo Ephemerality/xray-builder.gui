@@ -133,7 +133,7 @@ Shorten the title in Calibre or change the database name manually.
 </value>
   </data>
   <data name="ExtractingMetadata" xml:space="preserve">
-    <value>Extracting metadata...</value>
+    <value>Extracting metadata…</value>
   </data>
   <data name="FailedToValidateAsin" xml:space="preserve">
     <value>Failed to validate/fix ASIN</value>
@@ -142,7 +142,7 @@ Shorten the title in Calibre or change the database name manually.
     <value>Continuing anyway</value>
   </data>
   <data name="SavingRawml" xml:space="preserve">
-    <value>Saving raw markup to the dmp directory...</value>
+    <value>Saving raw markup to the dmp directory…</value>
   </data>
   <data name="GotMetadata" xml:space="preserve">
     <value>Got metadata!</value>
@@ -187,7 +187,7 @@ Shorten the title in Calibre or change the database name manually.
     <value>Both Real and Pen names are required for End Actions file creation.</value>
   </data>
   <data name="AttemptingBuildXRay" xml:space="preserve">
-    <value>Attempting to build X-Ray...</value>
+    <value>Attempting to build X-Ray…</value>
   </data>
   <data name="NoTermsAvailable" xml:space="preserve">
     <value>No terms were available. Do you want to continue building anyway?</value>
@@ -196,7 +196,7 @@ Shorten the title in Calibre or change the database name manually.
     <value>No Terms</value>
   </data>
   <data name="Cancelling" xml:space="preserve">
-    <value>Cancelling...</value>
+    <value>Cancelling…</value>
   </data>
   <data name="SeeMobilereads" xml:space="preserve">
     <value>See the MobileRead forum thread (link in Settings) for more information on building aliases.</value>
@@ -220,7 +220,7 @@ Shorten the title in Calibre or change the database name manually.
     <value>Character aliases read from {0}.</value>
   </data>
   <data name="InitialXRayBuiltAddingChapters" xml:space="preserve">
-    <value>Initial X-Ray built, adding locations and chapters...</value>
+    <value>Initial X-Ray built, adding locations and chapters…</value>
   </data>
   <data name="BuildCancelled" xml:space="preserve">
     <value>Build cancelled.</value>
@@ -229,7 +229,7 @@ Shorten the title in Calibre or change the database name manually.
     <value>An error occurred while building the X-Ray</value>
   </data>
   <data name="SavingXRay" xml:space="preserve">
-    <value>Saving X-Ray to file...</value>
+    <value>Saving X-Ray to file…</value>
   </data>
   <data name="OpenedInAnotherProgram" xml:space="preserve">
     <value>Is it opened in another program?</value>
@@ -253,7 +253,7 @@ Shorten the title in Calibre or change the database name manually.
     <value>Successfully downloaded pre-made {0} Actions file!</value>
   </data>
   <data name="WritingStartActionsFile" xml:space="preserve">
-    <value>Writing Start Actions file...</value>
+    <value>Writing Start Actions file…</value>
   </data>
   <data name="StartActionsCreated" xml:space="preserve">
     <value>Start Actions file created successfully!</value>
@@ -262,7 +262,7 @@ Shorten the title in Calibre or change the database name manually.
     <value>An error occurred while creating the Start Actions</value>
   </data>
   <data name="WritingEndActionsFile" xml:space="preserve">
-    <value>Writing End Actions file...</value>
+    <value>Writing End Actions file…</value>
   </data>
   <data name="EndActionsCreated" xml:space="preserve">
     <value>End Actions file created successfully!</value>
@@ -277,7 +277,7 @@ Shorten the title in Calibre or change the database name manually.
     <value>All extras downloaded/built and none need to be overwritten, stopping here!</value>
   </data>
   <data name="BuildingAuthorProfile" xml:space="preserve">
-    <value>Attempting to build Author Profile...</value>
+    <value>Attempting to build Author Profile…</value>
   </data>
   <data name="BuiltAuthorProfileFromExisting" xml:space="preserve">
     <value>Built Author Profile from the existing End Actions file!</value>
@@ -292,7 +292,7 @@ Shorten the title in Calibre or change the database name manually.
     <value>An error occurred while writing the Author Profile file</value>
   </data>
   <data name="BuildingStartEndActions" xml:space="preserve">
-    <value>Attempting to build Start and/or End Actions...</value>
+    <value>Attempting to build Start and/or End Actions…</value>
   </data>
   <data name="SeriesInformation" xml:space="preserve">
     <value>Series Information</value>
@@ -307,10 +307,10 @@ Shorten the title in Calibre or change the database name manually.
     <value>Missing Link</value>
   </data>
   <data name="ExportingTermsFrom" xml:space="preserve">
-    <value>Exporting terms from {0}...</value>
+    <value>Exporting terms from {0}…</value>
   </data>
   <data name="CantExportFromFile" xml:space="preserve">
-    <value>Can't export terms from an XML/TXT file...</value>
+    <value>Can't export terms from an XML/TXT file…</value>
   </data>
   <data name="CharacterDataSavedTo" xml:space="preserve">
     <value>Character data has been successfully saved to {0}</value>
@@ -334,7 +334,7 @@ Shorten the title in Calibre or change the database name manually.
     <value>All extras files already exist and none of the ""overwrite"" settings are enabled!</value>
   </data>
   <data name="DownloadingActions" xml:space="preserve">
-    <value>Attempting to download {0} Actions...</value>
+    <value>Attempting to download {0} Actions…</value>
   </data>
   <data name="ErrorSavingXml" xml:space="preserve">
     <value>An error occurred while saving character data to XML file at {0}</value>
@@ -346,7 +346,7 @@ Shorten the title in Calibre or change the database name manually.
     <value>Failed to download cover image</value>
   </data>
   <data name="MultipleResultsFromSource" xml:space="preserve">
-    <value>Warning: Multiple results returned from {0}...</value>
+    <value>Warning: Multiple results returned from {0}…</value>
   </data>
   <data name="VisitUrl" xml:space="preserve">
     <value>You may want to visit the URL to ensure it is correct.</value>
@@ -364,7 +364,7 @@ Shorten the title in Calibre or change the database name manually.
     <value>An error occurred while searching</value>
   </data>
   <data name="ExtractingRawMl" xml:space="preserve">
-    <value>Extracting raw markup...</value>
+    <value>Extracting raw markup…</value>
   </data>
   <data name="ExtractedToPath" xml:space="preserve">
     <value>Extracted to {0}!</value>
@@ -376,7 +376,7 @@ Shorten the title in Calibre or change the database name manually.
     <value>Invalid X-Ray file.</value>
   </data>
   <data name="OpenXRayFile" xml:space="preserve">
-    <value>Open a Kindle X-Ray file...</value>
+    <value>Open a Kindle X-Ray file…</value>
   </data>
   <data name="CharacterDataExtractedSavedToPath" xml:space="preserve">
     <value>Character data has been successfully extracted and saved to {0}</value>
@@ -391,13 +391,13 @@ Shorten the title in Calibre or change the database name manually.
     <value>Help Document Not Found</value>
   </data>
   <data name="OpenKindleFile" xml:space="preserve">
-    <value>Open a Kindle {0} file...</value>
+    <value>Open a Kindle {0} file…</value>
   </data>
   <data name="InvalidKindleFile" xml:space="preserve">
     <value>Invalid {0} file.</value>
   </data>
   <data name="SearchingAmazonForTitleAuthor" xml:space="preserve">
-    <value>Searching Amazon for {0} by {1}...</value>
+    <value>Searching Amazon for {0} by {1}…</value>
   </data>
   <data name="IncorrectAsinTitle" xml:space="preserve">
     <value>Incorrect ASIN</value>
@@ -529,7 +529,7 @@ Do you wish to continue?</value>
     <value>Ignore soft hyphens (Unicode U+00AD) while searching for terms.</value>
   </data>
   <data name="WriteXRayNewFormatTooltip" xml:space="preserve">
-    <value>Write the X-Ray file in the new format for Paperwhite 2 or Voyage firmware 5.6+.</value>
+    <value>Write the X-Ray file in the new format for the Paperwhite 2 or Voyage with firmware version 5.6 or higher.</value>
   </data>
   <data name="BuildXRayForAndroidTooltip" xml:space="preserve">
     <value>Changes the naming convention of the X-Ray file for the Android Kindle app.</value>
@@ -632,7 +632,7 @@ Must be enabled for a saved biography to be loaded.</value>
     <value>Estimate Page Count</value>
   </data>
   <data name="EbookUnpackingTitle" xml:space="preserve">
-    <value>eBook Unpacking</value>
+    <value>E-book Unpacking</value>
   </data>
   <data name="SaveRawmlTitle" xml:space="preserve">
     <value>Save RAWML</value>

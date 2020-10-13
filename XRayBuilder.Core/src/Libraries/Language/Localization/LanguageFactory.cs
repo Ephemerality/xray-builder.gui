@@ -10,7 +10,8 @@ namespace XRayBuilder.Core.Libraries.Language.Localization
         public enum Enum
         {
             English,
-            French
+            French,
+            NorwegianBokmål
         }
 
         protected override IReadOnlyDictionary<Enum, ILanguage> Dictionary { get; }

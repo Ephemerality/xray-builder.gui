@@ -127,7 +127,7 @@
     <value>Output Directory Not Found</value>
   </data>
   <data name="DatabaseNameLengthWarning" xml:space="preserve">
-    <value>WARNING: The database name cannot be longer. If "{0}" is the full e-book title, this should not be an issue.
+    <value>WARNING: The database name is at its maximum length. If "{0}" is the full e-book title, this should not be an issue.
 If the title is supposed to be longer than that, you might get an error on your Kindle (WG on firmware before 5.6).
 Shorten the title in Calibre or change the database name manually.
 </value>
@@ -328,7 +328,7 @@ Shorten the title in Calibre or change the database name manually.
     <value>If you do not want to use {0}, you can change the data source in Settings.</value>
   </data>
   <data name="BooksSourceUrl" xml:space="preserve">
-    <value>Book's {0} URL</value>
+    <value>E-book's {0} URL</value>
   </data>
   <data name="AllExtrasExistNoOverwrite" xml:space="preserve">
     <value>All extras files already exist and none of the ""overwrite"" settings are enabled!</value>

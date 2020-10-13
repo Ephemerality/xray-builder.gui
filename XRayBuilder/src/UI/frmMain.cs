@@ -863,6 +863,13 @@ namespace XRayBuilderGUI.UI
             else
                 rdoFile.Checked = true;
             SetDatasourceLabels();
+            AdjustUi();
+        }
+
+        private void AdjustUi()
+        {
+            txtGoodreads.Location = new Point(lblGoodreads.Location.X + lblGoodreads.Width + 6, txtGoodreads.Location.Y);
+            txtGoodreads.Size = new Size(groupBox1.Width - txtGoodreads.Location.X - 12, txtGoodreads.Size.Height);
         }
 
         private void SetDatasourceLabels()

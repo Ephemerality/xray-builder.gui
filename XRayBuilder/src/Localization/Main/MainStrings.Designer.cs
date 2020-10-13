@@ -196,7 +196,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Attempting to build X-Ray....
+        ///   Looks up a localized string similar to Attempting to build X-Ray….
         /// </summary>
         internal static string AttemptingBuildXRay {
             get {
@@ -268,7 +268,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Book found on {0}!.
+        ///   Looks up a localized string similar to Found the book on {0}!.
         /// </summary>
         internal static string BookFoundOnSource {
             get {
@@ -277,7 +277,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Specified book was not found..
+        ///   Looks up a localized string similar to Could not find that e-book..
         /// </summary>
         internal static string BookNotFound {
             get {
@@ -295,7 +295,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Book&apos;s {0} URL.
+        ///   Looks up a localized string similar to E-book&apos;s {0} URL.
         /// </summary>
         internal static string BooksSourceUrl {
             get {
@@ -340,7 +340,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Attempting to build Author Profile....
+        ///   Looks up a localized string similar to Attempting to build Author Profile….
         /// </summary>
         internal static string BuildingAuthorProfile {
             get {
@@ -349,7 +349,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Building the old format of X-Ray is not supported with KFX books.
+        ///   Looks up a localized string similar to KFX e-books cannot be used to build X-Ray files in the old format.
         /// </summary>
         internal static string BuildingOldFormatNotSupported {
             get {
@@ -358,7 +358,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Attempting to build Start and/or End Actions....
+        ///   Looks up a localized string similar to Attempting to build Start and/or End Actions….
         /// </summary>
         internal static string BuildingStartEndActions {
             get {
@@ -385,7 +385,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cancelling....
+        ///   Looks up a localized string similar to Cancelling….
         /// </summary>
         internal static string Cancelling {
             get {
@@ -394,7 +394,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Can&apos;t export terms from an XML/TXT file....
+        ///   Looks up a localized string similar to Can&apos;t export terms from an XML/TXT file….
         /// </summary>
         internal static string CantExportFromFile {
             get {
@@ -475,9 +475,9 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WARNING: Database Name is the maximum length. If &quot;{0}&quot; is the full book title, this should not be an issue.
-        ///If the title is supposed to be longer than that, you might get an error on your Kindle (WG on firmware &lt; 5.6).
-        ///This can be resolved by either shortening the title in Calibre or manually changing the database name.
+        ///   Looks up a localized string similar to WARNING: The database name is at its maximum length. If &quot;{0}&quot; is the full e-book title, this should not be an issue.
+        ///If the title is supposed to be longer than that, you might get an error on your Kindle (WG on firmware before 5.6).
+        ///Shorten the title in Calibre or change the database name manually.
         ///.
         /// </summary>
         internal static string DatabaseNameLengthWarning {
@@ -559,7 +559,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Attempting to download {0} Actions....
+        ///   Looks up a localized string similar to Attempting to download {0} Actions….
         /// </summary>
         internal static string DownloadingActions {
             get {
@@ -568,7 +568,16 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to eBook Processing.
+        ///   Looks up a localized string similar to E-book.
+        /// </summary>
+        internal static string Ebook {
+            get {
+                return ResourceManager.GetString("Ebook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to E-book Processing.
         /// </summary>
         internal static string EbookProcessingTitle {
             get {
@@ -577,7 +586,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to eBook Unpacking.
+        ///   Looks up a localized string similar to E-book Unpacking.
         /// </summary>
         internal static string EbookUnpackingTitle {
             get {
@@ -748,7 +757,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Try to estimate books page count if no page count is count online (based on user_none&apos;s APNX generation project)..
+        ///   Looks up a localized string similar to Try to estimate the page count of the e-book if none can be found online (based on user_none&apos;s APNX generation project)..
         /// </summary>
         internal static string EstimatePageCountTooltip {
             get {
@@ -757,7 +766,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Exporting terms from {0}....
+        ///   Looks up a localized string similar to Exporting terms from {0}….
         /// </summary>
         internal static string ExportingTermsFrom {
             get {
@@ -775,7 +784,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Extracting metadata....
+        ///   Looks up a localized string similar to Extracting metadata….
         /// </summary>
         internal static string ExtractingMetadata {
             get {
@@ -784,7 +793,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Extracting raw markup....
+        ///   Looks up a localized string similar to Extracting raw markup….
         /// </summary>
         internal static string ExtractingRawMl {
             get {
@@ -865,7 +874,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Found the following book on Amazon.
+        ///   Looks up a localized string similar to Found the following e-book on Amazon.
         /// </summary>
         internal static string FoundBookAmazon {
             get {
@@ -955,7 +964,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This information allows you to rate this book on Amazon..
+        ///   Looks up a localized string similar to This info lets you rate this book on Amazon..
         /// </summary>
         internal static string InformationAllowsRatingOnAmazon {
             get {
@@ -973,7 +982,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Initial X-Ray built, adding locations and chapters....
+        ///   Looks up a localized string similar to Initial X-Ray built, adding locations and chapters….
         /// </summary>
         internal static string InitialXRayBuiltAddingChapters {
             get {
@@ -983,10 +992,10 @@ namespace XRayBuilderGUI.Localization.Main {
         
         /// <summary>
         ///   Looks up a localized string similar to Invalid Amazon ASIN detected: {0}!
-        ///Kindle may not display an X-Ray for this book.
+        ///Kindle may not display an X-Ray for this e-book.
         ///Do you want to fix it?
-        ///(This will modify the book meaning it will need to be re-copied to your Kindle device)
-        ///THIS FEATURE IS EXPERIMENTAL AND COULD DESTROY YOUR BOOK!.
+        ///(This will modify the e-book, meaning it will need to be re-copied to your Kindle device.)
+        ///THIS FEATURE IS EXPERIMENTAL AND COULD DESTROY YOUR E-BOOK!.
         /// </summary>
         internal static string InvalidAsinShouldFix {
             get {
@@ -996,7 +1005,7 @@ namespace XRayBuilderGUI.Localization.Main {
         
         /// <summary>
         ///   Looks up a localized string similar to Invalid Amazon ASIN detected: {0}!
-        ///Kindle may not display an X-Ray for this book.
+        ///Kindle may fail to display an X-Ray for this e-book.
         ///Do you wish to continue?.
         /// </summary>
         internal static string InvalidAsinWarning {
@@ -1123,7 +1132,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Warning: Multiple results returned from {0}....
+        ///   Looks up a localized string similar to Warning: Multiple results returned from {0}….
         /// </summary>
         internal static string MultipleResultsFromSource {
             get {
@@ -1240,7 +1249,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Open a Kindle book..
+        ///   Looks up a localized string similar to Open a Kindle e-book..
         /// </summary>
         internal static string OpenKindleBook {
             get {
@@ -1249,7 +1258,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Open a Kindle {0} file....
+        ///   Looks up a localized string similar to Open a Kindle {0} file….
         /// </summary>
         internal static string OpenKindleFile {
             get {
@@ -1285,7 +1294,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Open a Kindle X-Ray file....
+        ///   Looks up a localized string similar to Open a Kindle X-Ray file….
         /// </summary>
         internal static string OpenXRayFile {
             get {
@@ -1447,7 +1456,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Allow ASIN entry if the next or previous book in a series cannot automatically be found..
+        ///   Looks up a localized string similar to Allow ASIN entry if the next or previous e-book in a series cannot be found automatically..
         /// </summary>
         internal static string PromptAsinTooltip {
             get {
@@ -1583,7 +1592,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save the RAWML (raw markup) of the book in the output directory so you can review it..
+        ///   Looks up a localized string similar to Save the RAWML (raw markup) of the e-book in the output directory so you can review it..
         /// </summary>
         internal static string SaveRawMlTooltip {
             get {
@@ -1610,7 +1619,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Saving raw markup to the dmp directory....
+        ///   Looks up a localized string similar to Saving raw markup to the dmp directory….
         /// </summary>
         internal static string SavingRawml {
             get {
@@ -1619,7 +1628,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Saving X-Ray to file....
+        ///   Looks up a localized string similar to Saving X-Ray to file….
         /// </summary>
         internal static string SavingXRay {
             get {
@@ -1628,7 +1637,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Searching Amazon for {0} by {1}....
+        ///   Looks up a localized string similar to Searching Amazon for {0} by {1}….
         /// </summary>
         internal static string SearchingAmazonForTitleAuthor {
             get {
@@ -1781,7 +1790,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Try to build the X-Ray file for this book..
+        ///   Looks up a localized string similar to Try to build the X-Ray file for this e-book..
         /// </summary>
         internal static string TryToBuildXRay {
             get {
@@ -1790,7 +1799,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to automatically find a matching ASIN for this book on Amazon :(.
+        ///   Looks up a localized string similar to Could not find a matching ASIN  automatically for this e-book on Amazon :(.
         /// </summary>
         internal static string UnableToAutomaticallyFindAsinOnAmazon {
             get {
@@ -1835,7 +1844,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Successfully updated the ASIN to {0}! Be sure to copy this new version of the book to your Kindle device..
+        ///   Looks up a localized string similar to ASIN updated to {0}! Make sure to copy this new version of the e-book to your Kindle device..
         /// </summary>
         internal static string UpdatedAsin {
             get {
@@ -1907,7 +1916,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Write the X-Ray file in the new format for Paperwhite 2 or Voyage firmware 5.6+..
+        ///   Looks up a localized string similar to Write the X-Ray file in the new format for the Paperwhite 2 or Voyage with firmware version 5.6 or higher..
         /// </summary>
         internal static string WriteXRayNewFormatTooltip {
             get {
@@ -1916,7 +1925,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Writing End Actions file....
+        ///   Looks up a localized string similar to Writing End Actions file….
         /// </summary>
         internal static string WritingEndActionsFile {
             get {
@@ -1925,7 +1934,7 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Writing Start Actions file....
+        ///   Looks up a localized string similar to Writing Start Actions file….
         /// </summary>
         internal static string WritingStartActionsFile {
             get {

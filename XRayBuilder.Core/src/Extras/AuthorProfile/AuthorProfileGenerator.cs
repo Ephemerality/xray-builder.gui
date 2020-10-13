@@ -77,7 +77,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
 //            }
 
             // Try to find author's biography
-
+            string biography = null;
             string ReadBio(string file)
             {
                 try
@@ -85,7 +85,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                     var fileText = Functions.ReadFromFile(file);
                     if (string.IsNullOrEmpty(fileText))
                         _logger.Log($"Found biography file, but it is empty!\r\n{file}");
-                    else
+                    else if(!string.Equals(biography, fileText))
                         _logger.Log($"Using biography from {file}.");
 
                     return fileText;
@@ -99,7 +99,6 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             }
 
             // TODO: Separate out biography stuff
-            string biography = null;
             var bioFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext", $"{authorAsin}.bio");
             var readFromFile = false;
             if (request.Settings.SaveBio && File.Exists(bioFile))
@@ -173,7 +172,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                         return null;
                     }
                 }
-                if (editBioCallback != null && editBioCallback("Would you like to open the biography file in notepad for editing?"))
+                if (!readFromFile && editBioCallback != null && editBioCallback("Would you like to open the biography file in notepad for editing?"))
                 {
                     Functions.RunNotepad(bioFile);
                     biography = ReadBio(bioFile);

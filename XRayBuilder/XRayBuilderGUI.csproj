@@ -101,63 +101,43 @@
     <Compile Update="src\UI\frmAbout - Copy.designer.cs">
       <DependentUpon>frmAbout.cs</DependentUpon>
     </Compile>
-    <Compile Update="src\UI\frmAbout.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="src\UI\frmAbout.cs" />
     <Compile Update="src\UI\frmAbout.designer.cs">
       <DependentUpon>frmAbout.cs</DependentUpon>
     </Compile>
-    <Compile Update="src\UI\frmASIN.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="src\UI\frmASIN.cs" />
     <Compile Update="src\UI\frmASIN.Designer.cs">
       <DependentUpon>frmASIN.cs</DependentUpon>
     </Compile>
-    <Compile Update="src\UI\frmCreateXR.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="src\UI\frmCreateXR.cs" />
     <Compile Update="src\UI\frmCreateXR.designer.cs">
       <DependentUpon>frmCreateXR.cs</DependentUpon>
     </Compile>
-    <Compile Update="src\UI\frmGR.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="src\UI\frmGR.cs" />
     <Compile Update="src\UI\frmGR.Designer.cs">
       <DependentUpon>frmGR.cs</DependentUpon>
     </Compile>
-    <Compile Update="src\UI\Preview\frmPreviewAP.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="src\UI\Preview\frmPreviewAP.cs" />
     <Compile Update="src\UI\Preview\frmPreviewAP.Designer.cs">
       <DependentUpon>frmPreviewAP.cs</DependentUpon>
     </Compile>
-    <Compile Update="src\UI\Preview\frmPreviewEA.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="src\UI\Preview\frmPreviewEA.cs" />
     <Compile Update="src\UI\Preview\frmPreviewEA.Designer.cs">
       <DependentUpon>frmPreviewEA.cs</DependentUpon>
     </Compile>
-    <Compile Update="src\UI\Preview\frmPreviewSA.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="src\UI\Preview\frmPreviewSA.cs" />
     <Compile Update="src\UI\Preview\frmPreviewSA.Designer.cs">
       <DependentUpon>frmPreviewSA.cs</DependentUpon>
     </Compile>
-    <Compile Update="src\UI\Preview\frmPreviewXR.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="src\UI\Preview\frmPreviewXR.cs" />
     <Compile Update="src\UI\Preview\frmPreviewXR.Designer.cs">
       <DependentUpon>frmPreviewXR.cs</DependentUpon>
     </Compile>
-    <Compile Update="src\UI\frmSettings.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="src\UI\frmSettings.cs" />
     <Compile Update="src\UI\frmSettings.Designer.cs">
       <DependentUpon>frmSettings.cs</DependentUpon>
     </Compile>
-    <Compile Update="src\UI\frmMain.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="src\UI\frmMain.cs" />
     <Compile Update="src\UI\frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>

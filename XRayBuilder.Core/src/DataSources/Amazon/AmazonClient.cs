@@ -39,7 +39,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
         // private const int MaxParallelism = 5;
         private readonly Regex _regexAsin = new Regex("(?<asin>B[A-Z0-9]{9})", RegexOptions.Compiled);
         private readonly Regex _regexAsinUrl = new Regex("(/e/(?<asin>B\\w+)[/?]|dp/(?<asin>B[A-Z0-9]{9})/|/gp/product/(?<asin>B[A-Z0-9]{9}))", RegexOptions.Compiled);
-        private readonly Regex _regexIgnoreHeaders = new Regex(@"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private readonly Regex _regexIgnoreHeaders = new Regex(@"(Series|Reading) Order|Complete Series|Checklist|Edition|eSpecial|Box Set|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         public AmazonClient(IHttpClient httpClient, IAmazonInfoParser amazonInfoParser, ILogger logger)
         {

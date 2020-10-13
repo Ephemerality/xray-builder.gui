@@ -28,7 +28,7 @@ namespace XRayBuilder.Core.Extras.EndActions
         private readonly IAmazonInfoParser _amazonInfoParser;
         private readonly IRoentgenClient _roentgenClient;
 
-        private readonly Regex _invalidBookTitleRegex = new Regex(@"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private readonly Regex _invalidBookTitleRegex = new Regex(@"(Series|Reading) Order|Complete Series|Checklist|Edition|eSpecial|Box Set|\([0-9]+ Book Series\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public EndActionsDataGenerator(
             ILogger logger,

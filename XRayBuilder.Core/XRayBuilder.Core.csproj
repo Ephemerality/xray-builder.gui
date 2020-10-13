@@ -22,6 +22,21 @@
       <ProjectReference Include="..\IonDotnet\Amazon.IonDotnet\Amazon.IonDotnet.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="src\Localization\Core\CoreStrings.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>CoreStrings.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="src\Localization\Core\CoreStrings.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>CoreStrings.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
     <Choose>
         <When Condition="$(TargetFramework.StartsWith('net4'))">
             <ItemGroup>

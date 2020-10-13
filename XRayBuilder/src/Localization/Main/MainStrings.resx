@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -59,7 +59,7 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
@@ -127,13 +127,13 @@
     <value>Output Directory Not Found</value>
   </data>
   <data name="DatabaseNameLengthWarning" xml:space="preserve">
-    <value>WARNING: Database Name is the maximum length. If "{0}" is the full book title, this should not be an issue.
-If the title is supposed to be longer than that, you might get an error on your Kindle (WG on firmware &lt; 5.6).
-This can be resolved by either shortening the title in Calibre or manually changing the database name.
+    <value>WARNING: The database name is at its maximum length. If "{0}" is the full e-book title, this should not be an issue.
+If the title is supposed to be longer than that, you might get an error on your Kindle (WG on firmware before 5.6).
+Shorten the title in Calibre or change the database name manually.
 </value>
   </data>
   <data name="ExtractingMetadata" xml:space="preserve">
-    <value>Extracting metadata...</value>
+    <value>Extracting metadata…</value>
   </data>
   <data name="FailedToValidateAsin" xml:space="preserve">
     <value>Failed to validate/fix ASIN</value>
@@ -142,7 +142,7 @@ This can be resolved by either shortening the title in Calibre or manually chang
     <value>Continuing anyway</value>
   </data>
   <data name="SavingRawml" xml:space="preserve">
-    <value>Saving raw markup to the dmp directory...</value>
+    <value>Saving raw markup to the dmp directory…</value>
   </data>
   <data name="GotMetadata" xml:space="preserve">
     <value>Got metadata!</value>
@@ -160,7 +160,7 @@ This can be resolved by either shortening the title in Calibre or manually chang
     <value>An error occurred while extracting metadata</value>
   </data>
   <data name="BookNotFound" xml:space="preserve">
-    <value>Specified book was not found.</value>
+    <value>Could not find that e-book.</value>
   </data>
   <data name="BookNotFoundTitle" xml:space="preserve">
     <value>Book Not Found</value>
@@ -181,13 +181,13 @@ This can be resolved by either shortening the title in Calibre or manually chang
     <value>Amazon Customer Details Not Found</value>
   </data>
   <data name="InformationAllowsRatingOnAmazon" xml:space="preserve">
-    <value>This information allows you to rate this book on Amazon.</value>
+    <value>This info lets you rate this book on Amazon.</value>
   </data>
   <data name="PenNamesRequired" xml:space="preserve">
     <value>Both Real and Pen names are required for End Actions file creation.</value>
   </data>
   <data name="AttemptingBuildXRay" xml:space="preserve">
-    <value>Attempting to build X-Ray...</value>
+    <value>Attempting to build X-Ray…</value>
   </data>
   <data name="NoTermsAvailable" xml:space="preserve">
     <value>No terms were available. Do you want to continue building anyway?</value>
@@ -196,7 +196,7 @@ This can be resolved by either shortening the title in Calibre or manually chang
     <value>No Terms</value>
   </data>
   <data name="Cancelling" xml:space="preserve">
-    <value>Cancelling...</value>
+    <value>Cancelling…</value>
   </data>
   <data name="SeeMobilereads" xml:space="preserve">
     <value>See the MobileRead forum thread (link in Settings) for more information on building aliases.</value>
@@ -220,7 +220,7 @@ This can be resolved by either shortening the title in Calibre or manually chang
     <value>Character aliases read from {0}.</value>
   </data>
   <data name="InitialXRayBuiltAddingChapters" xml:space="preserve">
-    <value>Initial X-Ray built, adding locations and chapters...</value>
+    <value>Initial X-Ray built, adding locations and chapters…</value>
   </data>
   <data name="BuildCancelled" xml:space="preserve">
     <value>Build cancelled.</value>
@@ -229,7 +229,7 @@ This can be resolved by either shortening the title in Calibre or manually chang
     <value>An error occurred while building the X-Ray</value>
   </data>
   <data name="SavingXRay" xml:space="preserve">
-    <value>Saving X-Ray to file...</value>
+    <value>Saving X-Ray to file…</value>
   </data>
   <data name="OpenedInAnotherProgram" xml:space="preserve">
     <value>Is it opened in another program?</value>
@@ -253,7 +253,7 @@ This can be resolved by either shortening the title in Calibre or manually chang
     <value>Successfully downloaded pre-made {0} Actions file!</value>
   </data>
   <data name="WritingStartActionsFile" xml:space="preserve">
-    <value>Writing Start Actions file...</value>
+    <value>Writing Start Actions file…</value>
   </data>
   <data name="StartActionsCreated" xml:space="preserve">
     <value>Start Actions file created successfully!</value>
@@ -262,7 +262,7 @@ This can be resolved by either shortening the title in Calibre or manually chang
     <value>An error occurred while creating the Start Actions</value>
   </data>
   <data name="WritingEndActionsFile" xml:space="preserve">
-    <value>Writing End Actions file...</value>
+    <value>Writing End Actions file…</value>
   </data>
   <data name="EndActionsCreated" xml:space="preserve">
     <value>End Actions file created successfully!</value>
@@ -277,7 +277,7 @@ This can be resolved by either shortening the title in Calibre or manually chang
     <value>All extras downloaded/built and none need to be overwritten, stopping here!</value>
   </data>
   <data name="BuildingAuthorProfile" xml:space="preserve">
-    <value>Attempting to build Author Profile...</value>
+    <value>Attempting to build Author Profile…</value>
   </data>
   <data name="BuiltAuthorProfileFromExisting" xml:space="preserve">
     <value>Built Author Profile from the existing End Actions file!</value>
@@ -292,7 +292,7 @@ This can be resolved by either shortening the title in Calibre or manually chang
     <value>An error occurred while writing the Author Profile file</value>
   </data>
   <data name="BuildingStartEndActions" xml:space="preserve">
-    <value>Attempting to build Start and/or End Actions...</value>
+    <value>Attempting to build Start and/or End Actions…</value>
   </data>
   <data name="SeriesInformation" xml:space="preserve">
     <value>Series Information</value>
@@ -307,10 +307,10 @@ This can be resolved by either shortening the title in Calibre or manually chang
     <value>Missing Link</value>
   </data>
   <data name="ExportingTermsFrom" xml:space="preserve">
-    <value>Exporting terms from {0}...</value>
+    <value>Exporting terms from {0}…</value>
   </data>
   <data name="CantExportFromFile" xml:space="preserve">
-    <value>Can't export terms from an XML/TXT file...</value>
+    <value>Can't export terms from an XML/TXT file…</value>
   </data>
   <data name="CharacterDataSavedTo" xml:space="preserve">
     <value>Character data has been successfully saved to {0}</value>
@@ -328,13 +328,13 @@ This can be resolved by either shortening the title in Calibre or manually chang
     <value>If you do not want to use {0}, you can change the data source in Settings.</value>
   </data>
   <data name="BooksSourceUrl" xml:space="preserve">
-    <value>Book's {0} URL</value>
+    <value>E-book's {0} URL</value>
   </data>
   <data name="AllExtrasExistNoOverwrite" xml:space="preserve">
     <value>All extras files already exist and none of the ""overwrite"" settings are enabled!</value>
   </data>
   <data name="DownloadingActions" xml:space="preserve">
-    <value>Attempting to download {0} Actions...</value>
+    <value>Attempting to download {0} Actions…</value>
   </data>
   <data name="ErrorSavingXml" xml:space="preserve">
     <value>An error occurred while saving character data to XML file at {0}</value>
@@ -346,13 +346,13 @@ This can be resolved by either shortening the title in Calibre or manually chang
     <value>Failed to download cover image</value>
   </data>
   <data name="MultipleResultsFromSource" xml:space="preserve">
-    <value>Warning: Multiple results returned from {0}...</value>
+    <value>Warning: Multiple results returned from {0}…</value>
   </data>
   <data name="VisitUrl" xml:space="preserve">
     <value>You may want to visit the URL to ensure it is correct.</value>
   </data>
   <data name="BookFoundOnSource" xml:space="preserve">
-    <value>Book found on {0}!</value>
+    <value>Found the book on {0}!</value>
   </data>
   <data name="TitleByAuthor" xml:space="preserve">
     <value>{0} by {1}</value>
@@ -364,7 +364,7 @@ This can be resolved by either shortening the title in Calibre or manually chang
     <value>An error occurred while searching</value>
   </data>
   <data name="ExtractingRawMl" xml:space="preserve">
-    <value>Extracting raw markup...</value>
+    <value>Extracting raw markup…</value>
   </data>
   <data name="ExtractedToPath" xml:space="preserve">
     <value>Extracted to {0}!</value>
@@ -376,7 +376,7 @@ This can be resolved by either shortening the title in Calibre or manually chang
     <value>Invalid X-Ray file.</value>
   </data>
   <data name="OpenXRayFile" xml:space="preserve">
-    <value>Open a Kindle X-Ray file...</value>
+    <value>Open a Kindle X-Ray file…</value>
   </data>
   <data name="CharacterDataExtractedSavedToPath" xml:space="preserve">
     <value>Character data has been successfully extracted and saved to {0}</value>
@@ -391,31 +391,31 @@ This can be resolved by either shortening the title in Calibre or manually chang
     <value>Help Document Not Found</value>
   </data>
   <data name="OpenKindleFile" xml:space="preserve">
-    <value>Open a Kindle {0} file...</value>
+    <value>Open a Kindle {0} file…</value>
   </data>
   <data name="InvalidKindleFile" xml:space="preserve">
     <value>Invalid {0} file.</value>
   </data>
   <data name="SearchingAmazonForTitleAuthor" xml:space="preserve">
-    <value>Searching Amazon for {0} by {1}...</value>
+    <value>Searching Amazon for {0} by {1}…</value>
   </data>
   <data name="IncorrectAsinTitle" xml:space="preserve">
     <value>Incorrect ASIN</value>
   </data>
   <data name="InvalidAsinShouldFix" xml:space="preserve">
     <value>Invalid Amazon ASIN detected: {0}!
-Kindle may not display an X-Ray for this book.
+Kindle may not display an X-Ray for this e-book.
 Do you want to fix it?
-(This will modify the book meaning it will need to be re-copied to your Kindle device)
-THIS FEATURE IS EXPERIMENTAL AND COULD DESTROY YOUR BOOK!</value>
+(This will modify the e-book, meaning it will need to be re-copied to your Kindle device.)
+THIS FEATURE IS EXPERIMENTAL AND COULD DESTROY YOUR E-BOOK!</value>
   </data>
   <data name="InvalidAsinWarning" xml:space="preserve">
     <value>Invalid Amazon ASIN detected: {0}!
-Kindle may not display an X-Ray for this book.
+Kindle may fail to display an X-Ray for this e-book.
 Do you wish to continue?</value>
   </data>
   <data name="UpdatedAsin" xml:space="preserve">
-    <value>Successfully updated the ASIN to {0}! Be sure to copy this new version of the book to your Kindle device.</value>
+    <value>ASIN updated to {0}! Make sure to copy this new version of the e-book to your Kindle device.</value>
   </data>
   <data name="AmazonSearchResultTitle" xml:space="preserve">
     <value>Amazon Search Result</value>
@@ -433,10 +433,10 @@ Do you wish to continue?</value>
     <value>Title</value>
   </data>
   <data name="FoundBookAmazon" xml:space="preserve">
-    <value>Found the following book on Amazon</value>
+    <value>Found the following e-book on Amazon</value>
   </data>
   <data name="UnableToAutomaticallyFindAsinOnAmazon" xml:space="preserve">
-    <value>Unable to automatically find a matching ASIN for this book on Amazon :(</value>
+    <value>Could not find a matching ASIN  automatically for this e-book on Amazon :(</value>
   </data>
   <data name="OpenChaptersFileNotepad" xml:space="preserve">
     <value>Would you like to open the chapters file in notepad for editing?</value>
@@ -445,10 +445,10 @@ Do you wish to continue?</value>
     <value>Chapters</value>
   </data>
   <data name="BuildingOldFormatNotSupported" xml:space="preserve">
-    <value>Building the old format of X-Ray is not supported with KFX books</value>
+    <value>KFX e-books cannot be used to build X-Ray files in the old format</value>
   </data>
   <data name="OpenKindleBook" xml:space="preserve">
-    <value>Open a Kindle book.</value>
+    <value>Open a Kindle e-book.</value>
   </data>
   <data name="OpenOutputDirectory" xml:space="preserve">
     <value>Open the default output directory.</value>
@@ -481,7 +481,7 @@ Do you wish to continue?</value>
     <value>View a preview of the generated files.</value>
   </data>
   <data name="TryToBuildXRay" xml:space="preserve">
-    <value>Try to build the X-Ray file for this book.</value>
+    <value>Try to build the X-Ray file for this e-book.</value>
   </data>
   <data name="OneClickTooltip" xml:space="preserve">
     <value>One Click button to try to build the Start Actions, Author Profile, End Actions, and X-Ray files for this book.</value>
@@ -493,7 +493,7 @@ Do you wish to continue?</value>
     <value>Try to build the Start Actions, Author Profile, and End Actions files for this book.</value>
   </data>
   <data name="SaveRawMlTooltip" xml:space="preserve">
-    <value>Save the RAWML (raw markup) of the book in the output directory so you can review it.</value>
+    <value>Save the RAWML (raw markup) of the e-book in the output directory so you can review it.</value>
   </data>
   <data name="CreateXmlTooltip" xml:space="preserve">
     <value>Create an XML file containing characters and settings, or edit an existing XML file.</value>
@@ -529,7 +529,7 @@ Do you wish to continue?</value>
     <value>Ignore soft hyphens (Unicode U+00AD) while searching for terms.</value>
   </data>
   <data name="WriteXRayNewFormatTooltip" xml:space="preserve">
-    <value>Write the X-Ray file in the new format for Paperwhite 2 or Voyage firmware 5.6+.</value>
+    <value>Write the X-Ray file in the new format for the Paperwhite 2 or Voyage with firmware version 5.6 or higher.</value>
   </data>
   <data name="BuildXRayForAndroidTooltip" xml:space="preserve">
     <value>Changes the naming convention of the X-Ray file for the Android Kindle app.</value>
@@ -592,7 +592,7 @@ Do you wish to continue?</value>
     <value>Visit the MobileRead forum for support, bug reports, or questions.</value>
   </data>
   <data name="EstimatePageCountTooltip" xml:space="preserve">
-    <value>Try to estimate books page count if no page count is count online (based on user_none's APNX generation project).</value>
+    <value>Try to estimate the page count of the e-book if none can be found online (based on user_none's APNX generation project).</value>
   </data>
   <data name="SecondarySourceTooltip" xml:space="preserve">
     <value>Determines from which non-Amazon source terms and metadata will be downloaded.</value>
@@ -605,7 +605,7 @@ Do you wish to continue?</value>
 Must be enabled for a saved biography to be loaded.</value>
   </data>
   <data name="PromptAsinTooltip" xml:space="preserve">
-    <value>Allow ASIN entry if the next or previous book in a series cannot automatically be found.</value>
+    <value>Allow ASIN entry if the next or previous e-book in a series cannot be found automatically.</value>
   </data>
   <data name="EditBioTooltip" xml:space="preserve">
     <value>If enabled, allows editing the Author's biography before it's used.</value>
@@ -626,13 +626,13 @@ Must be enabled for a saved biography to be loaded.</value>
     <value>Save</value>
   </data>
   <data name="EbookProcessingTitle" xml:space="preserve">
-    <value>eBook Processing</value>
+    <value>E-book Processing</value>
   </data>
   <data name="EstimatePageCountTitle" xml:space="preserve">
     <value>Estimate Page Count</value>
   </data>
   <data name="EbookUnpackingTitle" xml:space="preserve">
-    <value>eBook Unpacking</value>
+    <value>E-book Unpacking</value>
   </data>
   <data name="SaveRawmlTitle" xml:space="preserve">
     <value>Save RAWML</value>

@@ -352,7 +352,7 @@ Shorten the title in Calibre or change the database name manually.
     <value>You may want to visit the URL to ensure it is correct.</value>
   </data>
   <data name="BookFoundOnSource" xml:space="preserve">
-    <value>Found the book on {0}.</value>
+    <value>Found the book on {0}!</value>
   </data>
   <data name="TitleByAuthor" xml:space="preserve">
     <value>{0} by {1}</value>
@@ -445,7 +445,7 @@ Do you wish to continue?</value>
     <value>Chapters</value>
   </data>
   <data name="BuildingOldFormatNotSupported" xml:space="preserve">
-    <value>Building the old format of X-Ray is not supported with KFX books</value>
+    <value>KFX e-books cannot be used to build X-Ray files in the old format</value>
   </data>
   <data name="OpenKindleBook" xml:space="preserve">
     <value>Open a Kindle e-book.</value>

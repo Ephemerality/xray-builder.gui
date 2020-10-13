@@ -404,18 +404,18 @@ Shorten the title in Calibre or change the database name manually.
   </data>
   <data name="InvalidAsinShouldFix" xml:space="preserve">
     <value>Invalid Amazon ASIN detected: {0}!
-Kindle may not display an X-Ray for this book.
+Kindle may not display an X-Ray for this e-book.
 Do you want to fix it?
-(This will modify the book meaning it will need to be re-copied to your Kindle device)
-THIS FEATURE IS EXPERIMENTAL AND COULD DESTROY YOUR BOOK!</value>
+(This will modify the e-book, meaning it will need to be re-copied to your Kindle device.)
+THIS FEATURE IS EXPERIMENTAL AND COULD DESTROY YOUR E-BOOK!</value>
   </data>
   <data name="InvalidAsinWarning" xml:space="preserve">
     <value>Invalid Amazon ASIN detected: {0}!
-Kindle may not display an X-Ray for this book.
+Kindle may fail to display an X-Ray for this e-book.
 Do you wish to continue?</value>
   </data>
   <data name="UpdatedAsin" xml:space="preserve">
-    <value>Successfully updated the ASIN to {0}! Be sure to copy this new version of the book to your Kindle device.</value>
+    <value>ASIN updated to {0}! Make sure to copy this new version of the e-book to your Kindle device.</value>
   </data>
   <data name="AmazonSearchResultTitle" xml:space="preserve">
     <value>Amazon Search Result</value>
@@ -433,10 +433,10 @@ Do you wish to continue?</value>
     <value>Title</value>
   </data>
   <data name="FoundBookAmazon" xml:space="preserve">
-    <value>Found the following book on Amazon</value>
+    <value>Found the following e-book on Amazon</value>
   </data>
   <data name="UnableToAutomaticallyFindAsinOnAmazon" xml:space="preserve">
-    <value>Unable to automatically find a matching ASIN for this book on Amazon :(</value>
+    <value>Could not find a matching ASIN  automatically for this e-book on Amazon :(</value>
   </data>
   <data name="OpenChaptersFileNotepad" xml:space="preserve">
     <value>Would you like to open the chapters file in notepad for editing?</value>
@@ -448,7 +448,7 @@ Do you wish to continue?</value>
     <value>Building the old format of X-Ray is not supported with KFX books</value>
   </data>
   <data name="OpenKindleBook" xml:space="preserve">
-    <value>Open a Kindle book.</value>
+    <value>Open a Kindle e-book.</value>
   </data>
   <data name="OpenOutputDirectory" xml:space="preserve">
     <value>Open the default output directory.</value>
@@ -481,7 +481,7 @@ Do you wish to continue?</value>
     <value>View a preview of the generated files.</value>
   </data>
   <data name="TryToBuildXRay" xml:space="preserve">
-    <value>Try to build the X-Ray file for this book.</value>
+    <value>Try to build the X-Ray file for this e-book.</value>
   </data>
   <data name="OneClickTooltip" xml:space="preserve">
     <value>One Click button to try to build the Start Actions, Author Profile, End Actions, and X-Ray files for this book.</value>
@@ -493,7 +493,7 @@ Do you wish to continue?</value>
     <value>Try to build the Start Actions, Author Profile, and End Actions files for this book.</value>
   </data>
   <data name="SaveRawMlTooltip" xml:space="preserve">
-    <value>Save the RAWML (raw markup) of the book in the output directory so you can review it.</value>
+    <value>Save the RAWML (raw markup) of the e-book in the output directory so you can review it.</value>
   </data>
   <data name="CreateXmlTooltip" xml:space="preserve">
     <value>Create an XML file containing characters and settings, or edit an existing XML file.</value>
@@ -592,7 +592,7 @@ Do you wish to continue?</value>
     <value>Visit the MobileRead forum for support, bug reports, or questions.</value>
   </data>
   <data name="EstimatePageCountTooltip" xml:space="preserve">
-    <value>Try to estimate books page count if no page count is count online (based on user_none's APNX generation project).</value>
+    <value>Try to estimate the page count of the e-book if none can be found online (based on user_none's APNX generation project).</value>
   </data>
   <data name="SecondarySourceTooltip" xml:space="preserve">
     <value>Determines from which non-Amazon source terms and metadata will be downloaded.</value>
@@ -605,7 +605,7 @@ Do you wish to continue?</value>
 Must be enabled for a saved biography to be loaded.</value>
   </data>
   <data name="PromptAsinTooltip" xml:space="preserve">
-    <value>Allow ASIN entry if the next or previous book in a series cannot automatically be found.</value>
+    <value>Allow ASIN entry if the next or previous e-book in a series cannot be found automatically.</value>
   </data>
   <data name="EditBioTooltip" xml:space="preserve">
     <value>If enabled, allows editing the Author's biography before it's used.</value>
@@ -626,7 +626,7 @@ Must be enabled for a saved biography to be loaded.</value>
     <value>Save</value>
   </data>
   <data name="EbookProcessingTitle" xml:space="preserve">
-    <value>eBook Processing</value>
+    <value>E-book Processing</value>
   </data>
   <data name="EstimatePageCountTitle" xml:space="preserve">
     <value>Estimate Page Count</value>

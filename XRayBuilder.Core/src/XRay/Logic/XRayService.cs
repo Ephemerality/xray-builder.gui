@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -13,6 +14,7 @@ using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Primitives.Extensions;
 using XRayBuilder.Core.Libraries.Progress;
+using XRayBuilder.Core.Localization.Core;
 using XRayBuilder.Core.Logic;
 using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Logic.Aliases;
@@ -161,7 +163,7 @@ namespace XRayBuilder.Core.XRay.Logic
                 xray.Erl = rawMlStream.Length;
             }
 
-            _logger.Log("Scanning book content...");
+            _logger.Log(CoreStrings.ScanningEbookContent);
             var timer = new System.Diagnostics.Stopwatch();
             timer.Start();
             //Iterate over all paragraphs in book
@@ -171,12 +173,10 @@ namespace XRayBuilder.Core.XRay.Logic
             if (nodes == null)
             {
                 nodes = web.DocumentNode.SelectNodes("//div");
-                _logger.Log("Warning: Could not locate paragraphs normally (p elements or divs of class 'paragraph').\r\n" +
-                    "Searching all book contents (all divs), which may produce odd results.");
+                _logger.Log($@"{CoreStrings.Warning}: {CoreStrings.CouldNotLocateParagraphsNormally}{Environment.NewLine}{CoreStrings.SearchingAllDivs}");
             }
             if (nodes == null)
-                throw new Exception("Could not locate any paragraphs in this book.\r\n" +
-                    "Report this error along with a copy of the book to improve parsing.");
+                throw new Exception(CoreStrings.CouldNotLocateAnyParagraphs);
             progress?.Set(0, nodes.Count);
             for (var i = 0; i < nodes.Count; i++)
             {
@@ -407,11 +407,11 @@ namespace XRayBuilder.Core.XRay.Logic
             }
 
             timer.Stop();
-            _logger.Log($"Scan time: {timer.Elapsed}");
+            _logger.Log(string.Format(CoreStrings.ScanTime, timer.Elapsed));
             //output list of terms with no locs
             foreach (var t in xray.Terms.Where(t => t.Match && t.Locs.Count == 0))
             {
-                _logger.Log($"No locations were found for the term \"{t.TermName}\".\r\nYou should add aliases for this term using the book or rawml as a reference.");
+                _logger.Log(string.Format(CoreStrings.NoLocationsFoundForTerm, t.TermName));
             }
         }
 

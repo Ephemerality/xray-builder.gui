@@ -79,4 +79,70 @@
   <data name="DatabaseName" xml:space="preserve">
     <value>Nom de la base de données</value>
   </data>
+  <data name="BuildCancelled" xml:space="preserve">
+    <value>Création annulée.</value>
+  </data>
+  <data name="AliasesReadFrom" xml:space="preserve">
+    <value>Alias de caractère lu à partir de {0}.</value>
+  </data>
+  <data name="AliasesFileNotFound" xml:space="preserve">
+    <value>Fichier d'alias introuvable.</value>
+  </data>
+  <data name="AliasesReadFromXml" xml:space="preserve">
+    <value>Alias de caractère lu à partir du fichier XML.</value>
+  </data>
+  <data name="TermsExportedOrAlreadyExist" xml:space="preserve">
+    <value>Les mots ont été exportés dans un fichier d'alias ou existent déjà dans ce fichier.</value>
+  </data>
+  <data name="OpenInNotepad" xml:space="preserve">
+    <value>Voulez-vous ouvrir le fichier dans le bloc note pour le modifier ?</value>
+  </data>
+  <data name="SeeMobilereads" xml:space="preserve">
+    <value>Consultez le fil du forum MobileRead (lien dans les paramètres) pour plus d'information sur la création d'alias.</value>
+  </data>
+  <data name="NoTermsTitle" xml:space="preserve">
+    <value>Aucun mot</value>
+  </data>
+  <data name="NoTermsAvailable" xml:space="preserve">
+    <value>Aucun mot n'est disponible. Souhaitez-vous continuer quand même ?</value>
+  </data>
+  <data name="AttemptingBuildXRay" xml:space="preserve">
+    <value>Tentative de création du fichier X-Ray…</value>
+  </data>
+  <data name="InformationAllowsRatingOnAmazon" xml:space="preserve">
+    <value>Cette information vous permet d'évaluer ce livre sur Amazon.</value>
+  </data>
+  <data name="ReviewSettingsPage" xml:space="preserve">
+    <value>Veuillez vérifier la page des paramètres.</value>
+  </data>
+  <data name="SpecifiedOutputDirectoryDoesNotExist" xml:space="preserve">
+    <value>Le dossier de sortie spécifié n'existe pas.</value>
+  </data>
+  <data name="NoSourceLinkTitle" xml:space="preserve">
+    <value>Lien {0} manquant</value>
+  </data>
+  <data name="NoSourceLinkSpecified" xml:space="preserve">
+    <value>Aucun lien {0} n'a été spécifié.</value>
+  </data>
+  <data name="BookNotFound" xml:space="preserve">
+    <value>Impossible de trouver ce livre.</value>
+  </data>
+  <data name="ErrorExtractingMetadata" xml:space="preserve">
+    <value>Une erreur s'est produite lors de l'extraction des métadonnées</value>
+  </data>
+  <data name="GotMetadata" xml:space="preserve">
+    <value>Métadonnées obtenues !</value>
+  </data>
+  <data name="ContinuingAnyway" xml:space="preserve">
+    <value>Continuer quand même</value>
+  </data>
+  <data name="OutputDirNotFoundTitle" xml:space="preserve">
+    <value>Dossier de sortie introuvable</value>
+  </data>
+  <data name="OutputDirNotFoundReviewSettings" xml:space="preserve">
+    <value>Le dossier de sortie spécifié n'existe pas. Veuillez vérifier la page des paramètres.</value>
+  </data>
+  <data name="InitializeFailed" xml:space="preserve">
+    <value>Échec de l'initialisation de l'application</value>
+  </data>
 </root>

@@ -65,7 +65,7 @@
     <value>Annulation…</value>
   </data>
   <data name="BookNotFoundTitle" xml:space="preserve">
-    <value>Livre Introuvable</value>
+    <value>Livre introuvable</value>
   </data>
   <data name="UniqueID" xml:space="preserve">
     <value>Identifiant unique</value>
@@ -95,7 +95,7 @@
     <value>Les mots ont été exportés dans un fichier d'alias ou existent déjà dans ce fichier.</value>
   </data>
   <data name="OpenInNotepad" xml:space="preserve">
-    <value>Voulez-vous ouvrir le fichier dans le bloc note pour le modifier ?</value>
+    <value>Voulez-vous ouvrir le fichier dans le bloc-notes pour le modifier ?</value>
   </data>
   <data name="SeeMobilereads" xml:space="preserve">
     <value>Consultez le fil du forum MobileRead (lien dans les paramètres) pour plus d'information sur la création d'alias.</value>
@@ -144,5 +144,35 @@
   </data>
   <data name="InitializeFailed" xml:space="preserve">
     <value>Échec de l'initialisation de l'application</value>
+  </data>
+  <data name="OpenedInAnotherProgram" xml:space="preserve">
+    <value>Est-il ouvert dans un autre programme ?</value>
+  </data>
+  <data name="SavingXRay" xml:space="preserve">
+    <value>Sauvegarde de l'X-Ray au fichier…</value>
+  </data>
+  <data name="ErrorBuildingXRay" xml:space="preserve">
+    <value>Une erreur est survenue lors de la création du fichier X-Ray</value>
+  </data>
+  <data name="InitialXRayBuiltAddingChapters" xml:space="preserve">
+    <value>Création du fichier X-Ray initial, ajout d'emplacements et de chapitres…</value>
+  </data>
+  <data name="PenNamesRequired" xml:space="preserve">
+    <value>Les noms Real et Pen sont requis pour la création du fichier des actions de fin.</value>
+  </data>
+  <data name="AmazonCustomerDetailsNotFoundTitle" xml:space="preserve">
+    <value>Détails du Client Amazon Introuvables</value>
+  </data>
+  <data name="SavingRawml" xml:space="preserve">
+    <value>Enregistrement du balisage brut dans le répertoire dmp…</value>
+  </data>
+  <data name="FailedToValidateAsin" xml:space="preserve">
+    <value>Échec de la validation/correction de l'ASIN</value>
+  </data>
+  <data name="DatabaseNameLengthWarning" xml:space="preserve">
+    <value>ATTENTION: Le nom de la base de données est à sa longueur maximale. Si "{0}" est le titre complet de l'e-book, cela ne devrait pas poser problème.
+Si le titre est censé plus long que cela, vous pourriez avoir une erreur sur votre Kindle (WG micrologiciel inférieur à 5.6).
+Réduisez le titre dans l'application Calibre ou changez le nom de la base de données manuellement.
+</value>
   </data>
 </root>

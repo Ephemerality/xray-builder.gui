@@ -37,10 +37,10 @@ namespace XRayBuilder.Core.Extras.Artifacts
             [JsonProperty("imageUrl")]
             public string ImageUrl { get; set; }
 
-            [JsonProperty("bisacCodes")]
+            [JsonProperty("bisacCodes", NullValueHandling = NullValueHandling.Ignore)]
             public string[] BisacCodes { get; set; }
 
-            [JsonProperty("fictionStatus")]
+            [JsonProperty("fictionStatus", NullValueHandling = NullValueHandling.Ignore)]
             public string FictionStatus { get; set; }
 
             [JsonProperty("erl")]

@@ -28,6 +28,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
         /// First page of books from author's page
         /// </summary>
         public BookInfo[] Books { get; set; }
+        public string Url { get; set; }
     }
 
     // TODO: Calling SearchAuthor then using the search results for all subsequent calls is kinda weird
@@ -57,14 +58,16 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
         public string Url(string tld, string asin) => $"https://www.amazon.{tld}/dp/{asin}";
 
-        public async Task<AuthorSearchResults> SearchAuthor(string author, string bookAsin, string TLD, CancellationToken cancellationToken)
+        // TODO fix the need to have an enableLog param
+        public async Task<AuthorSearchResults> SearchAuthor(string author, string TLD, CancellationToken cancellationToken, bool enableLog = true)
         {
             //Generate Author search URL from author's name
             var newAuthor = Functions.FixAuthor(author);
             var plusAuthorName = newAuthor.Replace(" ", "+");
             //Updated to match Search "all" Amazon
             var amazonAuthorSearchUrl = $"https://www.amazon.{TLD}/s/ref=nb_sb_noss_2?url=search-alias%3Dstripbooks&field-keywords={plusAuthorName}";
-            _logger.Log($"Searching for author's page on Amazon.{TLD}...");
+            if(enableLog)
+                _logger.Log($"Searching for author's page on Amazon.{TLD}...");
 
             // Search Amazon for Author
             var authorSearchDoc = await _httpClient.GetPageAsync(amazonAuthorSearchUrl, cancellationToken);
@@ -76,7 +79,8 @@ namespace XRayBuilder.Core.DataSources.Amazon
             }
             catch (AmazonCaptchaException)
             {
-                _logger.Log($"Warning: Amazon.{TLD} is requesting a captcha.\r\nYou can try visiting Amazon.{TLD} in a real browser first, try another region, or try again later.");
+                if(enableLog)
+                    _logger.Log($"Warning: Amazon.{TLD} is requesting a captcha.\r\nYou can try visiting Amazon.{TLD} in a real browser first, try another region, or try again later.");
                 return null;
             }
             // Try to find Author's page from Amazon search
@@ -91,7 +95,8 @@ namespace XRayBuilder.Core.DataSources.Amazon
                     .ToArray();
                 if (possibleNodes == null || (node = possibleNodes.FirstOrDefault()) == null)
                 {
-                    _logger.Log($"An error occurred finding author's page on Amazon.{TLD}.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at {amazonAuthorSearchUrl}\r\nSometimes Amazon just doesn't return the author and trying a few times will work.");
+                    if (enableLog)
+                        _logger.Log($"An error occurred finding author's page on Amazon.{TLD}.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at {amazonAuthorSearchUrl}\r\nSometimes Amazon just doesn't return the author and trying a few times will work.");
                     return null;
                 }
             }
@@ -120,14 +125,16 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
             if (node == null || string.IsNullOrEmpty(properAuthor) || properAuthor.IndexOf('/', 1) < 3 || string.IsNullOrEmpty(authorAsin))
             {
-                _logger.Log($"Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: {amazonAuthorSearchUrl}");
+                if (enableLog)
+                    _logger.Log($"Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: {amazonAuthorSearchUrl}");
                 return null;
             }
             properAuthor = properAuthor.Substring(1, properAuthor.IndexOf('/', 1) - 1);
             var authorAmazonWebsiteLocationLog = $"https://www.amazon.{TLD}/{properAuthor}/e/{authorAsin}";
             var authorAmazonWebsiteLocation = $"https://www.amazon.{TLD}{node.GetAttributeValue("href", "")}";
 
-            _logger.Log($"Author page found on Amazon!\r\nAuthor's Amazon Page URL: {authorAmazonWebsiteLocationLog}");
+            if(enableLog)
+                _logger.Log($"Author page found on Amazon!\r\nAuthor's Amazon Page URL: {authorAmazonWebsiteLocationLog}");
 
             // Load Author's Amazon page
             var authorHtmlDoc = new HtmlDocument();
@@ -163,7 +170,8 @@ namespace XRayBuilder.Core.DataSources.Amazon
             }
             catch (FormatChangedException)
             {
-                _logger.Log("Warning: Amazon biography format changed or no biography available for this author.", LogLevel.Warn);
+                if(enableLog)
+                    _logger.Log("Warning: Amazon biography format changed or no biography available for this author.", LogLevel.Warn);
             }
 
             string authorImageUrl = null;
@@ -173,7 +181,8 @@ namespace XRayBuilder.Core.DataSources.Amazon
             }
             catch (FormatChangedException)
             {
-                _logger.Log("Warning: Amazon author image format changed or no image is available for this author.", LogLevel.Warn);
+                if (enableLog)
+                    _logger.Log("Warning: Amazon author image format changed or no image is available for this author.", LogLevel.Warn);
             }
 
             var bookList = GetAuthorBooks(authorHtmlDoc, author, TLD);
@@ -185,7 +194,8 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 Asin = authorAsin,
                 Biography = biography,
                 ImageUrl = authorImageUrl,
-                Books = bookList.ToArray()
+                Books = bookList.ToArray(),
+                Url = authorAmazonWebsiteLocationLog
             };
         }
 

@@ -197,6 +197,9 @@
     <EmbeddedResource Update="src\UI\frmASIN.resx">
       <DependentUpon>frmASIN.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Update="src\UI\frmBookInfo.resx">
+      <DependentUpon>frmBookInfo.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Update="src\UI\frmCreateXR.resx">
       <DependentUpon>frmCreateXR.cs</DependentUpon>
     </EmbeddedResource>

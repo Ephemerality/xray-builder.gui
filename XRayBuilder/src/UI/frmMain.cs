@@ -786,6 +786,7 @@ namespace XRayBuilderGUI.UI
             using var frmSet = _diContainer.GetInstance<frmSettings>();
             frmSet.ShowDialog();
             SetDatasourceLabels();
+            AdjustUi();
 
             if (!txtGoodreads.Text.ToLower().Contains(_settings.dataSource.ToLower()))
                 txtGoodreads.Text = "";
@@ -796,12 +797,7 @@ namespace XRayBuilderGUI.UI
             _settings.mobiFile = txtMobi.Text;
             _settings.xmlFile = txtXMLFile.Text;
             _settings.Goodreads = txtGoodreads.Text;
-            _settings.buildSource = rdoGoodreads.Checked
-                ? "Goodreads"
-                : rdoRoentgen.Checked
-                    ? "Roentgen"
-                    : "XML";
-            _settings.Save();
+
             if (txtOutput.Text.Trim().Length != 0)
                 File.WriteAllText(_currentLog, txtOutput.Text);
             Application.Exit();
@@ -869,14 +865,15 @@ namespace XRayBuilderGUI.UI
                 btnBrowseXML.Visible = true;
                 btnDownloadTerms.Visible = false;
             }
+
             SetDatasourceLabels();
             AdjustUi();
         }
 
         private void AdjustUi()
         {
-            txtGoodreads.Location = new Point(lblGoodreads.Location.X + lblGoodreads.Width + 6, txtGoodreads.Location.Y);
-            txtGoodreads.Size = new Size(groupBox1.Width - txtGoodreads.Location.X - 12, txtGoodreads.Size.Height);
+            txtGoodreads.Location = new Point(lblGoodreads.Location.X + lblGoodreads.Width + 11, txtGoodreads.Location.Y);
+            txtGoodreads.Size = new Size(groupBox1.Width - txtGoodreads.Location.X - 18, txtGoodreads.Size.Height);
         }
 
         private void SetSelectedDatasource()
@@ -902,6 +899,13 @@ namespace XRayBuilderGUI.UI
                 btnXraySource.Image = Resources.source_file;
                 btnXraySourceFile.Checked = true;
             }
+
+            _settings.buildSource = rdoGoodreads.Checked
+                ? "Goodreads"
+                : rdoRoentgen.Checked
+                    ? "Roentgen"
+                    : "XML";
+            _settings.Save();
         }
 
         private void SetDatasourceLink(string url)
@@ -942,7 +946,6 @@ namespace XRayBuilderGUI.UI
             lblDatasource.Text = $"{_dataSource.Name}:";
             txtDatasource.Enabled = _dataSource.SearchEnabled;
             SetDatasourceLink(txtGoodreads.Text);
-
             SetSelectedDatasource();
         }
 
@@ -987,6 +990,7 @@ namespace XRayBuilderGUI.UI
             if (txtMobi.Text == "" || !File.Exists(txtMobi.Text))
                 return;
             txtGoodreads.Text = "";
+            txtDatasource.Text = "";
             prgBar.Value = 0;
             _openedMetadata = null;
 
@@ -1015,6 +1019,9 @@ namespace XRayBuilderGUI.UI
             btnBuild.Enabled = metadata.XRaySupported;
             btnOneClick.Enabled = metadata.XRaySupported;
             btnUnpack.Enabled = metadata.RawMlSupported;
+
+            // todo centralized name (should the app name be localized?)
+            Text = $"X-Ray Builder GUI - {txtMobi.Text}";
 
             try
             {
@@ -1329,6 +1336,28 @@ namespace XRayBuilderGUI.UI
         private void txtGoodreads_TextChanged(object sender, EventArgs e)
         {
             SetDatasourceLink(txtGoodreads.Text);
+        }
+
+        private void pbCover_Click(object sender, EventArgs e)
+        {
+            using var frmBook = _diContainer.GetInstance<frmBookInfo>();
+            frmBook.Setup(_openedMetadata, (Image) pbCover.Image.Clone(), new frmBookInfo.DialogData(txtGoodreads.Text, "", "", _settings.buildSource));
+            frmBook.ShowDialog();
+            if (frmBook.Result == null)
+                return;
+            txtGoodreads.Text = frmBook.Result.SecondarySourceUrl;
+            // TODO Maybe use an enum for buildsource so we don't throw these strings around (to think about)
+            _settings.buildSource = frmBook.Result.TermsSource;
+        }
+
+        private void pbCover_MouseEnter(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Hand;
+        }
+
+        private void pbCover_MouseLeave(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Default;
         }
     }
 }

@@ -791,6 +791,9 @@
             this.pbCover.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pbCover.TabIndex = 0;
             this.pbCover.TabStop = false;
+            this.pbCover.Click += new System.EventHandler(this.pbCover_Click);
+            this.pbCover.MouseEnter += new System.EventHandler(this.pbCover_MouseEnter);
+            this.pbCover.MouseLeave += new System.EventHandler(this.pbCover_MouseLeave);
             // 
             // txtDatasource
             // 

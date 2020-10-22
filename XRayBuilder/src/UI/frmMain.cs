@@ -66,6 +66,8 @@ namespace XRayBuilderGUI.UI
         private readonly IEndActionsAuthorConverter _endActionsAuthorConverter;
         private readonly IDirectoryService _directoryService;
 
+        public Data Data = new Data();
+
         // There is private method ClearAllSelections in ToolStrip class,
         // which removes selections from items. You can invoke it via reflection:
         // https://stackoverflow.com/a/10341622
@@ -112,8 +114,10 @@ namespace XRayBuilderGUI.UI
             _directoryService = directoryService;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
-
+            
             toolStrip.Renderer = new CustomToolStripProfessionalRenderer();
+
+            txtGoodreads.DataBindings.Add("Text", Data, "GoodreadsUrl", true, DataSourceUpdateMode.OnPropertyChanged);
         }
 
         private readonly ToolTip _tooltip = new ToolTip();
@@ -126,6 +130,7 @@ namespace XRayBuilderGUI.UI
         private ISecondarySource _dataSource;
 
         private IMetadata _openedMetadata;
+        private Image _openedCover;
 
         private DialogResult SafeShow([Localizable(true)] string msg, [Localizable(true)] string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton def)
         {
@@ -182,8 +187,10 @@ namespace XRayBuilderGUI.UI
 
         private void btnBrowseMobi_Click(object sender, EventArgs e)
         {
-            txtMobi.Text = "";
+            var book = txtMobi.Text;
             txtMobi.Text = UIFunctions.GetBook(txtMobi.Text);
+            if (string.Equals(book, txtMobi.Text)) return;
+            Data = new Data();
         }
 
         private void btnBrowseXML_Click(object sender, EventArgs e)
@@ -305,11 +312,12 @@ namespace XRayBuilderGUI.UI
                 {
                     selectedSource = _diContainer.GetInstance<SecondarySourceRoentgen>();
                     xrayTask = _xrayService.CreateXRayAsync(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.roentgenRegion, _settings.includeTopics, selectedSource, _progress, _cancelTokens.Token);
-                }                else
-                {
-                    // TODO Set datasource properly
-                    selectedSource = _diContainer.GetInstance<SecondaryDataSourceFactory>().Get(SecondaryDataSourceFactory.Enum.File);
-                    xrayTask = _xrayService.CreateXRayAsync(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.amazonTLD, _settings.includeTopics, selectedSource, _progress, _cancelTokens.Token);                }
+                } 
+                
+                // TODO Set datasource properly
+                selectedSource = _diContainer.GetInstance<SecondaryDataSourceFactory>().Get(SecondaryDataSourceFactory.Enum.File);
+                xrayTask = _xrayService.CreateXRayAsync(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.amazonTLD, _settings.includeTopics, selectedSource, _progress, _cancelTokens.Token);
+
 
                 xray = await Task.Run(() => xrayTask).ConfigureAwait(false);
 
@@ -866,6 +874,7 @@ namespace XRayBuilderGUI.UI
             using var frmSet = _diContainer.GetInstance<frmSettings>();
             frmSet.ShowDialog();
             SetDatasourceLabels();
+            AdjustUi();
 
             if (!txtGoodreads.Text.ToLower().Contains(_settings.dataSource.ToLower()))
                 txtGoodreads.Text = "";
@@ -876,12 +885,7 @@ namespace XRayBuilderGUI.UI
             _settings.mobiFile = txtMobi.Text;
             _settings.xmlFile = txtXMLFile.Text;
             _settings.Goodreads = txtGoodreads.Text;
-            _settings.buildSource = rdoGoodreads.Checked
-                ? "Goodreads"
-                : rdoRoentgen.Checked
-                    ? "Roentgen"
-                    : "XML";
-            _settings.Save();
+            
             if (txtOutput.Text.Trim().Length != 0)
                 File.WriteAllText(_currentLog, txtOutput.Text);
             Application.Exit();
@@ -937,6 +941,7 @@ namespace XRayBuilderGUI.UI
             txtGoodreads.Text = _settings.Goodreads;
             if (_settings.buildSource == "Goodreads")
             {
+
                 rdoGoodreads.Checked = true;
                 btnBrowseXML.Visible = false;
                 btnDownloadTerms.Visible = true;
@@ -953,14 +958,15 @@ namespace XRayBuilderGUI.UI
                 btnBrowseXML.Visible = true;
                 btnDownloadTerms.Visible = false;
             }
+
             SetDatasourceLabels();
             AdjustUi();
         }
 
         private void AdjustUi()
         {
-            txtGoodreads.Location = new Point(lblGoodreads.Location.X + lblGoodreads.Width + 6, txtGoodreads.Location.Y);
-            txtGoodreads.Size = new Size(groupBox1.Width - txtGoodreads.Location.X - 12, txtGoodreads.Size.Height);
+            txtGoodreads.Location = new Point(lblGoodreads.Location.X + lblGoodreads.Width + 11, txtGoodreads.Location.Y);
+            txtGoodreads.Size = new Size(groupBox1.Width - txtGoodreads.Location.X - 18, txtGoodreads.Size.Height);
         }
 
         private void SetSelectedDatasource()
@@ -971,7 +977,7 @@ namespace XRayBuilderGUI.UI
 
             if (rdoGoodreads.Checked)
             {
-                btnDownloadTerms.ToolTipText = $@"Save Goodreads terms to an XML file.";
+                btnDownloadTerms.ToolTipText = @"Save Goodreads terms to an XML file.";
                 btnXraySource.Image = Resources.source_internet;
                 btnXraySourceGoodreads.Checked = true;
             }
@@ -986,6 +992,14 @@ namespace XRayBuilderGUI.UI
                 btnXraySource.Image = Resources.source_file;
                 btnXraySourceFile.Checked = true;
             }
+
+            _settings.buildSource = rdoGoodreads.Checked
+                ? "Goodreads"
+                : rdoRoentgen.Checked
+                    ? "Roentgen"
+                    : "XML";
+            _settings.Save();
+            Data.XraySource = _settings.buildSource;
         }
 
         private void SetDatasourceLink(string url)
@@ -1001,6 +1015,7 @@ namespace XRayBuilderGUI.UI
             _tooltip.SetToolTip(txtDatasource, url);
             txtDatasource.Visible = true;
             txtDatasource.Text = matchId.Groups[2].Value;
+            Data.GoodreadsUrl = url;
         }
 
         private void SetDatasourceLabels()
@@ -1020,7 +1035,6 @@ namespace XRayBuilderGUI.UI
             lblDatasource.Text = $@"{_dataSource.Name}:";
             txtDatasource.Enabled = _dataSource.SearchEnabled;
             SetDatasourceLink(txtGoodreads.Text);
-
             SetSelectedDatasource();
         }
 
@@ -1065,6 +1079,7 @@ namespace XRayBuilderGUI.UI
             if (txtMobi.Text == "" || !File.Exists(txtMobi.Text))
                 return;
             txtGoodreads.Text = "";
+            txtDatasource.Text = "";
             prgBar.Value = 0;
             _openedMetadata = null;
 
@@ -1076,6 +1091,7 @@ namespace XRayBuilderGUI.UI
             }
             metadata.CheckDrm();
             pbCover.Image = (Image) metadata.CoverImage?.Clone();
+            _openedCover = (Image) metadata.CoverImage?.Clone();
 
             lblTitle.Visible = true;
             lblAuthor.Visible = true;
@@ -1093,6 +1109,8 @@ namespace XRayBuilderGUI.UI
             btnBuild.Enabled = metadata.XRaySupported;
             btnOneClick.Enabled = metadata.XRaySupported;
             btnUnpack.Enabled = metadata.RawMlSupported;
+
+            Text = $@"X-Ray Builder GUI - {txtMobi.Text}";
 
             try
             {
@@ -1408,6 +1426,25 @@ namespace XRayBuilderGUI.UI
         private void txtGoodreads_TextChanged(object sender, EventArgs e)
         {
             SetDatasourceLink(txtGoodreads.Text);
+        }
+
+        private void pbCover_Click(object sender, EventArgs e)
+        {
+            using var frmBook = _diContainer.GetInstance<frmBookInfo>();
+            frmBook.Book = _openedMetadata;
+            frmBook.Cover = _openedCover;
+            frmBook.Data = Data;
+            frmBook.ShowDialog();
+        }
+
+        private void pbCover_MouseEnter(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Hand;
+        }
+
+        private void pbCover_MouseLeave(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Default;
         }
     }
 }

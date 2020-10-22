@@ -33,7 +33,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
         public override string Name => "Shelfari";
         public override bool SearchEnabled { get; } = false;
-        public override int UrlLabelPosition { get; } = 6;
+        public override int UrlLabelPosition { get; } = 14;
         public override bool SupportsNotableClips { get; } = true;
 
         // private string FindShelfariURL(HtmlDocument shelfariHtmlDoc, string author, string title)

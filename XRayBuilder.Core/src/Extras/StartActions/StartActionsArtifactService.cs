@@ -43,7 +43,7 @@ namespace XRayBuilder.Core.Extras.StartActions
                 Asin = curBook.Asin,
                 ContentType = "EBOK",
                 Timestamp = Functions.UnixTimestampMilliseconds(),
-                RefTagSuffix = "AAAgAAA",
+                RefTagSuffix = "AAATAAA",
                 ImageUrl = curBook.ImageUrl,
                 Erl = -1
             }; 
@@ -63,7 +63,7 @@ namespace XRayBuilder.Core.Extras.StartActions
                 {
                     new Subscription
                     {
-                        Asin = curBook.AuthorAsin,
+                        Asin = string.IsNullOrEmpty(curBook.AuthorAsin) ? authorProfile.Asin : curBook.AuthorAsin,
                         Name = curBook.Author,
                         ImageUrl = curBook.AuthorImageUrl
                     }
@@ -96,6 +96,8 @@ namespace XRayBuilder.Core.Extras.StartActions
 
             
             startActions.Data.GrokShelfInfo.Asin = curBook.Asin;
+            startActions.Data.GrokShelfInfo.IsAutoshelvingEnabled = true;
+
             startActions.Data.BookDescription = Extensions.BookInfoToBook(curBook, true);
             startActions.Data.CurrentBook = startActions.Data.BookDescription;
             startActions.Data.AuthorBios = new AuthorBios

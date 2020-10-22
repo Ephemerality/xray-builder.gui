@@ -40,7 +40,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
         public override string Name { get; } = "LibraryThing";
         public override bool SearchEnabled { get; } = true;
-        public override int UrlLabelPosition { get; } = 6;
+        public override int UrlLabelPosition { get; } = 14;
         public override bool SupportsNotableClips { get; } = false;
 
         private const string BaseUrl = "https://www.librarything.com";

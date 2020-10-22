@@ -118,7 +118,7 @@
             this.lblGoodreads.Location = new System.Drawing.Point(14, 31);
             this.lblGoodreads.Name = "lblGoodreads";
             this.lblGoodreads.Size = new System.Drawing.Size(115, 20);
-            this.lblGoodreads.TabIndex = 8;
+            this.lblGoodreads.TabIndex = 0;
             this.lblGoodreads.Text = "Goodreads URL:";
             this.lblGoodreads.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -130,7 +130,7 @@
             this.txtMobi.Location = new System.Drawing.Point(18, 28);
             this.txtMobi.Name = "txtMobi";
             this.txtMobi.Size = new System.Drawing.Size(1179, 27);
-            this.txtMobi.TabIndex = 1;
+            this.txtMobi.TabIndex = 0;
             this.txtMobi.TextChanged += new System.EventHandler(this.txtMobi_TextChanged);
             // 
             // groupBox1
@@ -143,7 +143,7 @@
             this.groupBox1.Location = new System.Drawing.Point(12, 183);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(1215, 74);
-            this.groupBox1.TabIndex = 29;
+            this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Metadata Provider";
             // 
@@ -155,7 +155,7 @@
             this.txtGoodreads.Location = new System.Drawing.Point(140, 28);
             this.txtGoodreads.Name = "txtGoodreads";
             this.txtGoodreads.Size = new System.Drawing.Size(1057, 27);
-            this.txtGoodreads.TabIndex = 27;
+            this.txtGoodreads.TabIndex = 0;
             this.txtGoodreads.TextChanged += new System.EventHandler(this.txtGoodreads_TextChanged);
             // 
             // groupBox3
@@ -167,7 +167,7 @@
             this.groupBox3.Location = new System.Drawing.Point(12, 103);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(1215, 74);
-            this.groupBox3.TabIndex = 38;
+            this.groupBox3.TabIndex = 0;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Book";
             // 
@@ -180,7 +180,7 @@
             this.prgBar.Size = new System.Drawing.Size(1178, 21);
             this.prgBar.Step = 1;
             this.prgBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.prgBar.TabIndex = 18;
+            this.prgBar.TabIndex = 0;
             // 
             // txtOutput
             // 
@@ -196,7 +196,7 @@
             this.txtOutput.ReadOnly = true;
             this.txtOutput.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
             this.txtOutput.Size = new System.Drawing.Size(915, 543);
-            this.txtOutput.TabIndex = 61;
+            this.txtOutput.TabIndex = 0;
             this.txtOutput.Text = "";
             this.txtOutput.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.txtOutput_LinkClicked);
             // 
@@ -252,7 +252,7 @@
             this.lblFiles.Location = new System.Drawing.Point(940, 878);
             this.lblFiles.Name = "lblFiles";
             this.lblFiles.Size = new System.Drawing.Size(40, 19);
-            this.lblFiles.TabIndex = 69;
+            this.lblFiles.TabIndex = 0;
             this.lblFiles.Text = "Files:";
             this.lblFiles.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -267,7 +267,7 @@
             this.txtAsin.Location = new System.Drawing.Point(1034, 834);
             this.txtAsin.Name = "txtAsin";
             this.txtAsin.Size = new System.Drawing.Size(39, 19);
-            this.txtAsin.TabIndex = 68;
+            this.txtAsin.TabIndex = 0;
             this.txtAsin.TabStop = true;
             this.txtAsin.Text = "ASIN";
             this.txtAsin.Visible = false;
@@ -281,7 +281,7 @@
             this.txtAuthor.Location = new System.Drawing.Point(1034, 812);
             this.txtAuthor.Name = "txtAuthor";
             this.txtAuthor.Size = new System.Drawing.Size(190, 19);
-            this.txtAuthor.TabIndex = 5;
+            this.txtAuthor.TabIndex = 0;
             this.txtAuthor.Text = "Author";
             this.txtAuthor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.txtAuthor.Visible = false;
@@ -294,7 +294,7 @@
             this.txtTitle.Location = new System.Drawing.Point(1034, 790);
             this.txtTitle.Name = "txtTitle";
             this.txtTitle.Size = new System.Drawing.Size(190, 19);
-            this.txtTitle.TabIndex = 4;
+            this.txtTitle.TabIndex = 0;
             this.txtTitle.Text = "Title";
             this.txtTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.txtTitle.Visible = false;
@@ -307,7 +307,7 @@
             this.lblAsin.Location = new System.Drawing.Point(940, 834);
             this.lblAsin.Name = "lblAsin";
             this.lblAsin.Size = new System.Drawing.Size(44, 19);
-            this.lblAsin.TabIndex = 3;
+            this.lblAsin.TabIndex = 0;
             this.lblAsin.Text = "ASIN:";
             this.lblAsin.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -319,7 +319,7 @@
             this.lblAuthor.Location = new System.Drawing.Point(940, 812);
             this.lblAuthor.Name = "lblAuthor";
             this.lblAuthor.Size = new System.Drawing.Size(56, 19);
-            this.lblAuthor.TabIndex = 2;
+            this.lblAuthor.TabIndex = 0;
             this.lblAuthor.Text = "Author:";
             this.lblAuthor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -331,7 +331,7 @@
             this.lblTitle.Location = new System.Drawing.Point(940, 790);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(40, 19);
-            this.lblTitle.TabIndex = 1;
+            this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "Title:";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -347,7 +347,7 @@
             this.groupBox4.Location = new System.Drawing.Point(12, 263);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(1215, 74);
-            this.groupBox4.TabIndex = 70;
+            this.groupBox4.TabIndex = 0;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "X-Ray Terms Source";
             // 
@@ -358,7 +358,7 @@
             this.rdoRoentgen.Location = new System.Drawing.Point(131, 29);
             this.rdoRoentgen.Name = "rdoRoentgen";
             this.rdoRoentgen.Size = new System.Drawing.Size(94, 24);
-            this.rdoRoentgen.TabIndex = 26;
+            this.rdoRoentgen.TabIndex = 0;
             this.rdoRoentgen.Text = "Roentgen";
             this.rdoRoentgen.UseVisualStyleBackColor = true;
             this.rdoRoentgen.CheckedChanged += new System.EventHandler(this.rdoSource_CheckedChanged);
@@ -370,7 +370,7 @@
             this.rdoFile.Location = new System.Drawing.Point(234, 29);
             this.rdoFile.Name = "rdoFile";
             this.rdoFile.Size = new System.Drawing.Size(53, 24);
-            this.rdoFile.TabIndex = 25;
+            this.rdoFile.TabIndex = 0;
             this.rdoFile.Text = "File";
             this.rdoFile.UseVisualStyleBackColor = true;
             this.rdoFile.CheckedChanged += new System.EventHandler(this.rdoSource_CheckedChanged);
@@ -383,7 +383,7 @@
             this.rdoGoodreads.Location = new System.Drawing.Point(18, 29);
             this.rdoGoodreads.Name = "rdoGoodreads";
             this.rdoGoodreads.Size = new System.Drawing.Size(103, 24);
-            this.rdoGoodreads.TabIndex = 24;
+            this.rdoGoodreads.TabIndex = 0;
             this.rdoGoodreads.TabStop = true;
             this.rdoGoodreads.Text = "Goodreads";
             this.rdoGoodreads.UseVisualStyleBackColor = true;
@@ -398,7 +398,7 @@
             this.txtXMLFile.Location = new System.Drawing.Point(297, 28);
             this.txtXMLFile.Name = "txtXMLFile";
             this.txtXMLFile.Size = new System.Drawing.Size(900, 27);
-            this.txtXMLFile.TabIndex = 23;
+            this.txtXMLFile.TabIndex = 0;
             // 
             // toolStrip
             // 
@@ -429,7 +429,7 @@
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(1244, 100);
-            this.toolStrip.TabIndex = 74;
+            this.toolStrip.TabIndex = 0;
             this.toolStrip.Text = "toolStrip1";
             // 
             // btnBrowseMobi
@@ -786,7 +786,7 @@
             this.pbFile4.Location = new System.Drawing.Point(1116, 880);
             this.pbFile4.Name = "pbFile4";
             this.pbFile4.Size = new System.Drawing.Size(16, 16);
-            this.pbFile4.TabIndex = 73;
+            this.pbFile4.TabIndex = 0;
             this.pbFile4.TabStop = false;
             // 
             // pbFile3
@@ -796,7 +796,7 @@
             this.pbFile3.Location = new System.Drawing.Point(1090, 880);
             this.pbFile3.Name = "pbFile3";
             this.pbFile3.Size = new System.Drawing.Size(16, 16);
-            this.pbFile3.TabIndex = 72;
+            this.pbFile3.TabIndex = 0;
             this.pbFile3.TabStop = false;
             // 
             // pbFile2
@@ -806,7 +806,7 @@
             this.pbFile2.Location = new System.Drawing.Point(1064, 880);
             this.pbFile2.Name = "pbFile2";
             this.pbFile2.Size = new System.Drawing.Size(16, 16);
-            this.pbFile2.TabIndex = 71;
+            this.pbFile2.TabIndex = 0;
             this.pbFile2.TabStop = false;
             // 
             // btnCancel
@@ -817,7 +817,7 @@
             this.btnCancel.Location = new System.Drawing.Point(1205, 912);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(23, 23);
-            this.btnCancel.TabIndex = 69;
+            this.btnCancel.TabIndex = 0;
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
@@ -828,7 +828,7 @@
             this.pbFile1.Location = new System.Drawing.Point(1038, 880);
             this.pbFile1.Name = "pbFile1";
             this.pbFile1.Size = new System.Drawing.Size(16, 16);
-            this.pbFile1.TabIndex = 70;
+            this.pbFile1.TabIndex = 0;
             this.pbFile1.TabStop = false;
             // 
             // pbCover
@@ -841,6 +841,9 @@
             this.pbCover.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pbCover.TabIndex = 0;
             this.pbCover.TabStop = false;
+            this.pbCover.Click += new System.EventHandler(this.pbCover_Click);
+            this.pbCover.MouseEnter += new System.EventHandler(this.pbCover_MouseEnter);
+            this.pbCover.MouseLeave += new System.EventHandler(this.pbCover_MouseLeave);
             // 
             // txtDatasource
             // 
@@ -853,7 +856,7 @@
             this.txtDatasource.Location = new System.Drawing.Point(1034, 856);
             this.txtDatasource.Name = "txtDatasource";
             this.txtDatasource.Size = new System.Drawing.Size(129, 19);
-            this.txtDatasource.TabIndex = 76;
+            this.txtDatasource.TabIndex = 0;
             this.txtDatasource.TabStop = true;
             this.txtDatasource.Text = "Search datasource...";
             this.txtDatasource.Visible = false;
@@ -867,7 +870,7 @@
             this.lblDatasource.Location = new System.Drawing.Point(940, 856);
             this.lblDatasource.Name = "lblDatasource";
             this.lblDatasource.Size = new System.Drawing.Size(82, 19);
-            this.lblDatasource.TabIndex = 75;
+            this.lblDatasource.TabIndex = 0;
             this.lblDatasource.Text = "Datasource:";
             this.lblDatasource.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 

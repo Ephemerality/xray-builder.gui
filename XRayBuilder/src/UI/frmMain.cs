@@ -545,7 +545,7 @@ namespace XRayBuilderGUI.UI
                         {
                             _logger.Log(MainStrings.WritingStartActionsFile);
                             File.WriteAllText(saPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(startActions)));
-                            _logger.Log($@"{MainStrings.StartActionsCreated}\r\n{string.Format(MainStrings.SavedTo, saPath)}");
+                            _logger.Log($@"{MainStrings.StartActionsCreated}{Environment.NewLine}{string.Format(MainStrings.SavedTo, saPath)}");
                             needSa = false;
                         }
                     }
@@ -566,7 +566,7 @@ namespace XRayBuilderGUI.UI
                         {
                             _logger.Log(MainStrings.WritingEndActionsFile);
                             File.WriteAllText(eaPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(endActions)));
-                            _logger.Log($@"{MainStrings.EndActionsCreated}\r\n{string.Format(MainStrings.SavedTo, eaPath)}");
+                            _logger.Log($@"{MainStrings.EndActionsCreated}{Environment.NewLine}{string.Format(MainStrings.SavedTo, eaPath)}");
                             needEa = false;
                         }
                     }
@@ -709,7 +709,7 @@ namespace XRayBuilderGUI.UI
                             _logger.Log($@"{MainStrings.ErrorCreatingStartActions}: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
                         }
 
-                        _logger.Log($@"{MainStrings.StartActionsCreated}\r\n{string.Format(MainStrings.SavedTo, saPath)}");
+                        _logger.Log($@"{MainStrings.StartActionsCreated}{Environment.NewLine}{string.Format(MainStrings.SavedTo, saPath)}");
                     }
                 }
 
@@ -885,6 +885,7 @@ namespace XRayBuilderGUI.UI
             _settings.mobiFile = txtMobi.Text;
             _settings.xmlFile = txtXMLFile.Text;
             _settings.Goodreads = txtGoodreads.Text;
+            _settings.Save();
             
             if (txtOutput.Text.Trim().Length != 0)
                 File.WriteAllText(_currentLog, txtOutput.Text);

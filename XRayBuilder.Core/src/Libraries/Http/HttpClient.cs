@@ -63,9 +63,18 @@ namespace XRayBuilder.Core.Libraries.Http
             var response = await GetStreamAsync(url, cancellationToken);
             var image = new Bitmap(response);
 
+            const int i = 750;
+            if (image.Height > i || image.Width > i)
+            {
+                var scaledImage = image.Scale(i, i, false);
+                image = (Bitmap) scaledImage;
+            }
+            
             image = greyscale
                 ? (Bitmap) image.ToGrayscale3()
                 : image;
+
+            //image.Save(@"D:\tempImg.jpg");
 
             return image;
         }

@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 
@@ -48,6 +49,75 @@ namespace XRayBuilder.Core.Libraries.Images.Extensions
             using var ms = new MemoryStream();
             image.Save(ms, format);
             return Convert.ToBase64String(ms.ToArray());
+        }
+
+        /// <summary>
+        ///     Resize the image to the specified width and height.
+        ///     https://stackoverflow.com/a/10323949
+        ///     InterpolationMode HighQualityBicubic introducing artifacts on edge of resized images
+        ///     https://stackoverflow.com/a/8312531
+        /// </summary>
+        /// <param name="original">The image to resize.</param>
+        /// <param name="width">The width to resize to.</param>
+        /// <param name="height">The height to resize to.</param>
+        /// <param name="fill">Fill the resized image keeping aspect ratio.</param>
+        /// <returns>The resized image.</returns>
+        public static Image Scale(this Image original, int width, int height, bool fill)
+        {
+            #region Calculations
+
+            var sourceWidth = original.Width;
+            var sourceHeight = original.Height;
+            const int sourceX = 0;
+            const int sourceY = 0;
+            double destX = 0;
+            double destY = 0;
+
+            double nScale;
+
+            var nScaleW = width / (double)sourceWidth;
+            var nScaleH = height / (double) sourceHeight;
+            if (!fill)
+            {
+                nScale = Math.Min(nScaleH, nScaleW);
+            }
+            else
+            {
+                nScale = Math.Max(nScaleH, nScaleW);
+                destY = (height - sourceHeight * nScale) / 2;
+                destX = (width - sourceWidth * nScale) / 2;
+            }
+            
+            var destWidth = (int) Math.Round(sourceWidth * nScale);
+            var destHeight = (int) Math.Round(sourceHeight * nScale);
+
+            #endregion
+
+            Bitmap bmPhoto;
+            try
+            {
+                bmPhoto = new Bitmap(destWidth + (int) Math.Round(2 * destX), destHeight + (int) Math.Round(2 * destY));
+            }
+            catch (Exception)
+            {
+                return new Bitmap(original);
+            }
+
+            using var grPhoto = Graphics.FromImage(bmPhoto);
+            grPhoto.CompositingMode = CompositingMode.SourceCopy;
+            grPhoto.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            grPhoto.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            grPhoto.CompositingQuality = CompositingQuality.HighQuality;
+            grPhoto.SmoothingMode = SmoothingMode.HighQuality;
+
+            var to = new Rectangle((int) Math.Round(destX), (int) Math.Round(destY), destWidth, destHeight);
+            var from = new Rectangle(sourceX, sourceY, sourceWidth, sourceHeight);
+
+            using var wrapMode = new ImageAttributes();
+            wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+            grPhoto.DrawImage(original, to, 0, 0, from.Width, from.Height, GraphicsUnit.Pixel, wrapMode);
+
+            return bmPhoto;
         }
     }
 }

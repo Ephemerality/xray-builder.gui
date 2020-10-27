@@ -20,6 +20,7 @@ namespace XRayBuilderGUI.UI.Preview
         private readonly IHttpClient _httpClient;
 
         private readonly Regex _regexHighlights = new Regex(@"(?<text>(?<num>[\d,.]+) passages have been highlighted (?<total>[\d,.]+) times)", RegexOptions.Compiled);
+        private const int MaxImageSize = 750;
 
         public frmPreviewSA(IHttpClient httpClient)
         {
@@ -95,7 +96,7 @@ namespace XRayBuilderGUI.UI.Preview
             {
                 var imageUrl = author.ImageUrl;
                 if (!string.IsNullOrEmpty(imageUrl))
-                    pbAuthorImage.Image = await _httpClient.GetImageAsync(imageUrl, false, cancellationToken);
+                    pbAuthorImage.Image = await _httpClient.GetImageAsync(imageUrl, MaxImageSize, false, cancellationToken);
                 lblBiography.Text = author.Bio;
             }
 
@@ -106,7 +107,7 @@ namespace XRayBuilderGUI.UI.Preview
                 {
                     var imageUrl = rec.ImageUrl;
                     if (!string.IsNullOrEmpty(imageUrl))
-                        ilOtherBooks.Images.Add(await _httpClient.GetImageAsync(imageUrl, false, cancellationToken));
+                        ilOtherBooks.Images.Add(await _httpClient.GetImageAsync(imageUrl, MaxImageSize, false, cancellationToken));
                 }
                 ListViewItem_SetSpacing(lvOtherBooks, 60 + 12, 90 + 12);
                 for (var i = 0; i < ilOtherBooks.Images.Count; i++)
@@ -128,7 +129,7 @@ namespace XRayBuilderGUI.UI.Preview
                 lblPreviousTitle.Text = startActions.Data.PreviousBookInTheSeries.Title;
                 var imageUrl = startActions.Data.PreviousBookInTheSeries.ImageUrl;
                 if (!string.IsNullOrEmpty(imageUrl))
-                    pbPreviousCover.Image = await _httpClient.GetImageAsync(imageUrl, false, cancellationToken);
+                    pbPreviousCover.Image = await _httpClient.GetImageAsync(imageUrl, MaxImageSize, false, cancellationToken);
             }
         }
 

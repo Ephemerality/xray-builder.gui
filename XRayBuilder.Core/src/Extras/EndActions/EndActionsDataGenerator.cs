@@ -142,14 +142,12 @@ namespace XRayBuilder.Core.Extras.EndActions
                     .Where(book => book.Title != curBook.Title && book.Asin != curBook.Asin)
                     .ToArray();
 
-                if (settings.UseNewVersion)
+                if (settings.UseNewVersion && relatedBooks.Any())
                 {
                     _logger.Log($"Gathering metadata for {relatedBooks.Length} related book(s)…");
                     progress?.Set(0, relatedBooks.Length);
                     await foreach (var _ in _amazonClient.EnhanceBookInfos(relatedBooks, cancellationToken))
-                    {
                         progress?.Add(1);
-                    }
                 }
 
                 return new Response
@@ -281,7 +279,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             if (series.Previous != null)
                 series.Previous = await FromApOrSearch(series.Previous, cancellationToken);
 
-            if (series.Next == null)
+            if (series.Next == null && int.TryParse(series.Position, out var seriesPosition) && seriesPosition != series.Total)
             {
                 _logger.Log("Book was found to be part of a series, but an error occurred finding the next book.\r\n"
                     + "Please report this book, the URL, and output log to improve parsing (if it's a real book).");

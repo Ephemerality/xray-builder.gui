@@ -22,6 +22,8 @@ namespace XRayBuilderGUI.UI.Preview
         private readonly Settings _settings = Settings.Default;
         private string _authorUrl = string.Empty;
 
+        private const int MaxImageSize = 750;
+
         #region SET LISTVIEW ICON SPACING
 
         // http://qdevblog.blogspot.ch/2011/11/c-listview-item-spacing.html
@@ -80,7 +82,7 @@ namespace XRayBuilderGUI.UI.Preview
                     lblAuthor.Text = author.Name;
                     lblAuthorRecs.Text = $@"More by {author.Name}";
                     if (!string.IsNullOrEmpty(author.ImageUrl))
-                        pbAuthor.Image = await _httpClient.GetImageAsync(author.ImageUrl, false, cancellationToken);
+                        pbAuthor.Image = await _httpClient.GetImageAsync(author.ImageUrl, MaxImageSize, false, cancellationToken);
                 }
 
                 if (endActions.Data.PublicSharedRating != null)
@@ -109,7 +111,7 @@ namespace XRayBuilderGUI.UI.Preview
                     var nextBook = endActions.Data.NextBook;
                     txtNextInSeries.Text = nextBook.Title;
                     if (!string.IsNullOrEmpty(nextBook.ImageUrl))
-                        pbNextCover.Image = await _httpClient.GetImageAsync(nextBook.ImageUrl, false, cancellationToken);
+                        pbNextCover.Image = await _httpClient.GetImageAsync(nextBook.ImageUrl, MaxImageSize, false, cancellationToken);
                 }
                 else
                 {
@@ -130,7 +132,7 @@ namespace XRayBuilderGUI.UI.Preview
             ListViewItem_SetSpacing(listView, 60 + 12, 90 + 12);
 
             var urls = books.Select(book => book.ImageUrl);
-            var images = await _httpClient.GetImages(urls, false, cancellationToken).ToArrayAsync(cancellationToken);
+            var images = await _httpClient.GetImages(urls, MaxImageSize, false, cancellationToken).ToArrayAsync(cancellationToken);
 
             var i = 0;
             foreach (var image in images)

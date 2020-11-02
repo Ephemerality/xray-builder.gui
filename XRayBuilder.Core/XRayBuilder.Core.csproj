@@ -8,12 +8,12 @@
 
     <ItemGroup>
         <PackageReference Include="AsyncEnumerator" Version="4.0.2" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.24" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.26" />
         <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
         <PackageReference Include="Pluralize.NET" Version="1.0.2" />
-        <PackageReference Include="SimpleInjector" Version="5.0.3" />
-        <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.1" />
+        <PackageReference Include="SimpleInjector" Version="5.1.0" />
+        <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.5" />
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
         <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.1" />
     </ItemGroup>

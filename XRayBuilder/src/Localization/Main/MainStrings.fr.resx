@@ -146,7 +146,7 @@
     <value>Échec de l'initialisation de l'application</value>
   </data>
   <data name="OpenedInAnotherProgram" xml:space="preserve">
-    <value>Est-il ouvert dans un autre programme ?</value>
+    <value>Est-il ouvert dans un autre programme?</value>
   </data>
   <data name="SavingXRay" xml:space="preserve">
     <value>Sauvegarde de l'X-Ray au fichier…</value>
@@ -158,7 +158,7 @@
     <value>Création du fichier X-Ray initial, ajout d'emplacements et de chapitres…</value>
   </data>
   <data name="PenNamesRequired" xml:space="preserve">
-    <value>Les noms Real et Pen sont requis pour la création du fichier des actions de fin.</value>
+    <value>Le vrai nom et le pseudonyme sont requis pour la création du fichier des actions de fin.</value>
   </data>
   <data name="AmazonCustomerDetailsNotFoundTitle" xml:space="preserve">
     <value>Détails du Client Amazon Introuvables</value>

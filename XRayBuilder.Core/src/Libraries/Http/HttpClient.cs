@@ -138,7 +138,7 @@ namespace XRayBuilder.Core.Libraries.Http
 
     public sealed class TimeoutHandler : DelegatingHandler
     {
-        private readonly TimeSpan _defaultTimeout = TimeSpan.FromSeconds(15);
+        private readonly TimeSpan _defaultTimeout = TimeSpan.FromSeconds(60);
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {

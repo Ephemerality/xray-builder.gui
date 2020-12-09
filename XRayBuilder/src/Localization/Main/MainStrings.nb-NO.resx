@@ -59,22 +59,22 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="EbookProcessingTitle" xml:space="preserve">
-    <value>eBook-behandling</value>
+    <value>E-bok-behandling</value>
   </data>
   <data name="PromptAsinTooltip" xml:space="preserve">
-    <value>Tillat ASIN-oppføring hvis neste eller forrige bok i en serie ikke kan finnes automatisk.</value>
+    <value>Tillat ASIN-oppføring hvis neste eller forrige e-bok i en serie ikke kan finnes automatisk.</value>
   </data>
   <data name="EstimatePageCountTooltip" xml:space="preserve">
     <value>Anslå bokens sideantall hvis det ikke er å finne på nett (basert på user_none sitt APNX-genereringsprosjekt).</value>
   </data>
   <data name="SaveRawMlTooltip" xml:space="preserve">
-    <value>Lagre RAWML (rå oppmerking) for boken i utdatamappen slik at du kan gjennomse den.</value>
+    <value>Lagre RAWML (rå oppmerking) for e-boken i utdatamappen slik at du kan gjennomse den.</value>
   </data>
   <data name="TryToBuildXRay" xml:space="preserve">
-    <value>Prøv å bygge X-Ray fil for denne boken.</value>
+    <value>Prøv å bygge X-Ray fil for denne e-boken.</value>
   </data>
   <data name="OpenKindleBook" xml:space="preserve">
-    <value>Åpne en Kindle-bok.</value>
+    <value>Åpne en Kindle-e-bok.</value>
   </data>
   <data name="BuildingOldFormatNotSupported" xml:space="preserve">
     <value>Bygging av X-Ray i gammelt format støttes ikke for XFX-bøker</value>
@@ -83,7 +83,7 @@
     <value>Klarte ikke å finne samsvarende ASIN for denne boken på Amazon automatisk :(</value>
   </data>
   <data name="FoundBookAmazon" xml:space="preserve">
-    <value>Fant følgende bok på Amazon</value>
+    <value>Fant følgende e-bok på Amazon</value>
   </data>
   <data name="UpdatedAsin" xml:space="preserve">
     <value>ASIN oppdatert til {0}. Kopier denne nye versjonen av boken til din Kindle-enhet.</value>
@@ -110,7 +110,7 @@ DENNE FUNKSJONEN ER EKSPERIMENTELL OG KAN ØDELEGGE BOKEN DIN!</value>
     <value>Denne infoen lar deg vurdere denne boken på Amazon.</value>
   </data>
   <data name="BookNotFound" xml:space="preserve">
-    <value>Fant ikke angitt bok.</value>
+    <value>Fant ikke den e-boken.</value>
   </data>
   <data name="DatabaseNameLengthWarning" xml:space="preserve">
     <value>AdvarseL: Databasenavn er maksimal lengde. Hvis «{0}» er hele boktittelen, bør ikke dette være et problem.
@@ -122,58 +122,58 @@ Dette kan løses enten ved å forkorte tittelen i Calibre eller manuelt endre da
     <value>Søker etter {0} av {1} på Amazon…</value>
   </data>
   <data name="OpenKindleFile" xml:space="preserve">
-    <value>Åpne en Kindle {0}-fil…</value>
+    <value>Åpne en Kindle {0}-fil …</value>
   </data>
   <data name="OpenXRayFile" xml:space="preserve">
-    <value>Åpne en Kindle-X-Ray-fil…</value>
+    <value>Åpne en Kindle-X-Ray-fil …</value>
   </data>
   <data name="ExtractingRawMl" xml:space="preserve">
-    <value>Pakker ut rå oppmerking…</value>
+    <value>Pakker ut rå oppmerking …</value>
   </data>
   <data name="MultipleResultsFromSource" xml:space="preserve">
-    <value>Advarsel: Flerfoldige resultater mottatt fra {0}…</value>
+    <value>Advarsel: Flerfoldige resultater mottatt fra {0} …</value>
   </data>
   <data name="DownloadingActions" xml:space="preserve">
-    <value>Prøver å laste ned {0}-handlinger…</value>
+    <value>Prøver å laste ned {0}-handlinger …</value>
   </data>
   <data name="CantExportFromFile" xml:space="preserve">
-    <value>Kan ikke eksportere vilkår fra en XML/TXT-fil…</value>
+    <value>Kan ikke eksportere vilkår fra en XML/TXT-fil …</value>
   </data>
   <data name="ExportingTermsFrom" xml:space="preserve">
-    <value>Eksporterer vilkår fra {0}…</value>
+    <value>Eksporterer vilkår fra {0} …</value>
   </data>
   <data name="BuildingStartEndActions" xml:space="preserve">
-    <value>Prøver å bygge start- og/eller slutthandlinger…</value>
+    <value>Prøver å bygge start- og/eller slutthandlinger …</value>
   </data>
   <data name="BuildingAuthorProfile" xml:space="preserve">
-    <value>Prøver å bygge forfatterprofil…</value>
+    <value>Prøver å bygge forfatterprofil …</value>
   </data>
   <data name="WritingEndActionsFile" xml:space="preserve">
-    <value>Skriver slutthandlingsfil…</value>
+    <value>Skriver slutthandlingsfil …</value>
   </data>
   <data name="WritingStartActionsFile" xml:space="preserve">
-    <value>Skriver starthandlingsfil…</value>
+    <value>Skriver starthandlingsfil …</value>
   </data>
   <data name="SavingXRay" xml:space="preserve">
-    <value>Lagrer X-Ray til fil…</value>
+    <value>Lagrer X-Ray til fil …</value>
   </data>
   <data name="InitialXRayBuiltAddingChapters" xml:space="preserve">
-    <value>Foreløpig X-Ray bygd, legger til plasseringer og kapitler…</value>
+    <value>Foreløpig X-Ray bygd, legger til plasseringer og kapitler …</value>
   </data>
   <data name="Cancelling" xml:space="preserve">
-    <value>Avbryter…</value>
+    <value>Avbryter …</value>
   </data>
   <data name="AttemptingBuildXRay" xml:space="preserve">
-    <value>Prøver å bygge X-Ray…</value>
+    <value>Prøver å bygge X-Ray …</value>
   </data>
   <data name="SavingRawml" xml:space="preserve">
-    <value>Lagrer rå oppmerking til dmp-mappe…</value>
+    <value>Lagrer rå oppmerking til dmp-mappe …</value>
   </data>
   <data name="ExtractingMetadata" xml:space="preserve">
     <value>Pakker ut metadata…</value>
   </data>
   <data name="EbookUnpackingTitle" xml:space="preserve">
-    <value>eBook-utpakking</value>
+    <value>E-bok-utpakking</value>
   </data>
   <data name="WriteXRayNewFormatTooltip" xml:space="preserve">
     <value>Skriv X-Ray fil i nytt format for Paperwhite 2 eller Voyage-fastvare 5.6+.</value>

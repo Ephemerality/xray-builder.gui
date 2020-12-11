@@ -807,9 +807,11 @@ namespace XRayBuilderGUI.UI
             // 
             // cmbRegion
             // 
+            this.cmbRegion.DropDownHeight = 162;
             this.cmbRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbRegion.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmbRegion.FormattingEnabled = true;
+            this.cmbRegion.IntegralHeight = false;
             this.cmbRegion.Location = new System.Drawing.Point(106, 116);
             this.cmbRegion.Name = "cmbRegion";
             this.cmbRegion.Size = new System.Drawing.Size(138, 23);

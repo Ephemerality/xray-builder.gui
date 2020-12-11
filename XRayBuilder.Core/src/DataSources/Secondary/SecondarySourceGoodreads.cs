@@ -153,20 +153,20 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
             var seriesHtmlDoc = await _httpClient.GetPageAsync(series.Url, cancellationToken);
 
-            seriesNode = seriesHtmlDoc.DocumentNode.SelectSingleNode("//div[contains(@class, 'responsiveSeriesHeader__subtitle')]");
-            match = Regex.Match(seriesNode?.InnerText ?? "", @"([0-9]+) (?:primary )?works?");
-            if (match.Success)
-                series.Total = int.Parse(match.Groups[1].Value);
-
-            var positionInt = (int)Convert.ToDouble(series.Position, CultureInfo.InvariantCulture.NumberFormat);
-            var totalInt = (int)Convert.ToDouble(series.Total, CultureInfo.InvariantCulture.NumberFormat);
-
             var bookNodes = seriesHtmlDoc.DocumentNode.SelectNodes("//div[@itemtype='http://schema.org/Book']");
             if (bookNodes == null)
                 return series;
-            var prevSearch = series.Position.Contains(".")
-                ? $"book {positionInt}"
-                : $"book {positionInt - 1}";
+
+            series.Total = bookNodes
+                .Select(node => node.PreviousSibling)
+                .Count(node => Regex.IsMatch(node?.InnerText.ToUpper() ?? "", @"^BOOK ([0-9]+)$"));
+
+            if (series.Total == 0)
+                return series;
+
+            var positionInt = (int)Convert.ToDouble(series.Position, CultureInfo.InvariantCulture.NumberFormat);
+
+            var prevSearch = $"book {positionInt - 1}";
             var nextSearch = $"book {positionInt + 1}";
 
             async Task<BookInfo> ParseSeriesBook(HtmlNode bookNode)
@@ -201,7 +201,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
                 else if (bookIndexText == nextSearch)
                     series.Next = await ParseSeriesBook(bookNode);
 
-                if (series.Previous != null && (series.Next != null || positionInt == totalInt))
+                if (series.Previous != null && (series.Next != null || positionInt == series.Total))
                     break; // next and prev found or prev found and latest in series
             }
 

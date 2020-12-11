@@ -61,6 +61,11 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             if (searchResults == null)
                 return null; // Already logged error in search function
 
+            // Filter out any results that are the same title but not the same asin
+            searchResults.Books = searchResults.Books
+                .Where(book => !book.Title.ToLower().Contains(request.Book.Title.ToLower()) && book.Asin != request.Book.Asin)
+                .ToArray();
+
             var authorAsin = searchResults.Asin;
 
             //todo re-implement saving in a nicer way

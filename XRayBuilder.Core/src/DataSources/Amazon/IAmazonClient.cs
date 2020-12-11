@@ -17,5 +17,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
         Task<AuthorSearchResults> SearchAuthor(string author, string TLD, CancellationToken cancellationToken, bool enableLog = true);
         Task<BookInfo> SearchBook(string title, string author, string TLD, CancellationToken cancellationToken);
         IAsyncEnumerable<BookInfo> EnhanceBookInfos(IEnumerable<BookInfo> books, CancellationToken cancellationToken);
+        [CanBeNull]
+        Task<BookInfo> GetBookByAsin(string asin, string tld, CancellationToken cancellationToken);
     }
 }

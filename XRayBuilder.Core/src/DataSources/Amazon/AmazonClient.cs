@@ -320,6 +320,37 @@ namespace XRayBuilder.Core.DataSources.Amazon
             return bookList;
         }
 
+        public async Task<BookInfo> GetBookByAsin(string asin, string tld, CancellationToken cancellationToken)
+        {
+            _logger.Log($"Fetching information from Amazon.{tld}...");
+
+            HtmlDocument bookHtmlDoc;
+            try
+            {
+                bookHtmlDoc = await _httpClient.GetPageAsync(Url(tld, asin), cancellationToken);
+            }
+            catch (Exception)
+            {
+                _logger.Log($"An error occurred while downloading book's page from Amazon.{tld}!");
+                _logger.Log("Trying again with Amazon.com…");
+                try
+                {
+                    bookHtmlDoc = await _httpClient.GetPageAsync(Url("com", asin), cancellationToken);
+                }
+                catch (Exception)
+                {
+                    _logger.Log("An error occurred while downloading book's page from Amazon.\r\nThe ASIN may not be correct.");
+                    return null;
+                }
+            }
+
+            var response = _amazonInfoParser.ParseAmazonDocument(bookHtmlDoc);
+            var result = new BookInfo("", "", asin);
+            response.ApplyToBookInfo(result);
+
+            return result;
+        }
+
         // TODO: All calls to Amazon should check for the captcha page (or ideally avoid it somehow)
         public async Task<BookInfo> SearchBook(string title, string author, string TLD, CancellationToken cancellationToken)
         {

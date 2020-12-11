@@ -96,12 +96,18 @@ namespace XRayBuilder.Core.Extras.EndActions
             endActions.Data.AuthorRecs = new Recs
             {
                 Class = "featuredRecommendationList",
-                Recommendations = request.AuthorOtherBooks.Select(bk => Extensions.BookInfoToBook(bk, true)).ToArray()
+                Recommendations = request.AuthorOtherBooks
+                    .Select(bk => Extensions.BookInfoToBook(bk, true))
+                    .ToArray()
             };
+
             endActions.Data.CustomersWhoBoughtRecs = new Recs
             {
                 Class = "featuredRecommendationList",
-                Recommendations = request.CustomerAlsoBought.Select(bk => Extensions.BookInfoToBook(bk, true)).ToArray()
+                Recommendations = request.CustomerAlsoBought
+                    .Where(b => request.AuthorOtherBooks.All(a => a.Asin != b.Asin && !b.Title.ToLower().Contains(a.Title.ToLower())))
+                    .Select(bk => Extensions.BookInfoToBook(bk, true))
+                    .ToArray()
             };
 
             try

@@ -139,7 +139,7 @@ namespace XRayBuilder.Core.Extras.EndActions
                             : Enumerable.Empty<BookInfo>();
                     }).Where(list => list != null)
                     .Distinct()
-                    .Where(book => book.Title != curBook.Title && book.Asin != curBook.Asin)
+                    .Where(book => !book.Title.ToLower().Contains(curBook.Title.ToLower()) && book.Asin != curBook.Asin && !_invalidBookTitleRegex.IsMatch(curBook.Title))
                     .ToArray();
 
                 if (settings.UseNewVersion && relatedBooks.Any())
@@ -362,7 +362,11 @@ namespace XRayBuilder.Core.Extras.EndActions
             {
                 _logger.Log($"Series URL: {curBook.Series.Url}");
                 if (!string.IsNullOrEmpty(curBook.Series.Name))
-                    _logger.Log($"This is book {curBook.Series.Position} of {curBook.Series.Total} in the {curBook.Series.Name} series");
+                {
+                    _logger.Log((int) Convert.ToDouble(curBook.Series.Position) == curBook.Series.Total
+                        ? $"This is the latest book in the {curBook.Series.Name} series."
+                        : $"This is book {curBook.Series.Position} of {curBook.Series.Total} in the {curBook.Series.Name} series.");
+                }
                 if (curBook.Series.Previous != null)
                     _logger.Log($"Preceded by: {curBook.Series.Previous.Title}");
                 if (curBook.Series.Next != null)

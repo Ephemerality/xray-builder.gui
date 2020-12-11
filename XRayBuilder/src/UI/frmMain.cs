@@ -847,7 +847,10 @@ namespace XRayBuilderGUI.UI
             if (_settings.outDir == "")
                 _settings.outDir = $@"{Environment.CurrentDirectory}\out";
 
-            txtGoodreads.Text = _settings.Goodreads;
+            txtGoodreads.Text = !File.Exists(txtMobi.Text)
+                    ? ""
+                    : _settings.Goodreads;
+
             if (_settings.buildSource == "Goodreads")
             {
                 rdoGoodreads.Checked = true;
@@ -911,9 +914,10 @@ namespace XRayBuilderGUI.UI
 
         private void SetDatasourceLink(string url)
         {
+            txtDatasource.Visible = true;
             if (string.IsNullOrEmpty(url))
             {
-                txtDatasource.Text = "";
+                txtDatasource.Text = "Search datasource...";
                 return;
             }
 
@@ -922,7 +926,6 @@ namespace XRayBuilderGUI.UI
             if (!matchId.Success)
                 return;
             _tooltip.SetToolTip(txtDatasource, url);
-            txtDatasource.Visible = true;
             txtDatasource.Text = matchId.Groups[2].Value;
         }
 
@@ -986,14 +989,40 @@ namespace XRayBuilderGUI.UI
             SetDatasourceLabels();
         }
 
+        private void ClearInterface(bool bookOpened)
+        {
+            if (!bookOpened)
+            {
+                // todo centralized name (should the app name be localized?)
+                Text = "X-Ray Builder GUI";
+                txtMobi.Text = "";
+                txtOutput.Clear();
+            }
+            else
+                Text = $"X-Ray Builder GUI - {txtMobi.Text}";
+
+            txtGoodreads.Text = "";
+            pbCover.Image = Resources.missing_cover;
+            txtTitle.Text = "";
+            txtAuthor.Text = "";
+            txtAsin.Text = "";
+            // todo another copy
+            txtDatasource.Text = "Search datasource...";
+            prgBar.Value = 0;
+            _openedMetadata = null;
+            CheckFiles("","","","","","");
+        }
+
         private async void txtMobi_TextChanged(object sender, EventArgs e)
         {
             if (txtMobi.Text == "" || !File.Exists(txtMobi.Text))
+            {
+                ClearInterface(false);
                 return;
-            txtGoodreads.Text = "";
-            txtDatasource.Text = "";
-            prgBar.Value = 0;
-            _openedMetadata = null;
+            }
+            ClearInterface(true);
+
+            ToggleInterface(false);
 
             using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
             if (metadata == null)
@@ -1021,8 +1050,19 @@ namespace XRayBuilderGUI.UI
             btnOneClick.Enabled = metadata.XRaySupported;
             btnUnpack.Enabled = metadata.RawMlSupported;
 
-            // todo centralized name (should the app name be localized?)
-            Text = $"X-Ray Builder GUI - {txtMobi.Text}";
+            //TODO: Check ASIN matches selected Amazon region.
+            //try
+            //{
+            //    _logger.Log(@$"Checking if this ASIN matches a book available on Amazon{_settings.amazonTLD}...");
+            //    var localBookResult = await _amazonClient.SearchBook(metadata.Title, metadata.Author, _settings.amazonTLD, _cancelTokens.Token);
+            //    _logger.Log(localBookResult.Asin == metadata.Asin
+            //        ? $@"Successfully found a matching book:  {localBookResult.Title}!"
+            //        : $"Warning: {localBookResult.Title} by {localBookResult.Author} was found, but the ASIN does not match for your selected Amazon region!\n\rURL: {localBookResult.AmazonUrl}");
+            //}
+            //catch (Exception)
+            //{
+            //    // Ignored
+            //}
 
             try
             {
@@ -1038,6 +1078,7 @@ namespace XRayBuilderGUI.UI
             {
                 // Ignored
             }
+            ToggleInterface(true);
         }
 
         private async void tmiAuthorProfile_Click(object sender, EventArgs e)
@@ -1341,6 +1382,7 @@ namespace XRayBuilderGUI.UI
 
         private void pbCover_Click(object sender, EventArgs e)
         {
+            if (_openedMetadata == null) return;
             using var frmBook = _diContainer.GetInstance<frmBookInfo>();
             frmBook.Setup(_openedMetadata, (Image) pbCover.Image.Clone(), new frmBookInfo.DialogData(txtGoodreads.Text, "", "", _settings.buildSource));
             frmBook.ShowDialog();

@@ -31,7 +31,7 @@ namespace XRayBuilder.Core.Libraries.Logging
 
         public void Log(string message, LogLevel level = LogLevel.Info)
         {
-            Console.WriteLine($"{level}: {message}");
+            Console.WriteLine($@"{level}: {message}");
             LogEvent?.Invoke(new LogEventArgs
             {
                 Message = message,

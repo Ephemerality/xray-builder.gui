@@ -77,6 +77,7 @@ namespace XRayBuilderGUI.UI
             txtBio.DataBindings.Add("Text", Data, "AuthorBio", true, DataSourceUpdateMode.OnPropertyChanged);
             cbXraySource.DataBindings.Add("SelectedItem", Data, "XraySource", true,
                 DataSourceUpdateMode.OnPropertyChanged);
+            //txtBookUrl.DataBindings.Add("Text", Data, "BookUrl", true, DataSourceUpdateMode.OnPropertyChanged);
 
             var ds = (SecondaryDataSourceFactory.Enum) Enum.Parse(typeof(SecondaryDataSourceFactory.Enum),
                 _settings.dataSource);

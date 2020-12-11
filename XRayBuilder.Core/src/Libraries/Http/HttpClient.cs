@@ -97,6 +97,8 @@ namespace XRayBuilder.Core.Libraries.Http
             }
             SetDefaultSettings(request);
             var response = await SendAsync(request, cancellationToken);
+            //if (response.StatusCode == HttpStatusCode.NotFound)
+            //    return null;
             return await response.Content.ReadAsStreamAsync();
         }
 
@@ -147,7 +149,7 @@ namespace XRayBuilder.Core.Libraries.Http
 
     public sealed class TimeoutHandler : DelegatingHandler
     {
-        private readonly TimeSpan _defaultTimeout = TimeSpan.FromSeconds(15);
+        private readonly TimeSpan _defaultTimeout = TimeSpan.FromSeconds(60);
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
@@ -201,6 +203,90 @@ namespace XRayBuilder.Core.Libraries.Http
                         case (HttpStatusCode) 429:
                             await Task.Delay(1000, cancellationToken);
                             continue;
+                        case HttpStatusCode.Continue:
+                            break;
+                        case HttpStatusCode.SwitchingProtocols:
+                            break;
+                        case HttpStatusCode.OK:
+                            break;
+                        case HttpStatusCode.Created:
+                            break;
+                        case HttpStatusCode.Accepted:
+                            break;
+                        case HttpStatusCode.NonAuthoritativeInformation:
+                            break;
+                        case HttpStatusCode.NoContent:
+                            break;
+                        case HttpStatusCode.ResetContent:
+                            break;
+                        case HttpStatusCode.PartialContent:
+                            break;
+                        case HttpStatusCode.MultipleChoices:
+                            break;
+                        case HttpStatusCode.MovedPermanently:
+                            break;
+                        case HttpStatusCode.Found:
+                            break;
+                        case HttpStatusCode.SeeOther:
+                            break;
+                        case HttpStatusCode.NotModified:
+                            break;
+                        case HttpStatusCode.UseProxy:
+                            break;
+                        case HttpStatusCode.Unused:
+                            break;
+                        case HttpStatusCode.TemporaryRedirect:
+                            break;
+                        case HttpStatusCode.BadRequest:
+                            break;
+                        case HttpStatusCode.Unauthorized:
+                            break;
+                        case HttpStatusCode.PaymentRequired:
+                            break;
+                        case HttpStatusCode.Forbidden:
+                            break;
+                        case HttpStatusCode.NotFound:
+                            break;
+                        case HttpStatusCode.MethodNotAllowed:
+                            break;
+                        case HttpStatusCode.NotAcceptable:
+                            break;
+                        case HttpStatusCode.ProxyAuthenticationRequired:
+                            break;
+                        case HttpStatusCode.RequestTimeout:
+                            break;
+                        case HttpStatusCode.Conflict:
+                            break;
+                        case HttpStatusCode.Gone:
+                            break;
+                        case HttpStatusCode.LengthRequired:
+                            break;
+                        case HttpStatusCode.PreconditionFailed:
+                            break;
+                        case HttpStatusCode.RequestEntityTooLarge:
+                            break;
+                        case HttpStatusCode.RequestUriTooLong:
+                            break;
+                        case HttpStatusCode.UnsupportedMediaType:
+                            break;
+                        case HttpStatusCode.RequestedRangeNotSatisfiable:
+                            break;
+                        case HttpStatusCode.ExpectationFailed:
+                            break;
+                        case HttpStatusCode.UpgradeRequired:
+                            break;
+                        case HttpStatusCode.InternalServerError:
+                            break;
+                        case HttpStatusCode.NotImplemented:
+                            break;
+                        case HttpStatusCode.BadGateway:
+                            break;
+                        case HttpStatusCode.GatewayTimeout:
+                            break;
+                        case HttpStatusCode.HttpVersionNotSupported:
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
 
                     // Not something we can retry, return the response as is
@@ -249,7 +335,7 @@ namespace XRayBuilder.Core.Libraries.Http
                 };
                 request.RequestUri = builder.Uri;
                 var response = await base.SendAsync(request, cancellationToken);
-                Logger?.Log($"Not available from {originalHost}, but found on Amazon US ({request.RequestUri})");
+                Logger?.Log($@"Not available from {originalHost}, but found on Amazon US ({request.RequestUri})");
                 return response;
             }
         }

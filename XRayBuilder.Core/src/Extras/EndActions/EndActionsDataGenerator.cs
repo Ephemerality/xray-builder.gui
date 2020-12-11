@@ -137,12 +137,12 @@ namespace XRayBuilder.Core.Extras.EndActions
                             : Enumerable.Empty<BookInfo>();
                     }).Where(list => list != null)
                     .Distinct()
-                    .Where(book => book.Title != curBook.Title && book.Asin != curBook.Asin)
+                    .Where(book => !book.Title.ToLower().Contains(curBook.Title.ToLower()) && book.Asin != curBook.Asin && !_invalidBookTitleRegex.IsMatch(curBook.Title))
                     .ToArray();
 
                 if (settings.UseNewVersion && relatedBooks.Length != 0)
                 {
-                    _logger.Log($"Gathering metadata for {relatedBooks.Length} related book(s)...");
+                    _logger.Log($@"Gathering metadata for {relatedBooks.Length} related book(s)...");
                     progress?.Set(0, relatedBooks.Length);
                     await foreach (var _ in _amazonClient.EnhanceBookInfos(relatedBooks, cancellationToken))
                     {
@@ -255,7 +255,7 @@ namespace XRayBuilder.Core.Extras.EndActions
 
         /// <summary>
         /// Generate necessities for the new format (which includes running <see cref="GenerateOld"/> automatically)
-        /// </summary>
+        /// <   /summary>
         [ItemCanBeNull]
         public async Task<Response> GenerateNewFormatData(
             BookInfo curBook,
@@ -327,13 +327,17 @@ namespace XRayBuilder.Core.Extras.EndActions
 
             if (curBook.Series != null)
             {
-                _logger.Log($"Series URL: {curBook.Series.Url}");
+                _logger.Log(@$"Series URL: {curBook.Series.Url}");
                 if (!string.IsNullOrEmpty(curBook.Series.Name))
-                    _logger.Log($"This is book {curBook.Series.Position} of {curBook.Series.Total} in the {curBook.Series.Name} series");
+                {
+                    _logger.Log((int) Convert.ToDouble(curBook.Series.Position) == curBook.Series.Total
+                        ? $@"This is the latest book in the {curBook.Series.Name} series."
+                        : $@"This is book {curBook.Series.Position} of {curBook.Series.Total} in the {curBook.Series.Name} series.");
+                }
                 if (curBook.Series.Previous != null)
-                    _logger.Log($"Preceded by: {curBook.Series.Previous.Title}");
+                    _logger.Log(@$"Preceded by: {curBook.Series.Previous.Title}");
                 if (curBook.Series.Next != null)
-                    _logger.Log($"Followed by: {curBook.Series.Next.Title}");
+                    _logger.Log(@$"Followed by: {curBook.Series.Next.Title}");
             }
 
             try
@@ -343,18 +347,13 @@ namespace XRayBuilder.Core.Extras.EndActions
                     var metadataCount = metadata.GetPageCount();
                     if (metadataCount.HasValue)
                         curBook.PagesInBook = metadataCount.Value;
-                    //else if (settings.EstimatePageCount)
-                    //{
-                    //    _logger.Log($"No page count found on {dataSource.Name} or in metadata. Attempting to estimate page count...");
-                    //    _logger.Log(Functions.GetPageCount(curBook.RawmlPath, curBook));
-                    //}
                     else
-                        _logger.Log($"No page count found on {dataSource.Name} or in metadata");
+                        _logger.Log(@$"No page count found on {dataSource.Name} or in metadata.");
                 }
             }
             catch (Exception ex)
             {
-                _logger.Log($"An error occurred while searching for or estimating the page count: {ex.Message}\r\n{ex.StackTrace}");
+                _logger.Log(@$"An error occurred while searching for or estimating the page count: {ex.Message}\r\n{ex.StackTrace}");
                 throw;
             }
 

@@ -64,7 +64,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             var plusAuthorName = newAuthor.Replace(" ", "+");
             //Updated to match Search "all" Amazon
             var amazonAuthorSearchUrl = $"https://www.amazon.{TLD}/s/ref=nb_sb_noss_2?url=search-alias%3Dstripbooks&field-keywords={plusAuthorName}";
-            if(enableLog) _logger.Log($"Searching for author's page on Amazon.{TLD}...");
+            if(enableLog) _logger.Log($@"Searching for author's page on Amazon.{TLD}...");
 
             // Search Amazon for Author
             var authorSearchDoc = await _httpClient.GetPageAsync(amazonAuthorSearchUrl, cancellationToken);
@@ -76,7 +76,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             }
             catch (AmazonCaptchaException)
             {
-                if(enableLog) _logger.Log($"Warning: Amazon.{TLD} is requesting a captcha.\r\nYou can try visiting Amazon.{TLD} in a real browser first, try another region, or try again later.");
+                if(enableLog) _logger.Log($@"Warning: Amazon.{TLD} is requesting a captcha.\r\nYou can try visiting Amazon.{TLD} in a real browser first, try another region, or try again later.");
                 return null;
             }
             // Try to find Author's page from Amazon search
@@ -321,6 +321,43 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 }
             }
             return bookList;
+        }
+
+        public async Task<BookInfo> GetBookByAsin(string asin, string tld, CancellationToken cancellationToken)
+        {
+            
+            var result = new BookInfo("", "", asin);
+            var bookUrl = $@"https://www.amazon.{tld}/dp/{asin}";
+            var bookBackupUrl = $@"https://www.amazon.com/dp/{asin}";
+
+            _logger.Log($@"Fetching information from Amazon.{tld}...");
+
+            HtmlDocument bookHtmlDoc;
+            try
+            {
+                bookHtmlDoc = await _httpClient.GetPageAsync(bookUrl, cancellationToken);
+            }
+            catch (Exception)
+            {
+                _logger.Log(
+                    $@"An error occurred while downloading book's page from Amazon.{tld}!");
+                _logger.Log(@"Trying again with Amazon.com…");
+                try
+                {
+                    
+                    bookHtmlDoc = await _httpClient.GetPageAsync(bookBackupUrl, cancellationToken);
+                }
+                catch (Exception)
+                {
+                    _logger.Log(
+                        "An error occurred while downloading book's page from Amazon.\r\nThe ASIN may not be correct.");
+                    return result;
+                }
+            }
+            var response = _amazonInfoParser.ParseAmazonDocument(bookHtmlDoc);
+            response.ApplyToBookInfo(result);
+
+            return result;
         }
 
         // TODO: All calls to Amazon should check for the captcha page (or ideally avoid it somehow)

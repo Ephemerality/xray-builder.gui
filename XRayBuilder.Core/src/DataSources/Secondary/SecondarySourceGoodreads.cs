@@ -151,20 +151,22 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
             var seriesHtmlDoc = await _httpClient.GetPageAsync(series.Url, cancellationToken);
 
-            seriesNode = seriesHtmlDoc.DocumentNode.SelectSingleNode("//div[contains(@class, 'responsiveSeriesHeader__subtitle')]");
-            match = Regex.Match(seriesNode?.InnerText ?? "", @"([0-9]+) (?:primary )?works?");
-            if (match.Success)
-                series.Total = int.Parse(match.Groups[1].Value);
-
-            var positionInt = (int)Convert.ToDouble(series.Position, CultureInfo.InvariantCulture.NumberFormat);
-            var totalInt = (int)Convert.ToDouble(series.Total, CultureInfo.InvariantCulture.NumberFormat);
-
             var bookNodes = seriesHtmlDoc.DocumentNode.SelectNodes("//div[@itemtype='http://schema.org/Book']");
-            if (bookNodes == null)
+            var bookList = new List<HtmlNode>();
+            foreach (var node in bookNodes)
+            {
+                var book = node.PreviousSibling;
+                match = Regex.Match(book?.InnerText.ToUpper() ?? "", @"^BOOK ([0-9]+)$");
+                if (match.Success) bookList.Add(book);
+            }
+
+            if (bookList.Count == 0)
                 return series;
-            var prevSearch = series.Position.Contains(".")
-                ? $"book {positionInt}"
-                : $"book {positionInt - 1}";
+            
+            series.Total = bookList.Count;
+            var positionInt = (int)Convert.ToDouble(series.Position, CultureInfo.InvariantCulture.NumberFormat);
+
+            var prevSearch = $"book {positionInt - 1}";
             var nextSearch = $"book {positionInt + 1}";
 
             async Task<BookInfo> ParseSeriesBook(HtmlNode bookNode)
@@ -199,7 +201,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
                 else if (bookIndexText == nextSearch)
                     series.Next = await ParseSeriesBook(bookNode);
 
-                if (series.Previous != null && (series.Next != null || positionInt == totalInt))
+                if (series.Previous != null && (series.Next != null || positionInt == series.Total))
                     break; // next and prev found or prev found and latest in series
             }
 
@@ -239,39 +241,45 @@ namespace XRayBuilder.Core.DataSources.Secondary
         // TODO: This shouldn't modify curbook
         public override async Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
         {
-            var bookPage = await _httpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
-            var pagesNode = bookPage.DocumentNode.SelectSingleNode("//div[@id='details']");
-            if (pagesNode == null)
-                return false;
-            var match = Regex.Match(pagesNode.InnerText, @"((\d+)|(\d+,\d+)) pages");
-            if (!match.Success) return false;
-            var minutes = int.Parse(match.Groups[1].Value, NumberStyles.AllowThousands) * 1.098507462686567;
+            var pageCount = curBook.PagesInBook;
+            if (pageCount == 0)
+            {
+                var bookPage = await _httpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
+                var pagesNode = bookPage.DocumentNode.SelectSingleNode("//div[@id='details']");
+                if (pagesNode == null)
+                    return false;
+                var match = Regex.Match(pagesNode.InnerText, @"((\d+)|(\d+,\d+)) pages");
+                if (!match.Success) return false;
+                pageCount = int.Parse(match.Groups[1].Value, NumberStyles.AllowThousands);
+            }
+            
+            var minutes = pageCount * 1.098507462686567;
             var span = TimeSpan.FromMinutes(minutes);
 
             var d = PluralUtil.Pluralize($"{span.Days:day}");
             var h = PluralUtil.Pluralize($"{span.Hours:hour}");
             var m = PluralUtil.Pluralize($"{span.Minutes:minute}");
-            var p = match.Groups[1].Value;
+            var p = pageCount;
 
-            curBook.PagesInBook = int.Parse(p);
+            curBook.PagesInBook = p;
             curBook.ReadingHours = span.Hours;
             curBook.ReadingMinutes = span.Minutes;
 
             if (span.Days > 1)
             {
-                _logger.Log($"Typical time to read: {d}, {h}, and {m} ({p} pages)");
+                _logger.Log(@$"Typical time to read: {d}, {h}, and {m} ({p} pages)");
                 return true;
             }
 
             if (span.Hours > 1)
             {
-                _logger.Log($"Typical time to read: {h}, and {m} ({p} pages)");
+                _logger.Log(@$"Typical time to read: {h} and {m} ({p} pages)");
                 return true;
             }
 
             if (span.Minutes <= 1)
             {
-                _logger.Log($"Typical time to read: {m} ({p} pages)");
+                _logger.Log(@$"Typical time to read: {m} ({p} pages)");
                 return true;
             }
 
@@ -280,7 +288,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
         public override async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
         {
-            _logger.Log("Downloading Goodreads page...");
+            _logger.Log(@"Downloading Goodreads page...");
             var grDoc = await _httpClient.GetPageAsync(dataUrl, cancellationToken);
             var charNodes = grDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/a");
             if (charNodes == null) return new List<Term>();

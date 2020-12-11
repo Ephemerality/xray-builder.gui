@@ -33,7 +33,7 @@ namespace XRayBuilder.Core.Libraries
             (string[] searches, string replace)[] replacements =
             {
                 (new[] {"&#169;", "&amp;#169;", "&#174;", "&amp;#174;", "&mdash;", @"</?[a-z]+>" }, ""),
-                (new[] { "“", "”", "\"" }, "'"),
+                (new[] { "“", "”", "\"", "&quot;" }, "'"),
                 (new[] { "&#133;", "&amp;#133;", @" \. \. \." }, "…"),
                 (new[] { " - ", "--" }, "—"),
                 (new[] { @"\t|\n|\r|•", @"\s+"}, " "),

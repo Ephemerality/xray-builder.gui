@@ -35,6 +35,8 @@
             this.btnSave = new System.Windows.Forms.Button();
             this.tabSettings = new System.Windows.Forms.TabControl();
             this.tabPgGeneral = new System.Windows.Forms.TabPage();
+            this.cbLanguage = new System.Windows.Forms.GroupBox();
+            this.cmbLanguage = new System.Windows.Forms.ComboBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.cmbSecondaryDataSource = new System.Windows.Forms.ComboBox();
             this.gbProcess = new System.Windows.Forms.GroupBox();
@@ -102,10 +104,9 @@
             this.chkRoentgenEndActions = new System.Windows.Forms.CheckBox();
             this.chkRoentgenStartActions = new System.Windows.Forms.CheckBox();
             this.listSettings = new System.Windows.Forms.ListBox();
-            this.cbLanguage = new System.Windows.Forms.GroupBox();
-            this.cmbLanguage = new System.Windows.Forms.ComboBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
+            this.cbLanguage.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.gbProcess.SuspendLayout();
             this.gbUnpack.SuspendLayout();
@@ -131,7 +132,6 @@
             this.groupBox9.SuspendLayout();
             this.groupBox7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-            this.cbLanguage.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSupport
@@ -204,6 +204,31 @@
             this.tabPgGeneral.TabIndex = 0;
             this.tabPgGeneral.Text = "tabPage1";
             this.tabPgGeneral.UseVisualStyleBackColor = true;
+            // 
+            // cbLanguage
+            // 
+            this.cbLanguage.Controls.Add(this.cmbLanguage);
+            this.cbLanguage.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cbLanguage.Location = new System.Drawing.Point(264, 276);
+            this.cbLanguage.Name = "cbLanguage";
+            this.cbLanguage.Size = new System.Drawing.Size(244, 75);
+            this.cbLanguage.TabIndex = 40;
+            this.cbLanguage.TabStop = false;
+            this.cbLanguage.Text = "Language";
+            // 
+            // cmbLanguage
+            // 
+            this.cmbLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbLanguage.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbLanguage.FormattingEnabled = true;
+            this.cmbLanguage.Items.AddRange(new object[] {
+            "Goodreads",
+            "Shelfari",
+            "LibraryThing"});
+            this.cmbLanguage.Location = new System.Drawing.Point(18, 28);
+            this.cmbLanguage.Name = "cmbLanguage";
+            this.cmbLanguage.Size = new System.Drawing.Size(208, 28);
+            this.cmbLanguage.TabIndex = 0;
             // 
             // groupBox2
             // 
@@ -782,9 +807,11 @@
             // 
             // cmbRegion
             // 
+            this.cmbRegion.DropDownHeight = 162;
             this.cmbRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbRegion.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmbRegion.FormattingEnabled = true;
+            this.cmbRegion.IntegralHeight = false;
             this.cmbRegion.Location = new System.Drawing.Point(106, 116);
             this.cmbRegion.Name = "cmbRegion";
             this.cmbRegion.Size = new System.Drawing.Size(138, 28);
@@ -968,31 +995,6 @@
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
             // 
-            // cbLanguage
-            // 
-            this.cbLanguage.Controls.Add(this.cmbLanguage);
-            this.cbLanguage.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cbLanguage.Location = new System.Drawing.Point(264, 276);
-            this.cbLanguage.Name = "cbLanguage";
-            this.cbLanguage.Size = new System.Drawing.Size(244, 75);
-            this.cbLanguage.TabIndex = 40;
-            this.cbLanguage.TabStop = false;
-            this.cbLanguage.Text = "Language";
-            // 
-            // cmbLanguage
-            // 
-            this.cmbLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbLanguage.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cmbLanguage.FormattingEnabled = true;
-            this.cmbLanguage.Items.AddRange(new object[] {
-            "Goodreads",
-            "Shelfari",
-            "LibraryThing"});
-            this.cmbLanguage.Location = new System.Drawing.Point(18, 28);
-            this.cmbLanguage.Name = "cmbLanguage";
-            this.cmbLanguage.Size = new System.Drawing.Size(208, 28);
-            this.cmbLanguage.TabIndex = 0;
-            // 
             // frmSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -1018,6 +1020,7 @@
             this.Load += new System.EventHandler(this.frmSettingsNew_Load);
             this.tabSettings.ResumeLayout(false);
             this.tabPgGeneral.ResumeLayout(false);
+            this.cbLanguage.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.gbProcess.ResumeLayout(false);
             this.gbProcess.PerformLayout();
@@ -1058,7 +1061,6 @@
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            this.cbLanguage.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

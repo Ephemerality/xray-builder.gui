@@ -59,7 +59,7 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
@@ -184,7 +184,7 @@ Shorten the title in Calibre or change the database name manually.
     <value>This info lets you rate this book on Amazon.</value>
   </data>
   <data name="PenNamesRequired" xml:space="preserve">
-    <value>Both Real and Pen names are required for End Actions file creation.</value>
+    <value>Both "real" and "pen" names are required for End Actions file creation.</value>
   </data>
   <data name="AttemptingBuildXRay" xml:space="preserve">
     <value>Attempting to build X-Ray…</value>

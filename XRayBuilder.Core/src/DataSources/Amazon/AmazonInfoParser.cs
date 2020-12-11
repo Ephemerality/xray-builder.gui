@@ -87,7 +87,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                     }
                 }
 
-                // cleanup to match retail file image links
+                    // cleanup to match retail file image links
                 if (imageUrl.Contains(@"https://images-na.ssl-images-amazon"))
                     imageUrl = imageUrl.Replace(@"https://images-na.ssl-images-amazon", @"http://ecx.images-amazon");
 

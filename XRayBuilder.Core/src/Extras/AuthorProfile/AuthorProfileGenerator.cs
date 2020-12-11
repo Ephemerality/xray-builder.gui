@@ -38,6 +38,9 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             try
             {
                 searchResults = await _amazonClient.SearchAuthor(request.Book.Author, request.Book.Asin, request.Settings.AmazonTld, cancellationToken, true);
+                searchResults.Books = searchResults.Books
+                    .Where(book => !book.Title.ToLower().Contains(request.Book.Title.ToLower()) && book.Asin != request.Book.Asin)
+                    .ToArray();
             }
             catch (Exception ex)
             {
@@ -121,17 +124,18 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                         var lastPunc = searchResults.Biography.LastIndexOfAny(new [] { '.', '!', '?' });
                         var lastSpace = searchResults.Biography.LastIndexOf(' ');
 
-                        if (lastPunc > lastSpace)
-                            biography = searchResults.Biography.Substring(0, lastPunc + 1);
-                        else
-                            biography = $"{searchResults.Biography.Substring(0, lastSpace)}{'\u2026'}";
+                        biography = lastPunc > lastSpace ?
+                            searchResults.Biography.Substring(0, lastPunc + 1) :
+                            $"{searchResults.Biography.Substring(0, lastSpace)}{'\u2026'}";
                     }
                     else
                         biography = searchResults.Biography;
 
                     biography = biography.Clean();
                     if (request.Settings.SaveBio || request.Settings.EditBiography)
+                    {
                         File.WriteAllText(bioFile, biography);
+                    }
                     _logger.Log("Author biography found on Amazon!");
                 }
             }

@@ -132,6 +132,8 @@ namespace XRayBuilderGUI.UI
         private IMetadata _openedMetadata;
         private Image _openedCover;
 
+        private string _bookPath = "";
+
         private DialogResult SafeShow([Localizable(true)] string msg, [Localizable(true)] string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton def)
         {
             return (DialogResult)Invoke(new Func<DialogResult>(() => MessageBox.Show(this, msg, caption, buttons, icon, def)));
@@ -312,12 +314,13 @@ namespace XRayBuilderGUI.UI
                 {
                     selectedSource = _diContainer.GetInstance<SecondarySourceRoentgen>();
                     xrayTask = _xrayService.CreateXRayAsync(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.roentgenRegion, _settings.includeTopics, selectedSource, _progress, _cancelTokens.Token);
-                } 
-                
-                // TODO Set datasource properly
-                selectedSource = _diContainer.GetInstance<SecondaryDataSourceFactory>().Get(SecondaryDataSourceFactory.Enum.File);
-                xrayTask = _xrayService.CreateXRayAsync(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.amazonTLD, _settings.includeTopics, selectedSource, _progress, _cancelTokens.Token);
-
+                }
+                else
+                {
+                    // TODO Set datasource properly
+                    selectedSource = _diContainer.GetInstance<SecondaryDataSourceFactory>().Get(SecondaryDataSourceFactory.Enum.File);
+                    xrayTask = _xrayService.CreateXRayAsync(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.amazonTLD, _settings.includeTopics, selectedSource, _progress, _cancelTokens.Token);   
+                }
 
                 xray = await Task.Run(() => xrayTask).ConfigureAwait(false);
 
@@ -333,7 +336,7 @@ namespace XRayBuilderGUI.UI
 
                 if (_settings.enableEdit && DialogResult.Yes ==
                     MessageBox.Show(
-                        $@"{MainStrings.TermsExportedOrAlreadyExist}\r\n{MainStrings.OpenInNotepad}\r\n{MainStrings.SeeMobilereads}",
+                        $"{MainStrings.TermsExportedOrAlreadyExist}\r\n{MainStrings.OpenInNotepad}\r\n{MainStrings.SeeMobilereads}",
                         MainStrings.Aliases,
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Question,
@@ -926,6 +929,8 @@ namespace XRayBuilderGUI.UI
 
             var args = Environment.GetCommandLineArgs();
 
+            Data.BookPath = args.Skip(1).Where(File.Exists).Select(Path.GetFullPath).FirstOrDefault()
+                            ?? _settings.mobiFile;
             txtMobi.Text = args.Skip(1).Where(File.Exists).Select(Path.GetFullPath).FirstOrDefault()
                            ?? _settings.mobiFile;
 
@@ -939,7 +944,10 @@ namespace XRayBuilderGUI.UI
             if (_settings.outDir == "")
                 _settings.outDir = $@"{Environment.CurrentDirectory}\out";
 
-            txtGoodreads.Text = _settings.Goodreads;
+            txtGoodreads.Text = !File.Exists(txtMobi.Text)
+                    ? string.Empty
+                    : _settings.Goodreads;
+
             if (_settings.buildSource == "Goodreads")
             {
 
@@ -1005,16 +1013,16 @@ namespace XRayBuilderGUI.UI
 
         private void SetDatasourceLink(string url)
         {
+            txtDatasource.Visible = true;
             if (string.IsNullOrEmpty(url))
             {
-                txtDatasource.Text = string.Empty;
+                txtDatasource.Text = @"Search datasource...";
                 return;
             }
 
             var matchId = Regex.Match(url, @"(show|work)/(\d+)");
             if (!matchId.Success) return;
             _tooltip.SetToolTip(txtDatasource, url);
-            txtDatasource.Visible = true;
             txtDatasource.Text = matchId.Groups[2].Value;
             Data.GoodreadsUrl = url;
         }
@@ -1075,14 +1083,36 @@ namespace XRayBuilderGUI.UI
             SetDatasourceLabels();
         }
 
+        private void ClearInterface(bool bookOpened)
+        {
+            if (!bookOpened)
+            {
+                Text = @"X-Ray Builder GUI";
+                txtMobi.Text = "";
+                txtOutput.Clear();
+                Functions.TimeStamp();
+            }
+            txtGoodreads.Text = "";
+            pbCover.Image = Resources.missing_cover;
+            txtTitle.Text = "";
+            txtAuthor.Text = "";
+            txtAsin.Text = "";
+            txtDatasource.Text = @"Search datasource...";
+            prgBar.Value = 0;
+            _openedMetadata = null;
+            CheckFiles("","","","","","");
+        }
+
         private async void txtMobi_TextChanged(object sender, EventArgs e)
         {
             if (txtMobi.Text == "" || !File.Exists(txtMobi.Text))
+            {
+                ClearInterface(false);
                 return;
-            txtGoodreads.Text = "";
-            txtDatasource.Text = "";
-            prgBar.Value = 0;
-            _openedMetadata = null;
+            }
+            ClearInterface(true);
+
+            ToggleInterface(false);
 
             using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
             if (metadata == null)
@@ -1113,6 +1143,20 @@ namespace XRayBuilderGUI.UI
 
             Text = $@"X-Ray Builder GUI - {txtMobi.Text}";
 
+            //TODO: Check ASIN matches selected Amazon region.
+            //try
+            //{
+            //    _logger.Log(@$"Checking if this ASIN matches a book available on Amazon{_settings.amazonTLD}...");
+            //    var localBookResult = await _amazonClient.SearchBook(metadata.Title, metadata.Author, _settings.amazonTLD, _cancelTokens.Token);
+            //    _logger.Log(localBookResult.Asin == metadata.Asin
+            //        ? $@"Successfully found a matching book:  {localBookResult.Title}!"
+            //        : $"Warning: {localBookResult.Title} by {localBookResult.Author} was found, but the ASIN does not match for your selected Amazon region!\n\rURL: {localBookResult.AmazonUrl}");
+            //}
+            //catch (Exception)
+            //{
+            //    // Ignored
+            //}
+
             try
             {
                 if (AmazonClient.IsAsin(metadata.Asin))
@@ -1127,6 +1171,7 @@ namespace XRayBuilderGUI.UI
             {
                 // Ignored
             }
+            ToggleInterface(true);
         }
 
         private async void tmiAuthorProfile_Click(object sender, EventArgs e)
@@ -1431,6 +1476,7 @@ namespace XRayBuilderGUI.UI
 
         private void pbCover_Click(object sender, EventArgs e)
         {
+            if (_openedMetadata == null) return;
             using var frmBook = _diContainer.GetInstance<frmBookInfo>();
             frmBook.Book = _openedMetadata;
             frmBook.Cover = _openedCover;

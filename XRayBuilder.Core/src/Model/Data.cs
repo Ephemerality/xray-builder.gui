@@ -5,28 +5,30 @@ namespace XRayBuilder.Core.Model
 {
     public class Data : INotifyPropertyChanged
     {
-        private string _bio;
-        private string _author;
-        private string _book;
-        private string _goodreads;
-        private string _xraysource;
+        private static string _author;
+        private static string _bio;
+        private static string _bookPath;
+        private static string _bookUrl;
+        private static string _goodreads;
+        private static string _xraysource;
 
         public Data()
         {
-            GoodreadsUrl = string.Empty;
-            AuthorUrl = string.Empty;
             AuthorBio = string.Empty;
+            AuthorUrl = string.Empty;
+            BookPath = string.Empty;
             BookUrl = string.Empty;
+            GoodreadsUrl = string.Empty;
             XraySource = string.Empty;
         }
 
-        public string GoodreadsUrl
+        public string AuthorBio
         {
-            get => _goodreads;
+            get => _bio;
             set
             {
-                if (_goodreads == value) return;
-                _goodreads = value ?? string.Empty;
+                if (_bio == value) return;
+                _bio = value ?? string.Empty;
                 NotifyPropertyChanged();
             }
         }
@@ -42,28 +44,39 @@ namespace XRayBuilder.Core.Model
             }
         }
 
-        public string AuthorBio
+        public string BookPath
         {
-            get => _bio;
+            get => _bookPath;
             set
             {
-                if (_bio == value) return;
-                _bio = value ?? string.Empty;
+                if (_bookPath == value) return;
+                _bookPath = value ?? string.Empty;
                 NotifyPropertyChanged();
             }
         }
 
         public string BookUrl
         {
-            get => _book;
+            get => _bookUrl;
             set
             {
-                if (_book == value) return;
-                _book = value ?? string.Empty;
+                if (_bookUrl == value) return;
+                _bookUrl = value ?? string.Empty;
                 NotifyPropertyChanged();
             }
         }
 
+        public string GoodreadsUrl
+        {
+            get => _goodreads;
+            set
+            {
+                if (_goodreads == value) return;
+                _goodreads = value ?? string.Empty;
+                NotifyPropertyChanged();
+            }
+        }
+        
         public string XraySource
         {
             get => _xraysource;

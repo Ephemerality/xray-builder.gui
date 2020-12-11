@@ -71,7 +71,8 @@ namespace XRayBuilder.Core.Extras.EndActions
             {
                 Class = "publicSharedRating",
                 Timestamp = Functions.UnixTimestampMilliseconds(),
-                Value = Math.Round(request.BookAmazonRating ?? 0.0, 1)
+                //Value = Math.Round(request.BookAmazonRating ?? 0.0, 1)
+                Value = 0.0
             };
             endActions.Data.CustomerProfile = new Extras.Artifacts.EndActions.CustomerProfile
             {
@@ -96,12 +97,20 @@ namespace XRayBuilder.Core.Extras.EndActions
             endActions.Data.AuthorRecs = new Recs
             {
                 Class = "featuredRecommendationList",
-                Recommendations = request.AuthorOtherBooks.Select(bk => Extensions.BookInfoToBook(bk, true)).ToArray()
+                Recommendations = request.AuthorOtherBooks
+                    .Select(bk => Extensions.BookInfoToBook(bk, true))
+                    .ToArray()
             };
+            
+            var custAlso = request.CustomerAlsoBought.Where(b => request.AuthorOtherBooks.All(a => a.Asin != b.Asin)).ToArray();
+            
             endActions.Data.CustomersWhoBoughtRecs = new Recs
             {
                 Class = "featuredRecommendationList",
-                Recommendations = request.CustomerAlsoBought.Select(bk => Extensions.BookInfoToBook(bk, true)).ToArray()
+                Recommendations = request.CustomerAlsoBought
+                    .Where(b => request.AuthorOtherBooks.All(a => a.Asin != b.Asin && !b.Title.ToLower().Contains(a.Title.ToLower())))
+                    .Select(bk => Extensions.BookInfoToBook(bk, true))
+                    .ToArray()
             };
 
             try

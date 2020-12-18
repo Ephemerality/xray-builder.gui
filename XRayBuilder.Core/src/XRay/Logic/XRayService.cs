@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -74,6 +73,7 @@ namespace XRayBuilder.Core.XRay.Logic
                 _logger.Log("Downloading notable clips...");
                 xray.NotableClips = (await dataSource.GetNotableClipsAsync(dataLocation, null, progress, token))?.ToList();
             }
+
             if (xray.Terms.Count == 0)
             {
                 _logger.Log($"Warning: No terms found on {dataSource.Name}.");
@@ -113,6 +113,7 @@ namespace XRayBuilder.Core.XRay.Logic
                 // todo don't set the IDs here...
                 t.Id = termId++;
             }
+
             _logger.Log(str.ToString());
         }
 
@@ -175,6 +176,7 @@ namespace XRayBuilder.Core.XRay.Logic
                 nodes = web.DocumentNode.SelectNodes("//div");
                 _logger.Log($@"{CoreStrings.Warning}: {CoreStrings.CouldNotLocateParagraphsNormally}{Environment.NewLine}{CoreStrings.SearchingAllDivs}");
             }
+
             if (nodes == null)
                 throw new Exception(CoreStrings.CouldNotLocateAnyParagraphs);
             progress?.Set(0, nodes.Count);
@@ -201,6 +203,7 @@ namespace XRayBuilder.Core.XRay.Logic
                     noSoftHypen = noSoftHypen.Replace("&#173;", "");
                     noSoftHypen = noSoftHypen.Replace("&#0173;", "");
                 }
+
                 foreach (var character in xray.Terms)
                 {
                     //Search for character name and aliases in the html-less text. If failed, try in the HTML for rare situations.
@@ -237,24 +240,19 @@ namespace XRayBuilder.Core.XRay.Logic
                     if (!termFound)
                         continue;
 
-                    var locHighlight = new List<int>();
-                    var lenHighlight = new List<int>();
+                    var highlights = new HashSet<Highlight>();
                     //Search html for character name and aliases
                     foreach (var s in search)
                     {
                         var matches = Regex.Matches(node.InnerHtml, $@"{quotes}?\b{s}{punctuationMarks}", character.MatchCase || character.RegexAliases ? RegexOptions.None : RegexOptions.IgnoreCase);
                         foreach (Match match in matches)
-                        {
-                            if (locHighlight.Contains(match.Index) && lenHighlight.Contains(match.Length))
-                                continue;
-                            locHighlight.Add(match.Index);
-                            lenHighlight.Add(match.Length);
-                        }
+                            highlights.Add(new Highlight(location + locOffset, lenQuote, match.Index, match.Length));
                     }
+
                     //If normal search fails, use regexp to search in case there is some wacky html nested in term
                     //Regexp may be less than ideal for parsing HTML but seems to work ok so far in these small paragraphs
                     //Also search in soft hyphen-less text if option is set to do so
-                    if (locHighlight.Count == 0)
+                    if (highlights.Any())
                     {
                         foreach (var s in search)
                         {
@@ -275,81 +273,35 @@ namespace XRayBuilder.Core.XRay.Logic
                                 else
                                     matches = Regex.Matches(node.InnerHtml, pat, RegexOptions.IgnoreCase);
                                 foreach (Match match in matches)
-                                {
-                                    if (locHighlight.Contains(match.Index) && lenHighlight.Contains(match.Length))
-                                        continue;
-                                    locHighlight.Add(match.Index);
-                                    lenHighlight.Add(match.Length);
-                                }
+                                    highlights.Add(new Highlight(location + locOffset, lenQuote, match.Index, match.Length));
                             }
                         }
                     }
-                    if (locHighlight.Count == 0 || locHighlight.Count != lenHighlight.Count) //something went wrong
+
+                    if (!highlights.Any()) //something went wrong
                     {
                         // _logger.Log($"An error occurred while searching for start of highlight.\r\nWas looking for (or one of the aliases of): {character.TermName}\r\nSearching in: {node.InnerHtml}");
                         continue;
                     }
 
-                    //If an excerpt is too long, the X-Ray reader cuts it off.
-                    //If the location of the highlighted word (character name) within the excerpt is far enough in to get cut off,
-                    //this section attempts to shorted the excerpt by locating the start of a sentence that is just far enough away from the highlight.
-                    //The length is determined by the space the excerpt takes up rather than its actual length... so 135 is just a guess based on what I've seen.
-                    const int lengthLimit = 135;
-                    for (var j = 0; j < locHighlight.Count; j++)
-                    {
-                        if (!shortEx || locHighlight[j] + lenHighlight[j] <= lengthLimit)
-                            continue;
-                        var start = locHighlight[j];
-                        long newLoc = -1;
-                        var newLenQuote = 0;
-                        var newLocHighlight = 0;
+                    // Shortening is only useful for the old format
+                    if (!useNewVersion && shortEx)
+                        highlights = ShortenHighlightsInNode(node, highlights).ToHashSet();
 
-                        while (start > -1)
-                        {
-                            var at = node.InnerHtml.LastIndexOfAny(new[] { '.', '?', '!' }, start);
-                            if (at > -1)
-                            {
-                                start = at - 1;
-                                if (locHighlight[j] + lenHighlight[j] + 1 - at - 2 <= lengthLimit)
-                                {
-                                    newLoc = location + at + 2;
-                                    newLenQuote = lenQuote - at - 2;
-                                    newLocHighlight = locHighlight[j] - at - 2;
-                                }
-                                else
-                                    break;
-                            }
-                            else
-                                break;
-                        }
-                        //Only add new locs if shorter excerpt was found
-                        if (newLoc >= 0)
-                        {
-                            character.Locs.Add(new []
-                            {
-                                newLoc + locOffset,
-                                newLenQuote,
-                                newLocHighlight,
-                                lenHighlight[j]
-                            });
-                            locHighlight.RemoveAt(j);
-                            lenHighlight.RemoveAt(j--);
-                        }
-                    }
-
-                    for (var j = 0; j < locHighlight.Count; j++)
+                    foreach (var (quoteIndex, quoteLength, index, length) in highlights)
                     {
                         // For old format
                         character.Locs.Add(new long[]
                         {
-                            location + locOffset,
-                            lenQuote,
-                            locHighlight[j],
-                            lenHighlight[j]
+                            quoteIndex,
+                            quoteLength,
+                            index,
+                            length
                         });
                         // For new format
-                        character.Occurrences.Add(new Occurrence(location + locOffset + locHighlight[j], lenHighlight[j]));
+                        character.Occurrences.Add(new Occurrence(location + locOffset + index, length));
                     }
+
                     var exCheck = xray.Excerpts.Where(t => t.Start.Equals(location + locOffset)).ToArray();
                     if (exCheck.Length > 0)
                     {
@@ -393,8 +345,8 @@ namespace XRayBuilder.Core.XRay.Logic
                                     Highlights = quote.Likes
                                 };
                                 excerpt.RelatedEntities.Add(0); // Mark the excerpt as notable
-                                 // TODO: also add other related entities
-                                 xray.Excerpts.Add(excerpt);
+                                // TODO: also add other related entities
+                                xray.Excerpts.Add(excerpt);
                             }
                             else
                                 excerpt.RelatedEntities.Add(0);
@@ -403,6 +355,7 @@ namespace XRayBuilder.Core.XRay.Logic
                         }
                     }
                 }
+
                 progress?.Add(1);
             }
 
@@ -437,5 +390,60 @@ namespace XRayBuilder.Core.XRay.Logic
 
         //    return false;
         //}
+
+        /// <summary>
+        /// Describes a highlighted word inside a containing quote
+        /// </summary>
+        private sealed record Highlight(int QuoteIndex, int QuoteLength, int Index, int Length);
+
+        private IEnumerable<Highlight> ShortenHighlightsInNode(HtmlNode node, IEnumerable<Highlight> highlights)
+        {
+            //If an excerpt is too long, the X-Ray reader cuts it off (in firmware versions < 5.6).
+            //If the location of the highlighted word (character name) within the excerpt is far enough in to get cut off,
+            //this section attempts to shorted the excerpt by locating the start of a sentence that is just far enough away from the highlight.
+            //The length is determined by the space the excerpt takes up rather than its actual length... so 135 is just a guess based on what I've seen.
+            const int lengthLimit = 135;
+            foreach (var highlight in highlights)
+            {
+                if (highlight.Index + highlight.Length <= lengthLimit)
+                {
+                    yield return highlight;
+                    continue;
+                }
+                var start = highlight.Index;
+                var newLoc = -1;
+                var newLenQuote = 0;
+                var newLocHighlight = 0;
+
+                while (start > -1)
+                {
+                    var at = node.InnerHtml.LastIndexOfAny(new[] {'.', '?', '!'}, start);
+                    if (at > -1)
+                    {
+                        start = at - 1;
+                        if (highlight.Index + highlight.Length + 1 - at - 2 <= lengthLimit)
+                        {
+                            newLoc = highlight.QuoteIndex + at + 2;
+                            newLenQuote = node.InnerHtml.Length - at - 2;
+                            newLocHighlight = highlight.Index - at - 2;
+                        }
+                        else
+                            break;
+                    }
+                    else
+                        break;
+                }
+
+                // Only use new locs if shorter excerpt was found
+                yield return newLoc >= 0
+                    ? highlight with
+                    {
+                        QuoteIndex = newLoc,
+                        QuoteLength = newLenQuote,
+                        Index = newLocHighlight
+                    }
+                    : highlight;
+            }
+        }
     }
 }

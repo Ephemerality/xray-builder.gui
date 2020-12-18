@@ -34,7 +34,7 @@ namespace XRayBuilderGUI.UI.Preview
 
             foreach (var t in terms)
             {
-                var p = new XRayPanel(t.Type, t.TermName, Math.Max(t.Occurrences.Count, t.Locs.Count).ToString(), t.Desc);
+                var p = new XRayPanel(t.Type, t.TermName, t.Occurrences.Count.ToString(), t.Desc);
                 var controls = t.Type switch
                 {
                     "character" => flpPeople.Controls,

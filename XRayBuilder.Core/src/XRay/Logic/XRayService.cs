@@ -240,19 +240,23 @@ namespace XRayBuilder.Core.XRay.Logic
                     if (!termFound)
                         continue;
 
-                    var highlights = new HashSet<Highlight>();
+                    var occurrences = new HashSet<Occurrence>();
                     //Search html for character name and aliases
                     foreach (var s in search)
                     {
                         var matches = Regex.Matches(node.InnerHtml, $@"{quotes}?\b{s}{punctuationMarks}", character.MatchCase || character.RegexAliases ? RegexOptions.None : RegexOptions.IgnoreCase);
                         foreach (Match match in matches)
-                            highlights.Add(new Highlight(location + locOffset, lenQuote, match.Index, match.Length));
+                            occurrences.Add(new Occurrence
+                            {
+                                Excerpt = new IndexLength(location + locOffset, lenQuote),
+                                Highlight = new IndexLength(match.Index, match.Length)
+                            });
                     }
 
                     //If normal search fails, use regexp to search in case there is some wacky html nested in term
                     //Regexp may be less than ideal for parsing HTML but seems to work ok so far in these small paragraphs
                     //Also search in soft hyphen-less text if option is set to do so
-                    if (highlights.Any())
+                    if (occurrences.Any())
                     {
                         foreach (var s in search)
                         {
@@ -273,12 +277,16 @@ namespace XRayBuilder.Core.XRay.Logic
                                 else
                                     matches = Regex.Matches(node.InnerHtml, pat, RegexOptions.IgnoreCase);
                                 foreach (Match match in matches)
-                                    highlights.Add(new Highlight(location + locOffset, lenQuote, match.Index, match.Length));
+                                    occurrences.Add(new Occurrence
+                                    {
+                                        Excerpt = new IndexLength(location + locOffset, lenQuote),
+                                        Highlight = new IndexLength(match.Index, match.Length)
+                                    });
                             }
                         }
                     }
 
-                    if (!highlights.Any()) //something went wrong
+                    if (!occurrences.Any()) //something went wrong
                     {
                         // _logger.Log($"An error occurred while searching for start of highlight.\r\nWas looking for (or one of the aliases of): {character.TermName}\r\nSearching in: {node.InnerHtml}");
                         continue;
@@ -286,21 +294,9 @@ namespace XRayBuilder.Core.XRay.Logic
 
                     // Shortening is only useful for the old format
                     if (!useNewVersion && shortEx)
-                        highlights = ShortenHighlightsInNode(node, highlights).ToHashSet();
+                        occurrences = ShortenHighlightsInNode(node, occurrences).ToHashSet();
 
-                    foreach (var (quoteIndex, quoteLength, index, length) in highlights)
-                    {
-                        // For old format
-                        character.Locs.Add(new long[]
-                        {
-                            quoteIndex,
-                            quoteLength,
-                            index,
-                            length
-                        });
-                        // For new format
-                        character.Occurrences.Add(new Occurrence(location + locOffset + index, length));
-                    }
+                    character.Occurrences = occurrences.ToList();
 
                     var exCheck = xray.Excerpts.Where(t => t.Start.Equals(location + locOffset)).ToArray();
                     if (exCheck.Length > 0)
@@ -361,8 +357,8 @@ namespace XRayBuilder.Core.XRay.Logic
 
             timer.Stop();
             _logger.Log(string.Format(CoreStrings.ScanTime, timer.Elapsed));
-            //output list of terms with no locs
-            foreach (var t in xray.Terms.Where(t => t.Match && t.Locs.Count == 0))
+            //output list of terms with no occurrences
+            foreach (var t in xray.Terms.Where(t => t.Match && t.Occurrences.Count == 0))
             {
                 _logger.Log(string.Format(CoreStrings.NoLocationsFoundForTerm, t.TermName));
             }
@@ -391,26 +387,21 @@ namespace XRayBuilder.Core.XRay.Logic
         //    return false;
         //}
 
-        /// <summary>
-        /// Describes a highlighted word inside a containing quote
-        /// </summary>
-        private sealed record Highlight(int QuoteIndex, int QuoteLength, int Index, int Length);
-
-        private IEnumerable<Highlight> ShortenHighlightsInNode(HtmlNode node, IEnumerable<Highlight> highlights)
+        private IEnumerable<Occurrence> ShortenHighlightsInNode(HtmlNode node, IEnumerable<Occurrence> occurrences)
         {
             //If an excerpt is too long, the X-Ray reader cuts it off (in firmware versions < 5.6).
             //If the location of the highlighted word (character name) within the excerpt is far enough in to get cut off,
             //this section attempts to shorted the excerpt by locating the start of a sentence that is just far enough away from the highlight.
             //The length is determined by the space the excerpt takes up rather than its actual length... so 135 is just a guess based on what I've seen.
             const int lengthLimit = 135;
-            foreach (var highlight in highlights)
+            foreach (var occurrence in occurrences)
             {
-                if (highlight.Index + highlight.Length <= lengthLimit)
+                if (occurrence.Highlight.Index + occurrence.Highlight.Length <= lengthLimit)
                 {
-                    yield return highlight;
+                    yield return occurrence;
                     continue;
                 }
-                var start = highlight.Index;
+                var start = occurrence.Highlight.Index;
                 var newLoc = -1;
                 var newLenQuote = 0;
                 var newLocHighlight = 0;
@@ -421,11 +412,11 @@ namespace XRayBuilder.Core.XRay.Logic
                     if (at > -1)
                     {
                         start = at - 1;
-                        if (highlight.Index + highlight.Length + 1 - at - 2 <= lengthLimit)
+                        if (occurrence.Highlight.Index + occurrence.Highlight.Length + 1 - at - 2 <= lengthLimit)
                         {
-                            newLoc = highlight.QuoteIndex + at + 2;
+                            newLoc = occurrence.Excerpt.Index + at + 2;
                             newLenQuote = node.InnerHtml.Length - at - 2;
-                            newLocHighlight = highlight.Index - at - 2;
+                            newLocHighlight = occurrence.Highlight.Index - at - 2;
                         }
                         else
                             break;
@@ -436,13 +427,12 @@ namespace XRayBuilder.Core.XRay.Logic
 
                 // Only use new locs if shorter excerpt was found
                 yield return newLoc >= 0
-                    ? highlight with
+                    ? new Occurrence
                     {
-                        QuoteIndex = newLoc,
-                        QuoteLength = newLenQuote,
-                        Index = newLocHighlight
+                        Excerpt = new IndexLength(newLoc, newLenQuote),
+                        Highlight = occurrence.Highlight with { Index = newLocHighlight }
                     }
-                    : highlight;
+                    : occurrence;
             }
         }
     }

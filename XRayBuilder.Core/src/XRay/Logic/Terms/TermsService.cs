@@ -12,6 +12,7 @@ using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
 using XRayBuilder.Core.XRay.Artifacts;
+using XRayBuilder.Core.XRay.Model;
 
 namespace XRayBuilder.Core.XRay.Logic.Terms
 {
@@ -54,7 +55,7 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
                 // Real locations aren't needed for extracting terms for preview or XML saving, but need count
                 var i = Convert.ToInt32(reader["count"]);
                 for (; i > 0; i--)
-                    newTerm.Locs.Add(null);
+                    newTerm.Occurrences.Add(new Occurrence());
 
                 // TODO: Should probably also confirm whether this URL exists or not
                 if (newTerm.DescSrc == "Wikipedia")

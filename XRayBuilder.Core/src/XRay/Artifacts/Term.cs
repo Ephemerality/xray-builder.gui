@@ -29,16 +29,12 @@ namespace XRayBuilder.Core.XRay.Artifacts
         public List<string> Aliases { get; set; } = new List<string>();
 
         [XmlIgnore]
-        [JsonProperty("locs")]
-        public List<long[]> Locs { get; set; } = new List<long[]>();
-
-        [XmlIgnore]
         [JsonIgnore]
         public int Id { get; set; } = -1;
 
         [XmlIgnore]
         [JsonIgnore]
-        public List<Occurrence> Occurrences { get; } = new List<Occurrence>();
+        public List<Occurrence> Occurrences { get; set; } = new();
 
         [JsonIgnore]
         public bool MatchCase { get; set; }

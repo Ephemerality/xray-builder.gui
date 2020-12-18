@@ -67,20 +67,24 @@ namespace XRayBuilder.Core.XRay.Logic
                             : RegexOptions.IgnoreCase;
 
                         var currentOffset = offset;
-                        var highlights = searchList
+                        var occurrences = searchList
                             .Select(search => Regex.Matches(contentChunk.ContentText, $@"{Quotes}?\b{search}{_punctuationMarks}", regexOptions))
 #if NETFRAMEWORK
                             .SelectMany(matches => matches.Cast<Match>())
 #else
                             .SelectMany(matches => matches)
 #endif
-                            .ToLookup(match => currentOffset + match.Index, match => match.Length);
+                            .Select(match => new Occurrence
+                            {
+                                Excerpt = new IndexLength(currentOffset, contentChunk.Length),
+                                Highlight = new IndexLength(match.Index, match.Length)
+                            })
+                            .ToHashSet();
 
-                        if (highlights.Count == 0)
+                        if (!occurrences.Any())
                             continue;
 
-                        var highlightOccurrences = highlights.SelectMany(highlightGroup => highlightGroup.Select(highlight => new Occurrence(highlightGroup.Key, highlight)));
-                        character.Occurrences.AddRange(highlightOccurrences);
+                        character.Occurrences = occurrences.ToList();
 
                         // Check excerpts
                         var exCheck = xray.Excerpts.Where(t => t.Start.Equals(offset)).ToArray();

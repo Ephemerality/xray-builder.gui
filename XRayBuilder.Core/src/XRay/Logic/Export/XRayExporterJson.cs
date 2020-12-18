@@ -7,6 +7,7 @@ using System.Threading;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Libraries.Serialization.Json.Util;
 using XRayBuilder.Core.XRay.Artifacts;
+using XRayBuilder.Core.XRay.Model;
 
 namespace XRayBuilder.Core.XRay.Logic.Export
 {
@@ -49,7 +50,16 @@ namespace XRayBuilder.Core.XRay.Logic.Export
                     DescUrl = term.DescUrl ?? "",
                     Type = term.Type,
                     TermName = term.TermName,
-                    Locs = term.Locs.Count > 0 ? term.Locs : new List<long[]> {new long[] {100, 100, 100, 6}}
+                    Occurrences = term.Occurrences.Count > 0
+                        ? term.Occurrences
+                        : new List<Occurrence>
+                        {
+                            new Occurrence
+                            {
+                                Excerpt = new IndexLength(100, 100),
+                                Highlight = new IndexLength(100, 6)
+                            }
+                        }
                 }).ToArray(),
                 Chapters = chapters,
                 Start = start,

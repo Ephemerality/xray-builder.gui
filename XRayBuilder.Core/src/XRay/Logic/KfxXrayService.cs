@@ -119,8 +119,6 @@ namespace XRayBuilder.Core.XRay.Logic
                             }
                             else
                                 excerpt.RelatedEntities.Add(0);
-
-                            xray.FoundNotables++;
                         }
                     }
 

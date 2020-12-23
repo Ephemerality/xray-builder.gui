@@ -19,7 +19,6 @@ namespace XRayBuilder.Core.XRay
         public long Erl { get; set; }
         public bool Unattended { get; set; }
         public List<NotableClip> NotableClips { get; set; }
-        public int FoundNotables { get; set; }
         public DateTime? CreatedAt { get; set; }
     }
 }

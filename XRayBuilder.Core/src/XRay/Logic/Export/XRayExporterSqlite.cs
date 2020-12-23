@@ -167,19 +167,27 @@ namespace XRayBuilder.Core.XRay.Logic.Export
 
             // Populate some more clips if not enough were found initially
             // TODO: Add a config value in settings for this amount
-            var toAdd = new List<Excerpt>(20);
-            if (xray.FoundNotables <= 20 && xray.FoundNotables + xray.Excerpts.Count <= 20)
-                toAdd.AddRange(xray.Excerpts);
-            else if (xray.FoundNotables <= 20)
+            const int minimumNotables = 20;
+            var toAdd = new List<Excerpt>(minimumNotables);
+            var foundNotables = xray.Excerpts.Count(excerpt => excerpt.Notable);
+            switch (foundNotables)
             {
-                var rand = new Random();
-                var eligible = xray.Excerpts.Where(ex => !ex.Notable).ToList();
-                while (xray.FoundNotables <= 20 && eligible.Count > 0)
+                case <= minimumNotables when foundNotables + xray.Excerpts.Count <= minimumNotables:
+                    toAdd.AddRange(xray.Excerpts);
+                    break;
+                case <= minimumNotables:
                 {
-                    var randEx = eligible.ElementAt(rand.Next(eligible.Count));
-                    toAdd.Add(randEx);
-                    eligible.Remove(randEx);
-                    xray.FoundNotables++;
+                    var rand = new Random();
+                    var eligible = xray.Excerpts.Where(ex => !ex.Notable).ToList();
+                    while (foundNotables <= minimumNotables && eligible.Count > 0)
+                    {
+                        var randEx = eligible.ElementAt(rand.Next(eligible.Count));
+                        toAdd.Add(randEx);
+                        eligible.Remove(randEx);
+                        foundNotables++;
+                    }
+
+                    break;
                 }
             }
             foreach (var excerpt in toAdd)

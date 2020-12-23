@@ -329,9 +329,10 @@ namespace XRayBuilder.Core.XRay.Logic
                                 xray.Excerpts.Add(excerpt);
                             }
                             else
+                            {
+                                excerpt.Notable = true;
                                 excerpt.RelatedEntities.Add(0);
-
-                            xray.FoundNotables++;
+                            }
                         }
                     }
                 }

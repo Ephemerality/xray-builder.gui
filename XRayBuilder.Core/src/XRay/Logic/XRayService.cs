@@ -298,23 +298,7 @@ namespace XRayBuilder.Core.XRay.Logic
 
                     character.Occurrences = occurrences.ToList();
 
-                    var exCheck = xray.Excerpts.Where(t => t.Start.Equals(location + locOffset)).ToArray();
-                    if (exCheck.Length > 0)
-                    {
-                        if (!exCheck[0].RelatedEntities.Contains(character.Id))
-                            exCheck[0].RelatedEntities.Add(character.Id);
-                    }
-                    else
-                    {
-                        var newExcerpt = new Excerpt
-                        {
-                            Id = excerptId++,
-                            Start = location + locOffset,
-                            Length = lenQuote
-                        };
-                        newExcerpt.RelatedEntities.Add(character.Id);
-                        xray.Excerpts.Add(newExcerpt);
-                    }
+                    ExcerptHelper.EnhanceOrAddExcerpts(xray.Excerpts, character.Id, new IndexLength(location + locOffset, lenQuote));
                 }
 
                 // Attempt to match downloaded notable clips, not worried if no matches occur as some will be added later anyway

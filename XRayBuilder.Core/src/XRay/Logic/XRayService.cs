@@ -303,39 +303,7 @@ namespace XRayBuilder.Core.XRay.Logic
 
                 // Attempt to match downloaded notable clips, not worried if no matches occur as some will be added later anyway
                 if (useNewVersion && xray.NotableClips != null)
-                {
-                    foreach (var quote in xray.NotableClips)
-                    {
-                        var index = node.InnerText.IndexOf(quote.Text, StringComparison.Ordinal);
-                        if (index > -1)
-                        {
-                            // See if an excerpt already exists at this location
-                            var excerpt = xray.Excerpts.FirstOrDefault(e => e.Start == index);
-                            if (excerpt == null)
-                            {
-                                if (skipNoLikes && quote.Likes == 0
-                                    || quote.Text.Length < minClipLen)
-                                    continue;
-                                excerpt = new Excerpt
-                                {
-                                    Id = excerptId++,
-                                    Start = location,
-                                    Length = node.InnerHtml.Length,
-                                    Notable = true,
-                                    Highlights = quote.Likes
-                                };
-                                excerpt.RelatedEntities.Add(0); // Mark the excerpt as notable
-                                // TODO: also add other related entities
-                                xray.Excerpts.Add(excerpt);
-                            }
-                            else
-                            {
-                                excerpt.Notable = true;
-                                excerpt.RelatedEntities.Add(0);
-                            }
-                        }
-                    }
-                }
+                    ExcerptHelper.ProcessNotablesForParagraph(node.InnerText, location, xray.NotableClips, xray.Excerpts, skipNoLikes, minClipLen);
 
                 progress?.Add(1);
             }

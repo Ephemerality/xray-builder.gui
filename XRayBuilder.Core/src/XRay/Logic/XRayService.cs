@@ -141,7 +141,6 @@ namespace XRayBuilder.Core.XRay.Logic
             var dashesEllipsis = _encoding.GetString(Encoding.UTF8.GetBytes("(-|\u2010|\u2011|\u2012|\u2013|\u2014|\u2015|\u2026|&#8211;|&#8212;|&#8217;|&#8218;|&#8230;)")); //U+2010 to U+2015 and U+2026
             var punctuationMarks = string.Format(@"({0}s|{0})?{1}?[!\.?,""\);:]*{0}*{1}*{2}*", apostrophes, quotes, dashesEllipsis);
 
-            var excerptId = 0;
             var web = new HtmlDocument();
             web.Load(rawMlStream, _encoding);
 

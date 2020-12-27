@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -44,7 +43,6 @@ namespace XRayBuilder.Core.XRay.Logic
             xray.Erl = last.Pid + last.Length - 1;
 
             var offset = 0;
-            var excerptId = 0;
             progress?.Set(0, contentChunks.Count);
             foreach (var contentChunk in contentChunks)
             {

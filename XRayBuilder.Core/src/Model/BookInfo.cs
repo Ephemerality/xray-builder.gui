@@ -11,9 +11,9 @@ namespace XRayBuilder.Core.Model
     // TODO: Remove defaults and privates, move logic
     public class BookInfo : IEquatable<BookInfo>
     {
-        public string Title { get; }
-        public string Author { get; }
-        public string Asin { get; }
+        public string Title { get; set; }
+        public string Author { get; set; }
+        public string Asin { get; set; }
         [CanBeNull]
         public string Tld { get; set; }
         public string AmazonUrl => string.IsNullOrEmpty(Asin)
@@ -69,6 +69,14 @@ namespace XRayBuilder.Core.Model
             Title = title;
             Author = author;
             Asin = asin;
+        }
+
+        public BookInfo(string title, string author, string asin, string tld)
+        {
+            Title = title;
+            Author = author;
+            Asin = asin;
+            Tld = tld;
         }
 
         public override string ToString() => $"{Title} - {Author}";

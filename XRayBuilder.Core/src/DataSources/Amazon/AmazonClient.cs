@@ -39,8 +39,8 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
         // private const int MaxParallelism = 5;
         private readonly Regex _regexAsin = new Regex("(?<asin>B[A-Z0-9]{9})", RegexOptions.Compiled);
-        private readonly Regex _regexAsinUrl = new Regex("(/e/(?<asin>B\\w+)[/?]|dp/(?<asin>B[A-Z0-9]{9})/|/gp/product/(?<asin>B[A-Z0-9]{9}))", RegexOptions.Compiled);
-        private readonly Regex _regexIgnoreHeaders = new Regex(@"(Series|Reading) Order|Complete Series|Checklist|Edition|eSpecial|Box Set|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private readonly Regex _regexAsinUrl = new Regex("(/e/(?<asin>B\\w+)[/?]|dp/(?<asin>B[A-Z0-9]{9})/|/gp/product/(?<asin>B[A-Z0-9]{9})|url=%2Fdp%2F(?<asin>B[A-Z0-9]{9})%2F)", RegexOptions.Compiled);
+        private readonly Regex _regexIgnoreHeaders = new Regex(@"(Series|Reading) Order|Complete Series|Checklist|Edition|eSpecial|Box ?Set|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         public AmazonClient(IHttpClient httpClient, IAmazonInfoParser amazonInfoParser, ILogger logger)
         {
@@ -323,43 +323,6 @@ namespace XRayBuilder.Core.DataSources.Amazon
             return bookList;
         }
 
-        public async Task<BookInfo> GetBookByAsin(string asin, string tld, CancellationToken cancellationToken)
-        {
-            
-            var result = new BookInfo("", "", asin);
-            var bookUrl = $@"https://www.amazon.{tld}/dp/{asin}";
-            var bookBackupUrl = $@"https://www.amazon.com/dp/{asin}";
-
-            _logger.Log($@"Fetching information from Amazon.{tld}...");
-
-            HtmlDocument bookHtmlDoc;
-            try
-            {
-                bookHtmlDoc = await _httpClient.GetPageAsync(bookUrl, cancellationToken);
-            }
-            catch (Exception)
-            {
-                _logger.Log(
-                    $@"An error occurred while downloading book's page from Amazon.{tld}!");
-                _logger.Log(@"Trying again with Amazon.com…");
-                try
-                {
-                    
-                    bookHtmlDoc = await _httpClient.GetPageAsync(bookBackupUrl, cancellationToken);
-                }
-                catch (Exception)
-                {
-                    _logger.Log(
-                        "An error occurred while downloading book's page from Amazon.\r\nThe ASIN may not be correct.");
-                    return result;
-                }
-            }
-            var response = _amazonInfoParser.ParseAmazonDocument(bookHtmlDoc);
-            response.ApplyToBookInfo(result);
-
-            return result;
-        }
-
         // TODO: All calls to Amazon should check for the captcha page (or ideally avoid it somehow)
         public async Task<BookInfo> SearchBook(string title, string author, string TLD, CancellationToken cancellationToken)
         {
@@ -404,9 +367,11 @@ namespace XRayBuilder.Core.DataSources.Amazon
             {
                 var foundAsin = ParseAsinFromUrl(nodeASIN.OuterHtml);
                 var titleNode = node.SelectSingleNode(".//div/div/div/div[@class='a-fixed-left-grid-col a-col-right']/div/a")
-                    ?? node.SelectSingleNode(".//h2");
+                                ?? node.SelectSingleNode(".//h2");
                 if (titleNode != null)
-                    result = new BookInfo(WebUtility.HtmlDecode(titleNode.InnerText.Trim()), author, foundAsin);
+                {
+                    result = new BookInfo(WebUtility.HtmlDecode(titleNode.InnerText.Trim()), author, foundAsin, TLD);
+                }
             }
             return result;
         }

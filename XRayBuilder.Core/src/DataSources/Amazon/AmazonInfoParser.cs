@@ -53,12 +53,20 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 throw new AmazonCaptchaException();
         }
 
+        public bool NotFound(HtmlDocument doc)
+        {
+            var notFoundCheck = Regex.Match(doc.DocumentNode.InnerHtml, @"(cs_404_logo|cs_404_link)");
+            return notFoundCheck.Success;
+        }
+
         /// <summary>
         /// Retrieves a book's description, image URL, and rating from the Amazon document
         /// </summary>
         public InfoResponse ParseAmazonDocument(HtmlDocument bookDoc)
         {
             var response = new InfoResponse();
+
+            if (NotFound(bookDoc)) return response;
 
             CheckCaptcha(bookDoc);
 

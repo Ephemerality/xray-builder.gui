@@ -28,7 +28,7 @@ namespace XRayBuilder.Core.Extras.EndActions
         private readonly IAmazonInfoParser _amazonInfoParser;
         private readonly IRoentgenClient _roentgenClient;
 
-        private readonly Regex _invalidBookTitleRegex = new Regex(@"(Series|Reading) Order|Complete Series|Checklist|Edition|eSpecial|Box Set|\([0-9]+ Book Series\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private readonly Regex _invalidBookTitleRegex = new Regex(@"(Series|Reading) Order|Complete Series|Checklist|Edition|eSpecial|Box ?Set|\([0-9]+ Book Series\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public EndActionsDataGenerator(
             ILogger logger,
@@ -50,12 +50,9 @@ namespace XRayBuilder.Core.Extras.EndActions
         /// </summary>
         public async Task<Response> GenerateOld(BookInfo curBook, Settings settings, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
-            _logger.Log("Attempting to find book on Amazon...");
+            _logger.Log($@"Attempting to find book on Amazon.{settings.AmazonTld}...");
             //Generate Book search URL from book's ASIN
             var ebookLocation = $@"https://www.amazon.{settings.AmazonTld}/dp/{curBook.Asin}";
-
-            // Search Amazon for book
-            //_logger.Log(String.Format("Book's Amazon page URL: {0}", ebookLocation));
 
             HtmlDocument bookHtmlDoc;
             try
@@ -118,15 +115,16 @@ namespace XRayBuilder.Core.Extras.EndActions
             {
                 var listSelectors = new[]
                 {
+                    "//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card']",
                     "//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card a-float-left']",
                     "//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card aok-float-left']",
-                    "//*[contains(@id, 'desktop-dp-sims_purchase-similarities-esp')]//li",
-                    "//*[@id='desktop-dp-sims_purchase-similarities-sims-feature']//li",
-                    "//*[contains(@id, 'dp-sims_OnlineDpSimsPurchaseStrategy-sims')]//li",
-                    "//*[@id='view_to_purchase-sims-feature']//li",
-                    "//*[@id='desktop-dp-sims_vtp-60-sims-feature']//li",
-                    "//div[@id='desktop-dp-sims_session-similarities-sims-feature']//li",
-                    "//div[@id='desktop-dp-sims_session-similarities-brand-protection-sims-feature']//li"
+                    "//*[contains(@id, 'desktop-dp-sims_purchase-similarities-esp')]/li",
+                    "//*[contains(@id, 'dp-sims_OnlineDpSimsPurchaseStrategy-sims')]/li",
+                    "//*[@id='desktop-dp-sims_purchase-similarities-sims-feature']/li",
+                    "//*[@id='desktop-dp-sims_vtp-60-sims-feature']/li",
+                    "//div[@id='desktop-dp-sims_session-similarities-brand-protection-sims-feature']/li",
+                    "//div[@id='desktop-dp-sims_session-similarities-sims-feature']/li",
+                    "//*[@id='view_to_purchase-sims-feature']/li"
                 };
 
                 var relatedBooks = listSelectors.SelectMany(selector =>
@@ -167,16 +165,24 @@ namespace XRayBuilder.Core.Extras.EndActions
         {
             foreach (var book in books.Where(item => item != null))
             {
-                var asinNode = book.SelectSingleNode(".//a[@class='a-link-normal']");
+                var asinNode = book.SelectSingleNode(".//a[@class='a-link-normal']/div/span[@class='a-color-secondary series-book-number']")
+                    ??
+                    book.SelectSingleNode(".//a[@class='a-link-normal']/div[@class='a-section a-spacing-mini']/img");
+                if (asinNode != null)
+                    asinNode = book.SelectSingleNode(".//a[@class='a-link-normal'][2]");
+                if (asinNode == null)
+                    asinNode = book.SelectSingleNode(".//a[@class='a-link-normal']");
                 if (asinNode == null)
                     continue;
 
-                var authorNode = book.SelectSingleNode(".//a[@class='a-size-small a-link-child']");
+                var authorNode = book.SelectSingleNode(".//a[@class='a-size-small a-link-child']")
+                                 ??
+                                 book.SelectSingleNode(".//div[@class='a-row a-size-small sp-dp-ellipsis sp-dp-author']/a/span");
                 if (authorNode == null)
                     continue;
 
                 var author = authorNode.InnerText.Clean();
-                var title = HtmlEntity.DeEntitize(asinNode.InnerText.Trim());
+                var title = HtmlEntity.DeEntitize(asinNode.InnerText.Clean());
                 var asin = _amazonClient.ParseAsinFromUrl(asinNode.GetAttributeValue("href", ""));
 
                 if (string.IsNullOrEmpty(author) || string.IsNullOrEmpty(asin) || string.IsNullOrEmpty(title) || _invalidBookTitleRegex.IsMatch(title))
@@ -188,10 +194,22 @@ namespace XRayBuilder.Core.Extras.EndActions
 
         private async Task<BookInfo> SearchOrPrompt(BookInfo book, Func<string, string, string> asinPrompt, Settings settings, CancellationToken cancellationToken = default)
         {
-            // If the asin was available from another source, use it
             if (!string.IsNullOrEmpty(book.Asin))
             {
                 var response = await _amazonInfoParser.GetAndParseAmazonDocument($"https://www.amazon.{settings.AmazonTld}/dp/{book.Asin}", cancellationToken);
+                if (string.IsNullOrEmpty(response.Description))
+                {
+                    var localAmazonBook = await _amazonClient.SearchBook(book.Title, book.Author, settings.AmazonTld,
+                        cancellationToken);
+                    if (localAmazonBook != null)
+                    {
+                        response = await _amazonInfoParser.GetAndParseAmazonDocument(localAmazonBook.AmazonUrl, cancellationToken);
+                        response.ApplyToBookInfo(localAmazonBook);
+                        localAmazonBook.Title = book.Title;
+                        return localAmazonBook;
+                    }
+                    response = await _amazonInfoParser.GetAndParseAmazonDocument($"https://www.amazon.com/dp/{book.Asin}", cancellationToken);
+                }
                 response.ApplyToBookInfo(book);
 
                 return book;
@@ -248,8 +266,9 @@ namespace XRayBuilder.Core.Extras.EndActions
 
             if (series.Next == null && Convert.ToInt32(series.Position) != series.Total)
             {
-                _logger.Log("Book was found to be part of a series, but an error occurred finding the next book.\r\n"
-                    + "Please report this book, the URL, and output log to improve parsing (if it's a real book).");
+                _logger.Log(@"Book was found to be part of a series, but an error occurred finding the next book." +
+                            Environment.NewLine +
+                            @"Please report this book, the URL, and output log to improve parsing (if it's a real book).");
             }
         }
 

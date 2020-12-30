@@ -74,8 +74,6 @@ namespace XRayBuilder.Core.Libraries.Http
                 ? (Bitmap) image.ToGrayscale3()
                 : image;
 
-            //image.Save(@"D:\tempImg.jpg");
-
             return image;
         }
 
@@ -317,11 +315,11 @@ namespace XRayBuilder.Core.Libraries.Http
             try
             {
                 var response = await base.SendAsync(request, cancellationToken);
-                if (!response.IsSuccessStatusCode)
-                    throw new HttpClientException(response.StatusCode.ToString())
-                    {
-                        Response = response
-                    };
+                //if (!response.IsSuccessStatusCode)
+                //    throw new HttpClientException(response.StatusCode.ToString())
+                //    {
+                //        Response = response
+                //    };
                 return response;
             }
             catch (HttpClientException ex) when (ex.Response.StatusCode == HttpStatusCode.NotFound

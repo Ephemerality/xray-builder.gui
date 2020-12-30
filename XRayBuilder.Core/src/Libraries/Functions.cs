@@ -16,7 +16,7 @@ namespace XRayBuilder.Core.Libraries
         public static bool IsActualBook(string title, string curTitle)
         {
             var pattern =
-                $@"{curTitle}|(Series|Reading) Order|Complete Series|Checklist|Edition|eSpecial|Box Set|\([0-9]+ Book Series\)";
+                $@"{curTitle}|(Series|Reading) Order|Complete Series|Checklist|Edition|eSpecial|Box ?Set|\([0-9]+ Book Series\)";
             var match = Regex.Match(title, pattern, RegexOptions.IgnoreCase);
             return !match.Success;
         }

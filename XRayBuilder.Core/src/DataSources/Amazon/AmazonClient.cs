@@ -395,9 +395,15 @@ namespace XRayBuilder.Core.DataSources.Amazon
             {
                 var foundAsin = ParseAsinFromUrl(nodeASIN.OuterHtml);
                 var titleNode = node.SelectSingleNode(".//div/div/div/div[@class='a-fixed-left-grid-col a-col-right']/div/a")
-                    ?? node.SelectSingleNode(".//h2");
+                                ?? node.SelectSingleNode(".//h2");
+
                 if (titleNode != null)
-                    result = new BookInfo(WebUtility.HtmlDecode(titleNode.InnerText.Trim()), author, foundAsin);
+                {
+                    result = new BookInfo(WebUtility.HtmlDecode(titleNode.InnerText.Trim()), author, foundAsin)
+                    {
+                        Tld = TLD
+                    };
+                }
             }
             return result;
         }

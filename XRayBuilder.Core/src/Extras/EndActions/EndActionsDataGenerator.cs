@@ -55,9 +55,6 @@ namespace XRayBuilder.Core.Extras.EndActions
             //Generate Book search URL from book's ASIN
             var ebookLocation = $@"https://www.amazon.{settings.AmazonTld}/dp/{curBook.Asin}";
 
-            // Search Amazon for book
-            //_logger.Log(String.Format("Book's Amazon page URL: {0}", ebookLocation));
-
             HtmlDocument bookHtmlDoc;
             try
             {
@@ -120,15 +117,16 @@ namespace XRayBuilder.Core.Extras.EndActions
             {
                 var listSelectors = new[]
                 {
+                    "//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card']",
                     "//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card a-float-left']",
                     "//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card aok-float-left']",
-                    "//*[contains(@id, 'desktop-dp-sims_purchase-similarities-esp')]//li",
-                    "//*[@id='desktop-dp-sims_purchase-similarities-sims-feature']//li",
-                    "//*[contains(@id, 'dp-sims_OnlineDpSimsPurchaseStrategy-sims')]//li",
-                    "//*[@id='view_to_purchase-sims-feature']//li",
-                    "//*[@id='desktop-dp-sims_vtp-60-sims-feature']//li",
-                    "//div[@id='desktop-dp-sims_session-similarities-sims-feature']//li",
-                    "//div[@id='desktop-dp-sims_session-similarities-brand-protection-sims-feature']//li"
+                    "//*[contains(@id, 'desktop-dp-sims_purchase-similarities-esp')]/li",
+                    "//*[contains(@id, 'dp-sims_OnlineDpSimsPurchaseStrategy-sims')]/li",
+                    "//*[@id='desktop-dp-sims_purchase-similarities-sims-feature']/li",
+                    "//*[@id='desktop-dp-sims_vtp-60-sims-feature']/li",
+                    "//div[@id='desktop-dp-sims_session-similarities-brand-protection-sims-feature']/li",
+                    "//div[@id='desktop-dp-sims_session-similarities-sims-feature']/li",
+                    "//*[@id='view_to_purchase-sims-feature']/li"
                 };
 
                 var relatedBooks = listSelectors.SelectMany(selector =>
@@ -221,10 +219,22 @@ namespace XRayBuilder.Core.Extras.EndActions
 
         private async Task<BookInfo> SearchOrPrompt(BookInfo book, Func<string, string, string> asinPrompt, Settings settings, CancellationToken cancellationToken = default)
         {
-            // If the asin was available from another source, use it
             if (!string.IsNullOrEmpty(book.Asin))
             {
                 var response = await _amazonInfoParser.GetAndParseAmazonDocument($"https://www.amazon.{settings.AmazonTld}/dp/{book.Asin}", cancellationToken);
+                if (string.IsNullOrEmpty(response.Description))
+                {
+                    var localAmazonBook = await _amazonClient.SearchBook(book.Title, book.Author, settings.AmazonTld,
+                        cancellationToken);
+                    if (localAmazonBook != null)
+                    {
+                        response = await _amazonInfoParser.GetAndParseAmazonDocument(localAmazonBook.AmazonUrl, cancellationToken);
+                        response.ApplyToBookInfo(localAmazonBook);
+                        localAmazonBook.Title = book.Title;
+                        return localAmazonBook;
+                    }
+                    response = await _amazonInfoParser.GetAndParseAmazonDocument($"https://www.amazon.com/dp/{book.Asin}", cancellationToken);
+                }
                 response.ApplyToBookInfo(book);
 
                 return book;
@@ -281,8 +291,7 @@ namespace XRayBuilder.Core.Extras.EndActions
 
             if (series.Next == null && int.TryParse(series.Position, out var seriesPosition) && seriesPosition != series.Total)
             {
-                _logger.Log("Book was found to be part of a series, but an error occurred finding the next book.\r\n"
-                    + "Please report this book, the URL, and output log to improve parsing (if it's a real book).");
+                _logger.Log($@"Book was found to be part of a series, but an error occurred finding the next book.{Environment.NewLine}Please report this book, the URL, and output log to improve parsing (if it's a real book).");
             }
         }
 

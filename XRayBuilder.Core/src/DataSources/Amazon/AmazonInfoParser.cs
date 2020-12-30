@@ -17,6 +17,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
         private readonly IHttpClient _httpClient;
 
         private readonly Regex _numbersRegex = new(@"(\d+)", RegexOptions.Compiled);
+        private readonly Regex _regex404 = new(@"(cs_404_logo|cs_404_link)", RegexOptions.Compiled);
 
         public AmazonInfoParser(ILogger logger, IHttpClient httpClient)
         {
@@ -61,6 +62,9 @@ namespace XRayBuilder.Core.DataSources.Amazon
         public InfoResponse ParseAmazonDocument(HtmlDocument bookDoc)
         {
             var response = new InfoResponse();
+
+            if (_regex404.IsMatch(bookDoc.DocumentNode.InnerHtml))
+                return response;
 
             CheckCaptcha(bookDoc);
 

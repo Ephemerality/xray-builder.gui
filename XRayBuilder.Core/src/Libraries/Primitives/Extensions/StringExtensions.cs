@@ -74,5 +74,17 @@ namespace XRayBuilder.Core.Libraries.Primitives.Extensions
             var pattern = new Regex("[^ -~]+");
             return pattern.Replace(value, "");
         }
+
+        /// <summary>
+        /// Returns the specified string converted to Title Case
+        /// </summary>
+        public static string ToTitleCase(this string value)
+        {
+            if (string.IsNullOrEmpty(value) || value.Any(t => char.IsLetter(t) && !char.IsUpper(t)))
+                return value;
+
+            var textInfo = new CultureInfo("en-US",false).TextInfo;
+            return textInfo.ToTitleCase(value.ToLower());
+        }
     }
 }

@@ -13,6 +13,7 @@ using XRayBuilder.Core.Extras.AuthorProfile;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Libraries.Primitives.Extensions;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Model;
 using XRayBuilder.Core.Unpack;
@@ -28,7 +29,7 @@ namespace XRayBuilder.Core.Extras.EndActions
         private readonly IAmazonInfoParser _amazonInfoParser;
         private readonly IRoentgenClient _roentgenClient;
 
-        private readonly Regex _invalidBookTitleRegex = new Regex(@"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private readonly Regex _invalidBookTitleRegex = new Regex(@"(Series|Reading) Order|Complete Series|Checklist|Edition|eSpecial|Box ?Set|[0-9]+ Book Series|Books? \d+ ?(to|—|\\u2013|–) ?\d+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public EndActionsDataGenerator(
             ILogger logger,
@@ -133,17 +134,35 @@ namespace XRayBuilder.Core.Extras.EndActions
         {
             foreach (var book in books.Where(item => item != null))
             {
-                var asinNode = book.SelectSingleNode(".//a[@class='a-link-normal']");
+                string title = null;
+                var asinNode = book.SelectSingleNode(".//a[@class='a-link-normal']/div/span[@class='a-color-secondary series-book-number']")
+                    ?? book.SelectSingleNode(".//a[@class='a-link-normal']/div[@class='a-section a-spacing-mini']/img");
+                if (asinNode != null)
+                {
+                    title = HtmlEntity.DeEntitize(asinNode.Attributes["alt"]?.Value).Clean();
+                    if(string.IsNullOrEmpty(title))
+                        asinNode = book.SelectSingleNode(".//a[@class='a-link-normal'][2]");
+                }
+                asinNode ??= book.SelectSingleNode(".//a[@class='a-link-normal' and @title]");
                 if (asinNode == null)
                     continue;
+
+                if (asinNode.InnerText.IndexOf("Just released", StringComparison.InvariantCultureIgnoreCase) >= 0)
+                {
+                    var titleNode = book.SelectSingleNode(".//a[@class='a-link-normal' and @title]");
+                    if (titleNode != null)
+                        title = HtmlEntity.DeEntitize(titleNode.GetAttributeValue("title", "")).Clean();
+                }
+                if (string.IsNullOrEmpty(title))
+                    title = HtmlEntity.DeEntitize(asinNode.InnerText).Clean();
+
+                var asin = _amazonClient.ParseAsinFromUrl(asinNode.GetAttributeValue("href", ""))
+                           ?? _amazonClient.ParseAsinFromUrl(book.InnerHtml);
 
                 var authorNode = book.SelectSingleNode(".//a[@class='a-size-small a-link-child']");
                 if (authorNode == null)
                     continue;
-
-                var author = authorNode.InnerText.Clean();
-                var title = HtmlEntity.DeEntitize(asinNode.InnerText.Trim());
-                var asin = _amazonClient.ParseAsinFromUrl(asinNode.GetAttributeValue("href", ""));
+                var author = authorNode.InnerText.Clean().ToTitleCase();
 
                 if (string.IsNullOrEmpty(author) || string.IsNullOrEmpty(asin) || string.IsNullOrEmpty(title) || _invalidBookTitleRegex.IsMatch(title))
                     continue;

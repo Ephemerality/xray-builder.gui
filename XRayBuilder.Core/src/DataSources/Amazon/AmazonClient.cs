@@ -14,6 +14,7 @@ using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Parsing.Regex;
+using XRayBuilder.Core.Libraries.Primitives.Extensions;
 using XRayBuilder.Core.Model;
 
 namespace XRayBuilder.Core.DataSources.Amazon
@@ -38,8 +39,8 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
         // private const int MaxParallelism = 5;
         private readonly Regex _regexAsin = new Regex("(?<asin>B[A-Z0-9]{9})", RegexOptions.Compiled);
-        private readonly Regex _regexAsinUrl = new Regex("(/e/(?<asin>B\\w+)[/?]|dp/(?<asin>B[A-Z0-9]{9})/|/gp/product/(?<asin>B[A-Z0-9]{9}))", RegexOptions.Compiled);
-        private readonly Regex _regexIgnoreHeaders = new Regex(@"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private readonly Regex _regexAsinUrl = new Regex("(/e/(?<asin>B\\w+)[/?]|dp/(?<asin>B[A-Z0-9]{9})/|/gp/product/(?<asin>B[A-Z0-9]{9})|url=%2Fdp%2F(?<asin>B[A-Z0-9]{9})%2F)", RegexOptions.Compiled);
+        private readonly Regex _regexIgnoreHeaders = new Regex(@"(Series|Reading) Order|Complete Series|Checklist|Edition|eSpecial|Box ?Set|[0-9]+ Book Series|Books? \d+ ?(to|—|\\u2013|–) ?\d+", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         public AmazonClient(IHttpClient httpClient, IAmazonInfoParser amazonInfoParser, ILogger logger)
         {
@@ -244,7 +245,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 // TODO: This should be removable when the Kindle Only page is parsed instead
                 if (string.IsNullOrEmpty(asin))
                     continue; //throw new DataSource.FormatChangedException(nameof(Amazon), "book results - kindle edition asin");
-                bookList.Add(new BookInfo(name, author, asin)
+                bookList.Add(new BookInfo(name.ToTitleCase(), author, asin)
                 {
                     Tld = tld
                 });
@@ -271,7 +272,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 // Skip known-bad things like lists and series and stuff
                 if (_regexIgnoreHeaders.IsMatch(otherBook.InnerText))
                     continue;
-                var name = otherBook.InnerText.Trim();
+                var name = otherBook.InnerText.Trim().ToTitleCase();
                 otherBook = result.SelectSingleNode(".//*[@title='Kindle Edition']");
                 if (otherBook == null)
                     continue;
@@ -298,10 +299,12 @@ namespace XRayBuilder.Core.DataSources.Amazon
                     if (otherBook == null) continue;
                     var asin = ParseAsinFromUrl(otherBook.OuterHtml);
                     if (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(asin))
-                        bookList.Add(new BookInfo(name, author, asin)
+                    {
+                        bookList.Add(new BookInfo(name.ToTitleCase(), author, asin)
                         {
                             Tld = tld
                         });
+                    }
                 }
             }
             return bookList;

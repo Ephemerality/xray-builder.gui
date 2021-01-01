@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -13,14 +14,6 @@ namespace XRayBuilder.Core.Libraries
 {
     public static class Functions
     {
-        public static bool IsActualBook(string title, string curTitle)
-        {
-            var pattern =
-                $@"{curTitle}|(Series|Reading) Order|Complete Series|Checklist|Edition|eSpecial|Box ?Set|\([0-9]+ Book Series\)";
-            var match = Regex.Match(title, pattern, RegexOptions.IgnoreCase);
-            return !match.Success;
-        }
-
         public static string ReadFromFile(string file)
         {
             using var streamReader = new StreamReader(file, Encoding.UTF8);
@@ -158,6 +151,19 @@ namespace XRayBuilder.Core.Libraries
             }
             return author;
         }
+
+        /// <summary>
+        /// Returns the specified string converted to Title Case
+        /// </summary>
+        public static string ToTitleCase(string text)
+        {
+            if (string.IsNullOrEmpty(text) || text.Any(t => char.IsLetter(t) && !char.IsUpper(t)))
+                return text;
+
+            var textInfo = new CultureInfo("en-US",false).TextInfo;
+            return textInfo.ToTitleCase(text.ToLower());
+        }
+
 
         /// <summary>
         /// Convert non-ascii characters into the \uXXXX hexidecimal format

@@ -40,7 +40,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
         // private const int MaxParallelism = 5;
         private readonly Regex _regexAsin = new Regex("(?<asin>B[A-Z0-9]{9})", RegexOptions.Compiled);
         private readonly Regex _regexAsinUrl = new Regex("(/e/(?<asin>B\\w+)[/?]|dp/(?<asin>B[A-Z0-9]{9})/|/gp/product/(?<asin>B[A-Z0-9]{9})|url=%2Fdp%2F(?<asin>B[A-Z0-9]{9})%2F)", RegexOptions.Compiled);
-        private readonly Regex _regexIgnoreHeaders = new Regex(@"(Series|Reading) Order|Complete Series|Checklist|Edition|eSpecial|Box ?Set|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private readonly Regex _regexIgnoreHeaders = new Regex(@"(Series|Reading) Order|Complete Series|Checklist|Edition|eSpecial|Box ?Set|[0-9]+ Book Series|Books? \d+ ?(to|—|\\u2013|–) ?\d+", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         public AmazonClient(IHttpClient httpClient, IAmazonInfoParser amazonInfoParser, ILogger logger)
         {
@@ -251,6 +251,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 // Skip known-bad things like lists and series and stuff
                 if (_regexIgnoreHeaders.IsMatch(name))
                     continue;
+                name = Functions.ToTitleCase(name);
 
                 // Get first Kindle ASIN
                 var asin = bookNodes.Select(bookNode => _regexAsinUrl.Match(bookNode.OuterHtml))
@@ -287,7 +288,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 // Skip known-bad things like lists and series and stuff
                 if (_regexIgnoreHeaders.IsMatch(otherBook.InnerText))
                     continue;
-                var name = otherBook.InnerText.Trim();
+                var name = Functions.ToTitleCase(otherBook.InnerText.Trim());
                 otherBook = result.SelectSingleNode(".//*[@title='Kindle Edition']");
                 if (otherBook == null)
                     continue;
@@ -306,7 +307,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 {
                     var otherBook = result.SelectSingleNode(".//a/img");
                     if (otherBook == null) continue;
-                    var name = otherBook.GetAttributeValue("alt", "");
+                    var name = Functions.ToTitleCase(otherBook.GetAttributeValue("alt", ""));
                     // Skip known-bad things like lists and series and stuff
                     if (_regexIgnoreHeaders.IsMatch(name))
                         continue;

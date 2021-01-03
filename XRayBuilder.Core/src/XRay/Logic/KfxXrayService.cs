@@ -1,9 +1,9 @@
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Unpack.KFX;
+using XRayBuilder.Core.XRay.Logic.Terms;
 using XRayBuilder.Core.XRay.Model;
 
 namespace XRayBuilder.Core.XRay.Logic
@@ -15,15 +15,12 @@ namespace XRayBuilder.Core.XRay.Logic
     public sealed class KfxXrayService : IKfxXrayService
     {
         private readonly ILogger _logger;
+        private readonly ITermsService _termsService;
 
-        private const string Apostrophes = "('|\u2019|\u0060|\u00B4)";
-        private const string Quotes = "(\"|\u2018|\u2019|\u201A|\u201B|\u201C|\u201D|\u201E|\u201F)";
-        private const string DashesEllipsis = "(-|\u2010|\u2011|\u2012|\u2013|\u2014|\u2015|\u2026|&#8211;|&#8212;|&#8217;|&#8218;|&#8230;)";
-        private readonly string _punctuationMarks = string.Format(@"({0}s|{0})?{1}?[!\.?,""\);:]*{0}*{1}*{2}*", Apostrophes, Quotes, DashesEllipsis);
-
-        public KfxXrayService(ILogger logger)
+        public KfxXrayService(ILogger logger, ITermsService termsService)
         {
             _logger = logger;
+            _termsService = termsService;
         }
 
         public void AddLocations(XRay xray,
@@ -52,39 +49,14 @@ namespace XRayBuilder.Core.XRay.Logic
                 {
                     foreach (var character in xray.Terms.Where(term => term.Match))
                     {
-                        // If the aliases are not supposed to be in regex format, escape them
-                        var aliases = character.RegexAliases
-                            ? character.Aliases
-                            : character.Aliases.Select(Regex.Escape);
-
-                        var searchList = new[] {character.TermName}.Concat(aliases).ToArray();
-
-                        //Search content for character name and aliases, respecting the case setting
-                        var regexOptions = character.MatchCase || character.RegexAliases
-                            ? RegexOptions.None
-                            : RegexOptions.IgnoreCase;
-
-                        var currentOffset = offset;
-                        var occurrences = searchList
-                            .Select(search => Regex.Matches(contentChunk.ContentText, $@"{Quotes}?\b{search}{_punctuationMarks}", regexOptions))
-#if NETFRAMEWORK
-                            .SelectMany(matches => matches.Cast<Match>())
-#else
-                            .SelectMany(matches => matches)
-#endif
-                            .Select(match => new Occurrence
-                            {
-                                Excerpt = new IndexLength(currentOffset, contentChunk.Length),
-                                Highlight = new IndexLength(match.Index, match.Length)
-                            })
-                            .ToHashSet();
-
+                        var paragraphInfo = new IndexLength(offset, contentChunk.Length);
+                        var occurrences = _termsService.FindOccurrences(kfx, character, contentChunk.ContentText, paragraphInfo);
                         if (!occurrences.Any())
                             continue;
 
-                        character.Occurrences = occurrences.ToList();
+                        character.Occurrences.UnionWith(occurrences);
 
-                        ExcerptHelper.EnhanceOrAddExcerpts(xray.Excerpts, character.Id, new IndexLength(offset, contentChunk.Length));
+                        ExcerptHelper.EnhanceOrAddExcerpts(xray.Excerpts, character.Id, paragraphInfo);
                     }
 
                     // Attempt to match downloaded notable clips, not worried if no matches occur as some will be added later anyway

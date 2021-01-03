@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using XRayBuilder.Core.Config;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Logic;
@@ -29,12 +30,12 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         public void Setup()
         {
             _logger = new Logger();
-            _termsService = new TermsService();
+            _termsService = new TermsService(new XRayBuilderConfig());
             _file = new SecondarySourceFile(_logger, _termsService);
             _previewDataExporter = new PreviewDataExporter();
             _chaptersService = new ChaptersService(_logger);
             _directoryService = new DirectoryService(_logger, null);
-            _xrayService = new XRayService(_logger, _chaptersService, new AliasesRepository(_logger, new AliasesService(_logger), _directoryService), _directoryService);
+            _xrayService = new XRayService(_logger, _chaptersService, new AliasesRepository(_logger, new AliasesService(_logger), _directoryService), _directoryService, _termsService);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]

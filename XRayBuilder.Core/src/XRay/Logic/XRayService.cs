@@ -18,6 +18,7 @@ using XRayBuilder.Core.Logic;
 using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Logic.Aliases;
 using XRayBuilder.Core.XRay.Logic.Chapters;
+using XRayBuilder.Core.XRay.Logic.Terms;
 using XRayBuilder.Core.XRay.Model;
 
 namespace XRayBuilder.Core.XRay.Logic
@@ -28,16 +29,17 @@ namespace XRayBuilder.Core.XRay.Logic
         private readonly ILogger _logger;
         private readonly ChaptersService _chaptersService;
         private readonly IAliasesRepository _aliasesRepository;
-        private readonly Encoding _encoding;
+        private readonly Encoding _encoding = CodePagesEncodingProvider.Instance.GetEncoding(1252);
         private readonly IDirectoryService _directoryService;
+        private readonly ITermsService _termsService;
 
-        public XRayService(ILogger logger, ChaptersService chaptersService, IAliasesRepository aliasesRepository, IDirectoryService directoryService)
+        public XRayService(ILogger logger, ChaptersService chaptersService, IAliasesRepository aliasesRepository, IDirectoryService directoryService, ITermsService termsService)
         {
             _logger = logger;
             _chaptersService = chaptersService;
             _aliasesRepository = aliasesRepository;
             _directoryService = directoryService;
-            _encoding = CodePagesEncodingProvider.Instance.GetEncoding(1252);
+            _termsService = termsService;
         }
 
         public async Task<XRay> CreateXRayAsync(
@@ -210,6 +212,7 @@ namespace XRayBuilder.Core.XRay.Logic
                     //If soft hyphen ignoring is turned on, also search hyphen-less text.
                     if (!character.Match)
                         continue;
+
                     var termFound = false;
                     // Convert from UTF8 string to default-encoded representation
                     var search = character.Aliases.Select(alias => _encoding.GetString(Encoding.UTF8.GetBytes(alias)))
@@ -229,6 +232,8 @@ namespace XRayBuilder.Core.XRay.Logic
                         search.Add(character.TermName);
                         // Search list should be in descending order by length, even the term name itself
                         search = search.OrderByDescending(s => s.Length).ToList();
+
+                        // TODO consider removing this "termfound" section 'cause it might be redundant and pointless now
                         if ((character.MatchCase && (search.Any(node.InnerText.Contains) || search.Any(node.InnerHtml.Contains)))
                             || (!character.MatchCase && (search.Any(node.InnerText.ContainsIgnorecase) || search.Any(node.InnerHtml.ContainsIgnorecase)))
                                 || (ignoreSoftHypen && (character.MatchCase && search.Any(noSoftHypen.Contains))
@@ -239,65 +244,17 @@ namespace XRayBuilder.Core.XRay.Logic
                     if (!termFound)
                         continue;
 
-                    var occurrences = new HashSet<Occurrence>();
-                    //Search html for character name and aliases
-                    foreach (var s in search)
-                    {
-                        var matches = Regex.Matches(node.InnerHtml, $@"{quotes}?\b{s}{punctuationMarks}", character.MatchCase || character.RegexAliases ? RegexOptions.None : RegexOptions.IgnoreCase);
-                        foreach (Match match in matches)
-                            occurrences.Add(new Occurrence
-                            {
-                                Excerpt = new IndexLength(location + locOffset, lenQuote),
-                                Highlight = new IndexLength(match.Index, match.Length)
-                            });
-                    }
-
-                    //If normal search fails, use regexp to search in case there is some wacky html nested in term
-                    //Regexp may be less than ideal for parsing HTML but seems to work ok so far in these small paragraphs
-                    //Also search in soft hyphen-less text if option is set to do so
-                    if (occurrences.Any())
-                    {
-                        foreach (var s in search)
-                        {
-                            var patterns = new List<string>();
-                            const string patternHtml = "(?:<[^>]*>)*";
-                            //Match HTML tags -- provided there's nothing malformed
-                            const string patternSoftHypen = "(\u00C2\u00AD|&shy;|&#173;|&#xad;|&#0173;|&#x00AD;)*";
-                            var pattern = string.Format("{0}{1}{0}{2}",
-                                patternHtml,
-                                string.Join(patternHtml + patternSoftHypen, character.RegexAliases ? s.ToCharArray() : Regex.Unescape(s).ToCharArray()),
-                                punctuationMarks);
-                            patterns.Add(pattern);
-                            foreach (var pat in patterns)
-                            {
-                                MatchCollection matches;
-                                if (character.MatchCase || character.RegexAliases)
-                                    matches = Regex.Matches(node.InnerHtml, pat);
-                                else
-                                    matches = Regex.Matches(node.InnerHtml, pat, RegexOptions.IgnoreCase);
-                                foreach (Match match in matches)
-                                    occurrences.Add(new Occurrence
-                                    {
-                                        Excerpt = new IndexLength(location + locOffset, lenQuote),
-                                        Highlight = new IndexLength(match.Index, match.Length)
-                                    });
-                            }
-                        }
-                    }
-
-                    if (!occurrences.Any()) //something went wrong
+                    var paragraphInfo = new IndexLength(location + locOffset, lenQuote);
+                    var occurrences = _termsService.FindOccurrences(metadata, character, node.InnerHtml, paragraphInfo);
+                    if (!occurrences.Any())
                     {
                         // _logger.Log($"An error occurred while searching for start of highlight.\r\nWas looking for (or one of the aliases of): {character.TermName}\r\nSearching in: {node.InnerHtml}");
                         continue;
                     }
 
-                    // Shortening is only useful for the old format
-                    if (!useNewVersion && shortEx)
-                        occurrences = ShortenHighlightsInNode(node, occurrences).ToHashSet();
+                    character.Occurrences.UnionWith(occurrences);
 
-                    character.Occurrences = occurrences.ToList();
-
-                    ExcerptHelper.EnhanceOrAddExcerpts(xray.Excerpts, character.Id, new IndexLength(location + locOffset, lenQuote));
+                    ExcerptHelper.EnhanceOrAddExcerpts(xray.Excerpts, character.Id, paragraphInfo);
                 }
 
                 // Attempt to match downloaded notable clips, not worried if no matches occur as some will be added later anyway

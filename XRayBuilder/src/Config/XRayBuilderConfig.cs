@@ -8,5 +8,7 @@ namespace XRayBuilderGUI.Config
         public string BaseOutputDirectory => Properties.Settings.Default.outDir;
         public bool OutputToSidecar => Properties.Settings.Default.outputToSidecar;
         public bool UseSubdirectories => Properties.Settings.Default.useSubDirectories;
+        public bool UseNewVersion => Properties.Settings.Default.useNewVersion;
+        public bool ShortenExcerptsLegacy => false;
     }
 }

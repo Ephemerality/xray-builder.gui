@@ -31,13 +31,13 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         public void Setup()
         {
             _logger = new Logger();
-            _termsService = new TermsService();
+            _termsService = new TermsService(new XRayBuilderConfig());
             _file = new SecondarySourceFile(_logger, _termsService);
             _directoryService = new DirectoryService(_logger, new XRayBuilderConfig());
             _aliasesRepository = new AliasesRepository(_logger, new AliasesService(_logger), _directoryService);
             _xrayExporter = new XRayExporterJson();
             _chaptersService = new ChaptersService(_logger);
-            _xrayService = new XRayService(_logger, _chaptersService, _aliasesRepository, _directoryService);
+            _xrayService = new XRayService(_logger, _chaptersService, _aliasesRepository, _directoryService, _termsService);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]

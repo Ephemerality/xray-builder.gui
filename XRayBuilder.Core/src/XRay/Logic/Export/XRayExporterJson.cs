@@ -52,9 +52,9 @@ namespace XRayBuilder.Core.XRay.Logic.Export
                     TermName = term.TermName,
                     Occurrences = term.Occurrences.Count > 0
                         ? term.Occurrences
-                        : new List<Occurrence>
+                        : new HashSet<Occurrence>
                         {
-                            new Occurrence
+                            new()
                             {
                                 Excerpt = new IndexLength(100, 100),
                                 Highlight = new IndexLength(100, 6)

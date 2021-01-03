@@ -20,7 +20,9 @@ namespace XRayBuilder.Core.XRay.Logic
             {
                 var newExcerpt = new Excerpt
                 {
-                    Id = excerpts.Max(excerpt => excerpt.Id) + 1,
+                    Id = excerpts.Any()
+                        ? excerpts.Max(excerpt => excerpt.Id) + 1
+                        : 1,
                     Start = excerptLocation.Index,
                     Length = excerptLocation.Length
                 };

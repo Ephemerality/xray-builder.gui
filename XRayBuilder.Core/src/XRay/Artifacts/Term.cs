@@ -34,7 +34,7 @@ namespace XRayBuilder.Core.XRay.Artifacts
 
         [XmlIgnore]
         [JsonIgnore]
-        public List<Occurrence> Occurrences { get; set; } = new();
+        public HashSet<Occurrence> Occurrences { get; set; } = new();
 
         [JsonIgnore]
         public bool MatchCase { get; set; }

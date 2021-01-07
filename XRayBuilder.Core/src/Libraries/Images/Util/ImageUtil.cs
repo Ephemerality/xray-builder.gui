@@ -18,6 +18,9 @@ namespace XRayBuilder.Core.Libraries.Images.Util
         /// </summary>
         public static bool AreEqual(Bitmap image1, Bitmap image2)
         {
+            if (image1 == null || image2 == null)
+                return false;
+
             if (image1.Width != image2.Width || image1.Height != image2.Height)
                 return false;
 

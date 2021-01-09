@@ -8,6 +8,7 @@ namespace XRayBuilder.Core.XRay.Logic
 {
     public static class ExcerptHelper
     {
+        // todo just take paragraph instead of indexlength
         public static void EnhanceOrAddExcerpts(List<Excerpt> excerpts, int characterId, IndexLength excerptLocation)
         {
             var exCheck = excerpts.Where(t => t.Start.Equals(excerptLocation.Index)).ToArray();

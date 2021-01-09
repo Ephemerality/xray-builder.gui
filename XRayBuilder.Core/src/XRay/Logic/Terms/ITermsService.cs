@@ -7,6 +7,7 @@ using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Artifacts;
+using XRayBuilder.Core.XRay.Logic.Parsing;
 using XRayBuilder.Core.XRay.Model;
 
 namespace XRayBuilder.Core.XRay.Logic.Terms
@@ -36,6 +37,6 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
         IEnumerable<Term> ReadTermsFromTxt(string txtFile);
 
         [NotNull]
-        HashSet<Occurrence> FindOccurrences(IMetadata metadata, Term term, string paragraph, IndexLength paragraphInfo);
+        HashSet<Occurrence> FindOccurrences([NotNull] IMetadata metadata, [NotNull] Term term, [NotNull] Paragraph paragraph);
     }
 }

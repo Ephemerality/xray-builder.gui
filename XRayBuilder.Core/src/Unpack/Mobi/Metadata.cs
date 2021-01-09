@@ -214,6 +214,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
         public Stream GetRawMlStream()
             => new MemoryStream(GetRawMl());
 
+        // todo consider caching the rawml since it won't change unless the book is reloaded
         public byte[] GetRawMl()
         {
             CheckDrm();

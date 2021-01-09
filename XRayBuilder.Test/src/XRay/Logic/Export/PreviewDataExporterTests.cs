@@ -11,6 +11,7 @@ using XRayBuilder.Core.XRay.Logic;
 using XRayBuilder.Core.XRay.Logic.Aliases;
 using XRayBuilder.Core.XRay.Logic.Chapters;
 using XRayBuilder.Core.XRay.Logic.Export;
+using XRayBuilder.Core.XRay.Logic.Parsing;
 using XRayBuilder.Core.XRay.Logic.Terms;
 
 namespace XRayBuilder.Test.XRay.Logic.Export
@@ -35,7 +36,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             _previewDataExporter = new PreviewDataExporter();
             _chaptersService = new ChaptersService(_logger);
             _directoryService = new DirectoryService(_logger, null);
-            _xrayService = new XRayService(_logger, _chaptersService, new AliasesRepository(_logger, new AliasesService(_logger), _directoryService), _directoryService, _termsService);
+            _xrayService = new XRayService(_logger, _chaptersService, new AliasesRepository(_logger, new AliasesService(_logger), _directoryService), _directoryService, _termsService, new ParagraphsService());
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]

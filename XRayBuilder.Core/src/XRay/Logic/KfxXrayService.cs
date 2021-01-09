@@ -3,6 +3,7 @@ using System.Threading;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Unpack.KFX;
+using XRayBuilder.Core.XRay.Logic.Parsing;
 using XRayBuilder.Core.XRay.Logic.Terms;
 using XRayBuilder.Core.XRay.Model;
 
@@ -16,11 +17,13 @@ namespace XRayBuilder.Core.XRay.Logic
     {
         private readonly ILogger _logger;
         private readonly ITermsService _termsService;
+        private readonly IParagraphsService _paragraphsService;
 
-        public KfxXrayService(ILogger logger, ITermsService termsService)
+        public KfxXrayService(ILogger logger, ITermsService termsService, IParagraphsService paragraphsService)
         {
             _logger = logger;
             _termsService = termsService;
+            _paragraphsService = paragraphsService;
         }
 
         public void AddLocations(XRay xray,
@@ -31,42 +34,36 @@ namespace XRayBuilder.Core.XRay.Logic
             CancellationToken token)
         {
             _logger.Log("Scanning book content...");
-            var contentChunks = kfx.GetContentChunks();
+
+            var paragraphs = _paragraphsService.GetParagraphs(kfx).ToArray();
 
             // Set start and end of content
             // TODO Figure out how to identify the first *actual* bit of content after the TOC
-            var last = contentChunks.Last();
+            var last = paragraphs.Last();
             xray.Srl = 1;
-            xray.Erl = last.Pid + last.Length - 1;
+            xray.Erl = last.Location + last.Length - 1;
 
-            var offset = 0;
-            progress?.Set(0, contentChunks.Count);
-            foreach (var contentChunk in contentChunks)
+            progress?.Set(0, paragraphs.Length);
+            foreach (var paragraph in paragraphs)
             {
                 token.ThrowIfCancellationRequested();
 
-                if (contentChunk.ContentText != null)
+                foreach (var character in xray.Terms.Where(term => term.Match))
                 {
-                    foreach (var character in xray.Terms.Where(term => term.Match))
-                    {
-                        var paragraphInfo = new IndexLength(offset, contentChunk.Length);
-                        var occurrences = _termsService.FindOccurrences(kfx, character, contentChunk.ContentText, paragraphInfo);
-                        if (!occurrences.Any())
-                            continue;
+                    var occurrences = _termsService.FindOccurrences(kfx, character, paragraph);
+                    if (!occurrences.Any())
+                        continue;
 
-                        character.Occurrences.UnionWith(occurrences);
+                    character.Occurrences.UnionWith(occurrences);
 
-                        ExcerptHelper.EnhanceOrAddExcerpts(xray.Excerpts, character.Id, paragraphInfo);
-                    }
-
-                    // Attempt to match downloaded notable clips, not worried if no matches occur as some will be added later anyway
-                    if (xray.NotableClips != null)
-                        ExcerptHelper.ProcessNotablesForParagraph(contentChunk.ContentText, offset, xray.NotableClips, xray.Excerpts, skipNoLikes, minClipLen);
-
-                    progress?.Add(1);
+                    ExcerptHelper.EnhanceOrAddExcerpts(xray.Excerpts, character.Id, new IndexLength(paragraph.Location, paragraph.Length));
                 }
 
-                offset += contentChunk.Length;
+                // Attempt to match downloaded notable clips, not worried if no matches occur as some will be added later anyway
+                if (xray.NotableClips != null)
+                    ExcerptHelper.ProcessNotablesForParagraph(paragraph.ContentText, paragraph.Location, xray.NotableClips, xray.Excerpts, skipNoLikes, minClipLen);
+
+                progress?.Add(1);
             }
 
             var missingOccurrences = xray.Terms

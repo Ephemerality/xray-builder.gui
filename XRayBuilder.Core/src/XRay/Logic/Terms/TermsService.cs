@@ -17,6 +17,7 @@ using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.Unpack.KFX;
 using XRayBuilder.Core.Unpack.Mobi;
 using XRayBuilder.Core.XRay.Artifacts;
+using XRayBuilder.Core.XRay.Logic.Parsing;
 using XRayBuilder.Core.XRay.Model;
 
 namespace XRayBuilder.Core.XRay.Logic.Terms
@@ -141,20 +142,20 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
             }
         }
 
-        public HashSet<Occurrence> FindOccurrences(IMetadata metadata, Term term, string paragraph, IndexLength paragraphInfo)
+        public HashSet<Occurrence> FindOccurrences(IMetadata metadata, Term term, Paragraph paragraph)
         {
             if (!term.Match)
                 return new HashSet<Occurrence>();
 
             return metadata switch
             {
-                Metadata _ => FindOccurrencesLegacy(term, paragraph, paragraphInfo),
-                KfxContainer _ => FindOccurrences(term, paragraph, paragraphInfo),
+                Metadata _ => FindOccurrencesLegacy(term, paragraph),
+                KfxContainer _ => FindOccurrences(term, paragraph),
                 _ => throw new NotSupportedException()
             };
         }
 
-        private HashSet<Occurrence> FindOccurrences(Term term, string paragraph, IndexLength paragraphInfo)
+        private HashSet<Occurrence> FindOccurrences(Term term, Paragraph paragraph)
         {
             // If the aliases are not supposed to be in regex format, escape them
             var aliases = term.RegexAliases
@@ -169,7 +170,7 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
                 : RegexOptions.IgnoreCase;
 
             return searchList
-                .Select(search => Regex.Matches(paragraph, $@"{_quotes}?\b{search}{_punctuationMarks}", regexOptions))
+                .Select(search => Regex.Matches(paragraph.ContentText, $@"{_quotes}?\b{search}{_punctuationMarks}", regexOptions))
 #if NETFRAMEWORK
                 .SelectMany(matches => matches.Cast<Match>())
 #else
@@ -177,13 +178,13 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
 #endif
                 .Select(match => new Occurrence
                 {
-                    Excerpt = paragraphInfo,
+                    Excerpt = new IndexLength(paragraph.Location, paragraph.Length),
                     Highlight = new IndexLength(match.Index, match.Length)
                 })
                 .ToHashSet();
         }
 
-        private HashSet<Occurrence> FindOccurrencesLegacy(Term term, string paragraph, IndexLength paragraphInfo)
+        private HashSet<Occurrence> FindOccurrencesLegacy(Term term, Paragraph paragraph)
         {
             // Convert from UTF8 string to default-encoded representation
             var search = term.Aliases.Select(alias => _encoding.GetString(Encoding.UTF8.GetBytes(alias))).ToList();
@@ -197,12 +198,12 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
             //Search html for character name and aliases
             foreach (var s in search)
             {
-                var matches = Regex.Matches(paragraph, $@"{_quotes}?\b{s}{_punctuationMarks}", term.MatchCase || term.RegexAliases ? RegexOptions.None : RegexOptions.IgnoreCase);
+                var matches = Regex.Matches(paragraph.ContentHtml!, $@"{_quotes}?\b{s}{_punctuationMarks}", term.MatchCase || term.RegexAliases ? RegexOptions.None : RegexOptions.IgnoreCase);
                 foreach (Match match in matches)
                 {
                     occurrences.Add(new Occurrence
                     {
-                        Excerpt = new IndexLength(paragraphInfo.Index, paragraphInfo.Length),
+                        Excerpt = new IndexLength(paragraph.Location, paragraph.Length),
                         Highlight = new IndexLength(match.Index, match.Length)
                     });
                 }
@@ -228,13 +229,13 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
                     {
                         MatchCollection matches;
                         if (term.MatchCase || term.RegexAliases)
-                            matches = Regex.Matches(paragraph, pat);
+                            matches = Regex.Matches(paragraph.ContentHtml!, pat);
                         else
-                            matches = Regex.Matches(paragraph, pat, RegexOptions.IgnoreCase);
+                            matches = Regex.Matches(paragraph.ContentHtml!, pat, RegexOptions.IgnoreCase);
                         foreach (Match match in matches)
                             occurrences.Add(new Occurrence
                             {
-                                Excerpt = new IndexLength(paragraphInfo.Index, paragraphInfo.Length),
+                                Excerpt = new IndexLength(paragraph.Location, paragraph.Length),
                                 Highlight = new IndexLength(match.Index, match.Length)
                             });
                     }
@@ -245,7 +246,7 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
 
             // Shortening is only useful for the old format
             if (!_config.UseNewVersion && _config.ShortenExcerptsLegacy)
-                occurrences = ShortenHighlightsInParagraph(paragraph, occurrences).ToHashSet();
+                occurrences = ShortenHighlightsInParagraph(paragraph.ContentHtml, occurrences).ToHashSet();
 
             return occurrences;
         }

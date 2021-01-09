@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -18,6 +17,7 @@ using XRayBuilder.Core.Logic;
 using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Logic.Aliases;
 using XRayBuilder.Core.XRay.Logic.Chapters;
+using XRayBuilder.Core.XRay.Logic.Parsing;
 using XRayBuilder.Core.XRay.Logic.Terms;
 using XRayBuilder.Core.XRay.Model;
 
@@ -32,14 +32,16 @@ namespace XRayBuilder.Core.XRay.Logic
         private readonly Encoding _encoding = CodePagesEncodingProvider.Instance.GetEncoding(1252);
         private readonly IDirectoryService _directoryService;
         private readonly ITermsService _termsService;
+        private readonly IParagraphsService _paragraphsService;
 
-        public XRayService(ILogger logger, ChaptersService chaptersService, IAliasesRepository aliasesRepository, IDirectoryService directoryService, ITermsService termsService)
+        public XRayService(ILogger logger, ChaptersService chaptersService, IAliasesRepository aliasesRepository, IDirectoryService directoryService, ITermsService termsService, IParagraphsService paragraphsService)
         {
             _logger = logger;
             _chaptersService = chaptersService;
             _aliasesRepository = aliasesRepository;
             _directoryService = directoryService;
             _termsService = termsService;
+            _paragraphsService = paragraphsService;
         }
 
         public async Task<XRay> CreateXRayAsync(
@@ -134,11 +136,6 @@ namespace XRayBuilder.Core.XRay.Logic
             bool ignoreSoftHypen = false,
             bool shortEx = true)
         {
-            var locOffset = metadata.IsAzw3 ? -16 : 0;
-
-            var web = new HtmlDocument();
-            web.Load(rawMlStream, _encoding);
-
             // Only load chapters when building the old format
             if (!useNewVersion)
             {
@@ -161,36 +158,24 @@ namespace XRayBuilder.Core.XRay.Logic
             _logger.Log(CoreStrings.ScanningEbookContent);
             var timer = new System.Diagnostics.Stopwatch();
             timer.Start();
-            //Iterate over all paragraphs in book
-            var nodes = web.DocumentNode.SelectNodes("//p")
-                ?? web.DocumentNode.SelectNodes("//div[@class='paragraph']")
-                ?? web.DocumentNode.SelectNodes("//div[@class='p-indent']");
-            if (nodes == null)
-            {
-                nodes = web.DocumentNode.SelectNodes("//div");
-                _logger.Log($@"{CoreStrings.Warning}: {CoreStrings.CouldNotLocateParagraphsNormally}{Environment.NewLine}{CoreStrings.SearchingAllDivs}");
-            }
 
-            if (nodes == null)
+            var paragraphs = _paragraphsService.GetParagraphs(metadata).ToArray();
+            if (!paragraphs.Any())
                 throw new Exception(CoreStrings.CouldNotLocateAnyParagraphs);
-            progress?.Set(0, nodes.Count);
-            for (var i = 0; i < nodes.Count; i++)
+
+            progress?.Set(0, paragraphs.Length);
+            foreach (var paragraph in paragraphs)
             {
                 token.ThrowIfCancellationRequested();
-                var node = nodes[i];
-                if (node.FirstChild == null) continue; //If the inner HTML is just empty, skip the paragraph!
-                var lenQuote = node.InnerHtml.Length;
-                var location = node.FirstChild.StreamPosition;
-                if (location < 0)
-                    throw new Exception($"Unable to locate paragraph {i} within the book content.");
 
-                //Skip paragraph if outside chapter range
-                if (location < xray.Srl || location > xray.Erl)
+                //Skip paragraph if outside known chapter range or if html is missing (shouldn't be, just a safety check)
+                if (paragraph.Location < xray.Srl || paragraph.Location > xray.Erl || paragraph.ContentHtml == null)
                     continue;
+
                 var noSoftHypen = "";
                 if (ignoreSoftHypen)
                 {
-                    noSoftHypen = node.InnerText;
+                    noSoftHypen = paragraph.ContentText;
                     noSoftHypen = noSoftHypen.Replace("\u00C2\u00AD", "");
                     noSoftHypen = noSoftHypen.Replace("&shy;", "");
                     noSoftHypen = noSoftHypen.Replace("&#xad;", "");
@@ -212,8 +197,8 @@ namespace XRayBuilder.Core.XRay.Logic
                         .ToList();
                     if (character.RegexAliases)
                     {
-                        if (search.Any(r => Regex.Match(node.InnerText, r).Success)
-                            || search.Any(r => Regex.Match(node.InnerHtml, r).Success)
+                        if (search.Any(r => Regex.Match(paragraph.ContentText, r).Success)
+                            || search.Any(r => Regex.Match(paragraph.ContentHtml!, r).Success)
                             || (ignoreSoftHypen && search.Any(r => Regex.Match(noSoftHypen, r).Success)))
                             termFound = true;
                     }
@@ -227,8 +212,8 @@ namespace XRayBuilder.Core.XRay.Logic
                         search = search.OrderByDescending(s => s.Length).ToList();
 
                         // TODO consider removing this "termfound" section 'cause it might be redundant and pointless now
-                        if ((character.MatchCase && (search.Any(node.InnerText.Contains) || search.Any(node.InnerHtml.Contains)))
-                            || (!character.MatchCase && (search.Any(node.InnerText.ContainsIgnorecase) || search.Any(node.InnerHtml.ContainsIgnorecase)))
+                        if ((character.MatchCase && (search.Any(paragraph.ContentText.Contains) || search.Any(paragraph.ContentHtml.Contains)))
+                            || (!character.MatchCase && (search.Any(paragraph.ContentText.ContainsIgnorecase) || search.Any(paragraph.ContentHtml.ContainsIgnorecase)))
                                 || (ignoreSoftHypen && (character.MatchCase && search.Any(noSoftHypen.Contains))
                                     || (!character.MatchCase && search.Any(noSoftHypen.ContainsIgnorecase))))
                             termFound = true;
@@ -237,8 +222,7 @@ namespace XRayBuilder.Core.XRay.Logic
                     if (!termFound)
                         continue;
 
-                    var paragraphInfo = new IndexLength(location + locOffset, lenQuote);
-                    var occurrences = _termsService.FindOccurrences(metadata, character, node.InnerHtml, paragraphInfo);
+                    var occurrences = _termsService.FindOccurrences(metadata, character, paragraph);
                     if (!occurrences.Any())
                     {
                         // _logger.Log($"An error occurred while searching for start of highlight.\r\nWas looking for (or one of the aliases of): {character.TermName}\r\nSearching in: {node.InnerHtml}");
@@ -247,12 +231,12 @@ namespace XRayBuilder.Core.XRay.Logic
 
                     character.Occurrences.UnionWith(occurrences);
 
-                    ExcerptHelper.EnhanceOrAddExcerpts(xray.Excerpts, character.Id, paragraphInfo);
+                    ExcerptHelper.EnhanceOrAddExcerpts(xray.Excerpts, character.Id, new IndexLength(paragraph.Location, paragraph.Length));
                 }
 
                 // Attempt to match downloaded notable clips, not worried if no matches occur as some will be added later anyway
                 if (useNewVersion && xray.NotableClips != null)
-                    ExcerptHelper.ProcessNotablesForParagraph(node.InnerText, location, xray.NotableClips, xray.Excerpts, skipNoLikes, minClipLen);
+                    ExcerptHelper.ProcessNotablesForParagraph(paragraph.ContentText, paragraph.Location, xray.NotableClips, xray.Excerpts, skipNoLikes, minClipLen);
 
                 progress?.Add(1);
             }

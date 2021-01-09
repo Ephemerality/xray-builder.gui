@@ -227,6 +227,8 @@ namespace XRayBuilder.Core.DataSources.Secondary
             _logger.Log($"Downloading {Name} page...");
             var page = await GetPageAsync(dataUrl, cancellationToken);
             var characterNodes = page.DocumentNode.SelectNodes("//div[@class='fwikiItem divcharacternames']//a");
+            if (characterNodes == null)
+                return Enumerable.Empty<Term>();
             _logger.Log($"Gathering term information from {Name}... ({characterNodes.Count})");
             progress?.Set(0, characterNodes.Count);
             if (characterNodes.Count > 20)

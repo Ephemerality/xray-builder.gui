@@ -136,13 +136,6 @@ namespace XRayBuilder.Core.XRay.Logic
         {
             var locOffset = metadata.IsAzw3 ? -16 : 0;
 
-            // If there is an apostrophe, attempt to match 's at the end of the term
-            // Match end of word, then search for any lingering punctuation
-            var apostrophes = _encoding.GetString(Encoding.UTF8.GetBytes("('|\u2019|\u0060|\u00B4)")); // '\u2019\u0060\u00B4
-            var quotes = _encoding.GetString(Encoding.UTF8.GetBytes("(\"|\u2018|\u2019|\u201A|\u201B|\u201C|\u201D|\u201E|\u201F)"));
-            var dashesEllipsis = _encoding.GetString(Encoding.UTF8.GetBytes("(-|\u2010|\u2011|\u2012|\u2013|\u2014|\u2015|\u2026|&#8211;|&#8212;|&#8217;|&#8218;|&#8230;)")); //U+2010 to U+2015 and U+2026
-            var punctuationMarks = string.Format(@"({0}s|{0})?{1}?[!\.?,""\);:]*{0}*{1}*{2}*", apostrophes, quotes, dashesEllipsis);
-
             var web = new HtmlDocument();
             web.Load(rawMlStream, _encoding);
 
@@ -295,54 +288,5 @@ namespace XRayBuilder.Core.XRay.Logic
 
         //    return false;
         //}
-
-        private IEnumerable<Occurrence> ShortenHighlightsInNode(HtmlNode node, IEnumerable<Occurrence> occurrences)
-        {
-            //If an excerpt is too long, the X-Ray reader cuts it off (in firmware versions < 5.6).
-            //If the location of the highlighted word (character name) within the excerpt is far enough in to get cut off,
-            //this section attempts to shorted the excerpt by locating the start of a sentence that is just far enough away from the highlight.
-            //The length is determined by the space the excerpt takes up rather than its actual length... so 135 is just a guess based on what I've seen.
-            const int lengthLimit = 135;
-            foreach (var occurrence in occurrences)
-            {
-                if (occurrence.Highlight.Index + occurrence.Highlight.Length <= lengthLimit)
-                {
-                    yield return occurrence;
-                    continue;
-                }
-                var start = occurrence.Highlight.Index;
-                var newLoc = -1;
-                var newLenQuote = 0;
-                var newLocHighlight = 0;
-
-                while (start > -1)
-                {
-                    var at = node.InnerHtml.LastIndexOfAny(new[] {'.', '?', '!'}, start);
-                    if (at > -1)
-                    {
-                        start = at - 1;
-                        if (occurrence.Highlight.Index + occurrence.Highlight.Length + 1 - at - 2 <= lengthLimit)
-                        {
-                            newLoc = occurrence.Excerpt.Index + at + 2;
-                            newLenQuote = node.InnerHtml.Length - at - 2;
-                            newLocHighlight = occurrence.Highlight.Index - at - 2;
-                        }
-                        else
-                            break;
-                    }
-                    else
-                        break;
-                }
-
-                // Only use new locs if shorter excerpt was found
-                yield return newLoc >= 0
-                    ? new Occurrence
-                    {
-                        Excerpt = new IndexLength(newLoc, newLenQuote),
-                        Highlight = occurrence.Highlight with { Index = newLocHighlight }
-                    }
-                    : occurrence;
-            }
-        }
     }
 }

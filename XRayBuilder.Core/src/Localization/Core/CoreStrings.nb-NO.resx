@@ -62,9 +62,24 @@
     <value>Skanner e-bokinnhold …</value>
   </data>
   <data name="ScanTime" xml:space="preserve">
-    <value>Skanningstid:</value>
+    <value>Skanningstid: {0}</value>
   </data>
   <data name="Warning" xml:space="preserve">
     <value>Advarsel</value>
+  </data>
+  <data name="CouldNotLocateParagraphsNormally" xml:space="preserve">
+    <value>Fant ingen avsnitt på normalt vis(«p»-elementer eller «div»-er med klasse «paragraph»).</value>
+  </data>
+  <data name="SearchingAllDivs" xml:space="preserve">
+    <value>Søker gjennom alt e-boksinnhold (alle «div»-elementer), som kan gi snodige resultater.</value>
+  </data>
+  <data name="ConsiderAddingAliases" xml:space="preserve">
+    <value>Overvei å legge til alias-er for denne termen.</value>
+  </data>
+  <data name="NoLocationsFoundForTerm" xml:space="preserve">
+    <value>Fant ingen steder for termen «{0}»</value>
+  </data>
+  <data name="CouldNotLocateAnyParagraphs" xml:space="preserve">
+    <value>Fant ingen avsnitt i denne e-boken ved bruk av kjente metoder.</value>
   </data>
 </root>

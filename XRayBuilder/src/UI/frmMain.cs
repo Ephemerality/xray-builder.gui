@@ -310,6 +310,7 @@ namespace XRayBuilderGUI.UI
                                 MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
                         }
                         // ReSharper disable twice AccessToDisposedClosure
+                        // todo just pass metadata instead of calling getrawmlstream
                         buildTask = Task.Run(() => _xrayService.ExpandFromRawMl(xray, metadata, metadata.GetRawMlStream(), _settings.useNewVersion, _settings.skipNoLikes, _settings.minClipLen, _settings.overwriteChapters, EditChaptersCallback, _progress, _cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion));
                         break;
                     case KfxContainer kfx:
@@ -1107,7 +1108,7 @@ namespace XRayBuilderGUI.UI
             using var frmCreateXr = _diContainer.GetInstance<frmCreateXR>();
             using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
             if (metadata != null)
-                frmCreateXr.SetMetadata(metadata.Asin, metadata.Author, metadata.Title);
+                frmCreateXr.SetMetadata(metadata);
             frmCreateXr.ShowDialog();
         }
 

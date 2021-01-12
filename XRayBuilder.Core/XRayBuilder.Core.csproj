@@ -8,14 +8,14 @@
 
     <ItemGroup>
         <PackageReference Include="AsyncEnumerator" Version="4.0.2" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.26" />
-        <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.29" />
+        <PackageReference Include="JetBrains.Annotations" Version="2020.3.0" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
         <PackageReference Include="Pluralize.NET" Version="1.0.2" />
-        <PackageReference Include="SimpleInjector" Version="5.1.0" />
-        <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.5" />
+        <PackageReference Include="SimpleInjector" Version="5.2.0" />
+        <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.7" />
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
-        <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.1" />
+        <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -50,7 +50,7 @@
         </When>
         <Otherwise>
             <ItemGroup>
-                <PackageReference Include="Microsoft.Windows.Compatibility" Version="3.1.1" />
+                <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.1" />
                 <PackageReference Include="Pluralize.NET.Core" Version="1.0.0" />
                 <PackageReference Include="JTForks.MiscUtil" Version="1.285.0" />
             </ItemGroup>

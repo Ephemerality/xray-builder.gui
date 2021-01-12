@@ -57,8 +57,7 @@ namespace XRayBuilderGUI.UI
             _logger = logger;
             InitializeComponent();
 
-            var dgvType = dgvTerms.GetType();
-            var pi = dgvType.GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic);
+            var pi = dgvTerms.GetType().GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic);
             pi?.SetValue(dgvTerms, true, null);
         }
 
@@ -177,8 +176,8 @@ namespace XRayBuilderGUI.UI
 
         private void EnqueueTermOccurrencesRefresh(Term term)
         {
-            // Don't enqueue the same term again if it is already pending
-            if (_queue.Any(t => ReferenceEquals(t, term)))
+            // Don't enqueue the same term again if it is already pending or if we don't care about occurrences
+            if (_activeMetadata == null || _queue.Any(t => ReferenceEquals(t, term)))
                 return;
             term.Occurrences = null;
             _queue.Enqueue(term);
@@ -196,7 +195,6 @@ namespace XRayBuilderGUI.UI
                         RefreshTermOccurrences(term, cancellationToken);
                         _queue.TryDequeue(out _);
                     }
-                    // var term = await _queue.TakeAsync(cancellationToken);
                     await Task.Delay(100, cancellationToken);
                 }
                 catch (OperationCanceledException)
@@ -230,13 +228,10 @@ namespace XRayBuilderGUI.UI
                     }
                 }
 
-                // term.Occurrences = new HashSet<Occurrence>(GetOccurenceSets().SelectMany(o => o));
                 SetOccurrencesThreadsafe(term, new HashSet<Occurrence>(GetOccurenceSets().SelectMany(o => o)));
             }
             else
                 SetOccurrencesThreadsafe(term, new HashSet<Occurrence>());
-
-            // term.Occurrences = new HashSet<Occurrence>();
         }
 
         private void SetOccurrencesThreadsafe(Term term, HashSet<Occurrence> occurrences)
@@ -249,21 +244,31 @@ namespace XRayBuilderGUI.UI
 
         private void btnAddTerm_Click(object sender, EventArgs e)
         {
-            if (txtName.Text == "") return;
-            Image typeImage = rdoCharacter.Checked ? Resources.character : Resources.setting;
-            dgvTerms.Rows.Add(
-                typeImage,
-                txtName.Text,
-                txtAliases.Text,
-                txtDescription.Text,
-                chkMatch.Checked,
-                chkCase.Checked,
-                chkRegex.Checked);
+            if (string.IsNullOrWhiteSpace(txtName.Text))
+                return;
+
+            var term = new Term
+            {
+                Type = rdoCharacter.Checked ? "character" : "topic",
+                TermName = txtName.Text,
+                Aliases = string.IsNullOrWhiteSpace(txtAliases.Text)
+                    ? new List<string>()
+                    : txtAliases.Text.Split(',').ToList(),
+                Occurrences = null,
+                Desc = txtDescription.Text,
+                Match = chkMatch.Checked,
+                MatchCase = chkCase.Checked,
+                RegexAliases = chkRegex.Checked
+            };
+            _terms.Add(term);
+            EnqueueTermOccurrencesRefresh(term);
+
             txtName.Text = "";
             txtAliases.Text = "";
             txtDescription.Text = "";
         }
 
+        // todo remove
         private void btnEditTerm_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(txtName.Text) && DialogResult.Cancel == MessageBox.Show(
@@ -315,8 +320,9 @@ namespace XRayBuilderGUI.UI
                         break;
                     default:
                         MessageBox.Show($"Error: Bad file type \"{filetype}\"");
-                        break;
+                        return;
                 }
+                dgvTerms.DataSource = _terms;
                 ReloadTerms();
             }
             catch (Exception ex)
@@ -374,8 +380,7 @@ namespace XRayBuilderGUI.UI
 
         private void btnRemoveTerm_Click(object sender, EventArgs e)
         {
-            foreach (var row in dgvTerms.Rows.Cast<DataGridViewRow>().Where(row => row.Selected))
-                dgvTerms.Rows.Remove(row);
+            _terms.Clear();
         }
 
         private void btnSaveXML_Click(object sender, EventArgs e)
@@ -526,20 +531,17 @@ namespace XRayBuilderGUI.UI
             if (!Directory.Exists($@"{Environment.CurrentDirectory}\xml\"))
                 Directory.CreateDirectory($@"{Environment.CurrentDirectory}\xml\");
             var outfile = Environment.CurrentDirectory + $@"\xml\{txtAsin.Text}.entities.xml";
-            _terms.Clear();
-            // _terms = GetTermsFromGrid().ToList();
             XmlUtil.SerializeToFile(_terms, outfile);
         }
 
         private void btnClear_Click(object sender, EventArgs e)
         {
-            if (dgvTerms.Rows.Count <= 0)
+            if (!_terms.Any())
                 return;
 
             if (DialogResult.OK != MessageBox.Show("Clearing the term list is irreversible!", "Are you sure?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2))
                 return;
 
-            dgvTerms.Rows.Clear();
             txtName.Text = "";
             txtAliases.Text = "";
             txtDescription.Text = "";
@@ -606,8 +608,11 @@ namespace XRayBuilderGUI.UI
             if (DialogResult.No == MessageBox.Show("Are you sure you want to clear all aliases?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2))
                 return;
 
-            foreach (DataGridViewRow row in dgvTerms.Rows)
-                row.Cells[2].Value = "";
+            foreach (var term in _terms)
+            {
+                term.Aliases.Clear();
+                EnqueueTermOccurrencesRefresh(term);
+            }
         }
 
         private void frmCreateXR_FormClosing(object sender, FormClosingEventArgs e)

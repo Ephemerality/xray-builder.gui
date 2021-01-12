@@ -9,10 +9,9 @@ Thanks to darrenmcg, Author Profile, Start Actions, and End Actions files can al
 * [jhowell's KFX in/output plugins for Calibre](https://www.mobileread.com/forums/showthread.php?t=272407)
 
 ## Requirements
-* Windows  
-* .NET Framework 4.6.2  
-* [Microsoft Visual C++ 2010 x86 Redistributable](https://www.microsoft.com/en-ca/download/details.aspx?id=5555)  
+* Windows 7+  
+* .NET Framework 4.8  
   
 ## Instructions and Binary Downloads
-* Furthur instructions are available within the appplication's help button.
+* Further instructions are available within the application's help button.
 * Instructions and support are available in the thread on MobileRead: http://www.mobileread.com/forums/showthread.php?t=245754

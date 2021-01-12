@@ -1106,9 +1106,13 @@ namespace XRayBuilderGUI.UI
         private async void btnCreate_Click(object sender, EventArgs e)
         {
             using var frmCreateXr = _diContainer.GetInstance<frmCreateXR>();
-            using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
-            if (metadata != null)
-                frmCreateXr.SetMetadata(metadata);
+            if (File.Exists(txtMobi.Text))
+            {
+                using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
+                if (metadata != null)
+                    frmCreateXr.SetMetadata(metadata);
+            }
+
             frmCreateXr.ShowDialog();
         }
 

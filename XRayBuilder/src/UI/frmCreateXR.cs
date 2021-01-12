@@ -558,7 +558,7 @@ namespace XRayBuilderGUI.UI
         {
             if (!AmazonClient.IsAsin(txtAsin.Text))
             {
-                MessageBox.Show($"'{txtAsin.Text} is not a valid ASIN.\r\nRoentgen requires one!");
+                MessageBox.Show($"'{txtAsin.Text}' is not a valid ASIN.\r\nRoentgen requires one!");
                 return;
             }
 

@@ -10,12 +10,13 @@ using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
 using XRayBuilder.Core.Model;
+using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Artifacts;
 using XRayBuilder.Core.XRay.Logic.Terms;
 
 namespace XRayBuilder.Core.DataSources.Secondary
 {
-    public sealed class SecondarySourceFile : ISecondarySource
+    public sealed class SecondarySourceFile : SecondarySource
     {
         private readonly ILogger _logger;
         private readonly ITermsService _termsService;
@@ -26,12 +27,13 @@ namespace XRayBuilder.Core.DataSources.Secondary
             _termsService = termsService;
         }
 
-        public string Name { get; } = "File";
-        public bool SearchEnabled { get; } = false;
-        public int UrlLabelPosition { get; } = 0;
-        public bool SupportsNotableClips { get; } = false;
+        public override string Name { get; } = "file";
+        public override bool SearchEnabled { get; } = false;
+        public override int UrlLabelPosition { get; } = 0;
+        public override bool SupportsNotableClips { get; } = false;
+        public override string SanitizeDataLocation(string dataLocation) => dataLocation;
 
-        public Task<IEnumerable<Term>> GetTermsAsync(string xmlFile, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
+        public override Task<IEnumerable<Term>> GetTermsAsync(string xmlFile, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
         {
             _logger.Log("Loading terms from file...");
             var filetype = Path.GetExtension(xmlFile);
@@ -42,7 +44,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
                 case ".txt":
                     return Task.FromResult(_termsService.ReadTermsFromTxt(xmlFile));
                 default:
-                    _logger.Log("Error: Bad file type \"" + filetype + "\"");
+                    _logger.Log($"Error: Bad file type \"{filetype}\"");
                     break;
             }
 
@@ -50,32 +52,34 @@ namespace XRayBuilder.Core.DataSources.Secondary
         }
 
         #region Unsupported
-        public Task<IEnumerable<BookInfo>> SearchBookAsync(string author, string title, CancellationToken cancellationToken = default)
+
+        public override bool IsMatchingUrl(string url)
+        {
+            var lower = url.ToLowerInvariant();
+            return File.Exists(url) && (lower.EndsWith(".xml") || lower.EndsWith(".txt"));
+        }
+
+        public override Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }
 
-        public Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
+        public override Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }
 
-        public Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
+        public override Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }
 
-        public Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
+        public override Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }
 
-        public Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
-        {
-            throw new NotSupportedException();
-        }
-
-        public Task<IEnumerable<BookInfo>> SearchBookByAsinAsync(string asin, CancellationToken cancellationToken = default)
+        public override Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }

@@ -44,7 +44,8 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             //Try to load custom common titles from BaseSplitIgnore.txt
             try
             {
-                using var streamReader = new StreamReader(Environment.CurrentDirectory + @"\dist\BaseSplitIgnore.txt", Encoding.UTF8);
+                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dist", "BaseSplitIgnore.txt");
+                using var streamReader = new StreamReader(path, Encoding.UTF8);
                 var customSplitIgnore = streamReader.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.None)
                     .Where(r => !r.StartsWith("//")).ToArray();
                 if (customSplitIgnore.Length >= 1)
@@ -53,9 +54,7 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             }
             catch (Exception ex)
             {
-                logger.Log("An error occurred while opening the BaseSplitIgnore.txt file.\r\n" +
-                    "Ensure you extracted it to the same directory as the program.\r\n" +
-                    ex.Message + "\r\nUsing built-in default terms...");
+                logger.Log($"An error occurred while opening the BaseSplitIgnore.txt file.\r\nEnsure you extracted it to the same directory as the program.\r\n{ex.Message}\r\nUsing built-in default terms...");
             }
 
             _sanitizePattern = new Regex($@"( ?({string.Join("|", _commonTitles)})\.? )|(^[A-Z]\. )|( [A-Z]\.)|("")|(“)|(”)|(,)|(')");
@@ -86,7 +85,7 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             return aliasesByTermName;
         }
 
-        private IEnumerable<string> GenerateAliasesForTerm(Term term)
+        public IEnumerable<string> GenerateAliasesForTerm(Term term)
         {
             var aliases = new List<string>();
             var textInfo = new CultureInfo("en-US", false).TextInfo;

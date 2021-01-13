@@ -1,8 +1,10 @@
 using SimpleInjector;
+using XRayBuilder.Core.DataSources.Amazon.Bootstrap;
 using XRayBuilder.Core.Extras.AuthorProfile;
 using XRayBuilder.Core.Extras.EndActions;
 using XRayBuilder.Core.Extras.StartActions;
 using XRayBuilder.Core.Libraries.Bootstrap.Model;
+using XRayBuilder.Core.Libraries.Http.Bootstrap;
 
 namespace XRayBuilder.Core.Extras.Bootstrap
 {
@@ -10,6 +12,8 @@ namespace XRayBuilder.Core.Extras.Bootstrap
     {
         public void Register(IBootstrapBuilder builder)
         {
+            builder.Register<BootstrapHttp>();
+            builder.Register<BootstrapAmazon>();
         }
 
         public void Register(Container container)

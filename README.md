@@ -8,12 +8,11 @@ It will also build some extra metadata files:
 * End Actions - Pops up when you're done reading the book to provide recommendations on what to read next
 
 ## Requirements
-* Windows  
-* .NET Framework 4.6.2  
-* [Microsoft Visual C++ 2010 x86 Redistributable](https://www.microsoft.com/en-ca/download/details.aspx?id=5555)  
+* Windows 7+  
+* .NET Framework 4.8  
   
 ## Instructions and Binary Downloads
-* Furthur instructions are available within the appplication's help button.
+* Further instructions are available within the application's help button.
 * Instructions and support are available in the thread on MobileRead: http://www.mobileread.com/forums/showthread.php?t=245754
 
 ## Translations

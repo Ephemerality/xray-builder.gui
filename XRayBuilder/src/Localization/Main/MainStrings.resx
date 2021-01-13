@@ -1,0 +1,757 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="InitializeFailed" xml:space="preserve">
+    <value>Failed to initialize the application</value>
+  </data>
+  <data name="OutputDirNotFoundReviewSettings" xml:space="preserve">
+    <value>Specified output directory does not exist. Please review the settings page.</value>
+  </data>
+  <data name="OutputDirNotFoundTitle" xml:space="preserve">
+    <value>Output Directory Not Found</value>
+  </data>
+  <data name="DatabaseNameLengthWarning" xml:space="preserve">
+    <value>WARNING: The database name is at its maximum length. If "{0}" is the full e-book title, this should not be an issue.
+If the title is supposed to be longer than that, you might get an error on your Kindle (WG on firmware before 5.6).
+Shorten the title in Calibre or change the database name manually.
+</value>
+  </data>
+  <data name="ExtractingMetadata" xml:space="preserve">
+    <value>Extracting metadata…</value>
+  </data>
+  <data name="FailedToValidateAsin" xml:space="preserve">
+    <value>Failed to validate/fix ASIN</value>
+  </data>
+  <data name="ContinuingAnyway" xml:space="preserve">
+    <value>Continuing anyway</value>
+  </data>
+  <data name="SavingRawml" xml:space="preserve">
+    <value>Saving raw markup to the dmp directory…</value>
+  </data>
+  <data name="GotMetadata" xml:space="preserve">
+    <value>Got metadata!</value>
+  </data>
+  <data name="DatabaseName" xml:space="preserve">
+    <value>Database Name</value>
+  </data>
+  <data name="UniqueID" xml:space="preserve">
+    <value>Unique ID</value>
+  </data>
+  <data name="Asin" xml:space="preserve">
+    <value>ASIN</value>
+  </data>
+  <data name="ErrorExtractingMetadata" xml:space="preserve">
+    <value>An error occurred while extracting metadata</value>
+  </data>
+  <data name="BookNotFound" xml:space="preserve">
+    <value>Could not find that e-book.</value>
+  </data>
+  <data name="BookNotFoundTitle" xml:space="preserve">
+    <value>Book Not Found</value>
+  </data>
+  <data name="NoSourceLinkSpecified" xml:space="preserve">
+    <value>No {0} link was specified.</value>
+  </data>
+  <data name="NoSourceLinkTitle" xml:space="preserve">
+    <value>Missing {0} Link</value>
+  </data>
+  <data name="SpecifiedOutputDirectoryDoesNotExist" xml:space="preserve">
+    <value>Specified output directory does not exist.</value>
+  </data>
+  <data name="ReviewSettingsPage" xml:space="preserve">
+    <value>Please review the settings page.</value>
+  </data>
+  <data name="AmazonCustomerDetailsNotFoundTitle" xml:space="preserve">
+    <value>Amazon Customer Details Not Found</value>
+  </data>
+  <data name="InformationAllowsRatingOnAmazon" xml:space="preserve">
+    <value>This info lets you rate this book on Amazon.</value>
+  </data>
+  <data name="PenNamesRequired" xml:space="preserve">
+    <value>Both "real" and "pen" names are required for End Actions file creation.</value>
+  </data>
+  <data name="AttemptingBuildXRay" xml:space="preserve">
+    <value>Attempting to build X-Ray…</value>
+  </data>
+  <data name="NoTermsAvailable" xml:space="preserve">
+    <value>No terms were available. Do you want to continue building anyway?</value>
+  </data>
+  <data name="NoTermsTitle" xml:space="preserve">
+    <value>No Terms</value>
+  </data>
+  <data name="Cancelling" xml:space="preserve">
+    <value>Cancelling…</value>
+  </data>
+  <data name="SeeMobilereads" xml:space="preserve">
+    <value>See the MobileRead forum thread (link in Settings) for more information on building aliases.</value>
+  </data>
+  <data name="OpenInNotepad" xml:space="preserve">
+    <value>Would you like to open the file in notepad for editing?</value>
+  </data>
+  <data name="TermsExportedOrAlreadyExist" xml:space="preserve">
+    <value>Terms have been exported to an alias file or already exist in that file.</value>
+  </data>
+  <data name="Aliases" xml:space="preserve">
+    <value>Aliases</value>
+  </data>
+  <data name="AliasesReadFromXml" xml:space="preserve">
+    <value>Character aliases read from the XML file.</value>
+  </data>
+  <data name="AliasesFileNotFound" xml:space="preserve">
+    <value>Aliases file not found.</value>
+  </data>
+  <data name="AliasesReadFrom" xml:space="preserve">
+    <value>Character aliases read from {0}.</value>
+  </data>
+  <data name="InitialXRayBuiltAddingChapters" xml:space="preserve">
+    <value>Initial X-Ray built, adding locations and chapters…</value>
+  </data>
+  <data name="BuildCancelled" xml:space="preserve">
+    <value>Build cancelled.</value>
+  </data>
+  <data name="ErrorBuildingXRay" xml:space="preserve">
+    <value>An error occurred while building the X-Ray</value>
+  </data>
+  <data name="SavingXRay" xml:space="preserve">
+    <value>Saving X-Ray to file…</value>
+  </data>
+  <data name="OpenedInAnotherProgram" xml:space="preserve">
+    <value>Is it opened in another program?</value>
+  </data>
+  <data name="PreviewData" xml:space="preserve">
+    <value>X-Ray previewData file created successfully!</value>
+  </data>
+  <data name="ErrorPreviewData" xml:space="preserve">
+    <value>An error occurred while saving the previewData file</value>
+  </data>
+  <data name="SavedTo" xml:space="preserve">
+    <value>Saved to {0}</value>
+  </data>
+  <data name="XRayCreated" xml:space="preserve">
+    <value>X-Ray file created successfully!</value>
+  </data>
+  <data name="NoPremadeActionsAvailable" xml:space="preserve">
+    <value>No pre-made {0} Actions file available, one will be built instead.</value>
+  </data>
+  <data name="PreMadeActionsDownloaded" xml:space="preserve">
+    <value>Successfully downloaded pre-made {0} Actions file!</value>
+  </data>
+  <data name="WritingStartActionsFile" xml:space="preserve">
+    <value>Writing Start Actions file…</value>
+  </data>
+  <data name="StartActionsCreated" xml:space="preserve">
+    <value>Start Actions file created successfully!</value>
+  </data>
+  <data name="ErrorCreatingStartActions" xml:space="preserve">
+    <value>An error occurred while creating the Start Actions</value>
+  </data>
+  <data name="WritingEndActionsFile" xml:space="preserve">
+    <value>Writing End Actions file…</value>
+  </data>
+  <data name="EndActionsCreated" xml:space="preserve">
+    <value>End Actions file created successfully!</value>
+  </data>
+  <data name="ErrorEndActions" xml:space="preserve">
+    <value>An error occurred creating the End Actions</value>
+  </data>
+  <data name="LoadedExistingEndActions" xml:space="preserve">
+    <value>Loaded existing End Actions from {0}</value>
+  </data>
+  <data name="AllExtrasDownloadedStopping" xml:space="preserve">
+    <value>All extras downloaded/built and none need to be overwritten, stopping here!</value>
+  </data>
+  <data name="BuildingAuthorProfile" xml:space="preserve">
+    <value>Attempting to build Author Profile…</value>
+  </data>
+  <data name="BuiltAuthorProfileFromExisting" xml:space="preserve">
+    <value>Built Author Profile from the existing End Actions file!</value>
+  </data>
+  <data name="Biography" xml:space="preserve">
+    <value>Biography</value>
+  </data>
+  <data name="AuthorProfileCreated" xml:space="preserve">
+    <value>Author Profile file created successfully!</value>
+  </data>
+  <data name="ErrorWritingAuthorProfile" xml:space="preserve">
+    <value>An error occurred while writing the Author Profile file</value>
+  </data>
+  <data name="BuildingStartEndActions" xml:space="preserve">
+    <value>Attempting to build Start and/or End Actions…</value>
+  </data>
+  <data name="SeriesInformation" xml:space="preserve">
+    <value>Series Information</value>
+  </data>
+  <data name="ErrorCreatingExtras" xml:space="preserve">
+    <value>An error occurred while creating the new Author Profile, Start Actions, and/or End Actions files</value>
+  </data>
+  <data name="NoLinkSpecified" xml:space="preserve">
+    <value>No link was specified.</value>
+  </data>
+  <data name="NoLinkTitle" xml:space="preserve">
+    <value>Missing Link</value>
+  </data>
+  <data name="ExportingTermsFrom" xml:space="preserve">
+    <value>Exporting terms from {0}…</value>
+  </data>
+  <data name="CantExportFromFile" xml:space="preserve">
+    <value>Can't export terms from an XML/TXT file…</value>
+  </data>
+  <data name="CharacterDataSavedTo" xml:space="preserve">
+    <value>Character data has been successfully saved to {0}</value>
+  </data>
+  <data name="DownloadCancelled" xml:space="preserve">
+    <value>Download cancelled.</value>
+  </data>
+  <data name="InvalidSourceLinkTitle" xml:space="preserve">
+    <value>Invalid {0} Link</value>
+  </data>
+  <data name="InvalidSourceLink" xml:space="preserve">
+    <value>Invalid {0} link was specified.</value>
+  </data>
+  <data name="ReviewSettingsForSource" xml:space="preserve">
+    <value>If you do not want to use {0}, you can change the data source in Settings.</value>
+  </data>
+  <data name="BooksSourceUrl" xml:space="preserve">
+    <value>E-book's {0} URL</value>
+  </data>
+  <data name="AllExtrasExistNoOverwrite" xml:space="preserve">
+    <value>All extras files already exist and none of the ""overwrite"" settings are enabled!</value>
+  </data>
+  <data name="DownloadingActions" xml:space="preserve">
+    <value>Attempting to download {0} Actions…</value>
+  </data>
+  <data name="ErrorSavingXml" xml:space="preserve">
+    <value>An error occurred while saving character data to XML file at {0}</value>
+  </data>
+  <data name="UnableToFindBookOnSource" xml:space="preserve">
+    <value>Unable to find this book on {0}. Ensure the book's title ({1}) is accurate!</value>
+  </data>
+  <data name="FailedCoverImageDownload" xml:space="preserve">
+    <value>Failed to download cover image</value>
+  </data>
+  <data name="MultipleResultsFromSource" xml:space="preserve">
+    <value>Warning: Multiple results returned from {0}…</value>
+  </data>
+  <data name="VisitUrl" xml:space="preserve">
+    <value>You may want to visit the URL to ensure it is correct.</value>
+  </data>
+  <data name="BookFoundOnSource" xml:space="preserve">
+    <value>Found the book on {0}!</value>
+  </data>
+  <data name="TitleByAuthor" xml:space="preserve">
+    <value>{0} by {1}</value>
+  </data>
+  <data name="SourceUrl" xml:space="preserve">
+    <value>{0} URL</value>
+  </data>
+  <data name="ErrorSearching" xml:space="preserve">
+    <value>An error occurred while searching</value>
+  </data>
+  <data name="ExtractingRawMl" xml:space="preserve">
+    <value>Extracting raw markup…</value>
+  </data>
+  <data name="ExtractedToPath" xml:space="preserve">
+    <value>Extracted to {0}!</value>
+  </data>
+  <data name="InvalidOrNoFileSelected" xml:space="preserve">
+    <value>Invalid or no file selected.</value>
+  </data>
+  <data name="InvalidXRayFile" xml:space="preserve">
+    <value>Invalid X-Ray file.</value>
+  </data>
+  <data name="OpenXRayFile" xml:space="preserve">
+    <value>Open a Kindle X-Ray file…</value>
+  </data>
+  <data name="CharacterDataExtractedSavedToPath" xml:space="preserve">
+    <value>Character data has been successfully extracted and saved to {0}</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="UnableToOpenHelpDocument" xml:space="preserve">
+    <value>Unable to open the supplied help document.</value>
+  </data>
+  <data name="HelpDocumentNotFoundTitle" xml:space="preserve">
+    <value>Help Document Not Found</value>
+  </data>
+  <data name="OpenKindleFile" xml:space="preserve">
+    <value>Open a Kindle {0} file…</value>
+  </data>
+  <data name="InvalidKindleFile" xml:space="preserve">
+    <value>Invalid {0} file.</value>
+  </data>
+  <data name="SearchingAmazonForTitleAuthor" xml:space="preserve">
+    <value>Searching Amazon for {0} by {1}…</value>
+  </data>
+  <data name="IncorrectAsinTitle" xml:space="preserve">
+    <value>Incorrect ASIN</value>
+  </data>
+  <data name="InvalidAsinShouldFix" xml:space="preserve">
+    <value>Invalid Amazon ASIN detected: {0}!
+Kindle may not display an X-Ray for this e-book.
+Do you want to fix it?
+(This will modify the e-book, meaning it will need to be re-copied to your Kindle device.)
+THIS FEATURE IS EXPERIMENTAL AND COULD DESTROY YOUR E-BOOK!</value>
+  </data>
+  <data name="InvalidAsinWarning" xml:space="preserve">
+    <value>Invalid Amazon ASIN detected: {0}!
+Kindle may fail to display an X-Ray for this e-book.
+Do you wish to continue?</value>
+  </data>
+  <data name="UpdatedAsin" xml:space="preserve">
+    <value>ASIN updated to {0}! Make sure to copy this new version of the e-book to your Kindle device.</value>
+  </data>
+  <data name="AmazonSearchResultTitle" xml:space="preserve">
+    <value>Amazon Search Result</value>
+  </data>
+  <data name="DoesThisSeemCorrect" xml:space="preserve">
+    <value>Does this seem correct?</value>
+  </data>
+  <data name="ShownAsinUsed" xml:space="preserve">
+    <value>If so, the shown ASIN will be used.</value>
+  </data>
+  <data name="Author" xml:space="preserve">
+    <value>Author</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="FoundBookAmazon" xml:space="preserve">
+    <value>Found the following e-book on Amazon</value>
+  </data>
+  <data name="UnableToAutomaticallyFindAsinOnAmazon" xml:space="preserve">
+    <value>Could not find a matching ASIN  automatically for this e-book on Amazon :(</value>
+  </data>
+  <data name="OpenChaptersFileNotepad" xml:space="preserve">
+    <value>Would you like to open the chapters file in notepad for editing?</value>
+  </data>
+  <data name="Chapters" xml:space="preserve">
+    <value>Chapters</value>
+  </data>
+  <data name="BuildingOldFormatNotSupported" xml:space="preserve">
+    <value>KFX e-books cannot be used to build X-Ray files in the old format</value>
+  </data>
+  <data name="OpenKindleBook" xml:space="preserve">
+    <value>Open a Kindle e-book.</value>
+  </data>
+  <data name="OpenOutputDirectory" xml:space="preserve">
+    <value>Open the default output directory.</value>
+  </data>
+  <data name="XRay" xml:space="preserve">
+    <value>X-Ray</value>
+  </data>
+  <data name="EndActions" xml:space="preserve">
+    <value>End Actions</value>
+  </data>
+  <data name="AuthorProfile" xml:space="preserve">
+    <value>Author Profile</value>
+  </data>
+  <data name="StartActions" xml:space="preserve">
+    <value>Start Actions</value>
+  </data>
+  <data name="ConfigureXRayBuilder" xml:space="preserve">
+    <value>Configure X-Ray Builder.</value>
+  </data>
+  <data name="LoadTermsFromFile" xml:space="preserve">
+    <value>Load terms from the selected file.</value>
+  </data>
+  <data name="DownloadFromRoentgen" xml:space="preserve">
+    <value>Download terms from Roentgen if any are available.</value>
+  </data>
+  <data name="UseLinkAsDataSource" xml:space="preserve">
+    <value>Use the above link as a terms source.</value>
+  </data>
+  <data name="ViewPreviewOfGeneratedFiles" xml:space="preserve">
+    <value>View a preview of the generated files.</value>
+  </data>
+  <data name="TryToBuildXRay" xml:space="preserve">
+    <value>Try to build the X-Ray file for this e-book.</value>
+  </data>
+  <data name="OneClickTooltip" xml:space="preserve">
+    <value>One Click button to try to build the Start Actions, Author Profile, End Actions, and X-Ray files for this book.</value>
+  </data>
+  <data name="OpenXmlOrTxt" xml:space="preserve">
+    <value>Open a supported XML or TXT file containing characters and topics.</value>
+  </data>
+  <data name="BuildExtrasTooltip" xml:space="preserve">
+    <value>Try to build the Start Actions, Author Profile, and End Actions files for this book.</value>
+  </data>
+  <data name="SaveRawMlTooltip" xml:space="preserve">
+    <value>Save the RAWML (raw markup) of the e-book in the output directory so you can review it.</value>
+  </data>
+  <data name="CreateXmlTooltip" xml:space="preserve">
+    <value>Create an XML file containing characters and settings, or edit an existing XML file.</value>
+  </data>
+  <data name="ExtractXRayToXml" xml:space="preserve">
+    <value>Extract an existing X-Ray file to an XML file.</value>
+  </data>
+  <data name="ErrorDeletingLogFiles" xml:space="preserve">
+    <value>An error occurred while trying to delete log files.</value>
+  </data>
+  <data name="UnableToDeleteLogFilesCaption" xml:space="preserve">
+    <value>Unable to delete Log files</value>
+  </data>
+  <data name="ClearLogsTitle" xml:space="preserve">
+    <value>Clear Logs</value>
+  </data>
+  <data name="AreYouSure" xml:space="preserve">
+    <value>Are you sure?</value>
+  </data>
+  <data name="ActionCannotBeUndone" xml:space="preserve">
+    <value>This action can not be undone.</value>
+  </data>
+  <data name="DeleteLogFilesConfirmation" xml:space="preserve">
+    <value>Are you sure you want to delete all log files?</value>
+  </data>
+  <data name="LogDirectoryNotFoundTitle" xml:space="preserve">
+    <value>Log Directory Not found</value>
+  </data>
+  <data name="LogDirectoryDoesNotExist" xml:space="preserve">
+    <value>Log directory does not exist.</value>
+  </data>
+  <data name="IgnoreSoftHyphensTooltip" xml:space="preserve">
+    <value>Ignore soft hyphens (Unicode U+00AD) while searching for terms.</value>
+  </data>
+  <data name="WriteXRayNewFormatTooltip" xml:space="preserve">
+    <value>Write the X-Ray file in the new format for the Paperwhite 2 or Voyage with firmware version 5.6 or higher.</value>
+  </data>
+  <data name="BuildXRayForAndroidTooltip" xml:space="preserve">
+    <value>Changes the naming convention of the X-Ray file for the Android Kindle app.</value>
+  </data>
+  <data name="RequiresNewFormat" xml:space="preserve">
+    <value>Requires building in the new format.</value>
+  </data>
+  <data name="FilesInAndroidFolder" xml:space="preserve">
+    <value>Files will be placed in the output directory in an 'Android' folder.</value>
+  </data>
+  <data name="GoodForFilteringQuotes" xml:space="preserve">
+    <value>good for filtering out garbage quotes from Goodreads or other sources</value>
+  </data>
+  <data name="SkipNoLikes" xml:space="preserve">
+    <value>Skip notable clips with no likes.</value>
+  </data>
+  <data name="MinimumQuoteLength" xml:space="preserve">
+    <value>Minimum length for notable clips.</value>
+  </data>
+  <data name="RequiredDuringEndActionsCreation" xml:space="preserve">
+    <value>Required during the End Actions file creation.</value>
+  </data>
+  <data name="EnableEditTooltip" xml:space="preserve">
+    <value>Enables the ability to edit files using Notepad during the build process.</value>
+  </data>
+  <data name="SaveToAuthorSubdirTooltip" xml:space="preserve">
+    <value>Save generated files to an "Author\Filename" subdirectory.</value>
+  </data>
+  <data name="SaveToSidecarSubdirTooltip" xml:space="preserve">
+    <value>Save generated files to a "sidecar" subdirectory based on the filename.</value>
+  </data>
+  <data name="OpenLogFileDirTooltip" xml:space="preserve">
+    <value>Open the log files directory.</value>
+  </data>
+  <data name="OverwriteAuthorProfileTooltip" xml:space="preserve">
+    <value>Overwrite existing Author Profile files.</value>
+  </data>
+  <data name="OverwriteEndActionsTooltip" xml:space="preserve">
+    <value>Overwrite existing End Actions files.</value>
+  </data>
+  <data name="OverwriteStartActionsTooltip" xml:space="preserve">
+    <value>Overwrite existing Start Actions files.</value>
+  </data>
+  <data name="OverwriteAliasesTooltip" xml:space="preserve">
+    <value>Overwrite existing alias files.</value>
+  </data>
+  <data name="OverwriteChaptersTooltip" xml:space="preserve">
+    <value>Overwrite existing chapter files.</value>
+  </data>
+  <data name="AutomaticallySplitAliasesTooltip" xml:space="preserve">
+    <value>Automatically split character names into aliases. This can have undesired consequences, so use it with caution!</value>
+  </data>
+  <data name="PlaySoundTooltip" xml:space="preserve">
+    <value>Play a sound after the build process is complete.</value>
+  </data>
+  <data name="DownloadAliasesTooltip" xml:space="preserve">
+    <value>Attempt to download pre-made aliases if none exist locally yet. If "Overwrite aliases" is enabled, local aliases will be overwritten by the downloaded ones.</value>
+  </data>
+  <data name="VisitForumTooltip" xml:space="preserve">
+    <value>Visit the MobileRead forum for support, bug reports, or questions.</value>
+  </data>
+  <data name="EstimatePageCountTooltip" xml:space="preserve">
+    <value>Try to estimate the page count of the e-book if none can be found online (based on user_none's APNX generation project).</value>
+  </data>
+  <data name="SecondarySourceTooltip" xml:space="preserve">
+    <value>Determines from which non-Amazon source terms and metadata will be downloaded.</value>
+  </data>
+  <data name="AmazonRegionTooltip" xml:space="preserve">
+    <value>Default Amazon page to search. If no results are found, Amazom.com (USA) will be used.</value>
+  </data>
+  <data name="SaveBioTooltip" xml:space="preserve">
+    <value>If enabled, author biographies will be saved and opened in Notepad before continuing to build Author Profiles.
+Must be enabled for a saved biography to be loaded.</value>
+  </data>
+  <data name="PromptAsinTooltip" xml:space="preserve">
+    <value>Allow ASIN entry if the next or previous e-book in a series cannot be found automatically.</value>
+  </data>
+  <data name="EditBioTooltip" xml:space="preserve">
+    <value>If enabled, allows editing the Author's biography before it's used.</value>
+  </data>
+  <data name="AutoBuildAuthorProfileTooltip" xml:space="preserve">
+    <value>When set, the Author Profile will be built using a downloaded End Actions file instead of scraping Amazon, if one is available.</value>
+  </data>
+  <data name="IncludeTopicsTooltip" xml:space="preserve">
+    <value>When downloading terms, include any that are non-characters (topics, locations, etc).</value>
+  </data>
+  <data name="Forum" xml:space="preserve">
+    <value>Forum</value>
+  </data>
+  <data name="Logs" xml:space="preserve">
+    <value>Logs</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="EbookProcessingTitle" xml:space="preserve">
+    <value>E-book Processing</value>
+  </data>
+  <data name="EstimatePageCountTitle" xml:space="preserve">
+    <value>Estimate Page Count</value>
+  </data>
+  <data name="EbookUnpackingTitle" xml:space="preserve">
+    <value>E-book Unpacking</value>
+  </data>
+  <data name="SaveRawmlTitle" xml:space="preserve">
+    <value>Save RAWML</value>
+  </data>
+  <data name="Sounds" xml:space="preserve">
+    <value>Sounds</value>
+  </data>
+  <data name="OutputDirectoryTitle" xml:space="preserve">
+    <value>Output Directory</value>
+  </data>
+  <data name="UseSidecarDirectory" xml:space="preserve">
+    <value>Use sidecar directory</value>
+  </data>
+  <data name="UseSubdirectories" xml:space="preserve">
+    <value>Use subdirectories</value>
+  </data>
+  <data name="DataProviderTitle" xml:space="preserve">
+    <value>Data Provider</value>
+  </data>
+  <data name="Preferences" xml:space="preserve">
+    <value>Preferences</value>
+  </data>
+  <data name="IgnoreSoftHyphensTitle" xml:space="preserve">
+    <value>Ignore Soft Hyphens</value>
+  </data>
+  <data name="NotableClipsTitle" xml:space="preserve">
+    <value>Notable Clips</value>
+  </data>
+  <data name="MinimumLength" xml:space="preserve">
+    <value>Minimum length:</value>
+  </data>
+  <data name="Format" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="BuildForAndroidTitle" xml:space="preserve">
+    <value>Build for Android</value>
+  </data>
+  <data name="UseNewFormatTitle" xml:space="preserve">
+    <value>Use New X-Ray Format</value>
+  </data>
+  <data name="BuildFromEndActions" xml:space="preserve">
+    <value>Build from downloaded End Actions when one is available</value>
+  </data>
+  <data name="OverwriteOptionsTitle" xml:space="preserve">
+    <value>Overwrite Options</value>
+  </data>
+  <data name="AliasesOptionsTitle" xml:space="preserve">
+    <value>Aliases Options</value>
+  </data>
+  <data name="DownloadAliases" xml:space="preserve">
+    <value>Download aliases</value>
+  </data>
+  <data name="AutomaticallySplitAliases" xml:space="preserve">
+    <value>Automatically split aliases</value>
+  </data>
+  <data name="EnableEditingAliases" xml:space="preserve">
+    <value>Enable editing of aliases</value>
+  </data>
+  <data name="EditAuthorBiography" xml:space="preserve">
+    <value>Edit author biography</value>
+  </data>
+  <data name="Show ASIN prompt" xml:space="preserve">
+    <value>Show ASIN prompt</value>
+  </data>
+  <data name="Region" xml:space="preserve">
+    <value>Region:</value>
+  </data>
+  <data name="SaveAuthorBiography" xml:space="preserve">
+    <value>Save author biography</value>
+  </data>
+  <data name="AmazonCustomerDetailsTitle" xml:space="preserve">
+    <value>Amazon Customer Details</value>
+  </data>
+  <data name="RealName" xml:space="preserve">
+    <value>Real Name:</value>
+  </data>
+  <data name="PenName" xml:space="preserve">
+    <value>Pen Name:</value>
+  </data>
+  <data name="FilesDownloadedInSelectedLanguage" xml:space="preserve">
+    <value>Files will be downloaded in the language of the selected region, when possible.</value>
+  </data>
+  <data name="TermsOptions" xml:space="preserve">
+    <value>Terms Options</value>
+  </data>
+  <data name="InclueTopics" xml:space="preserve">
+    <value>Include topic/location terms</value>
+  </data>
+  <data name="PreBuiltDownloadsTitle" xml:space="preserve">
+    <value>Pre-built Downloads</value>
+  </data>
+  <data name="PreBuiltSettingsDescription" xml:space="preserve">
+    <value>When these settings are enabled, pre-built versions of the files will be downloaded if they are available. Requires a valid ASIN.</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="Directories" xml:space="preserve">
+    <value>Directories</value>
+  </data>
+  <data name="Extras" xml:space="preserve">
+    <value>Extras</value>
+  </data>
+  <data name="Amazon" xml:space="preserve">
+    <value>Amazon</value>
+  </data>
+  <data name="Roentgen" xml:space="preserve">
+    <value>Roentgen</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="RestartRequiredTitle" xml:space="preserve">
+    <value>Restart Required</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Application must be restarted for changes to take effect!</value>
+  </data>
+</root>

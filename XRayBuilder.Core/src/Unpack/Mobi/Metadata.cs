@@ -129,6 +129,8 @@ namespace XRayBuilder.Core.Unpack.Mobi
 
         public bool IsAzw3 => _activeMobiHeader?.Version >= 8;
 
+        public string Isbn => _activeMobiHeader.ExtHeader.Isbn;
+
         public string Asin => _activeMobiHeader.ExtHeader.Asin != ""
             ? _activeMobiHeader.ExtHeader.Asin
             : _activeMobiHeader.ExtHeader.Asin2;
@@ -212,6 +214,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
         public Stream GetRawMlStream()
             => new MemoryStream(GetRawMl());
 
+        // todo consider caching the rawml since it won't change unless the book is reloaded
         public byte[] GetRawMl()
         {
             CheckDrm();
@@ -222,7 +225,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
                 1 => (IDecompressor) new UncompressedReader(),
                 2 => new PalmDocReader(),
                 17480 => new HuffCdicReader(),
-                _ => throw new UnpackException("Unknown compression type " + _activePdh.Compression + ".")
+                _ => throw new UnpackException($"Unknown compression type {_activePdh.Compression}.")
             };
 
             decomp.Initialize(_mobiHeader, _pdb, _headerRecords);

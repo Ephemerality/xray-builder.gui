@@ -40,10 +40,9 @@ namespace XRayBuilder.Test
                         AmazonTld = "com",
                         SaveBio = false,
                         UseNewVersion = true,
-                        EditBiography = false,
-                        SaveHtml = false
+                        EditBiography = false
                     }
-                });
+                }, _ => false);
             Assert.NotNull(response);
             Assert.AreEqual(expectedAuthorAsin, response.Asin);
             Assert.AreEqual(expectedAuthorName, response.Name);
@@ -67,7 +66,7 @@ namespace XRayBuilder.Test
                         UseNewVersion = true,
                         EditBiography = false
                     }
-                });
+                }, _ => false);
             Assert.NotNull(response);
             Assert.AreEqual(response.Asin, "B000APIGH4");
             Assert.AreEqual(response.Name, "George R. R. Martin");

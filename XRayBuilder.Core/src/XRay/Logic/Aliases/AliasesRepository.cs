@@ -4,8 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+#if NETFRAMEWORK
 using XRayBuilder.Core.Libraries.Enumerables.Extensions;
+#endif
 using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Logic;
 using XRayBuilder.Core.XRay.Artifacts;
 
 namespace XRayBuilder.Core.XRay.Logic.Aliases
@@ -14,17 +17,19 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
     {
         private readonly ILogger _logger;
         private readonly IAliasesService _aliasesService;
+        private readonly IDirectoryService _directoryService;
 
-        public AliasesRepository(ILogger logger, IAliasesService aliasesService)
+        public AliasesRepository(ILogger logger, IAliasesService aliasesService, IDirectoryService directoryService)
         {
             _logger = logger;
             _aliasesService = aliasesService;
+            _directoryService = directoryService;
         }
 
         // todo make this better
         public void LoadAliasesForXRay(XRay xray)
         {
-            var aliasesByTermName = LoadAliasesFromFile(xray.AliasPath);
+            var aliasesByTermName = LoadAliasesFromFile(_directoryService.GetAliasPath(xray.Asin));
             if (aliasesByTermName == null)
                 return;
 
@@ -95,12 +100,12 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
                 //Check for misplaced pipe character in aliases
                 if (temp2[0] != "" && temp2.Any(r => Regex.Match(@"\|", r).Success))
                 {
-                    _logger.Log("An error occurred parsing the alias file. Ignoring term: " + temp[0] + " aliases.\r\nCheck the file is in the correct format: Character Name|Alias1,Alias2,Etc");
+                    _logger.Log($"An error occurred parsing the alias file. Ignoring term: {temp[0]} aliases.\r\nCheck the file is in the correct format: Character Name|Alias1,Alias2,Etc");
                     continue;
                 }
                 if (temp2.Length == 0 || temp2[0] == "") continue;
                 if (aliasesByTermName.ContainsKey(temp[0]))
-                    _logger.Log("Duplicate alias of " + temp[0] + " found. Ignoring the duplicate.");
+                    _logger.Log($"Duplicate alias of {temp[0]} found. Ignoring the duplicate.");
                 else
                     aliasesByTermName.Add(temp[0], temp2);
             }
@@ -108,16 +113,10 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             return aliasesByTermName;
         }
 
-        public void SaveCharactersToFile(IEnumerable<Term> terms, string asin, bool splitAliases)
+        public string SaveCharactersToFile(IEnumerable<Term> terms, string asin, bool splitAliases)
         {
-            // todo service should handle this
-            var path = $@"{Environment.CurrentDirectory}\ext\";
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-
-            var aliasFile = $"{path}{asin}.aliases";
-
-            using var streamWriter = new StreamWriter(aliasFile, false, Encoding.UTF8);
+            var aliasPath = _directoryService.GetAliasPath(asin);
+            using var streamWriter = new StreamWriter(aliasPath, false, Encoding.UTF8);
 
             var sortedTerms = terms
                 .OrderBy(term => term.Type)
@@ -138,8 +137,11 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             }
             catch (Exception ex)
             {
-                _logger.Log("An error occurred while saving the aliases.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                _logger.Log($"An error occurred while saving the aliases.\r\n{ex.Message}\r\n{ex.StackTrace}");
+                return null;
             }
+
+            return aliasPath;
         }
     }
 }

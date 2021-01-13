@@ -1,0 +1,699 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="EbookProcessingTitle" xml:space="preserve">
+    <value>E-bok-behandling</value>
+  </data>
+  <data name="PromptAsinTooltip" xml:space="preserve">
+    <value>Tillat ASIN-oppføring hvis neste eller forrige e-bok i en serie ikke kan finnes automatisk.</value>
+  </data>
+  <data name="EstimatePageCountTooltip" xml:space="preserve">
+    <value>Anslå bokens sideantall hvis det ikke er å finne på nett (basert på user_none sitt APNX-genereringsprosjekt).</value>
+  </data>
+  <data name="SaveRawMlTooltip" xml:space="preserve">
+    <value>Lagre RAWML (rå oppmerking) for e-boken i utdatamappen slik at du kan gjennomse den.</value>
+  </data>
+  <data name="TryToBuildXRay" xml:space="preserve">
+    <value>Prøv å bygge X-Ray fil for denne e-boken.</value>
+  </data>
+  <data name="OpenKindleBook" xml:space="preserve">
+    <value>Åpne en Kindle-e-bok.</value>
+  </data>
+  <data name="BuildingOldFormatNotSupported" xml:space="preserve">
+    <value>Bygging av X-Ray i gammelt format støttes ikke for XFX-bøker</value>
+  </data>
+  <data name="UnableToAutomaticallyFindAsinOnAmazon" xml:space="preserve">
+    <value>Klarte ikke å finne samsvarende ASIN for denne boken på Amazon automatisk :(</value>
+  </data>
+  <data name="FoundBookAmazon" xml:space="preserve">
+    <value>Fant følgende e-bok på Amazon</value>
+  </data>
+  <data name="UpdatedAsin" xml:space="preserve">
+    <value>ASIN oppdatert til {0}. Kopier denne nye versjonen av boken til din Kindle-enhet.</value>
+  </data>
+  <data name="InvalidAsinWarning" xml:space="preserve">
+    <value>Ugyldig Amazon-ASIN oppdaget: {0}.
+Det kan hende Kindle ikke viser en X-Ray for denne boken.
+Ønsker du å fortsette?</value>
+  </data>
+  <data name="InvalidAsinShouldFix" xml:space="preserve">
+    <value>Oppdaget ugyldig Amazon-ASIN: {0}.
+Kindle kan ikke vise en X-Ray fil for denne boken.
+Ønsker du å fise det?
+(Dette vil endre boken, noe som betyr at den må kopieres til din Kindle-enhet igjen)
+DENNE FUNKSJONEN ER EKSPERIMENTELL OG KAN ØDELEGGE BOKEN DIN!</value>
+  </data>
+  <data name="BookFoundOnSource" xml:space="preserve">
+    <value>Fant bok på {0}.</value>
+  </data>
+  <data name="BooksSourceUrl" xml:space="preserve">
+    <value>Bokens {0}-nettadresse</value>
+  </data>
+  <data name="InformationAllowsRatingOnAmazon" xml:space="preserve">
+    <value>Denne infoen lar deg vurdere denne boken på Amazon.</value>
+  </data>
+  <data name="BookNotFound" xml:space="preserve">
+    <value>Fant ikke den e-boken.</value>
+  </data>
+  <data name="DatabaseNameLengthWarning" xml:space="preserve">
+    <value>AdvarseL: Databasenavn er maksimal lengde. Hvis «{0}» er hele boktittelen, bør ikke dette være et problem.
+Hvis tittelen er ment å være flere tegn, kan det hende du får en feil på din Kindle (WG på fastvare &lt; 5.6).
+Dette kan løses enten ved å forkorte tittelen i Calibre eller manuelt endre databasenavnet.
+</value>
+  </data>
+  <data name="SearchingAmazonForTitleAuthor" xml:space="preserve">
+    <value>Søker etter {0} av {1} på Amazon…</value>
+  </data>
+  <data name="OpenKindleFile" xml:space="preserve">
+    <value>Åpne en Kindle {0}-fil …</value>
+  </data>
+  <data name="OpenXRayFile" xml:space="preserve">
+    <value>Åpne en Kindle-X-Ray-fil …</value>
+  </data>
+  <data name="ExtractingRawMl" xml:space="preserve">
+    <value>Pakker ut rå oppmerking …</value>
+  </data>
+  <data name="MultipleResultsFromSource" xml:space="preserve">
+    <value>Advarsel: Flerfoldige resultater mottatt fra {0} …</value>
+  </data>
+  <data name="DownloadingActions" xml:space="preserve">
+    <value>Prøver å laste ned {0}-handlinger …</value>
+  </data>
+  <data name="CantExportFromFile" xml:space="preserve">
+    <value>Kan ikke eksportere vilkår fra en XML/TXT-fil …</value>
+  </data>
+  <data name="ExportingTermsFrom" xml:space="preserve">
+    <value>Eksporterer vilkår fra {0} …</value>
+  </data>
+  <data name="BuildingStartEndActions" xml:space="preserve">
+    <value>Prøver å bygge start- og/eller slutthandlinger …</value>
+  </data>
+  <data name="BuildingAuthorProfile" xml:space="preserve">
+    <value>Prøver å bygge forfatterprofil …</value>
+  </data>
+  <data name="WritingEndActionsFile" xml:space="preserve">
+    <value>Skriver slutthandlingsfil …</value>
+  </data>
+  <data name="WritingStartActionsFile" xml:space="preserve">
+    <value>Skriver starthandlingsfil …</value>
+  </data>
+  <data name="SavingXRay" xml:space="preserve">
+    <value>Lagrer X-Ray til fil …</value>
+  </data>
+  <data name="InitialXRayBuiltAddingChapters" xml:space="preserve">
+    <value>Foreløpig X-Ray bygd, legger til plasseringer og kapitler …</value>
+  </data>
+  <data name="Cancelling" xml:space="preserve">
+    <value>Avbryter …</value>
+  </data>
+  <data name="AttemptingBuildXRay" xml:space="preserve">
+    <value>Prøver å bygge X-Ray …</value>
+  </data>
+  <data name="SavingRawml" xml:space="preserve">
+    <value>Lagrer rå oppmerking til dmp-mappe …</value>
+  </data>
+  <data name="ExtractingMetadata" xml:space="preserve">
+    <value>Pakker ut metadata…</value>
+  </data>
+  <data name="EbookUnpackingTitle" xml:space="preserve">
+    <value>E-bok-utpakking</value>
+  </data>
+  <data name="WriteXRayNewFormatTooltip" xml:space="preserve">
+    <value>Skriv X-Ray fil i nytt format for Paperwhite 2 eller Voyage-fastvare 5.6+.</value>
+  </data>
+  <data name="AutoBuildAuthorProfileTooltip" xml:space="preserve">
+    <value>Når satt, vil forfatterprofil bygges ved bruk av en nedlastet slutthandlingsfil istedenfor skraping av Amazon, hvis en er tilgjengelig.</value>
+  </data>
+  <data name="EditBioTooltip" xml:space="preserve">
+    <value>Hvis påslått vil redigering av forfatterbiografi tillates for den brukes.</value>
+  </data>
+  <data name="SaveBioTooltip" xml:space="preserve">
+    <value>Hvis påskrudd, vil forfatterbiografier lagres og åpnes i tekstbehandler før man går videre til bygging av forfatterprofiler.
+Må skrus på for at en lagret biografi skal lastes inn.</value>
+  </data>
+  <data name="UseSidecarDirectory" xml:space="preserve">
+    <value>Bruke "sidecar"-mappe</value>
+  </data>
+  <data name="AmazonRegionTooltip" xml:space="preserve">
+    <value>Forvalgt Amazon-side å søke i. Hvis det er resultatløst, vil Amazon.com (USA) bli brukt.</value>
+  </data>
+  <data name="VisitForumTooltip" xml:space="preserve">
+    <value>Besøk MobileRead-forumet for brukerstøtte, feilrapporter, eller spørsmål.</value>
+  </data>
+  <data name="DownloadAliasesTooltip" xml:space="preserve">
+    <value>Prøv å laste ned forhåndslagde alias hvis ingen finnes lokalt enda. Hvis "Overskriv alias" er skrudd på, vil lokale alias overskrives av nedlastede.</value>
+  </data>
+  <data name="AutomaticallySplitAliasesTooltip" xml:space="preserve">
+    <value>Del opp kapittelnavn i alias automatisk. Dette kan ha utilsiktede konsekvenser, så bruk med omhu!</value>
+  </data>
+  <data name="SaveToSidecarSubdirTooltip" xml:space="preserve">
+    <value>Lagre genererte filer i en "sidecar"-undermappe basert på filnavnet.</value>
+  </data>
+  <data name="PreBuiltSettingsDescription" xml:space="preserve">
+    <value>Når disse innstillingene er påslått, vil forhåndsbygde versjoner av filer bli lastet ned hvis de er tilgjengelige.
+Krever gyldig ASIN.</value>
+  </data>
+  <data name="BuildFromEndActions" xml:space="preserve">
+    <value>Bygg fra nedlastetede slutthandlinger når en er tilgjengelig</value>
+  </data>
+  <data name="UseSubdirectories" xml:space="preserve">
+    <value>Bruk undermapper</value>
+  </data>
+  <data name="SaveToAuthorSubdirTooltip" xml:space="preserve">
+    <value>Lagre genererte filer i en «Utvikler\filnavn»-undermappe.</value>
+  </data>
+  <data name="EnableEditTooltip" xml:space="preserve">
+    <value>Skrur på muligheten til å redigere filer i tekstbehandler under byggingsprosessen.</value>
+  </data>
+  <data name="BuildXRayForAndroidTooltip" xml:space="preserve">
+    <value>Endrer navngivelsesformat for X-Ray filen for Android Kindle-programmet.</value>
+  </data>
+  <data name="OneClickTooltip" xml:space="preserve">
+    <value>Enkelttrykksknapp for å prøve å bygge starthandling-, forfatterprofil-, sluttthandlings-, og X-Ray-filer for denne boken.</value>
+  </data>
+  <data name="AllExtrasDownloadedStopping" xml:space="preserve">
+    <value>Alt ekstra nedlastet/bygd og ingenting å overskrive, stopper.</value>
+  </data>
+  <data name="Extras" xml:space="preserve">
+    <value>Ekstra</value>
+  </data>
+  <data name="RestartRequired" xml:space="preserve">
+    <value>Endringene vil tre i effekt når programmet startes på ny.</value>
+  </data>
+  <data name="Directories" xml:space="preserve">
+    <value>Mapper</value>
+  </data>
+  <data name="PreBuiltDownloadsTitle" xml:space="preserve">
+    <value>Forhåndsbygde nedlastinger</value>
+  </data>
+  <data name="FilesDownloadedInSelectedLanguage" xml:space="preserve">
+    <value>Filer vil lastes ned på språket for valgt region, hvis mulig.</value>
+  </data>
+  <data name="PenName" xml:space="preserve">
+    <value>Forfatternavn:</value>
+  </data>
+  <data name="RealName" xml:space="preserve">
+    <value>Egentlig navn:</value>
+  </data>
+  <data name="AmazonCustomerDetailsTitle" xml:space="preserve">
+    <value>Amazon-kundedetaljer</value>
+  </data>
+  <data name="SaveAuthorBiography" xml:space="preserve">
+    <value>Lagre forfatterbiografi</value>
+  </data>
+  <data name="Region" xml:space="preserve">
+    <value>Region:</value>
+  </data>
+  <data name="Show ASIN prompt" xml:space="preserve">
+    <value>Vis ASIN-ledetekst</value>
+  </data>
+  <data name="EditAuthorBiography" xml:space="preserve">
+    <value>Rediger forfatterbiografi</value>
+  </data>
+  <data name="EnableEditingAliases" xml:space="preserve">
+    <value>Skru på redigering av aliaser</value>
+  </data>
+  <data name="AutomaticallySplitAliases" xml:space="preserve">
+    <value>Del aliaser automatisk</value>
+  </data>
+  <data name="DownloadAliases" xml:space="preserve">
+    <value>Last ned aliaser</value>
+  </data>
+  <data name="AliasesOptionsTitle" xml:space="preserve">
+    <value>Aliasvalg</value>
+  </data>
+  <data name="OverwriteOptionsTitle" xml:space="preserve">
+    <value>Overskrivingsvalg</value>
+  </data>
+  <data name="NotableClipsTitle" xml:space="preserve">
+    <value>Merkverdige klipp</value>
+  </data>
+  <data name="IgnoreSoftHyphensTitle" xml:space="preserve">
+    <value>Ignorer myke bindestreker</value>
+  </data>
+  <data name="DataProviderTitle" xml:space="preserve">
+    <value>Datatilbyder</value>
+  </data>
+  <data name="PlaySoundTooltip" xml:space="preserve">
+    <value>Spill en lyd når byggprosessen er fullført.</value>
+  </data>
+  <data name="OverwriteEndActionsTooltip" xml:space="preserve">
+    <value>Overskriv eksisterende slutthandlingsfiler.</value>
+  </data>
+  <data name="RequiredDuringEndActionsCreation" xml:space="preserve">
+    <value>Påkrevd under opprettelse av slutthandlingsfil.</value>
+  </data>
+  <data name="MinimumQuoteLength" xml:space="preserve">
+    <value>Minimumslengde for merkverdige klipp.</value>
+  </data>
+  <data name="SkipNoLikes" xml:space="preserve">
+    <value>Hopp over merkverdige klipp uten gunst.</value>
+  </data>
+  <data name="GoodForFilteringQuotes" xml:space="preserve">
+    <value>bra for å filtrere ut søppelsitater fra Goodreads eller andre kilder</value>
+  </data>
+  <data name="FilesInAndroidFolder" xml:space="preserve">
+    <value>Filer vil bli plassert i utdatamappen i «Android»-mappen.</value>
+  </data>
+  <data name="RequiresNewFormat" xml:space="preserve">
+    <value>Krever bygging i nytt format.</value>
+  </data>
+  <data name="InclueTopics" xml:space="preserve">
+    <value>Inkluder emne/plasseringsvilkår</value>
+  </data>
+  <data name="IncludeTopicsTooltip" xml:space="preserve">
+    <value>Ved nedlasting av vilkår, inkluder alle som ikke er tegn (emner, plasseringer, osv).</value>
+  </data>
+  <data name="SecondarySourceTooltip" xml:space="preserve">
+    <value>Bestemmer hvilke kildevilkår og metadata som ikke er fra Amazon som skal lastes ned.</value>
+  </data>
+  <data name="IgnoreSoftHyphensTooltip" xml:space="preserve">
+    <value>Ignorer myke bindestreker (Unicode U+00AD) når du søker etter vilkår.</value>
+  </data>
+  <data name="ErrorDeletingLogFiles" xml:space="preserve">
+    <value>Klarte ikke å slette loggfiler.</value>
+  </data>
+  <data name="ExtractXRayToXml" xml:space="preserve">
+    <value>Pakk ut en eksisterende X-Ray-til til en XML-fil.</value>
+  </data>
+  <data name="CreateXmlTooltip" xml:space="preserve">
+    <value>Opprett en XML-fil som inneholder tegn og innstillinger, eller rediger en eksisterende XML-fil.</value>
+  </data>
+  <data name="BuildExtrasTooltip" xml:space="preserve">
+    <value>Prøv å bygge starthandling-, forfatterprofil-, og slutthandlingsfiler for denne boken.</value>
+  </data>
+  <data name="OpenXmlOrTxt" xml:space="preserve">
+    <value>Åpne en støttet XML- eller TXT-fil som inneholder kapitler og emner.</value>
+  </data>
+  <data name="StartActions" xml:space="preserve">
+    <value>Starthandlinger</value>
+  </data>
+  <data name="EndActions" xml:space="preserve">
+    <value>Slutthandlinger</value>
+  </data>
+  <data name="OpenChaptersFileNotepad" xml:space="preserve">
+    <value>Ønsker du å åpne kapitlene i tekstbehandler for redigering?</value>
+  </data>
+  <data name="VisitUrl" xml:space="preserve">
+    <value>Besøk nettadressen for å forsikre at den stemmer.</value>
+  </data>
+  <data name="UnableToFindBookOnSource" xml:space="preserve">
+    <value>Klarte ikke å finne denne boken på {0}. Sjekk at bokens tittel ({1}) stemmer.</value>
+  </data>
+  <data name="ErrorSavingXml" xml:space="preserve">
+    <value>Klarte ikke å lagre tegndata til XML-fil på {0}</value>
+  </data>
+  <data name="ErrorCreatingExtras" xml:space="preserve">
+    <value>Klarte ikke å opprette ny forfatterprofil-, starthandling-, og/eller slutthandlingsfiler</value>
+  </data>
+  <data name="SeriesInformation" xml:space="preserve">
+    <value>Serieinfo</value>
+  </data>
+  <data name="ErrorWritingAuthorProfile" xml:space="preserve">
+    <value>Klarte ikke å skrive forfatterprofilfil</value>
+  </data>
+  <data name="AuthorProfileCreated" xml:space="preserve">
+    <value>Forfatterprofilfil opprettet.</value>
+  </data>
+  <data name="BuiltAuthorProfileFromExisting" xml:space="preserve">
+    <value>Bygde forfatterprofil fra eksisterende slutthandlingsfil.</value>
+  </data>
+  <data name="Amazon" xml:space="preserve">
+    <value>Amazon</value>
+  </data>
+  <data name="Roentgen" xml:space="preserve">
+    <value>Roentgen</value>
+  </data>
+  <data name="OverwriteChaptersTooltip" xml:space="preserve">
+    <value>Overskriv eksisterende kapittel-filer.</value>
+  </data>
+  <data name="OverwriteAliasesTooltip" xml:space="preserve">
+    <value>Overskriv eksisterende alias-filer.</value>
+  </data>
+  <data name="OverwriteStartActionsTooltip" xml:space="preserve">
+    <value>Overskriv eksisterende starthandlingsfiler.</value>
+  </data>
+  <data name="UnableToDeleteLogFilesCaption" xml:space="preserve">
+    <value>Klarte ikke å slette loggfiler</value>
+  </data>
+  <data name="ViewPreviewOfGeneratedFiles" xml:space="preserve">
+    <value>Forhåndsvis genererte filer.</value>
+  </data>
+  <data name="UseLinkAsDataSource" xml:space="preserve">
+    <value>Bruk lenken ovenfor som vilkårskilde.</value>
+  </data>
+  <data name="DownloadFromRoentgen" xml:space="preserve">
+    <value>Last ned vilkår fra Roentgen hvis de forefinnes.</value>
+  </data>
+  <data name="LoadTermsFromFile" xml:space="preserve">
+    <value>Last inn vilkår fra valgt fil.</value>
+  </data>
+  <data name="ConfigureXRayBuilder" xml:space="preserve">
+    <value>Sett opp X-Ray-bygger.</value>
+  </data>
+  <data name="Chapters" xml:space="preserve">
+    <value>Kapitler</value>
+  </data>
+  <data name="ShownAsinUsed" xml:space="preserve">
+    <value>Hvis ikke, vil vist ASIN bli brukt.</value>
+  </data>
+  <data name="DoesThisSeemCorrect" xml:space="preserve">
+    <value>Ser dette riktig ut?</value>
+  </data>
+  <data name="UnableToOpenHelpDocument" xml:space="preserve">
+    <value>Klarte ikke å åpne angitt hjelpedokument.</value>
+  </data>
+  <data name="CharacterDataExtractedSavedToPath" xml:space="preserve">
+    <value>Tegndata utpakket og lagret til {0}</value>
+  </data>
+  <data name="InvalidOrNoFileSelected" xml:space="preserve">
+    <value>Ugyldig eller ingen fil angitt.</value>
+  </data>
+  <data name="ExtractedToPath" xml:space="preserve">
+    <value>Utpakket til {0}.</value>
+  </data>
+  <data name="ErrorSearching" xml:space="preserve">
+    <value>Søkefeil</value>
+  </data>
+  <data name="AllExtrasExistNoOverwrite" xml:space="preserve">
+    <value>Alle ekstrafiler finnes allerede, og ingen av ""overskriv""-innstillingene er påslått.</value>
+  </data>
+  <data name="ReviewSettingsForSource" xml:space="preserve">
+    <value>Hvis du ikke ønsker å bruke {0}, kan du endre datakilde i innstillingene.</value>
+  </data>
+  <data name="CharacterDataSavedTo" xml:space="preserve">
+    <value>Tegndata lagret til {0}</value>
+  </data>
+  <data name="NoLinkTitle" xml:space="preserve">
+    <value>Manglende lenke</value>
+  </data>
+  <data name="NoLinkSpecified" xml:space="preserve">
+    <value>Ingen lenke angitt.</value>
+  </data>
+  <data name="LoadedExistingEndActions" xml:space="preserve">
+    <value>Lastet inn eksisterende slutthandlinger fra {0}</value>
+  </data>
+  <data name="ErrorEndActions" xml:space="preserve">
+    <value>Klarte ikke å opprette slutthandlinger</value>
+  </data>
+  <data name="EndActionsCreated" xml:space="preserve">
+    <value>Slutthandlingsfil opprettet.</value>
+  </data>
+  <data name="ErrorCreatingStartActions" xml:space="preserve">
+    <value>Klarte ikke å opprette starthandlinger</value>
+  </data>
+  <data name="StartActionsCreated" xml:space="preserve">
+    <value>Starthandlingsfil opprettet.</value>
+  </data>
+  <data name="PreMadeActionsDownloaded" xml:space="preserve">
+    <value>Lastet ned forhåndslaget {0}-handlingsfil.</value>
+  </data>
+  <data name="NoPremadeActionsAvailable" xml:space="preserve">
+    <value>Ingen forhåndslaget {0}-Handlingsfil tilgjengelige. Den vil bli bygd istedenfor.</value>
+  </data>
+  <data name="ErrorPreviewData" xml:space="preserve">
+    <value>Klarte ikke å lagre previewData-fil</value>
+  </data>
+  <data name="AliasesReadFrom" xml:space="preserve">
+    <value>Tegnalias lest fra {0}.</value>
+  </data>
+  <data name="AliasesFileNotFound" xml:space="preserve">
+    <value>Fant ikke alias-fil.</value>
+  </data>
+  <data name="AliasesReadFromXml" xml:space="preserve">
+    <value>Tegn-alias innlest fra XML-filen.</value>
+  </data>
+  <data name="Aliases" xml:space="preserve">
+    <value>Alias</value>
+  </data>
+  <data name="TermsExportedOrAlreadyExist" xml:space="preserve">
+    <value>Vilkår eksportert til alias-fil, eller finnes allerede i den filen.</value>
+  </data>
+  <data name="OpenInNotepad" xml:space="preserve">
+    <value>Ønsker du å åpne en fil i tekstbehandler for redigering?</value>
+  </data>
+  <data name="SeeMobilereads" xml:space="preserve">
+    <value>Sjekk MobileRead-forumtråden (lenke i innstillingene) for mer info om bygging av alias.</value>
+  </data>
+  <data name="NoTermsAvailable" xml:space="preserve">
+    <value>Ingen vilkår tilgjengelige. Ønsker du å fortsette å bygget uansett?</value>
+  </data>
+  <data name="PenNamesRequired" xml:space="preserve">
+    <value>Både ekte og forfatternavn kreves for «Slutthandling»-filopprettelse.</value>
+  </data>
+  <data name="GotMetadata" xml:space="preserve">
+    <value>Hentet metadata</value>
+  </data>
+  <data name="RestartRequiredTitle" xml:space="preserve">
+    <value>Omstart kreves</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Innstillinger</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Språk</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>Generelt</value>
+  </data>
+  <data name="TermsOptions" xml:space="preserve">
+    <value>Vilkårsvalg</value>
+  </data>
+  <data name="UseNewFormatTitle" xml:space="preserve">
+    <value>Bruk nytt X-Ray-format</value>
+  </data>
+  <data name="BuildForAndroidTitle" xml:space="preserve">
+    <value>Bygg for Android</value>
+  </data>
+  <data name="Format" xml:space="preserve">
+    <value>Format</value>
+  </data>
+  <data name="MinimumLength" xml:space="preserve">
+    <value>Minimumslengde:</value>
+  </data>
+  <data name="Preferences" xml:space="preserve">
+    <value>Innstillinger</value>
+  </data>
+  <data name="OutputDirectoryTitle" xml:space="preserve">
+    <value>Utdatamappe</value>
+  </data>
+  <data name="Sounds" xml:space="preserve">
+    <value>Lyder</value>
+  </data>
+  <data name="SaveRawmlTitle" xml:space="preserve">
+    <value>Lagre RAWML</value>
+  </data>
+  <data name="EstimatePageCountTitle" xml:space="preserve">
+    <value>Anslå sideantall</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Lagre</value>
+  </data>
+  <data name="Logs" xml:space="preserve">
+    <value>Logger</value>
+  </data>
+  <data name="Forum" xml:space="preserve">
+    <value>Forum</value>
+  </data>
+  <data name="OverwriteAuthorProfileTooltip" xml:space="preserve">
+    <value>Overskriv eksisterende forfatterprofil-filer.</value>
+  </data>
+  <data name="OpenLogFileDirTooltip" xml:space="preserve">
+    <value>Åpne loggføringsmappen.</value>
+  </data>
+  <data name="LogDirectoryDoesNotExist" xml:space="preserve">
+    <value>Loggføringsmappen finnes ikke.</value>
+  </data>
+  <data name="LogDirectoryNotFoundTitle" xml:space="preserve">
+    <value>Fant ikke loggmappen</value>
+  </data>
+  <data name="DeleteLogFilesConfirmation" xml:space="preserve">
+    <value>Er du sikker på at du vil slette alle loggfiler?</value>
+  </data>
+  <data name="ActionCannotBeUndone" xml:space="preserve">
+    <value>Denne handlingen kan ikke angres.</value>
+  </data>
+  <data name="AreYouSure" xml:space="preserve">
+    <value>Er du sikker?</value>
+  </data>
+  <data name="ClearLogsTitle" xml:space="preserve">
+    <value>Tøm logger</value>
+  </data>
+  <data name="AuthorProfile" xml:space="preserve">
+    <value>Forfatter-profil</value>
+  </data>
+  <data name="XRay" xml:space="preserve">
+    <value>X-Ray</value>
+  </data>
+  <data name="OpenOutputDirectory" xml:space="preserve">
+    <value>Åpne forvalgt utdatamappe.</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Tittel</value>
+  </data>
+  <data name="Author" xml:space="preserve">
+    <value>Forfatter</value>
+  </data>
+  <data name="AmazonSearchResultTitle" xml:space="preserve">
+    <value>Amazon-søkeresultat</value>
+  </data>
+  <data name="IncorrectAsinTitle" xml:space="preserve">
+    <value>Feil ASIN</value>
+  </data>
+  <data name="InvalidKindleFile" xml:space="preserve">
+    <value>Ugydlig {0}-fil.</value>
+  </data>
+  <data name="HelpDocumentNotFoundTitle" xml:space="preserve">
+    <value>Fant ikke hjelpe-dokument</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Feil</value>
+  </data>
+  <data name="InvalidXRayFile" xml:space="preserve">
+    <value>Ugyldig X-Ray-fil.</value>
+  </data>
+  <data name="SourceUrl" xml:space="preserve">
+    <value>{0}-nettadresse</value>
+  </data>
+  <data name="TitleByAuthor" xml:space="preserve">
+    <value>{0} av {1}</value>
+  </data>
+  <data name="FailedCoverImageDownload" xml:space="preserve">
+    <value>Klarte ikke å laste ned omslagsbilde</value>
+  </data>
+  <data name="InvalidSourceLink" xml:space="preserve">
+    <value>Ugyldig {0}-lenke angitt.</value>
+  </data>
+  <data name="InvalidSourceLinkTitle" xml:space="preserve">
+    <value>Ugyldig {0}-lenke</value>
+  </data>
+  <data name="DownloadCancelled" xml:space="preserve">
+    <value>Nedlasting avbrutt.</value>
+  </data>
+  <data name="Biography" xml:space="preserve">
+    <value>Biografi</value>
+  </data>
+  <data name="XRayCreated" xml:space="preserve">
+    <value>X-Ray-fil opprettet</value>
+  </data>
+  <data name="SavedTo" xml:space="preserve">
+    <value>Lagret til {0}</value>
+  </data>
+  <data name="PreviewData" xml:space="preserve">
+    <value>Opprettet previewData-fil for X-Ray</value>
+  </data>
+  <data name="OpenedInAnotherProgram" xml:space="preserve">
+    <value>Er det åpent i et annet program?</value>
+  </data>
+  <data name="ErrorBuildingXRay" xml:space="preserve">
+    <value>Kunne ikke bygge X-Ray</value>
+  </data>
+  <data name="BuildCancelled" xml:space="preserve">
+    <value>Bygg avbrutt.</value>
+  </data>
+  <data name="NoTermsTitle" xml:space="preserve">
+    <value>Ingen vilkår</value>
+  </data>
+  <data name="AmazonCustomerDetailsNotFoundTitle" xml:space="preserve">
+    <value>Fant ikke Amazon-kundedetaljer</value>
+  </data>
+  <data name="ReviewSettingsPage" xml:space="preserve">
+    <value>Se over oppsettet på innstillingssiden.</value>
+  </data>
+  <data name="SpecifiedOutputDirectoryDoesNotExist" xml:space="preserve">
+    <value>Angitt utdatamappe finnes ikke.</value>
+  </data>
+  <data name="NoSourceLinkTitle" xml:space="preserve">
+    <value>Manglende {0}-lenke</value>
+  </data>
+  <data name="NoSourceLinkSpecified" xml:space="preserve">
+    <value>Ingen {0}-lenke ble angitt</value>
+  </data>
+  <data name="BookNotFoundTitle" xml:space="preserve">
+    <value>Fant ikke boken</value>
+  </data>
+  <data name="ErrorExtractingMetadata" xml:space="preserve">
+    <value>Klarte ikke å pakke ut metadata</value>
+  </data>
+  <data name="Asin" xml:space="preserve">
+    <value>ASIN</value>
+  </data>
+  <data name="UniqueID" xml:space="preserve">
+    <value>Unik ID</value>
+  </data>
+  <data name="DatabaseName" xml:space="preserve">
+    <value>Databasenavn</value>
+  </data>
+  <data name="ContinuingAnyway" xml:space="preserve">
+    <value>Fortsetter uansett</value>
+  </data>
+  <data name="FailedToValidateAsin" xml:space="preserve">
+    <value>Ķlarte ikke å bekrefte/fikse ASIN</value>
+  </data>
+  <data name="OutputDirNotFoundTitle" xml:space="preserve">
+    <value>Fant ikke utdatamappen</value>
+  </data>
+  <data name="OutputDirNotFoundReviewSettings" xml:space="preserve">
+    <value>Angitt utdatamappe finnes ikke. Se over oppsettet på innstillingssiden.</value>
+  </data>
+  <data name="InitializeFailed" xml:space="preserve">
+    <value>Klarte ikke å starteprogrammet</value>
+  </data>
+</root>

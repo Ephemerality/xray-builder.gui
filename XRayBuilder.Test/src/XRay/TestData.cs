@@ -1,13 +1,9 @@
 using System.Collections.Generic;
-using XRayBuilder.Core.DataSources.Secondary;
 
 namespace XRayBuilder.Test.XRay
 {
     public static class TestData
     {
-        public static Core.XRay.XRay CreateXRayFromXML(string path, string db, string guid, string asin, SecondarySourceGoodreads goodreads)
-            => new Core.XRay.XRay(path, db, guid, asin, goodreads, true) { Unattended = true };
-
         public static List<Book> Books = new List<Book>
         {
             new Book

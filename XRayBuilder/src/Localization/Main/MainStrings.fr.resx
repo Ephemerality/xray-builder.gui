@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Aliases" xml:space="preserve">
+    <value>Alias</value>
+  </data>
+  <data name="Cancelling" xml:space="preserve">
+    <value>Annulation…</value>
+  </data>
+  <data name="BookNotFoundTitle" xml:space="preserve">
+    <value>Livre introuvable</value>
+  </data>
+  <data name="UniqueID" xml:space="preserve">
+    <value>Identifiant unique</value>
+  </data>
+  <data name="ExtractingMetadata" xml:space="preserve">
+    <value>Extraction des métadonnées…</value>
+  </data>
+  <data name="Asin" xml:space="preserve">
+    <value>ASIN</value>
+  </data>
+  <data name="DatabaseName" xml:space="preserve">
+    <value>Nom de la base de données</value>
+  </data>
+  <data name="BuildCancelled" xml:space="preserve">
+    <value>Création annulée.</value>
+  </data>
+  <data name="AliasesReadFrom" xml:space="preserve">
+    <value>Alias de caractère lu à partir de {0}.</value>
+  </data>
+  <data name="AliasesFileNotFound" xml:space="preserve">
+    <value>Fichier d'alias introuvable.</value>
+  </data>
+  <data name="AliasesReadFromXml" xml:space="preserve">
+    <value>Alias de caractère lu à partir du fichier XML.</value>
+  </data>
+  <data name="TermsExportedOrAlreadyExist" xml:space="preserve">
+    <value>Les mots ont été exportés dans un fichier d'alias ou existent déjà dans ce fichier.</value>
+  </data>
+  <data name="OpenInNotepad" xml:space="preserve">
+    <value>Voulez-vous ouvrir le fichier dans le bloc-notes pour le modifier ?</value>
+  </data>
+  <data name="SeeMobilereads" xml:space="preserve">
+    <value>Consultez le fil du forum MobileRead (lien dans les paramètres) pour plus d'information sur la création d'alias.</value>
+  </data>
+  <data name="NoTermsTitle" xml:space="preserve">
+    <value>Aucun mot</value>
+  </data>
+  <data name="NoTermsAvailable" xml:space="preserve">
+    <value>Aucun mot n'est disponible. Souhaitez-vous continuer quand même ?</value>
+  </data>
+  <data name="AttemptingBuildXRay" xml:space="preserve">
+    <value>Tentative de création du fichier X-Ray…</value>
+  </data>
+  <data name="InformationAllowsRatingOnAmazon" xml:space="preserve">
+    <value>Cette information vous permet d'évaluer ce livre sur Amazon.</value>
+  </data>
+  <data name="ReviewSettingsPage" xml:space="preserve">
+    <value>Veuillez vérifier la page des paramètres.</value>
+  </data>
+  <data name="SpecifiedOutputDirectoryDoesNotExist" xml:space="preserve">
+    <value>Le dossier de sortie spécifié n'existe pas.</value>
+  </data>
+  <data name="NoSourceLinkTitle" xml:space="preserve">
+    <value>Lien {0} manquant</value>
+  </data>
+  <data name="NoSourceLinkSpecified" xml:space="preserve">
+    <value>Aucun lien {0} n'a été spécifié.</value>
+  </data>
+  <data name="BookNotFound" xml:space="preserve">
+    <value>Impossible de trouver ce livre.</value>
+  </data>
+  <data name="ErrorExtractingMetadata" xml:space="preserve">
+    <value>Une erreur s'est produite lors de l'extraction des métadonnées</value>
+  </data>
+  <data name="GotMetadata" xml:space="preserve">
+    <value>Métadonnées obtenues !</value>
+  </data>
+  <data name="ContinuingAnyway" xml:space="preserve">
+    <value>Continuer quand même</value>
+  </data>
+  <data name="OutputDirNotFoundTitle" xml:space="preserve">
+    <value>Dossier de sortie introuvable</value>
+  </data>
+  <data name="OutputDirNotFoundReviewSettings" xml:space="preserve">
+    <value>Le dossier de sortie spécifié n'existe pas. Veuillez vérifier la page des paramètres.</value>
+  </data>
+  <data name="InitializeFailed" xml:space="preserve">
+    <value>Échec de l'initialisation de l'application</value>
+  </data>
+  <data name="OpenedInAnotherProgram" xml:space="preserve">
+    <value>Est-il ouvert dans un autre programme?</value>
+  </data>
+  <data name="SavingXRay" xml:space="preserve">
+    <value>Sauvegarde de l'X-Ray au fichier…</value>
+  </data>
+  <data name="ErrorBuildingXRay" xml:space="preserve">
+    <value>Une erreur est survenue lors de la création du fichier X-Ray</value>
+  </data>
+  <data name="InitialXRayBuiltAddingChapters" xml:space="preserve">
+    <value>Création du fichier X-Ray initial, ajout d'emplacements et de chapitres…</value>
+  </data>
+  <data name="PenNamesRequired" xml:space="preserve">
+    <value>Le vrai nom et le pseudonyme sont requis pour la création du fichier des actions de fin.</value>
+  </data>
+  <data name="AmazonCustomerDetailsNotFoundTitle" xml:space="preserve">
+    <value>Détails du Client Amazon Introuvables</value>
+  </data>
+  <data name="SavingRawml" xml:space="preserve">
+    <value>Enregistrement du balisage brut dans le répertoire dmp…</value>
+  </data>
+  <data name="FailedToValidateAsin" xml:space="preserve">
+    <value>Échec de la validation/correction de l'ASIN</value>
+  </data>
+  <data name="DatabaseNameLengthWarning" xml:space="preserve">
+    <value>ATTENTION: Le nom de la base de données est à sa longueur maximale. Si "{0}" est le titre complet de l'e-book, cela ne devrait pas poser problème.
+Si le titre est censé plus long que cela, vous pourriez avoir une erreur sur votre Kindle (WG micrologiciel inférieur à 5.6).
+Réduisez le titre dans l'application Calibre ou changez le nom de la base de données manuellement.
+</value>
+  </data>
+</root>

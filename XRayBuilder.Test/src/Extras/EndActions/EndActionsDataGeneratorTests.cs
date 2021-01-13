@@ -53,10 +53,9 @@ namespace XRayBuilder.Test.Extras.EndActions
                     AmazonTld = "com",
                     SaveBio = false,
                     UseNewVersion = true,
-                    EditBiography = false,
-                    SaveHtml = false
+                    EditBiography = false
                 }
-            }, CancellationToken.None);
+            }, _ => false, null, CancellationToken.None);
 
             var endActionsDataGenerator = new EndActionsDataGenerator(_logger, _httpClient, _amazonClient, _amazonInfoParser, null);
 
@@ -76,7 +75,7 @@ namespace XRayBuilder.Test.Extras.EndActions
                 bookAsin: endActionsResponse.Book.Asin,
                 bookImageUrl: endActionsResponse.Book.ImageUrl,
                 bookDatabaseName: endActionsResponse.Book.Databasename,
-                bookGuid: endActionsResponse.Book.Guid,
+                bookGuid: endActionsResponse.Book.Guid ?? "",
                 bookErl: metadata.RawMlSize,
                 bookAmazonRating: endActionsResponse.Book.AmazonRating,
                 bookSeriesInfo: endActionsResponse.Book.Series,

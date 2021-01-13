@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -11,12 +11,17 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Roentgen.Logic;
-using XRayBuilder.Core.Libraries.Enumerables.Extensions;
+using XRayBuilder.Core.Libraries.Enumerables;
 using XRayBuilder.Core.Libraries.Images.Util;
+using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
+using XRayBuilder.Core.Logic;
+using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Artifacts;
 using XRayBuilder.Core.XRay.Logic.Aliases;
+using XRayBuilder.Core.XRay.Logic.Parsing;
 using XRayBuilder.Core.XRay.Logic.Terms;
+using XRayBuilder.Core.XRay.Model;
 using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI.UI
@@ -28,57 +33,242 @@ namespace XRayBuilderGUI.UI
         private readonly IAmazonClient _amazonClient;
         private readonly IRoentgenClient _roentgenClient;
         private readonly IAliasesService _aliasesService;
+        private readonly IDirectoryService _directoryService;
+        private readonly IParagraphsService _paragraphsService;
+        private readonly ILogger _logger;
 
         public frmCreateXR(
             ITermsService termsService,
             IAliasesRepository aliasesRepository,
             IAmazonClient amazonClient,
             IRoentgenClient roentgenClient,
-            IAliasesService aliasesService)
+            IAliasesService aliasesService,
+            IDirectoryService directoryService,
+            IParagraphsService paragraphsService,
+            ILogger logger)
         {
             _termsService = termsService;
             _aliasesRepository = aliasesRepository;
             _amazonClient = amazonClient;
             _roentgenClient = roentgenClient;
             _aliasesService = aliasesService;
+            _directoryService = directoryService;
+            _paragraphsService = paragraphsService;
+            _logger = logger;
             InitializeComponent();
 
-            var dgvType = dgvTerms.GetType();
-            var pi = dgvType.GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic);
+            var pi = dgvTerms.GetType().GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic);
             pi?.SetValue(dgvTerms, true, null);
         }
 
-        public void SetMetadata(string asin, string author, string title)
+        public void SetMetadata(IMetadata metadata)
         {
-            txtAuthor.Text = author;
-            txtTitle.Text = title;
-            txtAsin.Text = asin;
+            txtAuthor.Text = metadata.Author;
+            txtTitle.Text = metadata.Title;
+            txtAsin.Text = metadata.Asin;
+            _activeMetadata = metadata;
+
+            // Load the paragraph content in the background before starting the occurrence worker
+            _ = Task.Run(() =>
+            {
+                _paragraphs = _paragraphsService.GetParagraphs(metadata).ToArray();
+                _ = Task.Run(() => TermRefreshWorker(_cts.Token).ConfigureAwait(false), _cts.Token).ConfigureAwait(false);
+            }, _cts.Token).ConfigureAwait(false);
         }
 
-        private readonly ToolTip _toolTip1 = new ToolTip();
-        private List<Term> _terms = new List<Term>(100);
+        private readonly ToolTip _toolTip1 = new();
+        private SortableBindingList<Term> _terms = new(new List<Term>());
+        private IMetadata _activeMetadata;
+        private Paragraph[] _paragraphs;
+
+        private readonly CancellationTokenSource _cts = new();
+        private readonly ConcurrentQueue<Term> _queue = new();
+        private readonly string[] _monitoredColumns =
+        {
+            nameof(Term.Aliases),
+            nameof(Term.Match),
+            nameof(Term.MatchCase),
+            nameof(Term.RegexAliases),
+            nameof(Term.TermName)
+        };
+
+        private DataGridViewColumn[] ColumnDefinitions
+            => new DataGridViewColumn[]
+            {
+                new DataGridViewTextBoxColumn
+                {
+                    HeaderText = "#",
+                    Name = nameof(Term.Occurrences),
+                    DataPropertyName = nameof(Term.Occurrences),
+                    AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells,
+                    ReadOnly = true,
+                    Visible = false,
+                    SortMode = DataGridViewColumnSortMode.Automatic,
+                    DefaultCellStyle = new DataGridViewCellStyle
+                    {
+                        Alignment = DataGridViewContentAlignment.MiddleCenter
+                    }
+                },
+                new DataGridViewImageColumn
+                {
+                    HeaderText = "Type",
+                    Name = nameof(Term.Type),
+                    DataPropertyName = nameof(Term.Type),
+                    ReadOnly = true,
+                    Width = 36,
+                    SortMode = DataGridViewColumnSortMode.NotSortable
+                },
+                new DataGridViewTextBoxColumn
+                {
+                    HeaderText = "Name",
+                    DataPropertyName = nameof(Term.TermName),
+                    AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells,
+                    SortMode = DataGridViewColumnSortMode.Automatic
+                },
+                new DataGridViewTextBoxColumn
+                {
+                    HeaderText = "Aliases",
+                    Name = nameof(Term.Aliases),
+                    DataPropertyName = nameof(Term.Aliases),
+                    Width = 100,
+                    DefaultCellStyle = new DataGridViewCellStyle
+                    {
+                        WrapMode = DataGridViewTriState.True
+                    },
+                    SortMode = DataGridViewColumnSortMode.NotSortable
+                },
+                new DataGridViewTextBoxColumn
+                {
+                    HeaderText = "Description",
+                    DataPropertyName = nameof(Term.Desc),
+                    AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+                    DefaultCellStyle = new DataGridViewCellStyle
+                    {
+                        WrapMode = DataGridViewTriState.True
+                    },
+                    SortMode = DataGridViewColumnSortMode.NotSortable
+                },
+                new DataGridViewCheckBoxColumn
+                {
+                    HeaderText = "M",
+                    ToolTipText = $"Match - Usually enabled.{Environment.NewLine}Disabling this option is useful when you want a character to be displayed but their name doesn't work well for matching.",
+                    DataPropertyName = nameof(Term.Match),
+                    AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells,
+                    SortMode = DataGridViewColumnSortMode.NotSortable
+                },
+                new DataGridViewCheckBoxColumn
+                {
+                    HeaderText = "CS",
+                    ToolTipText = "Case-sensitive - Whether or not to match this term in case-sensitive mode. In general, characters will use this and others will not.",
+                    DataPropertyName = nameof(Term.MatchCase),
+                    AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells,
+                    SortMode = DataGridViewColumnSortMode.NotSortable
+                },
+                new DataGridViewCheckBoxColumn
+                {
+                    HeaderText = "R",
+                    ToolTipText = "Regular expression mode - When enabled, the aliases will be treated as a set of regular expressions.",
+                    DataPropertyName = nameof(Term.RegexAliases),
+                    AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells,
+                    SortMode = DataGridViewColumnSortMode.NotSortable
+                }
+            };
+
+        private void EnqueueTermOccurrencesRefresh(Term term)
+        {
+            // Don't enqueue the same term again if it is already pending or if we don't care about occurrences
+            if (_activeMetadata == null || _queue.Any(t => ReferenceEquals(t, term)))
+                return;
+            term.Occurrences = null;
+            _queue.Enqueue(term);
+        }
+
+        private async Task TermRefreshWorker(CancellationToken cancellationToken)
+        {
+            while (true)
+            {
+                try
+                {
+                    // TODO Add some concurrency to refresh X at a time to improve speed for larger books
+                    while (_queue.TryPeek(out var term))
+                    {
+                        RefreshTermOccurrences(term, cancellationToken);
+                        _queue.TryDequeue(out _);
+                    }
+                    await Task.Delay(100, cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    return;
+                }
+                // Ideally we'd ignore all errors for the sake of keeping the loop going but for now we'll log and exit for debugging
+                catch (Exception ex)
+                {
+                    _logger.Log($"Unexpected error during {nameof(TermRefreshWorker)} loop - {ex.Message}");
+                    return;
+                }
+            }
+        }
+
+        private void RefreshTermOccurrences(Term term, CancellationToken cancellationToken)
+        {
+            if (_activeMetadata == null)
+                return;
+
+            term.Occurrences?.Clear();
+
+            if (term.Match)
+            {
+                IEnumerable<HashSet<Occurrence>> GetOccurenceSets()
+                {
+                    foreach (var paragraph in _paragraphs)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        yield return _termsService.FindOccurrences(_activeMetadata, term, paragraph);
+                    }
+                }
+
+                SetOccurrencesThreadsafe(term, new HashSet<Occurrence>(GetOccurenceSets().SelectMany(o => o)));
+            }
+            else
+                SetOccurrencesThreadsafe(term, new HashSet<Occurrence>());
+        }
+
+        private void SetOccurrencesThreadsafe(Term term, HashSet<Occurrence> occurrences)
+        {
+            if (dgvTerms.InvokeRequired)
+                dgvTerms.BeginInvoke(new Action(() => SetOccurrencesThreadsafe(term, occurrences)));
+            else
+                term.Occurrences = occurrences;
+        }
 
         private void btnAddTerm_Click(object sender, EventArgs e)
         {
-            if (txtName.Text == "") return;
-            Image typeImage = rdoCharacter.Checked ? Resources.character : Resources.setting;
-            dgvTerms.Rows.Add(
-                typeImage,
-                txtName.Text,
-                txtAliases.Text,
-                txtDescription.Text,
-                txtLink.Text,
-                rdoGoodreads.Checked ? "Goodreads" : "Wikipedia",
-                chkMatch.Checked,
-                chkCase.Checked,
-                chkDelete.Checked,
-                chkRegex.Checked);
+            if (string.IsNullOrWhiteSpace(txtName.Text))
+                return;
+
+            var term = new Term
+            {
+                Type = rdoCharacter.Checked ? "character" : "topic",
+                TermName = txtName.Text,
+                Aliases = string.IsNullOrWhiteSpace(txtAliases.Text)
+                    ? new List<string>()
+                    : txtAliases.Text.Split(',').ToList(),
+                Occurrences = null,
+                Desc = txtDescription.Text,
+                Match = chkMatch.Checked,
+                MatchCase = chkCase.Checked,
+                RegexAliases = chkRegex.Checked
+            };
+            _terms.Add(term);
+            EnqueueTermOccurrencesRefresh(term);
+
             txtName.Text = "";
             txtAliases.Text = "";
             txtDescription.Text = "";
-            txtLink.Text = "";
         }
 
+        // todo remove
         private void btnEditTerm_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(txtName.Text) && DialogResult.Cancel == MessageBox.Show(
@@ -100,28 +290,10 @@ namespace XRayBuilderGUI.UI
             txtName.Text = row.Cells[1].Value?.ToString() ?? "";
             txtAliases.Text = row.Cells[2].Value?.ToString() ?? "";
             txtDescription.Text = row.Cells[3].Value?.ToString() ?? "";
-            txtLink.Text = row.Cells[4].Value?.ToString() ?? "";
-            rdoGoodreads.Checked = row.Cells[5].Value?.ToString() == "Goodreads";
-            rdoWikipedia.Checked = row.Cells[5].Value?.ToString() == "Wikipedia";
             chkMatch.Checked = (bool?)row.Cells[6].Value ?? false;
             chkCase.Checked = (bool?)row.Cells[7].Value ?? false;
-            //chkDelete.Checked = (bool)row.Cells[8].Value;
             chkRegex.Checked = (bool?)row.Cells[9].Value ?? false;
             dgvTerms.Rows.Remove(row);
-        }
-
-        private void btnLink_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (txtLink.Text == "")
-                    return;
-                Process.Start(txtLink.Text);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An error occured opening this link: {ex.Message}\r\n{ex.StackTrace}");
-            }
         }
 
         private void btnOpenXml_Click(object sender, EventArgs e)
@@ -141,15 +313,16 @@ namespace XRayBuilderGUI.UI
                 switch (filetype)
                 {
                     case ".xml":
-                        _terms = XmlUtil.DeserializeFile<List<Term>>(openFile.FileName);
+                        _terms = new SortableBindingList<Term>(XmlUtil.DeserializeFile<List<Term>>(openFile.FileName));
                         break;
                     case ".txt":
-                        _terms = _termsService.ReadTermsFromTxt(openFile.FileName).ToList();
+                        _terms = new SortableBindingList<Term>(_termsService.ReadTermsFromTxt(openFile.FileName).ToList());
                         break;
                     default:
                         MessageBox.Show($"Error: Bad file type \"{filetype}\"");
-                        break;
+                        return;
                 }
+                dgvTerms.DataSource = _terms;
                 ReloadTerms();
             }
             catch (Exception ex)
@@ -160,66 +333,54 @@ namespace XRayBuilderGUI.UI
 
         private void ReloadTerms()
         {
-            // todo another path to centralize
-            var aliasFile = $@"{Environment.CurrentDirectory}\ext\{txtAsin.Text}.aliases";
+            var aliasFile = _directoryService.GetAliasPath(txtAsin.Text);
             var d = new Dictionary<string, string>();
-            dgvTerms.Rows.Clear();
             txtName.Text = "";
             txtAliases.Text = "";
             txtDescription.Text = "";
-            txtLink.Text = "";
-            foreach (var t in _terms)
-            {
-                var typeImage = t.Type == "character" ? Resources.character : Resources.setting;
-                dgvTerms.Rows.Add(
-                    typeImage,
-                    t.TermName,
-                    t.Aliases?.Count > 0 ? string.Join(",", t.Aliases) : "",
-                    t.Desc,
-                    t.DescUrl,
-                    t.DescSrc,
-                    t.Match,
-                    t.MatchCase,
-                    false,
-                    t.RegexAliases);
-            }
-            _terms.Clear();
 
-            if (!File.Exists(aliasFile))
-                return;
-
-            if (_terms.Any(term => term.Aliases?.Count > 0))
+            try
             {
-                MessageBox.Show("The XML file already contained aliases, so the .aliases file will be ignored.");
-                return;
-            }
+                if (!File.Exists(aliasFile))
+                    return;
 
-            using (var streamReader = new StreamReader(aliasFile, Encoding.UTF8))
-            {
-                while (!streamReader.EndOfStream)
+                if (_terms.Any(term => term.Aliases?.Count > 0))
                 {
-                    var input = streamReader.ReadLine();
-                    var temp = input?.Split('|')
-                               ?? throw new IOException("Empty or invalid file.");
-                    if (temp.Length <= 1 || temp[0] == "" || temp[0].Substring(0, 1) == "#")
-                        continue;
-                    var temp2 = input.Substring(input.IndexOf('|') + 1);
-                    if (!d.ContainsKey(temp[0]))
-                        d.Add(temp[0], temp2);
+                    MessageBox.Show("The XML file already contained aliases, so the .aliases file will be ignored.");
+                    return;
+                }
+
+                using (var streamReader = new StreamReader(aliasFile, Encoding.UTF8))
+                {
+                    while (!streamReader.EndOfStream)
+                    {
+                        var input = streamReader.ReadLine();
+                        var temp = input?.Split('|')
+                                   ?? throw new IOException("Empty or invalid file.");
+                        if (temp.Length <= 1 || temp[0] == "" || temp[0].Substring(0, 1) == "#")
+                            continue;
+                        var temp2 = input.Substring(input.IndexOf('|') + 1);
+                        if (!d.ContainsKey(temp[0]))
+                            d.Add(temp[0], temp2);
+                    }
+                }
+
+                foreach (var term in _terms)
+                {
+                    if (d.TryGetValue(term.TermName, out var aliases))
+                        term.Aliases = aliases.Split(',').OrderByDescending(a => a.Length).ToList();
                 }
             }
-            foreach (DataGridViewRow row in dgvTerms.Rows)
+            finally
             {
-                var name = row.Cells[1].Value.ToString();
-                if (d.TryGetValue(name, out var aliases))
-                    row.Cells[2].Value = aliases;
+                foreach (var term in _terms)
+                    EnqueueTermOccurrencesRefresh(term);
             }
         }
 
         private void btnRemoveTerm_Click(object sender, EventArgs e)
         {
-            foreach (var row in dgvTerms.Rows.Cast<DataGridViewRow>().Where(row => row.Selected))
-                dgvTerms.Rows.Remove(row);
+            _terms.Clear();
         }
 
         private void btnSaveXML_Click(object sender, EventArgs e)
@@ -254,9 +415,41 @@ namespace XRayBuilderGUI.UI
             }
         }
 
+        private void dgvTerms_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (!_monitoredColumns.Contains(dgvTerms[e.ColumnIndex, e.RowIndex].OwningColumn.DataPropertyName))
+                return;
+
+            if (!(dgvTerms[e.ColumnIndex, e.RowIndex].OwningRow.DataBoundItem is Term term))
+                return;
+            // dgvTerms.Refresh();
+            EnqueueTermOccurrencesRefresh(term);
+        }
+
+        /// <summary>
+        /// Used to force checkboxes to commit their state change immediately rather than waiting for the cell to lose focus
+        /// </summary>
+        private void dgvTerms_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == -1 || e.RowIndex == -1)
+                return;
+
+            var cell = dgvTerms[e.ColumnIndex, e.RowIndex];
+            if (cell is not DataGridViewCheckBoxCell)
+                return;
+            dgvTerms.CommitEdit(DataGridViewDataErrorContexts.Commit);
+        }
+
         private void dgvTerms_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            btnEditTerm_Click(sender, e);
+            if (e.RowIndex == -1 || e.ColumnIndex == -1 || e.Button != MouseButtons.Left)
+                return;
+
+            if (dgvTerms[e.ColumnIndex, e.RowIndex] is not DataGridViewTextBoxCell)
+                return;
+
+            dgvTerms.CurrentCell = dgvTerms[e.ColumnIndex, e.RowIndex];
+            dgvTerms.BeginEdit(true);
         }
 
         private void dgvTerms_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
@@ -270,15 +463,20 @@ namespace XRayBuilderGUI.UI
 
         private void frmCreateXR_Load(object sender, EventArgs e)
         {
-            dgvTerms.Rows.Clear();
+            dgvTerms.AutoGenerateColumns = true;
+            dgvTerms.AutoSize = true;
+            dgvTerms.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
+            dgvTerms.DataSource = _terms;
+            dgvTerms.CellFormatting += dgvTerms_CellFormatting;
+            dgvTerms.Columns.Clear();
+            dgvTerms.Columns.AddRange(ColumnDefinitions);
+            if (_activeMetadata != null)
+                dgvTerms.Columns[nameof(Term.Occurrences)]!.Visible = true;
+
             txtName.Text = "";
             txtAliases.Text = "";
             txtDescription.Text = "";
-            txtLink.Text = "";
-            for (var i = 5; i <= 9; i++)
-                dgvTerms.Columns[i].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
             _toolTip1.SetToolTip(btnAddTerm, "Add this character or\r\ntopic to the term list.");
-            _toolTip1.SetToolTip(btnLink, "Open this link in your\r\ndefault browser.");
             _toolTip1.SetToolTip(btnEditTerm, "Edit the selected term. It will be\r\nremoved from the list and used to fill\r\nin the information above. Don't\r\nforget to add to the list when done.");
             _toolTip1.SetToolTip(btnRemoveTerm, "Remove the selected term from the\r\nterm list. This action is irreversible.");
             _toolTip1.SetToolTip(btnClear, "Clear the term list.");
@@ -287,39 +485,45 @@ namespace XRayBuilderGUI.UI
             _toolTip1.SetToolTip(btnDownloadTerms, "Download terms from Roentgen if any are available.\r\nExisting terms will be cleared!");
         }
 
+        private void dgvTerms_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            switch (dgvTerms.Columns[e.ColumnIndex].Name)
+            {
+                case nameof(Term.Occurrences):
+                    e.Value = ((HashSet<Occurrence>) e.Value)?.Count.ToString("N0") ?? "…";
+                    break;
+                case nameof(Term.Type):
+                {
+                    var cell = dgvTerms[e.ColumnIndex, e.RowIndex];
+                    var value = (string) e.Value;
+                    cell.ToolTipText = value == "character" ? "Character" : "Setting";
+                    e.Value = value == "character" ? Resources.character : Resources.setting;
+                    break;
+                }
+                case nameof(Term.Aliases):
+                    e.Value = string.Join(",", ((List<string>) e.Value).OrderByDescending(s => s.Length));
+                    break;
+            }
+        }
+
+        private void dgvTerms_CellParsing(object sender, DataGridViewCellParsingEventArgs e)
+        {
+            switch (dgvTerms.Columns[e.ColumnIndex].Name)
+            {
+                case nameof(Term.Aliases):
+                    var aliases = e.Value.ToString()
+                        .Split(',')
+                        .Select(s => s.Trim())
+                        .OrderByDescending(s => s.Length).ToList();
+                    e.Value = aliases;
+                    e.ParsingApplied = true;
+                    break;
+            }
+        }
+
         private void tsmDelete_Click(object sender, EventArgs e)
         {
             btnRemoveTerm_Click(sender, e);
-        }
-
-        private void tsmEdit_Click(object sender, EventArgs e)
-        {
-            btnEditTerm_Click(sender, e);
-        }
-
-        private IEnumerable<Term> GetTermsFromGrid()
-        {
-            var termId = 1;
-            foreach (DataGridViewRow row in dgvTerms.Rows)
-            {
-                yield return new Term
-                {
-                    Id = termId++,
-                    Type = ImageUtil.AreEqual((Bitmap) row.Cells[0].Value, Resources.character)
-                        ? "character"
-                        : "topic",
-                    TermName = row.Cells[1].Value?.ToString() ?? "",
-                    Aliases = !string.IsNullOrEmpty(row.Cells[2].Value?.ToString())
-                        ? row.Cells[2].Value.ToString().Split(',').Distinct().ToList()
-                        : new List<string>(),
-                    Desc = row.Cells[3].Value?.ToString() ?? "",
-                    DescUrl = row.Cells[4].Value?.ToString() ?? "",
-                    DescSrc = row.Cells[5].Value?.ToString() ?? "",
-                    Match = (bool?) row.Cells[6].Value ?? false,
-                    MatchCase = (bool?) row.Cells[7].Value ?? false,
-                    RegexAliases = (bool?) row.Cells[9].Value ?? false
-                };
-            }
         }
 
         private void CreateTerms()
@@ -327,24 +531,20 @@ namespace XRayBuilderGUI.UI
             if (!Directory.Exists($@"{Environment.CurrentDirectory}\xml\"))
                 Directory.CreateDirectory($@"{Environment.CurrentDirectory}\xml\");
             var outfile = Environment.CurrentDirectory + $@"\xml\{txtAsin.Text}.entities.xml";
-            _terms.Clear();
-            _terms = GetTermsFromGrid().ToList();
             XmlUtil.SerializeToFile(_terms, outfile);
         }
 
         private void btnClear_Click(object sender, EventArgs e)
         {
-            if (dgvTerms.Rows.Count <= 0)
+            if (!_terms.Any())
                 return;
 
             if (DialogResult.OK != MessageBox.Show("Clearing the term list is irreversible!", "Are you sure?", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2))
                 return;
 
-            dgvTerms.Rows.Clear();
             txtName.Text = "";
             txtAliases.Text = "";
             txtDescription.Text = "";
-            txtLink.Text = "";
             _terms.Clear();
         }
 
@@ -358,7 +558,7 @@ namespace XRayBuilderGUI.UI
         {
             if (!AmazonClient.IsAsin(txtAsin.Text))
             {
-                MessageBox.Show($"'{txtAsin.Text} is not a valid ASIN.\r\nRoentgen requires one!");
+                MessageBox.Show($"'{txtAsin.Text}' is not a valid ASIN.\r\nRoentgen requires one!");
                 return;
             }
 
@@ -378,7 +578,9 @@ namespace XRayBuilderGUI.UI
                     return;
                 }
 
-                _terms = terms.Where(term => term.Type == "character" || Settings.Default.includeTopics).ToList();
+                _terms.Clear();
+                foreach (var term in terms.Where(term => term.Type == "character" || Settings.Default.includeTopics))
+                    _terms.Add(term);
                 var trueCount = _terms.Count;
                 ReloadTerms();
                 MessageBox.Show($"Successfully downloaded {trueCount} terms from Roentgen!");
@@ -391,19 +593,10 @@ namespace XRayBuilderGUI.UI
 
         private void btnGenerateAliases_Click(object sender, EventArgs e)
         {
-            if (dgvTerms.Rows.Count < 0)
-                return;
-
-            var aliasesByTerm = _aliasesService.GenerateAliases(GetTermsFromGrid()).ToDictionary();
-            foreach (DataGridViewRow row in dgvTerms.Rows)
+            foreach (var term in _terms)
             {
-                var name = row.Cells[1].Value.ToString();
-                if (aliasesByTerm.TryGetValue(name, out var aliases) && aliases.Any())
-                {
-                    row.Cells[2].Value = string.IsNullOrEmpty((string) row.Cells[2].Value)
-                        ? string.Join(",", aliases)
-                        : $"{row.Cells[2].Value}{string.Join(",", aliases)}";
-                }
+                term.Aliases = _aliasesService.GenerateAliasesForTerm(term).ToList();
+                EnqueueTermOccurrencesRefresh(term);
             }
         }
 
@@ -415,8 +608,16 @@ namespace XRayBuilderGUI.UI
             if (DialogResult.No == MessageBox.Show("Are you sure you want to clear all aliases?", "Are you sure?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2))
                 return;
 
-            foreach (DataGridViewRow row in dgvTerms.Rows)
-                row.Cells[2].Value = "";
+            foreach (var term in _terms)
+            {
+                term.Aliases.Clear();
+                EnqueueTermOccurrencesRefresh(term);
+            }
+        }
+
+        private void frmCreateXR_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _cts.Cancel();
         }
     }
 }

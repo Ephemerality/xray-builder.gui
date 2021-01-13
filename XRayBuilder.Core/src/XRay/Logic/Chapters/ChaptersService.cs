@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using HtmlAgilityPack;
 using JetBrains.Annotations;
 using XRayBuilder.Core.Libraries;
@@ -27,11 +26,11 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
         /// <summary>
         /// Read the chapters or search for them and apply them to the given <param name="xray"></param>
         /// </summary>
-        // TODO Do something about unattended/dialog stuff
-        public void HandleChapters(XRay xray, string asin, long mlLen, HtmlDocument doc, string rawMl, bool overwriteChapters, SafeShowDelegate safeShow, bool unattended, bool enableEdit)
+        public void HandleChapters(XRay xray, string asin, long mlLen, HtmlDocument doc, string rawMl, bool overwriteChapters, [CanBeNull] Func<bool> editChaptersCallback)
         {
             //Similar to aliases, if chapters definition exists, load it. Otherwise, attempt to build it from the book
-            var chapterFile = $@"{Environment.CurrentDirectory}\ext\{asin}.chapters";
+            // todo directory service
+            var chapterFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext", $"{asin}.chapters");
             if (File.Exists(chapterFile) && !overwriteChapters)
             {
                 try
@@ -54,7 +53,7 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
                 }
                 catch (Exception ex)
                 {
-                    _logger.Log("Error searching for chapters: " + ex.Message);
+                    _logger.Log($"Error searching for chapters: {ex.Message}");
                 }
                 //Built chapters list is saved for manual editing
                 if (xray.Chapters.Count > 0)
@@ -66,24 +65,21 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
                     _logger.Log($"No chapters detected.\r\nYou can create a file at {chapterFile} if you want to define chapters manually.");
             }
 
-            if (!unattended && enableEdit)
-                if (DialogResult.Yes ==
-                    safeShow("Would you like to open the chapters file in notepad for editing?", "Chapters",
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
-                {
-                    Functions.RunNotepad(chapterFile);
-                    xray.Chapters.Clear();
+            if (editChaptersCallback != null && editChaptersCallback())
+            {
+                Functions.RunNotepad(chapterFile);
+                xray.Chapters.Clear();
 
-                    try
-                    {
-                        xray.Chapters = LoadChapters(asin).ToList();
-                        _logger.Log("Reloaded chapters from edited file.");
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Log($"An error occurred reading chapters from {chapterFile}: {ex.Message}");
-                    }
+                try
+                {
+                    xray.Chapters = LoadChapters(asin).ToList();
+                    _logger.Log("Reloaded chapters from edited file.");
                 }
+                catch (Exception ex)
+                {
+                    _logger.Log($"An error occurred reading chapters from {chapterFile}: {ex.Message}");
+                }
+            }
 
             //If no chapters were found, add a default chapter that spans the entire book
             //Define srl and erl so "progress bar" shows up correctly
@@ -115,20 +111,20 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
 
         private void SaveChapters(XRay xray)
         {
-            var path = Environment.CurrentDirectory + @"\ext\";
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext");
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            using var streamWriter = new StreamWriter($"{path}{xray.Asin}.chapters", false, Encoding.UTF8);
+            using var streamWriter = new StreamWriter(Path.Combine(path, $"{xray.Asin}.chapters"), false, Encoding.UTF8);
             foreach (var chapter in xray.Chapters)
                 streamWriter.WriteLine($"{chapter.Name}|{chapter.Start}|{chapter.End}");
         }
 
         private IEnumerable<Chapter> LoadChapters(string asin)
         {
-            var path = Environment.CurrentDirectory + @"\ext\" + asin + ".chapters";
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext", $"{asin}.chapters");
             if (!File.Exists(path))
                 throw new Exception($"Chapters file does not exist: {path}");
-            using var streamReader = new StreamReader(Environment.CurrentDirectory + @"\ext\" + asin + ".chapters", Encoding.UTF8);
+            using var streamReader = new StreamReader(path, Encoding.UTF8);
             while (!streamReader.EndOfStream)
             {
                 var tmp = streamReader.ReadLine()?.Split('|');
@@ -225,7 +221,7 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
                 }
                 catch (Exception ex)
                 {
-                    _logger.Log("Error searching for Calibre chapters: " + ex.Message);
+                    _logger.Log($"Error searching for Calibre chapters: {ex.Message}");
                 }
             }
 

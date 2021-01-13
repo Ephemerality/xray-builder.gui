@@ -1,10 +1,14 @@
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
+using XRayBuilder.Core.XRay.Model;
 
 namespace XRayBuilder.Core.XRay.Artifacts
 {
-    public sealed class Term
+    public sealed class Term : INotifyPropertyChanged
     {
         [JsonProperty("type")]
         public string Type { get; set; }
@@ -25,11 +29,17 @@ namespace XRayBuilder.Core.XRay.Artifacts
         public string DescUrl { get; set; }
 
         [JsonIgnore]
-        public List<string> Aliases { get; set; } = new List<string>();
+        public List<string> Aliases
+        {
+            get => _aliases;
+            set
+            {
+                _aliases = value;
+                OnPropertyChanged();
+            }
+        }
 
-        [XmlIgnore]
-        [JsonProperty("locs")]
-        public List<long[]> Locs { get; set; } = new List<long[]>();
+        private List<string> _aliases = new();
 
         [XmlIgnore]
         [JsonIgnore]
@@ -37,8 +47,16 @@ namespace XRayBuilder.Core.XRay.Artifacts
 
         [XmlIgnore]
         [JsonIgnore]
-        // TODO This is dumb
-        public List<int[]> Occurrences { get; set; } = new List<int[]>();
+        public HashSet<Occurrence> Occurrences
+        {
+            get => _occurrences;
+            set
+            {
+                _occurrences = value;
+                OnPropertyChanged();
+            }
+        }
+        private HashSet<Occurrence> _occurrences = new();
 
         [JsonIgnore]
         public bool MatchCase { get; set; }
@@ -50,6 +68,14 @@ namespace XRayBuilder.Core.XRay.Artifacts
         /// Determines if the aliases are in Regex format
         /// </summary>
         [JsonIgnore]
-        public bool RegexAliases;
+        public bool RegexAliases { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

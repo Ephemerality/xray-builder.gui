@@ -6,11 +6,13 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Dasync.Collections;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Images.Extensions;
 using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Model;
 
 namespace XRayBuilder.Core.Extras.AuthorProfile
@@ -29,18 +31,18 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
         }
 
         // TODO: Review this...
-        public async Task<Response> GenerateAsync(Request request, CancellationToken cancellationToken = default)
+        public async Task<Response> GenerateAsync(Request request, Func<string, bool> editBioCallback, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             AuthorSearchResults searchResults = null;
             // Attempt to download from the alternate site, if present. If it fails in some way, try .com
             // If the .com search crashes, it will crash back to the caller in frmMain
             try
             {
-                searchResults = await _amazonClient.SearchAuthor(request.Book.Author, request.Book.Asin, request.Settings.AmazonTld, request.Settings.SaveHtml, cancellationToken);
+                searchResults = await _amazonClient.SearchAuthor(request.Book.Author, request.Book.Asin, request.Settings.AmazonTld, cancellationToken);
             }
             catch (Exception ex)
             {
-                _logger.Log("Error searching Amazon." + request.Settings.AmazonTld + ": " + ex.Message + "\r\n" + ex.StackTrace);
+                _logger.Log($"Error searching Amazon.{request.Settings.AmazonTld}: {ex.Message}\r\n{ex.StackTrace}");
             }
             finally
             {
@@ -51,7 +53,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                     {
                         _logger.Log("Trying again with Amazon.com.");
                         request.Settings.AmazonTld = "com";
-                        searchResults = await _amazonClient.SearchAuthor(request.Book.Author, request.Book.Asin, request.Settings.AmazonTld, request.Settings.SaveHtml, cancellationToken);
+                        searchResults = await _amazonClient.SearchAuthor(request.Book.Author, request.Book.Asin, request.Settings.AmazonTld, cancellationToken);
                     }
                 }
             }
@@ -66,7 +68,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
 //                try
 //                {
 //                    _logger.Log("Saving author's Amazon webpage...");
-//                    File.WriteAllText(Environment.CurrentDirectory + string.Format(@"\dmp\{0}.authorpageHtml.txt", request.Book.Asin),
+//                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + string.Format(@"\dmp\{0}.authorpageHtml.txt", request.Book.Asin),
 //                        searchResults.AuthorHtmlDoc.DocumentNode.InnerHtml);
 //                }
 //                catch (Exception ex)
@@ -83,15 +85,15 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                 {
                     var fileText = Functions.ReadFromFile(file);
                     if (string.IsNullOrEmpty(fileText))
-                        _logger.Log("Found biography file, but it is empty!\r\n" + file);
+                        _logger.Log($"Found biography file, but it is empty!\r\n{file}");
                     else
-                        _logger.Log("Using biography from " + file + ".");
+                        _logger.Log($"Using biography from {file}.");
 
                     return fileText;
                 }
                 catch (Exception ex)
                 {
-                    _logger.Log("An error occurred while opening " + file + "\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                    _logger.Log($"An error occurred while opening {file}\r\n{ex.Message}\r\n{ex.StackTrace}");
                 }
 
                 return null;
@@ -99,7 +101,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
 
             // TODO: Separate out biography stuff
             string biography = null;
-            var bioFile = Environment.CurrentDirectory + @"\ext\" + authorAsin + ".bio";
+            var bioFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext", $"{authorAsin}.bio");
             var readFromFile = false;
             if (request.Settings.SaveBio && File.Exists(bioFile))
             {
@@ -124,7 +126,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                         if (lastPunc > lastSpace)
                             biography = searchResults.Biography.Substring(0, lastPunc + 1);
                         else
-                            biography = searchResults.Biography.Substring(0, lastSpace) + '\u2026';
+                            biography = $"{searchResults.Biography.Substring(0, lastSpace)}{'\u2026'}";
                     }
                     else
                         biography = searchResults.Biography;
@@ -142,14 +144,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                     ? "Would you like to edit the existing biography?"
                     : "Author biography found on Amazon! Would you like to edit it?";
 
-            // TODO: No dialogs here
-
-            if (request.Settings.EditBiography
-                && System.Windows.Forms.DialogResult.Yes ==
-                System.Windows.Forms.MessageBox.Show(
-                    message, "Biography",
-                    System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question,
-                    System.Windows.Forms.MessageBoxDefaultButton.Button2))
+            if (editBioCallback != null && editBioCallback(message))
             {
                 if (!File.Exists(bioFile))
                     File.WriteAllText(bioFile, string.Empty);
@@ -169,18 +164,17 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                 {
                     try
                     {
-                        _logger.Log("Saving biography to " + bioFile);
+                        _logger.Log($"Saving biography to {bioFile}");
                         using var streamWriter = new StreamWriter(bioFile, false, System.Text.Encoding.UTF8);
                         await streamWriter.WriteAsync(biography);
                     }
                     catch (Exception ex)
                     {
-                        _logger.Log("An error occurred while writing biography.\r\n" + ex.Message + "\r\n" + ex.StackTrace);
+                        _logger.Log($"An error occurred while writing biography.\r\n{ex.Message}\r\n{ex.StackTrace}");
                         return null;
                     }
                 }
-                if (System.Windows.Forms.DialogResult.Yes == System.Windows.Forms.MessageBox.Show("Would you like to open the biography file in notepad for editing?", "Biography",
-                   System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question, System.Windows.Forms.MessageBoxDefaultButton.Button2))
+                if (editBioCallback != null && editBioCallback("Would you like to open the biography file in notepad for editing?"))
                 {
                     Functions.RunNotepad(bioFile);
                     biography = ReadBio(bioFile);
@@ -210,11 +204,14 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                 _logger.Log("Gathering metadata for author's other books...");
                 try
                 {
-                    await foreach (var book in _amazonClient.EnhanceBookInfos(searchResults.Books, cancellationToken))
-                    {
-                        // todo progress
-                        bookBag.Add(book);
-                    }
+                    progress?.Set(0, searchResults.Books.Length);
+                    await _amazonClient
+                        .EnhanceBookInfos(searchResults.Books, cancellationToken)
+                        .ForEachAsync(book =>
+                        {
+                            bookBag.Add(book);
+                            progress?.Add(1);
+                        }, cancellationToken);
                 }
                 catch (Exception ex)
                 {
@@ -246,7 +243,6 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             public bool UseNewVersion { get; set; }
             public bool SaveBio { get; set; }
             public bool EditBiography { get; set; }
-            public bool SaveHtml { get; set; }
         }
 
         public sealed class Request

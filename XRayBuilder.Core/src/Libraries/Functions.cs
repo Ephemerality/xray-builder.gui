@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using HtmlAgilityPack;
+using JetBrains.Annotations;
 using XRayBuilder.Core.Model;
 
 namespace XRayBuilder.Core.Libraries
@@ -80,7 +81,7 @@ namespace XRayBuilder.Core.Libraries
             double lineCount = 0;
             if (!File.Exists(rawMl) || bookInfo == null)
             {
-                output = "Error: RawML could not be found, aborting.\r\nPath: " + rawMl;
+                output = $"Error: RawML could not be found, aborting.\r\nPath: {rawMl}";
                 return output;
             }
             var bookDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
@@ -146,7 +147,7 @@ namespace XRayBuilder.Core.Libraries
             if (author.Contains(','))
             {
                 var parts = author.Split(',');
-                author = parts[1].Trim() + " " + parts[0].Trim();
+                author = $"{parts[1].Trim()} {parts[0].Trim()}";
             }
             return author;
         }
@@ -173,8 +174,12 @@ namespace XRayBuilder.Core.Libraries
         /// <summary>
         /// Process GUID. If in decimal form, convert to hex.
         /// </summary>
+        [CanBeNull]
         public static string ConvertGuid(string guid)
         {
+            if (guid == null)
+                return null;
+
             if (Regex.IsMatch(guid, "/[a-zA-Z]/", RegexOptions.Compiled))
                 guid = guid.ToUpper();
             else

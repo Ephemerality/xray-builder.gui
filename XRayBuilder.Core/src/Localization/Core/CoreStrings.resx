@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="root" msdata:IsDataSet="true">
+		    $END$
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Warning" xml:space="preserve">
+		<value>Warning</value>
+	</data>
+	<data name="CouldNotLocateParagraphsNormally" xml:space="preserve">
+		<value>Could not find any paragraphs normally (p elements or divs with class 'paragraph').</value>
+	</data>
+	<data name="SearchingAllDivs" xml:space="preserve">
+		<value>Searching all book contents (all div elements), which may produce odd results.</value>
+	</data>
+	<data name="CouldNotLocateAnyParagraphs" xml:space="preserve">
+		<value>Could not find any paragraphs in this e-book using any known methods.</value>
+	</data>
+	<data name="ScanningEbookContent" xml:space="preserve">
+		<value>Scanning e-book content…</value>
+	</data>
+	<data name="ScanTime" xml:space="preserve">
+		<value>Scan time: {0}</value>
+	</data>
+	<data name="ConsiderAddingAliases" xml:space="preserve">
+		<value>Consider adding aliases for this term.</value>
+	</data>
+	<data name="NoLocationsFoundForTerm" xml:space="preserve">
+		<value>No locations were found for the term "{0}"</value>
+	</data>
+</root>

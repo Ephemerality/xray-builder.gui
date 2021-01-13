@@ -4,14 +4,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using XRayBuilder.Core.Config;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Extras.Artifacts;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Logic;
 using XRayBuilder.Core.Unpack.Mobi;
 using XRayBuilder.Core.XRay.Logic;
 using XRayBuilder.Core.XRay.Logic.Aliases;
 using XRayBuilder.Core.XRay.Logic.Chapters;
+using XRayBuilder.Core.XRay.Logic.Parsing;
 using XRayBuilder.Core.XRay.Logic.Terms;
 using XRayBuilder.Test.XRay;
 
@@ -25,15 +28,17 @@ namespace XRayBuilder.Test
         private ChaptersService _chaptersService;
         private IXRayService _xrayService;
         private ITermsService _termsService;
+        private IDirectoryService _directoryService;
 
         [SetUp]
         public void Setup()
         {
             _logger = new Logger();
-            _termsService = new TermsService();
+            _termsService = new TermsService(new XRayBuilderConfig());
             _file = new SecondarySourceFile(_logger, _termsService);
             _chaptersService = new ChaptersService(_logger);
-            _xrayService = new XRayService(_logger, _chaptersService, new AliasesRepository(_logger, new AliasesService(_logger)));
+            _directoryService = new DirectoryService(_logger, null);
+            _xrayService = new XRayService(_logger, _chaptersService, new AliasesRepository(_logger, new AliasesService(_logger), _directoryService), _directoryService, _termsService, new ParagraphsService());
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
@@ -47,7 +52,7 @@ namespace XRayBuilder.Test
         public async Task XRayXMLAliasTest(Book book)
         {
             var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, "com", true, _file, null, CancellationToken.None);
-            _xrayService.ExportAndDisplayTerms(xray, xray.AliasPath, true, false);
+            _xrayService.ExportAndDisplayTerms(xray, _file, true, false);
             FileAssert.AreEqual($"ext\\{book.Asin}.aliases", $"testfiles\\{book.Asin}.aliases");
         }
 
@@ -58,7 +63,7 @@ namespace XRayBuilder.Test
             xray.Unattended = true;
             var fakeMetadata = new Metadata();
             using var fs = new FileStream(book.Rawml, FileMode.Open);
-            _xrayService.ExpandFromRawMl(xray, fakeMetadata, fs, false, true, true, 0, true, null, null, CancellationToken.None, false, false);
+            _xrayService.ExpandFromRawMl(xray, fakeMetadata, fs, true, true, 0, true, null, null, CancellationToken.None, false, false);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
@@ -68,7 +73,7 @@ namespace XRayBuilder.Test
             xray.Unattended = true;
             var fakeMetadata = new Metadata();
             using var fs = new FileStream(book.Rawml, FileMode.Open);
-            _xrayService.ExpandFromRawMl(xray, fakeMetadata, fs, false, false, true, 0, true, null, null, CancellationToken.None, false, false);
+            _xrayService.ExpandFromRawMl(xray, fakeMetadata, fs, false, true, 0, true, null, null, CancellationToken.None, false, false);
             FileAssert.AreEqual($"ext\\{book.Asin}.chapters", $"testfiles\\{book.Asin}.chapters");
         }
     }

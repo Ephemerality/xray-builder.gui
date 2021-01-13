@@ -163,6 +163,7 @@
             // lblID
             // 
             this.lblID.AutoEllipsis = true;
+            this.lblID.AutoSize = true;
             this.lblID.Location = new System.Drawing.Point(70, 76);
             this.lblID.Name = "lblID";
             this.lblID.Size = new System.Drawing.Size(76, 13);

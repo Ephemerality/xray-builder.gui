@@ -1,5 +1,7 @@
 #if NETFRAMEWORK
 using Pluralize.NET;
+#else
+using Pluralize.NET.Core;
 #endif
 using System;
 using System.Globalization;
@@ -25,6 +27,13 @@ namespace XRayBuilder.Core.Libraries.Primitives.Extensions
             return count == 1
                 ? value
                 : _pluralizer.Pluralize(value);
+        }
+
+        public static int? TryParseInt(this string s)
+        {
+            return s.TryParseInt(NumberStyles.AllowThousands, CultureInfo.CurrentCulture)
+                   ?? s.TryParseInt(NumberStyles.AllowThousands, new CultureInfo("nl-NL"))
+                   ?? s.TryParseInt(NumberStyles.AllowThousands, new CultureInfo("en-US"));
         }
 
         public static int? TryParseInt(this string s, NumberStyles style, IFormatProvider provider)
@@ -64,6 +73,18 @@ namespace XRayBuilder.Core.Libraries.Primitives.Extensions
         {
             var pattern = new Regex("[^ -~]+");
             return pattern.Replace(value, "");
+        }
+
+        /// <summary>
+        /// Returns the specified string converted to Title Case
+        /// </summary>
+        public static string ToTitleCase(this string value)
+        {
+            if (string.IsNullOrEmpty(value) || value.Any(t => char.IsLetter(t) && !char.IsUpper(t)))
+                return value;
+
+            var textInfo = new CultureInfo("en-US",false).TextInfo;
+            return textInfo.ToTitleCase(value.ToLower());
         }
     }
 }

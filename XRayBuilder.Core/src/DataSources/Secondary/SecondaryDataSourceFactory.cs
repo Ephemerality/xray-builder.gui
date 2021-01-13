@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using XRayBuilder.Core.Libraries;
 
@@ -10,13 +11,17 @@ namespace XRayBuilder.Core.DataSources.Secondary
         public SecondaryDataSourceFactory(
             SecondarySourceShelfari shelfari,
             SecondarySourceGoodreads goodreads,
-            SecondarySourceFile file)
+            SecondarySourceFile file,
+            SecondarySourceLibraryThing libraryThing,
+            SecondarySourceRoentgen roentgen)
         {
             Dictionary = new Dictionary<Enum, ISecondarySource>
             {
                 {Enum.Shelfari, shelfari},
                 {Enum.Goodreads, goodreads},
-                {Enum.File, file}
+                {Enum.File, file},
+                {Enum.LibraryThing, libraryThing},
+                {Enum.Roentgen, roentgen}
             };
         }
 
@@ -24,9 +29,18 @@ namespace XRayBuilder.Core.DataSources.Secondary
         {
             Shelfari,
             Goodreads,
-            File
+            File,
+            LibraryThing,
+            Roentgen
         }
 
-        protected override Dictionary<Enum, ISecondarySource> Dictionary { get; }
+        protected override IReadOnlyDictionary<Enum, ISecondarySource> Dictionary { get; }
+
+        [CanBeNull]
+        public ISecondarySource GetInferredSource(string urlOrPath)
+        {
+            var matchingSources = Dictionary.Values.Where(source => source.IsMatchingUrl(urlOrPath)).ToArray();
+            return matchingSources.Length == 1 ? matchingSources.First() : null;
+        }
     }
 }

@@ -12,12 +12,13 @@ using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Model;
+using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Artifacts;
 
 namespace XRayBuilder.Core.DataSources.Secondary
 {
     [UsedImplicitly]
-    public sealed class SecondarySourceShelfari : ISecondarySource
+    public sealed class SecondarySourceShelfari : SecondarySource
     {
         private readonly ILogger _logger;
         private readonly IHttpClient _httpClient;
@@ -30,10 +31,10 @@ namespace XRayBuilder.Core.DataSources.Secondary
             _httpClient = httpClient;
         }
 
-        public string Name => "Shelfari";
-        public bool SearchEnabled { get; } = false;
-        public int UrlLabelPosition { get; } = 6;
-        public bool SupportsNotableClips { get; } = true;
+        public override string Name => "Shelfari";
+        public override bool SearchEnabled { get; } = false;
+        public override int UrlLabelPosition { get; } = 6;
+        public override bool SupportsNotableClips { get; } = true;
 
         // private string FindShelfariURL(HtmlDocument shelfariHtmlDoc, string author, string title)
         // {
@@ -80,20 +81,22 @@ namespace XRayBuilder.Core.DataSources.Secondary
         //     return "";
         // }
 
-        public Task<IEnumerable<BookInfo>> SearchBookAsync(string author, string title, CancellationToken cancellationToken = default)
+        public override bool IsMatchingUrl(string url)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
-        public Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
+        public override Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
             => Task.FromResult((SeriesInfo) null);
 
-        public async Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
+        public override async Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
         {
-            if (sourceHtmlDoc == null)
-            {
-                sourceHtmlDoc = await _httpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
-            }
+            sourceHtmlDoc ??= await _httpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
             var pageNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_FirstEdition']");
             var node1 = pageNode?.SelectSingleNode(".//div/div");
             if (node1 == null)
@@ -113,20 +116,17 @@ namespace XRayBuilder.Core.DataSources.Secondary
             return false;
         }
 
-        public Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
+        public override Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }
 
-        public async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
         {
             _logger.Log("Downloading Shelfari page...");
             var terms = new List<Term>();
 
-            if (sourceHtmlDoc == null)
-            {
-                sourceHtmlDoc = await _httpClient.GetPageAsync(dataUrl, cancellationToken);
-            }
+            sourceHtmlDoc ??= await _httpClient.GetPageAsync(dataUrl, cancellationToken);
 
             //Constants for wiki processing
             var sections = new Dictionary<string, string>
@@ -140,7 +140,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
             foreach (var header in sections.Keys)
             {
                 var characterNodes =
-                    sourceHtmlDoc.DocumentNode.SelectNodes("//div[@id='" + header + "']//ul[@class='li_6']/li");
+                    sourceHtmlDoc.DocumentNode.SelectNodes($"//div[@id='{header}']//ul[@class='li_6']/li");
                 if (characterNodes == null) continue; //Skip section if not found on page
                 foreach (var li in characterNodes)
                 {
@@ -166,7 +166,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
                         newTerm.MatchCase = false;
                     //Default glossary terms to be case insensitive when searching through book
                     if (terms.Select(t => t.TermName).Contains(newTerm.TermName))
-                        _logger.Log("Duplicate term \"" + newTerm.TermName + "\" found. Ignoring this duplicate.");
+                        _logger.Log($"Duplicate term \"{newTerm.TermName}\" found. Ignoring this duplicate.");
                     else
                         terms.Add(newTerm);
                 }
@@ -174,12 +174,9 @@ namespace XRayBuilder.Core.DataSources.Secondary
             return terms;
         }
 
-        public async Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
+        public override async Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
-            if (srcDoc == null)
-            {
-                srcDoc = await _httpClient.GetPageAsync(url, cancellationToken);
-            }
+            srcDoc ??= await _httpClient.GetPageAsync(url, cancellationToken);
             var quoteNodes = srcDoc.DocumentNode.SelectNodes("//div[@id='WikiModule_Quotations']/div/ul[@class='li_6']/li");
             if (quoteNodes == null)
                 return Enumerable.Empty<NotableClip>();
@@ -196,8 +193,5 @@ namespace XRayBuilder.Core.DataSources.Secondary
                     Likes = 0
                 });
         }
-
-        public Task<IEnumerable<BookInfo>> SearchBookByAsinAsync(string asin, CancellationToken cancellationToken = default)
-            => Task.FromResult(Enumerable.Empty<BookInfo>());
     }
 }

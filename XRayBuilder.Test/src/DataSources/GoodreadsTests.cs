@@ -1,11 +1,13 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using NSubstitute;
 using NUnit.Framework;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Model;
+using XRayBuilder.Core.Unpack;
 
 namespace XRayBuilder.Test.DataSources
 {
@@ -37,7 +39,10 @@ namespace XRayBuilder.Test.DataSources
         [Test]
         public async Task SearchBookTest()
         {
-            var results = (await _goodreads.SearchBookAsync("George R. R. Martin", "A Feast for Crows")).ToArray();
+            var testMetadata = Substitute.For<IMetadata>();
+            testMetadata.Author.Returns("George R. R. Martin");
+            testMetadata.Title.Returns("A Feast for Crows");
+            var results = (await _goodreads.SearchBookAsync(testMetadata)).ToArray();
             Assert.GreaterOrEqual(results.Length, 1);
             var first = results.First();
             Assert.AreEqual(first.Author, "George R.R. Martin");
@@ -109,6 +114,14 @@ namespace XRayBuilder.Test.DataSources
             Assert.Greater(book.AmazonRating, 0);
             Assert.GreaterOrEqual(book.NotableClips.Count, 500);
             Assert.GreaterOrEqual(book.Reviews, 1);
+        }
+
+        [TestCase("https://www.goodreads.com/book/show/4214.Life_of_Pi", true)]
+        [TestCase("https://www.amazon.com/dp/B000000", false)]
+        [TestCase("/usr/home/something/file.txt", false)]
+        public void IsMatchingUrlTest(string url, bool expected)
+        {
+            Assert.AreEqual(expected, _goodreads.IsMatchingUrl(url));
         }
     }
 }

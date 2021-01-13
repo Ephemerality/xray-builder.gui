@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
@@ -15,6 +14,7 @@ using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Parsing.Regex;
+using XRayBuilder.Core.Libraries.Primitives.Extensions;
 using XRayBuilder.Core.Model;
 
 namespace XRayBuilder.Core.DataSources.Amazon
@@ -39,8 +39,8 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
         // private const int MaxParallelism = 5;
         private readonly Regex _regexAsin = new Regex("(?<asin>B[A-Z0-9]{9})", RegexOptions.Compiled);
-        private readonly Regex _regexAsinUrl = new Regex("(/e/(?<asin>B\\w+)[/?]|dp/(?<asin>B[A-Z0-9]{9})/|/gp/product/(?<asin>B[A-Z0-9]{9}))", RegexOptions.Compiled);
-        private readonly Regex _regexIgnoreHeaders = new Regex(@"(Series|Reading) Order|Checklist|Edition|eSpecial|\([0-9]+ Book Series\)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private readonly Regex _regexAsinUrl = new Regex("(/e/(?<asin>B\\w+)[/?]|dp/(?<asin>B[A-Z0-9]{9})/|/gp/product/(?<asin>B[A-Z0-9]{9})|url=%2Fdp%2F(?<asin>B[A-Z0-9]{9})%2F)", RegexOptions.Compiled);
+        private readonly Regex _regexIgnoreHeaders = new Regex(@"(Series|Reading) Order|Complete Series|Checklist|Edition|eSpecial|Box ?Set|[0-9]+ Book Series|Books? \d+ ?(to|—|\\u2013|–) ?\d+", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         public AmazonClient(IHttpClient httpClient, IAmazonInfoParser amazonInfoParser, ILogger logger)
         {
@@ -57,7 +57,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
         public string Url(string tld, string asin) => $"https://www.amazon.{tld}/dp/{asin}";
 
-        public async Task<AuthorSearchResults> SearchAuthor(string author, string bookAsin, string TLD, bool saveHtml, CancellationToken cancellationToken)
+        public async Task<AuthorSearchResults> SearchAuthor(string author, string bookAsin, string TLD, CancellationToken cancellationToken)
         {
             //Generate Author search URL from author's name
             var newAuthor = Functions.FixAuthor(author);
@@ -69,20 +69,6 @@ namespace XRayBuilder.Core.DataSources.Amazon
             // Search Amazon for Author
             var authorSearchDoc = await _httpClient.GetPageAsync(amazonAuthorSearchUrl, cancellationToken);
 
-            if (saveHtml)
-            {
-                try
-                {
-                    _logger.Log("Saving Amazon's author search webpage...");
-                    File.WriteAllText(Environment.CurrentDirectory + $"\\dmp\\{bookAsin}.authorsearchHtml.txt",
-                        authorSearchDoc.DocumentNode.InnerHtml);
-                }
-                catch (Exception ex)
-                {
-                    _logger.Log(string.Format("An error ocurred saving authorsearchHtml.txt: {0}", ex.Message));
-                }
-            }
-
             // Check for captcha
             try
             {
@@ -90,8 +76,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             }
             catch (AmazonCaptchaException)
             {
-                _logger.Log($"Warning: Amazon.{TLD} is requesting a captcha."
-                    + $"You can try visiting Amazon.{TLD} in a real browser first, try another region, or try again later.");
+                _logger.Log($"Warning: Amazon.{TLD} is requesting a captcha.\r\nYou can try visiting Amazon.{TLD} in a real browser first, try another region, or try again later.");
                 return null;
             }
             // Try to find Author's page from Amazon search
@@ -106,11 +91,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                     .ToArray();
                 if (possibleNodes == null || (node = possibleNodes.FirstOrDefault()) == null)
                 {
-                    _logger.Log($"An error occurred finding author's page on Amazon.{TLD}." +
-                                "\r\nUnable to create Author Profile." +
-                                "\r\nEnsure the author metadata field matches the author's name exactly." +
-                                $"\r\nSearch results can be viewed at {amazonAuthorSearchUrl}" +
-                                "\r\nSometimes Amazon just doesn't return the author and trying a few times will work.");
+                    _logger.Log($"An error occurred finding author's page on Amazon.{TLD}.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at {amazonAuthorSearchUrl}\r\nSometimes Amazon just doesn't return the author and trying a few times will work.");
                     return null;
                 }
             }
@@ -139,7 +120,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
             if (node == null || string.IsNullOrEmpty(properAuthor) || properAuthor.IndexOf('/', 1) < 3 || string.IsNullOrEmpty(authorAsin))
             {
-                _logger.Log("Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: " + amazonAuthorSearchUrl);
+                _logger.Log($"Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: {amazonAuthorSearchUrl}");
                 return null;
             }
             properAuthor = properAuthor.Substring(1, properAuthor.IndexOf('/', 1) - 1);
@@ -264,7 +245,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 // TODO: This should be removable when the Kindle Only page is parsed instead
                 if (string.IsNullOrEmpty(asin))
                     continue; //throw new DataSource.FormatChangedException(nameof(Amazon), "book results - kindle edition asin");
-                bookList.Add(new BookInfo(name, author, asin)
+                bookList.Add(new BookInfo(name.ToTitleCase(), author, asin)
                 {
                     Tld = tld
                 });
@@ -291,7 +272,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 // Skip known-bad things like lists and series and stuff
                 if (_regexIgnoreHeaders.IsMatch(otherBook.InnerText))
                     continue;
-                var name = otherBook.InnerText.Trim();
+                var name = otherBook.InnerText.Trim().ToTitleCase();
                 otherBook = result.SelectSingleNode(".//*[@title='Kindle Edition']");
                 if (otherBook == null)
                     continue;
@@ -318,10 +299,12 @@ namespace XRayBuilder.Core.DataSources.Amazon
                     if (otherBook == null) continue;
                     var asin = ParseAsinFromUrl(otherBook.OuterHtml);
                     if (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(asin))
-                        bookList.Add(new BookInfo(name, author, asin)
+                    {
+                        bookList.Add(new BookInfo(name.ToTitleCase(), author, asin)
                         {
                             Tld = tld
                         });
+                    }
                 }
             }
             return bookList;
@@ -335,7 +318,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             if (title.IndexOf(" (", StringComparison.Ordinal) >= 0)
                 title = title.Substring(0, title.IndexOf(" (", StringComparison.Ordinal));
             //Search "all" Amazon
-            var searchUrl = $@"https://www.amazon.{TLD}/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords={Uri.EscapeDataString($"{title} {author}")}";
+            var searchUrl = $"https://www.amazon.{TLD}/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords={Uri.EscapeDataString($"{title} {author}")}";
             var searchDoc = await _httpClient.GetPageAsync(searchUrl, cancellationToken);
             var node = searchDoc.DocumentNode.SelectSingleNode("//li[@id='result_0']");
             var nodeASIN = node?.SelectSingleNode(".//a[@title='Kindle Edition']");

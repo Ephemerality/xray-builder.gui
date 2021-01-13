@@ -1,9 +1,10 @@
 using SimpleInjector;
+using XRayBuilder.Core.Config;
 using XRayBuilder.Core.Libraries.Bootstrap.Model;
 
-namespace XRayBuilder.Core.Libraries.Logging.Bootstrap
+namespace XRayBuilderGUI.Config
 {
-    public sealed class BootstrapLogging : IBootstrapSegment, IContainerSegment
+    public sealed class BootstrapConfig : IBootstrapSegment, IContainerSegment
     {
         public void Register(IBootstrapBuilder builder)
         {
@@ -11,7 +12,7 @@ namespace XRayBuilder.Core.Libraries.Logging.Bootstrap
 
         public void Register(Container container)
         {
-            container.RegisterSingleton<ILogger, Logger>();
+            container.RegisterSingleton<IXRayBuilderConfig, XRayBuilderConfig>();
         }
     }
 }

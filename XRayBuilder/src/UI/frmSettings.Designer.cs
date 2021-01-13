@@ -1,4 +1,6 @@
-﻿namespace XRayBuilderGUI.UI
+﻿using XRayBuilderGUI.Localization.Main;
+
+namespace XRayBuilderGUI.UI
 {
     partial class frmSettings
     {
@@ -36,14 +38,9 @@
             this.lblSeperator = new System.Windows.Forms.Label();
             this.tabSettings = new System.Windows.Forms.TabControl();
             this.tabPgGeneral = new System.Windows.Forms.TabPage();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.chkSearchAsin = new System.Windows.Forms.CheckBox();
             this.gbProcess = new System.Windows.Forms.GroupBox();
             this.chkPageCount = new System.Windows.Forms.CheckBox();
             this.gbUnpack = new System.Windows.Forms.GroupBox();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.lblNote = new System.Windows.Forms.Label();
-            this.chkSaveHtml = new System.Windows.Forms.CheckBox();
             this.chkRaw = new System.Windows.Forms.CheckBox();
             this.gbGeneral = new System.Windows.Forms.GroupBox();
             this.chkSound = new System.Windows.Forms.CheckBox();
@@ -55,8 +52,7 @@
             this.btnBrowseOut = new System.Windows.Forms.Button();
             this.tabPgXray = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.rdoShelfari = new System.Windows.Forms.RadioButton();
-            this.rdoGoodreads = new System.Windows.Forms.RadioButton();
+            this.cmbSecondaryDataSource = new System.Windows.Forms.ComboBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.chkSoftHyphen = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -92,6 +88,7 @@
             this.txtPen = new System.Windows.Forms.TextBox();
             this.lblPen = new System.Windows.Forms.Label();
             this.tabPgRoentgen = new System.Windows.Forms.TabPage();
+            this.label5 = new System.Windows.Forms.Label();
             this.cmbRoentgenRegion = new System.Windows.Forms.ComboBox();
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
@@ -103,13 +100,12 @@
             this.chkRoentgenEndActions = new System.Windows.Forms.CheckBox();
             this.chkRoentgenStartActions = new System.Windows.Forms.CheckBox();
             this.listSettings = new System.Windows.Forms.ListBox();
-            this.label5 = new System.Windows.Forms.Label();
+            this.cbLanguage = new System.Windows.Forms.GroupBox();
+            this.cmbLanguage = new System.Windows.Forms.ComboBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.gbProcess.SuspendLayout();
             this.gbUnpack.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.gbGeneral.SuspendLayout();
             this.tabPgDirectories.SuspendLayout();
             this.gbDirectories.SuspendLayout();
@@ -128,7 +124,8 @@
             this.tabPgRoentgen.SuspendLayout();
             this.groupBox9.SuspendLayout();
             this.groupBox7.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize) (this.pictureBox2)).BeginInit();
+            this.cbLanguage.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSupport
@@ -199,7 +196,7 @@
             // 
             // tabPgGeneral
             // 
-            this.tabPgGeneral.Controls.Add(this.groupBox1);
+            this.tabPgGeneral.Controls.Add(this.cbLanguage);
             this.tabPgGeneral.Controls.Add(this.gbProcess);
             this.tabPgGeneral.Controls.Add(this.gbUnpack);
             this.tabPgGeneral.Controls.Add(this.gbGeneral);
@@ -211,30 +208,10 @@
             this.tabPgGeneral.Text = "tabPage1";
             this.tabPgGeneral.UseVisualStyleBackColor = true;
             // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.chkSearchAsin);
-            this.groupBox1.Location = new System.Drawing.Point(6, 208);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(378, 48);
-            this.groupBox1.TabIndex = 39;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Data Provider";
-            // 
-            // chkSearchAsin
-            // 
-            this.chkSearchAsin.AutoSize = true;
-            this.chkSearchAsin.Location = new System.Drawing.Point(14, 19);
-            this.chkSearchAsin.Name = "chkSearchAsin";
-            this.chkSearchAsin.Size = new System.Drawing.Size(222, 17);
-            this.chkSearchAsin.TabIndex = 34;
-            this.chkSearchAsin.Text = "Allow search by ASIN before author + title";
-            this.chkSearchAsin.UseVisualStyleBackColor = true;
-            // 
             // gbProcess
             // 
             this.gbProcess.Controls.Add(this.chkPageCount);
-            this.gbProcess.Location = new System.Drawing.Point(6, 159);
+            this.gbProcess.Location = new System.Drawing.Point(6, 116);
             this.gbProcess.Name = "gbProcess";
             this.gbProcess.Size = new System.Drawing.Size(378, 48);
             this.gbProcess.TabIndex = 38;
@@ -253,46 +230,13 @@
             // 
             // gbUnpack
             // 
-            this.gbUnpack.Controls.Add(this.pictureBox1);
-            this.gbUnpack.Controls.Add(this.lblNote);
-            this.gbUnpack.Controls.Add(this.chkSaveHtml);
             this.gbUnpack.Controls.Add(this.chkRaw);
             this.gbUnpack.Location = new System.Drawing.Point(6, 66);
             this.gbUnpack.Name = "gbUnpack";
-            this.gbUnpack.Size = new System.Drawing.Size(378, 89);
+            this.gbUnpack.Size = new System.Drawing.Size(378, 44);
             this.gbUnpack.TabIndex = 37;
             this.gbUnpack.TabStop = false;
             this.gbUnpack.Text = "eBook Unpacking";
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(14, 45);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(14, 14);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 35;
-            this.pictureBox1.TabStop = false;
-            // 
-            // lblNote
-            // 
-            this.lblNote.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.lblNote.Location = new System.Drawing.Point(31, 43);
-            this.lblNote.Name = "lblNote";
-            this.lblNote.Size = new System.Drawing.Size(325, 43);
-            this.lblNote.TabIndex = 34;
-            this.lblNote.Text = "Metadata is now gathered internally rather than with KindleUnpack. If you run int" +
-    "o any metadata extraction errors, please report them on the MobileRead thread.";
-            // 
-            // chkSaveHtml
-            // 
-            this.chkSaveHtml.AutoSize = true;
-            this.chkSaveHtml.Location = new System.Drawing.Point(124, 19);
-            this.chkSaveHtml.Name = "chkSaveHtml";
-            this.chkSaveHtml.Size = new System.Drawing.Size(84, 17);
-            this.chkSaveHtml.TabIndex = 33;
-            this.chkSaveHtml.Text = "Save HTML";
-            this.chkSaveHtml.UseVisualStyleBackColor = true;
             // 
             // chkRaw
             // 
@@ -401,8 +345,7 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.rdoShelfari);
-            this.groupBox2.Controls.Add(this.rdoGoodreads);
+            this.groupBox2.Controls.Add(this.cmbSecondaryDataSource);
             this.groupBox2.Location = new System.Drawing.Point(202, 12);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(182, 74);
@@ -410,28 +353,15 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Data Provider";
             // 
-            // rdoShelfari
+            // cmbSecondaryDataSource
             // 
-            this.rdoShelfari.AutoSize = true;
-            this.rdoShelfari.Location = new System.Drawing.Point(17, 45);
-            this.rdoShelfari.Name = "rdoShelfari";
-            this.rdoShelfari.Size = new System.Drawing.Size(139, 17);
-            this.rdoShelfari.TabIndex = 1;
-            this.rdoShelfari.TabStop = true;
-            this.rdoShelfari.Text = "Shelfari (via archive.org)";
-            this.rdoShelfari.UseVisualStyleBackColor = true;
-            // 
-            // rdoGoodreads
-            // 
-            this.rdoGoodreads.AutoSize = true;
-            this.rdoGoodreads.Checked = true;
-            this.rdoGoodreads.Location = new System.Drawing.Point(17, 18);
-            this.rdoGoodreads.Name = "rdoGoodreads";
-            this.rdoGoodreads.Size = new System.Drawing.Size(77, 17);
-            this.rdoGoodreads.TabIndex = 0;
-            this.rdoGoodreads.TabStop = true;
-            this.rdoGoodreads.Text = "Goodreads";
-            this.rdoGoodreads.UseVisualStyleBackColor = true;
+            this.cmbSecondaryDataSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbSecondaryDataSource.FormattingEnabled = true;
+            this.cmbSecondaryDataSource.Items.AddRange(new object[] {"Goodreads", "Shelfari", "LibraryThing"});
+            this.cmbSecondaryDataSource.Location = new System.Drawing.Point(6, 31);
+            this.cmbSecondaryDataSource.Name = "cmbSecondaryDataSource";
+            this.cmbSecondaryDataSource.Size = new System.Drawing.Size(170, 21);
+            this.cmbSecondaryDataSource.TabIndex = 0;
             // 
             // groupBox4
             // 
@@ -468,7 +398,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.label2.Location = new System.Drawing.Point(168, 20);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(83, 13);
@@ -714,7 +644,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.label1.Location = new System.Drawing.Point(12, 74);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(44, 13);
@@ -756,7 +686,7 @@
             // lblReal
             // 
             this.lblReal.AutoSize = true;
-            this.lblReal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblReal.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.lblReal.Location = new System.Drawing.Point(12, 23);
             this.lblReal.Name = "lblReal";
             this.lblReal.Size = new System.Drawing.Size(63, 13);
@@ -780,7 +710,7 @@
             // lblPen
             // 
             this.lblPen.AutoSize = true;
-            this.lblPen.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblPen.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.lblPen.Location = new System.Drawing.Point(15, 56);
             this.lblPen.Name = "lblPen";
             this.lblPen.Size = new System.Drawing.Size(60, 13);
@@ -802,6 +732,15 @@
             this.tabPgRoentgen.Text = "tabPgRoentgen";
             this.tabPgRoentgen.UseVisualStyleBackColor = true;
             // 
+            // label5
+            // 
+            this.label5.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.label5.Location = new System.Drawing.Point(9, 172);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(199, 32);
+            this.label5.TabIndex = 40;
+            this.label5.Text = "Files will be downloaded in the language of the selected region, when possible.";
+            // 
             // cmbRoentgenRegion
             // 
             this.cmbRoentgenRegion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -814,7 +753,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.label4.Location = new System.Drawing.Point(9, 145);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(44, 13);
@@ -857,7 +796,7 @@
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
+            this.pictureBox2.Image = ((System.Drawing.Image) (resources.GetObject("pictureBox2.Image")));
             this.pictureBox2.Location = new System.Drawing.Point(123, 25);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(14, 14);
@@ -872,8 +811,7 @@
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(229, 48);
             this.label3.TabIndex = 36;
-            this.label3.Text = "When these settings are enabled, pre-built versions of the files will be download" +
-    "ed if they are available. Requires a valid ASIN.";
+            this.label3.Text = "When these settings are enabled, pre-built versions of the files will be download" + "ed if they are available. Requires a valid ASIN.";
             // 
             // chkRoentgenAuthorProfile
             // 
@@ -912,13 +850,7 @@
             this.listSettings.FormattingEnabled = true;
             this.listSettings.IntegralHeight = false;
             this.listSettings.ItemHeight = 20;
-            this.listSettings.Items.AddRange(new object[] {
-            "General",
-            "Directories",
-            "X-Ray",
-            "Extras",
-            "Amazon",
-            "Roentgen"});
+            this.listSettings.Items.AddRange(new object[] {"General", "Directories", "X-Ray", "Extras", "Amazon", "Roentgen"});
             this.listSettings.Location = new System.Drawing.Point(12, 12);
             this.listSettings.Name = "listSettings";
             this.listSettings.Size = new System.Drawing.Size(130, 253);
@@ -927,14 +859,24 @@
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
             // 
-            // label5
+            // cbLanguage
             // 
-            this.label5.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label5.Location = new System.Drawing.Point(9, 172);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(199, 32);
-            this.label5.TabIndex = 40;
-            this.label5.Text = "Files will be downloaded in the language of the selected region, when possible.";
+            this.cbLanguage.Controls.Add(this.cmbLanguage);
+            this.cbLanguage.Location = new System.Drawing.Point(6, 171);
+            this.cbLanguage.Name = "cbLanguage";
+            this.cbLanguage.Size = new System.Drawing.Size(377, 55);
+            this.cbLanguage.TabIndex = 39;
+            this.cbLanguage.TabStop = false;
+            this.cbLanguage.Text = "Language";
+            // 
+            // cmbLanguage
+            // 
+            this.cmbLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbLanguage.FormattingEnabled = true;
+            this.cmbLanguage.Location = new System.Drawing.Point(6, 19);
+            this.cmbLanguage.Name = "cmbLanguage";
+            this.cmbLanguage.Size = new System.Drawing.Size(160, 21);
+            this.cmbLanguage.TabIndex = 0;
             // 
             // frmSettings
             // 
@@ -949,7 +891,7 @@
             this.Controls.Add(this.btnLogs);
             this.Controls.Add(this.btnSave);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Icon = ((System.Drawing.Icon) (resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "frmSettings";
@@ -960,13 +902,10 @@
             this.Load += new System.EventHandler(this.frmSettingsNew_Load);
             this.tabSettings.ResumeLayout(false);
             this.tabPgGeneral.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.gbProcess.ResumeLayout(false);
             this.gbProcess.PerformLayout();
             this.gbUnpack.ResumeLayout(false);
             this.gbUnpack.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.gbGeneral.ResumeLayout(false);
             this.gbGeneral.PerformLayout();
             this.tabPgDirectories.ResumeLayout(false);
@@ -974,7 +913,6 @@
             this.gbDirectories.PerformLayout();
             this.tabPgXray.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox3.ResumeLayout(false);
@@ -998,10 +936,13 @@
             this.groupBox9.PerformLayout();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize) (this.pictureBox2)).EndInit();
+            this.cbLanguage.ResumeLayout(false);
             this.ResumeLayout(false);
-
         }
+
+        private System.Windows.Forms.GroupBox cbLanguage;
+        private System.Windows.Forms.ComboBox cmbLanguage;
 
         private System.Windows.Forms.Button btnBrowseOut;
         private System.Windows.Forms.Button btnClearLogs;
@@ -1026,8 +967,6 @@
         private System.Windows.Forms.CheckBox chkRoentgenEndActions;
         private System.Windows.Forms.CheckBox chkRoentgenStartActions;
         private System.Windows.Forms.CheckBox chkSaveBio;
-        private System.Windows.Forms.CheckBox chkSaveHtml;
-        private System.Windows.Forms.CheckBox chkSearchAsin;
         private System.Windows.Forms.CheckBox chkSkipNoLikes;
         private System.Windows.Forms.CheckBox chkSoftHyphen;
         private System.Windows.Forms.CheckBox chkSound;
@@ -1044,7 +983,6 @@
         private System.Windows.Forms.GroupBox gbProcess;
         private System.Windows.Forms.GroupBox gbUnpack;
         private System.Windows.Forms.GroupBox gbXray;
-        private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.GroupBox groupBox4;
@@ -1057,15 +995,11 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label lblNote;
         private System.Windows.Forms.Label lblPen;
         private System.Windows.Forms.Label lblReal;
         private System.Windows.Forms.Label lblSeperator;
         private System.Windows.Forms.ListBox listSettings;
-        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.PictureBox pictureBox2;
-        private System.Windows.Forms.RadioButton rdoGoodreads;
-        private System.Windows.Forms.RadioButton rdoShelfari;
         private System.Windows.Forms.TabPage tabPgAmazon;
         private System.Windows.Forms.TabPage tabPgDirectories;
         private System.Windows.Forms.TabPage tabPgExtras;
@@ -1081,5 +1015,6 @@
         #endregion
 
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ComboBox cmbSecondaryDataSource;
     }
 }

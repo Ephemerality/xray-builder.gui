@@ -2,9 +2,13 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Progress;
+using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Artifacts;
+using XRayBuilder.Core.XRay.Logic.Parsing;
+using XRayBuilder.Core.XRay.Model;
 
 namespace XRayBuilder.Core.XRay.Logic.Terms
 {
@@ -31,5 +35,8 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
         /// Read terms from a <param-ref name="txtFile"/>
         /// </summary>
         IEnumerable<Term> ReadTermsFromTxt(string txtFile);
+
+        [NotNull]
+        HashSet<Occurrence> FindOccurrences([NotNull] IMetadata metadata, [NotNull] Term term, [NotNull] Paragraph paragraph);
     }
 }

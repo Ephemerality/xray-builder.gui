@@ -249,7 +249,7 @@
             this.txtNextInSeries.Name = "txtNextInSeries";
             this.txtNextInSeries.Size = new System.Drawing.Size(307, 40);
             this.txtNextInSeries.TabIndex = 74;
-            this.txtNextInSeries.Text = "This book is not part of a series or\r\nit is the last book in a series...";
+            this.txtNextInSeries.Text = "This book is not part of a series or\r\nit is the last book in a series…";
             // 
             // frmPreviewEA
             // 
@@ -283,7 +283,7 @@
             this.ShowIcon = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Before You Go...";
+            this.Text = "Before You Go…";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbAuthor)).EndInit();

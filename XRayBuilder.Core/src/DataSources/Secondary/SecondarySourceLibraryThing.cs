@@ -224,10 +224,12 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
         public override async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
         {
-            _logger.Log($"Downloading {Name} page...");
+            _logger.Log($"Downloading {Name} page…");
             var page = await GetPageAsync(dataUrl, cancellationToken);
             var characterNodes = page.DocumentNode.SelectNodes("//div[@class='fwikiItem divcharacternames']//a");
-            _logger.Log($"Gathering term information from {Name}... ({characterNodes.Count})");
+            if (characterNodes == null)
+                return Enumerable.Empty<Term>();
+            _logger.Log($"Gathering term information from {Name}… ({characterNodes.Count})");
             progress?.Set(0, characterNodes.Count);
             if (characterNodes.Count > 20)
                 _logger.Log("More than 20 characters found. Consider using the 'download to XML' option if you need to build repeatedly.");

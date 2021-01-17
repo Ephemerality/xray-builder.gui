@@ -121,8 +121,8 @@ namespace XRayBuilder.Core.XRay.Logic.Export
                 foreach (var occurrence in t.Occurrences)
                 {
                     command3.Parameters.Add("@entity", DbType.Int32).Value = t.Id;
-                    command3.Parameters.Add("@start", DbType.Int32).Value = occurrence.Offset;
-                    command3.Parameters.Add("@length", DbType.Int32).Value = occurrence.Length;
+                    command3.Parameters.Add("@start", DbType.Int32).Value = occurrence.Excerpt.Index + occurrence.Highlight.Index;
+                    command3.Parameters.Add("@length", DbType.Int32).Value = occurrence.Highlight.Length;
                     command3.ExecuteNonQuery();
                 }
                 progress?.Add(1);
@@ -167,19 +167,27 @@ namespace XRayBuilder.Core.XRay.Logic.Export
 
             // Populate some more clips if not enough were found initially
             // TODO: Add a config value in settings for this amount
-            var toAdd = new List<Excerpt>(20);
-            if (xray.FoundNotables <= 20 && xray.FoundNotables + xray.Excerpts.Count <= 20)
-                toAdd.AddRange(xray.Excerpts);
-            else if (xray.FoundNotables <= 20)
+            const int minimumNotables = 20;
+            var toAdd = new List<Excerpt>(minimumNotables);
+            var foundNotables = xray.Excerpts.Count(excerpt => excerpt.Notable);
+            switch (foundNotables)
             {
-                var rand = new Random();
-                var eligible = xray.Excerpts.Where(ex => !ex.Notable).ToList();
-                while (xray.FoundNotables <= 20 && eligible.Count > 0)
+                case <= minimumNotables when foundNotables + xray.Excerpts.Count <= minimumNotables:
+                    toAdd.AddRange(xray.Excerpts);
+                    break;
+                case <= minimumNotables:
                 {
-                    var randEx = eligible.ElementAt(rand.Next(eligible.Count));
-                    toAdd.Add(randEx);
-                    eligible.Remove(randEx);
-                    xray.FoundNotables++;
+                    var rand = new Random();
+                    var eligible = xray.Excerpts.Where(ex => !ex.Notable).ToList();
+                    while (foundNotables <= minimumNotables && eligible.Count > 0)
+                    {
+                        var randEx = eligible.ElementAt(rand.Next(eligible.Count));
+                        toAdd.Add(randEx);
+                        eligible.Remove(randEx);
+                        foundNotables++;
+                    }
+
+                    break;
                 }
             }
             foreach (var excerpt in toAdd)
@@ -193,7 +201,7 @@ namespace XRayBuilder.Core.XRay.Logic.Export
             _logger.Log("Writing top mentions...");
             var sorted =
                 xray.Terms.Where(t => t.Type.Equals("character"))
-                    .OrderByDescending(t => t.Locs.Count)
+                    .OrderByDescending(t => t.Occurrences.Count)
                     .Select(t => t.Id)
                     .ToList();
             sql.Clear();
@@ -201,7 +209,7 @@ namespace XRayBuilder.Core.XRay.Logic.Export
                 string.Join(",", sorted.GetRange(0, Math.Min(10, sorted.Count))));
             sorted =
                 xray.Terms.Where(t => t.Type.Equals("topic"))
-                    .OrderByDescending(t => t.Locs.Count)
+                    .OrderByDescending(t => t.Occurrences.Count)
                     .Select(t => t.Id)
                     .ToList();
             sql.AppendFormat("update type set top_mentioned_entities='{0}' where id=2;",

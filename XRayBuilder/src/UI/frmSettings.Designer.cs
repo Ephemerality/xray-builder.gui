@@ -415,7 +415,7 @@
             this.btnBrowseOut.Name = "btnBrowseOut";
             this.btnBrowseOut.Size = new System.Drawing.Size(29, 29);
             this.btnBrowseOut.TabIndex = 13;
-            this.btnBrowseOut.Text = "...";
+            this.btnBrowseOut.Text = "…";
             this.btnBrowseOut.UseVisualStyleBackColor = true;
             this.btnBrowseOut.Click += new System.EventHandler(this.btnBrowseOut_Click);
             // 

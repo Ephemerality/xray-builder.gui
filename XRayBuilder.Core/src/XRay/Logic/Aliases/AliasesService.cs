@@ -85,7 +85,7 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             return aliasesByTermName;
         }
 
-        private IEnumerable<string> GenerateAliasesForTerm(Term term)
+        public IEnumerable<string> GenerateAliasesForTerm(Term term)
         {
             var aliases = new List<string>();
             var textInfo = new CultureInfo("en-US", false).TextInfo;

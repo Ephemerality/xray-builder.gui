@@ -15,6 +15,7 @@ using XRayBuilder.Core.Libraries.Enumerables.Extensions;
 using XRayBuilder.Core.Libraries.Images.Util;
 using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
 using XRayBuilder.Core.Logic;
+using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Artifacts;
 using XRayBuilder.Core.XRay.Logic.Aliases;
 using XRayBuilder.Core.XRay.Logic.Terms;
@@ -63,11 +64,11 @@ namespace XRayBuilderGUI.UI
             pi?.SetValue(dgvTerms, true, null);
         }
 
-        public void SetMetadata(string asin, string author, string title)
+        public void SetMetadata(IMetadata metadata)
         {
-            txtAuthor.Text = author;
-            txtTitle.Text = title;
-            txtAsin.Text = asin;
+            txtAuthor.Text = metadata.Author;
+            txtTitle.Text = metadata.Title;
+            txtAsin.Text = metadata.Asin;
         }
 
         private void btnAddTerm_Click(object sender, EventArgs e)
@@ -415,7 +416,7 @@ namespace XRayBuilderGUI.UI
         {
             if (!AmazonClient.IsAsin(txtAsin.Text))
             {
-                MessageBox.Show($@"{txtAsin.Text} is not a valid ASIN." +
+                MessageBox.Show($@"'{txtAsin.Text}' is not a valid ASIN." +
                                 Environment.NewLine +
                                 @"Roentgen requires one!",
                     @"Error",

@@ -64,7 +64,7 @@ namespace XRayBuilderGUI.UI.Preview
             }
             else
             {
-                lblSeries.Text = @"This book is not part of a series...";
+                lblSeries.Text = @"This book is not part of a series…";
                 pbPreviousCover.Image = Resources.missing_cover_small;
                 lblPreviousHeading.Visible = false;
                 lblPreviousTitle.Visible = false;

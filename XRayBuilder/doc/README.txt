@@ -2,16 +2,24 @@ X-Ray Builder GUI
 
 http://www.mobileread.com/forums/showthread.php?t=245754
 
-A .Net application that processes e-books to create X-Ray files for the Amazon Kindle (Paperwhite, Voyage, Fire). * X-Rays are built complete with chapter locations and excerpts.
+A C# application that processes e-books to create an X-Ray file for the Amazon Kindle (Paperwhite, Voyage, Fire).
+X-Ray files are built complete with chapter locations, excerpts, and notable clips.
+Thanks to darrenmcg, Author Profile, Start Actions, and End Actions files can also be built.
 
-Original X-Ray Builder by Ephemerality <Nick Niemi - ephemeral.vilification@gmail.com>
+Acknowledgements:
+
+Original X-Ray Builder by Ephemerality
 Modified version by darrenmcg
+New GUI, Shelfari/Goodreads search, previews, Start/End Actions, Author Profile, and various other new features by darrenmcg/Psycho Reptile
 Original X-Ray script by shinew
 http://www.mobileread.com/forums/showthread.php?t=157770
-http://www.xunwang.me/xray/
+jhowell's KFX in/output plugins for Calibre
+https://www.mobileread.com/forums/showthread.php?t=272407
 
 Requirements:
-• .Net Framework 4.0+
+
+• Windows 7+
+• .NET Framework 4.8
 
 Books should be DRM-free.
 Chapter detection on DRM books is not supported.

@@ -98,7 +98,7 @@ namespace XRayBuilder.Console.Logic
 
                 if (xray.Terms.Count == 0)
                 {
-                    _logger.Log($"No terms were available on {dataSource.Name}, cancelling the build...");
+                    _logger.Log($"No terms were available on {dataSource.Name}, cancelling the build…");
                     return null;
                 }
 
@@ -115,7 +115,7 @@ namespace XRayBuilder.Console.Logic
                     _logger.Log($"Character aliases read from {aliasPath}.");
                 }
 
-                _logger.Log("Initial X-Ray built, adding locations and chapters...");
+                _logger.Log("Initial X-Ray built, adding locations and chapters…");
                 //Expand the X-Ray file from the unpacked mobi
                 Task buildTask = metadata switch
                 {
@@ -137,7 +137,7 @@ namespace XRayBuilder.Console.Logic
                 return null;
             }
 
-            _logger.Log("Saving X-Ray to file...");
+            _logger.Log("Saving X-Ray to file…");
             var xrayPath = _directoryService.GetArtifactPath(ArtifactType.XRay, metadata, Path.GetFileNameWithoutExtension(request.BookPath), true);
 
             try
@@ -164,7 +164,7 @@ namespace XRayBuilder.Console.Logic
 
         private async Task<IMetadata> GetAndValidateMetadataAsync(string mobiFile, CancellationToken cancellationToken)
         {
-            _logger.Log("Extracting metadata...");
+            _logger.Log("Extracting metadata…");
             try
             {
                 var metadata = MetadataLoader.Load(mobiFile);
@@ -174,7 +174,7 @@ namespace XRayBuilder.Console.Logic
                 }
                 catch (Exception ex)
                 {
-                    _logger.Log($"Failed to validate/fix ASIN: {ex.Message}\r\nContinuing anyway...", LogLevel.Error);
+                    _logger.Log($"Failed to validate/fix ASIN: {ex.Message}\r\nContinuing anyway…", LogLevel.Error);
                 }
 
                 _logger.Log($"Got metadata! ASIN: {metadata.Asin}");
@@ -198,8 +198,8 @@ namespace XRayBuilder.Console.Logic
             if (!metadata.CanModify)
                 throw new Exception($"Invalid Amazon ASIN detected: {metadata.Asin}!\r\nKindle may not display an X-Ray for this book.\r\nYou must either use Calibre's Quality Check plugin (Fix ASIN for Kindle Fire) or a MOBI editor (exth 113 and optionally 504) to change this.");
 
-            _logger.Log($"Invalid Amazon ASIN detected: {metadata.Asin}!\nKindle may not display an X-Ray for this book.\r\nAttempting to fix it automatically...");
-            _logger.Log($"Searching Amazon for {metadata.Title} by {metadata.Author}...");
+            _logger.Log($"Invalid Amazon ASIN detected: {metadata.Asin}!\nKindle may not display an X-Ray for this book.\r\nAttempting to fix it automatically…");
+            _logger.Log($"Searching Amazon for {metadata.Title} by {metadata.Author}…");
             // todo config tld
             var amazonSearchResult = await _amazonClient.SearchBook(metadata.Title, metadata.Author, "com", cancellationToken);
             if (amazonSearchResult != null)

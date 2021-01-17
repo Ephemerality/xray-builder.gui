@@ -48,7 +48,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             {
                 try
                 {
-                    _logger.Log("Downloading author image...");
+                    _logger.Log("Downloading author image…");
                     authorImage = await _httpClient.GetImageAsync(imageUrl, cancellationToken: cancellationToken);
                 }
                 catch (Exception ex)

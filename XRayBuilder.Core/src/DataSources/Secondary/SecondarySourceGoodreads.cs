@@ -288,15 +288,15 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
         public override async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
         {
-            _logger.Log(@"Downloading Goodreads page...");
+            _logger.Log(@"Downloading Goodreads page…");
             var grDoc = await _httpClient.GetPageAsync(dataUrl, cancellationToken);
             var charNodes = grDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/a");
             if (charNodes == null) return new List<Term>();
-            // Check if ...more link exists on Goodreads page
+            // Check if …more link exists on Goodreads page
             var moreCharNodes = grDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/span[@class='toggleContent']/a");
             var allChars = moreCharNodes == null ? charNodes : charNodes.Concat(moreCharNodes);
             var termCount = moreCharNodes == null ? charNodes.Count : charNodes.Count + moreCharNodes.Count;
-            _logger.Log($"Gathering term information from Goodreads... ({termCount})");
+            _logger.Log($"Gathering term information from Goodreads… ({termCount})");
             progress?.Set(0, termCount);
             if (termCount > 20)
                 _logger.Log("More than 20 characters found. Consider using the 'download to XML' option if you need to build repeatedly.");

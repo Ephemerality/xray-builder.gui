@@ -153,19 +153,6 @@ namespace XRayBuilder.Core.Libraries
         }
 
         /// <summary>
-        /// Returns the specified string converted to Title Case
-        /// </summary>
-        public static string ToTitleCase(string text)
-        {
-            if (string.IsNullOrEmpty(text) || text.Any(t => char.IsLetter(t) && !char.IsUpper(t)))
-                return text;
-
-            var textInfo = new CultureInfo("en-US",false).TextInfo;
-            return textInfo.ToTitleCase(text.ToLower());
-        }
-
-
-        /// <summary>
         /// Convert non-ascii characters into the \uXXXX hexidecimal format
         /// </summary>
         public static string ExpandUnicode(string input)

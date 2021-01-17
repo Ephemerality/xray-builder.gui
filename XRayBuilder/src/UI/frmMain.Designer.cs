@@ -71,19 +71,12 @@
             this.btnBrowseXML = new System.Windows.Forms.ToolStripButton();
             this.btnExtractTerms = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.btnPreview = new System.Windows.Forms.ToolStripDropDownButton();
-            this.tmiAuthorProfile = new System.Windows.Forms.ToolStripMenuItem();
-            this.tmiEndAction = new System.Windows.Forms.ToolStripMenuItem();
-            this.tmiStartAction = new System.Windows.Forms.ToolStripMenuItem();
-            this.tmiXray = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnUnpack = new System.Windows.Forms.ToolStripButton();
             this.btnBrowseFolders = new System.Windows.Forms.ToolStripDropDownButton();
             this.btnBrowseOutput = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.btnBrowseDump = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnBrowseAliasesAndChapters = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnBrowseGeneratedData = new System.Windows.Forms.ToolStripMenuItem();
             this.btnBrowseLogs = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnBrowseRecords = new System.Windows.Forms.ToolStripMenuItem();
             this.btnBrowseTemp = new System.Windows.Forms.ToolStripMenuItem();
             this.btnBrowseXmlFolder = new System.Windows.Forms.ToolStripMenuItem();
             this.btnSettings = new System.Windows.Forms.ToolStripButton();
@@ -99,6 +92,12 @@
             this.pbCover = new System.Windows.Forms.PictureBox();
             this.txtDatasource = new System.Windows.Forms.LinkLabel();
             this.lblDatasource = new System.Windows.Forms.Label();
+            this.btnUnpack = new System.Windows.Forms.ToolStripButton();
+            this.tmiAuthorProfile = new System.Windows.Forms.ToolStripMenuItem();
+            this.tmiEndAction = new System.Windows.Forms.ToolStripMenuItem();
+            this.tmiStartAction = new System.Windows.Forms.ToolStripMenuItem();
+            this.tmiXray = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnPreview = new System.Windows.Forms.ToolStripDropDownButton();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.cmsLog.SuspendLayout();
@@ -129,7 +128,7 @@
             this.txtMobi.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtMobi.Location = new System.Drawing.Point(18, 28);
             this.txtMobi.Name = "txtMobi";
-            this.txtMobi.Size = new System.Drawing.Size(1179, 27);
+            this.txtMobi.Size = new System.Drawing.Size(1197, 27);
             this.txtMobi.TabIndex = 0;
             this.txtMobi.TextChanged += new System.EventHandler(this.txtMobi_TextChanged);
             // 
@@ -142,7 +141,7 @@
             this.groupBox1.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(12, 183);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1215, 74);
+            this.groupBox1.Size = new System.Drawing.Size(1233, 74);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Metadata Provider";
@@ -154,7 +153,7 @@
             this.txtGoodreads.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtGoodreads.Location = new System.Drawing.Point(140, 28);
             this.txtGoodreads.Name = "txtGoodreads";
-            this.txtGoodreads.Size = new System.Drawing.Size(1057, 27);
+            this.txtGoodreads.Size = new System.Drawing.Size(1075, 27);
             this.txtGoodreads.TabIndex = 0;
             this.txtGoodreads.TextChanged += new System.EventHandler(this.txtGoodreads_TextChanged);
             // 
@@ -166,7 +165,7 @@
             this.groupBox3.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox3.Location = new System.Drawing.Point(12, 103);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(1215, 74);
+            this.groupBox3.Size = new System.Drawing.Size(1233, 74);
             this.groupBox3.TabIndex = 0;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Book";
@@ -177,7 +176,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.prgBar.Location = new System.Drawing.Point(11, 913);
             this.prgBar.Name = "prgBar";
-            this.prgBar.Size = new System.Drawing.Size(1178, 21);
+            this.prgBar.Size = new System.Drawing.Size(1196, 21);
             this.prgBar.Step = 1;
             this.prgBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.prgBar.TabIndex = 0;
@@ -195,7 +194,7 @@
             this.txtOutput.Name = "txtOutput";
             this.txtOutput.ReadOnly = true;
             this.txtOutput.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.txtOutput.Size = new System.Drawing.Size(915, 543);
+            this.txtOutput.Size = new System.Drawing.Size(933, 543);
             this.txtOutput.TabIndex = 0;
             this.txtOutput.Text = "";
             this.txtOutput.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.txtOutput_LinkClicked);
@@ -249,7 +248,7 @@
             this.lblFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblFiles.AutoSize = true;
             this.lblFiles.Font = new System.Drawing.Font("Segoe UI Semibold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFiles.Location = new System.Drawing.Point(940, 878);
+            this.lblFiles.Location = new System.Drawing.Point(958, 878);
             this.lblFiles.Name = "lblFiles";
             this.lblFiles.Size = new System.Drawing.Size(40, 19);
             this.lblFiles.TabIndex = 0;
@@ -264,7 +263,7 @@
             this.txtAsin.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtAsin.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
             this.txtAsin.LinkColor = System.Drawing.Color.MediumBlue;
-            this.txtAsin.Location = new System.Drawing.Point(1034, 834);
+            this.txtAsin.Location = new System.Drawing.Point(1052, 834);
             this.txtAsin.Name = "txtAsin";
             this.txtAsin.Size = new System.Drawing.Size(39, 19);
             this.txtAsin.TabIndex = 0;
@@ -278,7 +277,7 @@
             this.txtAuthor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.txtAuthor.AutoEllipsis = true;
             this.txtAuthor.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtAuthor.Location = new System.Drawing.Point(1034, 812);
+            this.txtAuthor.Location = new System.Drawing.Point(1052, 812);
             this.txtAuthor.Name = "txtAuthor";
             this.txtAuthor.Size = new System.Drawing.Size(190, 19);
             this.txtAuthor.TabIndex = 0;
@@ -291,7 +290,7 @@
             this.txtTitle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.txtTitle.AutoEllipsis = true;
             this.txtTitle.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtTitle.Location = new System.Drawing.Point(1034, 790);
+            this.txtTitle.Location = new System.Drawing.Point(1052, 790);
             this.txtTitle.Name = "txtTitle";
             this.txtTitle.Size = new System.Drawing.Size(190, 19);
             this.txtTitle.TabIndex = 0;
@@ -304,7 +303,7 @@
             this.lblAsin.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblAsin.AutoSize = true;
             this.lblAsin.Font = new System.Drawing.Font("Segoe UI Semibold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAsin.Location = new System.Drawing.Point(940, 834);
+            this.lblAsin.Location = new System.Drawing.Point(958, 834);
             this.lblAsin.Name = "lblAsin";
             this.lblAsin.Size = new System.Drawing.Size(44, 19);
             this.lblAsin.TabIndex = 0;
@@ -316,7 +315,7 @@
             this.lblAuthor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblAuthor.AutoSize = true;
             this.lblAuthor.Font = new System.Drawing.Font("Segoe UI Semibold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAuthor.Location = new System.Drawing.Point(940, 812);
+            this.lblAuthor.Location = new System.Drawing.Point(958, 812);
             this.lblAuthor.Name = "lblAuthor";
             this.lblAuthor.Size = new System.Drawing.Size(56, 19);
             this.lblAuthor.TabIndex = 0;
@@ -328,7 +327,7 @@
             this.lblTitle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblTitle.AutoSize = true;
             this.lblTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTitle.Location = new System.Drawing.Point(940, 790);
+            this.lblTitle.Location = new System.Drawing.Point(958, 790);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(40, 19);
             this.lblTitle.TabIndex = 0;
@@ -346,7 +345,7 @@
             this.groupBox4.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox4.Location = new System.Drawing.Point(12, 263);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(1215, 74);
+            this.groupBox4.Size = new System.Drawing.Size(1233, 74);
             this.groupBox4.TabIndex = 0;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "X-Ray Terms Source";
@@ -397,7 +396,7 @@
             this.txtXMLFile.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtXMLFile.Location = new System.Drawing.Point(297, 28);
             this.txtXMLFile.Name = "txtXMLFile";
-            this.txtXMLFile.Size = new System.Drawing.Size(900, 27);
+            this.txtXMLFile.Size = new System.Drawing.Size(918, 27);
             this.txtXMLFile.TabIndex = 0;
             // 
             // toolStrip
@@ -410,8 +409,9 @@
             this.btnSearchGoodreads,
             this.toolStripSeparator2,
             this.btnKindleExtras,
-            this.toolStripSeparator5,
             this.btnBuild,
+            this.btnOneClick,
+            this.toolStripSeparator5,
             this.btnXraySource,
             this.btnCreate,
             this.btnDownloadTerms,
@@ -422,13 +422,12 @@
             this.btnUnpack,
             this.btnBrowseFolders,
             this.btnSettings,
-            this.btnOneClick,
             this.toolStripSeparator3,
             this.btnHelp,
             this.btnAbout});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
-            this.toolStrip.Size = new System.Drawing.Size(1244, 100);
+            this.toolStrip.Size = new System.Drawing.Size(1262, 100);
             this.toolStrip.TabIndex = 0;
             this.toolStrip.Text = "toolStrip1";
             // 
@@ -450,7 +449,7 @@
             this.btnSearchGoodreads.Image = ((System.Drawing.Image)(resources.GetObject("btnSearchGoodreads.Image")));
             this.btnSearchGoodreads.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnSearchGoodreads.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnSearchGoodreads.Margin = new System.Windows.Forms.Padding(4, 10, 3, 10);
+            this.btnSearchGoodreads.Margin = new System.Windows.Forms.Padding(5, 10, 7, 10);
             this.btnSearchGoodreads.Name = "btnSearchGoodreads";
             this.btnSearchGoodreads.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.btnSearchGoodreads.Size = new System.Drawing.Size(99, 80);
@@ -460,7 +459,6 @@
             // 
             // toolStripSeparator2
             // 
-            this.toolStripSeparator2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 100);
             // 
@@ -469,7 +467,7 @@
             this.btnKindleExtras.Image = ((System.Drawing.Image)(resources.GetObject("btnKindleExtras.Image")));
             this.btnKindleExtras.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnKindleExtras.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnKindleExtras.Margin = new System.Windows.Forms.Padding(4, 10, 7, 10);
+            this.btnKindleExtras.Margin = new System.Windows.Forms.Padding(8, 10, 5, 10);
             this.btnKindleExtras.Name = "btnKindleExtras";
             this.btnKindleExtras.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.btnKindleExtras.Size = new System.Drawing.Size(102, 80);
@@ -487,7 +485,7 @@
             this.btnBuild.Image = ((System.Drawing.Image)(resources.GetObject("btnBuild.Image")));
             this.btnBuild.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnBuild.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnBuild.Margin = new System.Windows.Forms.Padding(8, 10, 0, 10);
+            this.btnBuild.Margin = new System.Windows.Forms.Padding(0, 10, 5, 10);
             this.btnBuild.Name = "btnBuild";
             this.btnBuild.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.btnBuild.Size = new System.Drawing.Size(56, 80);
@@ -504,7 +502,7 @@
             this.btnXraySource.Image = ((System.Drawing.Image)(resources.GetObject("btnXraySource.Image")));
             this.btnXraySource.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnXraySource.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnXraySource.Margin = new System.Windows.Forms.Padding(4, 10, 0, 10);
+            this.btnXraySource.Margin = new System.Windows.Forms.Padding(8, 10, 5, 10);
             this.btnXraySource.Name = "btnXraySource";
             this.btnXraySource.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.btnXraySource.Size = new System.Drawing.Size(72, 80);
@@ -514,19 +512,19 @@
             // btnXraySourceFile
             // 
             this.btnXraySourceFile.Name = "btnXraySourceFile";
-            this.btnXraySourceFile.Size = new System.Drawing.Size(165, 26);
+            this.btnXraySourceFile.Size = new System.Drawing.Size(224, 26);
             this.btnXraySourceFile.Text = "File";
             // 
             // btnXraySourceGoodreads
             // 
             this.btnXraySourceGoodreads.Name = "btnXraySourceGoodreads";
-            this.btnXraySourceGoodreads.Size = new System.Drawing.Size(165, 26);
+            this.btnXraySourceGoodreads.Size = new System.Drawing.Size(224, 26);
             this.btnXraySourceGoodreads.Text = "Goodreads";
             // 
             // btnXraySourceRoentgen
             // 
             this.btnXraySourceRoentgen.Name = "btnXraySourceRoentgen";
-            this.btnXraySourceRoentgen.Size = new System.Drawing.Size(165, 26);
+            this.btnXraySourceRoentgen.Size = new System.Drawing.Size(224, 26);
             this.btnXraySourceRoentgen.Text = "Roentgen";
             // 
             // btnCreate
@@ -534,7 +532,7 @@
             this.btnCreate.Image = ((System.Drawing.Image)(resources.GetObject("btnCreate.Image")));
             this.btnCreate.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnCreate.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnCreate.Margin = new System.Windows.Forms.Padding(4, 10, 0, 10);
+            this.btnCreate.Margin = new System.Windows.Forms.Padding(0, 10, 5, 10);
             this.btnCreate.Name = "btnCreate";
             this.btnCreate.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.btnCreate.Size = new System.Drawing.Size(60, 80);
@@ -547,7 +545,7 @@
             this.btnDownloadTerms.Image = ((System.Drawing.Image)(resources.GetObject("btnDownloadTerms.Image")));
             this.btnDownloadTerms.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnDownloadTerms.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnDownloadTerms.Margin = new System.Windows.Forms.Padding(4, 10, 0, 10);
+            this.btnDownloadTerms.Margin = new System.Windows.Forms.Padding(0, 10, 5, 10);
             this.btnDownloadTerms.Name = "btnDownloadTerms";
             this.btnDownloadTerms.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.btnDownloadTerms.Size = new System.Drawing.Size(86, 80);
@@ -561,7 +559,7 @@
             this.btnBrowseXML.Image = ((System.Drawing.Image)(resources.GetObject("btnBrowseXML.Image")));
             this.btnBrowseXML.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnBrowseXML.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnBrowseXML.Margin = new System.Windows.Forms.Padding(4, 10, 0, 10);
+            this.btnBrowseXML.Margin = new System.Windows.Forms.Padding(0, 10, 5, 10);
             this.btnBrowseXML.Name = "btnBrowseXML";
             this.btnBrowseXML.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.btnBrowseXML.Size = new System.Drawing.Size(86, 80);
@@ -574,7 +572,7 @@
             this.btnExtractTerms.Image = ((System.Drawing.Image)(resources.GetObject("btnExtractTerms.Image")));
             this.btnExtractTerms.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnExtractTerms.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnExtractTerms.Margin = new System.Windows.Forms.Padding(4, 10, 3, 10);
+            this.btnExtractTerms.Margin = new System.Windows.Forms.Padding(0, 10, 7, 10);
             this.btnExtractTerms.Name = "btnExtractTerms";
             this.btnExtractTerms.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.btnExtractTerms.Size = new System.Drawing.Size(62, 80);
@@ -584,67 +582,8 @@
             // 
             // toolStripSeparator1
             // 
-            this.toolStripSeparator1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 100);
-            // 
-            // btnPreview
-            // 
-            this.btnPreview.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tmiAuthorProfile,
-            this.tmiEndAction,
-            this.tmiStartAction,
-            this.tmiXray});
-            this.btnPreview.Image = ((System.Drawing.Image)(resources.GetObject("btnPreview.Image")));
-            this.btnPreview.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.btnPreview.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnPreview.Margin = new System.Windows.Forms.Padding(4, 10, 0, 10);
-            this.btnPreview.Name = "btnPreview";
-            this.btnPreview.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.btnPreview.Size = new System.Drawing.Size(78, 80);
-            this.btnPreview.Text = "Preview";
-            this.btnPreview.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            // 
-            // tmiAuthorProfile
-            // 
-            this.tmiAuthorProfile.Name = "tmiAuthorProfile";
-            this.tmiAuthorProfile.Size = new System.Drawing.Size(184, 26);
-            this.tmiAuthorProfile.Text = "Author Profile";
-            this.tmiAuthorProfile.Click += new System.EventHandler(this.tmiAuthorProfile_Click);
-            // 
-            // tmiEndAction
-            // 
-            this.tmiEndAction.Name = "tmiEndAction";
-            this.tmiEndAction.Size = new System.Drawing.Size(184, 26);
-            this.tmiEndAction.Text = "End Actions";
-            this.tmiEndAction.Click += new System.EventHandler(this.tmiEndAction_Click);
-            // 
-            // tmiStartAction
-            // 
-            this.tmiStartAction.Name = "tmiStartAction";
-            this.tmiStartAction.Size = new System.Drawing.Size(184, 26);
-            this.tmiStartAction.Text = "Start Actions";
-            this.tmiStartAction.Click += new System.EventHandler(this.tmiStartAction_Click);
-            // 
-            // tmiXray
-            // 
-            this.tmiXray.Name = "tmiXray";
-            this.tmiXray.Size = new System.Drawing.Size(184, 26);
-            this.tmiXray.Text = "X-Ray";
-            this.tmiXray.Click += new System.EventHandler(this.tmiXray_Click);
-            // 
-            // btnUnpack
-            // 
-            this.btnUnpack.Image = ((System.Drawing.Image)(resources.GetObject("btnUnpack.Image")));
-            this.btnUnpack.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.btnUnpack.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnUnpack.Margin = new System.Windows.Forms.Padding(4, 10, 0, 10);
-            this.btnUnpack.Name = "btnUnpack";
-            this.btnUnpack.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.btnUnpack.Size = new System.Drawing.Size(66, 80);
-            this.btnUnpack.Text = "Unpack";
-            this.btnUnpack.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.btnUnpack.Click += new System.EventHandler(this.btnUnpack_Click);
             // 
             // btnBrowseFolders
             // 
@@ -652,15 +591,14 @@
             this.btnBrowseOutput,
             this.toolStripSeparator4,
             this.btnBrowseDump,
-            this.btnBrowseAliasesAndChapters,
+            this.btnBrowseGeneratedData,
             this.btnBrowseLogs,
-            this.btnBrowseRecords,
             this.btnBrowseTemp,
             this.btnBrowseXmlFolder});
             this.btnBrowseFolders.Image = ((System.Drawing.Image)(resources.GetObject("btnBrowseFolders.Image")));
             this.btnBrowseFolders.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnBrowseFolders.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnBrowseFolders.Margin = new System.Windows.Forms.Padding(4, 10, 0, 10);
+            this.btnBrowseFolders.Margin = new System.Windows.Forms.Padding(0, 10, 5, 10);
             this.btnBrowseFolders.Name = "btnBrowseFolders";
             this.btnBrowseFolders.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.btnBrowseFolders.Size = new System.Drawing.Size(75, 80);
@@ -670,54 +608,47 @@
             // btnBrowseOutput
             // 
             this.btnBrowseOutput.Name = "btnBrowseOutput";
-            this.btnBrowseOutput.Size = new System.Drawing.Size(229, 26);
+            this.btnBrowseOutput.Size = new System.Drawing.Size(224, 26);
             this.btnBrowseOutput.Text = "Output";
             this.btnBrowseOutput.Click += new System.EventHandler(this.btnBrowseOutput_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(226, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(221, 6);
             // 
             // btnBrowseDump
             // 
             this.btnBrowseDump.Name = "btnBrowseDump";
-            this.btnBrowseDump.Size = new System.Drawing.Size(229, 26);
+            this.btnBrowseDump.Size = new System.Drawing.Size(224, 26);
             this.btnBrowseDump.Text = "Dump";
             this.btnBrowseDump.Click += new System.EventHandler(this.btnBrowseDump_Click);
             // 
-            // btnBrowseAliasesAndChapters
+            // btnBrowseGeneratedData
             // 
-            this.btnBrowseAliasesAndChapters.Name = "btnBrowseAliasesAndChapters";
-            this.btnBrowseAliasesAndChapters.Size = new System.Drawing.Size(229, 26);
-            this.btnBrowseAliasesAndChapters.Text = "Aliases and Chapters";
-            this.btnBrowseAliasesAndChapters.Click += new System.EventHandler(this.btnBrowseAliasesAndChapters_Click);
+            this.btnBrowseGeneratedData.Name = "btnBrowseGeneratedData";
+            this.btnBrowseGeneratedData.Size = new System.Drawing.Size(224, 26);
+            this.btnBrowseGeneratedData.Text = "Generated Data";
+            this.btnBrowseGeneratedData.Click += new System.EventHandler(this.btnBrowseGeneratedData_Click);
             // 
             // btnBrowseLogs
             // 
             this.btnBrowseLogs.Name = "btnBrowseLogs";
-            this.btnBrowseLogs.Size = new System.Drawing.Size(229, 26);
+            this.btnBrowseLogs.Size = new System.Drawing.Size(224, 26);
             this.btnBrowseLogs.Text = "Logs";
             this.btnBrowseLogs.Click += new System.EventHandler(this.btnBrowseLogs_Click);
-            // 
-            // btnBrowseRecords
-            // 
-            this.btnBrowseRecords.Name = "btnBrowseRecords";
-            this.btnBrowseRecords.Size = new System.Drawing.Size(229, 26);
-            this.btnBrowseRecords.Text = "Records";
-            this.btnBrowseRecords.Click += new System.EventHandler(this.btnBrowseRecords_Click);
             // 
             // btnBrowseTemp
             // 
             this.btnBrowseTemp.Name = "btnBrowseTemp";
-            this.btnBrowseTemp.Size = new System.Drawing.Size(229, 26);
+            this.btnBrowseTemp.Size = new System.Drawing.Size(224, 26);
             this.btnBrowseTemp.Text = "Temp";
             this.btnBrowseTemp.Click += new System.EventHandler(this.btnBrowseTemp_Click);
             // 
             // btnBrowseXmlFolder
             // 
             this.btnBrowseXmlFolder.Name = "btnBrowseXmlFolder";
-            this.btnBrowseXmlFolder.Size = new System.Drawing.Size(229, 26);
+            this.btnBrowseXmlFolder.Size = new System.Drawing.Size(224, 26);
             this.btnBrowseXmlFolder.Text = "XML";
             this.btnBrowseXmlFolder.Click += new System.EventHandler(this.btnBrowseXmlFolder_Click);
             // 
@@ -726,7 +657,7 @@
             this.btnSettings.Image = ((System.Drawing.Image)(resources.GetObject("btnSettings.Image")));
             this.btnSettings.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnSettings.Margin = new System.Windows.Forms.Padding(4, 10, 0, 10);
+            this.btnSettings.Margin = new System.Windows.Forms.Padding(0, 10, 7, 10);
             this.btnSettings.Name = "btnSettings";
             this.btnSettings.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.btnSettings.Size = new System.Drawing.Size(70, 80);
@@ -739,7 +670,7 @@
             this.btnOneClick.Image = ((System.Drawing.Image)(resources.GetObject("btnOneClick.Image")));
             this.btnOneClick.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnOneClick.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnOneClick.Margin = new System.Windows.Forms.Padding(4, 10, 3, 10);
+            this.btnOneClick.Margin = new System.Windows.Forms.Padding(0, 10, 7, 10);
             this.btnOneClick.Name = "btnOneClick";
             this.btnOneClick.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.btnOneClick.Size = new System.Drawing.Size(79, 80);
@@ -749,7 +680,6 @@
             // 
             // toolStripSeparator3
             // 
-            this.toolStripSeparator3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(6, 100);
             // 
@@ -758,10 +688,10 @@
             this.btnHelp.Image = ((System.Drawing.Image)(resources.GetObject("btnHelp.Image")));
             this.btnHelp.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnHelp.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnHelp.Margin = new System.Windows.Forms.Padding(4, 10, 0, 10);
+            this.btnHelp.Margin = new System.Windows.Forms.Padding(8, 10, 5, 10);
             this.btnHelp.Name = "btnHelp";
-            this.btnHelp.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.btnHelp.Size = new System.Drawing.Size(49, 64);
+            this.btnHelp.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.btnHelp.Size = new System.Drawing.Size(57, 64);
             this.btnHelp.Text = "Help";
             this.btnHelp.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
@@ -771,7 +701,7 @@
             this.btnAbout.Image = ((System.Drawing.Image)(resources.GetObject("btnAbout.Image")));
             this.btnAbout.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnAbout.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnAbout.Margin = new System.Windows.Forms.Padding(4, 10, 0, 10);
+            this.btnAbout.Margin = new System.Windows.Forms.Padding(0, 10, 0, 10);
             this.btnAbout.Name = "btnAbout";
             this.btnAbout.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.btnAbout.Size = new System.Drawing.Size(58, 64);
@@ -783,7 +713,7 @@
             // 
             this.pbFile4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pbFile4.Image = ((System.Drawing.Image)(resources.GetObject("pbFile4.Image")));
-            this.pbFile4.Location = new System.Drawing.Point(1116, 880);
+            this.pbFile4.Location = new System.Drawing.Point(1134, 880);
             this.pbFile4.Name = "pbFile4";
             this.pbFile4.Size = new System.Drawing.Size(16, 16);
             this.pbFile4.TabIndex = 0;
@@ -793,7 +723,7 @@
             // 
             this.pbFile3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pbFile3.Image = ((System.Drawing.Image)(resources.GetObject("pbFile3.Image")));
-            this.pbFile3.Location = new System.Drawing.Point(1090, 880);
+            this.pbFile3.Location = new System.Drawing.Point(1108, 880);
             this.pbFile3.Name = "pbFile3";
             this.pbFile3.Size = new System.Drawing.Size(16, 16);
             this.pbFile3.TabIndex = 0;
@@ -803,7 +733,7 @@
             // 
             this.pbFile2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pbFile2.Image = ((System.Drawing.Image)(resources.GetObject("pbFile2.Image")));
-            this.pbFile2.Location = new System.Drawing.Point(1064, 880);
+            this.pbFile2.Location = new System.Drawing.Point(1082, 880);
             this.pbFile2.Name = "pbFile2";
             this.pbFile2.Size = new System.Drawing.Size(16, 16);
             this.pbFile2.TabIndex = 0;
@@ -814,7 +744,7 @@
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.Enabled = false;
             this.btnCancel.Image = ((System.Drawing.Image)(resources.GetObject("btnCancel.Image")));
-            this.btnCancel.Location = new System.Drawing.Point(1205, 912);
+            this.btnCancel.Location = new System.Drawing.Point(1223, 912);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(23, 23);
             this.btnCancel.TabIndex = 0;
@@ -825,7 +755,7 @@
             // 
             this.pbFile1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pbFile1.Image = ((System.Drawing.Image)(resources.GetObject("pbFile1.Image")));
-            this.pbFile1.Location = new System.Drawing.Point(1038, 880);
+            this.pbFile1.Location = new System.Drawing.Point(1056, 880);
             this.pbFile1.Name = "pbFile1";
             this.pbFile1.Size = new System.Drawing.Size(16, 16);
             this.pbFile1.TabIndex = 0;
@@ -835,15 +765,13 @@
             // 
             this.pbCover.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pbCover.Image = ((System.Drawing.Image)(resources.GetObject("pbCover.Image")));
-            this.pbCover.Location = new System.Drawing.Point(944, 353);
+            this.pbCover.Location = new System.Drawing.Point(962, 353);
             this.pbCover.Name = "pbCover";
             this.pbCover.Size = new System.Drawing.Size(283, 425);
             this.pbCover.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pbCover.TabIndex = 0;
             this.pbCover.TabStop = false;
             this.pbCover.Click += new System.EventHandler(this.pbCover_Click);
-            this.pbCover.MouseEnter += new System.EventHandler(this.pbCover_MouseEnter);
-            this.pbCover.MouseLeave += new System.EventHandler(this.pbCover_MouseLeave);
             // 
             // txtDatasource
             // 
@@ -853,12 +781,12 @@
             this.txtDatasource.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtDatasource.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
             this.txtDatasource.LinkColor = System.Drawing.Color.MediumBlue;
-            this.txtDatasource.Location = new System.Drawing.Point(1034, 856);
+            this.txtDatasource.Location = new System.Drawing.Point(1052, 856);
             this.txtDatasource.Name = "txtDatasource";
-            this.txtDatasource.Size = new System.Drawing.Size(129, 19);
+            this.txtDatasource.Size = new System.Drawing.Size(130, 19);
             this.txtDatasource.TabIndex = 0;
             this.txtDatasource.TabStop = true;
-            this.txtDatasource.Text = "Search datasource...";
+            this.txtDatasource.Text = "Search datasource…";
             this.txtDatasource.Visible = false;
             this.txtDatasource.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.txtDatasource_LinkClicked);
             // 
@@ -867,19 +795,77 @@
             this.lblDatasource.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblDatasource.AutoSize = true;
             this.lblDatasource.Font = new System.Drawing.Font("Segoe UI Semibold", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDatasource.Location = new System.Drawing.Point(940, 856);
+            this.lblDatasource.Location = new System.Drawing.Point(958, 856);
             this.lblDatasource.Name = "lblDatasource";
             this.lblDatasource.Size = new System.Drawing.Size(82, 19);
             this.lblDatasource.TabIndex = 0;
             this.lblDatasource.Text = "Datasource:";
             this.lblDatasource.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // btnUnpack
+            // 
+            this.btnUnpack.Image = ((System.Drawing.Image)(resources.GetObject("btnUnpack.Image")));
+            this.btnUnpack.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.btnUnpack.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnUnpack.Margin = new System.Windows.Forms.Padding(0, 10, 5, 10);
+            this.btnUnpack.Name = "btnUnpack";
+            this.btnUnpack.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.btnUnpack.Size = new System.Drawing.Size(66, 80);
+            this.btnUnpack.Text = "Unpack";
+            this.btnUnpack.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnUnpack.Click += new System.EventHandler(this.btnUnpack_Click);
+            // 
+            // tmiAuthorProfile
+            // 
+            this.tmiAuthorProfile.Name = "tmiAuthorProfile";
+            this.tmiAuthorProfile.Size = new System.Drawing.Size(224, 26);
+            this.tmiAuthorProfile.Text = "Author Profile";
+            this.tmiAuthorProfile.Click += new System.EventHandler(this.tmiAuthorProfile_Click);
+            // 
+            // tmiEndAction
+            // 
+            this.tmiEndAction.Name = "tmiEndAction";
+            this.tmiEndAction.Size = new System.Drawing.Size(224, 26);
+            this.tmiEndAction.Text = "End Actions";
+            this.tmiEndAction.Click += new System.EventHandler(this.tmiEndAction_Click);
+            // 
+            // tmiStartAction
+            // 
+            this.tmiStartAction.Name = "tmiStartAction";
+            this.tmiStartAction.Size = new System.Drawing.Size(224, 26);
+            this.tmiStartAction.Text = "Start Actions";
+            this.tmiStartAction.Click += new System.EventHandler(this.tmiStartAction_Click);
+            // 
+            // tmiXray
+            // 
+            this.tmiXray.Name = "tmiXray";
+            this.tmiXray.Size = new System.Drawing.Size(224, 26);
+            this.tmiXray.Text = "X-Ray";
+            this.tmiXray.Click += new System.EventHandler(this.tmiXray_Click);
+            // 
+            // btnPreview
+            // 
+            this.btnPreview.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tmiAuthorProfile,
+            this.tmiEndAction,
+            this.tmiStartAction,
+            this.tmiXray});
+            this.btnPreview.Image = ((System.Drawing.Image)(resources.GetObject("btnPreview.Image")));
+            this.btnPreview.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.btnPreview.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnPreview.Margin = new System.Windows.Forms.Padding(8, 10, 5, 10);
+            this.btnPreview.Name = "btnPreview";
+            this.btnPreview.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.btnPreview.Size = new System.Drawing.Size(78, 80);
+            this.btnPreview.Text = "Preview";
+            this.btnPreview.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            // 
             // frmMain
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1244, 949);
+            this.ClientSize = new System.Drawing.Size(1262, 949);
             this.Controls.Add(this.txtDatasource);
             this.Controls.Add(this.lblDatasource);
             this.Controls.Add(this.toolStrip);
@@ -964,15 +950,9 @@
         private System.Windows.Forms.ToolStripButton btnBuild;
         private System.Windows.Forms.ToolStripButton btnOneClick;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripDropDownButton btnPreview;
-        private System.Windows.Forms.ToolStripMenuItem tmiAuthorProfile;
-        private System.Windows.Forms.ToolStripMenuItem tmiEndAction;
-        private System.Windows.Forms.ToolStripMenuItem tmiStartAction;
-        private System.Windows.Forms.ToolStripMenuItem tmiXray;
         private System.Windows.Forms.ToolStripButton btnCreate;
         private System.Windows.Forms.ToolStripButton btnDownloadTerms;
         private System.Windows.Forms.ToolStripButton btnBrowseXML;
-        private System.Windows.Forms.ToolStripButton btnUnpack;
         private System.Windows.Forms.ToolStripButton btnExtractTerms;
         private System.Windows.Forms.ToolStripDropDownButton btnXraySource;
         private System.Windows.Forms.ToolStripMenuItem btnXraySourceFile;
@@ -982,9 +962,8 @@
         private System.Windows.Forms.ToolStripMenuItem btnBrowseOutput;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripMenuItem btnBrowseDump;
-        private System.Windows.Forms.ToolStripMenuItem btnBrowseAliasesAndChapters;
+        private System.Windows.Forms.ToolStripMenuItem btnBrowseGeneratedData;
         private System.Windows.Forms.ToolStripMenuItem btnBrowseLogs;
-        private System.Windows.Forms.ToolStripMenuItem btnBrowseRecords;
         private System.Windows.Forms.ToolStripMenuItem btnBrowseTemp;
         private System.Windows.Forms.ToolStripMenuItem btnBrowseXmlFolder;
         private System.Windows.Forms.ToolStripButton btnSettings;
@@ -1001,6 +980,12 @@
         private System.Windows.Forms.ToolStripMenuItem clearAndSaveToolStripMenuItem;
         private System.Windows.Forms.LinkLabel txtDatasource;
         private System.Windows.Forms.Label lblDatasource;
+        private System.Windows.Forms.ToolStripDropDownButton btnPreview;
+        private System.Windows.Forms.ToolStripMenuItem tmiAuthorProfile;
+        private System.Windows.Forms.ToolStripMenuItem tmiEndAction;
+        private System.Windows.Forms.ToolStripMenuItem tmiStartAction;
+        private System.Windows.Forms.ToolStripMenuItem tmiXray;
+        private System.Windows.Forms.ToolStripButton btnUnpack;
     }
 }
 

@@ -204,7 +204,7 @@
             this.StatusLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.StatusLabel.Name = "StatusLabel";
             this.StatusLabel.Size = new System.Drawing.Size(426, 20);
-            this.StatusLabel.Text = "Use the search or browse buttons to update book information...";
+            this.StatusLabel.Text = "Use the search or browse buttons to update book information…";
             this.StatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblBio

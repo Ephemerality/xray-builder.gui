@@ -41,7 +41,7 @@ namespace XRayBuilder.Console
             //If token cannot be cancelled, attach Ctrl+C and SIGTERN shutdown
             var done = new ManualResetEventSlim(false);
             using var cts = new CancellationTokenSource();
-            AttachCtrlcSigtermShutdown(cts, done, shutdownMessage: "Application is shutting down...");
+            AttachCtrlcSigtermShutdown(cts, done, shutdownMessage: "Application is shutting down…");
             await WaitAsync(cts.Token, "Application running. Press Ctrl+C to shut down.");
             done.Set();
         }

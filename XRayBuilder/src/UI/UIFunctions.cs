@@ -22,7 +22,7 @@ namespace XRayBuilderGUI.UI
             if (!Directory.Exists(dir))
                 MessageBox.Show(
                     @"Specified directory does not exist.",
-                    @"Directory Not Found...",
+                    @"Directory Not Found…",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
             else
@@ -80,7 +80,7 @@ namespace XRayBuilderGUI.UI
                 MessageBox.Show(@"Failed to update Content Type, could not open with write access." +
                                 Environment.NewLine +
                                 @"Is the book open in another application?",
-                    @"Access Denied...",
+                    @"Access Denied…",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
             }

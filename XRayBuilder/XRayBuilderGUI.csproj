@@ -26,7 +26,7 @@
     <Company>X-Ray Builder GUI</Company>
     <Product>X-Ray Builder GUI</Product>
     <Description>Generate X-Ray, Start Action, Author Profile, and End Action files for use on your Amazon Kindle.</Description>
-    <Copyright>Copyright © 2020</Copyright>
+    <Copyright>Copyright © 2021</Copyright>
     <AssemblyVersion>2.1.1.0</AssemblyVersion>
     <FileVersion>2.1.1.0</FileVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
@@ -65,7 +65,7 @@
     <PackageReference Include="JetBrains.Annotations" Version="2020.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Pluralize.NET" Version="1.0.2" />
-    <PackageReference Include="SimpleInjector" Version="5.2.0" />
+    <PackageReference Include="SimpleInjector" Version="5.2.1" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.7" />
   </ItemGroup>
 

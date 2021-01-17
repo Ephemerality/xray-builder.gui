@@ -325,7 +325,7 @@
             this.groupBox6.Size = new System.Drawing.Size(974, 74);
             this.groupBox6.TabIndex = 56;
             this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Save File As...";
+            this.groupBox6.Text = "Save File As…";
             // 
             // txtAsin
             // 

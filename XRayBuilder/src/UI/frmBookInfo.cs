@@ -31,7 +31,6 @@ namespace XRayBuilderGUI.UI
 
         public IMetadata Book;
         public Image Cover;
-        public Data Data;
 
         public frmBookInfo(
             IHttpClient httpClient,
@@ -59,7 +58,7 @@ namespace XRayBuilderGUI.UI
 
             if (Controls.OfType<TextBox>().Any(t => string.IsNullOrEmpty(t.Text)))
             {
-                SetStatus(@"Use the search buttons to update book information...");
+                SetStatus(@"Use the search buttons to update book information…");
                 btnOK.Enabled = false;
             }
             else
@@ -71,12 +70,12 @@ namespace XRayBuilderGUI.UI
 
         private void frmBookInfo_Load(object sender, EventArgs e)
         {
-            txtGoodreadsUrl.DataBindings.Add("Text", Data, "GoodreadsUrl", true,
-                DataSourceUpdateMode.OnPropertyChanged);
-            txtAuthorUrl.DataBindings.Add("Text", Data, "AuthorUrl", true, DataSourceUpdateMode.OnPropertyChanged);
-            txtBio.DataBindings.Add("Text", Data, "AuthorBio", true, DataSourceUpdateMode.OnPropertyChanged);
-            cbXraySource.DataBindings.Add("SelectedItem", Data, "XraySource", true,
-                DataSourceUpdateMode.OnPropertyChanged);
+            //txtGoodreadsUrl.DataBindings.Add("Text", Data, "GoodreadsUrl", true,
+            //    DataSourceUpdateMode.OnPropertyChanged);
+            //txtAuthorUrl.DataBindings.Add("Text", Data, "AuthorUrl", true, DataSourceUpdateMode.OnPropertyChanged);
+            //txtBio.DataBindings.Add("Text", Data, "AuthorBio", true, DataSourceUpdateMode.OnPropertyChanged);
+            //cbXraySource.DataBindings.Add("SelectedItem", Data, "XraySource", true,
+            //    DataSourceUpdateMode.OnPropertyChanged);
             //txtBookUrl.DataBindings.Add("Text", Data, "BookUrl", true, DataSourceUpdateMode.OnPropertyChanged);
 
             var ds = (SecondaryDataSourceFactory.Enum) Enum.Parse(typeof(SecondaryDataSourceFactory.Enum),
@@ -102,11 +101,11 @@ namespace XRayBuilderGUI.UI
             try
             {
                 var bookSearchService = _diContainer.GetInstance<IBookSearchService>();
-                SetStatus(@$"Searching {_dataSource.Name}...");
+                SetStatus(@$"Searching {_dataSource.Name}…");
                 var books = await bookSearchService.SearchSecondarySourceAsync(_dataSource, Book, _cancelTokens.Token);
                 if (books.Length <= 0)
                 {
-                    SetStatus(@$"Unable to find {Book.Title} on {_dataSource.Name}...");
+                    SetStatus(@$"Unable to find {Book.Title} on {_dataSource.Name}…");
                     CheckStatus();
                     return;
                 }
@@ -134,9 +133,6 @@ namespace XRayBuilderGUI.UI
                     frmG.ShowDialog();
                     bookUrl = books[frmG.cbResults.SelectedIndex].DataUrl;
                 }
-
-                if (!string.IsNullOrEmpty(bookUrl))
-                    Data.GoodreadsUrl = bookUrl;
             }
             catch (Exception)
             {
@@ -163,7 +159,7 @@ namespace XRayBuilderGUI.UI
             try
             {
                 Cursor = Cursors.WaitCursor;
-                SetStatus($@"Searching Amazon.{_settings.amazonTLD}...");
+                SetStatus($@"Searching Amazon.{_settings.amazonTLD}…");
                 searchResults = await _amazonClient.SearchAuthor(Book.Author, Book.Asin, _settings.amazonTLD,
                     _cancelTokens.Token, false);
             }
@@ -191,18 +187,6 @@ namespace XRayBuilderGUI.UI
                 SetStatus($"Failed to find {Book.Author} on Amazon.");
                 CheckStatus();
                 return;
-            }
-
-            Data.AuthorUrl = searchResults.Url;
-
-            if (_settings.saveBio && File.Exists(_bioFile))
-            {
-                using var streamReader = new StreamReader(_bioFile, Encoding.UTF8);
-                Data.AuthorBio = streamReader.ReadToEnd();
-            }
-            else
-            {
-                Data.AuthorBio = searchResults.Biography;
             }
 
             CheckStatus();

@@ -20,6 +20,7 @@ using XRayBuilder.Core.Extras.AuthorProfile;
 using XRayBuilder.Core.Extras.EndActions;
 using XRayBuilder.Core.Extras.StartActions;
 using XRayBuilder.Core.Libraries;
+using XRayBuilder.Core.Libraries.Database;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Progress;
@@ -66,7 +67,7 @@ namespace XRayBuilderGUI.UI
         private readonly IEndActionsAuthorConverter _endActionsAuthorConverter;
         private readonly IDirectoryService _directoryService;
 
-        public Data Data = new Data();
+        public Database Db = new Database();
 
         // There is private method ClearAllSelections in ToolStrip class,
         // which removes selections from items. You can invoke it via reflection:
@@ -116,8 +117,10 @@ namespace XRayBuilderGUI.UI
             _httpClient = httpClient;
             
             toolStrip.Renderer = new CustomToolStripProfessionalRenderer();
-
-            txtGoodreads.DataBindings.Add("Text", Data, "GoodreadsUrl", true, DataSourceUpdateMode.OnPropertyChanged);
+            
+            //((ToolStripDropDownMenu) btnXraySource.DropDown).ShowImageMargin = false;
+            //((ToolStripDropDownMenu) btnPreview.DropDown).ShowImageMargin = false;
+            //((ToolStripDropDownMenu) btnBrowseFolders.DropDown).ShowImageMargin = false;
         }
 
         private readonly ToolTip _tooltip = new ToolTip();
@@ -131,8 +134,6 @@ namespace XRayBuilderGUI.UI
 
         private IMetadata _openedMetadata;
         private Image _openedCover;
-
-        private string _bookPath = "";
 
         private DialogResult SafeShow([Localizable(true)] string msg, [Localizable(true)] string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton def)
         {
@@ -192,7 +193,6 @@ namespace XRayBuilderGUI.UI
             var book = txtMobi.Text;
             txtMobi.Text = UIFunctions.GetBook(txtMobi.Text);
             if (string.Equals(book, txtMobi.Text)) return;
-            Data = new Data();
         }
 
         private void btnBrowseXML_Click(object sender, EventArgs e)
@@ -220,7 +220,7 @@ namespace XRayBuilderGUI.UI
                 }
                 catch (Exception ex)
                 {
-                    _logger.Log($@"{MainStrings.FailedToValidateAsin}: {ex.Message}\r\n{MainStrings.ContinuingAnyway}...", LogLevel.Error);
+                    _logger.Log($@"{MainStrings.FailedToValidateAsin}: {ex.Message}\r\n{MainStrings.ContinuingAnyway}…", LogLevel.Error);
                 }
 
                 if (!Settings.Default.useNewVersion && metadata.DbName.Length == 31)
@@ -620,6 +620,7 @@ namespace XRayBuilderGUI.UI
 
                     if (authorProfileResponse == null)
                         return;
+                    //Db.AddAuthor(null);
                 }
 
                 if (needAp)
@@ -865,6 +866,9 @@ namespace XRayBuilderGUI.UI
                     
                     SetDatasourceLink(bookUrl);
                 }
+
+                var bk = new BookInfo(metadata, bookUrl);
+                Db.AddIdentifier(bk);
             }
             catch (Exception ex)
             {
@@ -915,6 +919,8 @@ namespace XRayBuilderGUI.UI
             btnExtractTerms.ToolTipText = MainStrings.ExtractXRayToXml;
             btnCreate.ToolTipText = MainStrings.CreateXmlTooltip;
 
+            btnHelp.ToolTipText = null;
+
             _tooltip.SetToolTip(rdoGoodreads, MainStrings.UseLinkAsDataSource);
             _tooltip.SetToolTip(rdoRoentgen, MainStrings.DownloadFromRoentgen);
             _tooltip.SetToolTip(rdoFile, MainStrings.LoadTermsFromFile);
@@ -928,9 +934,7 @@ namespace XRayBuilderGUI.UI
             DragDrop += frmMain_DragDrop;
 
             var args = Environment.GetCommandLineArgs();
-
-            Data.BookPath = args.Skip(1).Where(File.Exists).Select(Path.GetFullPath).FirstOrDefault()
-                            ?? _settings.mobiFile;
+            
             txtMobi.Text = args.Skip(1).Where(File.Exists).Select(Path.GetFullPath).FirstOrDefault()
                            ?? _settings.mobiFile;
 
@@ -1008,7 +1012,6 @@ namespace XRayBuilderGUI.UI
                     ? "Roentgen"
                     : "XML";
             _settings.Save();
-            Data.XraySource = _settings.buildSource;
         }
 
         private void SetDatasourceLink(string url)
@@ -1016,7 +1019,7 @@ namespace XRayBuilderGUI.UI
             txtDatasource.Visible = true;
             if (string.IsNullOrEmpty(url))
             {
-                txtDatasource.Text = @"Search datasource...";
+                txtDatasource.Text = @"Search datasource…";
                 return;
             }
 
@@ -1024,7 +1027,6 @@ namespace XRayBuilderGUI.UI
             if (!matchId.Success) return;
             _tooltip.SetToolTip(txtDatasource, url);
             txtDatasource.Text = matchId.Groups[2].Value;
-            Data.GoodreadsUrl = url;
         }
 
         private void SetDatasourceLabels()
@@ -1097,7 +1099,7 @@ namespace XRayBuilderGUI.UI
             txtTitle.Text = "";
             txtAuthor.Text = "";
             txtAsin.Text = "";
-            txtDatasource.Text = @"Search datasource...";
+            txtDatasource.Text = @"Search datasource…";
             prgBar.Value = 0;
             _openedMetadata = null;
             CheckFiles("","","","","","");
@@ -1146,7 +1148,7 @@ namespace XRayBuilderGUI.UI
             //TODO: Check ASIN matches selected Amazon region.
             //try
             //{
-            //    _logger.Log(@$"Checking if this ASIN matches a book available on Amazon{_settings.amazonTLD}...");
+            //    _logger.Log(@$"Checking if this ASIN matches a book available on Amazon{_settings.amazonTLD}…");
             //    var localBookResult = await _amazonClient.SearchBook(metadata.Title, metadata.Author, _settings.amazonTLD, _cancelTokens.Token);
             //    _logger.Log(localBookResult.Asin == metadata.Asin
             //        ? $@"Successfully found a matching book:  {localBookResult.Title}!"
@@ -1171,6 +1173,9 @@ namespace XRayBuilderGUI.UI
             {
                 // Ignored
             }
+
+            Db.AddBook(new BookInfo(_openedMetadata, _settings.Goodreads), txtMobi.Text);
+
             ToggleInterface(true);
         }
 
@@ -1302,9 +1307,12 @@ namespace XRayBuilderGUI.UI
         private async void btnCreate_Click(object sender, EventArgs e)
         {
             using var frmCreateXr = _diContainer.GetInstance<frmCreateXR>();
-            using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
-            if (metadata != null)
-                frmCreateXr.SetMetadata(metadata.Asin, metadata.Author, metadata.Title);
+            if (File.Exists(txtMobi.Text))
+            {
+                using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
+                if (metadata != null)
+                    frmCreateXr.SetMetadata(metadata);
+            }
             frmCreateXr.ShowDialog();
         }
 
@@ -1420,7 +1428,7 @@ namespace XRayBuilderGUI.UI
             UIFunctions.OpenDirectory(Environment.CurrentDirectory + @"\dmp");
         }
 
-        private void btnBrowseAliasesAndChapters_Click(object sender, EventArgs e)
+        private void btnBrowseGeneratedData_Click(object sender, EventArgs e)
         {
             UIFunctions.OpenDirectory(Environment.CurrentDirectory + @"\ext");
         }
@@ -1428,11 +1436,6 @@ namespace XRayBuilderGUI.UI
         private void btnBrowseLogs_Click(object sender, EventArgs e)
         {
             UIFunctions.OpenDirectory(Environment.CurrentDirectory + @"\log");
-        }
-
-        private void btnBrowseRecords_Click(object sender, EventArgs e)
-        {
-            UIFunctions.OpenDirectory(Environment.CurrentDirectory + @"\rec");
         }
 
         private void btnBrowseTemp_Click(object sender, EventArgs e)
@@ -1476,22 +1479,11 @@ namespace XRayBuilderGUI.UI
 
         private void pbCover_Click(object sender, EventArgs e)
         {
-            if (_openedMetadata == null) return;
-            using var frmBook = _diContainer.GetInstance<frmBookInfo>();
-            frmBook.Book = _openedMetadata;
-            frmBook.Cover = _openedCover;
-            frmBook.Data = Data;
-            frmBook.ShowDialog();
-        }
-
-        private void pbCover_MouseEnter(object sender, EventArgs e)
-        {
-            Cursor = Cursors.Hand;
-        }
-
-        private void pbCover_MouseLeave(object sender, EventArgs e)
-        {
-            Cursor = Cursors.Default;
+            //if (_openedMetadata == null) return;
+            //using var frmBook = _diContainer.GetInstance<frmBookInfo>();
+            //frmBook.Book = _openedMetadata;
+            //frmBook.Cover = _openedCover;
+            //frmBook.ShowDialog();
         }
     }
 }

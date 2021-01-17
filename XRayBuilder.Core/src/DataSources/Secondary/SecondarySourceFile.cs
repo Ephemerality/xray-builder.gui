@@ -35,7 +35,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
         public override Task<IEnumerable<Term>> GetTermsAsync(string xmlFile, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
         {
-            _logger.Log("Loading terms from file...");
+            _logger.Log("Loading terms from file…");
             var filetype = Path.GetExtension(xmlFile);
             switch (filetype)
             {

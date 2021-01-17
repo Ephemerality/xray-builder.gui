@@ -62,7 +62,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
         //             // Search for author with spaces removed to avoid situations like "J.R.R. Tolkien" / "J. R. R. Tolkien"
         //             // Ignore Collective Work search result.
         //             // May cause false matches, we'll see.
-        //             // Also remove diacritics from titles when matching just in case...
+        //             // Also remove diacritics from titles when matching just in case…
         //             // Searching for Children of Húrin will give a false match on the first pass before diacritics are removed from the search URL
         //             if ((listofthings.Contains("(Author)") || listofthings.Contains("(Author),")) &&
         //                 line.RemoveDiacritics().StartsWith(title.RemoveDiacritics(), StringComparison.OrdinalIgnoreCase) &&
@@ -123,7 +123,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
         public override async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
         {
-            _logger.Log("Downloading Shelfari page...");
+            _logger.Log("Downloading Shelfari page…");
             var terms = new List<Term>();
 
             sourceHtmlDoc ??= await _httpClient.GetPageAsync(dataUrl, cancellationToken);

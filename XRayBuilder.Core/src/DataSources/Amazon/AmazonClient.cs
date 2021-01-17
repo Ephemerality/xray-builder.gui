@@ -14,6 +14,7 @@ using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Parsing.Regex;
+using XRayBuilder.Core.Libraries.Primitives.Extensions;
 using XRayBuilder.Core.Model;
 
 namespace XRayBuilder.Core.DataSources.Amazon
@@ -21,6 +22,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
     public class AuthorSearchResults
     {
         public string Asin { get; set; }
+        public string Name { get; set; }
         public string Biography { get; set; }
         public string ImageUrl { get; set; }
         /// <summary>
@@ -64,7 +66,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             var plusAuthorName = newAuthor.Replace(" ", "+");
             //Updated to match Search "all" Amazon
             var amazonAuthorSearchUrl = $"https://www.amazon.{TLD}/s/ref=nb_sb_noss_2?url=search-alias%3Dstripbooks&field-keywords={plusAuthorName}";
-            if(enableLog) _logger.Log($@"Searching for author's page on Amazon.{TLD}...");
+            if(enableLog) _logger.Log($@"Searching for author's page on Amazon.{TLD}…");
 
             // Search Amazon for Author
             var authorSearchDoc = await _httpClient.GetPageAsync(amazonAuthorSearchUrl, cancellationToken);
@@ -140,7 +142,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
             // Try to find the Kindle Edition link
             // Either use the new one w/ only Kindle editions or the original
-            // TODO: don't handle individual regions here...
+            // TODO: don't handle individual regions here…
             if (TLD == "com")
             {
                 var kindleNode = authorHtmlDoc.DocumentNode.SelectSingleNode(".//a[@class='a-link-normal formatSelector']");
@@ -167,7 +169,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             }
             catch (FormatChangedException)
             {
-                if(enableLog) _logger.Log("Warning: Amazon biography format changed or no biography available for this author.", LogLevel.Warn);
+                if(enableLog) _logger.Log($@"Warning: Amazon.{TLD} biography format changed or no biography available for this author.", LogLevel.Warn);
             }
 
             if (!enableLog)
@@ -175,6 +177,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 return new AuthorSearchResults
                 {
                     Asin = authorAsin,
+                    Name = author,
                     Url = authorAmazonWebsiteLocationLog,
                     Biography = biography
                 };
@@ -187,7 +190,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             }
             catch (FormatChangedException)
             {
-                _logger.Log("Warning: Amazon author image format changed or no image is available for this author.", LogLevel.Warn);
+                _logger.Log($@"Warning: Amazon.{TLD} author image format changed or no image is available for this author.", LogLevel.Warn);
             }
 
             var bookList = GetAuthorBooks(authorHtmlDoc, author, TLD);
@@ -251,7 +254,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 // Skip known-bad things like lists and series and stuff
                 if (_regexIgnoreHeaders.IsMatch(name))
                     continue;
-                name = Functions.ToTitleCase(name);
+                name = name.ToTitleCase();
 
                 // Get first Kindle ASIN
                 var asin = bookNodes.Select(bookNode => _regexAsinUrl.Match(bookNode.OuterHtml))
@@ -288,7 +291,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 // Skip known-bad things like lists and series and stuff
                 if (_regexIgnoreHeaders.IsMatch(otherBook.InnerText))
                     continue;
-                var name = Functions.ToTitleCase(otherBook.InnerText.Trim());
+                var name = otherBook.InnerText.Trim().ToTitleCase();
                 otherBook = result.SelectSingleNode(".//*[@title='Kindle Edition']");
                 if (otherBook == null)
                     continue;
@@ -307,7 +310,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 {
                     var otherBook = result.SelectSingleNode(".//a/img");
                     if (otherBook == null) continue;
-                    var name = Functions.ToTitleCase(otherBook.GetAttributeValue("alt", ""));
+                    var name = otherBook.GetAttributeValue("alt", "");
                     // Skip known-bad things like lists and series and stuff
                     if (_regexIgnoreHeaders.IsMatch(name))
                         continue;
@@ -315,7 +318,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                     if (otherBook == null) continue;
                     var asin = ParseAsinFromUrl(otherBook.OuterHtml);
                     if (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(asin))
-                        bookList.Add(new BookInfo(name, author, asin)
+                        bookList.Add(new BookInfo(name.ToTitleCase(), author, asin)
                         {
                             Tld = tld
                         });

@@ -48,7 +48,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             {
                 if (searchResults == null)
                 {
-                    _logger.Log(string.Format("Failed to find {0} on Amazon." + request.Settings.AmazonTld, request.Book.Author));
+                    _logger.Log($"Failed to find {request.Book.Author} on Amazon.{request.Settings.AmazonTld}");
                     if (request.Settings.AmazonTld != "com")
                     {
                         _logger.Log("Trying again with Amazon.com.");
@@ -57,6 +57,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                     }
                 }
             }
+
             if (searchResults == null)
                 return null; // Already logged error in search function
 
@@ -77,8 +78,12 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
 //                }
 //            }
 
+            // TODO: Separate out biography stuff
             // Try to find author's biography
-
+            string biography = null;
+            var bioFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext", $"{authorAsin}.bio");
+            var readFromFile = false;
+            var newBioFile = false;
             string ReadBio(string file)
             {
                 try
@@ -86,8 +91,12 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                     var fileText = Functions.ReadFromFile(file);
                     if (string.IsNullOrEmpty(fileText))
                         _logger.Log($"Found biography file, but it is empty!\r\n{file}");
-                    else
+                    else if(!string.Equals(biography, fileText))
                         _logger.Log($"Using biography from {file}.");
+
+                    // todo fix this
+                    if (fileText != null && fileText.Contains("No author biography found locally or on Amazon!"))
+                        _logger.Log($"Warning: Local biography file contains an empty default biography.{Environment.NewLine}Delete {file} and try again");
 
                     return fileText;
                 }
@@ -99,11 +108,51 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                 return null;
             }
 
-            // TODO: Separate out biography stuff
-            string biography = null;
-            var bioFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext", $"{authorAsin}.bio");
-            var readFromFile = false;
-            if (request.Settings.SaveBio && File.Exists(bioFile))
+            string TrimBio(string bio)
+            {
+                try
+                {
+                    //Trim author biography to less than 1000 characters and/or replace more problematic characters.
+                    if (string.IsNullOrWhiteSpace(bio))
+                        return null;
+
+                    if (bio.Length > 1000)
+                    {
+                        // todo culture invariant
+                        var lastPunc = bio.LastIndexOfAny(new[] {'.', '!', '?'});
+                        var lastSpace = bio.LastIndexOf(' ');
+
+                        bio = lastPunc > lastSpace
+                            ? bio.Substring(0, lastPunc + 1)
+                            : $"{bio.Substring(0, lastSpace)}{'\u2026'}";
+                    }
+
+                    return bio.Clean();
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log($"An error occurred while trimming the biography\r\n{ex.Message}\r\n{ex.StackTrace}");
+                }
+
+                return bio;
+            }
+
+            if (searchResults.Biography == null && !File.Exists(bioFile))
+            {
+                if (request.Settings.AmazonTld != "com")
+                {
+                    _logger.Log(@"Searching for biography on Amazon.com…");
+                    request.Settings.AmazonTld = "com";
+                    var tempSearchResults = await _amazonClient.SearchAuthor(request.Book.Author, request.Book.Asin, request.Settings.AmazonTld, cancellationToken);
+                    if (tempSearchResults?.Biography != null)
+                    {
+                        searchResults.Biography = tempSearchResults.Biography;
+                        biography = searchResults.Biography;
+                    }
+                }
+            }
+
+            if (File.Exists(bioFile) && request.Settings.SaveBio)
             {
                 biography = ReadBio(bioFile);
                 // if it's null, there was an error. if it's just empty, we'll parse it out instead
@@ -113,28 +162,16 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                     readFromFile = true;
             }
 
-            if (string.IsNullOrEmpty(biography) && !string.IsNullOrEmpty(searchResults.Biography))
+            if (!string.IsNullOrEmpty(biography) && (request.Settings.SaveBio || request.Settings.EditBiography))
             {
-                //Trim authour biography to less than 1000 characters and/or replace more problematic characters.
-                if (searchResults.Biography.Trim().Length > 0)
+                if(!readFromFile)
+                    biography = TrimBio(biography);
+
+                if (!File.Exists(bioFile) && !string.IsNullOrEmpty(biography))
                 {
-                    if (searchResults.Biography.Length > 1000)
-                    {
-                        var lastPunc = searchResults.Biography.LastIndexOfAny(new [] { '.', '!', '?' });
-                        var lastSpace = searchResults.Biography.LastIndexOf(' ');
-
-                        if (lastPunc > lastSpace)
-                            biography = searchResults.Biography.Substring(0, lastPunc + 1);
-                        else
-                            biography = $"{searchResults.Biography.Substring(0, lastSpace)}{'\u2026'}";
-                    }
-                    else
-                        biography = searchResults.Biography;
-
-                    biography = biography.Clean();
-                    if (request.Settings.SaveBio)
-                        File.WriteAllText(bioFile, biography);
-                    _logger.Log("Author biography found on Amazon!");
+                    File.WriteAllText(bioFile, biography);
+                    newBioFile = true;
+                    _logger.Log(@"Author biography found!");
                 }
             }
 
@@ -174,7 +211,18 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                         return null;
                     }
                 }
-                if (editBioCallback != null && editBioCallback("Would you like to open the biography file in notepad for editing?"))
+
+                if (newBioFile)
+                {
+                    _logger.Log(@"New biography file opened in notepad for editing…");
+                    Functions.RunNotepad(bioFile);
+                    biography = ReadBio(bioFile);
+                    if (string.IsNullOrEmpty(biography))
+                        return null;
+                    searchResults.Biography = biography;
+                }
+
+                if (!readFromFile && editBioCallback != null && editBioCallback("Would you like to open the biography file in notepad for editing?"))
                 {
                     Functions.RunNotepad(bioFile);
                     biography = ReadBio(bioFile);
@@ -183,13 +231,15 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                 }
             }
 
+            searchResults.Biography = biography;
+
             // Try to download Author image
             request.Book.AuthorImageUrl = searchResults.ImageUrl;
 
             Bitmap ApAuthorImage = null;
             try
             {
-                _logger.Log("Downloading author image...");
+                _logger.Log("Downloading author image…");
                 ApAuthorImage = await _httpClient.GetImageAsync(request.Book.AuthorImageUrl, cancellationToken: cancellationToken);
                 _logger.Log("Grayscale base64-encoded author image created!");
             }
@@ -201,7 +251,13 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             var bookBag = new ConcurrentBag<BookInfo>();
             if (searchResults.Books != null && request.Settings.UseNewVersion)
             {
-                _logger.Log("Gathering metadata for author's other books...");
+                if (searchResults.Books.Length != 0)
+                {
+                    // todo pluralize
+                    _logger.Log(searchResults.Books.Length > 1
+                        ? $"Gathering metadata for {searchResults.Books.Length} other books by {request.Book.Author}…"
+                        : $"Gathering metadata for another book by {request.Book.Author}…");
+                }
                 try
                 {
                     progress?.Set(0, searchResults.Books.Length);
@@ -224,7 +280,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                 _logger.Log("Unable to find other books by this author. If there should be some, check the Amazon URL to ensure it is correct.");
             }
 
-            _logger.Log("Writing Author Profile to file...");
+            _logger.Log("Writing Author Profile to file…");
 
             return new Response
             {

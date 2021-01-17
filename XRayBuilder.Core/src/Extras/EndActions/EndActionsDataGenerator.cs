@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -51,7 +52,7 @@ namespace XRayBuilder.Core.Extras.EndActions
         /// </summary>
         public async Task<Response> GenerateOld(BookInfo curBook, Settings settings, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
-            _logger.Log("Attempting to find book on Amazon...");
+            _logger.Log($"Attempting to find book on Amazon.{settings.AmazonTld}…");
             //Generate Book search URL from book's ASIN
             var ebookLocation = $@"https://www.amazon.{settings.AmazonTld}/dp/{curBook.Asin}";
 
@@ -109,7 +110,7 @@ namespace XRayBuilder.Core.Extras.EndActions
 
                 if (settings.UseNewVersion)
                 {
-                    _logger.Log($"Gathering metadata for {relatedBooks.Length} related book(s)...");
+                    _logger.Log($"Gathering metadata for {relatedBooks.Length} related book(s)…");
                     progress?.Set(0, relatedBooks.Length);
                     await foreach (var _ in _amazonClient.EnhanceBookInfos(relatedBooks, cancellationToken))
                     {
@@ -134,35 +135,50 @@ namespace XRayBuilder.Core.Extras.EndActions
         {
             foreach (var book in books.Where(item => item != null))
             {
+                string author = null;
                 string title = null;
-                var asinNode = book.SelectSingleNode(".//a[@class='a-link-normal']/div/span[@class='a-color-secondary series-book-number']")
-                    ?? book.SelectSingleNode(".//a[@class='a-link-normal']/div[@class='a-section a-spacing-mini']/img");
+
+                var asinNode = book.SelectSingleNode(".//comment()[contains(., 'Title')]/following-sibling::a");
                 if (asinNode != null)
                 {
-                    title = HtmlEntity.DeEntitize(asinNode.Attributes["alt"]?.Value).Clean();
-                    if(string.IsNullOrEmpty(title))
-                        asinNode = book.SelectSingleNode(".//a[@class='a-link-normal'][2]");
-                }
-                asinNode ??= book.SelectSingleNode(".//a[@class='a-link-normal' and @title]");
-                if (asinNode == null)
-                    continue;
-
-                if (asinNode.InnerText.IndexOf("Just released", StringComparison.InvariantCultureIgnoreCase) >= 0)
-                {
-                    var titleNode = book.SelectSingleNode(".//a[@class='a-link-normal' and @title]");
-                    if (titleNode != null)
-                        title = HtmlEntity.DeEntitize(titleNode.GetAttributeValue("title", "")).Clean();
-                }
-                if (string.IsNullOrEmpty(title))
                     title = HtmlEntity.DeEntitize(asinNode.InnerText).Clean();
+                    var aNode = book.SelectSingleNode(".//div[@class='a-row']/a");
+                    if (aNode != null)
+                        author = HtmlEntity.DeEntitize(aNode.InnerText.Clean());
+                }
+                else
+                {
+                    asinNode = book.SelectSingleNode(".//a[@class='a-link-normal']/div/span[@class='a-color-secondary series-book-number']")
+                               ?? book.SelectSingleNode(".//a[@class='a-link-normal']/div[@class='a-section a-spacing-mini']/img");
+                    if (asinNode != null)
+                    {
+                        title = HtmlEntity.DeEntitize(asinNode.Attributes["alt"]?.Value).Clean();
+                        if (string.IsNullOrEmpty(title))
+                            asinNode = book.SelectSingleNode(".//a[@class='a-link-normal'][2]");
+                    }
+                    asinNode ??= book.SelectSingleNode(".//a[@class='a-link-normal' and @title]");
+                    if (asinNode == null)
+                        continue;
+
+                    if (asinNode.InnerText.IndexOf("Just released", StringComparison.InvariantCultureIgnoreCase) >= 0)
+                    {
+                        var titleNode = book.SelectSingleNode(".//a[@class='a-link-normal' and @title]");
+                        if (titleNode != null)
+                            title = HtmlEntity.DeEntitize(titleNode.GetAttributeValue("title", "")).Clean();
+                    }
+                    if (string.IsNullOrEmpty(title))
+                        title = HtmlEntity.DeEntitize(asinNode.InnerText).Clean();
+
+                    var authorNode = book.SelectSingleNode(".//a[@class='a-size-small a-link-child']")
+                                     ??
+                                     book.SelectSingleNode(".//div[@class='a-row a-size-small sp-dp-ellipsis sp-dp-author']/a/span");
+                    if (authorNode == null)
+                        continue;
+                    author = authorNode.InnerText.Clean().ToTitleCase();
+                }
 
                 var asin = _amazonClient.ParseAsinFromUrl(asinNode.GetAttributeValue("href", ""))
                            ?? _amazonClient.ParseAsinFromUrl(book.InnerHtml);
-
-                var authorNode = book.SelectSingleNode(".//a[@class='a-size-small a-link-child']");
-                if (authorNode == null)
-                    continue;
-                var author = authorNode.InnerText.Clean().ToTitleCase();
 
                 if (string.IsNullOrEmpty(author) || string.IsNullOrEmpty(asin) || string.IsNullOrEmpty(title) || _invalidBookTitleRegex.IsMatch(title))
                     continue;
@@ -189,7 +205,7 @@ namespace XRayBuilder.Core.Extras.EndActions
                 newBook = await _amazonClient.SearchBook(book.Title, book.Author, settings.AmazonTld, cancellationToken);
                 if (newBook == null && settings.PromptAsin && asinPrompt != null)
                 {
-                    _logger.Log($"ASIN prompt for {book.Title}...");
+                    _logger.Log($"ASIN prompt for {book.Title}…");
                     var asin = asinPrompt(book.Title, book.Author);
                     if (string.IsNullOrWhiteSpace(asin))
                         return null;
@@ -214,7 +230,7 @@ namespace XRayBuilder.Core.Extras.EndActions
 
         private async Task ExpandSeriesMetadata(AuthorProfileGenerator.Response authorProfile, SeriesInfo series, Settings settings, Func<string, string, string> asinPrompt, CancellationToken cancellationToken = default)
         {
-            // Search author's other books for the book (assumes next in series was written by the same author...)
+            // Search author's other books for the book (assumes next in series was written by the same author…)
             // Returns the first one found, though there should probably not be more than 1 of the same name anyway
             // If not found there, try to get it using the asin from Goodreads or by searching Amazon
             // Swaps out the basic next/previous from Goodreads w/ full Amazon ones
@@ -262,6 +278,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             {
                 await dataSource.GetExtrasAsync(curBook, progress, cancellationToken);
                 progress?.Set(0);
+                _logger.Log("Checking if this book is part of a series…");
                 curBook.Series = await dataSource.GetSeriesInfoAsync(curBook.DataUrl, cancellationToken);
 
                 if (curBook.Series == null || curBook.Series.Total == 0)

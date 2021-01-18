@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
 using HtmlAgilityPack;
@@ -18,7 +19,7 @@ namespace XRayBuilder.Core.XRay.Logic.Parsing
             {
                 Metadata _ => GetRegular(metadata),
                 KfxContainer kfx => GetKfx(kfx),
-                _ => throw new NotSupportedException()
+                _ => GetRegular(metadata)
             };
 
         private IEnumerable<Paragraph> GetRegular(IMetadata metadata)

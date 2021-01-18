@@ -59,7 +59,7 @@ namespace XRayBuilder.Test.DataSources
             testMetadata.Title.Returns("The Fellowship of the Ring");
             var results = (await _libraryThing.SearchBookAsync(testMetadata, CancellationToken.None)).ToArray();
 
-            Assert.AreEqual(10, results.Length);
+            Assert.AreEqual(11, results.Length);
             Assert.AreEqual("https://www.librarything.com/work/3203347", results[0].DataUrl);
             Assert.AreEqual("J. R. R. Tolkien", results[0].Author);
             Assert.AreEqual("The Fellowship of the Ring", results[0].Title);

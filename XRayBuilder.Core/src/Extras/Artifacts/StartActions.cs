@@ -37,10 +37,10 @@ namespace XRayBuilder.Core.Extras.Artifacts
             [JsonProperty("imageUrl")]
             public string ImageUrl { get; set; }
 
-            [JsonProperty("bisacCodes")]
+            [JsonProperty("bisacCodes", NullValueHandling = NullValueHandling.Ignore)]
             public string[] BisacCodes { get; set; }
 
-            [JsonProperty("fictionStatus")]
+            [JsonProperty("fictionStatus", NullValueHandling = NullValueHandling.Ignore)]
             public string FictionStatus { get; set; }
 
             [JsonProperty("erl")]
@@ -307,7 +307,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
 
         public sealed class DataJson
         {
-            [JsonProperty("seriesPosition")]
+            [JsonProperty("seriesPosition", NullValueHandling = NullValueHandling.Ignore)]
             public SeriesPosition SeriesPosition { get; set; }
 
             [JsonProperty("followSubscriptions")]
@@ -346,7 +346,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
             [JsonProperty("readingTime")]
             public ReadingTime ReadingTime { get; set; }
 
-            [JsonProperty("previousBookInTheSeries")]
+            [JsonProperty("previousBookInTheSeries", NullValueHandling = NullValueHandling.Ignore)]
             public Book PreviousBookInTheSeries { get; set; }
 
             [JsonProperty("authorSubscriptions")]

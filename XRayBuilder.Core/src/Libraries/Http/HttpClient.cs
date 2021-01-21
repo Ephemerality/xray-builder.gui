@@ -58,10 +58,16 @@ namespace XRayBuilder.Core.Libraries.Http
         }
 
         // TODO should this return image not bitmap?
-        public async Task<Bitmap> GetImageAsync(string url, bool greyscale = false, CancellationToken cancellationToken = default)
+        public async Task<Bitmap> GetImageAsync(string url, int maxWidthHeight = -1, bool greyscale = false, CancellationToken cancellationToken = default)
         {
             var response = await GetStreamAsync(url, cancellationToken);
             var image = new Bitmap(response);
+
+            if (maxWidthHeight > -1 && (image.Height > maxWidthHeight || image.Width > maxWidthHeight))
+            {
+                var scaledImage = image.Scale(maxWidthHeight, maxWidthHeight, false);
+                image = (Bitmap) scaledImage;
+            }
 
             image = greyscale
                 ? (Bitmap) image.ToGrayscale3()
@@ -70,11 +76,11 @@ namespace XRayBuilder.Core.Libraries.Http
             return image;
         }
 
-        public async IAsyncEnumerable<Bitmap> GetImages(IEnumerable<string> urls, bool greyscale = false, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<Bitmap> GetImages(IEnumerable<string> urls, int maxWidthHeight = -1, bool greyscale = false, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             foreach (var url in urls.Where(url => !string.IsNullOrEmpty(url)))
             {
-                yield return await GetImageAsync(url, greyscale, cancellationToken);
+                yield return await GetImageAsync(url, maxWidthHeight, greyscale, cancellationToken);
             }
         }
 

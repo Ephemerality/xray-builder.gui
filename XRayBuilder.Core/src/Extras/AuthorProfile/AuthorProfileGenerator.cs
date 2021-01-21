@@ -38,7 +38,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             // If the .com search crashes, it will crash back to the caller in frmMain
             try
             {
-                searchResults = await _amazonClient.SearchAuthor(request.Book.Author, request.Book.Asin, request.Settings.AmazonTld, cancellationToken);
+                searchResults = await _amazonClient.SearchAuthor(request.Book.Author, request.Settings.AmazonTld, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -53,13 +53,18 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                     {
                         _logger.Log("Trying again with Amazon.com.");
                         request.Settings.AmazonTld = "com";
-                        searchResults = await _amazonClient.SearchAuthor(request.Book.Author, request.Book.Asin, request.Settings.AmazonTld, cancellationToken);
+                        searchResults = await _amazonClient.SearchAuthor(request.Book.Author, request.Settings.AmazonTld, cancellationToken);
                     }
                 }
             }
 
             if (searchResults == null)
                 return null; // Already logged error in search function
+
+            // Filter out any results that are the same title but not the same asin
+            searchResults.Books = searchResults.Books
+                .Where(book => !book.Title.ToLower().Contains(request.Book.Title.ToLower()) && book.Asin != request.Book.Asin)
+                .ToArray();
 
             var authorAsin = searchResults.Asin;
 
@@ -143,7 +148,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                 {
                     _logger.Log(@"Searching for biography on Amazon.com…");
                     request.Settings.AmazonTld = "com";
-                    var tempSearchResults = await _amazonClient.SearchAuthor(request.Book.Author, request.Book.Asin, request.Settings.AmazonTld, cancellationToken);
+                    var tempSearchResults = await _amazonClient.SearchAuthor(request.Book.Author, request.Settings.AmazonTld, cancellationToken);
                     if (tempSearchResults?.Biography != null)
                     {
                         searchResults.Biography = tempSearchResults.Biography;
@@ -158,7 +163,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                 // if it's null, there was an error. if it's just empty, we'll parse it out instead
                 if (biography == null)
                     return null;
-                if (biography == "")
+                if (!string.IsNullOrEmpty(biography))
                     readFromFile = true;
             }
 
@@ -176,10 +181,10 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             }
 
             var message = biography == null
-                ? "No author biography found on Amazon!\r\nWould you like to create one?"
+                ? $"No author biography found on Amazon!{Environment.NewLine}Would you like to create one?"
                 : readFromFile
                     ? "Would you like to edit the existing biography?"
-                    : "Author biography found on Amazon! Would you like to edit it?";
+                    : $"Author biography found on Amazon!{Environment.NewLine}Would you like to edit it?";
 
             if (editBioCallback != null && editBioCallback(message))
             {
@@ -245,7 +250,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             }
             catch (Exception ex)
             {
-                _logger.Log(string.Format("An error occurred downloading the author image: {0}", ex.Message));
+                _logger.Log($"An error occurred downloading the author image: {ex.Message}");
             }
 
             var bookBag = new ConcurrentBag<BookInfo>();
@@ -268,6 +273,8 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                             bookBag.Add(book);
                             progress?.Add(1);
                         }, cancellationToken);
+                    progress?.Set(0, 0);
+                    _logger.Log("Metadata gathering complete!");
                 }
                 catch (Exception ex)
                 {
@@ -277,7 +284,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             }
             else
             {
-                _logger.Log("Unable to find other books by this author. If there should be some, check the Amazon URL to ensure it is correct.");
+                _logger.Log($"Unable to find other books by {request.Book.Author}. If there should be some, check the Amazon URL to ensure it is correct.");
             }
 
             _logger.Log("Writing Author Profile to file…");

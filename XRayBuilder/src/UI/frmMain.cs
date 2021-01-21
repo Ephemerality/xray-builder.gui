@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -104,15 +105,17 @@ namespace XRayBuilderGUI.UI
             _directoryService = directoryService;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
+
+            toolStrip.Renderer = ToolStripTheme.Renderer();
         }
 
-        private readonly ToolTip _tooltip = new ToolTip();
+        private readonly ToolTip _tooltip = new();
         private readonly Settings _settings = Settings.Default;
         private readonly string _currentLog = $@"{Environment.CurrentDirectory}\log\{DateTime.Now:HH.mm.ss.dd.MM.yyyy}.txt";
 
         private readonly IProgressBar _progress;
 
-        private CancellationTokenSource _cancelTokens = new CancellationTokenSource();
+        private CancellationTokenSource _cancelTokens = new();
         private ISecondarySource _dataSource;
 
         private IMetadata _openedMetadata;
@@ -124,6 +127,9 @@ namespace XRayBuilderGUI.UI
 
         private void ToggleInterface(bool enabled)
         {
+            toolStrip.ClearAllSelections();
+            toolStrip.Enabled = enabled;
+
             foreach (var c in Controls.OfType<Button>())
                 c.Enabled = enabled;
             txtMobi.Enabled = enabled;
@@ -145,16 +151,7 @@ namespace XRayBuilderGUI.UI
 
         private void btnBrowseMobi_Click(object sender, EventArgs e)
         {
-            txtMobi.Text = "";
-            txtMobi.Text = UIFunctions.GetBook(txtMobi.Text);
-        }
-
-        private void btnBrowseOutput_Click(object sender, EventArgs e)
-        {
-            if (!Directory.Exists(_settings.outDir))
-                MessageBox.Show(MainStrings.OutputDirNotFoundReviewSettings, MainStrings.OutputDirNotFoundTitle);
-            else
-                Process.Start(_settings.outDir);
+            txtMobi.Text = UIFunctions.GetBook("");
         }
 
         private void btnBrowseXML_Click(object sender, EventArgs e)
@@ -187,7 +184,7 @@ namespace XRayBuilderGUI.UI
 
                 if (!Settings.Default.useNewVersion && metadata.DbName.Length == 31)
                 {
-                    MessageBox.Show(string.Format(MainStrings.DatabaseNameLengthWarning, metadata.DbName));
+                    MessageBox.Show(string.Format(MainStrings.DatabaseNameLengthWarning, metadata.DbName), "Database Name", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 if (saveRawMl && metadata.RawMlSupported)
@@ -195,7 +192,7 @@ namespace XRayBuilderGUI.UI
                     _logger.Log(MainStrings.SavingRawml);
                     metadata.SaveRawMl(_directoryService.GetRawmlPath(mobiFile));
                 }
-                _logger.Log($@"{MainStrings.GotMetadata}{Environment.NewLine}{MainStrings.DatabaseName}: {metadata.DbName}{Environment.NewLine}{MainStrings.UniqueID}: {metadata.UniqueId}{Environment.NewLine}{MainStrings.Asin}: {metadata.Asin}");
+                _logger.Log($@"{MainStrings.GotMetadata}{Environment.NewLine}{MainStrings.Asin}: {metadata.Asin}");
 
                 _openedMetadata = metadata;
                 return metadata;
@@ -213,22 +210,22 @@ namespace XRayBuilderGUI.UI
             //Check current settings
             if (!File.Exists(txtMobi.Text))
             {
-                MessageBox.Show(MainStrings.BookNotFound, MainStrings.BookNotFoundTitle);
+                MessageBox.Show(MainStrings.BookNotFound, MainStrings.BookNotFoundTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             if (rdoGoodreads.Checked && txtGoodreads.Text == "")
             {
-                MessageBox.Show(string.Format(MainStrings.NoSourceLinkSpecified, _dataSource.Name), string.Format(MainStrings.NoSourceLinkTitle, _dataSource.Name));
+                MessageBox.Show(string.Format(MainStrings.NoSourceLinkSpecified, _dataSource.Name), string.Format(MainStrings.NoSourceLinkTitle, _dataSource.Name), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             if (!Directory.Exists(_settings.outDir))
             {
-                MessageBox.Show($@"{MainStrings.SpecifiedOutputDirectoryDoesNotExist}{Environment.NewLine}{MainStrings.ReviewSettingsPage}", MainStrings.OutputDirNotFoundTitle);
+                MessageBox.Show($@"{MainStrings.SpecifiedOutputDirectoryDoesNotExist}{Environment.NewLine}{MainStrings.ReviewSettingsPage}", MainStrings.OutputDirNotFoundTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             if (_settings.realName.Trim().Length == 0 || _settings.penName.Trim().Length == 0)
             {
-                MessageBox.Show($@"{MainStrings.PenNamesRequired}{Environment.NewLine}{MainStrings.InformationAllowsRatingOnAmazon}{Environment.NewLine}{MainStrings.ReviewSettingsPage}", MainStrings.AmazonCustomerDetailsNotFoundTitle);
+                MessageBox.Show($@"{MainStrings.PenNamesRequired}{Environment.NewLine}{MainStrings.InformationAllowsRatingOnAmazon}{Environment.NewLine}{MainStrings.ReviewSettingsPage}", MainStrings.AmazonCustomerDetailsNotFoundTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -266,8 +263,7 @@ namespace XRayBuilderGUI.UI
 
                 xray = await Task.Run(() => xrayTask).ConfigureAwait(false);
 
-                if (xray.Terms.Count == 0
-                    && DialogResult.No == MessageBox.Show(MainStrings.NoTermsAvailable, MainStrings.NoTermsTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2))
+                if (xray.Terms.Count == 0 && DialogResult.No == MessageBox.Show(MainStrings.NoTermsAvailable, MainStrings.NoTermsTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2))
                 {
                     _logger.Log(MainStrings.Cancelling);
                     return;
@@ -276,12 +272,7 @@ namespace XRayBuilderGUI.UI
                 var aliasPath = _directoryService.GetAliasPath(xray.Asin);
                 _xrayService.ExportAndDisplayTerms(xray, selectedSource, _settings.overwriteAliases, _settings.splitAliases);
 
-                if (_settings.enableEdit && DialogResult.Yes ==
-                    MessageBox.Show($@"{MainStrings.TermsExportedOrAlreadyExist}\r\n{MainStrings.OpenInNotepad}\r\n{MainStrings.SeeMobilereads}",
-                        MainStrings.Aliases,
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question,
-                        MessageBoxDefaultButton.Button2))
+                if (_settings.enableEdit && DialogResult.Yes == MessageBox.Show($@"{MainStrings.TermsExportedOrAlreadyExist}\r\n{MainStrings.OpenInNotepad}\r\n{MainStrings.SeeMobilereads}", MainStrings.Aliases, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
                 {
                     Functions.RunNotepad(aliasPath);
                 }
@@ -395,22 +386,22 @@ namespace XRayBuilderGUI.UI
             //Check current settings
             if (!File.Exists(txtMobi.Text))
             {
-                MessageBox.Show(MainStrings.BookNotFound, MainStrings.BookNotFoundTitle);
+                MessageBox.Show(MainStrings.BookNotFound, MainStrings.BookNotFoundTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             if (txtGoodreads.Text == "")
             {
-                MessageBox.Show(string.Format(MainStrings.NoSourceLinkSpecified, _dataSource.Name), string.Format(MainStrings.NoSourceLinkTitle, _dataSource.Name));
+                MessageBox.Show(string.Format(MainStrings.NoSourceLinkSpecified, _dataSource.Name), string.Format(MainStrings.NoSourceLinkTitle, _dataSource.Name), MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             if (!txtGoodreads.Text.ToLower().Contains(_settings.dataSource.ToLower()))
             {
-                MessageBox.Show($@"{string.Format(MainStrings.InvalidSourceLink, _dataSource.Name)}{Environment.NewLine}{string.Format(MainStrings.ReviewSettingsForSource, _dataSource.Name)}", string.Format(MainStrings.InvalidSourceLinkTitle, _dataSource.Name));
+                MessageBox.Show($@"{string.Format(MainStrings.InvalidSourceLink, _dataSource.Name)}{Environment.NewLine}{string.Format(MainStrings.ReviewSettingsForSource, _dataSource.Name)}", string.Format(MainStrings.InvalidSourceLinkTitle, _dataSource.Name), MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             if (_settings.realName.Trim().Length == 0 || _settings.penName.Trim().Length == 0)
             {
-                MessageBox.Show($@"{MainStrings.PenNamesRequired}{Environment.NewLine}{MainStrings.InformationAllowsRatingOnAmazon}{Environment.NewLine}{MainStrings.ReviewSettingsPage}", MainStrings.AmazonCustomerDetailsNotFoundTitle);
+                MessageBox.Show($@"{MainStrings.PenNamesRequired}{Environment.NewLine}{MainStrings.InformationAllowsRatingOnAmazon}{Environment.NewLine}{MainStrings.ReviewSettingsPage}", MainStrings.AmazonCustomerDetailsNotFoundTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
@@ -474,7 +465,7 @@ namespace XRayBuilderGUI.UI
                         {
                             _logger.Log(MainStrings.WritingStartActionsFile);
                             File.WriteAllText(saPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(startActions)));
-                            _logger.Log($@"{MainStrings.StartActionsCreated}\r\n{string.Format(MainStrings.SavedTo, saPath)}");
+                            _logger.Log($@"{MainStrings.StartActionsCreated}{Environment.NewLine}{string.Format(MainStrings.SavedTo, saPath)}");
                             needSa = false;
                         }
                     }
@@ -495,7 +486,7 @@ namespace XRayBuilderGUI.UI
                         {
                             _logger.Log(MainStrings.WritingEndActionsFile);
                             File.WriteAllText(eaPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(endActions)));
-                            _logger.Log($@"{MainStrings.EndActionsCreated}\r\n{string.Format(MainStrings.SavedTo, eaPath)}");
+                            _logger.Log($@"{MainStrings.EndActionsCreated}{Environment.NewLine}{string.Format(MainStrings.SavedTo, eaPath)}");
                             needEa = false;
                         }
                     }
@@ -583,7 +574,8 @@ namespace XRayBuilderGUI.UI
                         AmazonTld = _settings.amazonTLD,
                         UseNewVersion = _settings.useNewVersion,
                         PromptAsin = _settings.promptASIN,
-                        EstimatePageCount = _settings.pageCount
+                        EstimatePageCount = _settings.pageCount,
+                        EditDescription = _settings.editDescription
                     };
 
                     var endActionsDataGenerator = _diContainer.GetInstance<IEndActionsDataGenerator>();
@@ -637,7 +629,7 @@ namespace XRayBuilderGUI.UI
                             _logger.Log($@"{MainStrings.ErrorCreatingStartActions}: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
                         }
 
-                        _logger.Log($@"{MainStrings.StartActionsCreated}\r\n{string.Format(MainStrings.SavedTo, saPath)}");
+                        _logger.Log($@"{MainStrings.StartActionsCreated}{Environment.NewLine}{string.Format(MainStrings.SavedTo, saPath)}");
                     }
                 }
 
@@ -661,12 +653,12 @@ namespace XRayBuilderGUI.UI
         {
             if (rdoGoodreads.Checked && txtGoodreads.Text == "")
             {
-                MessageBox.Show(MainStrings.NoLinkSpecified, MainStrings.NoLinkTitle);
+                MessageBox.Show(MainStrings.NoLinkSpecified, MainStrings.NoLinkTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             if (!File.Exists(txtMobi.Text))
             {
-                MessageBox.Show(MainStrings.BookNotFound, MainStrings.BookNotFoundTitle);
+                MessageBox.Show(MainStrings.BookNotFound, MainStrings.BookNotFoundTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             ToggleInterface(false);
@@ -726,12 +718,12 @@ namespace XRayBuilderGUI.UI
         {
             if (!File.Exists(txtMobi.Text))
             {
-                MessageBox.Show(MainStrings.BookNotFound, MainStrings.BookNotFoundTitle);
+                MessageBox.Show(MainStrings.BookNotFound, MainStrings.BookNotFoundTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             if (!Directory.Exists(_settings.outDir))
             {
-                MessageBox.Show(MainStrings.OutputDirNotFoundReviewSettings, MainStrings.OutputDirNotFoundTitle);
+                MessageBox.Show(MainStrings.OutputDirNotFoundReviewSettings, MainStrings.OutputDirNotFoundTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
@@ -780,6 +772,7 @@ namespace XRayBuilderGUI.UI
                     txtGoodreads.Text = bookUrl;
                     txtGoodreads.Refresh();
                     _logger.Log($@"{string.Format(MainStrings.BookFoundOnSource, _dataSource.Name)}{Environment.NewLine}{string.Format(MainStrings.TitleByAuthor, metadata.Title, metadata.Author)}{Environment.NewLine}{string.Format(MainStrings.SourceUrl, _dataSource.Name)}: {bookUrl}{Environment.NewLine}{MainStrings.VisitUrl}");
+                    SetDatasourceLink(bookUrl);
                 }
             }
             catch (Exception ex)
@@ -793,6 +786,7 @@ namespace XRayBuilderGUI.UI
             using var frmSet = _diContainer.GetInstance<frmSettings>();
             frmSet.ShowDialog();
             SetDatasourceLabels();
+            AdjustUi();
 
             if (!txtGoodreads.Text.ToLower().Contains(_settings.dataSource.ToLower()))
                 txtGoodreads.Text = "";
@@ -803,12 +797,8 @@ namespace XRayBuilderGUI.UI
             _settings.mobiFile = txtMobi.Text;
             _settings.xmlFile = txtXMLFile.Text;
             _settings.Goodreads = txtGoodreads.Text;
-            _settings.buildSource = rdoGoodreads.Checked
-                ? "Goodreads"
-                : rdoRoentgen.Checked
-                    ? "Roentgen"
-                    : "XML";
             _settings.Save();
+
             if (txtOutput.Text.Trim().Length != 0)
                 File.WriteAllText(_currentLog, txtOutput.Text);
             Application.Exit();
@@ -817,17 +807,18 @@ namespace XRayBuilderGUI.UI
         private void Form1_Load(object sender, EventArgs e)
         {
             ActiveControl = lblGoodreads;
-            _tooltip.SetToolTip(btnBrowseMobi, MainStrings.OpenKindleBook);
-            _tooltip.SetToolTip(btnBrowseOutput, MainStrings.OpenOutputDirectory);
-            _tooltip.SetToolTip(btnOneClick, MainStrings.OneClickTooltip);
-            _tooltip.SetToolTip(btnBrowseXML, MainStrings.OpenXmlOrTxt);
-            _tooltip.SetToolTip(btnKindleExtras, MainStrings.BuildExtrasTooltip);
-            _tooltip.SetToolTip(btnBuild, MainStrings.TryToBuildXRay);
-            _tooltip.SetToolTip(btnSettings, MainStrings.ConfigureXRayBuilder);
-            _tooltip.SetToolTip(btnPreview, MainStrings.ViewPreviewOfGeneratedFiles);
-            _tooltip.SetToolTip(btnUnpack, MainStrings.SaveRawMlTooltip);
-            _tooltip.SetToolTip(btnExtractTerms, MainStrings.ExtractXRayToXml);
-            _tooltip.SetToolTip(btnCreate, MainStrings.CreateXmlTooltip);
+            btnBrowseMobi.ToolTipText = MainStrings.OpenKindleBook;
+            btnBrowseFolders.ToolTipText = MainStrings.OpenOutputDirectory;
+            btnOneClick.ToolTipText = MainStrings.OneClickTooltip;
+            btnBrowseXML.ToolTipText = MainStrings.OpenXmlOrTxt;
+            btnKindleExtras.ToolTipText = MainStrings.BuildExtrasTooltip;
+            btnBuild.ToolTipText = MainStrings.TryToBuildXRay;
+            btnSettings.ToolTipText = MainStrings.ConfigureXRayBuilder;
+            btnPreview.ToolTipText = MainStrings.ViewPreviewOfGeneratedFiles;
+            btnUnpack.ToolTipText = MainStrings.SaveRawMlTooltip;
+            btnExtractTerms.ToolTipText = MainStrings.ExtractXRayToXml;
+            btnCreate.ToolTipText = MainStrings.CreateXmlTooltip;
+            btnXraySource.ToolTipText = $"Select the build source{Environment.NewLine}for X-Ray creation.";
 
             _tooltip.SetToolTip(rdoGoodreads, MainStrings.UseLinkAsDataSource);
             _tooltip.SetToolTip(rdoRoentgen, MainStrings.DownloadFromRoentgen);
@@ -850,27 +841,92 @@ namespace XRayBuilderGUI.UI
 
             // TODO: Maybe do something about these paths
             // TODO: ExtLoader or something?
-            foreach (var dir in new [] { "out", "log", "dmp", "tmp", "ext" })
+            foreach (var dir in new [] { "out", "log", "dmp", "tmp", "ext", "rec" })
                 Directory.CreateDirectory($"{Environment.CurrentDirectory}\\{dir}");
 
             if (_settings.outDir == "")
                 _settings.outDir = $@"{Environment.CurrentDirectory}\out";
 
-            txtGoodreads.Text = _settings.Goodreads;
+            txtGoodreads.Text = !File.Exists(txtMobi.Text)
+                    ? ""
+                    : _settings.Goodreads;
+
             if (_settings.buildSource == "Goodreads")
+            {
                 rdoGoodreads.Checked = true;
+                btnBrowseXML.Visible = false;
+                btnDownloadTerms.Visible = true;
+            }
             else if (_settings.buildSource == "Roentgen")
+            {
                 rdoRoentgen.Checked = true;
+                btnBrowseXML.Visible = false;
+                btnDownloadTerms.Visible = true;
+            }
             else
+            {
                 rdoFile.Checked = true;
+                btnBrowseXML.Visible = true;
+                btnDownloadTerms.Visible = false;
+            }
+
             SetDatasourceLabels();
             AdjustUi();
         }
 
         private void AdjustUi()
         {
-            txtGoodreads.Location = new Point(lblGoodreads.Location.X + lblGoodreads.Width + 6, txtGoodreads.Location.Y);
-            txtGoodreads.Size = new Size(groupBox1.Width - txtGoodreads.Location.X - 12, txtGoodreads.Size.Height);
+            txtGoodreads.Location = new Point(lblGoodreads.Location.X + lblGoodreads.Width + 11, txtGoodreads.Location.Y);
+            txtGoodreads.Size = new Size(groupBox1.Width - txtGoodreads.Location.X - 18, txtGoodreads.Size.Height);
+        }
+
+        private void SetSelectedDatasource()
+        {
+            btnXraySourceGoodreads.Checked = false;
+            btnXraySourceRoentgen.Checked = false;
+            btnXraySourceFile.Checked = false;
+
+            if (rdoGoodreads.Checked)
+            {
+                btnDownloadTerms.ToolTipText = $"Save {_dataSource.Name} terms to an XML file.";
+                btnXraySource.Image = Resources.source_internet;
+                btnXraySourceGoodreads.Checked = true;
+            }
+            else if (rdoRoentgen.Checked)
+            {
+                btnDownloadTerms.ToolTipText = "Save Roentgen terms to an XML file.";
+                btnXraySource.Image = Resources.source_roentgen;
+                btnXraySourceRoentgen.Checked = true;
+            }
+            else if(rdoFile.Checked)
+            {
+                btnXraySource.Image = Resources.source_file;
+                btnXraySourceFile.Checked = true;
+            }
+
+            _settings.buildSource = rdoGoodreads.Checked
+                ? "Goodreads"
+                : rdoRoentgen.Checked
+                    ? "Roentgen"
+                    : "XML";
+            _settings.Save();
+        }
+
+        private void SetDatasourceLink(string url)
+        {
+            txtDatasource.Visible = true;
+            if (string.IsNullOrEmpty(url))
+            {
+                txtDatasource.Text = "Search datasource...";
+                return;
+            }
+
+            // todo this is weird
+            var matchId = Regex.Match(url, @"(show|work)/(\d+)");
+            if (!matchId.Success)
+                return;
+            _tooltip.SetToolTip(txtDatasource, url);
+            txtDatasource.Text = matchId.Groups[2].Value;
         }
 
         private void SetDatasourceLabels()
@@ -884,12 +940,17 @@ namespace XRayBuilderGUI.UI
             rdoGoodreads.Text = _dataSource.Name;
             lblGoodreads.Text = $@"{string.Format(MainStrings.SourceUrl, _dataSource.Name)}:";
             if (rdoGoodreads.Checked)
-                _tooltip.SetToolTip(btnDownloadTerms, $"Save {_dataSource.Name} terms to an XML file.");
+                btnDownloadTerms.ToolTipText = $"Save {_dataSource.Name} terms to an XML file.";
             else if (rdoRoentgen.Checked)
-                _tooltip.SetToolTip(btnDownloadTerms, $"Save Roentgen terms to an XML file.");
-            _tooltip.SetToolTip(btnSearchGoodreads, _dataSource.SearchEnabled
+                btnDownloadTerms.ToolTipText = "Save Roentgen terms to an XML file.";
+            btnSearchGoodreads.ToolTipText = _dataSource.SearchEnabled
                 ? $"Try to search for this book on {_dataSource.Name}."
-                : $"Search is disabled when {_dataSource.Name} is selected as a data source.");
+                : $"Search is disabled when {_dataSource.Name} is selected as a data source.";
+
+            lblDatasource.Text = $"{_dataSource.Name}:";
+            txtDatasource.Enabled = _dataSource.SearchEnabled;
+            SetDatasourceLink(txtGoodreads.Text);
+            SetSelectedDatasource();
         }
 
         private void frmMain_DragDrop(object sender, DragEventArgs e)
@@ -913,28 +974,55 @@ namespace XRayBuilderGUI.UI
 
         private void rdoSource_CheckedChanged(object sender, EventArgs e)
         {
-            if (((RadioButton)sender).Text == "File")
+            if (((RadioButton)sender).Text == rdoFile.Text)
             {
                 txtXMLFile.Enabled = true;
-                btnBrowseXML.Enabled = true;
-                btnDownloadTerms.Enabled = false;
+                btnBrowseXML.Visible = true;
+                btnDownloadTerms.Visible = false;
             }
             else
             {
                 txtXMLFile.Enabled = false;
-                btnBrowseXML.Enabled = false;
-                btnDownloadTerms.Enabled = true;
+                btnBrowseXML.Visible = false;
+                btnDownloadTerms.Visible = true;
             }
             SetDatasourceLabels();
+        }
+
+        private void ClearInterface(bool bookOpened)
+        {
+            if (!bookOpened)
+            {
+                // todo centralized name (should the app name be localized?)
+                Text = "X-Ray Builder GUI";
+                txtMobi.Text = "";
+                txtOutput.Clear();
+            }
+            else
+                Text = $"X-Ray Builder GUI - {txtMobi.Text}";
+
+            txtGoodreads.Text = "";
+            pbCover.Image = Resources.missing_cover;
+            txtTitle.Text = "";
+            txtAuthor.Text = "";
+            txtAsin.Text = "";
+            // todo another copy
+            txtDatasource.Text = "Search datasource...";
+            prgBar.Value = 0;
+            _openedMetadata = null;
+            CheckFiles("","","","","","");
         }
 
         private async void txtMobi_TextChanged(object sender, EventArgs e)
         {
             if (txtMobi.Text == "" || !File.Exists(txtMobi.Text))
+            {
+                ClearInterface(false);
                 return;
-            txtGoodreads.Text = "";
-            prgBar.Value = 0;
-            _openedMetadata = null;
+            }
+            ClearInterface(true);
+
+            ToggleInterface(false);
 
             using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
             if (metadata == null)
@@ -962,6 +1050,20 @@ namespace XRayBuilderGUI.UI
             btnOneClick.Enabled = metadata.XRaySupported;
             btnUnpack.Enabled = metadata.RawMlSupported;
 
+            //TODO: Check ASIN matches selected Amazon region.
+            //try
+            //{
+            //    _logger.Log(@$"Checking if this ASIN matches a book available on Amazon{_settings.amazonTLD}...");
+            //    var localBookResult = await _amazonClient.SearchBook(metadata.Title, metadata.Author, _settings.amazonTLD, _cancelTokens.Token);
+            //    _logger.Log(localBookResult.Asin == metadata.Asin
+            //        ? $@"Successfully found a matching book:  {localBookResult.Title}!"
+            //        : $"Warning: {localBookResult.Title} by {localBookResult.Author} was found, but the ASIN does not match for your selected Amazon region!\n\rURL: {localBookResult.AmazonUrl}");
+            //}
+            //catch (Exception)
+            //{
+            //    // Ignored
+            //}
+
             try
             {
                 if (AmazonClient.IsAsin(metadata.Asin))
@@ -976,11 +1078,7 @@ namespace XRayBuilderGUI.UI
             {
                 // Ignored
             }
-        }
-
-        private void btnPreview_Click(object sender, EventArgs e)
-        {
-            cmsPreview.Show(btnPreview, new Point(2, btnPreview.Height));
+            ToggleInterface(true);
         }
 
         private async void tmiAuthorProfile_Click(object sender, EventArgs e)
@@ -1020,12 +1118,12 @@ namespace XRayBuilderGUI.UI
             //Check current settings
             if (!File.Exists(txtMobi.Text))
             {
-                MessageBox.Show(MainStrings.BookNotFound, MainStrings.BookNotFoundTitle);
+                MessageBox.Show(MainStrings.BookNotFound, MainStrings.BookNotFoundTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             if (!Directory.Exists(_settings.outDir))
             {
-                MessageBox.Show(MainStrings.OutputDirNotFoundReviewSettings, MainStrings.OutputDirNotFoundTitle);
+                MessageBox.Show(MainStrings.OutputDirNotFoundReviewSettings, MainStrings.OutputDirNotFoundTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
@@ -1051,6 +1149,8 @@ namespace XRayBuilderGUI.UI
 
         private void txtAsin_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
+            if (string.Equals(txtAsin.Text, "ASIN"))
+                return;
             Process.Start(_amazonClient.Url(_settings.amazonTLD, txtAsin.Text));
         }
 
@@ -1118,30 +1218,29 @@ namespace XRayBuilderGUI.UI
 
         private void CheckFiles(string author, string title, string asin, string fileName, string databaseName, string guid)
         {
-            static Image SetPreviewAndPickImage(ToolStripItem toolStripItem, string path)
+            static Image SetPreviewAndPickImage(ToolStripDropDownItem toolStripDropDownItem, string path)
             {
                 var fileExists = File.Exists(path);
 
-                toolStripItem.Enabled = fileExists;
+                toolStripDropDownItem.Enabled = fileExists;
 
                 return fileExists
-                    ? Resources.file_on
-                    : Resources.file_off;
+                    ? Resources.file_exists
+                    : Resources.file_missing;
             }
 
-            pbFile1.Image = SetPreviewAndPickImage(cmsPreview.Items[2], _directoryService.GetArtifactPath(ArtifactType.StartActions, author, title, asin, fileName, databaseName, guid, false));
-            pbFile2.Image = SetPreviewAndPickImage(cmsPreview.Items[0], _directoryService.GetArtifactPath(ArtifactType.AuthorProfile, author, title, asin, fileName, databaseName, guid, false));
-            pbFile3.Image = SetPreviewAndPickImage(cmsPreview.Items[1], _directoryService.GetArtifactPath(ArtifactType.EndActions, author, title, asin, fileName, databaseName, guid, false));
-            pbFile4.Image = SetPreviewAndPickImage(cmsPreview.Items[3], _directoryService.GetArtifactPath(ArtifactType.XRay, author, title, asin, fileName, databaseName, guid, false));
+            pbFile1.Image = SetPreviewAndPickImage(tmiStartAction, _directoryService.GetArtifactPath(ArtifactType.StartActions, author, title, asin, fileName, databaseName, guid, false));
+            pbFile2.Image = SetPreviewAndPickImage(tmiAuthorProfile, _directoryService.GetArtifactPath(ArtifactType.AuthorProfile, author, title, asin, fileName, databaseName, guid, false));
+            pbFile3.Image = SetPreviewAndPickImage(tmiEndAction, _directoryService.GetArtifactPath(ArtifactType.EndActions, author, title, asin, fileName, databaseName, guid, false));
+            pbFile4.Image = SetPreviewAndPickImage(tmiXray, _directoryService.GetArtifactPath(ArtifactType.XRay, author, title, asin, fileName, databaseName, guid, false));
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            if (!_cancelTokens.IsCancellationRequested)
-            {
-                _logger.Log(MainStrings.Cancelling);
-                _cancelTokens.Cancel();
-            }
+            if (_cancelTokens.IsCancellationRequested)
+                return;
+            _logger.Log("Canceling...");
+            _cancelTokens.Cancel();
         }
 
         private async Task ShowPreviewAsync(PreviewProviderFactory.PreviewType type, string filePath, CancellationToken cancellationToken)
@@ -1212,6 +1311,96 @@ namespace XRayBuilderGUI.UI
                 _logger.Log(MainStrings.UnableToAutomaticallyFindAsinOnAmazon);
 
             // TODO: manual entry
+        }
+
+        private void btnBrowseOutput_Click(object sender, EventArgs e)
+        {
+            UIFunctions.OpenDirectory(_settings.outDir);
+        }
+
+        // todo central paths with directoryservice
+        private void btnBrowseDump_Click(object sender, EventArgs e)
+        {
+            UIFunctions.OpenDirectory($@"{Environment.CurrentDirectory}\dmp");
+        }
+
+        private void btnBrowseAliasesAndChapters_Click(object sender, EventArgs e)
+        {
+            UIFunctions.OpenDirectory($@"{Environment.CurrentDirectory}\ext");
+        }
+
+        private void btnBrowseLogs_Click(object sender, EventArgs e)
+        {
+            UIFunctions.OpenDirectory($@"{Environment.CurrentDirectory}\log");
+        }
+
+        private void btnBrowseRecords_Click(object sender, EventArgs e)
+        {
+            UIFunctions.OpenDirectory($@"{Environment.CurrentDirectory}\rec");
+        }
+
+        private void btnBrowseTemp_Click(object sender, EventArgs e)
+        {
+            UIFunctions.OpenDirectory($@"{Environment.CurrentDirectory}\tmp");
+        }
+
+        private void btnBrowseXmlFolder_Click(object sender, EventArgs e)
+        {
+            UIFunctions.OpenDirectory($@"{Environment.CurrentDirectory}\xml");
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (txtOutput.SelectionLength > 0)
+                Clipboard.SetText(txtOutput.SelectedText, TextDataFormat.Text);
+        }
+
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            txtOutput.Text = "";
+        }
+
+        private void clearAndSaveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtOutput.Text))
+                return;
+            File.WriteAllText(_currentLog, txtOutput.Text);
+            txtOutput.Text = string.Empty;
+        }
+
+        private void txtDatasource_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (txtDatasource.Text.Contains("Search"))
+                return;
+            Process.Start(txtGoodreads.Text);
+        }
+
+        private void txtGoodreads_TextChanged(object sender, EventArgs e)
+        {
+            SetDatasourceLink(txtGoodreads.Text);
+        }
+
+        private void pbCover_Click(object sender, EventArgs e)
+        {
+            if (_openedMetadata == null) return;
+            using var frmBook = _diContainer.GetInstance<frmBookInfo>();
+            frmBook.Setup(_openedMetadata, (Image) pbCover.Image.Clone(), new frmBookInfo.DialogData(txtGoodreads.Text, "", "", _settings.buildSource));
+            frmBook.ShowDialog();
+            if (frmBook.Result == null)
+                return;
+            txtGoodreads.Text = frmBook.Result.SecondarySourceUrl;
+            // TODO Maybe use an enum for buildsource so we don't throw these strings around (to think about)
+            _settings.buildSource = frmBook.Result.TermsSource;
+        }
+
+        private void pbCover_MouseEnter(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Hand;
+        }
+
+        private void pbCover_MouseLeave(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Default;
         }
     }
 }

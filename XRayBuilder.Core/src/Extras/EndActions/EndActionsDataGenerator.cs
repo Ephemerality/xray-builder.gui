@@ -18,7 +18,6 @@ using XRayBuilder.Core.Libraries.Primitives.Extensions;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Model;
 using XRayBuilder.Core.Unpack;
-using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilder.Core.Extras.EndActions
 {
@@ -56,9 +55,6 @@ namespace XRayBuilder.Core.Extras.EndActions
             //Generate Book search URL from book's ASIN
             var ebookLocation = $@"https://www.amazon.{settings.AmazonTld}/dp/{curBook.Asin}";
 
-            // Search Amazon for book
-            //_logger.Log(String.Format("Book's Amazon page URL: {0}", ebookLocation));
-
             HtmlDocument bookHtmlDoc;
             try
             {
@@ -82,19 +78,55 @@ namespace XRayBuilder.Core.Extras.EndActions
                 return null;
             }
 
+            string ReadDesc(string file)
+            {
+                try
+                {
+                    var fileText = Functions.ReadFromFile(file);
+
+                    if (string.IsNullOrEmpty(fileText))
+                        _logger.Log($"Found description file, but it is empty!\r\n{file}");
+                    if (!string.Equals(curBook.Description, fileText))
+                        _logger.Log($"Using biography from {file}.");
+
+                    return fileText;
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log($"An error occurred while opening {file}\r\n{ex.Message}\r\n{ex.StackTrace}");
+                }
+
+                return null;
+            }
+
+            var descFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory ?? Environment.CurrentDirectory, "ext", $"{curBook.Asin}.desc");
+            if (settings.EditDescription)
+            {
+                if (!File.Exists(descFile) || new FileInfo(descFile).Length == 0)
+#if NETFRAMEWORK
+                    File.WriteAllText(descFile, curBook.Description);
+#else
+                    await File.WriteAllTextAsync(descFile, curBook.Description, cancellationToken);
+#endif
+                _logger.Log("Displaying book description for editing...");
+                Functions.RunNotepad(descFile);
+                curBook.Description = ReadDesc(descFile);
+            }
+
             try
             {
                 var listSelectors = new[]
                 {
+                    "//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card']",
                     "//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card a-float-left']",
                     "//ol[@class='a-carousel' and @role='list']/li[@class='a-carousel-card aok-float-left']",
-                    "//*[contains(@id, 'desktop-dp-sims_purchase-similarities-esp')]//li",
-                    "//*[@id='desktop-dp-sims_purchase-similarities-sims-feature']//li",
-                    "//*[contains(@id, 'dp-sims_OnlineDpSimsPurchaseStrategy-sims')]//li",
-                    "//*[@id='view_to_purchase-sims-feature']//li",
-                    "//*[@id='desktop-dp-sims_vtp-60-sims-feature']//li",
-                    "//div[@id='desktop-dp-sims_session-similarities-sims-feature']//li",
-                    "//div[@id='desktop-dp-sims_session-similarities-brand-protection-sims-feature']//li"
+                    "//*[contains(@id, 'desktop-dp-sims_purchase-similarities-esp')]/li",
+                    "//*[contains(@id, 'dp-sims_OnlineDpSimsPurchaseStrategy-sims')]/li",
+                    "//*[@id='desktop-dp-sims_purchase-similarities-sims-feature']/li",
+                    "//*[@id='desktop-dp-sims_vtp-60-sims-feature']/li",
+                    "//div[@id='desktop-dp-sims_session-similarities-brand-protection-sims-feature']/li",
+                    "//div[@id='desktop-dp-sims_session-similarities-sims-feature']/li",
+                    "//*[@id='view_to_purchase-sims-feature']/li"
                 };
 
                 var relatedBooks = listSelectors.SelectMany(selector =>
@@ -105,17 +137,15 @@ namespace XRayBuilder.Core.Extras.EndActions
                             : Enumerable.Empty<BookInfo>();
                     }).Where(list => list != null)
                     .Distinct()
-                    .Where(book => book.Title != curBook.Title && book.Asin != curBook.Asin)
+                    .Where(book => !book.Title.ToLower().Contains(curBook.Title.ToLower()) && book.Asin != curBook.Asin && !_invalidBookTitleRegex.IsMatch(curBook.Title))
                     .ToArray();
 
-                if (settings.UseNewVersion)
+                if (settings.UseNewVersion && relatedBooks.Any())
                 {
                     _logger.Log($"Gathering metadata for {relatedBooks.Length} related book(s)…");
                     progress?.Set(0, relatedBooks.Length);
                     await foreach (var _ in _amazonClient.EnhanceBookInfos(relatedBooks, cancellationToken))
-                    {
                         progress?.Add(1);
-                    }
                 }
 
                 return new Response
@@ -189,10 +219,22 @@ namespace XRayBuilder.Core.Extras.EndActions
 
         private async Task<BookInfo> SearchOrPrompt(BookInfo book, Func<string, string, string> asinPrompt, Settings settings, CancellationToken cancellationToken = default)
         {
-            // If the asin was available from another source, use it
             if (!string.IsNullOrEmpty(book.Asin))
             {
                 var response = await _amazonInfoParser.GetAndParseAmazonDocument($"https://www.amazon.{settings.AmazonTld}/dp/{book.Asin}", cancellationToken);
+                if (string.IsNullOrEmpty(response.Description))
+                {
+                    var localAmazonBook = await _amazonClient.SearchBook(book.Title, book.Author, settings.AmazonTld,
+                        cancellationToken);
+                    if (localAmazonBook != null)
+                    {
+                        response = await _amazonInfoParser.GetAndParseAmazonDocument(localAmazonBook.AmazonUrl, cancellationToken);
+                        response.ApplyToBookInfo(localAmazonBook);
+                        localAmazonBook.Title = book.Title;
+                        return localAmazonBook;
+                    }
+                    response = await _amazonInfoParser.GetAndParseAmazonDocument($"https://www.amazon.com/dp/{book.Asin}", cancellationToken);
+                }
                 response.ApplyToBookInfo(book);
 
                 return book;
@@ -247,10 +289,9 @@ namespace XRayBuilder.Core.Extras.EndActions
             if (series.Previous != null)
                 series.Previous = await FromApOrSearch(series.Previous, cancellationToken);
 
-            if (series.Next == null)
+            if (series.Next == null && int.TryParse(series.Position, out var seriesPosition) && seriesPosition != series.Total)
             {
-                _logger.Log("Book was found to be part of a series, but an error occurred finding the next book.\r\n"
-                    + "Please report this book, the URL, and output log to improve parsing (if it's a real book).");
+                _logger.Log($@"Book was found to be part of a series, but an error occurred finding the next book.{Environment.NewLine}Please report this book, the URL, and output log to improve parsing (if it's a real book).");
             }
         }
 
@@ -328,13 +369,17 @@ namespace XRayBuilder.Core.Extras.EndActions
 
             if (curBook.Series != null)
             {
-                _logger.Log($"\nSeries URL: {curBook.Series.Url}");
+                _logger.Log($"Series URL: {curBook.Series.Url}");
                 if (!string.IsNullOrEmpty(curBook.Series.Name))
-                    _logger.Log($"This is book {curBook.Series.Position} of {curBook.Series.Total} in the {curBook.Series.Name} series");
+                {
+                    _logger.Log((int) Convert.ToDouble(curBook.Series.Position) == curBook.Series.Total
+                        ? $"This is the latest book in the {curBook.Series.Name} series."
+                        : $"This is book {curBook.Series.Position} of {curBook.Series.Total} in the {curBook.Series.Name} series.");
+                }
                 if (curBook.Series.Previous != null)
                     _logger.Log($"Preceded by: {curBook.Series.Previous.Title}");
                 if (curBook.Series.Next != null)
-                    _logger.Log($"Followed by: {curBook.Series.Next.Title}\n");
+                    _logger.Log($"Followed by: {curBook.Series.Next.Title}");
             }
 
             try
@@ -343,7 +388,7 @@ namespace XRayBuilder.Core.Extras.EndActions
                 {
                     var metadataCount = metadata.GetPageCount();
                     if (metadataCount.HasValue)
-                        curBook.PagesInBook = metadataCount.Value;
+                        curBook.PageCount = metadataCount.Value;
                     // else if (settings.EstimatePageCount)
                     // {
                     //     // TODO Estimation should be done in a place that has knowledge of the book's file and knows for sure that the rawml will exist
@@ -384,6 +429,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             public bool PromptAsin { get; set; }
             public bool EstimatePageCount { get; set; }
             public bool SaveHtml { get; set; }
+            public bool EditDescription { get; set; }
         }
     }
 }

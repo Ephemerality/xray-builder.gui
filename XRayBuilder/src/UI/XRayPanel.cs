@@ -10,52 +10,55 @@ namespace XRayBuilderGUI.UI
         {
             BorderStyle = BorderStyle.None;
             Name = "XRayPanel";
-            Size = new Size(258, 66);
+            Size = new Size(460, 66);
 
             var pbType = new PictureBox
             {
-                Image = type == "character" ? Properties.Resources.people : Properties.Resources.terms,
+                Image = type == "character" ? Properties.Resources.character : Properties.Resources.setting,
                 Location = new Point(0, 0),
-                Size = new Size(20, 20),
+                Size = new Size(16, 16),
                 SizeMode = PictureBoxSizeMode.StretchImage
             };
 
             var lblName = new Label
             {
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0),
                 AutoSize = false,
                 AutoEllipsis = true,
                 TextAlign = ContentAlignment.MiddleLeft,
-                Location = new Point(26, 2),
-                Size = new Size(100, 13),
+                Location = new Point(22, -2),
+                Size = new Size(335, 20),
                 Text = name
             };
-
+            
             var lblMentions = new Label
             {
-                Font = new Font("Microsoft Sans Serif", 6.75F, FontStyle.Regular, GraphicsUnit.Point, 0),
+                Font = new Font("Segoe UI", 7.8F, FontStyle.Regular, GraphicsUnit.Point, 0),
                 AutoSize = false,
                 AutoEllipsis = true,
                 TextAlign = ContentAlignment.MiddleRight,
-                Location = new Point(180, 3),
-                Size = new Size(80, 13),
+                Location = new Point(370, -2),
+                Size = new Size(84, 20),
                 Text = mentions == "0" ? "" : $"{mentions} mentions"
             };
 
             var lblDescription = new Label
             {
+                Font = new Font("Segoe UI", 7.8F, FontStyle.Regular, GraphicsUnit.Point, 0),
                 AutoSize = false,
                 AutoEllipsis = true,
                 TextAlign = ContentAlignment.TopLeft,
-                Location = new Point(26, 19),
-                Size = new Size(230, 45),
+                Location = new Point(22, 20),
+                Size = new Size(430, 40),
                 Text = description
             };
 
             var pbSeperator = new PictureBox
             {
                 Image = Properties.Resources.seperator,
-                Location = new Point(0, 65),
-                Size = new Size(350, 2)
+                Location = new Point(0, 62),
+                Size = new Size(450, 2),
+                SizeMode = PictureBoxSizeMode.StretchImage
             };
 
             Controls.Add(lblName);

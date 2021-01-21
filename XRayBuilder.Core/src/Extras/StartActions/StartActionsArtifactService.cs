@@ -43,7 +43,7 @@ namespace XRayBuilder.Core.Extras.StartActions
                 Asin = curBook.Asin,
                 ContentType = "EBOK",
                 Timestamp = Functions.UnixTimestampMilliseconds(),
-                RefTagSuffix = "AAAgAAA",
+                RefTagSuffix = "AAATAAA",
                 ImageUrl = curBook.ImageUrl,
                 Erl = -1
             };
@@ -63,7 +63,7 @@ namespace XRayBuilder.Core.Extras.StartActions
                 {
                     new Subscription
                     {
-                        Asin = curBook.AuthorAsin,
+                        Asin = string.IsNullOrEmpty(curBook.AuthorAsin) ? authorProfile.Asin : curBook.AuthorAsin,
                         Name = curBook.Author,
                         ImageUrl = curBook.AuthorImageUrl
                     }
@@ -73,6 +73,8 @@ namespace XRayBuilder.Core.Extras.StartActions
             startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMPASSAGES%", $"{curBook.NotableClips?.Count ?? 0}");
             startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMHIGHLIGHTS%", $"{curBook.NotableClips?.Sum(c => c.Likes) ?? 0}");
             startActions.Data.GrokShelfInfo.Asin = curBook.Asin;
+            startActions.Data.GrokShelfInfo.IsAutoshelvingEnabled = true;
+
             startActions.Data.BookDescription = Extensions.BookInfoToBook(curBook, true);
             startActions.Data.CurrentBook = startActions.Data.BookDescription;
             startActions.Data.AuthorBios = new AuthorBios
@@ -99,7 +101,7 @@ namespace XRayBuilder.Core.Extras.StartActions
             startActions.Data.ReadingTime.FormattedTime.Replace("%HOURS%", curBook.ReadingHours.ToString());
             startActions.Data.ReadingTime.FormattedTime.Replace("%MINUTES%", curBook.ReadingMinutes.ToString());
             startActions.Data.PreviousBookInTheSeries = Extensions.BookInfoToBook(curBook.Series?.Previous, true);
-            startActions.Data.ReadingPages.PagesInBook = curBook.PagesInBook;
+            startActions.Data.ReadingPages.PagesInBook = curBook.PageCount;
 
             return startActions;
         }

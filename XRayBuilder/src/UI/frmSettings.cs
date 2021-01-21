@@ -17,14 +17,14 @@ namespace XRayBuilderGUI.UI
         private readonly LanguageFactory _languageFactory;
 
         // TODO: Should be elsewhere maybe
-        private readonly Dictionary<string, string> regionTLDs = new Dictionary<string, string>
+        private readonly Dictionary<string, string> _regionTlDs = new()
         {
             { "Australia", "com.au" }, { "Brazil", "com.br" }, { "Canada", "ca" }, { "China", "cn" },
             { "France", "fr" }, { "Germany", "de" }, { "India", "in" }, { "Italy", "it" }, { "Japan", "co.jp" },
             { "Mexico", "com.mx" }, { "Netherlands", "nl" }, { "Spain", "es" }, { "USA", "com" }, { "UK", "co.uk" }
         };
 
-        private readonly Dictionary<string, string> roentgenRegionTLDs = new Dictionary<string, string>
+        private readonly Dictionary<string, string> roentgenRegionTLDs = new()
         {
             { "Germany", "de" }, { "USA", "com" }
         };
@@ -33,18 +33,6 @@ namespace XRayBuilderGUI.UI
         {
             _languageFactory = languageFactory;
             InitializeComponent();
-        }
-
-        private sealed class AmazonRegion
-        {
-            public string Name { get; }
-            public string TLD { get; }
-
-            public AmazonRegion(string name, string tld)
-            {
-                Name = name;
-                TLD = tld;
-            }
         }
 
         //http://stackoverflow.com/questions/2612487/how-to-fix-the-flickering-in-user-controls
@@ -95,6 +83,7 @@ namespace XRayBuilderGUI.UI
             chkAutoBuildAP.Checked = Settings.Default.autoBuildAP;
             chkPromptAsin.Checked = Settings.Default.promptASIN;
             chkEditBiography.Checked = Settings.Default.editBiography;
+            chkEditDescription.Checked = Settings.Default.editDescription;
             chkUseSidecar.Checked = Settings.Default.outputToSidecar;
             cmbSecondaryDataSource.Text = Settings.Default.dataSource;
 
@@ -134,9 +123,10 @@ namespace XRayBuilderGUI.UI
             toolTip1.SetToolTip(chkEditBiography, MainStrings.EditBioTooltip);
             toolTip1.SetToolTip(chkAutoBuildAP, MainStrings.AutoBuildAuthorProfileTooltip);
             toolTip1.SetToolTip(chkIncludeTopics, MainStrings.IncludeTopicsTooltip);
+            toolTip1.SetToolTip(chkEditDescription, $"If enabled, allows editing the book's{Environment.NewLine}description before it's used.");
 
-            var regions = new List<AmazonRegion>(regionTLDs.Count);
-            foreach (var (name, tld) in regionTLDs)
+            var regions = new List<AmazonRegion>(_regionTlDs.Count);
+            foreach (var (name, tld) in _regionTlDs)
                 regions.Add(new AmazonRegion(name, tld));
             cmbRegion.DataSource = regions;
             cmbRegion.DisplayMember = "Name";
@@ -147,14 +137,14 @@ namespace XRayBuilderGUI.UI
                 .Select(kvp => new AmazonRegion(kvp.Key, kvp.Value))
                 .ToArray();
             cmbRoentgenRegion.DataSource = roentgenRegions;
-            cmbRoentgenRegion.DisplayMember = "Name";
-            cmbRoentgenRegion.ValueMember = "TLD";
+            cmbRoentgenRegion.DisplayMember = nameof(AmazonRegion.Name);
+            cmbRoentgenRegion.ValueMember = nameof(AmazonRegion.Tld);
             cmbRoentgenRegion.SelectedValue = Settings.Default.roentgenRegion;
 
             var languages = _languageFactory.GetValues().ToArray();
             cmbLanguage.DataSource = languages;
-            cmbLanguage.DisplayMember = "Label";
-            cmbLanguage.ValueMember = "Language";
+            cmbLanguage.DisplayMember = nameof(ILanguage.Label);
+            cmbLanguage.ValueMember = nameof(ILanguage.Language);
             cmbLanguage.SelectedValue = _languageFactory.Get(Settings.Default.Language)!.Language;
         }
 
@@ -167,11 +157,15 @@ namespace XRayBuilderGUI.UI
         {
             if (txtReal.Text.Trim().Length == 0 || txtPen.Text.Trim().Length == 0)
             {
-                MessageBox.Show("Both Real and Pen names are required for\r\nEnd Action file creation.");
+                MessageBox.Show($"Both Real and Pen names are required for{Environment.NewLine}End Action file creation.", "Missing Name", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                listSettings.SelectedIndex = 4;
+                return;
             }
+
             if (!int.TryParse(txtMinClipLen.Text, out var minClipLen))
             {
-                MessageBox.Show("Length must be an integer.", "Length Error");
+                MessageBox.Show("Notable clip minimum length must be an integer.", "Length Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                listSettings.SelectedIndex = 2;
                 return;
             }
 
@@ -208,6 +202,7 @@ namespace XRayBuilderGUI.UI
             Settings.Default.dataSource = cmbSecondaryDataSource.Text;
             Settings.Default.promptASIN = chkPromptAsin.Checked;
             Settings.Default.editBiography = chkEditBiography.Checked;
+            Settings.Default.editDescription = chkEditDescription.Checked;
             Settings.Default.outputToSidecar = chkUseSidecar.Checked;
             Settings.Default.downloadSA = chkRoentgenStartActions.Checked;
             Settings.Default.downloadEA = chkRoentgenEndActions.Checked;
@@ -234,21 +229,22 @@ namespace XRayBuilderGUI.UI
             }
         }
 
+        /// <summary>
+        /// Handle escape key since there's no cancel button
+        /// </summary>
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            if (keyData == Keys.Escape)
-            {
-                Close();
-                return true;
-            }
-            return base.ProcessCmdKey(ref msg, keyData);
+            if (keyData != Keys.Escape)
+                return base.ProcessCmdKey(ref msg, keyData);
+            Close();
+            return true;
         }
 
         private void btnLogs_Click(object sender, EventArgs e)
         {
             if (!Directory.Exists($@"{Environment.CurrentDirectory}\log"))
             {
-                MessageBox.Show(MainStrings.LogDirectoryDoesNotExist, MainStrings.LogDirectoryNotFoundTitle);
+                MessageBox.Show(MainStrings.LogDirectoryDoesNotExist, MainStrings.LogDirectoryNotFoundTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -258,18 +254,23 @@ namespace XRayBuilderGUI.UI
 
         private void btnClearLogs_Click(object sender, EventArgs e)
         {
-            if (DialogResult.Yes == MessageBox.Show($@"{MainStrings.DeleteLogFilesConfirmation}{Environment.NewLine}{MainStrings.ActionCannotBeUndone}", MainStrings.AreYouSure, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
+            if (DialogResult.Yes != MessageBox.Show($@"{MainStrings.DeleteLogFilesConfirmation}{Environment.NewLine}{MainStrings.ActionCannotBeUndone}", MainStrings.AreYouSure, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
+                return;
+
+            try
             {
-                try
-                {
-                    Array.ForEach(Directory.GetFiles($@"{Environment.CurrentDirectory}\log"), File.Delete);
-                    btnClearLogs.Text = MainStrings.ClearLogsTitle;
-                    btnClearLogs.Enabled = false;
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show(MainStrings.ErrorDeletingLogFiles, MainStrings.UnableToDeleteLogFilesCaption);
-                }
+                Cursor = Cursors.WaitCursor;
+                Array.ForEach(Directory.GetFiles($@"{Environment.CurrentDirectory}\log"), File.Delete);
+                btnClearLogs.Text = MainStrings.ClearLogsTitle;
+                btnClearLogs.Enabled = false;
+            }
+            catch (Exception)
+            {
+                MessageBox.Show(MainStrings.ErrorDeletingLogFiles, MainStrings.UnableToDeleteLogFilesCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
             }
         }
 
@@ -295,12 +296,12 @@ namespace XRayBuilderGUI.UI
             e.DrawFocusRectangle();
 
             var brush = (e.State & DrawItemState.Selected) != 0 ? Brushes.White : Brushes.Black;
-            e.Graphics.DrawString(listSettings.Items[e.Index].ToString(), Font, brush, e.Bounds.X + 3, e.Bounds.Y + 3);
+            e.Graphics.DrawString(listSettings.Items[e.Index].ToString(), Font, brush, e.Bounds.X + 5, e.Bounds.Y + 5);
         }
 
         private void listSettings_MeasureItem(object sender, MeasureItemEventArgs e)
         {
-            e.ItemHeight = 20;
+            e.ItemHeight = 30;
         }
 
         private void listSettings_SelectedIndexChanged(object sender, EventArgs e)
@@ -313,5 +314,7 @@ namespace XRayBuilderGUI.UI
             if (chkDownloadAliases.Checked)
                 chkOverwriteAP.Checked = false;
         }
+
+        private sealed record AmazonRegion(string Name, string Tld);
     }
 }

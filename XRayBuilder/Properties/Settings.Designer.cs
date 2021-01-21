@@ -194,18 +194,6 @@ namespace XRayBuilderGUI.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool saveHtml {
-            get {
-                return ((bool)(this["saveHtml"]));
-            }
-            set {
-                this["saveHtml"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool splitAliases {
             get {
                 return ((bool)(this["splitAliases"]));
@@ -500,6 +488,18 @@ namespace XRayBuilderGUI.Properties {
             }
             set {
                 this["Language"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool editDescription {
+            get {
+                return ((bool)(this["editDescription"]));
+            }
+            set {
+                this["editDescription"] = value;
             }
         }
     }

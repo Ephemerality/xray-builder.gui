@@ -164,7 +164,6 @@
     <Content Include="dist\done.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Icon.ico" />
     <None Include="dist\BaseEndActions.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -172,8 +171,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\cancel.png" />
-    <None Include="Resources\file-on.png" />
-    <None Include="Resources\file-off.png" />
     <None Include="doc\Help.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -181,7 +178,6 @@
     <None Include="Resources\character.png" />
     <None Include="Resources\terms.png" />
     <None Include="Resources\people.png" />
-    <None Include="Resources\arrow-right.png" />
     <None Include="Resources\seperator.png" />
     <None Include="Resources\missing-image.png" />
     <None Include="Resources\STAR5.png" />
@@ -200,6 +196,9 @@
     </EmbeddedResource>
     <EmbeddedResource Update="src\UI\frmASIN.resx">
       <DependentUpon>frmASIN.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="src\UI\frmBookInfo.resx">
+      <DependentUpon>frmBookInfo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Update="src\UI\frmCreateXR.resx">
       <DependentUpon>frmCreateXR.cs</DependentUpon>
@@ -256,7 +255,6 @@
     <Content Include="doc\XML Documentation.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Resources\AI.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IonDotnet\Amazon.IonDotnet\Amazon.IonDotnet.csproj" />

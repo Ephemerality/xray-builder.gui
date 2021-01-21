@@ -151,7 +151,7 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
             {
                 Metadata _ => FindOccurrencesLegacy(term, paragraph),
                 KfxContainer _ => FindOccurrences(term, paragraph),
-                _ => throw new NotSupportedException()
+                _ => FindOccurrencesLegacy(term, paragraph)
             };
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -14,6 +15,14 @@ namespace XRayBuilderGUI.UI
         {
             using var f = new FolderBrowserDialog { SelectedPath = defaultFolder };
             return f.ShowDialog() == DialogResult.OK ? f.SelectedPath : defaultFolder;
+        }
+
+        public static void OpenDirectory(string dir)
+        {
+            if (!Directory.Exists(dir))
+                MessageBox.Show("Specified directory does not exist.", "Directory Not Found...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else
+                Process.Start(dir);
         }
 
         public static string GetFile([Localizable(true)] string title, string defaultFile, string filter = "All files (*.*)|*.*", string initialDir = "")
@@ -32,6 +41,7 @@ namespace XRayBuilderGUI.UI
 
             return f.ShowDialog() == DialogResult.OK ? f.FileName : defaultFile;
         }
+
         public static string GetBook(string defaultFile) => GetFile("Open a Kindle book", defaultFile, "Kindle Books (*.azw3, *.mobi, *.kfx)|*.azw3; *.mobi; *.kfx");
 
         public static string RemoveInvalidFileChars(string filename)
@@ -44,18 +54,18 @@ namespace XRayBuilderGUI.UI
         {
             if (md.CdeContentType == "EBOK")
                 return;
-            if (DialogResult.Yes == MessageBox.Show("The document type is not set to EBOK. Would you like this to be updated?\r\nCaution: This feature is experimental and could potentially ruin your book file.", "Incorrect Content Type", MessageBoxButtons.YesNo))
+            if (DialogResult.Yes != MessageBox.Show($"The document type is not set to EBOK. Would you like this to be updated?{Environment.NewLine}Caution: This feature is experimental and could potentially ruin your book file.", "Incorrect Content Type", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
+                return;
+
+            try
             {
-                try
-                {
-                    using var fs = new FileStream(bookPath, FileMode.Create);
-                    md.UpdateCdeContentType();
-                    md.Save(fs);
-                }
-                catch (IOException)
-                {
-                    MessageBox.Show("Failed to update Content Type, could not open with write access. Is the book open in another application?");
-                }
+                using var fs = new FileStream(bookPath, FileMode.Create);
+                md.UpdateCdeContentType();
+                md.Save(fs);
+            }
+            catch (IOException)
+            {
+                MessageBox.Show($"Failed to update Content Type, could not open with write access.{Environment.NewLine}Is the book open in another application?", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
     }

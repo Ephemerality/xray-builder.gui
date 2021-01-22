@@ -88,12 +88,15 @@ namespace XRayBuilder.Test.DataSources
         [Test]
         public async Task GetPageCountTest()
         {
-            var book = new BookInfo("", "", "") { DataUrl = "https://www.goodreads.com/book/show/13497.A_Feast_for_Crows" };
+            var book = new BookInfo("", "", "")
+            {
+                DataUrl = "https://www.goodreads.com/book/show/13497.A_Feast_for_Crows"
+            };
             var result = await _goodreads.GetPageCountAsync(book);
             Assert.True(result);
-            Assert.AreEqual(book.PageCount, 1061);
-            Assert.AreEqual(book.ReadingHours, 22);
-            Assert.AreEqual(book.ReadingMinutes, 47);
+            Assert.AreEqual(1061, book.PageCount);
+            Assert.AreEqual(19, book.ReadingHours);
+            Assert.AreEqual(25, book.ReadingMinutes);
         }
 
         [Test]

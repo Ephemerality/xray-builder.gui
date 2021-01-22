@@ -75,7 +75,12 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
                 // Real locations aren't needed for extracting terms for preview or XML saving, but need count
                 var i = Convert.ToInt32(reader["count"]);
                 for (; i > 0; i--)
-                    newTerm.Occurrences.Add(new Occurrence());
+                {
+                    newTerm.Occurrences.Add(new Occurrence
+                    {
+                        Excerpt = new IndexLength(i, i)
+                    });
+                }
 
                 // TODO: Should probably also confirm whether this URL exists or not
                 if (newTerm.DescSrc == "Wikipedia")

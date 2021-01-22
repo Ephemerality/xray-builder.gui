@@ -11,7 +11,7 @@ namespace XRayBuilder.Core.Model
     // TODO: Remove defaults and privates, move logic
     public class BookInfo : IEquatable<BookInfo>
     {
-        public string Title { get; }
+        public string Title { get; set; }
         public string Author { get; }
         public string Asin { get; }
         [CanBeNull]

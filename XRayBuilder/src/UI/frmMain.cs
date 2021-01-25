@@ -156,7 +156,7 @@ namespace XRayBuilderGUI.UI
 
         private void btnBrowseXML_Click(object sender, EventArgs e)
         {
-            txtXMLFile.Text = UIFunctions.GetFile(txtXMLFile.Text, "",  "XML files (*.xml)|*.xml|TXT files (*.txt)|*.txt");
+            txtXMLFile.Text = UIFunctions.GetFile("Open an entity file", txtXMLFile.Text,  "XML files (*.xml)|*.xml|TXT files (*.txt)|*.txt");
         }
 
         private async void btnBuild_Click(object sender, EventArgs e)
@@ -226,6 +226,14 @@ namespace XRayBuilderGUI.UI
             if (_settings.realName.Trim().Length == 0 || _settings.penName.Trim().Length == 0)
             {
                 MessageBox.Show($@"{MainStrings.PenNamesRequired}{Environment.NewLine}{MainStrings.InformationAllowsRatingOnAmazon}{Environment.NewLine}{MainStrings.ReviewSettingsPage}", MainStrings.AmazonCustomerDetailsNotFoundTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (_settings.buildSource == "XML" && txtXMLFile.Text == "")
+            {
+                MessageBox.Show("No supported file containing term data was specified.\r\nBrowse for an XML or TXT file containing character\r\nand topic data for this e-book before trying to\r\ncreate an X-Ray file.",
+                    "Missing Terms File",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
                 return;
             }
 

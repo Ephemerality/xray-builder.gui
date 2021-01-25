@@ -150,12 +150,12 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                     request.Settings.AmazonTld = "com";
                     var tempSearchResults = await _amazonClient.SearchAuthor(request.Book.Author, request.Settings.AmazonTld, cancellationToken);
                     if (tempSearchResults?.Biography != null)
-                    {
                         searchResults.Biography = tempSearchResults.Biography;
-                        biography = searchResults.Biography;
-                    }
                 }
             }
+
+            if (searchResults.Biography != null)
+                biography = searchResults.Biography;
 
             if (File.Exists(bioFile) && request.Settings.SaveBio)
             {

@@ -826,7 +826,6 @@ namespace XRayBuilderGUI.UI
             btnUnpack.ToolTipText = MainStrings.SaveRawMlTooltip;
             btnExtractTerms.ToolTipText = MainStrings.ExtractXRayToXml;
             btnCreate.ToolTipText = MainStrings.CreateXmlTooltip;
-            btnXraySource.ToolTipText = $"Select the build source{Environment.NewLine}for X-Ray creation.";
 
             _tooltip.SetToolTip(rdoGoodreads, MainStrings.UseLinkAsDataSource);
             _tooltip.SetToolTip(rdoRoentgen, MainStrings.DownloadFromRoentgen);
@@ -885,31 +884,18 @@ namespace XRayBuilderGUI.UI
         private void AdjustUi()
         {
             txtGoodreads.Location = new Point(lblGoodreads.Location.X + lblGoodreads.Width + 11, txtGoodreads.Location.Y);
-            txtGoodreads.Size = new Size(groupBox1.Width - txtGoodreads.Location.X - 18, txtGoodreads.Size.Height);
+            txtGoodreads.Size = new Size(groupBox1.Width - txtGoodreads.Location.X - 13, txtGoodreads.Size.Height);
         }
 
         private void SetSelectedDatasource()
         {
-            btnXraySourceGoodreads.Checked = false;
-            btnXraySourceRoentgen.Checked = false;
-            btnXraySourceFile.Checked = false;
-
             if (rdoGoodreads.Checked)
             {
                 btnDownloadTerms.ToolTipText = $"Save {_dataSource.Name} terms to an XML file.";
-                btnXraySource.Image = Resources.source_internet;
-                btnXraySourceGoodreads.Checked = true;
             }
             else if (rdoRoentgen.Checked)
             {
                 btnDownloadTerms.ToolTipText = "Save Roentgen terms to an XML file.";
-                btnXraySource.Image = Resources.source_roentgen;
-                btnXraySourceRoentgen.Checked = true;
-            }
-            else if(rdoFile.Checked)
-            {
-                btnXraySource.Image = Resources.source_file;
-                btnXraySourceFile.Checked = true;
             }
 
             _settings.buildSource = rdoGoodreads.Checked

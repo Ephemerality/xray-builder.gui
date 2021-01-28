@@ -148,7 +148,7 @@ namespace XRayBuilderGUI.UI
             // btnSave
             // 
             this.btnSave.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnSave.Location = new System.Drawing.Point(494, 285);
+            this.btnSave.Location = new System.Drawing.Point(489, 285);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(100, 26);
             this.btnSave.TabIndex = 37;

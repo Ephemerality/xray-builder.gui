@@ -50,9 +50,9 @@
             this.cbResults.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbResults.FormattingEnabled = true;
             this.cbResults.IntegralHeight = false;
-            this.cbResults.Location = new System.Drawing.Point(17, 17);
+            this.cbResults.Location = new System.Drawing.Point(12, 12);
             this.cbResults.Name = "cbResults";
-            this.cbResults.Size = new System.Drawing.Size(478, 28);
+            this.cbResults.Size = new System.Drawing.Size(410, 23);
             this.cbResults.TabIndex = 3;
             this.cbResults.SelectedIndexChanged += new System.EventHandler(this.cbResults_SelectedIndexChanged);
             // 
@@ -60,17 +60,17 @@
             // 
             this.lblMessage1.AutoEllipsis = true;
             this.lblMessage1.AutoSize = true;
-            this.lblMessage1.Location = new System.Drawing.Point(13, 57);
+            this.lblMessage1.Location = new System.Drawing.Point(9, 44);
             this.lblMessage1.Name = "lblMessage1";
-            this.lblMessage1.Size = new System.Drawing.Size(350, 20);
+            this.lblMessage1.Size = new System.Drawing.Size(278, 15);
             this.lblMessage1.TabIndex = 4;
             this.lblMessage1.Text = "?? matches for this book were found on Goodreads.";
             // 
             // btnOK
             // 
-            this.btnOK.Location = new System.Drawing.Point(396, 79);
+            this.btnOK.Location = new System.Drawing.Point(323, 60);
             this.btnOK.Name = "btnOK";
-            this.btnOK.Size = new System.Drawing.Size(100, 32);
+            this.btnOK.Size = new System.Drawing.Size(100, 26);
             this.btnOK.TabIndex = 5;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
@@ -80,9 +80,9 @@
             // 
             this.lblMessage2.AutoEllipsis = true;
             this.lblMessage2.AutoSize = true;
-            this.lblMessage2.Location = new System.Drawing.Point(13, 85);
+            this.lblMessage2.Location = new System.Drawing.Point(9, 65);
             this.lblMessage2.Name = "lblMessage2";
-            this.lblMessage2.Size = new System.Drawing.Size(239, 20);
+            this.lblMessage2.Size = new System.Drawing.Size(191, 15);
             this.lblMessage2.TabIndex = 6;
             this.lblMessage2.Text = "Which book would you like to use?";
             // 
@@ -96,9 +96,9 @@
             this.groupBox1.Controls.Add(this.lblID);
             this.groupBox1.Controls.Add(this.pbCover);
             this.groupBox1.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(17, 117);
+            this.groupBox1.Location = new System.Drawing.Point(12, 89);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(478, 137);
+            this.groupBox1.Size = new System.Drawing.Size(410, 123);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Book Details";
@@ -110,9 +110,9 @@
             this.linkID.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.linkID.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
             this.linkID.LinkColor = System.Drawing.Color.MediumBlue;
-            this.linkID.Location = new System.Drawing.Point(194, 101);
+            this.linkID.Location = new System.Drawing.Point(165, 96);
             this.linkID.Name = "linkID";
-            this.linkID.Size = new System.Drawing.Size(24, 20);
+            this.linkID.Size = new System.Drawing.Size(18, 15);
             this.linkID.TabIndex = 6;
             this.linkID.TabStop = true;
             this.linkID.Text = "ID";
@@ -124,9 +124,9 @@
             // 
             this.lblEditions.AutoEllipsis = true;
             this.lblEditions.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblEditions.Location = new System.Drawing.Point(91, 82);
+            this.lblEditions.Location = new System.Drawing.Point(81, 77);
             this.lblEditions.Name = "lblEditions";
-            this.lblEditions.Size = new System.Drawing.Size(379, 20);
+            this.lblEditions.Size = new System.Drawing.Size(323, 15);
             this.lblEditions.TabIndex = 5;
             this.lblEditions.Text = "Editions:";
             this.lblEditions.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -135,9 +135,9 @@
             // 
             this.lblRating.AutoEllipsis = true;
             this.lblRating.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblRating.Location = new System.Drawing.Point(91, 63);
+            this.lblRating.Location = new System.Drawing.Point(81, 58);
             this.lblRating.Name = "lblRating";
-            this.lblRating.Size = new System.Drawing.Size(379, 20);
+            this.lblRating.Size = new System.Drawing.Size(323, 15);
             this.lblRating.TabIndex = 4;
             this.lblRating.Text = "Rating:";
             this.lblRating.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -146,9 +146,9 @@
             // 
             this.lblTitle.AutoEllipsis = true;
             this.lblTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTitle.Location = new System.Drawing.Point(91, 25);
+            this.lblTitle.Location = new System.Drawing.Point(81, 20);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(379, 20);
+            this.lblTitle.Size = new System.Drawing.Size(323, 15);
             this.lblTitle.TabIndex = 3;
             this.lblTitle.Text = "Title";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -158,9 +158,9 @@
             // 
             this.lblAuthor.AutoEllipsis = true;
             this.lblAuthor.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAuthor.Location = new System.Drawing.Point(91, 44);
+            this.lblAuthor.Location = new System.Drawing.Point(81, 39);
             this.lblAuthor.Name = "lblAuthor";
-            this.lblAuthor.Size = new System.Drawing.Size(379, 20);
+            this.lblAuthor.Size = new System.Drawing.Size(323, 15);
             this.lblAuthor.TabIndex = 2;
             this.lblAuthor.Text = "Author";
             this.lblAuthor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -170,9 +170,9 @@
             this.lblID.AutoEllipsis = true;
             this.lblID.AutoSize = true;
             this.lblID.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblID.Location = new System.Drawing.Point(91, 101);
+            this.lblID.Location = new System.Drawing.Point(81, 96);
             this.lblID.Name = "lblID";
-            this.lblID.Size = new System.Drawing.Size(104, 20);
+            this.lblID.Size = new System.Drawing.Size(81, 15);
             this.lblID.TabIndex = 1;
             this.lblID.Text = "Goodreads ID:";
             this.lblID.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -180,7 +180,7 @@
             // pbCover
             // 
             this.pbCover.Image = ((System.Drawing.Image)(resources.GetObject("pbCover.Image")));
-            this.pbCover.Location = new System.Drawing.Point(18, 28);
+            this.pbCover.Location = new System.Drawing.Point(13, 21);
             this.pbCover.Name = "pbCover";
             this.pbCover.Size = new System.Drawing.Size(60, 90);
             this.pbCover.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -189,9 +189,9 @@
             // 
             // frmGR
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(512, 270);
+            this.ClientSize = new System.Drawing.Size(434, 223);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.lblMessage2);
             this.Controls.Add(this.btnOK);

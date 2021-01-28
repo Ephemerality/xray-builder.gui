@@ -13,6 +13,7 @@ using XRayBuilder.Core.DataSources.Logic;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Unpack;
+using XRayBuilderGUI.Localization.Main;
 using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI.UI
@@ -32,6 +33,9 @@ namespace XRayBuilderGUI.UI
 
         public DialogData Result { get; private set; }
 
+        private readonly ToolTip _tooltip = new();
+        private string tempUrl = "";
+
         public frmBookInfo(IHttpClient httpClient, Container diContainer, IAmazonClient amazonClient)
         {
             InitializeComponent();
@@ -44,13 +48,26 @@ namespace XRayBuilderGUI.UI
         {
             _metadata = metadata;
             _cover = coverImage;
-            txtGoodreadsUrl.Text = dialogData.SecondarySourceUrl;
             txtAuthorUrl.Text = dialogData.AuthorUrl;
             txtBio.Text = dialogData.AuthorBiography;
-            cbXraySource.Text = dialogData.TermsSource;
+
+            txtDataProviderUrl.Text = dialogData.SecondarySourceUrl;
+            tempUrl = dialogData.SecondarySourceUrl;
+            cmbSecondaryDataSource.Text = Settings.Default.dataSource;
+            
+            _tooltip.SetToolTip(btnAuthorUrlSearch, $"Search for {_metadata.Author}\r\non Amazon.{_settings.amazonTLD}.");
+            _tooltip.SetToolTip(btnBookUrlSearch, $"Search for {_metadata.Title}\r\non Amazon.{_settings.amazonTLD}.");
+            _tooltip.SetToolTip(btnAuthorUrlSearch, $"Search for {_metadata.Author}\r\non Amazon.{_settings.amazonTLD}.");
+            _tooltip.SetToolTip(cmbSecondaryDataSource, MainStrings.SecondarySourceTooltip);
+
+            foreach (var button in this.Controls.OfType<Button>())
+            {
+                if (button.Name.Contains("UrlLink"))
+                    _tooltip.SetToolTip(button, "Open this link in your\r\ndefault browser.");
+            }
         }
 
-        public sealed record DialogData(string SecondarySourceUrl, string AuthorUrl, string AuthorBiography, string TermsSource);
+        public sealed record DialogData(string SecondarySource, string SecondarySourceUrl, string AuthorUrl, string AuthorBiography);
 
         private void CheckStatus()
         {
@@ -64,12 +81,12 @@ namespace XRayBuilderGUI.UI
 
             if (Controls.OfType<TextBox>().Any(t => string.IsNullOrEmpty(t.Text)))
             {
-                SetStatus("Use the search buttons to update book information...");
+                SetStatus("Use the search buttons to update book information…");
                 btnOK.Enabled = false;
             }
             else
             {
-                SetStatus("Book information complete!");
+                SetStatus("Book information complete! Click OK.");
                 btnOK.Enabled = true;
             }
         }
@@ -84,29 +101,29 @@ namespace XRayBuilderGUI.UI
             _dataSource = _diContainer.GetInstance<SecondaryDataSourceFactory>().Get(dataSource);
 
             ActiveControl = btnCancel;
-            Text = $"{_metadata.Title} by {_metadata.Author}";
+            Text = $@"{_metadata.Title} by {_metadata.Author}";
             pbCover.Image = _cover;
             txtBookUrl.Text = $@"https://www.amazon.{_settings.amazonTLD}/dp/{_metadata.Asin}";
 
             CheckStatus();
         }
 
-        private async void btnGoodreadsSearch_Click(object sender, EventArgs e)
+        private async void btnDataProviderSearch_Click(object sender, EventArgs e)
         {
-            await SearchGoodreads();
+            await SearchDataProvider();
         }
 
-        private async Task SearchGoodreads()
+        private async Task SearchDataProvider()
         {
             Cursor = Cursors.WaitCursor;
             try
             {
                 var bookSearchService = _diContainer.GetInstance<IBookSearchService>();
-                SetStatus($"Searching {_dataSource.Name}...");
+                SetStatus($"Searching {_dataSource.Name}…");
                 var books = await bookSearchService.SearchSecondarySourceAsync(_dataSource, _metadata, _cancelTokens.Token);
                 if (books.Length <= 0)
                 {
-                    SetStatus($"Unable to find {_metadata.Title} on {_dataSource.Name}...");
+                    SetStatus($"Unable to find {_metadata.Title} on {_dataSource.Name}…");
                     return;
                 }
 
@@ -125,7 +142,7 @@ namespace XRayBuilderGUI.UI
                         }
                         catch (Exception)
                         {
-                            SetStatus("Failed to download cover image.");
+                            SetStatus($"Failed to download cover image for {book.Title} by {book.Author}.");
                         }
 
                     SetStatus($"Warning: Multiple results returned from {_dataSource.Name}…");
@@ -135,7 +152,7 @@ namespace XRayBuilderGUI.UI
                 }
 
                 if (!string.IsNullOrEmpty(bookUrl))
-                    txtGoodreadsUrl.Text = bookUrl;
+                    txtDataProviderUrl.Text = bookUrl;
             }
             catch (Exception)
             {
@@ -165,7 +182,7 @@ namespace XRayBuilderGUI.UI
             try
             {
                 Cursor = Cursors.WaitCursor;
-                SetStatus($@"Searching Amazon.{_settings.amazonTLD}...");
+                SetStatus($@"Searching Amazon.{_settings.amazonTLD}…");
                 searchResults = await _amazonClient.SearchAuthor(_metadata.Author, _settings.amazonTLD, _cancelTokens.Token, false);
             }
             catch (Exception)
@@ -191,6 +208,7 @@ namespace XRayBuilderGUI.UI
                 return;
             }
 
+            SetStatus($"{_metadata.Author} page found  on Amazon.{_settings.amazonTLD}.");
             txtAuthorUrl.Text = searchResults.Url;
 
             if (_settings.saveBio && File.Exists(_bioFile))
@@ -207,7 +225,9 @@ namespace XRayBuilderGUI.UI
         private void btnOK_Click(object sender, EventArgs e)
         {
             File.WriteAllText(_bioFile, txtBio.Text);
-            Result = new DialogData(txtGoodreadsUrl.Text, txtAuthorUrl.Text, txtBio.Text, cbXraySource.Text);
+            Result = new DialogData(_dataSource.Name, txtDataProviderUrl.Text, txtAuthorUrl.Text, txtBio.Text);
+            Settings.Default.dataSource = cmbSecondaryDataSource.Text;
+            Settings.Default.Save();
             Close();
         }
 
@@ -227,7 +247,7 @@ namespace XRayBuilderGUI.UI
             }
             catch (Exception ex)
             {
-                MessageBox.Show($@"An error occured opening this link:{Environment.NewLine}{ex.Message}", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($@"An error occurred opening this link:{Environment.NewLine}{ex.Message}", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -241,15 +261,54 @@ namespace XRayBuilderGUI.UI
             OpenLink(txtBookUrl.Text);
         }
 
-        private void btnGoodreadsUrlLink_Click(object sender, EventArgs e)
+        private void btnDataProviderUrlLink_Click(object sender, EventArgs e)
         {
-            OpenLink(txtGoodreadsUrl.Text);
+            OpenLink(txtDataProviderUrl.Text);
         }
 
-        private void cbXraySource_SelectedIndexChanged(object sender, EventArgs e)
+        private async void btnBookUrlSearch_Click(object sender, EventArgs e)
         {
-            if (cbXraySource.SelectedItem.ToString() == "XML")
-                txtXMLFile.Enabled = true;
+            await SearchBook();
+            CheckStatus();
+        }
+
+        private async Task SearchBook()
+        {
+            try
+            {
+                Cursor = Cursors.WaitCursor;
+                SetStatus($@"Searching Amazon.{_settings.amazonTLD}…");
+
+               var amazonSearchResult = await _amazonClient.SearchBook(_metadata.Title, _metadata.Author, _settings.amazonTLD, _cancelTokens.Token);
+                if (amazonSearchResult != null)
+                {
+                    SetStatus($"{_metadata.Title} page found  on Amazon.{_settings.amazonTLD}.");
+                    txtBookUrl.Text = amazonSearchResult.AmazonUrl;
+                }
+            }
+            catch (Exception)
+            {
+                SetStatus($@"Error searching Amazon.{_settings.amazonTLD}.");
+            }
+        }
+
+        private void AdjustUi()
+        {
+            lblDataProviderUrl.Location = new Point(txtDataProviderUrl.Location.X - lblDataProviderUrl.Width - 7, lblDataProviderUrl.Location.Y);
+        }
+
+        private void cmbSecondaryDataSource_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var dataProvider = cmbSecondaryDataSource.Text;
+            lblDataProviderUrl.Text = $@"{dataProvider} URL:";
+            txtDataProviderUrl.Text = tempUrl.Contains(dataProvider.ToLower()) && !string.IsNullOrEmpty(tempUrl) ? tempUrl : string.Empty;
+            _tooltip.SetToolTip(btnDataProviderSearch, $"Search for {_metadata.Title} on {dataProvider}.");
+
+            var dataSource = (SecondaryDataSourceFactory.Enum) Enum.Parse(typeof(SecondaryDataSourceFactory.Enum), dataProvider);
+            _dataSource = _diContainer.GetInstance<SecondaryDataSourceFactory>().Get(dataSource);
+
+            AdjustUi();
+            CheckStatus();
         }
     }
 }

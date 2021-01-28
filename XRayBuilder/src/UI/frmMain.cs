@@ -827,6 +827,8 @@ namespace XRayBuilderGUI.UI
             btnExtractTerms.ToolTipText = MainStrings.ExtractXRayToXml;
             btnCreate.ToolTipText = MainStrings.CreateXmlTooltip;
 
+            _tooltip.SetToolTip(pbCover, "Double-click to open\r\nthe book details window");
+
             _tooltip.SetToolTip(rdoGoodreads, MainStrings.UseLinkAsDataSource);
             _tooltip.SetToolTip(rdoRoentgen, MainStrings.DownloadFromRoentgen);
             _tooltip.SetToolTip(rdoFile, MainStrings.LoadTermsFromFile);
@@ -1374,19 +1376,6 @@ namespace XRayBuilderGUI.UI
             SetDatasourceLink(txtGoodreads.Text);
         }
 
-        private void pbCover_Click(object sender, EventArgs e)
-        {
-            if (_openedMetadata == null) return;
-            using var frmBook = _diContainer.GetInstance<frmBookInfo>();
-            frmBook.Setup(_openedMetadata, (Image) pbCover.Image.Clone(), new frmBookInfo.DialogData(txtGoodreads.Text, "", "", _settings.buildSource));
-            frmBook.ShowDialog();
-            if (frmBook.Result == null)
-                return;
-            txtGoodreads.Text = frmBook.Result.SecondarySourceUrl;
-            // TODO Maybe use an enum for buildsource so we don't throw these strings around (to think about)
-            _settings.buildSource = frmBook.Result.TermsSource;
-        }
-
         private void pbCover_MouseEnter(object sender, EventArgs e)
         {
             Cursor = Cursors.Hand;
@@ -1395,6 +1384,19 @@ namespace XRayBuilderGUI.UI
         private void pbCover_MouseLeave(object sender, EventArgs e)
         {
             Cursor = Cursors.Default;
+        }
+
+        private void pbCover_DoubleClick(object sender, EventArgs e)
+        {
+            if (_openedMetadata == null) return;
+            using var frmBook = _diContainer.GetInstance<frmBookInfo>();
+            frmBook.Setup(_openedMetadata, (Image) pbCover.Image.Clone(), new frmBookInfo.DialogData(_dataSource.Name, txtGoodreads.Text, "", ""));
+            frmBook.ShowDialog();
+            if (frmBook.Result == null)
+                return;
+
+            txtGoodreads.Text = frmBook.Result.SecondarySourceUrl;
+            SetDatasourceLabels();
         }
     }
 }

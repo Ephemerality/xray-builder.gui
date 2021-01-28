@@ -857,14 +857,14 @@
             // pbCover
             // 
             this.pbCover.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.pbCover.Image = ((System.Drawing.Image)(resources.GetObject("pbCover.Image")));
+            this.pbCover.Image = global::XRayBuilderGUI.Properties.Resources.missing_cover_medium;
             this.pbCover.Location = new System.Drawing.Point(828, 273);
             this.pbCover.Name = "pbCover";
             this.pbCover.Size = new System.Drawing.Size(190, 285);
             this.pbCover.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pbCover.TabIndex = 0;
             this.pbCover.TabStop = false;
-            this.pbCover.Click += new System.EventHandler(this.pbCover_Click);
+            this.pbCover.DoubleClick += new System.EventHandler(this.pbCover_DoubleClick);
             this.pbCover.MouseEnter += new System.EventHandler(this.pbCover_MouseEnter);
             this.pbCover.MouseLeave += new System.EventHandler(this.pbCover_MouseLeave);
             // 

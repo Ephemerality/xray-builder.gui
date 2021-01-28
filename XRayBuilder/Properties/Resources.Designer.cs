@@ -133,6 +133,16 @@ namespace XRayBuilderGUI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap missing_cover_medium {
+            get {
+                object obj = ResourceManager.GetObject("missing_cover_medium", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap missing_cover_small {
             get {
                 object obj = ResourceManager.GetObject("missing_cover_small", resourceCulture);

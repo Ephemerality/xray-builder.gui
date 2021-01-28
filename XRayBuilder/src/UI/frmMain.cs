@@ -1182,23 +1182,6 @@ namespace XRayBuilderGUI.UI
             }
         }
 
-        private void btnHelp_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                Process.Start(Environment.CurrentDirectory + @"\doc\help.pdf");
-            }
-            catch
-            {
-                MessageBox.Show(MainStrings.UnableToOpenHelpDocument, MainStrings.HelpDocumentNotFoundTitle);
-            }
-        }
-
-        private void btnAbout_Click(object sender, EventArgs e)
-        {
-            new frmAbout().ShowDialog();
-        }
-
         private async void btnCreate_Click(object sender, EventArgs e)
         {
             using var frmCreateXr = _diContainer.GetInstance<frmCreateXR>();
@@ -1397,6 +1380,28 @@ namespace XRayBuilderGUI.UI
 
             txtGoodreads.Text = frmBook.Result.SecondarySourceUrl;
             SetDatasourceLabels();
+        }
+
+        private void btnViewHelp_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(Environment.CurrentDirectory + @"\doc\help.pdf");
+            }
+            catch
+            {
+                MessageBox.Show(MainStrings.UnableToOpenHelpDocument, MainStrings.HelpDocumentNotFoundTitle);
+            }
+        }
+
+        private void btnVisitForum_Click(object sender, EventArgs e)
+        {
+            Process.Start("http://www.mobileread.com/forums/showthread.php?t=245754");
+        }
+
+        private void btnAbout_Click(object sender, EventArgs e)
+        {
+            new frmAbout().ShowDialog();
         }
     }
 }

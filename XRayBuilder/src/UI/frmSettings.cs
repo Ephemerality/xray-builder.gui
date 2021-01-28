@@ -105,7 +105,6 @@ namespace XRayBuilderGUI.UI
             toolTip1.SetToolTip(chkEnableEdit, MainStrings.EnableEditTooltip);
             toolTip1.SetToolTip(chkSubDirectories, MainStrings.SaveToAuthorSubdirTooltip);
             toolTip1.SetToolTip(chkUseSidecar, MainStrings.SaveToSidecarSubdirTooltip);
-            toolTip1.SetToolTip(btnLogs, MainStrings.OpenLogFileDirTooltip);
             toolTip1.SetToolTip(chkOverwriteAP, MainStrings.OverwriteAuthorProfileTooltip);
             toolTip1.SetToolTip(chkOverwriteEA, MainStrings.OverwriteEndActionsTooltip);
             toolTip1.SetToolTip(chkOverwriteSA, MainStrings.OverwriteStartActionsTooltip);
@@ -114,7 +113,6 @@ namespace XRayBuilderGUI.UI
             toolTip1.SetToolTip(chkSplitAliases, MainStrings.AutomaticallySplitAliasesTooltip);
             toolTip1.SetToolTip(chkSound, MainStrings.PlaySoundTooltip);
             toolTip1.SetToolTip(chkDownloadAliases, MainStrings.DownloadAliasesTooltip);
-            toolTip1.SetToolTip(btnSupport, MainStrings.VisitForumTooltip);
             toolTip1.SetToolTip(chkPageCount, MainStrings.EstimatePageCountTooltip);
             toolTip1.SetToolTip(cmbSecondaryDataSource, MainStrings.SecondarySourceTooltip);
             toolTip1.SetToolTip(chkSaveBio, MainStrings.SaveBioTooltip);
@@ -240,18 +238,6 @@ namespace XRayBuilderGUI.UI
             return true;
         }
 
-        private void btnLogs_Click(object sender, EventArgs e)
-        {
-            if (!Directory.Exists($@"{Environment.CurrentDirectory}\log"))
-            {
-                MessageBox.Show(MainStrings.LogDirectoryDoesNotExist, MainStrings.LogDirectoryNotFoundTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            TopMost = false;
-            Process.Start($@"{Environment.CurrentDirectory}\log");
-        }
-
         private void btnClearLogs_Click(object sender, EventArgs e)
         {
             if (DialogResult.Yes != MessageBox.Show($@"{MainStrings.DeleteLogFilesConfirmation}{Environment.NewLine}{MainStrings.ActionCannotBeUndone}", MainStrings.AreYouSure, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
@@ -285,23 +271,18 @@ namespace XRayBuilderGUI.UI
             }
         }
 
-        private void btnSupport_Click(object sender, EventArgs e)
-        {
-            Process.Start("http://www.mobileread.com/forums/showthread.php?t=245754");
-        }
-
         private void listSettings_DrawItem(object sender, DrawItemEventArgs e)
         {
             e.DrawBackground();
             e.DrawFocusRectangle();
 
             var brush = (e.State & DrawItemState.Selected) != 0 ? Brushes.White : Brushes.Black;
-            e.Graphics.DrawString(listSettings.Items[e.Index].ToString(), Font, brush, e.Bounds.X + 5, e.Bounds.Y + 5);
+            e.Graphics.DrawString(listSettings.Items[e.Index].ToString(), Font, brush, e.Bounds.X + 5, e.Bounds.Y + 3);
         }
 
         private void listSettings_MeasureItem(object sender, MeasureItemEventArgs e)
         {
-            e.ItemHeight = 30;
+            e.ItemHeight = 23;
         }
 
         private void listSettings_SelectedIndexChanged(object sender, EventArgs e)

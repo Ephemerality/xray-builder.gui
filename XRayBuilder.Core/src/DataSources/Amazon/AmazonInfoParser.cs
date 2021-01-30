@@ -16,7 +16,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
         private readonly ILogger _logger;
         private readonly IHttpClient _httpClient;
 
-        private readonly Regex _numbersRegex = new(@"(\d+)", RegexOptions.Compiled);
+        private readonly Regex _numbersRegex = new(@"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)", RegexOptions.Compiled);
         private readonly Regex _regex404 = new(@"(cs_404_logo|cs_404_link)", RegexOptions.Compiled);
 
         public AmazonInfoParser(ILogger logger, IHttpClient httpClient)
@@ -174,6 +174,18 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
                 if (match.Success)
                     response.Pages = int.Parse(match.Value);
+            }
+
+            if (pagesNode == null)
+            {
+                pagesNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='detailBullets_feature_div']/ul");
+                var lengthNode = pagesNode?.SelectSingleNode(".//span[contains(text(),'pages')]");
+                if (lengthNode != null)
+                {
+                    var match = _numbersRegex.Match(lengthNode.InnerText);
+                    if (match.Success)
+                        response.Pages = int.Parse(match.Value);
+                }
             }
 
             #endregion

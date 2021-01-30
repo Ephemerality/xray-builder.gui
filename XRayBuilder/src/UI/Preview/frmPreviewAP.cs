@@ -52,5 +52,10 @@ namespace XRayBuilderGUI.UI.Preview
         {
             base.ShowDialog();
         }
+
+        private void frmPreviewAP_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Dispose();
+        }
     }
 }

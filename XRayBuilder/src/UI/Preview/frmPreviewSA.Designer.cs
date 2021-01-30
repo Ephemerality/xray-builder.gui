@@ -101,7 +101,7 @@
             this.lblHighlightsCount.Name = "lblHighlightsCount";
             this.lblHighlightsCount.Size = new System.Drawing.Size(415, 15);
             this.lblHighlightsCount.TabIndex = 77;
-            this.lblHighlightsCount.Text = "No popular highlight information available";
+            this.lblHighlightsCount.Text = "n passages have been highlighten n times";
             // 
             // lblBiography
             // 
@@ -378,6 +378,7 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "About This Book";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmPreviewSA_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbRating)).EndInit();

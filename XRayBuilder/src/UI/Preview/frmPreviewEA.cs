@@ -158,5 +158,10 @@ namespace XRayBuilderGUI.UI.Preview
             if (string.IsNullOrEmpty(_authorUrl)) return;
             Process.Start(_authorUrl);
         }
+
+        private void frmPreviewEA_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Dispose();
+        }
     }
 }

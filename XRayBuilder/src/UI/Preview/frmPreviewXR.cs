@@ -60,5 +60,10 @@ namespace XRayBuilderGUI.UI.Preview
         {
             flpPeople.VerticalScroll.Value = e.NewValue;
         }
+
+        private void frmPreviewXR_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Dispose();
+        }
     }
 }

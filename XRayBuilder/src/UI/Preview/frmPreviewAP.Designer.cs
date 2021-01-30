@@ -118,7 +118,7 @@
             // 
             // frmPreviewAP
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(657, 556);
             this.Controls.Add(this.dgvOtherBooks);
@@ -136,6 +136,7 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Abouth [author]";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmPreviewAP_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.pbAuthorImage)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvOtherBooks)).EndInit();
             this.ResumeLayout(false);

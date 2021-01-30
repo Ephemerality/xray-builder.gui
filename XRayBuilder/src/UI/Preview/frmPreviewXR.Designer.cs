@@ -95,7 +95,7 @@
             this.tbTerms.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tbTerms.Name = "tbTerms";
             this.tbTerms.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tbTerms.Size = new System.Drawing.Size(496, 602);
+            this.tbTerms.Size = new System.Drawing.Size(496, 579);
             this.tbTerms.TabIndex = 2;
             this.tbTerms.Text = "TERMS";
             this.tbTerms.UseVisualStyleBackColor = true;
@@ -107,7 +107,7 @@
             this.pTerms.Location = new System.Drawing.Point(4, 5);
             this.pTerms.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pTerms.Name = "pTerms";
-            this.pTerms.Size = new System.Drawing.Size(488, 592);
+            this.pTerms.Size = new System.Drawing.Size(488, 569);
             this.pTerms.TabIndex = 0;
             // 
             // flpTerms
@@ -116,12 +116,12 @@
             this.flpTerms.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flpTerms.Location = new System.Drawing.Point(0, 0);
             this.flpTerms.Name = "flpTerms";
-            this.flpTerms.Size = new System.Drawing.Size(488, 592);
+            this.flpTerms.Size = new System.Drawing.Size(488, 569);
             this.flpTerms.TabIndex = 2;
             // 
             // frmPreviewXR
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(508, 625);
             this.Controls.Add(this.tcXray);
@@ -134,6 +134,7 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "X-Ray";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmPreviewXR_FormClosing);
             this.tcXray.ResumeLayout(false);
             this.tpPeople.ResumeLayout(false);
             this.pPeople.ResumeLayout(false);

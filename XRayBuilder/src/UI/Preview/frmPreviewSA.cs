@@ -49,30 +49,19 @@ namespace XRayBuilderGUI.UI.Preview
             if (startActions.Data.SeriesPosition != null)
             {
                 var seriesInfo = startActions.Data.SeriesPosition;
-                lblSeries.Text = $@"This is book {seriesInfo.PositionInSeries} of {seriesInfo.TotalInSeries} in {seriesInfo.SeriesName}";
-                if (seriesInfo.PositionInSeries == 1)
+                if (seriesInfo.PositionInSeries > 1)
                 {
-                    pbPreviousCover.Visible = false;
-                    lblPreviousHeading.Visible = false;
-                    lblPreviousTitle.Visible = false;
-                    lblSeries.Left = 12;
-                    lblSeries.Width = 312;
-                }
-                else
-                {
-                    lblSeries.Left = 81;
-                    lblSeries.Width = 345;
-                    pbPreviousCover.Visible = true;
+                    lblSeries.Text = $@"This is book {seriesInfo.PositionInSeries} of {seriesInfo.TotalInSeries} in {seriesInfo.SeriesName}";
                     lblPreviousHeading.Visible = true;
                     lblPreviousTitle.Visible = true;
                 }
-            }
-            else
-            {
-                lblSeries.Text = @"This book is not part of a series...";
-                pbPreviousCover.Image = Resources.missing_cover_small;
-                lblPreviousHeading.Visible = false;
-                lblPreviousTitle.Visible = false;
+                else
+                {
+                    lblSeries.Text = @"This book is not part of a series…";
+                    pbPreviousCover.Image = Resources.missing_cover_small;
+                    lblPreviousHeading.Visible = false;
+                    lblPreviousTitle.Visible = false;
+                }
             }
 
             // TODO: Enums or something for language
@@ -81,8 +70,10 @@ namespace XRayBuilderGUI.UI.Preview
             {
                 var popularHighlightsText = _regexHighlights.Match(highlights);
                 if (popularHighlightsText.Success)
-                    lblHighlightsCount.Text = popularHighlightsText.Groups["text"].Value;
+                    lblHighlightsCount.Text = !popularHighlightsText.Groups["text"].Value.StartsWith("0") ? popularHighlightsText.Groups["text"].Value : "No popular highlights were found for this book.";
             }
+            else
+                lblHighlightsCount.Text = "No popular highlights were found for this book.";
 
             if (startActions.Data.BookDescription != null)
             {
@@ -176,6 +167,11 @@ namespace XRayBuilderGUI.UI.Preview
         {
             if (!string.IsNullOrEmpty(Asin))
                 Process.Start($"http://www.amazon.{Settings.Default.amazonTLD}/dp/{Asin}");
+        }
+
+        private void frmPreviewSA_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Dispose();
         }
     }
 }

@@ -128,7 +128,7 @@
             this.lblFollowAuthor.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblFollowAuthor.Location = new System.Drawing.Point(13, 78);
             this.lblFollowAuthor.Name = "lblFollowAuthor";
-            this.lblFollowAuthor.Size = new System.Drawing.Size(132, 20);
+            this.lblFollowAuthor.Size = new System.Drawing.Size(102, 15);
             this.lblFollowAuthor.TabIndex = 79;
             this.lblFollowAuthor.Text = "Follow the Author";
             this.lblFollowAuthor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -168,7 +168,7 @@
             this.lblYourRating.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblYourRating.Location = new System.Drawing.Point(13, 12);
             this.lblYourRating.Name = "lblYourRating";
-            this.lblYourRating.Size = new System.Drawing.Size(171, 20);
+            this.lblYourRating.Size = new System.Drawing.Size(133, 15);
             this.lblYourRating.TabIndex = 75;
             this.lblYourRating.Text = "Your Rating on Amazon";
             this.lblYourRating.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -205,7 +205,7 @@
             this.lblCustomersWhoBoughtRecs.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblCustomersWhoBoughtRecs.Location = new System.Drawing.Point(13, 228);
             this.lblCustomersWhoBoughtRecs.Name = "lblCustomersWhoBoughtRecs";
-            this.lblCustomersWhoBoughtRecs.Size = new System.Drawing.Size(319, 20);
+            this.lblCustomersWhoBoughtRecs.Size = new System.Drawing.Size(249, 15);
             this.lblCustomersWhoBoughtRecs.TabIndex = 71;
             this.lblCustomersWhoBoughtRecs.Text = "Customers who bought this book also bought";
             this.lblCustomersWhoBoughtRecs.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -236,7 +236,7 @@
             this.lblNextInSeries.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblNextInSeries.Location = new System.Drawing.Point(408, 12);
             this.lblNextInSeries.Name = "lblNextInSeries";
-            this.lblNextInSeries.Size = new System.Drawing.Size(101, 20);
+            this.lblNextInSeries.Size = new System.Drawing.Size(77, 15);
             this.lblNextInSeries.TabIndex = 68;
             this.lblNextInSeries.Text = "Next in series";
             this.lblNextInSeries.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -253,7 +253,7 @@
             // 
             // frmPreviewEA
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(809, 482);
             this.Controls.Add(this.pictureBox2);
@@ -284,6 +284,7 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Before You Go...";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmPreviewEA_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbAuthor)).EndInit();

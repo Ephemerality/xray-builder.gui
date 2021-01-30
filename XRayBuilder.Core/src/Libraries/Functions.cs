@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using JetBrains.Annotations;
+using XRayBuilder.Core.Libraries.Language.Pluralization;
 using XRayBuilder.Core.Model;
 
 namespace XRayBuilder.Core.Libraries
@@ -75,6 +76,26 @@ namespace XRayBuilder.Core.Libraries
             return $"Running X-Ray Builder GUI v{version}. Log started on {date} at {time}.\r\n";
         }
 
+        public static string GetReadingTime(BookInfo bookInfo)
+        {
+            if (bookInfo.PageCount == 0)
+                return null;
+
+            var minutes = bookInfo.PageCount * 1.098507462686567;
+            var span = TimeSpan.FromMinutes(minutes);
+
+            var d = PluralUtil.Pluralize($"{span.Days:day}");
+            var h = PluralUtil.Pluralize($"{span.Hours:hour}");
+            var m = PluralUtil.Pluralize($"{span.Minutes:minute}");
+            var p = bookInfo.PageCount;
+
+            bookInfo.ReadingHours = span.Hours;
+            bookInfo.ReadingMinutes = span.Minutes;
+
+            var formatted = $"Typical time to read: {(span.Days > 1 ? $"{d}, " : string.Empty)}{(span.Hours > 1 ? $"{h}" : string.Empty)}{(span.Hours > 1 ? " and " : ", ")}{(span.Minutes > 1 ? $"{m}" : string.Empty)} ({p} pages)";
+            return formatted.StartsWith(", ") ? formatted.Substring(2, formatted.Length) : formatted;
+        }
+
         public static string GetPageCount(string rawMl, BookInfo bookInfo)
         {
             string output;
@@ -113,8 +134,7 @@ namespace XRayBuilder.Core.Libraries
             bookInfo.PageCount = pageCount;
             bookInfo.ReadingHours = span.Hours;
             bookInfo.ReadingMinutes = span.Minutes;
-            output = $"Typical time to read: {span.Hours} hours and {span.Minutes} minutes ({bookInfo.PageCount} pages)";
-            return output;
+            return GetReadingTime(bookInfo);
         }
 
         public static void RunNotepad(string filename)

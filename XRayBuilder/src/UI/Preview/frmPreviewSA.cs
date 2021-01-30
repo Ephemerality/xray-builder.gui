@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -21,6 +22,7 @@ namespace XRayBuilderGUI.UI.Preview
 
         private readonly Regex _regexHighlights = new Regex(@"(?<text>(?<num>[\d,.]+) passages have been highlighted (?<total>[\d,.]+) times)", RegexOptions.Compiled);
         private const int MaxImageSize = 750;
+        private string Asin;
 
         public frmPreviewSA(IHttpClient httpClient)
         {
@@ -42,6 +44,8 @@ namespace XRayBuilderGUI.UI.Preview
             ilOtherBooks.Images.Clear();
             lvOtherBooks.Clear();
 
+            Asin = startActions.BookInfo.Asin;
+
             if (startActions.Data.SeriesPosition != null)
             {
                 var seriesInfo = startActions.Data.SeriesPosition;
@@ -56,7 +60,7 @@ namespace XRayBuilderGUI.UI.Preview
                 }
                 else
                 {
-                    lblSeries.Left = 85;
+                    lblSeries.Left = 81;
                     lblSeries.Width = 345;
                     pbPreviousCover.Visible = true;
                     lblPreviousHeading.Visible = true;
@@ -77,7 +81,7 @@ namespace XRayBuilderGUI.UI.Preview
             {
                 var popularHighlightsText = _regexHighlights.Match(highlights);
                 if (popularHighlightsText.Success)
-                    lblHighlights.Text = popularHighlightsText.Groups["text"].Value;
+                    lblHighlightsCount.Text = popularHighlightsText.Groups["text"].Value;
             }
 
             if (startActions.Data.BookDescription != null)
@@ -85,6 +89,7 @@ namespace XRayBuilderGUI.UI.Preview
                 var bookDescription = startActions.Data.BookDescription;
                 lblTitle.Text = bookDescription.Title;
                 lblAuthor.Text = bookDescription.Authors.FirstOrDefault() ?? "";
+                lblAboutAuthorName.Text = bookDescription.Authors.FirstOrDefault() ?? "";
                 lblDescription.Text = bookDescription.Description;
                 if (bookDescription.AmazonRating.HasValue)
                     pbRating.Image = (Image)Resources.ResourceManager.GetObject($"STAR{Math.Floor((decimal) bookDescription.AmazonRating)}");
@@ -103,13 +108,14 @@ namespace XRayBuilderGUI.UI.Preview
             if (startActions.Data.AuthorRecs != null || startActions.Data.AuthorFeaturedRecs != null)
             {
                 var recommendations = startActions.Data.AuthorRecs ?? startActions.Data.AuthorFeaturedRecs;
+                Width = recommendations.Recommendations.Length < 15 ? 665 : 691;
                 foreach (var rec in recommendations.Recommendations)
                 {
                     var imageUrl = rec.ImageUrl;
                     if (!string.IsNullOrEmpty(imageUrl))
                         ilOtherBooks.Images.Add(await _httpClient.GetImageAsync(imageUrl, MaxImageSize, false, cancellationToken));
                 }
-                ListViewItem_SetSpacing(lvOtherBooks, 60 + 12, 90 + 12);
+                ListViewItem_SetSpacing(lvOtherBooks, 60 + 10, 90 + 10);
                 for (var i = 0; i < ilOtherBooks.Images.Count; i++)
                 {
                     var item = new ListViewItem {ImageIndex = i};
@@ -165,5 +171,11 @@ namespace XRayBuilderGUI.UI.Preview
         }
 
         #endregion
+
+        private void linkStore_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(Asin))
+                Process.Start($"http://www.amazon.{Settings.Default.amazonTLD}/dp/{Asin}");
+        }
     }
 }

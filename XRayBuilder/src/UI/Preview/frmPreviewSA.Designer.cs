@@ -33,7 +33,7 @@
             this.ilOtherBooks = new System.Windows.Forms.ImageList(this.components);
             this.lblTime = new System.Windows.Forms.Label();
             this.lblVotes = new System.Windows.Forms.Label();
-            this.lblHighlights = new System.Windows.Forms.Label();
+            this.lblHighlightsCount = new System.Windows.Forms.Label();
             this.lblBiography = new System.Windows.Forms.Label();
             this.lblAboutAuthor = new System.Windows.Forms.Label();
             this.lblPreviousTitle = new System.Windows.Forms.Label();
@@ -52,12 +52,17 @@
             this.pbAuthorImage = new System.Windows.Forms.PictureBox();
             this.pbPreviousCover = new System.Windows.Forms.PictureBox();
             this.pbSeperator1 = new System.Windows.Forms.PictureBox();
+            this.linkStore = new System.Windows.Forms.LinkLabel();
+            this.lblAboutAuthorName = new System.Windows.Forms.Label();
+            this.pictureBox3 = new System.Windows.Forms.PictureBox();
+            this.lblHighlights = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbRating)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbAuthorImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbPreviousCover)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbSeperator1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.SuspendLayout();
             // 
             // ilOtherBooks
@@ -69,10 +74,10 @@
             // lblTime
             // 
             this.lblTime.AutoSize = true;
-            this.lblTime.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTime.Location = new System.Drawing.Point(13, 498);
+            this.lblTime.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTime.Location = new System.Drawing.Point(9, 162);
             this.lblTime.Name = "lblTime";
-            this.lblTime.Size = new System.Drawing.Size(143, 20);
+            this.lblTime.Size = new System.Drawing.Size(116, 15);
             this.lblTime.TabIndex = 82;
             this.lblTime.Text = "Typical time to read";
             this.lblTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -80,41 +85,41 @@
             // lblVotes
             // 
             this.lblVotes.AutoSize = true;
-            this.lblVotes.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblVotes.Location = new System.Drawing.Point(101, 56);
+            this.lblVotes.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblVotes.Location = new System.Drawing.Point(98, 50);
             this.lblVotes.Name = "lblVotes";
-            this.lblVotes.Size = new System.Drawing.Size(50, 19);
+            this.lblVotes.Size = new System.Drawing.Size(40, 13);
             this.lblVotes.TabIndex = 79;
             this.lblVotes.Text = "(votes)";
             this.lblVotes.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // lblHighlights
+            // lblHighlightsCount
             // 
-            this.lblHighlights.AutoEllipsis = true;
-            this.lblHighlights.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblHighlights.Location = new System.Drawing.Point(13, 521);
-            this.lblHighlights.Name = "lblHighlights";
-            this.lblHighlights.Size = new System.Drawing.Size(417, 20);
-            this.lblHighlights.TabIndex = 77;
-            this.lblHighlights.Text = "No popular highlight information available";
+            this.lblHighlightsCount.AutoEllipsis = true;
+            this.lblHighlightsCount.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblHighlightsCount.Location = new System.Drawing.Point(9, 510);
+            this.lblHighlightsCount.Name = "lblHighlightsCount";
+            this.lblHighlightsCount.Size = new System.Drawing.Size(415, 15);
+            this.lblHighlightsCount.TabIndex = 77;
+            this.lblHighlightsCount.Text = "No popular highlight information available";
             // 
             // lblBiography
             // 
             this.lblBiography.AutoEllipsis = true;
             this.lblBiography.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblBiography.Location = new System.Drawing.Point(89, 373);
+            this.lblBiography.Location = new System.Drawing.Point(80, 399);
             this.lblBiography.Name = "lblBiography";
-            this.lblBiography.Size = new System.Drawing.Size(341, 103);
+            this.lblBiography.Size = new System.Drawing.Size(344, 77);
             this.lblBiography.TabIndex = 76;
             this.lblBiography.Text = "Biography";
             // 
             // lblAboutAuthor
             // 
             this.lblAboutAuthor.AutoSize = true;
-            this.lblAboutAuthor.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAboutAuthor.Location = new System.Drawing.Point(13, 345);
+            this.lblAboutAuthor.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAboutAuthor.Location = new System.Drawing.Point(9, 353);
             this.lblAboutAuthor.Name = "lblAboutAuthor";
-            this.lblAboutAuthor.Size = new System.Drawing.Size(127, 20);
+            this.lblAboutAuthor.Size = new System.Drawing.Size(103, 15);
             this.lblAboutAuthor.TabIndex = 74;
             this.lblAboutAuthor.Text = "About the author";
             this.lblAboutAuthor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -123,20 +128,19 @@
             // 
             this.lblPreviousTitle.AutoEllipsis = true;
             this.lblPreviousTitle.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblPreviousTitle.Location = new System.Drawing.Point(85, 271);
+            this.lblPreviousTitle.Location = new System.Drawing.Point(80, 282);
             this.lblPreviousTitle.Name = "lblPreviousTitle";
-            this.lblPreviousTitle.Size = new System.Drawing.Size(345, 20);
+            this.lblPreviousTitle.Size = new System.Drawing.Size(344, 30);
             this.lblPreviousTitle.TabIndex = 73;
             this.lblPreviousTitle.Text = "Previous Title";
-            this.lblPreviousTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblPreviousHeading
             // 
-            this.lblPreviousHeading.AutoEllipsis = true;
-            this.lblPreviousHeading.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblPreviousHeading.Location = new System.Drawing.Point(85, 248);
+            this.lblPreviousHeading.AutoSize = true;
+            this.lblPreviousHeading.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblPreviousHeading.Location = new System.Drawing.Point(80, 263);
             this.lblPreviousHeading.Name = "lblPreviousHeading";
-            this.lblPreviousHeading.Size = new System.Drawing.Size(345, 20);
+            this.lblPreviousHeading.Size = new System.Drawing.Size(159, 15);
             this.lblPreviousHeading.TabIndex = 72;
             this.lblPreviousHeading.Text = "Previous book in the series:";
             this.lblPreviousHeading.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -145,9 +149,9 @@
             // 
             this.lblSeries.AutoEllipsis = true;
             this.lblSeries.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblSeries.Location = new System.Drawing.Point(85, 225);
+            this.lblSeries.Location = new System.Drawing.Point(81, 244);
             this.lblSeries.Name = "lblSeries";
-            this.lblSeries.Size = new System.Drawing.Size(345, 20);
+            this.lblSeries.Size = new System.Drawing.Size(344, 15);
             this.lblSeries.TabIndex = 70;
             this.lblSeries.Text = "This is book n of n in Series Name";
             this.lblSeries.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -155,10 +159,10 @@
             // lblAboutSeries
             // 
             this.lblAboutSeries.AutoSize = true;
-            this.lblAboutSeries.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAboutSeries.Location = new System.Drawing.Point(13, 192);
+            this.lblAboutSeries.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAboutSeries.Location = new System.Drawing.Point(9, 217);
             this.lblAboutSeries.Name = "lblAboutSeries";
-            this.lblAboutSeries.Size = new System.Drawing.Size(119, 20);
+            this.lblAboutSeries.Size = new System.Drawing.Size(98, 15);
             this.lblAboutSeries.TabIndex = 69;
             this.lblAboutSeries.Text = "About the series";
             this.lblAboutSeries.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -167,9 +171,9 @@
             // 
             this.lblReadingTime.AutoEllipsis = true;
             this.lblReadingTime.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblReadingTime.Location = new System.Drawing.Point(13, 544);
+            this.lblReadingTime.Location = new System.Drawing.Point(9, 183);
             this.lblReadingTime.Name = "lblReadingTime";
-            this.lblReadingTime.Size = new System.Drawing.Size(417, 20);
+            this.lblReadingTime.Size = new System.Drawing.Size(415, 15);
             this.lblReadingTime.TabIndex = 68;
             this.lblReadingTime.Text = "No typical reading time information available";
             this.lblReadingTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -178,9 +182,9 @@
             // 
             this.lblDescription.AutoEllipsis = true;
             this.lblDescription.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblDescription.Location = new System.Drawing.Point(12, 78);
+            this.lblDescription.Location = new System.Drawing.Point(9, 71);
             this.lblDescription.Name = "lblDescription";
-            this.lblDescription.Size = new System.Drawing.Size(418, 98);
+            this.lblDescription.Size = new System.Drawing.Size(416, 78);
             this.lblDescription.TabIndex = 66;
             this.lblDescription.Text = "Description";
             // 
@@ -188,19 +192,19 @@
             // 
             this.lblAuthor.AutoEllipsis = true;
             this.lblAuthor.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.lblAuthor.Location = new System.Drawing.Point(13, 35);
+            this.lblAuthor.Location = new System.Drawing.Point(9, 28);
             this.lblAuthor.Name = "lblAuthor";
-            this.lblAuthor.Size = new System.Drawing.Size(417, 20);
+            this.lblAuthor.Size = new System.Drawing.Size(417, 15);
             this.lblAuthor.TabIndex = 65;
             this.lblAuthor.Text = "Author";
             this.lblAuthor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblTitle
             // 
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTitle.Location = new System.Drawing.Point(13, 12);
+            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTitle.Location = new System.Drawing.Point(9, 9);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(417, 20);
+            this.lblTitle.Size = new System.Drawing.Size(417, 15);
             this.lblTitle.TabIndex = 64;
             this.lblTitle.Text = "Title";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -208,10 +212,10 @@
             // lblAuthorMore
             // 
             this.lblAuthorMore.AutoSize = true;
-            this.lblAuthorMore.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblAuthorMore.Location = new System.Drawing.Point(442, 12);
+            this.lblAuthorMore.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAuthorMore.Location = new System.Drawing.Point(433, 9);
             this.lblAuthorMore.Name = "lblAuthorMore";
-            this.lblAuthorMore.Size = new System.Drawing.Size(143, 20);
+            this.lblAuthorMore.Size = new System.Drawing.Size(115, 15);
             this.lblAuthorMore.TabIndex = 83;
             this.lblAuthorMore.Text = "More by the author";
             this.lblAuthorMore.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -222,9 +226,9 @@
             this.lvOtherBooks.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.lvOtherBooks.HideSelection = false;
             this.lvOtherBooks.LargeImageList = this.ilOtherBooks;
-            this.lvOtherBooks.Location = new System.Drawing.Point(439, 43);
+            this.lvOtherBooks.Location = new System.Drawing.Point(430, 31);
             this.lvOtherBooks.Name = "lvOtherBooks";
-            this.lvOtherBooks.Size = new System.Drawing.Size(244, 512);
+            this.lvOtherBooks.Size = new System.Drawing.Size(234, 491);
             this.lvOtherBooks.TabIndex = 84;
             this.lvOtherBooks.UseCompatibleStateImageBehavior = false;
             this.lvOtherBooks.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.lvOtherBooks_ItemSelectionChanged);
@@ -233,7 +237,7 @@
             // 
             this.pictureBox2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(205)))), ((int)(((byte)(205)))), ((int)(((byte)(205)))));
             this.pictureBox2.InitialImage = null;
-            this.pictureBox2.Location = new System.Drawing.Point(17, 485);
+            this.pictureBox2.Location = new System.Drawing.Point(12, 479);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(413, 1);
             this.pictureBox2.TabIndex = 81;
@@ -243,7 +247,7 @@
             // 
             this.pictureBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(205)))), ((int)(((byte)(205)))), ((int)(((byte)(205)))));
             this.pictureBox1.InitialImage = null;
-            this.pictureBox1.Location = new System.Drawing.Point(17, 332);
+            this.pictureBox1.Location = new System.Drawing.Point(12, 343);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(413, 1);
             this.pictureBox1.TabIndex = 80;
@@ -252,7 +256,7 @@
             // pbRating
             // 
             this.pbRating.Image = global::XRayBuilderGUI.Properties.Resources.STAR0;
-            this.pbRating.Location = new System.Drawing.Point(17, 59);
+            this.pbRating.Location = new System.Drawing.Point(12, 50);
             this.pbRating.Name = "pbRating";
             this.pbRating.Size = new System.Drawing.Size(80, 16);
             this.pbRating.TabIndex = 78;
@@ -261,7 +265,7 @@
             // pbAuthorImage
             // 
             this.pbAuthorImage.Image = ((System.Drawing.Image)(resources.GetObject("pbAuthorImage.Image")));
-            this.pbAuthorImage.Location = new System.Drawing.Point(17, 378);
+            this.pbAuthorImage.Location = new System.Drawing.Point(12, 377);
             this.pbAuthorImage.Name = "pbAuthorImage";
             this.pbAuthorImage.Size = new System.Drawing.Size(60, 90);
             this.pbAuthorImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -271,7 +275,7 @@
             // pbPreviousCover
             // 
             this.pbPreviousCover.Image = ((System.Drawing.Image)(resources.GetObject("pbPreviousCover.Image")));
-            this.pbPreviousCover.Location = new System.Drawing.Point(17, 225);
+            this.pbPreviousCover.Location = new System.Drawing.Point(12, 241);
             this.pbPreviousCover.Name = "pbPreviousCover";
             this.pbPreviousCover.Size = new System.Drawing.Size(60, 90);
             this.pbPreviousCover.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -282,17 +286,67 @@
             // 
             this.pbSeperator1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(205)))), ((int)(((byte)(205)))), ((int)(((byte)(205)))));
             this.pbSeperator1.InitialImage = null;
-            this.pbSeperator1.Location = new System.Drawing.Point(17, 179);
+            this.pbSeperator1.Location = new System.Drawing.Point(12, 207);
             this.pbSeperator1.Name = "pbSeperator1";
             this.pbSeperator1.Size = new System.Drawing.Size(413, 1);
             this.pbSeperator1.TabIndex = 67;
             this.pbSeperator1.TabStop = false;
             // 
+            // linkStore
+            // 
+            this.linkStore.ActiveLinkColor = System.Drawing.Color.RoyalBlue;
+            this.linkStore.AutoSize = true;
+            this.linkStore.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.linkStore.Location = new System.Drawing.Point(357, 50);
+            this.linkStore.Name = "linkStore";
+            this.linkStore.Size = new System.Drawing.Size(67, 13);
+            this.linkStore.TabIndex = 85;
+            this.linkStore.TabStop = true;
+            this.linkStore.Text = "See in store";
+            this.linkStore.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.linkStore.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkStore_LinkClicked);
+            // 
+            // lblAboutAuthorName
+            // 
+            this.lblAboutAuthorName.AutoSize = true;
+            this.lblAboutAuthorName.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAboutAuthorName.Location = new System.Drawing.Point(81, 380);
+            this.lblAboutAuthorName.Name = "lblAboutAuthorName";
+            this.lblAboutAuthorName.Size = new System.Drawing.Size(46, 15);
+            this.lblAboutAuthorName.TabIndex = 86;
+            this.lblAboutAuthorName.Text = "Author";
+            this.lblAboutAuthorName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // pictureBox3
+            // 
+            this.pictureBox3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(205)))), ((int)(((byte)(205)))), ((int)(((byte)(205)))));
+            this.pictureBox3.InitialImage = null;
+            this.pictureBox3.Location = new System.Drawing.Point(12, 152);
+            this.pictureBox3.Name = "pictureBox3";
+            this.pictureBox3.Size = new System.Drawing.Size(413, 1);
+            this.pictureBox3.TabIndex = 87;
+            this.pictureBox3.TabStop = false;
+            // 
+            // lblHighlights
+            // 
+            this.lblHighlights.AutoSize = true;
+            this.lblHighlights.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblHighlights.Location = new System.Drawing.Point(9, 489);
+            this.lblHighlights.Name = "lblHighlights";
+            this.lblHighlights.Size = new System.Drawing.Size(108, 15);
+            this.lblHighlights.TabIndex = 88;
+            this.lblHighlights.Text = "Popular Highlights";
+            this.lblHighlights.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // frmPreviewSA
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(699, 576);
+            this.ClientSize = new System.Drawing.Size(675, 534);
+            this.Controls.Add(this.lblHighlights);
+            this.Controls.Add(this.pictureBox3);
+            this.Controls.Add(this.lblAboutAuthorName);
+            this.Controls.Add(this.linkStore);
             this.Controls.Add(this.lvOtherBooks);
             this.Controls.Add(this.lblAuthorMore);
             this.Controls.Add(this.lblTime);
@@ -300,7 +354,7 @@
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.lblVotes);
             this.Controls.Add(this.pbRating);
-            this.Controls.Add(this.lblHighlights);
+            this.Controls.Add(this.lblHighlightsCount);
             this.Controls.Add(this.lblBiography);
             this.Controls.Add(this.pbAuthorImage);
             this.Controls.Add(this.lblAboutAuthor);
@@ -330,6 +384,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pbAuthorImage)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbPreviousCover)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbSeperator1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -342,7 +397,7 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label lblVotes;
         private System.Windows.Forms.PictureBox pbRating;
-        private System.Windows.Forms.Label lblHighlights;
+        private System.Windows.Forms.Label lblHighlightsCount;
         private System.Windows.Forms.Label lblBiography;
         private System.Windows.Forms.PictureBox pbAuthorImage;
         private System.Windows.Forms.Label lblAboutAuthor;
@@ -358,5 +413,9 @@
         private System.Windows.Forms.Label lblTitle;
         private System.Windows.Forms.Label lblAuthorMore;
         private System.Windows.Forms.ListView lvOtherBooks;
+        private System.Windows.Forms.LinkLabel linkStore;
+        private System.Windows.Forms.Label lblAboutAuthorName;
+        private System.Windows.Forms.PictureBox pictureBox3;
+        private System.Windows.Forms.Label lblHighlights;
     }
 }

@@ -34,7 +34,7 @@ namespace XRayBuilderGUI.UI
         public DialogData Result { get; private set; }
 
         private readonly ToolTip _tooltip = new();
-        private string tempUrl = "";
+        private string secondaryDataSourceUrl;
 
         public frmBookInfo(IHttpClient httpClient, Container diContainer, IAmazonClient amazonClient)
         {
@@ -52,15 +52,15 @@ namespace XRayBuilderGUI.UI
             txtBio.Text = dialogData.AuthorBiography;
 
             txtDataProviderUrl.Text = dialogData.SecondarySourceUrl;
-            tempUrl = dialogData.SecondarySourceUrl;
+            secondaryDataSourceUrl = dialogData.SecondarySourceUrl;
             cmbSecondaryDataSource.Text = Settings.Default.dataSource;
-            
+
             _tooltip.SetToolTip(btnAuthorUrlSearch, $"Search for {_metadata.Author}\r\non Amazon.{_settings.amazonTLD}.");
             _tooltip.SetToolTip(btnBookUrlSearch, $"Search for {_metadata.Title}\r\non Amazon.{_settings.amazonTLD}.");
             _tooltip.SetToolTip(btnAuthorUrlSearch, $"Search for {_metadata.Author}\r\non Amazon.{_settings.amazonTLD}.");
             _tooltip.SetToolTip(cmbSecondaryDataSource, MainStrings.SecondarySourceTooltip);
 
-            foreach (var button in this.Controls.OfType<Button>())
+            foreach (var button in Controls.OfType<Button>())
             {
                 if (button.Name.Contains("UrlLink"))
                     _tooltip.SetToolTip(button, "Open this link in your\r\ndefault browser.");
@@ -301,7 +301,7 @@ namespace XRayBuilderGUI.UI
         {
             var dataProvider = cmbSecondaryDataSource.Text;
             lblDataProviderUrl.Text = $@"{dataProvider} URL:";
-            txtDataProviderUrl.Text = tempUrl.Contains(dataProvider.ToLower()) && !string.IsNullOrEmpty(tempUrl) ? tempUrl : string.Empty;
+            txtDataProviderUrl.Text = secondaryDataSourceUrl.Contains(dataProvider.ToLower()) && !string.IsNullOrEmpty(secondaryDataSourceUrl) ? secondaryDataSourceUrl : string.Empty;
             _tooltip.SetToolTip(btnDataProviderSearch, $"Search for {_metadata.Title} on {dataProvider}.");
 
             var dataSource = (SecondaryDataSourceFactory.Enum) Enum.Parse(typeof(SecondaryDataSourceFactory.Enum), dataProvider);

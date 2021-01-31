@@ -5,7 +5,6 @@ using System.Windows.Forms;
 using XRayBuilder.Core.Extras.Artifacts;
 using XRayBuilder.Core.Libraries.Images.Util;
 using XRayBuilder.Core.Libraries.Serialization.Json.Util;
-using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI.UI.Preview
 {
@@ -32,7 +31,7 @@ namespace XRayBuilderGUI.UI.Preview
             var author = authorProfile.Authors?.FirstOrDefault();
             if (author != null)
             {
-                lblAuthorMore.Text = $"Kindle Books By {author.Name}";
+                lblAuthorMore.Text = $" Kindle Books By {author.Name}";
                 Text = $"About {author.Name}";
                 lblBiography.Text = author.Bio ?? "";
                 if (author.Picture != null)
@@ -42,7 +41,7 @@ namespace XRayBuilderGUI.UI.Preview
             if (authorProfile.OtherBooks != null)
             {
                 foreach (var book in authorProfile.OtherBooks)
-                    dgvOtherBooks.Rows.Add(book.Title);
+                    dgvOtherBooks.Rows.Add($" {book.Title}");
             }
 
             return Task.CompletedTask;

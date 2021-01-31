@@ -22,7 +22,7 @@ namespace XRayBuilderGUI.UI.Preview
 
         private readonly Regex _regexHighlights = new Regex(@"(?<text>(?<num>[\d,.]+) passages have been highlighted (?<total>[\d,.]+) times)", RegexOptions.Compiled);
         private const int MaxImageSize = 750;
-        private string Asin;
+        private string _asin;
 
         public frmPreviewSA(IHttpClient httpClient)
         {
@@ -44,7 +44,7 @@ namespace XRayBuilderGUI.UI.Preview
             ilOtherBooks.Images.Clear();
             lvOtherBooks.Clear();
 
-            Asin = startActions.BookInfo.Asin;
+            _asin = startActions.BookInfo.Asin;
 
             if (startActions.Data.SeriesPosition != null)
             {
@@ -165,8 +165,8 @@ namespace XRayBuilderGUI.UI.Preview
 
         private void linkStore_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(Asin))
-                Process.Start($"http://www.amazon.{Settings.Default.amazonTLD}/dp/{Asin}");
+            if (!string.IsNullOrEmpty(_asin))
+                Process.Start($"http://www.amazon.{Settings.Default.amazonTLD}/dp/{_asin}");
         }
 
         private void frmPreviewSA_FormClosing(object sender, FormClosingEventArgs e)

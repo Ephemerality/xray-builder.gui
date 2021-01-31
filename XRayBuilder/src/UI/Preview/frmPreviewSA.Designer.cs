@@ -130,7 +130,7 @@
             this.lblPreviousTitle.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.lblPreviousTitle.Location = new System.Drawing.Point(80, 282);
             this.lblPreviousTitle.Name = "lblPreviousTitle";
-            this.lblPreviousTitle.Size = new System.Drawing.Size(344, 30);
+            this.lblPreviousTitle.Size = new System.Drawing.Size(344, 32);
             this.lblPreviousTitle.TabIndex = 73;
             this.lblPreviousTitle.Text = "Previous Title";
             // 

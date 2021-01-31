@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.SQLite;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -59,11 +60,6 @@ namespace XRayBuilderGUI.UI.Preview
         private void flpPeople_Scroll(object sender, ScrollEventArgs e)
         {
             flpPeople.VerticalScroll.Value = e.NewValue;
-        }
-
-        private void frmPreviewXR_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Dispose();
         }
     }
 }

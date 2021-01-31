@@ -115,7 +115,7 @@ namespace XRayBuilderGUI.UI
                     Name = nameof(Term.Type),
                     DataPropertyName = nameof(Term.Type),
                     ReadOnly = true,
-                    Width = 36,
+                    Width = 39,
                     SortMode = DataGridViewColumnSortMode.NotSortable
                 },
                 new DataGridViewTextBoxColumn
@@ -151,26 +151,26 @@ namespace XRayBuilderGUI.UI
                 new DataGridViewCheckBoxColumn
                 {
                     HeaderText = "M",
-                    ToolTipText = $"Match - Usually enabled.{Environment.NewLine}Disabling this option is useful when you want a character to be displayed but their name doesn't work well for matching.",
+                    ToolTipText = "Match",
                     DataPropertyName = nameof(Term.Match),
-                    AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells,
-                    SortMode = DataGridViewColumnSortMode.NotSortable
+                    SortMode = DataGridViewColumnSortMode.NotSortable,
+                    Width = 27
                 },
                 new DataGridViewCheckBoxColumn
                 {
                     HeaderText = "CS",
-                    ToolTipText = "Case-sensitive - Whether or not to match this term in case-sensitive mode. In general, characters will use this and others will not.",
+                    ToolTipText = "Case-sensitive",
                     DataPropertyName = nameof(Term.MatchCase),
-                    AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells,
-                    SortMode = DataGridViewColumnSortMode.NotSortable
+                    SortMode = DataGridViewColumnSortMode.NotSortable,
+                    Width = 29
                 },
                 new DataGridViewCheckBoxColumn
                 {
                     HeaderText = "R",
-                    ToolTipText = "Regular expression mode - When enabled, the aliases will be treated as a set of regular expressions.",
+                    ToolTipText = "Regular expression mode.",
                     DataPropertyName = nameof(Term.RegexAliases),
-                    AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells,
-                    SortMode = DataGridViewColumnSortMode.NotSortable
+                    SortMode = DataGridViewColumnSortMode.NotSortable,
+                    Width = 23
                 }
             };
 
@@ -285,14 +285,14 @@ namespace XRayBuilderGUI.UI
             if (row == null)
                 return;
 
-            rdoCharacter.Checked = ImageUtil.AreEqual((Bitmap)row.Cells[0].Value, Resources.character);
-            rdoTopic.Checked = ImageUtil.AreEqual((Bitmap)row.Cells[0].Value, Resources.setting);
-            txtName.Text = row.Cells[1].Value?.ToString() ?? "";
-            txtAliases.Text = row.Cells[2].Value?.ToString() ?? "";
-            txtDescription.Text = row.Cells[3].Value?.ToString() ?? "";
-            chkMatch.Checked = (bool?)row.Cells[6].Value ?? false;
-            chkCase.Checked = (bool?)row.Cells[7].Value ?? false;
-            chkRegex.Checked = (bool?)row.Cells[9].Value ?? false;
+            rdoCharacter.Checked = ImageUtil.AreEqual((Bitmap)row.Cells[1].FormattedValue, Resources.character);
+            rdoTopic.Checked = ImageUtil.AreEqual((Bitmap)row.Cells[1].FormattedValue, Resources.setting);
+            txtName.Text = row.Cells[2].Value?.ToString() ?? "";
+            txtAliases.Text = row.Cells[3].FormattedValue?.ToString() ?? "";
+            txtDescription.Text = row.Cells[4].Value?.ToString() ?? "";
+            chkMatch.Checked = (bool?)row.Cells[5].Value ?? false;
+            chkCase.Checked = (bool?)row.Cells[6].Value ?? false;
+            chkRegex.Checked = (bool?)row.Cells[7].Value ?? false;
             dgvTerms.Rows.Remove(row);
         }
 
@@ -300,7 +300,7 @@ namespace XRayBuilderGUI.UI
         {
             var openFile = new OpenFileDialog
             {
-                Title = "Open XML or TXT file",
+                Title = "Open an entity file",
                 Filter = "XML files (*.xml)|*.xml|TXT files (*.txt)|*.txt",
                 InitialDirectory = $@"{Environment.CurrentDirectory}\xml\"
             };
@@ -476,13 +476,23 @@ namespace XRayBuilderGUI.UI
             txtName.Text = "";
             txtAliases.Text = "";
             txtDescription.Text = "";
+
             _toolTip1.SetToolTip(btnAddTerm, "Add this character or\r\ntopic to the term list.");
-            _toolTip1.SetToolTip(btnEditTerm, "Edit the selected term. It will be\r\nremoved from the list and used to fill\r\nin the information above. Don't\r\nforget to add to the list when done.");
-            _toolTip1.SetToolTip(btnRemoveTerm, "Remove the selected term from the\r\nterm list. This action is irreversible.");
+            _toolTip1.SetToolTip(btnEditTerm, "Edit the selected term. It will be removed from\r\nthe list and used to fill in the information\r\nabove. Don't forget to add to the list when done!");
+            _toolTip1.SetToolTip(btnRemoveTerm, "Remove the selected term from the\r\nterm list. This action is irreversible");
             _toolTip1.SetToolTip(btnClear, "Clear the term list.");
-            _toolTip1.SetToolTip(btnOpenXml, "Open an existing term XML of TXT file.\r\nIf an alias file with a matching ASIN\r\nis found, aliases wil automatically be\r\npopulated.");
+            _toolTip1.SetToolTip(btnOpenXml, "Open an existing term XML of TXT file. If\r\nan alias file with a matching ASIN is found,\r\naliases wil automatically be populated.");
             _toolTip1.SetToolTip(btnSaveXML, "Save the term list to an XML file. Any\r\nassociated aliases will be saved to an\r\nASIN.aliases file in the /ext folder.");
-            _toolTip1.SetToolTip(btnDownloadTerms, "Download terms from Roentgen if any are available.\r\nExisting terms will be cleared!");
+            _toolTip1.SetToolTip(btnDownloadTerms, "Download terms from Roentgen if any are\r\navailable. Existing terms will be cleared!");
+            _toolTip1.SetToolTip(btnGenerateAliases, "Automatically split character\r\nnames into aliases.");
+            _toolTip1.SetToolTip(btnClearAliases, "Clear all aliases.");
+
+            _toolTip1.SetToolTip(chkMatch, "Usually enabled. Disabling this option is useful\r\nwhen you want a character to be displayed but\r\ntheir name doesn't work well for matching.");
+            _toolTip1.SetToolTip(chkCase, "Whether or not to match this term in\r\ncase-sensitive mode. In general, characters\r\nwill use this and others will not.");
+            _toolTip1.SetToolTip(chkRegex, "When enabled, the aliases will be treated\r\nas a set of regular expressions.");
+
+            _toolTip1.SetToolTip(rdoCharacter, "A character is an individual, fictional or\r\nreal, in your book. Examples of characters include\r\n\"Don Quixote\", \"Warren Buffett\", and \"Darth Vader\".");
+            _toolTip1.SetToolTip(rdoTopic, "Terms are places, organizations, or phrases, and can\r\nalso be fictional or real. Examples of terms include\r\n\"Westeros\", \"IBM\", and \"deadlock\".");
         }
 
         private void dgvTerms_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)

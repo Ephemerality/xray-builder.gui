@@ -88,6 +88,8 @@
             this.btnHelp = new System.Windows.Forms.ToolStripDropDownButton();
             this.btnViewHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.btnVisitForum = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.btnCancel = new System.Windows.Forms.Button();
             this.txtDatasource = new System.Windows.Forms.LinkLabel();
             this.lblDatasource = new System.Windows.Forms.Label();
@@ -97,8 +99,6 @@
             this.pbFile2 = new System.Windows.Forms.PictureBox();
             this.pbFile1 = new System.Windows.Forms.PictureBox();
             this.pbCover = new System.Windows.Forms.PictureBox();
-            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
-            this.btnAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.cmsLog.SuspendLayout();
@@ -718,7 +718,7 @@
             this.btnSettings.Margin = new System.Windows.Forms.Padding(6, 12, 3, 12);
             this.btnSettings.Name = "btnSettings";
             this.btnSettings.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.btnSettings.Size = new System.Drawing.Size(57, 66);
+            this.btnSettings.Size = new System.Drawing.Size(57, 59);
             this.btnSettings.Text = "Settings";
             this.btnSettings.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnSettings.Click += new System.EventHandler(this.btnSettings_Click);
@@ -761,6 +761,18 @@
             this.btnVisitForum.Size = new System.Drawing.Size(180, 22);
             this.btnVisitForum.Text = "Visit Forum";
             this.btnVisitForum.Click += new System.EventHandler(this.btnVisitForum_Click);
+            // 
+            // toolStripSeparator6
+            // 
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(177, 6);
+            // 
+            // btnAbout
+            // 
+            this.btnAbout.Name = "btnAbout";
+            this.btnAbout.Size = new System.Drawing.Size(180, 22);
+            this.btnAbout.Text = "About";
+            this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
             // 
             // btnCancel
             // 
@@ -872,18 +884,6 @@
             this.pbCover.DoubleClick += new System.EventHandler(this.pbCover_DoubleClick);
             this.pbCover.MouseEnter += new System.EventHandler(this.pbCover_MouseEnter);
             this.pbCover.MouseLeave += new System.EventHandler(this.pbCover_MouseLeave);
-            // 
-            // toolStripSeparator6
-            // 
-            this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(177, 6);
-            // 
-            // btnAbout
-            // 
-            this.btnAbout.Name = "btnAbout";
-            this.btnAbout.Size = new System.Drawing.Size(180, 22);
-            this.btnAbout.Text = "About";
-            this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
             // 
             // frmMain
             // 

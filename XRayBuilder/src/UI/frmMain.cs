@@ -151,7 +151,10 @@ namespace XRayBuilderGUI.UI
 
         private void btnBrowseMobi_Click(object sender, EventArgs e)
         {
-            txtMobi.Text = UIFunctions.GetBook("");
+            var file = UIFunctions.GetBook("");
+            if (string.IsNullOrEmpty(file) || txtMobi.Text.Equals(file))
+                return;
+            txtMobi.Text = file;
         }
 
         private void btnBrowseXML_Click(object sender, EventArgs e)
@@ -1002,6 +1005,7 @@ namespace XRayBuilderGUI.UI
             txtTitle.Text = "";
             txtAuthor.Text = "";
             txtAsin.Text = "";
+            txtXMLFile.Text = "";
             // todo another copy
             txtDatasource.Text = "Search datasource...";
             prgBar.Value = 0;

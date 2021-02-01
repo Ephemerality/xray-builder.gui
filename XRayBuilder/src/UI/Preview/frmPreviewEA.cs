@@ -126,7 +126,7 @@ namespace XRayBuilderGUI.UI.Preview
                     lblNextAuthor.Visible = false;
                     linkStore.Visible = false;
 
-                    txtNotInSeries.Location = new Point(471, 55);
+                    txtNotInSeries.Location = new Point(457, 63);
                     txtNotInSeries.Visible = true;
                 }
 

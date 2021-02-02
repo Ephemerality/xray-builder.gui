@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
 
 namespace XRayBuilder.Core.Extras.Artifacts
@@ -206,9 +207,11 @@ namespace XRayBuilder.Core.Extras.Artifacts
             public AuthorBios AuthorBios { get; set; }
 
             [JsonProperty("authorRecs")]
+            [CanBeNull]
             public Recs AuthorRecs { get; set; }
 
             [JsonProperty("customersWhoBoughtRecs")]
+            [CanBeNull]
             public Recs CustomersWhoBoughtRecs { get; set; }
 
             [JsonProperty("authorSubscriptions")]

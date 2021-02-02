@@ -130,8 +130,10 @@ namespace XRayBuilderGUI.UI.Preview
                     txtNotInSeries.Visible = true;
                 }
 
-                await PopulateImagesFromBooks(lvAuthorRecs, ilauthorRecs, endActions.Data.AuthorRecs.Recommendations, cancellationToken);
-                await PopulateImagesFromBooks(lvCustomersWhoBoughtRecs, ilcustomersWhoBoughtRecs, endActions.Data.CustomersWhoBoughtRecs.Recommendations, cancellationToken);
+                if (endActions.Data.AuthorRecs?.Recommendations != null)
+                    await PopulateImagesFromBooks(lvAuthorRecs, ilauthorRecs, endActions.Data.AuthorRecs.Recommendations, cancellationToken);
+                if (endActions.Data.CustomersWhoBoughtRecs?.Recommendations != null)
+                    await PopulateImagesFromBooks(lvCustomersWhoBoughtRecs, ilcustomersWhoBoughtRecs, endActions.Data.CustomersWhoBoughtRecs.Recommendations, cancellationToken);
             }
             catch (Exception ex)
             {

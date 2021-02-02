@@ -1245,7 +1245,7 @@ namespace XRayBuilderGUI.UI
 
             try
             {
-                var previewForm = previewProvider.GenForm();
+                using var previewForm = previewProvider.GenForm();
                 await previewForm.Populate(selPath, cancellationToken);
                 previewForm.ShowDialog();
 

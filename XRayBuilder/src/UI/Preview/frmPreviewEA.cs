@@ -173,11 +173,6 @@ namespace XRayBuilderGUI.UI.Preview
             Process.Start(_authorUrl);
         }
 
-        private void frmPreviewEA_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Dispose();
-        }
-
         private void linkStore_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             if (!string.IsNullOrEmpty(_asin))

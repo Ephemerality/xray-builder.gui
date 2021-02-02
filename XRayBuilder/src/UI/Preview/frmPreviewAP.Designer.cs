@@ -135,7 +135,6 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "About Author";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmPreviewAP_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.pbAuthorImage)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvOtherBooks)).EndInit();
             this.ResumeLayout(false);

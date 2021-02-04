@@ -70,15 +70,19 @@ namespace XRayBuilder.Core.Extras.StartActions
                 }
             };
             startActions.Data.AuthorSubscriptions = startActions.Data.FollowSubscriptions;
+
             if (curBook.NotableClips == null || curBook.NotableClips?.Count == 0)
-            {
                 startActions.Data.PopularHighlightsText = null;
-            }
             else
             {
+                var likes = curBook.NotableClips?.Sum(c => c.Likes);
+                if (likes == 0)
+                    likes = curBook.NotableClips?.Count;
+
                 startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMPASSAGES%", $"{curBook.NotableClips?.Count}");
-                startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMHIGHLIGHTS%", $"{curBook.NotableClips?.Sum(c => c.Likes)}");
+                startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMHIGHLIGHTS%", $"{likes}");
             }
+
             startActions.Data.GrokShelfInfo.Asin = curBook.Asin;
             startActions.Data.GrokShelfInfo.IsAutoshelvingEnabled = true;
 

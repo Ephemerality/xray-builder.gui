@@ -75,11 +75,11 @@ namespace XRayBuilder.Core.Extras.StartActions
                 startActions.Data.PopularHighlightsText = null;
             else
             {
-                var likes = curBook.NotableClips?.Sum(c => c.Likes);
+                var likes = curBook.NotableClips.Sum(c => c.Likes);
                 if (likes == 0)
-                    likes = curBook.NotableClips?.Count;
+                    likes = curBook.NotableClips.Count;
 
-                startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMPASSAGES%", $"{curBook.NotableClips?.Count}");
+                startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMPASSAGES%", $"{curBook.NotableClips.Count}");
                 startActions.Data.PopularHighlightsText.LocalizedText.Replace("%NUMHIGHLIGHTS%", $"{likes}");
             }
 

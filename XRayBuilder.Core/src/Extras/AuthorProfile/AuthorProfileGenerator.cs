@@ -148,7 +148,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                 {
                     _logger.Log(@"Searching for biography on Amazon.com…");
                     request.Settings.AmazonTld = "com";
-                    var tempSearchResults = await _amazonClient.SearchAuthor(request.Book.Author, request.Settings.AmazonTld, cancellationToken);
+                    var tempSearchResults = await _amazonClient.SearchAuthor(request.Book.Author, request.Settings.AmazonTld, cancellationToken, false);
                     if (tempSearchResults?.Biography != null)
                         searchResults.Biography = tempSearchResults.Biography;
                 }

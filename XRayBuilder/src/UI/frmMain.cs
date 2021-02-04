@@ -853,7 +853,7 @@ namespace XRayBuilderGUI.UI
 
             // TODO: Maybe do something about these paths
             // TODO: ExtLoader or something?
-            foreach (var dir in new [] { "out", "log", "dmp", "tmp", "ext", "rec" })
+            foreach (var dir in new [] { "out", "log", "dmp", "tmp", "ext" })
                 Directory.CreateDirectory($"{Environment.CurrentDirectory}\\{dir}");
 
             if (_settings.outDir == "")
@@ -1315,11 +1315,6 @@ namespace XRayBuilderGUI.UI
         private void btnBrowseLogs_Click(object sender, EventArgs e)
         {
             UIFunctions.OpenDirectory($@"{Environment.CurrentDirectory}\log");
-        }
-
-        private void btnBrowseRecords_Click(object sender, EventArgs e)
-        {
-            UIFunctions.OpenDirectory($@"{Environment.CurrentDirectory}\rec");
         }
 
         private void btnBrowseTemp_Click(object sender, EventArgs e)

@@ -80,7 +80,6 @@
             this.btnBrowseDump = new System.Windows.Forms.ToolStripMenuItem();
             this.btnBrowseAliasesAndChapters = new System.Windows.Forms.ToolStripMenuItem();
             this.btnBrowseLogs = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnBrowseRecords = new System.Windows.Forms.ToolStripMenuItem();
             this.btnBrowseTemp = new System.Windows.Forms.ToolStripMenuItem();
             this.btnBrowseXmlFolder = new System.Windows.Forms.ToolStripMenuItem();
             this.btnSettings = new System.Windows.Forms.ToolStripButton();
@@ -641,7 +640,6 @@
             this.btnBrowseDump,
             this.btnBrowseAliasesAndChapters,
             this.btnBrowseLogs,
-            this.btnBrowseRecords,
             this.btnBrowseTemp,
             this.btnBrowseXmlFolder});
             this.btnBrowseFolders.Image = ((System.Drawing.Image)(resources.GetObject("btnBrowseFolders.Image")));
@@ -687,13 +685,6 @@
             this.btnBrowseLogs.Size = new System.Drawing.Size(180, 22);
             this.btnBrowseLogs.Text = "Logs";
             this.btnBrowseLogs.Click += new System.EventHandler(this.btnBrowseLogs_Click);
-            // 
-            // btnBrowseRecords
-            // 
-            this.btnBrowseRecords.Name = "btnBrowseRecords";
-            this.btnBrowseRecords.Size = new System.Drawing.Size(180, 22);
-            this.btnBrowseRecords.Text = "Records";
-            this.btnBrowseRecords.Click += new System.EventHandler(this.btnBrowseRecords_Click);
             // 
             // btnBrowseTemp
             // 
@@ -992,7 +983,6 @@
         private System.Windows.Forms.ToolStripMenuItem btnBrowseDump;
         private System.Windows.Forms.ToolStripMenuItem btnBrowseAliasesAndChapters;
         private System.Windows.Forms.ToolStripMenuItem btnBrowseLogs;
-        private System.Windows.Forms.ToolStripMenuItem btnBrowseRecords;
         private System.Windows.Forms.ToolStripMenuItem btnBrowseTemp;
         private System.Windows.Forms.ToolStripMenuItem btnBrowseXmlFolder;
         private System.Windows.Forms.ToolStripButton btnSettings;

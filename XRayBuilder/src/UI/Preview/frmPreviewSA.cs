@@ -55,13 +55,14 @@ namespace XRayBuilderGUI.UI.Preview
                     lblPreviousHeading.Visible = true;
                     lblPreviousTitle.Visible = true;
                 }
-                else
-                {
-                    lblSeries.Text = @"This book is not part of a series…";
-                    pbPreviousCover.Image = Resources.missing_cover_small;
-                    lblPreviousHeading.Visible = false;
-                    lblPreviousTitle.Visible = false;
-                }
+            }
+            else
+            {
+                lblPreviousTitle.Text = @"This book is not part of a series…";
+                pbPreviousCover.Image = Resources.missing_cover_small;
+                lblSeries.Visible = false;
+                lblPreviousHeading.Visible = false;
+                lblPreviousTitle.Visible = true;
             }
 
             // TODO: Enums or something for language

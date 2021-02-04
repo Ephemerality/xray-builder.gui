@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Secondary.Model;
+using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Progress;
@@ -33,7 +34,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
         public override string Name => "Shelfari";
         public override bool SearchEnabled { get; } = false;
-        public override int UrlLabelPosition { get; } = 14;
+        public override int UrlLabelPosition { get; } = 9;
         public override bool SupportsNotableClips { get; } = true;
 
         // private string FindShelfariURL(HtmlDocument shelfariHtmlDoc, string author, string title)
@@ -107,10 +108,10 @@ namespace XRayBuilder.Core.DataSources.Secondary
             {
                 var minutes = int.Parse(match1.Groups[1].Value, NumberStyles.AllowThousands) * 1.098507462686567;
                 var span = TimeSpan.FromMinutes(minutes);
-                _logger.Log(string.Format("Typical time to read: {0} hours and {1} minutes ({2} pages)", span.Hours, span.Minutes, match1.Groups[1].Value));
                 curBook.PageCount = int.Parse(match1.Groups[1].Value);
                 curBook.ReadingHours = span.Hours;
                 curBook.ReadingMinutes = span.Minutes;
+                _logger.Log(Functions.GetReadingTime(curBook));
                 return true;
             }
             return false;

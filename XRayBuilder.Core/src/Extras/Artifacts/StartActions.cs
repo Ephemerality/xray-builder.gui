@@ -316,7 +316,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
             [JsonProperty("welcomeText")]
             public WelcomeText WelcomeText { get; set; }
 
-            [JsonProperty("popularHighlightsText")]
+            [JsonProperty("popularHighlightsText", NullValueHandling = NullValueHandling.Ignore)]
             public PopularHighlightsText PopularHighlightsText { get; set; }
 
             [JsonProperty("grokShelfInfo")]

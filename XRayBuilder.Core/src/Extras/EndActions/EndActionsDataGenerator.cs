@@ -384,20 +384,26 @@ namespace XRayBuilder.Core.Extras.EndActions
 
             try
             {
-                if (!await dataSource.GetPageCountAsync(curBook, cancellationToken))
+                var readingTimeFromPageCount = Functions.GetReadingTime(curBook);
+                if (string.IsNullOrEmpty(readingTimeFromPageCount))
                 {
-                    var metadataCount = metadata.GetPageCount();
-                    if (metadataCount.HasValue)
-                        curBook.PageCount = metadataCount.Value;
-                    // else if (settings.EstimatePageCount)
-                    // {
-                    //     // TODO Estimation should be done in a place that has knowledge of the book's file and knows for sure that the rawml will exist
-                    //     _logger.Log($"No page count found on {dataSource.Name} or in metadata. Attempting to estimate page count...");
-                    //     _logger.Log(Functions.GetPageCount(curBook.RawmlPath, curBook));
-                    // }
-                    else
-                        _logger.Log($"No page count found on {dataSource.Name} or in metadata");
+                    if (!await dataSource.GetPageCountAsync(curBook, cancellationToken))
+                    {
+                        var metadataCount = metadata.GetPageCount();
+                        if (metadataCount.HasValue)
+                            curBook.PageCount = metadataCount.Value;
+                        // else if (settings.EstimatePageCount)
+                        // {
+                        //     // TODO Estimation should be done in a place that has knowledge of the book's file and knows for sure that the rawml will exist
+                        //     _logger.Log($"No page count found on {dataSource.Name} or in metadata. Attempting to estimate page count...");
+                        //     _logger.Log(Functions.GetPageCount(curBook.RawmlPath, curBook));
+                        // }
+                        else
+                            _logger.Log($"No page count found on {dataSource.Name} or in metadata");
+                    }
                 }
+                else
+                    _logger.Log(readingTimeFromPageCount);
             }
             catch (Exception ex)
             {

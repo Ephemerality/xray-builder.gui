@@ -151,12 +151,15 @@ namespace XRayBuilderGUI.UI
 
         private void btnBrowseMobi_Click(object sender, EventArgs e)
         {
-            txtMobi.Text = UIFunctions.GetBook("");
+            var file = UIFunctions.GetBook("");
+            if (string.IsNullOrEmpty(file) || txtMobi.Text.Equals(file))
+                return;
+            txtMobi.Text = file;
         }
 
         private void btnBrowseXML_Click(object sender, EventArgs e)
         {
-            txtXMLFile.Text = UIFunctions.GetFile(txtXMLFile.Text, "",  "XML files (*.xml)|*.xml|TXT files (*.txt)|*.txt");
+            txtXMLFile.Text = UIFunctions.GetFile("Open an entity file", txtXMLFile.Text,  "XML files (*.xml)|*.xml|TXT files (*.txt)|*.txt");
         }
 
         private async void btnBuild_Click(object sender, EventArgs e)
@@ -226,6 +229,14 @@ namespace XRayBuilderGUI.UI
             if (_settings.realName.Trim().Length == 0 || _settings.penName.Trim().Length == 0)
             {
                 MessageBox.Show($@"{MainStrings.PenNamesRequired}{Environment.NewLine}{MainStrings.InformationAllowsRatingOnAmazon}{Environment.NewLine}{MainStrings.ReviewSettingsPage}", MainStrings.AmazonCustomerDetailsNotFoundTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (_settings.buildSource == "XML" && txtXMLFile.Text == "")
+            {
+                MessageBox.Show("No supported file containing term data was specified.\r\nBrowse for an XML or TXT file containing character\r\nand topic data for this e-book before trying to\r\ncreate an X-Ray file.",
+                    "Missing Terms File",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
                 return;
             }
 
@@ -818,7 +829,8 @@ namespace XRayBuilderGUI.UI
             btnUnpack.ToolTipText = MainStrings.SaveRawMlTooltip;
             btnExtractTerms.ToolTipText = MainStrings.ExtractXRayToXml;
             btnCreate.ToolTipText = MainStrings.CreateXmlTooltip;
-            btnXraySource.ToolTipText = $"Select the build source{Environment.NewLine}for X-Ray creation.";
+
+            _tooltip.SetToolTip(pbCover, "Double-click to open\r\nthe book details window");
 
             _tooltip.SetToolTip(rdoGoodreads, MainStrings.UseLinkAsDataSource);
             _tooltip.SetToolTip(rdoRoentgen, MainStrings.DownloadFromRoentgen);
@@ -841,7 +853,7 @@ namespace XRayBuilderGUI.UI
 
             // TODO: Maybe do something about these paths
             // TODO: ExtLoader or something?
-            foreach (var dir in new [] { "out", "log", "dmp", "tmp", "ext", "rec" })
+            foreach (var dir in new [] { "out", "log", "dmp", "tmp", "ext" })
                 Directory.CreateDirectory($"{Environment.CurrentDirectory}\\{dir}");
 
             if (_settings.outDir == "")
@@ -877,31 +889,18 @@ namespace XRayBuilderGUI.UI
         private void AdjustUi()
         {
             txtGoodreads.Location = new Point(lblGoodreads.Location.X + lblGoodreads.Width + 11, txtGoodreads.Location.Y);
-            txtGoodreads.Size = new Size(groupBox1.Width - txtGoodreads.Location.X - 18, txtGoodreads.Size.Height);
+            txtGoodreads.Size = new Size(groupBox1.Width - txtGoodreads.Location.X - 13, txtGoodreads.Size.Height);
         }
 
         private void SetSelectedDatasource()
         {
-            btnXraySourceGoodreads.Checked = false;
-            btnXraySourceRoentgen.Checked = false;
-            btnXraySourceFile.Checked = false;
-
             if (rdoGoodreads.Checked)
             {
                 btnDownloadTerms.ToolTipText = $"Save {_dataSource.Name} terms to an XML file.";
-                btnXraySource.Image = Resources.source_internet;
-                btnXraySourceGoodreads.Checked = true;
             }
             else if (rdoRoentgen.Checked)
             {
                 btnDownloadTerms.ToolTipText = "Save Roentgen terms to an XML file.";
-                btnXraySource.Image = Resources.source_roentgen;
-                btnXraySourceRoentgen.Checked = true;
-            }
-            else if(rdoFile.Checked)
-            {
-                btnXraySource.Image = Resources.source_file;
-                btnXraySourceFile.Checked = true;
             }
 
             _settings.buildSource = rdoGoodreads.Checked
@@ -1006,6 +1005,7 @@ namespace XRayBuilderGUI.UI
             txtTitle.Text = "";
             txtAuthor.Text = "";
             txtAsin.Text = "";
+            txtXMLFile.Text = "";
             // todo another copy
             txtDatasource.Text = "Search datasource...";
             prgBar.Value = 0;
@@ -1186,23 +1186,6 @@ namespace XRayBuilderGUI.UI
             }
         }
 
-        private void btnHelp_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                Process.Start(Environment.CurrentDirectory + @"\doc\help.pdf");
-            }
-            catch
-            {
-                MessageBox.Show(MainStrings.UnableToOpenHelpDocument, MainStrings.HelpDocumentNotFoundTitle);
-            }
-        }
-
-        private void btnAbout_Click(object sender, EventArgs e)
-        {
-            new frmAbout().ShowDialog();
-        }
-
         private async void btnCreate_Click(object sender, EventArgs e)
         {
             using var frmCreateXr = _diContainer.GetInstance<frmCreateXR>();
@@ -1262,7 +1245,7 @@ namespace XRayBuilderGUI.UI
 
             try
             {
-                var previewForm = previewProvider.GenForm();
+                using var previewForm = previewProvider.GenForm();
                 await previewForm.Populate(selPath, cancellationToken);
                 previewForm.ShowDialog();
 
@@ -1334,11 +1317,6 @@ namespace XRayBuilderGUI.UI
             UIFunctions.OpenDirectory($@"{Environment.CurrentDirectory}\log");
         }
 
-        private void btnBrowseRecords_Click(object sender, EventArgs e)
-        {
-            UIFunctions.OpenDirectory($@"{Environment.CurrentDirectory}\rec");
-        }
-
         private void btnBrowseTemp_Click(object sender, EventArgs e)
         {
             UIFunctions.OpenDirectory($@"{Environment.CurrentDirectory}\tmp");
@@ -1380,19 +1358,6 @@ namespace XRayBuilderGUI.UI
             SetDatasourceLink(txtGoodreads.Text);
         }
 
-        private void pbCover_Click(object sender, EventArgs e)
-        {
-            if (_openedMetadata == null) return;
-            using var frmBook = _diContainer.GetInstance<frmBookInfo>();
-            frmBook.Setup(_openedMetadata, (Image) pbCover.Image.Clone(), new frmBookInfo.DialogData(txtGoodreads.Text, "", "", _settings.buildSource));
-            frmBook.ShowDialog();
-            if (frmBook.Result == null)
-                return;
-            txtGoodreads.Text = frmBook.Result.SecondarySourceUrl;
-            // TODO Maybe use an enum for buildsource so we don't throw these strings around (to think about)
-            _settings.buildSource = frmBook.Result.TermsSource;
-        }
-
         private void pbCover_MouseEnter(object sender, EventArgs e)
         {
             Cursor = Cursors.Hand;
@@ -1401,6 +1366,41 @@ namespace XRayBuilderGUI.UI
         private void pbCover_MouseLeave(object sender, EventArgs e)
         {
             Cursor = Cursors.Default;
+        }
+
+        private void pbCover_DoubleClick(object sender, EventArgs e)
+        {
+            if (_openedMetadata == null) return;
+            using var frmBook = _diContainer.GetInstance<frmBookInfo>();
+            frmBook.Setup(_openedMetadata, (Image) pbCover.Image.Clone(), new frmBookInfo.DialogData(_dataSource.Name, txtGoodreads.Text, "", ""));
+            frmBook.ShowDialog();
+            if (frmBook.Result == null)
+                return;
+
+            txtGoodreads.Text = frmBook.Result.SecondarySourceUrl;
+            SetDatasourceLabels();
+        }
+
+        private void btnViewHelp_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(Environment.CurrentDirectory + @"\doc\help.pdf");
+            }
+            catch
+            {
+                MessageBox.Show(MainStrings.UnableToOpenHelpDocument, MainStrings.HelpDocumentNotFoundTitle);
+            }
+        }
+
+        private void btnVisitForum_Click(object sender, EventArgs e)
+        {
+            Process.Start("http://www.mobileread.com/forums/showthread.php?t=245754");
+        }
+
+        private void btnAbout_Click(object sender, EventArgs e)
+        {
+            new frmAbout().ShowDialog();
         }
     }
 }

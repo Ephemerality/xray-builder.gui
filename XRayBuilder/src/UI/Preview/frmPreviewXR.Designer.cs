@@ -45,14 +45,13 @@
             // 
             // tcXray
             // 
-            this.tcXray.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
             this.tcXray.Controls.Add(this.tpPeople);
             this.tcXray.Controls.Add(this.tbTerms);
             this.tcXray.ItemSize = new System.Drawing.Size(141, 32);
-            this.tcXray.Location = new System.Drawing.Point(3, 6);
+            this.tcXray.Location = new System.Drawing.Point(12, 12);
             this.tcXray.Name = "tcXray";
             this.tcXray.SelectedIndex = 0;
-            this.tcXray.Size = new System.Drawing.Size(504, 619);
+            this.tcXray.Size = new System.Drawing.Size(505, 596);
             this.tcXray.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tcXray.TabIndex = 0;
             // 
@@ -63,7 +62,7 @@
             this.tpPeople.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tpPeople.Name = "tpPeople";
             this.tpPeople.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tpPeople.Size = new System.Drawing.Size(496, 579);
+            this.tpPeople.Size = new System.Drawing.Size(497, 556);
             this.tpPeople.TabIndex = 1;
             this.tpPeople.Text = "PEOPLE";
             this.tpPeople.UseVisualStyleBackColor = true;
@@ -75,7 +74,7 @@
             this.pPeople.Location = new System.Drawing.Point(4, 5);
             this.pPeople.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pPeople.Name = "pPeople";
-            this.pPeople.Size = new System.Drawing.Size(488, 569);
+            this.pPeople.Size = new System.Drawing.Size(489, 546);
             this.pPeople.TabIndex = 1;
             // 
             // flpPeople
@@ -84,7 +83,7 @@
             this.flpPeople.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flpPeople.Location = new System.Drawing.Point(0, 0);
             this.flpPeople.Name = "flpPeople";
-            this.flpPeople.Size = new System.Drawing.Size(488, 569);
+            this.flpPeople.Size = new System.Drawing.Size(489, 546);
             this.flpPeople.TabIndex = 1;
             this.flpPeople.Scroll += new System.Windows.Forms.ScrollEventHandler(this.flpPeople_Scroll);
             // 
@@ -95,7 +94,7 @@
             this.tbTerms.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tbTerms.Name = "tbTerms";
             this.tbTerms.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tbTerms.Size = new System.Drawing.Size(496, 602);
+            this.tbTerms.Size = new System.Drawing.Size(497, 556);
             this.tbTerms.TabIndex = 2;
             this.tbTerms.Text = "TERMS";
             this.tbTerms.UseVisualStyleBackColor = true;
@@ -107,7 +106,7 @@
             this.pTerms.Location = new System.Drawing.Point(4, 5);
             this.pTerms.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pTerms.Name = "pTerms";
-            this.pTerms.Size = new System.Drawing.Size(488, 592);
+            this.pTerms.Size = new System.Drawing.Size(489, 546);
             this.pTerms.TabIndex = 0;
             // 
             // flpTerms
@@ -116,14 +115,14 @@
             this.flpTerms.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flpTerms.Location = new System.Drawing.Point(0, 0);
             this.flpTerms.Name = "flpTerms";
-            this.flpTerms.Size = new System.Drawing.Size(488, 592);
+            this.flpTerms.Size = new System.Drawing.Size(489, 546);
             this.flpTerms.TabIndex = 2;
             // 
             // frmPreviewXR
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(508, 625);
+            this.ClientSize = new System.Drawing.Size(527, 617);
             this.Controls.Add(this.tcXray);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -132,6 +131,7 @@
             this.MinimizeBox = false;
             this.Name = "frmPreviewXR";
             this.ShowInTaskbar = false;
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "X-Ray";
             this.tcXray.ResumeLayout(false);

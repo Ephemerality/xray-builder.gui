@@ -35,7 +35,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
         public override string Name => "Goodreads";
         public override bool SearchEnabled { get; } = true;
-        public override int UrlLabelPosition { get; } = 14;
+        public override int UrlLabelPosition { get; } = 9;
         public override bool SupportsNotableClips { get; } = true;
 
         private readonly Regex _regexBookId = new Regex(@"/book/show/(?<id>[0-9]+)", RegexOptions.Compiled);
@@ -250,35 +250,13 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
             var minutes = int.Parse(match.Groups[1].Value, NumberStyles.AllowThousands) * 1.098507462686567;
             var span = TimeSpan.FromMinutes(minutes);
-
-            var d = PluralUtil.Pluralize($"{span.Days:day}");
-            var h = PluralUtil.Pluralize($"{span.Hours:hour}");
-            var m = PluralUtil.Pluralize($"{span.Minutes:minute}");
             var p = match.Groups["pages"].Value;
 
             curBook.PageCount = int.Parse(p, NumberStyles.AllowThousands, CultureInfo.InvariantCulture);
             curBook.ReadingHours = span.Hours;
             curBook.ReadingMinutes = span.Minutes;
 
-            // todo clean up this section
-            if (span.Days > 1)
-            {
-                _logger.Log($"Typical time to read: {d}, {h}, and {m} ({p} pages)");
-                return true;
-            }
-
-            if (span.Hours > 1)
-            {
-                _logger.Log($"Typical time to read: {h}, and {m} ({p} pages)");
-                return true;
-            }
-
-            if (span.Minutes <= 1)
-            {
-                _logger.Log($"Typical time to read: {m} ({p} pages)");
-                return true;
-            }
-
+            _logger.Log(Functions.GetReadingTime(curBook));
             return true;
         }
 

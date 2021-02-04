@@ -20,7 +20,8 @@ namespace XRayBuilderGUI.UI.Preview
         private readonly IHttpClient _httpClient;
 
         private readonly Settings _settings = Settings.Default;
-        private string _authorUrl = string.Empty;
+        private string _authorUrl;
+        private string _asin;
 
         private const int MaxImageSize = 750;
 
@@ -34,9 +35,10 @@ namespace XRayBuilderGUI.UI.Preview
 
         private void ListViewItem_SetSpacing(ListView listview, short leftPadding, short topPadding)
         {
-            const int LVM_FIRST = 0x1000;
-            const int LVM_SETICONSPACING = LVM_FIRST + 53;
-            NativeMethods.SendMessage(listview.Handle, LVM_SETICONSPACING, IntPtr.Zero, (IntPtr) MakeLong(leftPadding, topPadding));
+            const int lvmFirst = 0x1000;
+            const int lvmSetIconSpacing = lvmFirst + 53;
+            NativeMethods.SendMessage(listview.Handle, lvmSetIconSpacing, IntPtr.Zero,
+                (IntPtr) MakeLong(leftPadding, topPadding));
         }
 
         #endregion
@@ -98,7 +100,7 @@ namespace XRayBuilderGUI.UI.Preview
 
                 if (endActions.Data.CustomerProfile != null)
                 {
-                    lblUpdate.Text = $@"Update on Amazon (as {endActions.Data.CustomerProfile.PenName})";
+                    lblUpdate.Text = $@"Update on Amazon (as {endActions.Data.CustomerProfile.PenName}) and Goodreads";
                 }
 
                 ilauthorRecs.Images.Clear();
@@ -109,17 +111,29 @@ namespace XRayBuilderGUI.UI.Preview
                 if (endActions.Data.NextBook != null)
                 {
                     var nextBook = endActions.Data.NextBook;
-                    txtNextInSeries.Text = nextBook.Title;
+                    lblNextTitle.Visible = true;
+                    lblNextAuthor.Visible = true;
+                    linkStore.Visible = true;
+                    lblNextTitle.Text = nextBook.Title;
+                    lblNextAuthor.Text = nextBook.Authors.FirstOrDefault();
+                    _asin = nextBook.Asin;
                     if (!string.IsNullOrEmpty(nextBook.ImageUrl))
                         pbNextCover.Image = await _httpClient.GetImageAsync(nextBook.ImageUrl, MaxImageSize, false, cancellationToken);
                 }
                 else
                 {
-                    txtNextInSeries.Text = @"This book is not part of a series" + Environment.NewLine + @"or is the latest in the series";
+                    lblNextTitle.Visible = false;
+                    lblNextAuthor.Visible = false;
+                    linkStore.Visible = false;
+
+                    txtNotInSeries.Location = new Point(457, 63);
+                    txtNotInSeries.Visible = true;
                 }
 
-                await PopulateImagesFromBooks(lvAuthorRecs, ilauthorRecs, endActions.Data.AuthorRecs.Recommendations, cancellationToken);
-                await PopulateImagesFromBooks(lvCustomersWhoBoughtRecs, ilcustomersWhoBoughtRecs, endActions.Data.CustomersWhoBoughtRecs.Recommendations, cancellationToken);
+                if (endActions.Data.AuthorRecs?.Recommendations != null)
+                    await PopulateImagesFromBooks(lvAuthorRecs, ilauthorRecs, endActions.Data.AuthorRecs.Recommendations, cancellationToken);
+                if (endActions.Data.CustomersWhoBoughtRecs?.Recommendations != null)
+                    await PopulateImagesFromBooks(lvCustomersWhoBoughtRecs, ilcustomersWhoBoughtRecs, endActions.Data.CustomersWhoBoughtRecs.Recommendations, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -129,7 +143,7 @@ namespace XRayBuilderGUI.UI.Preview
 
         private async Task PopulateImagesFromBooks(ListView listView, ImageList imageList, IEnumerable<Book> books, CancellationToken cancellationToken = default)
         {
-            ListViewItem_SetSpacing(listView, 60 + 12, 90 + 12);
+            ListViewItem_SetSpacing(listView, 60 + 10, 90 + 10);
 
             var urls = books.Select(book => book.ImageUrl);
             var images = await _httpClient.GetImages(urls, MaxImageSize, false, cancellationToken).ToArrayAsync(cancellationToken);
@@ -157,6 +171,12 @@ namespace XRayBuilderGUI.UI.Preview
         {
             if (string.IsNullOrEmpty(_authorUrl)) return;
             Process.Start(_authorUrl);
+        }
+
+        private void linkStore_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(_asin))
+                Process.Start($"http://www.amazon.{Settings.Default.amazonTLD}/dp/{_asin}");
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -21,6 +22,7 @@ namespace XRayBuilderGUI.UI.Preview
 
         private readonly Regex _regexHighlights = new Regex(@"(?<text>(?<num>[\d,.]+) passages have been highlighted (?<total>[\d,.]+) times)", RegexOptions.Compiled);
         private const int MaxImageSize = 750;
+        private string _asin;
 
         public frmPreviewSA(IHttpClient httpClient)
         {
@@ -42,33 +44,25 @@ namespace XRayBuilderGUI.UI.Preview
             ilOtherBooks.Images.Clear();
             lvOtherBooks.Clear();
 
+            _asin = startActions.BookInfo.Asin;
+
             if (startActions.Data.SeriesPosition != null)
             {
                 var seriesInfo = startActions.Data.SeriesPosition;
-                lblSeries.Text = $@"This is book {seriesInfo.PositionInSeries} of {seriesInfo.TotalInSeries} in {seriesInfo.SeriesName}";
-                if (seriesInfo.PositionInSeries == 1)
+                if (seriesInfo.PositionInSeries > 1)
                 {
-                    pbPreviousCover.Visible = false;
-                    lblPreviousHeading.Visible = false;
-                    lblPreviousTitle.Visible = false;
-                    lblSeries.Left = 12;
-                    lblSeries.Width = 312;
-                }
-                else
-                {
-                    lblSeries.Left = 85;
-                    lblSeries.Width = 345;
-                    pbPreviousCover.Visible = true;
+                    lblSeries.Text = $@"This is book {seriesInfo.PositionInSeries} of {seriesInfo.TotalInSeries} in {seriesInfo.SeriesName}";
                     lblPreviousHeading.Visible = true;
                     lblPreviousTitle.Visible = true;
                 }
             }
             else
             {
-                lblSeries.Text = @"This book is not part of a series...";
+                lblPreviousTitle.Text = @"This book is not part of a series…";
                 pbPreviousCover.Image = Resources.missing_cover_small;
+                lblSeries.Visible = false;
                 lblPreviousHeading.Visible = false;
-                lblPreviousTitle.Visible = false;
+                lblPreviousTitle.Visible = true;
             }
 
             // TODO: Enums or something for language
@@ -77,14 +71,17 @@ namespace XRayBuilderGUI.UI.Preview
             {
                 var popularHighlightsText = _regexHighlights.Match(highlights);
                 if (popularHighlightsText.Success)
-                    lblHighlights.Text = popularHighlightsText.Groups["text"].Value;
+                    lblHighlightsCount.Text = !popularHighlightsText.Groups["text"].Value.StartsWith("0") ? popularHighlightsText.Groups["text"].Value : "No popular highlights were found for this book.";
             }
+            else
+                lblHighlightsCount.Text = "No popular highlights were found for this book.";
 
             if (startActions.Data.BookDescription != null)
             {
                 var bookDescription = startActions.Data.BookDescription;
                 lblTitle.Text = bookDescription.Title;
                 lblAuthor.Text = bookDescription.Authors.FirstOrDefault() ?? "";
+                lblAboutAuthorName.Text = bookDescription.Authors.FirstOrDefault() ?? "";
                 lblDescription.Text = bookDescription.Description;
                 if (bookDescription.AmazonRating.HasValue)
                     pbRating.Image = (Image)Resources.ResourceManager.GetObject($"STAR{Math.Floor((decimal) bookDescription.AmazonRating)}");
@@ -103,13 +100,14 @@ namespace XRayBuilderGUI.UI.Preview
             if (startActions.Data.AuthorRecs != null || startActions.Data.AuthorFeaturedRecs != null)
             {
                 var recommendations = startActions.Data.AuthorRecs ?? startActions.Data.AuthorFeaturedRecs;
+                Width = recommendations.Recommendations.Length < 15 ? 665 : 691;
                 foreach (var rec in recommendations.Recommendations)
                 {
                     var imageUrl = rec.ImageUrl;
                     if (!string.IsNullOrEmpty(imageUrl))
                         ilOtherBooks.Images.Add(await _httpClient.GetImageAsync(imageUrl, MaxImageSize, false, cancellationToken));
                 }
-                ListViewItem_SetSpacing(lvOtherBooks, 60 + 12, 90 + 12);
+                ListViewItem_SetSpacing(lvOtherBooks, 60 + 10, 90 + 10);
                 for (var i = 0; i < ilOtherBooks.Images.Count; i++)
                 {
                     var item = new ListViewItem {ImageIndex = i};
@@ -165,5 +163,11 @@ namespace XRayBuilderGUI.UI.Preview
         }
 
         #endregion
+
+        private void linkStore_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(_asin))
+                Process.Start($"http://www.amazon.{Settings.Default.amazonTLD}/dp/{_asin}");
+        }
     }
 }

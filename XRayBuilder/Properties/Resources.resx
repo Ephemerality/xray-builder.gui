@@ -130,12 +130,6 @@
   <data name="cancel" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\cancel.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="file_exists" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\file_exists.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="file_missing" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\file_missing.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="character" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\character.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -172,16 +166,13 @@
   <data name="missing_cover_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\missing_cover_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="source_file" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\source_file.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="file_exists" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\file-exists.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="source_internet" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\source_internet.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="file_missing" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\file-missing.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="source_roentgen" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\source_roentgen.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="source_select" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\source_select.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="missing_cover_medium" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\missing_cover_medium.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

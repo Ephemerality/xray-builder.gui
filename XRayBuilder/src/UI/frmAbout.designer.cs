@@ -42,9 +42,9 @@
             // logoPictureBox
             // 
             this.logoPictureBox.Image = ((System.Drawing.Image)(resources.GetObject("logoPictureBox.Image")));
-            this.logoPictureBox.Location = new System.Drawing.Point(17, 17);
+            this.logoPictureBox.Location = new System.Drawing.Point(12, 12);
             this.logoPictureBox.Name = "logoPictureBox";
-            this.logoPictureBox.Size = new System.Drawing.Size(130, 259);
+            this.logoPictureBox.Size = new System.Drawing.Size(130, 196);
             this.logoPictureBox.TabIndex = 22;
             this.logoPictureBox.TabStop = false;
             // 
@@ -53,9 +53,9 @@
             this.lnklblIcons.ActiveLinkColor = System.Drawing.Color.Blue;
             this.lnklblIcons.AutoSize = true;
             this.lnklblIcons.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
-            this.lnklblIcons.Location = new System.Drawing.Point(159, 251);
+            this.lnklblIcons.Location = new System.Drawing.Point(149, 190);
             this.lnklblIcons.Name = "lnklblIcons";
-            this.lnklblIcons.Size = new System.Drawing.Size(157, 20);
+            this.lnklblIcons.Size = new System.Drawing.Size(128, 15);
             this.lnklblIcons.TabIndex = 20;
             this.lnklblIcons.TabStop = true;
             this.lnklblIcons.Text = "Icons from icons8.com";
@@ -64,10 +64,9 @@
             // btnOk
             // 
             this.btnOk.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnOk.Location = new System.Drawing.Point(393, 245);
-            this.btnOk.Margin = new System.Windows.Forms.Padding(5);
+            this.btnOk.Location = new System.Drawing.Point(298, 186);
             this.btnOk.Name = "btnOk";
-            this.btnOk.Size = new System.Drawing.Size(100, 32);
+            this.btnOk.Size = new System.Drawing.Size(75, 23);
             this.btnOk.TabIndex = 14;
             this.btnOk.Text = "OK";
             this.btnOk.UseVisualStyleBackColor = true;
@@ -76,9 +75,9 @@
             // 
             this.lblBuild.AutoSize = true;
             this.lblBuild.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBuild.Location = new System.Drawing.Point(159, 111);
+            this.lblBuild.Location = new System.Drawing.Point(150, 84);
             this.lblBuild.Name = "lblBuild";
-            this.lblBuild.Size = new System.Drawing.Size(43, 20);
+            this.lblBuild.Size = new System.Drawing.Size(34, 15);
             this.lblBuild.TabIndex = 19;
             this.lblBuild.Text = "Build";
             this.lblBuild.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -87,9 +86,9 @@
             // 
             this.lblCopyright.AutoSize = true;
             this.lblCopyright.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblCopyright.Location = new System.Drawing.Point(159, 87);
+            this.lblCopyright.Location = new System.Drawing.Point(150, 65);
             this.lblCopyright.Name = "lblCopyright";
-            this.lblCopyright.Size = new System.Drawing.Size(74, 20);
+            this.lblCopyright.Size = new System.Drawing.Size(60, 15);
             this.lblCopyright.TabIndex = 18;
             this.lblCopyright.Text = "Copyright";
             this.lblCopyright.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -100,9 +99,9 @@
             this.lblName.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(240)))));
             this.lblName.Font = new System.Drawing.Font("Segoe UI Semibold", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblName.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(46)))), ((int)(((byte)(150)))));
-            this.lblName.Location = new System.Drawing.Point(158, 25);
+            this.lblName.Location = new System.Drawing.Point(149, 17);
             this.lblName.Name = "lblName";
-            this.lblName.Size = new System.Drawing.Size(212, 32);
+            this.lblName.Size = new System.Drawing.Size(166, 25);
             this.lblName.TabIndex = 21;
             this.lblName.Text = "X-Ray Builder GUI";
             this.lblName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -111,9 +110,9 @@
             // 
             this.lblVersion.AutoSize = true;
             this.lblVersion.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblVersion.Location = new System.Drawing.Point(160, 63);
+            this.lblVersion.Location = new System.Drawing.Point(151, 46);
             this.lblVersion.Name = "lblVersion";
-            this.lblVersion.Size = new System.Drawing.Size(57, 20);
+            this.lblVersion.Size = new System.Drawing.Size(45, 15);
             this.lblVersion.TabIndex = 17;
             this.lblVersion.Text = "Version";
             this.lblVersion.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -121,18 +120,20 @@
             // lblDescription
             // 
             this.lblDescription.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDescription.Location = new System.Drawing.Point(159, 156);
+            this.lblDescription.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.lblDescription.Location = new System.Drawing.Point(150, 117);
             this.lblDescription.Name = "lblDescription";
-            this.lblDescription.Size = new System.Drawing.Size(334, 70);
+            this.lblDescription.Size = new System.Drawing.Size(222, 51);
             this.lblDescription.TabIndex = 23;
-            this.lblDescription.Text = "Description";
+            this.lblDescription.Text = "Generate X-Ray, Start Action, Author Profile, and End Action files for use on you" +
+    "r Amazon Kindle.";
             // 
             // frmAbout
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnOk;
-            this.ClientSize = new System.Drawing.Size(509, 293);
+            this.ClientSize = new System.Drawing.Size(384, 220);
             this.Controls.Add(this.lblDescription);
             this.Controls.Add(this.logoPictureBox);
             this.Controls.Add(this.lnklblIcons);

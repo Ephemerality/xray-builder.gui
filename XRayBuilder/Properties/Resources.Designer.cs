@@ -133,6 +133,16 @@ namespace XRayBuilderGUI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap missing_cover_medium {
+            get {
+                object obj = ResourceManager.GetObject("missing_cover_medium", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap missing_cover_small {
             get {
                 object obj = ResourceManager.GetObject("missing_cover_small", resourceCulture);
@@ -166,46 +176,6 @@ namespace XRayBuilderGUI.Properties {
         internal static System.Drawing.Bitmap setting {
             get {
                 object obj = ResourceManager.GetObject("setting", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap source_file {
-            get {
-                object obj = ResourceManager.GetObject("source_file", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap source_internet {
-            get {
-                object obj = ResourceManager.GetObject("source_internet", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap source_roentgen {
-            get {
-                object obj = ResourceManager.GetObject("source_roentgen", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap source_select {
-            get {
-                object obj = ResourceManager.GetObject("source_select", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

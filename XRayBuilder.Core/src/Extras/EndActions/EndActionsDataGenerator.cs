@@ -16,6 +16,7 @@ using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Primitives.Extensions;
 using XRayBuilder.Core.Libraries.Progress;
+using XRayBuilder.Core.Logic.ReadingTime;
 using XRayBuilder.Core.Model;
 using XRayBuilder.Core.Unpack;
 
@@ -28,6 +29,7 @@ namespace XRayBuilder.Core.Extras.EndActions
         private readonly IAmazonClient _amazonClient;
         private readonly IAmazonInfoParser _amazonInfoParser;
         private readonly IRoentgenClient _roentgenClient;
+        private readonly IReadingTimeService _readingTimeService;
 
         private readonly Regex _invalidBookTitleRegex = new Regex(@"(Series|Reading) Order|Complete Series|Checklist|Edition|eSpecial|Box ?Set|[0-9]+ Book Series|Books? \d+ ?(to|—|\\u2013|–) ?\d+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
@@ -36,13 +38,14 @@ namespace XRayBuilder.Core.Extras.EndActions
             IHttpClient httpClient,
             IAmazonClient amazonClient,
             IAmazonInfoParser amazonInfoParser,
-            IRoentgenClient roentgenClient)
+            IRoentgenClient roentgenClient, IReadingTimeService readingTimeService)
         {
             _logger = logger;
             _httpClient = httpClient;
             _amazonClient = amazonClient;
             _amazonInfoParser = amazonInfoParser;
             _roentgenClient = roentgenClient;
+            _readingTimeService = readingTimeService;
         }
 
         /// <summary>
@@ -384,7 +387,10 @@ namespace XRayBuilder.Core.Extras.EndActions
 
             try
             {
-                var readingTimeFromPageCount = Functions.GetReadingTime(curBook);
+                var readingTimeFromPageCount = "";
+                if (curBook.PageCount != 0)
+                    readingTimeFromPageCount = _readingTimeService.GetFormattedReadingTime(curBook.PageCount);
+
                 if (string.IsNullOrEmpty(readingTimeFromPageCount))
                 {
                     if (!await dataSource.GetPageCountAsync(curBook, cancellationToken))

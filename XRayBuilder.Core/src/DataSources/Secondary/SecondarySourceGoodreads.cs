@@ -18,6 +18,7 @@ using XRayBuilder.Core.Libraries.Language.Pluralization;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Primitives.Extensions;
 using XRayBuilder.Core.Libraries.Progress;
+using XRayBuilder.Core.Logic.ReadingTime;
 using XRayBuilder.Core.Model;
 using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Artifacts;
@@ -30,6 +31,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
         private readonly ILogger _logger;
         private readonly IHttpClient _httpClient;
         private readonly IAmazonClient _amazonClient;
+        private readonly IReadingTimeService _readingTimeService;
 
         private const int MaxConcurrentRequests = 10;
 
@@ -42,11 +44,12 @@ namespace XRayBuilder.Core.DataSources.Secondary
         private readonly Regex _regexEditions = new(@"editions/(?<editions>[0-9]*)-", RegexOptions.Compiled);
         private readonly Regex _regexPages = new(@"(?<pages>(\d+)|(\d+,\d+)) pages", RegexOptions.Compiled);
 
-        public SecondarySourceGoodreads(ILogger logger, IHttpClient httpClient, IAmazonClient amazonClient)
+        public SecondarySourceGoodreads(ILogger logger, IHttpClient httpClient, IAmazonClient amazonClient, IReadingTimeService readingTimeService)
         {
             _logger = logger;
             _httpClient = httpClient;
             _amazonClient = amazonClient;
+            _readingTimeService = readingTimeService;
         }
 
         private string ParseBookIdFromUrl(string input) => _regexBookId.Match(input).Groups["id"].Value;
@@ -248,15 +251,14 @@ namespace XRayBuilder.Core.DataSources.Secondary
             if (!match.Success)
                 return false;
 
-            var minutes = int.Parse(match.Groups[1].Value, NumberStyles.AllowThousands) * 1.098507462686567;
-            var span = TimeSpan.FromMinutes(minutes);
-            var p = match.Groups["pages"].Value;
+            var pages = int.Parse(match.Groups["pages"].Value, NumberStyles.AllowThousands);
+            var readingTime = _readingTimeService.GetReadingTime(pages);
 
-            curBook.PageCount = int.Parse(p, NumberStyles.AllowThousands, CultureInfo.InvariantCulture);
-            curBook.ReadingHours = span.Hours;
-            curBook.ReadingMinutes = span.Minutes;
+            curBook.PageCount = pages;
+            curBook.ReadingHours = readingTime.Hours;
+            curBook.ReadingMinutes = readingTime.Minutes;
 
-            _logger.Log(Functions.GetReadingTime(curBook));
+            _logger.Log(_readingTimeService.GetFormattedReadingTime(pages));
             return true;
         }
 

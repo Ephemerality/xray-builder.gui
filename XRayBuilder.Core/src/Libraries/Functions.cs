@@ -9,12 +9,15 @@ using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using JetBrains.Annotations;
 using XRayBuilder.Core.Libraries.Language.Pluralization;
+using XRayBuilder.Core.Logic.ReadingTime;
 using XRayBuilder.Core.Model;
 
 namespace XRayBuilder.Core.Libraries
 {
     public static class Functions
     {
+        private static readonly IReadingTimeService _readingTimeService;
+
         public static string ReadFromFile(string file)
         {
             using var streamReader = new StreamReader(file, Encoding.UTF8);
@@ -76,26 +79,6 @@ namespace XRayBuilder.Core.Libraries
             return $"Running X-Ray Builder GUI v{version}. Log started on {date} at {time}.\r\n";
         }
 
-        public static string GetReadingTime(BookInfo bookInfo)
-        {
-            if (bookInfo.PageCount == 0)
-                return null;
-
-            var minutes = bookInfo.PageCount * 1.098507462686567;
-            var span = TimeSpan.FromMinutes(minutes);
-
-            var d = PluralUtil.Pluralize($"{span.Days:day}");
-            var h = PluralUtil.Pluralize($"{span.Hours:hour}");
-            var m = PluralUtil.Pluralize($"{span.Minutes:minute}");
-            var p = bookInfo.PageCount;
-
-            bookInfo.ReadingHours = span.Hours;
-            bookInfo.ReadingMinutes = span.Minutes;
-
-            var formatted = $"Typical time to read: {(span.Days > 1 ? $"{d}, " : string.Empty)}{(span.Hours > 1 ? $"{h}" : string.Empty)}{(span.Hours > 1 ? " and " : ", ")}{(span.Minutes > 1 ? $"{m}" : string.Empty)} ({p} pages)";
-            return formatted.StartsWith(", ") ? formatted.Substring(2, formatted.Length) : formatted;
-        }
-
         public static string GetPageCount(string rawMl, BookInfo bookInfo)
         {
             string output;
@@ -129,12 +112,14 @@ namespace XRayBuilder.Core.Libraries
                 output = "An error occurred while estimating page count!";
                 return output;
             }
-            var minutes = pageCount * 1.098507462686567;
-            var span = TimeSpan.FromMinutes(minutes);
+
+            var readingTime = _readingTimeService.GetReadingTime(pageCount);
+
             bookInfo.PageCount = pageCount;
-            bookInfo.ReadingHours = span.Hours;
-            bookInfo.ReadingMinutes = span.Minutes;
-            return GetReadingTime(bookInfo);
+            bookInfo.ReadingHours = readingTime.Hours;
+            bookInfo.ReadingMinutes = readingTime.Minutes;
+
+            return _readingTimeService.GetFormattedReadingTime(pageCount);
         }
 
         public static void RunNotepad(string filename)

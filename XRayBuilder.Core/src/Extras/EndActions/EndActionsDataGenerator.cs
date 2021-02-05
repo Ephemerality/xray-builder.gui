@@ -389,7 +389,12 @@ namespace XRayBuilder.Core.Extras.EndActions
             {
                 var readingTimeFromPageCount = "";
                 if (curBook.PageCount != 0)
+                {
+                    var readingTime = _readingTimeService.GetReadingTime(curBook.PageCount);
+                    curBook.ReadingHours = readingTime.Hours;
+                    curBook.ReadingMinutes = readingTime.Minutes;
                     readingTimeFromPageCount = _readingTimeService.GetFormattedReadingTime(curBook.PageCount);
+                }
 
                 if (string.IsNullOrEmpty(readingTimeFromPageCount))
                 {

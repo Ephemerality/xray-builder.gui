@@ -1,8 +1,10 @@
 ﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
 using XRayBuilder.Core.DataSources.Amazon;
+using XRayBuilder.Core.DataSources.Logic;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
@@ -36,19 +38,21 @@ namespace XRayBuilder.Test.DataSources
             Assert.AreEqual("Goodreads", _goodreads.Name);
         }
 
+        // Todo separate test for goodreads search book vs booksearchservice
         [Test]
         public async Task SearchBookTest()
         {
             var testMetadata = Substitute.For<IMetadata>();
             testMetadata.Author.Returns("George R. R. Martin");
             testMetadata.Title.Returns("A Feast for Crows");
-            var results = (await _goodreads.SearchBookAsync(testMetadata)).ToArray();
+            var bookSearchService = new BookSearchService();
+            var results = await bookSearchService.SearchSecondarySourceAsync(_goodreads, testMetadata, CancellationToken.None);
             Assert.GreaterOrEqual(results.Length, 1);
             var first = results.First();
             Assert.AreEqual(first.Author, "George R.R. Martin");
-            Assert.AreEqual(first.GoodreadsId, "13497");
+            Assert.AreEqual(first.GoodreadsId, "27282032");
             Assert.False(string.IsNullOrEmpty(first.ImageUrl));
-            Assert.AreEqual(first.Title, "A Feast for Crows (A Song of Ice and Fire, #4)");
+            Assert.AreEqual("A Feast for Crows (Part One) (A Song of Ice and Fire, #4)", first.Title);
             Assert.Greater(first.Editions, 0);
         }
 

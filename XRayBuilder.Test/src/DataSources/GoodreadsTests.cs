@@ -8,6 +8,7 @@ using XRayBuilder.Core.DataSources.Logic;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Logic.ReadingTime;
 using XRayBuilder.Core.Model;
 using XRayBuilder.Core.Unpack;
 
@@ -21,6 +22,7 @@ namespace XRayBuilder.Test.DataSources
         private IAmazonClient _amazonClient;
         private SecondarySourceGoodreads _goodreads;
         private IAmazonInfoParser _amazonInfoParser;
+        private IReadingTimeService _readingTimeService;
 
         [SetUp]
         public void Setup()
@@ -29,7 +31,8 @@ namespace XRayBuilder.Test.DataSources
             _httpClient = new HttpClient(_logger);
             _amazonInfoParser = new AmazonInfoParser(_logger, _httpClient);
             _amazonClient = new AmazonClient(_httpClient, _amazonInfoParser, _logger);
-            _goodreads = new SecondarySourceGoodreads(_logger, _httpClient, _amazonClient);
+            _goodreads = new SecondarySourceGoodreads(_logger, _httpClient, _amazonClient, _readingTimeService);
+            _readingTimeService = new ReadingTimeService();
         }
 
         [Test]

@@ -12,6 +12,7 @@ using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Progress;
+using XRayBuilder.Core.Logic.ReadingTime;
 using XRayBuilder.Core.Model;
 using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Artifacts;
@@ -23,13 +24,15 @@ namespace XRayBuilder.Core.DataSources.Secondary
     {
         private readonly ILogger _logger;
         private readonly IHttpClient _httpClient;
+        private readonly IReadingTimeService _readingTimeService;
 
         private HtmlDocument sourceHtmlDoc;
 
-        public SecondarySourceShelfari(ILogger logger, IHttpClient httpClient)
+        public SecondarySourceShelfari(ILogger logger, IHttpClient httpClient, IReadingTimeService readingTimeService)
         {
             _logger = logger;
             _httpClient = httpClient;
+            _readingTimeService = readingTimeService;
         }
 
         public override string Name => "Shelfari";
@@ -106,12 +109,14 @@ namespace XRayBuilder.Core.DataSources.Secondary
             var match1 = Regex.Match(node1.InnerText, @"Page Count: ((\d+)|(\d+,\d+))");
             if (match1.Success)
             {
-                var minutes = int.Parse(match1.Groups[1].Value, NumberStyles.AllowThousands) * 1.098507462686567;
-                var span = TimeSpan.FromMinutes(minutes);
-                curBook.PageCount = int.Parse(match1.Groups[1].Value);
-                curBook.ReadingHours = span.Hours;
-                curBook.ReadingMinutes = span.Minutes;
-                _logger.Log(Functions.GetReadingTime(curBook));
+                var pages = int.Parse(match1.Groups[1].Value, NumberStyles.AllowThousands);
+                var readingTime = _readingTimeService.GetReadingTime(pages);
+
+                curBook.PageCount = pages;
+                curBook.ReadingHours = readingTime.Hours;
+                curBook.ReadingMinutes = readingTime.Minutes;
+
+                _logger.Log(_readingTimeService.GetFormattedReadingTime(pages));
                 return true;
             }
             return false;

@@ -9,6 +9,7 @@ using XRayBuilder.Core.Extras.AuthorProfile;
 using XRayBuilder.Core.Extras.EndActions;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Logic.ReadingTime;
 using XRayBuilder.Core.Model;
 using XRayBuilder.Core.Unpack;
 
@@ -27,6 +28,7 @@ namespace XRayBuilder.Test.Extras.EndActions
         private IAmazonInfoParser _amazonInfoParser;
         private IAmazonClient _amazonClient;
         private IEndActionsArtifactService _endActionsArtifactService;
+        private IReadingTimeService _readingTimeService;
 
         [SetUp]
         public void Setup()
@@ -36,8 +38,9 @@ namespace XRayBuilder.Test.Extras.EndActions
             _amazonInfoParser = new AmazonInfoParser(_logger, _httpClient);
             _amazonClient = new AmazonClient(_httpClient, _amazonInfoParser, _logger);
             _authorProfileGenerator = new AuthorProfileGenerator(_httpClient, _logger, _amazonClient);
-            _secondarySourceGoodreads = new SecondarySourceGoodreads(_logger, _httpClient, _amazonClient);
+            _secondarySourceGoodreads = new SecondarySourceGoodreads(_logger, _httpClient, _amazonClient, _readingTimeService);
             _endActionsArtifactService = new EndActionsArtifactService(_logger);
+            _readingTimeService = new ReadingTimeService();
         }
 
         // [Test]
@@ -57,7 +60,7 @@ namespace XRayBuilder.Test.Extras.EndActions
                 }
             }, _ => false, null, CancellationToken.None);
 
-            var endActionsDataGenerator = new EndActionsDataGenerator(_logger, _httpClient, _amazonClient, _amazonInfoParser, null);
+            var endActionsDataGenerator = new EndActionsDataGenerator(_logger, _httpClient, _amazonClient, _amazonInfoParser, null, _readingTimeService);
 
             var settings = new EndActionsDataGenerator.Settings
             {

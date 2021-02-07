@@ -4,6 +4,7 @@ using XRayBuilder.Core.Libraries.Bootstrap.Model;
 using XRayBuilder.Core.Libraries.Language.Localization;
 using XRayBuilder.Core.Libraries.SimpleInjector.Extensions;
 using XRayBuilder.Core.Logic;
+using XRayBuilder.Core.Logic.ReadingTime;
 
 namespace XRayBuilder.Core.Bootstrap
 {
@@ -17,6 +18,7 @@ namespace XRayBuilder.Core.Bootstrap
         {
             container.RegisterSingleton<IDirectoryService, DirectoryService>();
             container.RegisterSingleton<IBookSearchService, BookSearchService>();
+            container.RegisterSingleton<IReadingTimeService, ReadingTimeService>();
             container.AutoregisterConcreteCollectionFromInterface<ILanguage>(Lifestyle.Singleton);
         }
     }

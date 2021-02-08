@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -22,6 +23,9 @@ namespace XRayBuilder.Core.Libraries
         {
             (string[] searches, string replace)[] replacements =
             {
+                (new[] {"<br><br>"}, " "),
+                (new[] {"<b></b>"}, ""),
+                (new[] {@"(<a.*?>.*?</a>)"}, ""),
                 (new[] {"&#169;", "&amp;#169;", "&#174;", "&amp;#174;", "&mdash;", @"</?[a-z]+>" }, ""),
                 (new[] { "“", "”", "\"", "&quot;" }, "'"),
                 (new[] { "&#133;", "&amp;#133;", @" \. \. \." }, "…"),
@@ -34,7 +38,25 @@ namespace XRayBuilder.Core.Libraries
             {
                 str = Regex.Replace(str, $"({string.Join("|", s)})", r, RegexOptions.Multiline);
             }
-            return str.Trim();
+
+            return HtmlDecode(str).Trim();
+        }
+
+        /// <summary>
+        /// Decode hex HTML entities.
+        /// </summary>
+        public static string HtmlDecode(string input)
+        {
+            var regex = new Regex(@"( ?&x(\d{4}); ?)");
+            var matches = regex.Matches(input);
+            var sb = new StringBuilder (input);
+
+            foreach (Match m in matches)
+            {
+                sb.Replace(m.Groups[0].Value, $"&#x{m.Groups[2].Value};".Replace(" ", string.Empty));
+            }
+
+            return WebUtility.HtmlDecode(sb.ToString());
         }
 
         public static string GetBookOutputDirectory(string author, string title, bool create, string baseOutputDir)

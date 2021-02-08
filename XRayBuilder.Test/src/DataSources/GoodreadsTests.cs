@@ -53,9 +53,9 @@ namespace XRayBuilder.Test.DataSources
             Assert.GreaterOrEqual(results.Length, 1);
             var first = results.First();
             Assert.AreEqual(first.Author, "George R.R. Martin");
-            Assert.AreEqual(first.GoodreadsId, "27282032");
+            Assert.AreEqual("13497", first.GoodreadsId);
             Assert.False(string.IsNullOrEmpty(first.ImageUrl));
-            Assert.AreEqual("A Feast for Crows (Part One) (A Song of Ice and Fire, #4)", first.Title);
+            Assert.AreEqual("A Feast for Crows (A Song of Ice and Fire, #4)", first.Title);
             Assert.Greater(first.Editions, 0);
         }
 

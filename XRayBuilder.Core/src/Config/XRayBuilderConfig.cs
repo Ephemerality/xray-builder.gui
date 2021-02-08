@@ -8,5 +8,6 @@ namespace XRayBuilder.Core.Config
         public bool UseSubdirectories { get; set; }
         public bool UseNewVersion { get; set; }
         public bool ShortenExcerptsLegacy { get; set; }
+        public string AmazonTld { get; set; }
     }
 }

@@ -10,5 +10,6 @@ namespace XRayBuilderGUI.Config
         public bool UseSubdirectories => Properties.Settings.Default.useSubDirectories;
         public bool UseNewVersion => Properties.Settings.Default.useNewVersion;
         public bool ShortenExcerptsLegacy => false;
+        public string AmazonTld => Properties.Settings.Default.amazonTLD;
     }
 }

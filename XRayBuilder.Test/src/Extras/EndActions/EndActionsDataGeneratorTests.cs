@@ -9,9 +9,11 @@ using XRayBuilder.Core.Extras.AuthorProfile;
 using XRayBuilder.Core.Extras.EndActions;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Logic.PageCount;
 using XRayBuilder.Core.Logic.ReadingTime;
 using XRayBuilder.Core.Model;
 using XRayBuilder.Core.Unpack;
+using XRayBuilder.Core.XRay.Logic.Parsing;
 
 namespace XRayBuilder.Test.Extras.EndActions
 {
@@ -29,6 +31,7 @@ namespace XRayBuilder.Test.Extras.EndActions
         private IAmazonClient _amazonClient;
         private IEndActionsArtifactService _endActionsArtifactService;
         private IReadingTimeService _readingTimeService;
+        private IPageCountService _pageCountService;
 
         [SetUp]
         public void Setup()
@@ -41,6 +44,7 @@ namespace XRayBuilder.Test.Extras.EndActions
             _secondarySourceGoodreads = new SecondarySourceGoodreads(_logger, _httpClient, _amazonClient, _readingTimeService);
             _endActionsArtifactService = new EndActionsArtifactService(_logger);
             _readingTimeService = new ReadingTimeService();
+            _pageCountService = new PageCountService(new ParagraphsService());
         }
 
         // [Test]
@@ -60,7 +64,7 @@ namespace XRayBuilder.Test.Extras.EndActions
                 }
             }, _ => false, null, CancellationToken.None);
 
-            var endActionsDataGenerator = new EndActionsDataGenerator(_logger, _httpClient, _amazonClient, _amazonInfoParser, null, _readingTimeService);
+            var endActionsDataGenerator = new EndActionsDataGenerator(_logger, _httpClient, _amazonClient, _amazonInfoParser, null, _readingTimeService, _pageCountService);
 
             var settings = new EndActionsDataGenerator.Settings
             {

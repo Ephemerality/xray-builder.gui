@@ -16,6 +16,7 @@ using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Primitives.Extensions;
 using XRayBuilder.Core.Libraries.Progress;
+using XRayBuilder.Core.Logic.PageCount;
 using XRayBuilder.Core.Logic.ReadingTime;
 using XRayBuilder.Core.Model;
 using XRayBuilder.Core.Unpack;
@@ -30,6 +31,7 @@ namespace XRayBuilder.Core.Extras.EndActions
         private readonly IAmazonInfoParser _amazonInfoParser;
         private readonly IRoentgenClient _roentgenClient;
         private readonly IReadingTimeService _readingTimeService;
+        private readonly IPageCountService _pageCountService;
 
         private readonly Regex _invalidBookTitleRegex = new Regex(@"(Series|Reading) Order|Complete Series|Checklist|Edition|eSpecial|Box ?Set|[0-9]+ Book Series|Books? \d+ ?(to|—|\\u2013|–) ?\d+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
@@ -38,7 +40,9 @@ namespace XRayBuilder.Core.Extras.EndActions
             IHttpClient httpClient,
             IAmazonClient amazonClient,
             IAmazonInfoParser amazonInfoParser,
-            IRoentgenClient roentgenClient, IReadingTimeService readingTimeService)
+            IRoentgenClient roentgenClient,
+            IReadingTimeService readingTimeService,
+            IPageCountService pageCountService)
         {
             _logger = logger;
             _httpClient = httpClient;
@@ -46,6 +50,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             _amazonInfoParser = amazonInfoParser;
             _roentgenClient = roentgenClient;
             _readingTimeService = readingTimeService;
+            _pageCountService = pageCountService;
         }
 
         /// <summary>
@@ -385,41 +390,40 @@ namespace XRayBuilder.Core.Extras.EndActions
                     _logger.Log($"Followed by: {curBook.Series.Next.Title}");
             }
 
-            try
+            // If the page count isn't known, attempt to locate or estimate it (if the setting is enabled)
+            if (curBook.PageCount == 0)
             {
-                string readingTimeFromPageCount = null;
-                if (curBook.PageCount != 0)
-                {
-                    var readingTime = _readingTimeService.GetReadingTime(curBook.PageCount);
-                    curBook.ReadingHours = readingTime.Hours;
-                    curBook.ReadingMinutes = readingTime.Minutes;
-                    readingTimeFromPageCount = _readingTimeService.GetFormattedReadingTime(curBook.PageCount);
-                }
-
-                if (string.IsNullOrEmpty(readingTimeFromPageCount))
+                try
                 {
                     if (!await dataSource.GetPageCountAsync(curBook, cancellationToken))
                     {
                         var metadataCount = metadata.GetPageCount();
                         if (metadataCount.HasValue)
                             curBook.PageCount = metadataCount.Value;
-                        // else if (settings.EstimatePageCount)
-                        // {
-                        //     // TODO Estimation should be done in a place that has knowledge of the book's file and knows for sure that the rawml will exist
-                        //     _logger.Log($"No page count found on {dataSource.Name} or in metadata. Attempting to estimate page count...");
-                        //     _logger.Log(Functions.GetPageCount(curBook.RawmlPath, curBook));
-                        // }
+                        else if (settings.EstimatePageCount)
+                        {
+                            _logger.Log($"No page count found on {dataSource.Name} or in metadata. An estimation will be made, if possible.");
+                            curBook.PageCount = _pageCountService.EstimatePageCount(metadata);
+                        }
                         else
                             _logger.Log($"No page count found on {dataSource.Name} or in metadata");
                     }
                 }
-                else
-                    _logger.Log(readingTimeFromPageCount);
+                catch (Exception ex)
+                {
+                    _logger.Log($"An error occurred while searching for or estimating the page count: {ex.Message}\r\n{ex.StackTrace}");
+                    throw;
+                }
             }
-            catch (Exception ex)
+
+            if (curBook.PageCount != 0)
             {
-                _logger.Log($"An error occurred while searching for or estimating the page count: {ex.Message}\r\n{ex.StackTrace}");
-                throw;
+                var readingTime = _readingTimeService.GetReadingTime(curBook.PageCount);
+                curBook.ReadingHours = readingTime.Hours;
+                curBook.ReadingMinutes = readingTime.Minutes;
+                var readingTimeFromPageCount = _readingTimeService.GetFormattedReadingTime(curBook.PageCount);
+                if (readingTimeFromPageCount != null)
+                    _logger.Log(readingTimeFromPageCount);
             }
 
             return new Response

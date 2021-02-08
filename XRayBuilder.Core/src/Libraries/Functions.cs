@@ -1,23 +1,16 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using HtmlAgilityPack;
 using JetBrains.Annotations;
-using XRayBuilder.Core.Libraries.Language.Pluralization;
-using XRayBuilder.Core.Logic.ReadingTime;
-using XRayBuilder.Core.Model;
 
 namespace XRayBuilder.Core.Libraries
 {
     public static class Functions
     {
-        private static readonly IReadingTimeService _readingTimeService;
-
         public static string ReadFromFile(string file)
         {
             using var streamReader = new StreamReader(file, Encoding.UTF8);
@@ -77,49 +70,6 @@ namespace XRayBuilder.Core.Libraries
             var time = $"{DateTime.Now:HH:mm:ss}";
             var date = $"{DateTime.Now:dd/MM/yyyy}";
             return $"Running X-Ray Builder GUI v{version}. Log started on {date} at {time}.\r\n";
-        }
-
-        public static string GetPageCount(string rawMl, BookInfo bookInfo)
-        {
-            string output;
-            double lineCount = 0;
-            if (!File.Exists(rawMl) || bookInfo == null)
-            {
-                output = $"Error: RawML could not be found, aborting.\r\nPath: {rawMl}";
-                return output;
-            }
-            var bookDoc = new HtmlDocument { OptionAutoCloseOnEnd = true };
-            bookDoc.Load(rawMl, Encoding.UTF8);
-            var booklineNodes = bookDoc.DocumentNode.SelectNodes("//p") ?? bookDoc.DocumentNode.SelectNodes("//div");
-            if (booklineNodes == null)
-            {
-                output = "An error occurred while estimating page count!";
-                return output;
-            }
-            foreach (var line in booklineNodes)
-            {
-                var lineLength = line.InnerText.Length + 1;
-                if (lineLength < 70)
-                {
-                    lineCount++;
-                    continue;
-                }
-                lineCount += Math.Ceiling((double)lineLength / 70);
-            }
-            var pageCount = Convert.ToInt32(Math.Ceiling(lineCount / 31));
-            if (pageCount == 0)
-            {
-                output = "An error occurred while estimating page count!";
-                return output;
-            }
-
-            var readingTime = _readingTimeService.GetReadingTime(pageCount);
-
-            bookInfo.PageCount = pageCount;
-            bookInfo.ReadingHours = readingTime.Hours;
-            bookInfo.ReadingMinutes = readingTime.Minutes;
-
-            return _readingTimeService.GetFormattedReadingTime(pageCount);
         }
 
         public static void RunNotepad(string filename)

@@ -17,7 +17,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
         private readonly IHttpClient _httpClient;
 
         private readonly Regex _numbersRegex = new(@"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)", RegexOptions.Compiled);
-        private readonly Regex _regex404 = new(@"(cs_404_logo|cs_404_link)", RegexOptions.Compiled);
+        private readonly Regex _regex404 = new(@"(cs_404_logo|cs_404_link|Page Not Found)", RegexOptions.Compiled);
 
         public AmazonInfoParser(ILogger logger, IHttpClient httpClient)
         {
@@ -111,22 +111,21 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-size-medium series-detail-description-text']");
             if (descNode != null && descNode.InnerText != "")
             {
-                var description = descNode.InnerText.Trim();
+                var description = descNode.InnerHtml.Clean();
                 // Following the example of Amazon, cut off desc around 1000 characters.
                 // If conveniently trimmed at the end of the sentence, let it end with the punctuation.
                 // If the sentence continues, cut it off and replace the space with an ellipsis
                 if (description.Length > 1000)
                 {
                     description = description.Substring(0, 1000);
-                    var lastPunc = description.LastIndexOfAny(new[] { '.', '!', '?' });
+                    var lastPunc = description.LastIndexOfAny(new[] { '.', '!', '?', ',' });
                     var lastSpace = description.LastIndexOf(' ');
                     if (lastPunc > lastSpace)
                         description = description.Substring(0, lastPunc + 1);
                     else
                         description = $"{description.Substring(0, lastSpace)}{'\u2026'}";
                 }
-                description = System.Net.WebUtility.HtmlDecode(description);
-                response.Description = description.Clean();
+                response.Description = description;
             }
             #endregion
 

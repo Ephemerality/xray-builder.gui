@@ -105,6 +105,7 @@ namespace XRayBuilderGUI.UI
             this.chkRoentgenStartActions = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.listSettings = new System.Windows.Forms.ListBox();
+            this.chkRoentgenNextInSeries = new System.Windows.Forms.CheckBox();
             this.tabSettings.SuspendLayout();
             this.tabPgGeneral.SuspendLayout();
             this.cbLanguage.SuspendLayout();
@@ -827,7 +828,7 @@ namespace XRayBuilderGUI.UI
             this.groupBox1.Controls.Add(this.pictureBox3);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(6, 154);
+            this.groupBox1.Location = new System.Drawing.Point(6, 181);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(414, 58);
             this.groupBox1.TabIndex = 41;
@@ -868,7 +869,7 @@ namespace XRayBuilderGUI.UI
             // 
             this.groupBox9.Controls.Add(this.chkIncludeTopics);
             this.groupBox9.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox9.Location = new System.Drawing.Point(6, 103);
+            this.groupBox9.Location = new System.Drawing.Point(6, 130);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Size = new System.Drawing.Size(414, 48);
             this.groupBox9.TabIndex = 28;
@@ -888,6 +889,7 @@ namespace XRayBuilderGUI.UI
             // 
             // groupBox7
             // 
+            this.groupBox7.Controls.Add(this.chkRoentgenNextInSeries);
             this.groupBox7.Controls.Add(this.pictureBox2);
             this.groupBox7.Controls.Add(this.label3);
             this.groupBox7.Controls.Add(this.chkRoentgenAuthorProfile);
@@ -896,7 +898,7 @@ namespace XRayBuilderGUI.UI
             this.groupBox7.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox7.Location = new System.Drawing.Point(6, 4);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(414, 98);
+            this.groupBox7.Size = new System.Drawing.Size(414, 123);
             this.groupBox7.TabIndex = 27;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Pre-built Downloads";
@@ -917,17 +919,17 @@ namespace XRayBuilderGUI.UI
             this.label3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(110)))), ((int)(((byte)(210)))));
             this.label3.Location = new System.Drawing.Point(157, 17);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(242, 54);
+            this.label3.Size = new System.Drawing.Size(246, 42);
             this.label3.TabIndex = 36;
             this.label3.Text = "When these settings are enabled, pre-built versions of the files will be download" +
-    "ed if they are available.\r\nRequires a valid ASIN.";
+    "ed if they are available. Requires a valid ASIN.";
             // 
             // chkRoentgenAuthorProfile
             // 
             this.chkRoentgenAuthorProfile.AutoSize = true;
             this.chkRoentgenAuthorProfile.Enabled = false;
             this.chkRoentgenAuthorProfile.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkRoentgenAuthorProfile.Location = new System.Drawing.Point(13, 69);
+            this.chkRoentgenAuthorProfile.Location = new System.Drawing.Point(13, 19);
             this.chkRoentgenAuthorProfile.Name = "chkRoentgenAuthorProfile";
             this.chkRoentgenAuthorProfile.Size = new System.Drawing.Size(100, 19);
             this.chkRoentgenAuthorProfile.TabIndex = 33;
@@ -938,7 +940,7 @@ namespace XRayBuilderGUI.UI
             // 
             this.chkRoentgenEndActions.AutoSize = true;
             this.chkRoentgenEndActions.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkRoentgenEndActions.Location = new System.Drawing.Point(13, 19);
+            this.chkRoentgenEndActions.Location = new System.Drawing.Point(13, 44);
             this.chkRoentgenEndActions.Name = "chkRoentgenEndActions";
             this.chkRoentgenEndActions.Size = new System.Drawing.Size(89, 19);
             this.chkRoentgenEndActions.TabIndex = 29;
@@ -949,7 +951,7 @@ namespace XRayBuilderGUI.UI
             // 
             this.chkRoentgenStartActions.AutoSize = true;
             this.chkRoentgenStartActions.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkRoentgenStartActions.Location = new System.Drawing.Point(13, 44);
+            this.chkRoentgenStartActions.Location = new System.Drawing.Point(13, 69);
             this.chkRoentgenStartActions.Name = "chkRoentgenStartActions";
             this.chkRoentgenStartActions.Size = new System.Drawing.Size(93, 19);
             this.chkRoentgenStartActions.TabIndex = 24;
@@ -986,6 +988,17 @@ namespace XRayBuilderGUI.UI
             this.listSettings.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listSettings_DrawItem);
             this.listSettings.MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.listSettings_MeasureItem);
             this.listSettings.SelectedIndexChanged += new System.EventHandler(this.listSettings_SelectedIndexChanged);
+            // 
+            // chkRoentgenNextInSeries
+            // 
+            this.chkRoentgenNextInSeries.AutoSize = true;
+            this.chkRoentgenNextInSeries.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkRoentgenNextInSeries.Location = new System.Drawing.Point(13, 94);
+            this.chkRoentgenNextInSeries.Name = "chkRoentgenNextInSeries";
+            this.chkRoentgenNextInSeries.Size = new System.Drawing.Size(97, 19);
+            this.chkRoentgenNextInSeries.TabIndex = 38;
+            this.chkRoentgenNextInSeries.Text = "Next in Series";
+            this.chkRoentgenNextInSeries.UseVisualStyleBackColor = true;
             // 
             // frmSettings
             // 
@@ -1132,5 +1145,7 @@ namespace XRayBuilderGUI.UI
         private System.Windows.Forms.CheckBox chkEditDescription;
 
         #endregion
+
+        private System.Windows.Forms.CheckBox chkRoentgenNextInSeries;
     }
 }

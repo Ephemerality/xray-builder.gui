@@ -586,7 +586,8 @@ namespace XRayBuilderGUI.UI
                         UseNewVersion = _settings.useNewVersion,
                         PromptAsin = _settings.promptASIN,
                         EstimatePageCount = _settings.pageCount,
-                        EditDescription = _settings.editDescription
+                        EditDescription = _settings.editDescription,
+                        DownloadNis = _settings.downloadNIS
                     };
 
                     var endActionsDataGenerator = _diContainer.GetInstance<IEndActionsDataGenerator>();

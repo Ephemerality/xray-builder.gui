@@ -12,9 +12,8 @@ namespace XRayBuilder.Core.Logic.ReadingTime
 
         public string GetFormattedReadingTime(int pageCount)
         {
-            var formatted = "";
             if (pageCount == 0)
-                return formatted;
+                return null;
 
             var readingTime = GetReadingTime(pageCount);
 
@@ -22,8 +21,7 @@ namespace XRayBuilder.Core.Logic.ReadingTime
             var hours = PluralUtil.Pluralize($"{readingTime.Hours:hour}");
             var minutes = PluralUtil.Pluralize($"{readingTime.Minutes:minute}");
 
-            formatted = $"Typical time to read: {(readingTime.Days > 1 ? $"{days}, " : string.Empty)}{(readingTime.Hours > 1 ? $"{hours}" : string.Empty)}{(readingTime.Hours > 1 ? " and " : ", ")}{(readingTime.Minutes > 1 ? $"{minutes}" : string.Empty)} ({pageCount} pages)";
-            return formatted.StartsWith(", ") ? formatted.Substring(2, formatted.Length) : formatted;
+            return $"Typical time to read: {(readingTime.Days > 1 ? $"{days}, " : string.Empty)}{(readingTime.Hours > 1 ? $"{hours}" : string.Empty)}{(readingTime.Hours > 1 ? " and " : ", ")}{(readingTime.Minutes > 1 ? $"{minutes}" : string.Empty)} ({pageCount} pages)";
         }
     }
 }

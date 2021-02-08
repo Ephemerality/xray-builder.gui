@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Secondary.Model;
-using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Progress;
@@ -110,13 +109,17 @@ namespace XRayBuilder.Core.DataSources.Secondary
             if (match1.Success)
             {
                 var pages = int.Parse(match1.Groups[1].Value, NumberStyles.AllowThousands);
-                var readingTime = _readingTimeService.GetReadingTime(pages);
+                if (pages != 0)
+                {
+                    var readingTime = _readingTimeService.GetReadingTime(pages);
 
-                curBook.PageCount = pages;
-                curBook.ReadingHours = readingTime.Hours;
-                curBook.ReadingMinutes = readingTime.Minutes;
+                    curBook.PageCount = pages;
+                    curBook.ReadingHours = readingTime.Hours;
+                    curBook.ReadingMinutes = readingTime.Minutes;
 
-                _logger.Log(_readingTimeService.GetFormattedReadingTime(pages));
+                    _logger.Log(_readingTimeService.GetFormattedReadingTime(pages));
+                }
+
                 return true;
             }
             return false;

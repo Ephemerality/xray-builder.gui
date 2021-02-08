@@ -14,7 +14,7 @@ namespace XRayBuilder.Core.Logic.ReadingTime
         /// <summary>
         /// Converts an integer into a formatted string.
         /// </summary>
-        /// <returns>Typical time to read including the number of pages.</returns>
+        /// <returns>Typical time to read including the number of pages or null if no pages are specified.</returns>
         /// <param name="pageCount">Page count as an integer.</param>
         string GetFormattedReadingTime(int pageCount);
     }

@@ -252,13 +252,17 @@ namespace XRayBuilder.Core.DataSources.Secondary
                 return false;
 
             var pages = int.Parse(match.Groups["pages"].Value, NumberStyles.AllowThousands);
-            var readingTime = _readingTimeService.GetReadingTime(pages);
+            if (pages != 0)
+            {
+                var readingTime = _readingTimeService.GetReadingTime(pages);
 
-            curBook.PageCount = pages;
-            curBook.ReadingHours = readingTime.Hours;
-            curBook.ReadingMinutes = readingTime.Minutes;
+                curBook.PageCount = pages;
+                curBook.ReadingHours = readingTime.Hours;
+                curBook.ReadingMinutes = readingTime.Minutes;
 
-            _logger.Log(_readingTimeService.GetFormattedReadingTime(pages));
+                _logger.Log(_readingTimeService.GetFormattedReadingTime(pages));
+            }
+
             return true;
         }
 

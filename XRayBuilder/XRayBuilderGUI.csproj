@@ -30,6 +30,8 @@
     <AssemblyVersion>2.1.1.0</AssemblyVersion>
     <FileVersion>2.1.1.0</FileVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>AnyCPU</PlatformTarget>

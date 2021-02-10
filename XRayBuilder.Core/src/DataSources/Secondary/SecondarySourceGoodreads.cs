@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dasync.Collections;
 using HtmlAgilityPack;
-using XRayBuilder.Core.Config;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Secondary.Model;
 using XRayBuilder.Core.Libraries;
@@ -33,7 +32,6 @@ namespace XRayBuilder.Core.DataSources.Secondary
         private readonly IHttpClient _httpClient;
         private readonly IAmazonClient _amazonClient;
         private readonly IReadingTimeService _readingTimeService;
-        private readonly IXRayBuilderConfig _config;
 
         private const int MaxConcurrentRequests = 10;
 
@@ -46,13 +44,12 @@ namespace XRayBuilder.Core.DataSources.Secondary
         private readonly Regex _regexEditions = new(@"editions/(?<editions>[0-9]*)-", RegexOptions.Compiled);
         private readonly Regex _regexPages = new(@"(?<pages>(\d+)|(\d+,\d+)) pages", RegexOptions.Compiled);
 
-        public SecondarySourceGoodreads(ILogger logger, IHttpClient httpClient, IAmazonClient amazonClient, IReadingTimeService readingTimeService, IXRayBuilderConfig config)
+        public SecondarySourceGoodreads(ILogger logger, IHttpClient httpClient, IAmazonClient amazonClient, IReadingTimeService readingTimeService)
         {
             _logger = logger;
             _httpClient = httpClient;
             _amazonClient = amazonClient;
             _readingTimeService = readingTimeService;
-            _config = config;
         }
 
         private string ParseBookIdFromUrl(string input) => _regexBookId.Match(input).Groups["id"].Value;
@@ -170,11 +167,6 @@ namespace XRayBuilder.Core.DataSources.Secondary
             if (series.Total == 0)
                 return series;
 
-            _logger.Log((int) Convert.ToDouble(series.Position) == series.Total
-                ? $"This is the latest book in the {series.Name} series."
-                : $"This is book {series.Position} of {series.Total} in the {series.Name} series.");
-            _logger.Log($"Series URL: {series.Url}");
-
             var positionInt = (int)Convert.ToDouble(series.Position, CultureInfo.InvariantCulture.NumberFormat);
 
             var prevSearch = $"book {positionInt - 1}";
@@ -208,17 +200,9 @@ namespace XRayBuilder.Core.DataSources.Secondary
                 var bookIndexText = bookIndex.InnerText.ToLower();
 
                 if (bookIndexText == prevSearch && series.Previous == null)
-                {
                     series.Previous = await ParseSeriesBook(bookNode);
-                    if(series.Previous != null)
-                        _logger.Log($"Preceded by {series.Previous.Title}.");
-                }
                 else if (bookIndexText == nextSearch)
-                {
                     series.Next = await ParseSeriesBook(bookNode);
-                    if(series.Next != null)
-                        _logger.Log($"Followed by {series.Next.Title}.");
-                }
 
                 if (series.Previous != null && (series.Next != null || positionInt == series.Total))
                     break; // next and prev found or prev found and latest in series

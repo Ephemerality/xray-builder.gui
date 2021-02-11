@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
         private readonly Regex _numbersRegex = new(@"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)", RegexOptions.Compiled);
         private readonly Regex _regex404 = new(@"(cs_404_logo|cs_404_link|Page Not Found)", RegexOptions.Compiled);
+        private readonly Regex _dirtyParas = new(@"^<[^>]+>.*<[^>]+>$", RegexOptions.Compiled);
 
         public AmazonInfoParser(ILogger logger, IHttpClient httpClient)
         {
@@ -111,19 +113,34 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-size-medium series-detail-description-text']");
             if (descNode != null && descNode.InnerText != "")
             {
-                var description = descNode.InnerHtml.Clean();
+                var description = "";
+
+                // TODO: If this proves better than InnerHtml.Clean(), and is reliable, use in other places instead of Clean()?
+                // Match all p nodes in the description node.
+                // Filter out any node starting and ending with a html style tag
+                // "Should" remove single bold, italic and heading lines to leave a cleaner description.
+                // Then replace known entities with characters using HtmlEntity.DeEntitize and join strings to form description.
+                var nodes = descNode.SelectNodes(".//p") ?? descNode.SelectNodes(".//div");
+                if (nodes != null)
+                {
+                    var filteredNodes = (from p in nodes let match = _dirtyParas.Match(p.InnerHtml) where !match.Success select HtmlEntity.DeEntitize(p.InnerText)).ToList();
+                    description = string.Join(" ", filteredNodes);
+                }
+                else
+                    description = descNode.InnerHtml.Clean();
+
                 // Following the example of Amazon, cut off desc around 1000 characters.
                 // If conveniently trimmed at the end of the sentence, let it end with the punctuation.
                 // If the sentence continues, cut it off and replace the space with an ellipsis
                 if (description.Length > 1000)
                 {
                     description = description.Substring(0, 1000);
-                    var lastPunc = description.LastIndexOfAny(new[] { '.', '!', '?', ',' });
+                    var lastPunc = description.LastIndexOfAny(new[] { '.', '!', '?' });
                     var lastSpace = description.LastIndexOf(' ');
                     if (lastPunc > lastSpace)
                         description = description.Substring(0, lastPunc + 1);
                     else
-                        description = $"{description.Substring(0, lastSpace)}{'\u2026'}";
+                        description = $"{description.Substring(0, lastSpace - 1)}{'\u2026'}";
                 }
                 response.Description = description;
             }

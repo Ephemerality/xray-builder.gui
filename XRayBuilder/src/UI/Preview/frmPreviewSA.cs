@@ -49,6 +49,12 @@ namespace XRayBuilderGUI.UI.Preview
             if (startActions.Data.SeriesPosition != null)
             {
                 var seriesInfo = startActions.Data.SeriesPosition;
+                if (seriesInfo.PositionInSeries == 1)
+                {
+                    lblSeries.Text = $@"This is the first book in {seriesInfo.SeriesName}";
+                    lblPreviousHeading.Visible = false;
+                    lblPreviousTitle.Visible = false;
+                }
                 if (seriesInfo.PositionInSeries > 1)
                 {
                     lblSeries.Text = $@"This is book {seriesInfo.PositionInSeries} of {seriesInfo.TotalInSeries} in {seriesInfo.SeriesName}";

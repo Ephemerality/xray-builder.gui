@@ -23,16 +23,12 @@ namespace XRayBuilder.Core.Libraries
         {
             (string[] searches, string replace)[] replacements =
             {
-                (new[] {"<br><br>"}, " "),
-                (new[] {"<b></b>"}, ""),
-                (new[] {@"(<a.*?>.*?</a>)"}, ""),
-                (new[] {"&#169;", "&amp;#169;", "&#174;", "&amp;#174;", "&mdash;", @"</?[a-z]+>" }, ""),
+                (new[] {"&#169;", "&amp;#169;", "&#174;", "&amp;#174;", "&mdash;", @"</?[a-z]+>", @"(<a.*?>.*?</a>)", "@", @"#(?!\d+)", @"\$", "%", "_", "<b></b>", @"\*" }, ""),
+                (new[] { "&#133;", "&amp;#133;", @" \. \. \.", @"\.\.\." }, "…"),
+                (new[] { @"\t|\n|\r|•", @"\s+", "<br><br>"}, " "),
                 (new[] { "“", "”", "\"", "&quot;" }, "'"),
-                (new[] { "&#133;", "&amp;#133;", @" \. \. \." }, "…"),
                 (new[] { " - ", "--" }, "—"),
-                (new[] { @"\t|\n|\r|•", @"\s+"}, " "),
-                (new[] { @"\. …$"}, "."),
-                (new[] {"@", @"#(?!\d+)", @"\$", "%", "_"}, "")
+                (new[] { @"\. …$"}, ".")
             };
             foreach (var (s, r) in replacements)
             {
@@ -130,7 +126,7 @@ namespace XRayBuilder.Core.Libraries
         }
 
         /// <summary>
-        /// Convert non-ascii characters into the \uXXXX hexidecimal format
+        /// Convert non-ascii characters into the \uXXXX hexadecimal format
         /// </summary>
         public static string ExpandUnicode(string input)
         {

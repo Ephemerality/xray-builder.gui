@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -19,7 +20,8 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
         private readonly Regex _numbersRegex = new(@"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)", RegexOptions.Compiled);
         private readonly Regex _regex404 = new(@"(cs_404_logo|cs_404_link|Page Not Found)", RegexOptions.Compiled);
-        private readonly Regex _dirtyParas = new(@"^<[^>]+>.*<[^>]+>$", RegexOptions.Compiled);
+
+        private readonly Regex _dirtyParas = new(@"^<[^>]+>.*<[^>]+>$|^&apos;|&apos;$|\*|_", RegexOptions.Compiled);
 
         public AmazonInfoParser(ILogger logger, IHttpClient httpClient)
         {
@@ -113,18 +115,18 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-size-medium series-detail-description-text']");
             if (descNode != null && descNode.InnerText != "")
             {
-                var description = "";
-
                 // TODO: If this proves better than InnerHtml.Clean(), and is reliable, use in other places instead of Clean()?
                 // Match all p nodes in the description node.
                 // Filter out any node starting and ending with a html style tag
                 // "Should" remove single bold, italic and heading lines to leave a cleaner description.
                 // Then replace known entities with characters using HtmlEntity.DeEntitize and join strings to form description.
-                var nodes = descNode.SelectNodes(".//p") ?? descNode.SelectNodes(".//div");
+                var nodes = descNode.SelectNodes(".//p/text()[normalize-space(.) != '']") ?? descNode.SelectNodes(".//div/text()[normalize-space(.) != '']");
+
+                string description;
                 if (nodes != null)
                 {
-                    var filteredNodes = (from p in nodes let match = _dirtyParas.Match(p.InnerHtml) where !match.Success select HtmlEntity.DeEntitize(p.InnerText)).ToList();
-                    description = string.Join(" ", filteredNodes);
+                    var filteredNodes = (from p in nodes let match = _dirtyParas.Match(p.InnerHtml.Trim()) where !match.Success select HtmlEntity.DeEntitize(p.InnerText.Trim())).ToList();
+                    description = filteredNodes.Count > 0 ? string.Join(" ", filteredNodes) : descNode.InnerHtml.Clean();
                 }
                 else
                     description = descNode.InnerHtml.Clean();
@@ -142,6 +144,11 @@ namespace XRayBuilder.Core.DataSources.Amazon
                     else
                         description = $"{description.Substring(0, lastSpace - 1)}{'\u2026'}";
                 }
+
+                // Used to test output from Amazon description parsing
+                //var descsCheckFile = AppDomain.CurrentDomain.BaseDirectory + @"\descs.txt";
+                //File.AppendAllText(descsCheckFile, description + Environment.NewLine + Environment.NewLine);
+
                 response.Description = description;
             }
             #endregion

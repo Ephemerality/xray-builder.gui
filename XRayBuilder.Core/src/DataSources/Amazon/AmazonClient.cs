@@ -206,7 +206,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                    ?? authorHtmlDoc.DocumentNode.SelectSingleNode("//span[@id='author_biography']")
                    ?? throw new FormatChangedException(nameof(AmazonClient), "author bio");
 
-            return bioNode.InnerText;
+            return bioNode.InnerHtml.Clean();
         }
 
         private string GetAuthorImageUrl(HtmlDocument authorHtmlDoc)

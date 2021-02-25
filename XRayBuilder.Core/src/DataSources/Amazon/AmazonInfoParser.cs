@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -125,8 +124,14 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 string description;
                 if (nodes != null)
                 {
-                    var filteredNodes = (from p in nodes let match = _dirtyParas.Match(p.InnerHtml.Trim()) where !match.Success select HtmlEntity.DeEntitize(p.InnerText.Trim())).ToList();
-                    description = filteredNodes.Count > 0 ? string.Join(" ", filteredNodes) : descNode.InnerHtml.Clean();
+                    var filteredNodes = nodes
+                        .Where(node => !_dirtyParas.IsMatch(node.InnerHtml.Trim()))
+                        .Select(node => HtmlEntity.DeEntitize(node.InnerText.Trim()))
+                        .ToArray();
+
+                    description = filteredNodes.Any()
+                        ? string.Join(" ", filteredNodes)
+                        : descNode.InnerHtml.Clean();
                 }
                 else
                     description = descNode.InnerHtml.Clean();

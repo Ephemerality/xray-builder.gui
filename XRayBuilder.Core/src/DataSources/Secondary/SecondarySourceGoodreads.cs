@@ -423,23 +423,23 @@ namespace XRayBuilder.Core.DataSources.Secondary
             var grDoc = await _httpClient.GetPageAsync(dataUrl, cancellationToken);
 
             var aboutNode = grDoc.DocumentNode.SelectSingleNode("//div[@class='bookAuthorProfile']");
-            if (aboutNode != null)
-            {
-                var bioNodes = aboutNode.SelectNodes("//div[@class='bookAuthorProfile__about']/span/text()[normalize-space(.) != '']");
-                if (bioNodes != null)
-                {
-                    var nodes = bioNodes.Select(n => HtmlEntity.DeEntitize(n.InnerText.Trim())).ToList();
-                    result.Biography = string.Join(" ", nodes);
-                }
+            if (aboutNode == null)
+                return result;
 
-                var imgNode = aboutNode.SelectSingleNode(".//div[@class='bookAuthorProfile__photo']");
-                if (imgNode != null)
-                {
-                    var attr = imgNode.GetAttributeValue("style", "");
-                    var match = Regex.Match(attr, @"background-image: url\((.*)\)");
-                    if (match.Success)
-                        result.ImageUrl = match.Groups[1].Value.Replace("p3/", "p8/");
-                }
+            var bioNodes = aboutNode.SelectNodes("//div[@class='bookAuthorProfile__about']/span/text()[normalize-space(.) != '']");
+            if (bioNodes != null)
+            {
+                var nodes = bioNodes.Select(n => HtmlEntity.DeEntitize(n.InnerText.Trim())).ToList();
+                result.Biography = string.Join(" ", nodes);
+            }
+
+            var imgNode = aboutNode.SelectSingleNode(".//div[@class='bookAuthorProfile__photo']");
+            if (imgNode != null)
+            {
+                var attr = imgNode.GetAttributeValue("style", "");
+                var match = Regex.Match(attr, @"background-image: url\((.*)\)");
+                if (match.Success)
+                    result.ImageUrl = match.Groups[1].Value.Replace("p3/", "p8/");
             }
 
             return result;

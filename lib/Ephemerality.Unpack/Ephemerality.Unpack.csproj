@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="JetBrains.Annotations" Version="2020.3.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\IonDotnet\Amazon.IonDotnet\Amazon.IonDotnet.csproj" />
+    </ItemGroup>
+
+    <Choose>
+        <When Condition="$(TargetFramework.StartsWith('net4'))">
+            <ItemGroup>
+                <Reference Include="Microsoft.CSharp" />
+                <PackageReference Include="JonSkeet.MiscUtil" Version="0.2.0" />
+            </ItemGroup>
+        </When>
+        <Otherwise>
+            <ItemGroup>
+                <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.1" />
+                <PackageReference Include="JTForks.MiscUtil" Version="1.285.0" />
+            </ItemGroup>
+        </Otherwise>
+    </Choose>
+
+</Project>

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
-using XRayBuilder.Core.Unpack.KFX;
-using Metadata = XRayBuilder.Core.Unpack.Mobi.Metadata;
+using Ephemerality.Unpack.KFX;
+using Metadata = Ephemerality.Unpack.Mobi.Metadata;
 
-namespace XRayBuilder.Core.Unpack
+namespace Ephemerality.Unpack
 {
     public static class MetadataLoader
     {

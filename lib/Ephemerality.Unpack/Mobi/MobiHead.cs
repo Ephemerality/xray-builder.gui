@@ -6,7 +6,7 @@ using System.Text;
 using MiscUtil.Conversion;
 using MiscUtil.IO;
 
-namespace XRayBuilder.Core.Unpack.Mobi
+namespace Ephemerality.Unpack.Mobi
 {
     public sealed class MobiHead
     {

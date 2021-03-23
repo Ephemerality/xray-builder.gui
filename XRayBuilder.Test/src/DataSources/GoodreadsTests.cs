@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Ephemerality.Unpack;
 using NSubstitute;
 using NUnit.Framework;
 using XRayBuilder.Core.DataSources.Amazon;
@@ -10,7 +11,6 @@ using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Logic.ReadingTime;
 using XRayBuilder.Core.Model;
-using XRayBuilder.Core.Unpack;
 
 namespace XRayBuilder.Test.DataSources
 {

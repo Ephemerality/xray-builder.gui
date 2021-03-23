@@ -1,9 +1,9 @@
 using System;
 using System.IO;
+using Ephemerality.Unpack;
 using XRayBuilder.Core.Config;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Logging;
-using XRayBuilder.Core.Unpack;
 
 namespace XRayBuilder.Core.Logic
 {

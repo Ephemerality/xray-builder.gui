@@ -1,6 +1,6 @@
 using System;
 
-namespace XRayBuilder.Core.Unpack
+namespace Ephemerality.Unpack
 {
     public sealed class EncryptedBookException : Exception
     {

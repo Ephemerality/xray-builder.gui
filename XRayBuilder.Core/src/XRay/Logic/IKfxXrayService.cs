@@ -1,6 +1,6 @@
 using System.Threading;
+using Ephemerality.Unpack.KFX;
 using XRayBuilder.Core.Libraries.Progress;
-using XRayBuilder.Core.Unpack.KFX;
 
 namespace XRayBuilder.Core.XRay.Logic
 {

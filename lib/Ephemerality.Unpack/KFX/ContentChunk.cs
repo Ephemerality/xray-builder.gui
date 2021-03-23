@@ -1,4 +1,4 @@
-namespace XRayBuilder.Core.Unpack.KFX
+namespace Ephemerality.Unpack.KFX
 {
     public sealed class ContentChunk
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Amazon.IonDotnet.Tree;
 
-namespace XRayBuilder.Core.Unpack.KFX
+namespace Ephemerality.Unpack.KFX
 {
     public class EntityCollection : IEnumerable<Entity>
     {

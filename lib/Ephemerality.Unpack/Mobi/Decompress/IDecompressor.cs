@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 
-namespace XRayBuilder.Core.Unpack.Mobi.Decompress
+namespace Ephemerality.Unpack.Mobi.Decompress
 {
     public interface IDecompressor
     {

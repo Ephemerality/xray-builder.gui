@@ -8,12 +8,10 @@ using System.Text;
 using Amazon.IonDotnet;
 using Amazon.IonDotnet.Builders;
 using Amazon.IonDotnet.Tree.Impl;
+using Ephemerality.Unpack.Extensions;
 using Newtonsoft.Json;
-using XRayBuilder.Core.Libraries.Enumerables.Extensions;
-using XRayBuilder.Core.Libraries.IO.Extensions;
-using XRayBuilder.Core.Libraries.Primitives.Extensions;
 
-namespace XRayBuilder.Core.Unpack.KFX
+namespace Ephemerality.Unpack.KFX
 {
     public sealed class KfxContainer : YjContainer
     {

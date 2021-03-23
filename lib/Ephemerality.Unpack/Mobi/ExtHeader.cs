@@ -9,13 +9,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Ephemerality.Unpack.Extensions;
 using JetBrains.Annotations;
 using MiscUtil.Conversion;
 using MiscUtil.IO;
-using XRayBuilder.Core.Libraries.IO.Extensions;
-using XRayBuilder.Core.Libraries.Primitives.Extensions;
 
-namespace XRayBuilder.Core.Unpack.Mobi
+namespace Ephemerality.Unpack.Mobi
 {
     public sealed class ExtHeader
     {
@@ -27,7 +26,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
             if (identifier != "EXTH")
                 throw new UnpackException($"Invalid EXTH identifier: {identifier}");
             // Skip reading header length
-            reader.BaseStream.Skip(4);
+            reader.BaseStream.Seek(4, SeekOrigin.Current);
             var recordCount = reader.ReadInt32();
             for (var i = 0; i < recordCount; i++)
                 RecordList.Add(new ExtHRecord(reader));

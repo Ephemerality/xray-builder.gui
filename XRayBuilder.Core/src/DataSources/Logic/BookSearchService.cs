@@ -1,10 +1,10 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Ephemerality.Unpack;
 using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Model;
-using XRayBuilder.Core.Unpack;
 
 namespace XRayBuilder.Core.DataSources.Logic
 {

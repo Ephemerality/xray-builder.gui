@@ -6,9 +6,9 @@
 
 using System;
 using System.IO;
-using XRayBuilder.Core.Libraries.Primitives.Extensions;
+using Ephemerality.Unpack.Extensions;
 
-namespace XRayBuilder.Core.Unpack.Mobi
+namespace Ephemerality.Unpack.Mobi
 {
     public sealed class PalmDocHeader
     {

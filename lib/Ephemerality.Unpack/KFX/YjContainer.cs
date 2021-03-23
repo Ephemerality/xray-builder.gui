@@ -9,7 +9,7 @@ using Amazon.IonDotnet.Tree;
 using Amazon.IonDotnet.Tree.Impl;
 using JetBrains.Annotations;
 
-namespace XRayBuilder.Core.Unpack.KFX
+namespace Ephemerality.Unpack.KFX
 {
     public class YjContainer : IMetadata
     {

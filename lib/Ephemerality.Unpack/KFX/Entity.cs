@@ -7,9 +7,9 @@ using Amazon.IonDotnet;
 using Amazon.IonDotnet.Builders;
 using Amazon.IonDotnet.Tree;
 using Amazon.IonDotnet.Tree.Impl;
-using XRayBuilder.Core.Libraries.IO.Extensions;
+using Ephemerality.Unpack.Extensions;
 
-namespace XRayBuilder.Core.Unpack.KFX
+namespace Ephemerality.Unpack.KFX
 {
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class Entity

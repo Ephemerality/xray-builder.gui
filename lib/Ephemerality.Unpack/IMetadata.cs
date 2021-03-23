@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.IO;
 
-namespace XRayBuilder.Core.Unpack
+namespace Ephemerality.Unpack
 {
     public interface IMetadata : IDisposable
     {

@@ -2,6 +2,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Ephemerality.Unpack;
 using NUnit.Framework;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Secondary;
@@ -12,7 +13,6 @@ using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Logic.PageCount;
 using XRayBuilder.Core.Logic.ReadingTime;
 using XRayBuilder.Core.Model;
-using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Logic.Parsing;
 
 namespace XRayBuilder.Test.Extras.EndActions

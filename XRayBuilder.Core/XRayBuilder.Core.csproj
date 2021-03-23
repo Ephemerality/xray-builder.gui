@@ -19,10 +19,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\IonDotnet\Amazon.IonDotnet\Amazon.IonDotnet.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
       <EmbeddedResource Update="src\Localization\Core\CoreStrings.resx">
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>CoreStrings.Designer.cs</LastGenOutput>
@@ -35,6 +31,10 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>CoreStrings.resx</DependentUpon>
       </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\lib\Ephemerality.Unpack\Ephemerality.Unpack.csproj" />
     </ItemGroup>
 
     <Choose>

@@ -1,6 +1,6 @@
 using System.IO;
+using Ephemerality.Unpack;
 using NUnit.Framework;
-using XRayBuilder.Core.Unpack;
 using XRayBuilder.Test.XRay;
 
 namespace XRayBuilder.Test.Unpack

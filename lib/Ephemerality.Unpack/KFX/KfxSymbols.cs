@@ -1,4 +1,4 @@
-namespace XRayBuilder.Core.Unpack.KFX
+namespace Ephemerality.Unpack.KFX
 {
     public static class KfxSymbols
     {

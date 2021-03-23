@@ -1,6 +1,6 @@
 using System;
 
-namespace XRayBuilder.Core.Unpack.Mobi.Decompress
+namespace Ephemerality.Unpack.Mobi.Decompress
 {
     public sealed class PalmDocReader : Decompressor
     {

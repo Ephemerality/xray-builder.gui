@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using XRayBuilder.Core.Unpack;
+using Ephemerality.Unpack;
 
 namespace XRayBuilderGUI.UI
 {

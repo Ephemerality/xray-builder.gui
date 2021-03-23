@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using XRayBuilder.Core.Libraries.Primitives.Extensions;
+using Ephemerality.Unpack.Extensions;
 
-namespace XRayBuilder.Core.Unpack.Mobi.Decompress
+namespace Ephemerality.Unpack.Mobi.Decompress
 {
     internal sealed class HuffCdicReader : Decompressor
     {

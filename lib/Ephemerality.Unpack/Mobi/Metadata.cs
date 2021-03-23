@@ -10,13 +10,13 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Ephemerality.Unpack.Extensions;
+using Ephemerality.Unpack.Mobi.Decompress;
+using Ephemerality.Unpack.Util;
 using MiscUtil.Conversion;
 using MiscUtil.IO;
-using XRayBuilder.Core.Libraries;
-using XRayBuilder.Core.Libraries.IO.Extensions;
-using XRayBuilder.Core.Unpack.Mobi.Decompress;
 
-namespace XRayBuilder.Core.Unpack.Mobi
+namespace Ephemerality.Unpack.Mobi
 {
     public sealed class Metadata : IMetadata
     {
@@ -139,7 +139,7 @@ namespace XRayBuilder.Core.Unpack.Mobi
         public string DbName => _pdb.DbName;
 
         public string UniqueId => _activeMobiHeader.UniqueId.ToString();
-        public string Guid => Functions.ConvertGuid(UniqueId);
+        public string Guid => GuidUtil.ConvertGuid(UniqueId);
         public bool CanModify => true;
 
         public string Author => _activeMobiHeader.ExtHeader.Author;

@@ -1,11 +1,11 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Ephemerality.Unpack;
 using NSubstitute;
 using NUnit.Framework;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Logging;
-using XRayBuilder.Core.Unpack;
 
 namespace XRayBuilder.Test.DataSources
 {

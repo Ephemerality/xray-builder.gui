@@ -7,11 +7,11 @@
 using System;
 using System.IO;
 using System.Text;
+using Ephemerality.Unpack.Extensions;
 using MiscUtil.Conversion;
 using MiscUtil.IO;
-using XRayBuilder.Core.Libraries.Primitives.Extensions;
 
-namespace XRayBuilder.Core.Unpack.Mobi
+namespace Ephemerality.Unpack.Mobi
 {
     public sealed class PdbHeader
     {

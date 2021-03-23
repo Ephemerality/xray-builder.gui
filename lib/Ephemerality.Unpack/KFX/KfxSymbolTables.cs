@@ -4,7 +4,7 @@ using Amazon.IonDotnet;
 using Amazon.IonDotnet.Internals;
 using Amazon.IonDotnet.Utils;
 
-namespace XRayBuilder.Core.Unpack.KFX
+namespace Ephemerality.Unpack.KFX
 {
     public static class KfxSymbolTable
     {

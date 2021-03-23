@@ -257,7 +257,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IonDotnet\Amazon.IonDotnet\Amazon.IonDotnet.csproj" />
     <ProjectReference Include="..\XRayBuilder.Core\XRayBuilder.Core.csproj" />
   </ItemGroup>
   <ItemGroup>

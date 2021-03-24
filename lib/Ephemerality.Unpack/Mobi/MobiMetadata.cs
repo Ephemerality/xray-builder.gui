@@ -32,7 +32,7 @@ namespace Ephemerality.Unpack.Mobi
         private PalmDocHeader _activePdh;
         private MobiHead _activeMobiHeader;
 
-        public MobiMetadata(FileStream fs)
+        public MobiMetadata(Stream fs)
         {
             Initialize(fs);
         }
@@ -40,7 +40,7 @@ namespace Ephemerality.Unpack.Mobi
         internal MobiMetadata()
         { }
 
-        private void Initialize(FileStream fs)
+        private void Initialize(Stream fs)
         {
             fs.Seek(0, SeekOrigin.Begin);
             _pdb = new PdbHeader(fs);

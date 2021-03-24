@@ -33,7 +33,7 @@ namespace Ephemerality.Unpack.Mobi
 
         public readonly RecordInfo[] RecordMetadata;
 
-        public PdbHeader(FileStream fs)
+        public PdbHeader(Stream fs)
         {
             fs.Read(_dbName, 0, 32);
             fs.Read(_attributeBits, 0, 2);

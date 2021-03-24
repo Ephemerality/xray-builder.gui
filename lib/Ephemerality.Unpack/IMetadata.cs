@@ -35,8 +35,9 @@ namespace Ephemerality.Unpack
         void SetAsin(string asin);
         int? GetPageCount();
 
-        // Settings (should be moved)
+        /// <summary>
+        /// Indicates whether or not the metadata type supports exporting its raw markup
+        /// </summary>
         bool RawMlSupported { get; }
-        bool XRaySupported { get; }
     }
 }

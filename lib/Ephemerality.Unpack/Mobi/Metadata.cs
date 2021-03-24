@@ -199,8 +199,7 @@ namespace Ephemerality.Unpack.Mobi
             }
         }
 
-        public bool RawMlSupported { get; } = true;
-        public bool XRaySupported { get; } = true;
+        public bool RawMlSupported => true;
 
         /// <summary>
         /// Throws <see cref="EncryptedBookException"/> if DRM is enabled.

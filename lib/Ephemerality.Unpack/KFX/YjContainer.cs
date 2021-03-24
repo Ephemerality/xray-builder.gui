@@ -159,8 +159,7 @@ namespace Ephemerality.Unpack.KFX
                 ?.GetField(KfxSymbols.Entries)
                 ?.Count;
 
-        public bool RawMlSupported { get; } = false;
-        public bool XRaySupported { get; } = true;
+        public bool RawMlSupported => false;
 
         [CanBeNull]
         public IonList GetDefaultToc()

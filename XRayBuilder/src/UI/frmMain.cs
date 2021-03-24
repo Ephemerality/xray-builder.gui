@@ -1046,8 +1046,8 @@ namespace XRayBuilderGUI.UI
             _tooltip.SetToolTip(txtAsin, _amazonClient.Url(_settings.amazonTLD, txtAsin.Text));
 
             CheckFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text), metadata.DbName, metadata.Guid);
-            btnBuild.Enabled = metadata.XRaySupported;
-            btnOneClick.Enabled = metadata.XRaySupported;
+            btnBuild.Enabled = true;
+            btnOneClick.Enabled = true;
             btnUnpack.Enabled = metadata.RawMlSupported;
 
             //TODO: Check ASIN matches selected Amazon region.

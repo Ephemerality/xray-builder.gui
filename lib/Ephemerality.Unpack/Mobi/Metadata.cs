@@ -10,6 +10,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Ephemerality.Unpack.Exceptions;
 using Ephemerality.Unpack.Extensions;
 using Ephemerality.Unpack.Mobi.Decompress;
 using Ephemerality.Unpack.Util;

@@ -1,6 +1,6 @@
 using System;
 
-namespace Ephemerality.Unpack
+namespace Ephemerality.Unpack.Exceptions
 {
     public sealed class UnpackException : Exception
     {

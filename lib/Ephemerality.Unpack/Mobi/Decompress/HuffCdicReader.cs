@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Ephemerality.Unpack.Exceptions;
 using Ephemerality.Unpack.Extensions;
 
 namespace Ephemerality.Unpack.Mobi.Decompress

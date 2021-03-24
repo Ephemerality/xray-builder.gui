@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Ephemerality.Unpack.Exceptions;
 using Ephemerality.Unpack.Extensions;
 using JetBrains.Annotations;
 using MiscUtil.Conversion;

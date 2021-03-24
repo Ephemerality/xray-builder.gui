@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using System.Text;
+using Ephemerality.Unpack.Exceptions;
 using MiscUtil.Conversion;
 using MiscUtil.IO;
 

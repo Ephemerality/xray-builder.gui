@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Ephemerality.Unpack.Exceptions;
 using MiscUtil.IO;
 
 namespace Ephemerality.Unpack.Mobi

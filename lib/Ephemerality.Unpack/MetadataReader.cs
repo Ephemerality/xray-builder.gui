@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using Ephemerality.Unpack.KFX;
-using Metadata = Ephemerality.Unpack.Mobi.Metadata;
+using Ephemerality.Unpack.Mobi;
 
 namespace Ephemerality.Unpack
 {
-    public static class MetadataLoader
+    public static class MetadataReader
     {
         public static IMetadata Load(string file)
         {
@@ -16,7 +16,7 @@ namespace Ephemerality.Unpack
             {
                 case ".azw3":
                 case ".mobi":
-                    metadata = new Metadata(fs);
+                    metadata = new MobiMetadata(fs);
                     break;
                 case ".kfx":
                     metadata = new KfxContainer(fs);

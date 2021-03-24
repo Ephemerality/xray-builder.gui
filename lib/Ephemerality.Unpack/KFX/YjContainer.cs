@@ -7,13 +7,14 @@ using System.IO;
 using System.Linq;
 using Amazon.IonDotnet.Tree;
 using Amazon.IonDotnet.Tree.Impl;
+using Ephemerality.Unpack.Exceptions;
 using JetBrains.Annotations;
 
 namespace Ephemerality.Unpack.KFX
 {
-    public class YjContainer : IMetadata
+    public abstract class YjContainer : IMetadata
     {
-        public EntityCollection Entities { get; } = new EntityCollection();
+        public EntityCollection Entities { get; } = new();
 
         public enum ContainerFormat
         {
@@ -57,16 +58,12 @@ namespace Ephemerality.Unpack.KFX
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"Unsupported image format: {format}", e);
+                    throw new UnpackException($"Unsupported image format: {format}", e);
                 }
             }
         }
 
-        public bool IsAzw3
-        {
-            get => false;
-            set => throw new NotSupportedException();
-        }
+        public bool IsAzw3 => false;
 
         public string Asin => Metadata.Asin;
         public string Author => Metadata.Author;
@@ -83,7 +80,7 @@ namespace Ephemerality.Unpack.KFX
 
         private KfxMetadata Metadata { get; set; }
 
-        private class KfxMetadata
+        private sealed class KfxMetadata
         {
             public string Asin { get; set; }
             public string AssetId { get; set; }
@@ -133,17 +130,11 @@ namespace Ephemerality.Unpack.KFX
         {
         }
 
-        public byte[] GetRawMl()
-        {
-            throw new NotSupportedException();
-        }
+        public byte[] GetRawMl() => throw new NotSupportedException();
 
-        public Stream GetRawMlStream() => new MemoryStream(new byte[0]);
+        public Stream GetRawMlStream() => throw new NotSupportedException();
 
-        public void SaveRawMl(string path)
-        {
-            throw new NotSupportedException();
-        }
+        public void SaveRawMl(string path) => throw new NotSupportedException();
 
         public void UpdateCdeContentType() => throw new NotSupportedException();
 
@@ -254,141 +245,143 @@ namespace Ephemerality.Unpack.KFX
                     }
 
                     var parentEid = (int?) null;
-                    if (value is IonList ionList)
+                    switch (value)
                     {
-                        foreach (var (v, i) in ionList.Select((v, i) => (v, i)))
+                        case IonList ionList:
                         {
-                            var valueToExtract = v;
-                            if (new[] {KfxSymbols.ContentList, KfxSymbols.Plugin}.Contains(contentKey) && v is IonSymbol listSymbol) // todo && is_kpf_prepub
-                                // todo confirm this actually works
-                                valueToExtract = Entities.Value(KfxSymbols.Structure, listSymbol.SymbolValue.Text);
-                            ExtractPositionData(valueToExtract, currentEid, contentKey, i, ionList.Count - 1, advance);
-                        }
-                    }
-                    else if (value is IonStruct ionStruct)
-                    {
-                        if (contentKey != KfxSymbols.Storyline)
-                        {
-                            var eid = ionStruct.GetField(KfxSymbols.Id) ?? ionStruct.GetField(KfxSymbols.KfxId);
-                            if (eid != null)
+                            foreach (var (v, i) in ionList.Select((v, i) => (v, i)))
                             {
-                                parentEid = currentEid;
-                                currentEid = eid.IntValue;
-                                if (eidSection.ContainsKey(currentEid.Value))
-                                {
-                                    if (eidSection[currentEid.Value] == name)
-                                        throw new Exception($"Duplicate eid {currentEid} in section {name}");
-                                    throw new Exception($"Duplicate eid {currentEid} in {name} and {eidSection[currentEid.Value]}");
-                                }
-
-                                eidSection[currentEid.Value] = name;
+                                var valueToExtract = v;
+                                if (new[] {KfxSymbols.ContentList, KfxSymbols.Plugin}.Contains(contentKey) && v is IonSymbol listSymbol) // todo && is_kpf_prepub
+                                    // todo confirm this actually works
+                                    valueToExtract = Entities.Value(KfxSymbols.Structure, listSymbol.SymbolValue.Text);
+                                ExtractPositionData(valueToExtract, currentEid, contentKey, i, ionList.Count - 1, advance);
                             }
+
+                            break;
                         }
-
-                        var annotationType = ionStruct.GetField(KfxSymbols.AnnotationType);
-                        var type = ionStruct.GetField(KfxSymbols.Type);
-                        if (new[] {KfxSymbols.Text, KfxSymbols.Container, KfxSymbols.Image}.Contains(type?.StringValue)
-                            && parentEid != null && listIndex != null
-                            && contentKey == KfxSymbols.ContentList
-                            && ionStruct.GetField(KfxSymbols.Render)?.StringValue == KfxSymbols.Inline)
+                        case IonStruct ionStruct:
                         {
-                            HaveContent(parentEid, listIndex == 0 ? -1 : 0, advance);
-                        }
-
-                        var saveCpiPidForOffset = cpiPidForOffset;
-
-                        if (new[] {KfxSymbols.Image, KfxSymbols.Kvg, KfxSymbols.Plugin, KfxSymbols.HorizontalRule}.Contains(type?.StringValue))
-                            HaveContent(currentEid, 1, advance);
-                        else if (new[] {KfxSymbols.Text, KfxSymbols.Container, KfxSymbols.ListItem}.Contains(type?.StringValue))
-                        {
-                            if (new[] {KfxSymbols.Content, KfxSymbols.ContentList, KfxSymbols.StoryName}.All(ct => !ionStruct.ContainsField(ct)))
-                                HaveContent(currentEid, 1, advance); // todo matchZeroLen: isKpr321 && type?.StringValue == KfxSymbols.Text
-                        }
-
-                        foreach (var pageTemplate in ionStruct.Where(s => s.FieldNameSymbol.Text == KfxSymbols.PageTemplates).OfType<IonList>())
-                            ExtractPositionData(pageTemplate.First(), currentEid, KfxSymbols.PageTemplates, null, null, advance);
-
-                        if (ionStruct.ContainsField(KfxSymbols.ContentList) && !new[] {KfxSymbols.Kvg, KfxSymbols.Plugin}.Contains(type?.StringValue))
-                            HaveContent(currentEid, 1, advance && !new[] {KfxSymbols.Math, KfxSymbols.Mathsegment}.Contains(ionStruct.GetField(KfxSymbols.YjClassification)?.StringValue));
-
-                        if (ionStruct.ContainsField(KfxSymbols.Content) && !new[] {KfxSymbols.AltText, KfxSymbols.Mathml}.Contains(annotationType?.StringValue))
-                        {
-                            var contentStruct = ionStruct.GetField(KfxSymbols.Content);
-                            var content = Entities
-                                .ValueOrDefault(KfxSymbols.Content, contentStruct.GetField("name").StringValue)
-                                ?.GetField(KfxSymbols.ContentList)
-                                .GetElementAt(contentStruct.GetField(KfxSymbols.Index).IntValue);
-                            if (content != null)
-                                HaveContent(currentEid, content.StringValue.Length, advance, contentStruct.GetField("name").StringValue, content.StringValue);
-                        }
-
-                        if (ionStruct.ContainsField(KfxSymbols.Annotations))
-                            ExtractPositionData(ionStruct.GetField(KfxSymbols.Annotations), currentEid, KfxSymbols.Annotations, null, null, advance);
-
-                        if (ionStruct.ContainsField(KfxSymbols.AltContent))
-                            ExtractPositionData(Entities.Value(KfxSymbols.Storyline, ionStruct.GetField(KfxSymbols.AltContent).StringValue), null, KfxSymbols.Storyline, null, null, advance);
-
-                        if (ionStruct.ContainsField(KfxSymbols.ContentList))
-                        {
-                            var contentListValue = ionStruct.GetField(KfxSymbols.ContentList);
-                            if (type?.StringValue == KfxSymbols.Plugin)
-                                ExtractPositionData(contentListValue, currentEid, type.StringValue, null, null, advance);
-                            else if (type?.StringValue == KfxSymbols.Kvg)
-                                ExtractPositionData(contentListValue, null, KfxSymbols.ContentList, null, null, false);
-                            else
-                                ExtractPositionData(contentListValue, currentEid, KfxSymbols.ContentList, null, null, advance);
-                        }
-
-                        if (ionStruct.ContainsField(KfxSymbols.Content) && !new[] {KfxSymbols.AltText, KfxSymbols.Mathml}.Contains(annotationType?.StringValue))
-                        {
-                            var contentValue = ionStruct.GetField(KfxSymbols.Content);
-                            if (!(contentValue is IonStruct))
-                                ExtractPositionData(contentValue, currentEid, KfxSymbols.Content, null, null, advance);
-                        }
-
-                        if (ionStruct.ContainsField(KfxSymbols.StoryName) && contentKey != KfxSymbols.Storyline)
-                        {
-                            HaveContent(currentEid, 1, advance);
-
-                            var storyNameValue = ionStruct.GetField(KfxSymbols.StoryName).StringValue;
-                            storiesBySection[name] = storyNameValue;
-                            sectionsByStory[storyNameValue] = name;
-
-                            // if self.is_conditional_structure:
-                            //     if fv not in pending_story_names:
-                            //         pending_story_names.append(fv)
-                            // else:
-                            if (!processedStoryNames.Contains(storyNameValue))
+                            if (contentKey != KfxSymbols.Storyline)
                             {
-                                var fragment = Entities.ValueOrDefault(KfxSymbols.Storyline, storyNameValue);
-                                if (fragment != null)
+                                var eid = ionStruct.GetField(KfxSymbols.Id) ?? ionStruct.GetField(KfxSymbols.KfxId);
+                                if (eid != null)
                                 {
-                                    ExtractPositionData(fragment, null, KfxSymbols.Storyline, null, null, advance);
-                                    processedStoryNames.Add(storyNameValue);
+                                    parentEid = currentEid;
+                                    currentEid = eid.IntValue;
+                                    if (eidSection.ContainsKey(currentEid.Value))
+                                    {
+                                        if (eidSection[currentEid.Value] == name)
+                                            throw new Exception($"Duplicate eid {currentEid} in section {name}");
+                                        throw new Exception($"Duplicate eid {currentEid} in {name} and {eidSection[currentEid.Value]}");
+                                    }
+
+                                    eidSection[currentEid.Value] = name;
                                 }
                             }
+
+                            var annotationType = ionStruct.GetField(KfxSymbols.AnnotationType);
+                            var type = ionStruct.GetField(KfxSymbols.Type);
+                            if (new[] {KfxSymbols.Text, KfxSymbols.Container, KfxSymbols.Image}.Contains(type?.StringValue)
+                                && parentEid != null && listIndex != null
+                                && contentKey == KfxSymbols.ContentList
+                                && ionStruct.GetField(KfxSymbols.Render)?.StringValue == KfxSymbols.Inline)
+                            {
+                                HaveContent(parentEid, listIndex == 0 ? -1 : 0, advance);
+                            }
+
+                            var saveCpiPidForOffset = cpiPidForOffset;
+
+                            if (new[] {KfxSymbols.Image, KfxSymbols.Kvg, KfxSymbols.Plugin, KfxSymbols.HorizontalRule}.Contains(type?.StringValue))
+                                HaveContent(currentEid, 1, advance);
+                            else if (new[] {KfxSymbols.Text, KfxSymbols.Container, KfxSymbols.ListItem}.Contains(type?.StringValue))
+                            {
+                                if (new[] {KfxSymbols.Content, KfxSymbols.ContentList, KfxSymbols.StoryName}.All(ct => !ionStruct.ContainsField(ct)))
+                                    HaveContent(currentEid, 1, advance); // todo matchZeroLen: isKpr321 && type?.StringValue == KfxSymbols.Text
+                            }
+
+                            foreach (var pageTemplate in ionStruct.Where(s => s.FieldNameSymbol.Text == KfxSymbols.PageTemplates).OfType<IonList>())
+                                ExtractPositionData(pageTemplate.First(), currentEid, KfxSymbols.PageTemplates, null, null, advance);
+
+                            if (ionStruct.ContainsField(KfxSymbols.ContentList) && !new[] {KfxSymbols.Kvg, KfxSymbols.Plugin}.Contains(type?.StringValue))
+                                HaveContent(currentEid, 1, advance && !new[] {KfxSymbols.Math, KfxSymbols.Mathsegment}.Contains(ionStruct.GetField(KfxSymbols.YjClassification)?.StringValue));
+
+                            if (ionStruct.ContainsField(KfxSymbols.Content) && !new[] {KfxSymbols.AltText, KfxSymbols.Mathml}.Contains(annotationType?.StringValue))
+                            {
+                                var contentStruct = ionStruct.GetField(KfxSymbols.Content);
+                                var content = Entities
+                                    .ValueOrDefault(KfxSymbols.Content, contentStruct.GetField("name").StringValue)
+                                    ?.GetField(KfxSymbols.ContentList)
+                                    .GetElementAt(contentStruct.GetField(KfxSymbols.Index).IntValue);
+                                if (content != null)
+                                    HaveContent(currentEid, content.StringValue.Length, advance, contentStruct.GetField("name").StringValue, content.StringValue);
+                            }
+
+                            if (ionStruct.ContainsField(KfxSymbols.Annotations))
+                                ExtractPositionData(ionStruct.GetField(KfxSymbols.Annotations), currentEid, KfxSymbols.Annotations, null, null, advance);
+
+                            if (ionStruct.ContainsField(KfxSymbols.AltContent))
+                                ExtractPositionData(Entities.Value(KfxSymbols.Storyline, ionStruct.GetField(KfxSymbols.AltContent).StringValue), null, KfxSymbols.Storyline, null, null, advance);
+
+                            if (ionStruct.ContainsField(KfxSymbols.ContentList))
+                            {
+                                var contentListValue = ionStruct.GetField(KfxSymbols.ContentList);
+                                if (type?.StringValue == KfxSymbols.Plugin)
+                                    ExtractPositionData(contentListValue, currentEid, type.StringValue, null, null, advance);
+                                else if (type?.StringValue == KfxSymbols.Kvg)
+                                    ExtractPositionData(contentListValue, null, KfxSymbols.ContentList, null, null, false);
+                                else
+                                    ExtractPositionData(contentListValue, currentEid, KfxSymbols.ContentList, null, null, advance);
+                            }
+
+                            if (ionStruct.ContainsField(KfxSymbols.Content) && !new[] {KfxSymbols.AltText, KfxSymbols.Mathml}.Contains(annotationType?.StringValue))
+                            {
+                                var contentValue = ionStruct.GetField(KfxSymbols.Content);
+                                if (contentValue is not IonStruct)
+                                    ExtractPositionData(contentValue, currentEid, KfxSymbols.Content, null, null, advance);
+                            }
+
+                            if (ionStruct.ContainsField(KfxSymbols.StoryName) && contentKey != KfxSymbols.Storyline)
+                            {
+                                HaveContent(currentEid, 1, advance);
+
+                                var storyNameValue = ionStruct.GetField(KfxSymbols.StoryName).StringValue;
+                                storiesBySection[name] = storyNameValue;
+                                sectionsByStory[storyNameValue] = name;
+
+                                // if self.is_conditional_structure:
+                                //     if fv not in pending_story_names:
+                                //         pending_story_names.append(fv)
+                                // else:
+                                if (!processedStoryNames.Contains(storyNameValue))
+                                {
+                                    var fragment = Entities.ValueOrDefault(KfxSymbols.Storyline, storyNameValue);
+                                    if (fragment != null)
+                                    {
+                                        ExtractPositionData(fragment, null, KfxSymbols.Storyline, null, null, advance);
+                                        processedStoryNames.Add(storyNameValue);
+                                    }
+                                }
+                            }
+
+                            var extraItemsIgnoredTypes = new[]
+                            {
+                                KfxSymbols.AltContent, KfxSymbols.AltText, KfxSymbols.Annotations, KfxSymbols.Content,
+                                KfxSymbols.ContentList, KfxSymbols.PageTemplates, KfxSymbols.ReadingOrderSwitchMap, KfxSymbols.ShapeList, KfxSymbols.StoryName,
+                                "yj.dictionary.term", "yj.dictionary.unnormalized_term"
+                            };
+                            var extraItems = ionStruct.Where(s => s is not IonString && !extraItemsIgnoredTypes.Contains(s.FieldNameSymbol.Text));
+                            foreach (var extraItem in extraItems)
+                                ExtractPositionData(extraItem, currentEid, extraItem.FieldNameSymbol.Text, null, null, advance);
+
+                            if (type?.StringValue != KfxSymbols.Image && ionStruct.GetField(KfxSymbols.Render)?.StringValue == KfxSymbols.Inline && cpiPidForOffset > saveCpiPidForOffset + 1)
+                                cpiPidForOffset++;
+                            break;
                         }
-
-                        var extraItemsIgnoredTypes = new[]
-                        {
-                            KfxSymbols.AltContent, KfxSymbols.AltText, KfxSymbols.Annotations, KfxSymbols.Content,
-                            KfxSymbols.ContentList, KfxSymbols.PageTemplates, KfxSymbols.ReadingOrderSwitchMap, KfxSymbols.ShapeList, KfxSymbols.StoryName,
-                            "yj.dictionary.term", "yj.dictionary.unnormalized_term"
-                        };
-                        var extraItems = ionStruct.Where(s => !(s is IonString) && !extraItemsIgnoredTypes.Contains(s.FieldNameSymbol.Text));
-                        foreach (var extraItem in extraItems)
-                            ExtractPositionData(extraItem, currentEid, extraItem.FieldNameSymbol.Text, null, null, advance);
-
-                        if (type?.StringValue != KfxSymbols.Image && ionStruct.GetField(KfxSymbols.Render)?.StringValue == KfxSymbols.Inline && cpiPidForOffset > saveCpiPidForOffset + 1)
-                            cpiPidForOffset++;
-                    }
-                    else if (value is IonSexp)
-                    {
-                        throw new NotSupportedException();
-                    }
-                    else if (value is IonString)
-                    {
-                        throw new NotSupportedException();
+                        case IonSexp:
+                            throw new NotSupportedException();
+                        case IonString:
+                            throw new NotSupportedException();
                     }
                 }
 

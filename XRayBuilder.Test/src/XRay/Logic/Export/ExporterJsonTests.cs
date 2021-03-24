@@ -48,7 +48,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             xray.Unattended = true;
             _xrayService.ExportAndDisplayTerms(xray, _file, true, false);
             using var fs = new FileStream(book.Bookpath, FileMode.Open, FileAccess.Read);
-            var metadata = new Metadata(fs);
+            var metadata = new MobiMetadata(fs);
             _aliasesRepository.LoadAliasesForXRay(xray);
             using var bookFs = new FileStream(book.Rawml, FileMode.Open);
             _xrayService.ExpandFromRawMl(xray, metadata, bookFs, false, true, 0, true, null, null, CancellationToken.None, false, false);

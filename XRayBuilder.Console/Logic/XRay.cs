@@ -120,7 +120,7 @@ namespace XRayBuilder.Console.Logic
                 Task buildTask = metadata switch
                 {
                     // ReSharper disable AccessToDisposedClosure
-                    Metadata _ => Task.Run(() => _xrayService.ExpandFromRawMl(xray, metadata, metadata.GetRawMlStream(), true, true, 25, true, null, _progress, cancellationToken, true, false), cancellationToken),
+                    MobiMetadata _ => Task.Run(() => _xrayService.ExpandFromRawMl(xray, metadata, metadata.GetRawMlStream(), true, true, 25, true, null, _progress, cancellationToken, true, false), cancellationToken),
                     KfxContainer kfx => Task.Run(() => _kfxXrayService.AddLocations(xray, kfx, true, 25, _progress, cancellationToken), cancellationToken),
                     _ => throw new NotSupportedException()
                 };
@@ -167,7 +167,7 @@ namespace XRayBuilder.Console.Logic
             _logger.Log("Extracting metadata...");
             try
             {
-                var metadata = MetadataLoader.Load(mobiFile);
+                var metadata = MetadataReader.Load(mobiFile);
                 try
                 {
                     await CheckAndFixIncorrectAsinOrThrowAsync(metadata, mobiFile, cancellationToken);

@@ -174,7 +174,7 @@ namespace XRayBuilderGUI.UI
             _logger.Log(MainStrings.ExtractingMetadata);
             try
             {
-                var metadata = MetadataLoader.Load(mobiFile);
+                var metadata = MetadataReader.Load(mobiFile);
                 UIFunctions.EbokTagPromptOrThrow(metadata, mobiFile);
                 try
                 {
@@ -302,7 +302,7 @@ namespace XRayBuilderGUI.UI
                 Task buildTask;
                 switch (metadata)
                 {
-                    case Metadata _:
+                    case MobiMetadata _:
                         bool EditChaptersCallback()
                         {
                             if (xray.Unattended || !_settings.enableEdit)
@@ -688,7 +688,7 @@ namespace XRayBuilderGUI.UI
                     try
                     {
                         _logger.Log(string.Format(MainStrings.ExportingTermsFrom, "Roentgen"));
-                        using var metadata = MetadataLoader.Load(txtMobi.Text);
+                        using var metadata = MetadataReader.Load(txtMobi.Text);
                         await Task.Run(() => _termsService.DownloadAndSaveAsync(_diContainer.GetInstance<SecondarySourceRoentgen>(), null, path, metadata.Asin, _settings.roentgenRegion, _settings.includeTopics, _progress, _cancelTokens.Token));
                     }
                     catch (Exception ex) when (ex.Message.Contains("No terms"))
@@ -1128,7 +1128,7 @@ namespace XRayBuilderGUI.UI
             }
 
             _logger.Log(MainStrings.ExtractingRawMl);
-            using var metadata = MetadataLoader.Load(txtMobi.Text);
+            using var metadata = MetadataReader.Load(txtMobi.Text);
             var rawMlPath = _directoryService.GetRawmlPath(txtMobi.Text);
             metadata.SaveRawMl(rawMlPath);
             _logger.Log(string.Format(MainStrings.ExtractedToPath, rawMlPath));

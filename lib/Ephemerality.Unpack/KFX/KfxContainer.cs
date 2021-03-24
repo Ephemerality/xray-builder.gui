@@ -1,6 +1,5 @@
 ﻿// Based on KFX handling from jhowell's KFX in/output plugins (https://www.mobileread.com/forums/showthread.php?t=272407)
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,6 +7,7 @@ using System.Text;
 using Amazon.IonDotnet;
 using Amazon.IonDotnet.Builders;
 using Amazon.IonDotnet.Tree.Impl;
+using Ephemerality.Unpack.Exceptions;
 using Ephemerality.Unpack.Extensions;
 using Newtonsoft.Json;
 
@@ -52,7 +52,7 @@ namespace Ephemerality.Unpack.KFX
 
             var containerInfo = loader.LoadSingle<IonStruct>(containerInfoData);
             if (containerInfo == null)
-                throw new Exception("Bad container or something");
+                throw new UnpackException("Bad container or something");
 
             // Get document symbol offsets by their ID, load the symbols, then reload the container
             var docSymbolOffset = containerInfo.GetById(KfxSymbolTable.KfxSymbolIds[KfxSymbols.BcDocSymbolOffset]);
@@ -77,15 +77,15 @@ namespace Ephemerality.Unpack.KFX
 
             var compressionType = containerInfo.GetField(KfxSymbols.BcComprType).IntValue;
             if (compressionType != DefaultCompressionType)
-                throw new Exception($"Unexpected bcComprType ({compressionType})");
+                throw new UnpackException($"Unexpected bcComprType ({compressionType})");
 
             var drmScheme = containerInfo.GetField(KfxSymbols.BcDrmScheme).IntValue;
             if (drmScheme != DefaultDrmScheme)
-                throw new Exception($"Unexpected bcDRMScheme ({drmScheme})");
+                throw new UnpackException($"Unexpected bcDRMScheme ({drmScheme})");
 
             var chunkSize = containerInfo.GetField(KfxSymbols.BcChunkSize).IntValue;
             if (chunkSize != DefaultChunkSize)
-                throw new Exception($"Unexpected bcChunkSize in container {containerId} info ({chunkSize})");
+                throw new UnpackException($"Unexpected bcChunkSize in container {containerId} info ({chunkSize})");
 
             if (header.Version > 1)
             {
@@ -112,9 +112,9 @@ namespace Ephemerality.Unpack.KFX
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
             if (kfxGenInfo.GetOrDefault("kfxgen_payload_sha1") != payloadSha1)
-                throw new Exception($"Incorrect kfxgen_payload_sha1 in container {containerId}");
+                throw new UnpackException($"Incorrect kfxgen_payload_sha1 in container {containerId}");
             if (kfxGenInfo.GetOrDefault("kfxgen_acr") != containerId)
-                throw new Exception($"Unexpected kfxgen_acr in container {containerId}");
+                throw new UnpackException($"Unexpected kfxgen_acr in container {containerId}");
 
             var typeNums = new HashSet<int>();
             if (indexTableLength > 0)
@@ -132,7 +132,7 @@ namespace Ephemerality.Unpack.KFX
 
                     var entityStart = (int) header.Length + entityOffset;
                     if (entityStart + entityLength > fs.Length)
-                        throw new Exception($"Container {containerId} is not large enough for entity end (offset {entityStart + entityLength})");
+                        throw new UnpackException($"Container {containerId} is not large enough for entity end (offset {entityStart + entityLength})");
 
                     var entityData = new MemoryStream(fs.ReadBytes(entityStart, entityLength, SeekOrigin.Begin));
                     Entities.Add(new Entity(entityData, id, type, docSymbols, loader));
@@ -165,58 +165,6 @@ namespace Ephemerality.Unpack.KFX
             };
 
             SetMetadata();
-        }
-    }
-
-    public class KfxContainerInfo
-    {
-        public KfxHeader Header { get; set; }
-        public string ContainerId { get; set; }
-        public int ChunkSize { get; set; }
-        public int CompressionType { get; set; }
-        public int DrmScheme { get; set; }
-        public string KfxGenApplicationVersion { get; set; }
-        public string KfxGenPackageVersion { get; set; }
-        public YjContainer.ContainerFormat ContainerFormat { get; set; }
-    }
-
-    public class KfxHeader
-    {
-        public string Signature { get; }
-        public ushort Version { get; }
-        public uint Length { get; }
-        public uint ContainerInfoOffset { get; }
-        public uint ContainerInfoLength { get; }
-
-        private const string DrmSignature = "?DRM";
-        private const string KfxSignature = "CONT";
-        private const int MinHeaderLength = 18;
-        private readonly int[] _allowedVersions = { 1, 2 };
-
-        public KfxHeader(Stream stream)
-        {
-            using var reader = new BinaryReader(stream, Encoding.UTF8, true);
-            Signature = Encoding.ASCII.GetString(reader.ReadBytes(4));
-            switch (Signature)
-            {
-                case KfxSignature:
-                    break;
-                case DrmSignature:
-                    throw new Exception("DRM-protected books are not supported");
-                default:
-                    throw new Exception("Book is not in KFX format");
-            }
-
-            Version = reader.ReadUInt16();
-            if (!_allowedVersions.Contains(Version))
-                throw new Exception($"KFX version not supported ({Version})");
-
-            Length = reader.ReadUInt32();
-            if (Length < MinHeaderLength)
-                throw new Exception("Invalid KFX: header too short");
-
-            ContainerInfoOffset = reader.ReadUInt32();
-            ContainerInfoLength = reader.ReadUInt32();
         }
     }
 }

@@ -19,7 +19,7 @@ using MiscUtil.IO;
 
 namespace Ephemerality.Unpack.Mobi
 {
-    public sealed class Metadata : IMetadata
+    public sealed class MobiMetadata : IMetadata
     {
         private PdbHeader _pdb;
         private PalmDocHeader _pdh;
@@ -32,12 +32,12 @@ namespace Ephemerality.Unpack.Mobi
         private PalmDocHeader _activePdh;
         private MobiHead _activeMobiHeader;
 
-        public Metadata(FileStream fs)
+        public MobiMetadata(FileStream fs)
         {
             Initialize(fs);
         }
 
-        internal Metadata()
+        internal MobiMetadata()
         { }
 
         private void Initialize(FileStream fs)
@@ -201,9 +201,6 @@ namespace Ephemerality.Unpack.Mobi
 
         public bool RawMlSupported => true;
 
-        /// <summary>
-        /// Throws <see cref="EncryptedBookException"/> if DRM is enabled.
-        /// </summary>
         public void CheckDrm()
         {
             if (_activePdh.EncryptionType != 0)

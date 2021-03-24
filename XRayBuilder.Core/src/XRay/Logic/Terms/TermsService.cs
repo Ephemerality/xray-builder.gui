@@ -154,7 +154,7 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
 
             return metadata switch
             {
-                Metadata _ => FindOccurrencesLegacy(term, paragraph),
+                MobiMetadata _ => FindOccurrencesLegacy(term, paragraph),
                 KfxContainer _ => FindOccurrences(term, paragraph),
                 _ => FindOccurrencesLegacy(term, paragraph)
             };

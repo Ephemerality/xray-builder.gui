@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using Ephemerality.Unpack.Exceptions;
 
 namespace Ephemerality.Unpack
 {
@@ -26,10 +27,25 @@ namespace Ephemerality.Unpack
         /// </summary>
         bool CanModify { get; }
 
+        /// <summary>
+        /// For Mobi/AZW3, throws <see cref="EncryptedBookException"/> if DRM is enabled.
+        /// KFX books will throw during load instead.
+        /// </summary>
         void CheckDrm();
+        /// <summary>
+        /// If supported, returns the raw markup from the book
+        /// </summary>
         byte[] GetRawMl();
+        /// <summary>
+        /// If supported, returns a stream containing the raw markup from <see cref="GetRawMl"/>
+        /// </summary>
         Stream GetRawMlStream();
+        /// <summary>
+        /// If supported, saves the raw markup to a file
+        /// </summary>
         void SaveRawMl(string path);
+
+        // TODO These only apply to Mobi, shouldn't be forced for KFX
         void UpdateCdeContentType();
         void Save(Stream stream);
         void SetAsin(string asin);

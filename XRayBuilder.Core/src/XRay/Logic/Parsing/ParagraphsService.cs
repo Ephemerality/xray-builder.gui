@@ -17,7 +17,7 @@ namespace XRayBuilder.Core.XRay.Logic.Parsing
         public IEnumerable<Paragraph> GetParagraphs(IMetadata metadata)
             => metadata switch
             {
-                Metadata _ => GetRegular(metadata),
+                MobiMetadata _ => GetRegular(metadata),
                 KfxContainer kfx => GetKfx(kfx),
                 _ => GetRegular(metadata)
             };

@@ -27,7 +27,6 @@
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <ItemGroup>
-    <PackageReference Include="Amazon.IonDotnet.Ephemerality" Version="1.0.0" />
     <PackageReference Include="AsyncEnumerator" Version="4.0.2" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.29" />
     <PackageReference Include="JetBrains.Annotations" Version="2020.3.0" />
@@ -57,6 +56,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Amazon.IonDotnet.Ephemerality, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\lib\Ephemerality.Unpack\Amazon.IonDotnet.Ephemerality.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net.Http" />
   </ItemGroup>
 </Project>

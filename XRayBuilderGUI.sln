@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XRayBuilder.Test", "XRayBui
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XRayBuilder.Core", "XRayBuilder.Core\XRayBuilder.Core.csproj", "{AA34A70F-7538-4364-A05F-37EC6896D3D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amazon.IonDotnet", "lib\IonDotnet\Amazon.IonDotnet\Amazon.IonDotnet.csproj", "{C18F678E-F654-4E86-B879-09E22BC115C7}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XRayBuilder.Console", "XRayBuilder.Console\XRayBuilder.Console.csproj", "{D756007E-193E-49BC-B86B-51F86E0CD23A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ephemerality.Unpack", "lib\Ephemerality.Unpack\Ephemerality.Unpack.csproj", "{7879DA3B-B5E6-4300-944A-9585570E3A43}"
@@ -61,18 +59,6 @@ Global
 		{AA34A70F-7538-4364-A05F-37EC6896D3D3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AA34A70F-7538-4364-A05F-37EC6896D3D3}.Release|x86.ActiveCfg = Release|Any CPU
 		{AA34A70F-7538-4364-A05F-37EC6896D3D3}.Release|x86.Build.0 = Release|Any CPU
-		{C18F678E-F654-4E86-B879-09E22BC115C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C18F678E-F654-4E86-B879-09E22BC115C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C18F678E-F654-4E86-B879-09E22BC115C7}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{C18F678E-F654-4E86-B879-09E22BC115C7}.Debug|x86.Build.0 = Debug|Any CPU
-		{C18F678E-F654-4E86-B879-09E22BC115C7}.Perf|Any CPU.ActiveCfg = Debug|Any CPU
-		{C18F678E-F654-4E86-B879-09E22BC115C7}.Perf|Any CPU.Build.0 = Debug|Any CPU
-		{C18F678E-F654-4E86-B879-09E22BC115C7}.Perf|x86.ActiveCfg = Debug|Any CPU
-		{C18F678E-F654-4E86-B879-09E22BC115C7}.Perf|x86.Build.0 = Debug|Any CPU
-		{C18F678E-F654-4E86-B879-09E22BC115C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C18F678E-F654-4E86-B879-09E22BC115C7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C18F678E-F654-4E86-B879-09E22BC115C7}.Release|x86.ActiveCfg = Release|Any CPU
-		{C18F678E-F654-4E86-B879-09E22BC115C7}.Release|x86.Build.0 = Release|Any CPU
 		{D756007E-193E-49BC-B86B-51F86E0CD23A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D756007E-193E-49BC-B86B-51F86E0CD23A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D756007E-193E-49BC-B86B-51F86E0CD23A}.Debug|x86.ActiveCfg = Debug|Any CPU

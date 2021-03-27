@@ -175,4 +175,67 @@ Si le titre est censé plus long que cela, vous pourriez avoir une erreur sur vo
 Réduisez le titre dans l'application Calibre ou changez le nom de la base de données manuellement.
 </value>
   </data>
+  <data name="SeriesInformation" xml:space="preserve">
+    <value>Information de suites</value>
+  </data>
+  <data name="BuildingStartEndActions" xml:space="preserve">
+    <value>Compilation des actions de démarrage et de fin en cours…</value>
+  </data>
+  <data name="BuildingAuthorProfile" xml:space="preserve">
+    <value>Création du profil de l'auteur en cours…</value>
+  </data>
+  <data name="BuiltAuthorProfileFromExisting" xml:space="preserve">
+    <value>Création du profil de l'auteur à partir du fichier d'action de fin !</value>
+  </data>
+  <data name="AuthorProfileCreated" xml:space="preserve">
+    <value>Profil de l'auteur créé !</value>
+  </data>
+  <data name="ErrorWritingAuthorProfile" xml:space="preserve">
+    <value>Erreur lors de la création du profil de l'auteur</value>
+  </data>
+  <data name="Biography" xml:space="preserve">
+    <value>Biographie</value>
+  </data>
+  <data name="AllExtrasDownloadedStopping" xml:space="preserve">
+    <value>Arrêt : tout les extras téléchargés et compilés et les None doivent être écrasés !</value>
+  </data>
+  <data name="LoadedExistingEndActions" xml:space="preserve">
+    <value>Chargement des actions de fin depuis {0}</value>
+  </data>
+  <data name="ErrorEndActions" xml:space="preserve">
+    <value>Erreur lors de l'écriture du fichier des actions de fin</value>
+  </data>
+  <data name="EndActionsCreated" xml:space="preserve">
+    <value>Fichier des actions de fin créé !</value>
+  </data>
+  <data name="WritingEndActionsFile" xml:space="preserve">
+    <value>Écriture du fichier des actions de fin…</value>
+  </data>
+  <data name="ErrorCreatingStartActions" xml:space="preserve">
+    <value>Erreur lors de l'écriture du fichier des actions de démarrage</value>
+  </data>
+  <data name="StartActionsCreated" xml:space="preserve">
+    <value>Fichier des actions de démarrage créé !</value>
+  </data>
+  <data name="WritingStartActionsFile" xml:space="preserve">
+    <value>Écriture du fichier des actions de démarrage…</value>
+  </data>
+  <data name="PreMadeActionsDownloaded" xml:space="preserve">
+    <value>Fichier d'actions {0} téléchargé !</value>
+  </data>
+  <data name="NoPremadeActionsAvailable" xml:space="preserve">
+    <value>Aucun fichier d'actions {0} disponible : un sera créé en remplacement.</value>
+  </data>
+  <data name="XRayCreated" xml:space="preserve">
+    <value>Fichier X-Ray créé !</value>
+  </data>
+  <data name="SavedTo" xml:space="preserve">
+    <value>Enregistré vers {0}</value>
+  </data>
+  <data name="ErrorPreviewData" xml:space="preserve">
+    <value>Erreur pendant l'enregistrement du fichier previewData</value>
+  </data>
+  <data name="PreviewData" xml:space="preserve">
+    <value>Fichier previewData d'X-Ray créé !</value>
+  </data>
 </root>

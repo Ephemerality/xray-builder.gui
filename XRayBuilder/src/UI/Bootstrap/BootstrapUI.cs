@@ -1,4 +1,5 @@
 using SimpleInjector;
+using XRayBuilder.Core.Database.Bootstrap;
 using XRayBuilder.Core.Libraries.Bootstrap.Model;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.SimpleInjector.Extensions;
@@ -12,6 +13,7 @@ namespace XRayBuilderGUI.UI.Bootstrap
     {
         public void Register(IBootstrapBuilder builder)
         {
+            builder.Register<BootstrapDatabase>();
         }
 
         public void Register(Container container)

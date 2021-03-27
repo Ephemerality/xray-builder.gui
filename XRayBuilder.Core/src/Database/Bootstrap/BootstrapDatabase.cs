@@ -14,6 +14,7 @@ namespace XRayBuilder.Core.Database.Bootstrap
             var config = new DatabaseConfig("xraybuilder.db");
             container.RegisterSingleton(() => config);
             container.RegisterSingleton<DatabaseMigrator>();
+            container.RegisterSingleton<IDatabaseConnection>(() => new DatabaseConnection(config));
         }
     }
 }

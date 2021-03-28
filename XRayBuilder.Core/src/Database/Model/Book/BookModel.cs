@@ -1,4 +1,4 @@
-namespace XRayBuilder.Core.Database.Model
+namespace XRayBuilder.Core.Database.Model.Book
 {
     /// <summary>
     /// Database model for the Book table

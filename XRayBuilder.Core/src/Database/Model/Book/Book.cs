@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using XRayBuilder.Core.Database.Model.Author;
 
-namespace XRayBuilder.Core.Database.Model
+namespace XRayBuilder.Core.Database.Model.Book
 {
     /// <summary>
     /// POCO version of <see cref="BookModel"/>

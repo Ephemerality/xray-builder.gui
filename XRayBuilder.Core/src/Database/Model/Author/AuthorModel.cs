@@ -1,7 +1,8 @@
-namespace XRayBuilder.Core.Database.Model
+namespace XRayBuilder.Core.Database.Model.Author
 {
     /// <summary>
     /// Database model for the Author table
+    /// Not bothering with a POCO version for now
     /// </summary>
     public sealed class AuthorModel
     {

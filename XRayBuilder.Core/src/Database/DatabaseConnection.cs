@@ -26,7 +26,7 @@ namespace XRayBuilder.Core.Database
             return await _sqLiteConnection.QueryAsync<T>(new CommandDefinition(sql, param, null, cancellationToken: cancellationToken));
         }
 
-        public async Task<int> ExecuteAsync<T>(string sql, object param = null, CancellationToken cancellationToken = default)
+        public async Task<int> ExecuteAsync(string sql, object param = null, CancellationToken cancellationToken = default)
         {
             await OpenAsync(cancellationToken);
             return await _sqLiteConnection.ExecuteAsync(new CommandDefinition(sql, param, null, cancellationToken: cancellationToken));

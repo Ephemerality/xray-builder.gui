@@ -6,7 +6,6 @@ using Dasync.Collections;
 using JetBrains.Annotations;
 using XRayBuilder.Core.Database.Model.Author;
 using XRayBuilder.Core.Database.Model.Book;
-using XRayBuilder.Core.Database.Orm.Author;
 using XRayBuilder.Core.Database.Orm.Book;
 using XRayBuilder.Core.Database.Orm.BookAuthorMap;
 
@@ -15,17 +14,17 @@ namespace XRayBuilder.Core.Database.Repository
     public sealed class BookRepository
     {
         private readonly IBookOrm _bookOrm;
-        private readonly IAuthorOrm _authorOrm;
         private readonly IBookAuthorMapOrm _bookAuthorMapOrm;
         private readonly BookConverter _bookConverter = new();
         private readonly IDatabaseConnection _connection;
+        private readonly AuthorRepository _authorRepository;
 
-        public BookRepository(IBookOrm bookOrm, IAuthorOrm authorOrm, IBookAuthorMapOrm bookAuthorMapOrm, IDatabaseConnection connection)
+        public BookRepository(IBookOrm bookOrm, IBookAuthorMapOrm bookAuthorMapOrm, IDatabaseConnection connection, AuthorRepository authorRepository)
         {
             _bookOrm = bookOrm;
-            _authorOrm = authorOrm;
             _bookAuthorMapOrm = bookAuthorMapOrm;
             _connection = connection;
+            _authorRepository = authorRepository;
         }
 
         #region Converter
@@ -61,8 +60,8 @@ namespace XRayBuilder.Core.Database.Repository
         public async Task<Book> GetByAsinAsync([NotNull] string asin, CancellationToken cancellationToken)
         {
             var bookModel = await _bookOrm.GetByAsinAsync(asin, cancellationToken);
-            var authorIds = await _bookAuthorMapOrm.GetAuthorsForBookAsync(bookModel.BookId, cancellationToken);
-            var authorModels = await _authorOrm.GetByIdsAsync(authorIds, cancellationToken);
+            var authorIds = await _bookAuthorMapOrm.GetAuthorIdsForBookAsync(bookModel.BookId, cancellationToken);
+            var authorModels = await _authorRepository.GetByIdsAsync(authorIds, cancellationToken);
 
             return _bookConverter.ToPoco(bookModel, authorModels);
         }
@@ -75,7 +74,7 @@ namespace XRayBuilder.Core.Database.Repository
             var authorIds = await new AsyncEnumerable<long>(async yield =>
             {
                 foreach (var author in book.Authors)
-                    await yield.ReturnAsync(await _authorOrm.UpsertAsync(author, yield.CancellationToken));
+                    await yield.ReturnAsync(await _authorRepository.AddOrUpdateAsync(author, yield.CancellationToken));
             }).ToArrayAsync(cancellationToken);
 
             await _bookAuthorMapOrm.UpdateAuthorsForBookAsync(bookId, authorIds, cancellationToken);

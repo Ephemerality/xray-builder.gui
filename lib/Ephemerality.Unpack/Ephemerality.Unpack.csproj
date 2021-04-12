@@ -44,4 +44,21 @@ Content can be unpacked in the form of RAWML for Mobi/AZW3 and plain text for KF
         </Otherwise>
     </Choose>
 
+    <!--
+    The following solves the problem that 'dotnet pack' does not include the DLLs from referenced projects.
+    See https://github.com/NuGet/Home/issues/3891 for a description of the problem
+    and for newer versions / workarounds / built-in methods.
+    -->
+    <PropertyGroup>
+        <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+        <!-- include PDBs in the NuGet package -->
+        <!--<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>-->
+    </PropertyGroup>
+    <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
+        <ItemGroup>
+            <!-- Output all references with CopyLocal = true to package directory. E.g. IonDotnet above. -->
+            <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('CopyLocal', 'true'))" />
+        </ItemGroup>
+    </Target>
+
 </Project>

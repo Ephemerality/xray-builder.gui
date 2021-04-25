@@ -12,7 +12,7 @@ namespace XRayBuilder.Core.Database
      * decide where responsiblity lies for updating database
         * db needs to be bootstrapped in Core instead of UI if it will be updated in misc services
             * this would mean Console would need to init the db even if unused
-     * make writing repos less tedious and repetitive
+     * make writing repos less tedious and repetitive (abstract common things like insert/update/delete/upsert
      * find best place to assign data source ids from URL (static parse X Id inside the repo w/ regex isn't good)
      */
     public interface IDatabaseConnection : IDisposable

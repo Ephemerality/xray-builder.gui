@@ -19,11 +19,9 @@ namespace XRayBuilder.Core.Database.Orm.Author
             _connection = connection;
         }
 
-        [ItemCanBeNull]
         public async Task<AuthorModel> GetByIdAsync(long authorId, CancellationToken cancellationToken)
             => (await GetByIdsAsync(new [] {authorId}, cancellationToken)).SingleOrDefault();
 
-        [ItemNotNull]
         public Task<IEnumerable<AuthorModel>> GetByIdsAsync(IEnumerable<long> authorIds, CancellationToken cancellationToken)
         {
             var parameters = new
@@ -36,7 +34,6 @@ namespace XRayBuilder.Core.Database.Orm.Author
             return _connection.QueryAsync<AuthorModel>(query, parameters, cancellationToken);
         }
 
-        [ItemCanBeNull]
         public async Task<AuthorModel> GetByAsinAsync(string asin, CancellationToken cancellationToken)
         {
             var parameters = new
@@ -66,7 +63,7 @@ WHERE {nameof(authorModel.AuthorId)}=@{nameof(AuthorModel.AuthorId)}";
             return authorModel.AuthorId;
         }
 
-        public Task<long> UpsertAsync([NotNull] AuthorModel authorModel, CancellationToken cancellationToken)
+        public Task<long> UpsertAsync(AuthorModel authorModel, CancellationToken cancellationToken)
         {
             if (authorModel.AuthorId != default)
                 return UpdateAsync(authorModel, cancellationToken);
@@ -75,7 +72,7 @@ WHERE {nameof(authorModel.AuthorId)}=@{nameof(AuthorModel.AuthorId)}";
 ({nameof(AuthorModel.Asin)}, {nameof(AuthorModel.Name)}, {nameof(AuthorModel.Biography)}, {nameof(AuthorModel.ImageUrl)})
 VALUES (@{nameof(AuthorModel.Asin)}, @{nameof(AuthorModel.Name)}, @{nameof(AuthorModel.Biography)}, @{nameof(AuthorModel.ImageUrl)})
 ON CONFLICT ({nameof(AuthorModel.Asin)})
-DO UPDATE SET 
+DO UPDATE SET
 {nameof(AuthorModel.Asin)}=@{nameof(AuthorModel.Asin)},
 {nameof(AuthorModel.Name)}=@{nameof(AuthorModel.Name)},
 {nameof(AuthorModel.Biography)}=@{nameof(AuthorModel.Biography)},

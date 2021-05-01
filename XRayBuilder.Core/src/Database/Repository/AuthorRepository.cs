@@ -11,7 +11,7 @@ namespace XRayBuilder.Core.Database.Repository
     /// Handle storage for <see cref="AuthorModel"/>
     /// (really just a proxy for <see cref="IAuthorOrm"/> for now for consistency)
     /// </summary>
-    public sealed class AuthorRepository
+    public sealed class AuthorRepository : IAuthorRepository
     {
         private readonly IAuthorOrm _authorOrm;
 
@@ -26,10 +26,10 @@ namespace XRayBuilder.Core.Database.Repository
         public Task<IEnumerable<AuthorModel>> GetByIdsAsync(IEnumerable<long> authorIds, CancellationToken cancellationToken)
             => _authorOrm.GetByIdsAsync(authorIds, cancellationToken);
 
-        public Task<AuthorModel> GetByAsinAsync([NotNull] string asin, CancellationToken cancellationToken)
+        public Task<AuthorModel> GetByAsinAsync(string asin, CancellationToken cancellationToken)
             => _authorOrm.GetByAsinAsync(asin, cancellationToken);
 
-        public Task<long> AddOrUpdateAsync([NotNull] AuthorModel authorModel, CancellationToken cancellationToken)
+        public Task<long> AddOrUpdateAsync(AuthorModel authorModel, CancellationToken cancellationToken)
             => _authorOrm.UpsertAsync(authorModel, cancellationToken);
     }
 }

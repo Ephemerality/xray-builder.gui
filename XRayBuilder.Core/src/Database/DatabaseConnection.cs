@@ -17,7 +17,7 @@ namespace XRayBuilder.Core.Database
 
         public DatabaseConnection(DatabaseConfig config)
         {
-            _sqLiteConnection = new SQLiteConnection(config.Filename);
+            _sqLiteConnection = new SQLiteConnection($"Data Source={config.Filename};Version=3;");
         }
 
         public async Task<IEnumerable<T>> QueryAsync<T>(string sql, object param = null, CancellationToken cancellationToken = default)

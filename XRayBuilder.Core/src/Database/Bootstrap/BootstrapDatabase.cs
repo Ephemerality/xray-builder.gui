@@ -2,6 +2,7 @@ using SimpleInjector;
 using XRayBuilder.Core.Database.Orm.Author;
 using XRayBuilder.Core.Database.Orm.Book;
 using XRayBuilder.Core.Database.Orm.BookAuthorMap;
+using XRayBuilder.Core.Database.Repository;
 using XRayBuilder.Core.Libraries.Bootstrap.Model;
 
 namespace XRayBuilder.Core.Database.Bootstrap
@@ -21,6 +22,8 @@ namespace XRayBuilder.Core.Database.Bootstrap
             container.RegisterSingleton<IAuthorOrm, AuthorOrm>();
             container.RegisterSingleton<IBookOrm, BookOrm>();
             container.RegisterSingleton<IBookAuthorMapOrm, BookAuthorMapOrm>();
+            container.RegisterSingleton<IAuthorRepository, AuthorRepository>();
+            container.RegisterSingleton<IBookRepository, BookRepository>();
         }
     }
 }

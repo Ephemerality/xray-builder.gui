@@ -17,9 +17,9 @@ namespace XRayBuilder.Core.Database.Repository
         private readonly IBookAuthorMapOrm _bookAuthorMapOrm;
         private readonly BookConverter _bookConverter = new();
         private readonly IDatabaseConnection _connection;
-        private readonly AuthorRepository _authorRepository;
+        private readonly IAuthorRepository _authorRepository;
 
-        public BookRepository(IBookOrm bookOrm, IBookAuthorMapOrm bookAuthorMapOrm, IDatabaseConnection connection, AuthorRepository authorRepository)
+        public BookRepository(IBookOrm bookOrm, IBookAuthorMapOrm bookAuthorMapOrm, IDatabaseConnection connection, IAuthorRepository authorRepository)
         {
             _bookOrm = bookOrm;
             _bookAuthorMapOrm = bookAuthorMapOrm;

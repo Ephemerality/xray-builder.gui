@@ -60,6 +60,8 @@ namespace XRayBuilder.Core.Database.Repository
         public async Task<Book> GetByAsinAsync(string asin, CancellationToken cancellationToken)
         {
             var bookModel = await _bookOrm.GetByAsinAsync(asin, cancellationToken);
+            if (bookModel == null)
+                return null;
             var authorIds = await _bookAuthorMapOrm.GetAuthorIdsForBookAsync(bookModel.BookId, cancellationToken);
             var authorModels = await _authorRepository.GetByIdsAsync(authorIds, cancellationToken);
 

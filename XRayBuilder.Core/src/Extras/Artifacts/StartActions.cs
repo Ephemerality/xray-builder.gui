@@ -323,7 +323,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
             public GrokShelfInfo GrokShelfInfo { get; set; }
 
             [JsonProperty("bookDescription")]
-            public Book BookDescription { get; set; }
+            public BookData BookDescription { get; set; }
 
             [JsonProperty("authorBios")]
             public AuthorBios AuthorBios { get; set; }
@@ -341,13 +341,13 @@ namespace XRayBuilder.Core.Extras.Artifacts
             public Recs LeftNavCitationRecs { get; set; }
 
             [JsonProperty("currentBook")]
-            public Book CurrentBook { get; set; }
+            public BookData CurrentBook { get; set; }
 
             [JsonProperty("readingTime")]
             public ReadingTime ReadingTime { get; set; }
 
             [JsonProperty("previousBookInTheSeries", NullValueHandling = NullValueHandling.Ignore)]
-            public Book PreviousBookInTheSeries { get; set; }
+            public BookData PreviousBookInTheSeries { get; set; }
 
             [JsonProperty("authorSubscriptions")]
             public AuthorSubscriptions AuthorSubscriptions { get; set; }

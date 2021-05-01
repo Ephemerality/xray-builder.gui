@@ -7,11 +7,11 @@ namespace XRayBuilder.Core.Extras.Artifacts
 {
     public static class Extensions
     {
-        public static Book BookInfoToBook(BookInfo bookInfo, bool featured)
+        public static BookData BookInfoToBook(BookInfo bookInfo, bool featured)
         {
             if (bookInfo == null)
                 return null;
-            return new Book
+            return new BookData
             {
                 Class = featured ? "featuredRecommendation" : "recommendation",
                 Asin = bookInfo.Asin,
@@ -41,7 +41,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
         public string Class { get; set; } = "recommendationList";
 
         [JsonProperty("recommendations")]
-        public Book[] Recommendations { get; set; }
+        public BookData[] Recommendations { get; set; }
     }
 
     public class Author
@@ -62,7 +62,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
         public string ImageUrl { get; set; }
     }
 
-    public class Book
+    public class BookData
     {
         private double? _amazonRating;
 

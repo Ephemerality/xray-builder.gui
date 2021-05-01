@@ -327,7 +327,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
 
         public static Artifacts.AuthorProfile CreateAp(Response response, string bookAsin)
         {
-            var authorOtherBooks = response.OtherBooks.Select(book => new Artifacts.AuthorProfile.Book
+            var authorOtherBooks = response.OtherBooks.Select(book => new Artifacts.AuthorProfile.BookData
             {
                 E = 1,
                 Asin = book.Asin,

@@ -11,7 +11,7 @@ using XRayBuilder.Core.Database.Orm.BookAuthorMap;
 
 namespace XRayBuilder.Core.Database.Repository
 {
-    public sealed class BookRepository
+    public sealed class BookRepository : IBookRepository
     {
         private readonly IBookOrm _bookOrm;
         private readonly IBookAuthorMapOrm _bookAuthorMapOrm;
@@ -57,7 +57,7 @@ namespace XRayBuilder.Core.Database.Repository
 
         #endregion
 
-        public async Task<Book> GetByAsinAsync([NotNull] string asin, CancellationToken cancellationToken)
+        public async Task<Book> GetByAsinAsync(string asin, CancellationToken cancellationToken)
         {
             var bookModel = await _bookOrm.GetByAsinAsync(asin, cancellationToken);
             var authorIds = await _bookAuthorMapOrm.GetAuthorIdsForBookAsync(bookModel.BookId, cancellationToken);

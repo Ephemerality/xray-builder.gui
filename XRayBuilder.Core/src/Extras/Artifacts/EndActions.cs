@@ -195,7 +195,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
             public AuthorSubscriptions FollowSubscriptions { get; set; }
 
             [JsonProperty("nextBook", NullValueHandling = NullValueHandling.Ignore)]
-            public Book NextBook { get; set; }
+            public BookData NextBook { get; set; }
 
             [JsonProperty("publicSharedRating")]
             public Rating PublicSharedRating { get; set; }

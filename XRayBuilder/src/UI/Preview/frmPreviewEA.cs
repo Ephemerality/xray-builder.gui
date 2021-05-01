@@ -141,7 +141,7 @@ namespace XRayBuilderGUI.UI.Preview
             }
         }
 
-        private async Task PopulateImagesFromBooks(ListView listView, ImageList imageList, IEnumerable<Book> books, CancellationToken cancellationToken = default)
+        private async Task PopulateImagesFromBooks(ListView listView, ImageList imageList, IEnumerable<BookData> books, CancellationToken cancellationToken = default)
         {
             ListViewItem_SetSpacing(listView, 60 + 10, 90 + 10);
 

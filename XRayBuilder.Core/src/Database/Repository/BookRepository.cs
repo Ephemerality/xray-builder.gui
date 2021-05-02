@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Dasync.Collections;
-using JetBrains.Annotations;
 using XRayBuilder.Core.Database.Model.Author;
 using XRayBuilder.Core.Database.Model.Book;
 using XRayBuilder.Core.Database.Orm.Book;
@@ -82,6 +81,11 @@ namespace XRayBuilder.Core.Database.Repository
             await _bookAuthorMapOrm.UpdateAuthorsForBookAsync(bookId, authorIds, cancellationToken);
 
             transaction.Commit();
+        }
+
+        public async Task AddUpOrUpdateBulkAsync(Book[] books, CancellationToken cancellationToken)
+        {
+            // TODO
         }
     }
 }

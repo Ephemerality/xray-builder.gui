@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.Drawing;
@@ -11,6 +12,9 @@ using System.Windows.Forms;
 using Ephemerality.Unpack;
 using Newtonsoft.Json;
 using XRayBuilder.Core.Database;
+using XRayBuilder.Core.Database.Model.Author;
+using XRayBuilder.Core.Database.Model.Book;
+using XRayBuilder.Core.Database.Repository;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Logic;
 using XRayBuilder.Core.DataSources.Roentgen.Logic;
@@ -60,6 +64,7 @@ namespace XRayBuilderGUI.UI
         private readonly DatabaseMigrator _databaseMigrator;
         private readonly IMetadataService _metadataService;
         private readonly IXRayBuildService _xrayBuildService;
+        private readonly IBookRepository _bookRepository;
 
         public frmMain(
             ILogger logger,
@@ -78,7 +83,8 @@ namespace XRayBuilderGUI.UI
             IDirectoryService directoryService,
             DatabaseMigrator databaseMigrator,
             IMetadataService metadataService,
-            IXRayBuildService xrayBuildService)
+            IXRayBuildService xrayBuildService,
+            IBookRepository bookRepository)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
@@ -99,6 +105,7 @@ namespace XRayBuilderGUI.UI
             _databaseMigrator = databaseMigrator;
             _metadataService = metadataService;
             _xrayBuildService = xrayBuildService;
+            _bookRepository = bookRepository;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
 
@@ -427,6 +434,25 @@ namespace XRayBuilderGUI.UI
 
                     if (authorProfileResponse == null)
                         return;
+
+                    // Update DB with author profile results
+                    var authorModel = new AuthorModel
+                    {
+                        Asin = authorProfileResponse.Asin,
+                        Name = authorProfileResponse.Name,
+                        ImageUrl = authorProfileResponse.ImageUrl,
+                        Biography = authorProfileResponse.Biography
+                    };
+
+                    await _bookRepository.AddUpOrUpdateBulkAsync(authorProfileResponse.OtherBooks.Select(book => new Book
+                    {
+                        Asin = book.Asin,
+                        Title = book.Title,
+                        Authors = new List<AuthorModel>
+                        {
+                            authorModel
+                        }
+                    }).ToArray(), _cancelTokens.Token);
                 }
 
                 if (needSa || needEa)

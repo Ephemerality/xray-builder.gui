@@ -45,6 +45,7 @@ namespace XRayBuilder.Core.Extras.StartActions
                 Timestamp = Functions.UnixTimestampMilliseconds(),
                 RefTagSuffix = "AAATAAA",
                 ImageUrl = curBook.ImageUrl,
+                FictionStatus = "unknown",
                 Erl = -1
             };
             if (!string.IsNullOrEmpty(curBook.Series?.Position))
@@ -102,6 +103,19 @@ namespace XRayBuilder.Core.Extras.StartActions
                     }
                 }
             };
+            startActions.Data.AuthorBiosBSE = new AuthorBios
+            {
+                Authors = new[]
+                {
+                    new Author
+                    {
+                        Asin = authorProfile.Asin,
+                        Name = curBook.Author,
+                        Bio = authorProfile.Biography,
+                        ImageUrl = authorProfile.ImageUrl
+                    }
+                }
+            };
             startActions.Data.AuthorRecs = new Recs
             {
                 Class = "recommendationList",
@@ -113,6 +127,8 @@ namespace XRayBuilder.Core.Extras.StartActions
             startActions.Data.ReadingTime.FormattedTime.Replace("%MINUTES%", curBook.ReadingMinutes.ToString());
             startActions.Data.PreviousBookInTheSeries = Extensions.BookInfoToBook(curBook.Series?.Previous, true);
             startActions.Data.ReadingPages.PagesInBook = curBook.PageCount;
+
+            startActions.BottomSheetEnabled = true;
 
             return startActions;
         }

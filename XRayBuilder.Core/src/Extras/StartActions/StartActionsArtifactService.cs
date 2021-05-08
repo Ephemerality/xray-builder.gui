@@ -89,7 +89,7 @@ namespace XRayBuilder.Core.Extras.StartActions
 
             startActions.Data.BookDescription = Extensions.BookInfoToBook(curBook, true);
             startActions.Data.CurrentBook = startActions.Data.BookDescription;
-            startActions.Data.AuthorBios = new AuthorBios
+            var authorBios = new AuthorBios
             {
                 Authors = new[]
                 {
@@ -103,19 +103,8 @@ namespace XRayBuilder.Core.Extras.StartActions
                     }
                 }
             };
-            startActions.Data.AuthorBiosBSE = new AuthorBios
-            {
-                Authors = new[]
-                {
-                    new Author
-                    {
-                        Asin = authorProfile.Asin,
-                        Name = curBook.Author,
-                        Bio = authorProfile.Biography,
-                        ImageUrl = authorProfile.ImageUrl
-                    }
-                }
-            };
+            startActions.Data.AuthorBios = authorBios;
+            startActions.Data.AuthorBiosBSE = authorBios;
             startActions.Data.AuthorRecs = new Recs
             {
                 Class = "recommendationList",

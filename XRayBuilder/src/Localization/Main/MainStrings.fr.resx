@@ -158,7 +158,7 @@
     <value>Création du fichier X-Ray initial, ajout d'emplacements et de chapitres…</value>
   </data>
   <data name="PenNamesRequired" xml:space="preserve">
-    <value>Le vrai nom et le pseudonyme sont requis pour la création du fichier des actions de fin.</value>
+    <value>Le vrai nom et le nom de plume sont requis pour la création du fichier des actions de fin.</value>
   </data>
   <data name="AmazonCustomerDetailsNotFoundTitle" xml:space="preserve">
     <value>Détails du Client Amazon Introuvables</value>
@@ -170,7 +170,7 @@
     <value>Échec de la validation/correction de l'ASIN</value>
   </data>
   <data name="DatabaseNameLengthWarning" xml:space="preserve">
-    <value>ATTENTION: Le nom de la base de données est à sa longueur maximale. Si "{0}" est le titre complet de l'e-book, cela ne devrait pas poser problème.
+    <value>ATTENTION : Le nom de la base de données est à sa longueur maximale. Si « {0} » est le titre complet du livre numérique, ceci ne devrait pas poser problème.
 Si le titre est censé plus long que cela, vous pourriez avoir une erreur sur votre Kindle (WG micrologiciel inférieur à 5.6).
 Réduisez le titre dans l'application Calibre ou changez le nom de la base de données manuellement.
 </value>
@@ -239,453 +239,459 @@ Réduisez le titre dans l'application Calibre ou changez le nom de la base de do
     <value>Fichier previewData d'X-Ray créé !</value>
   </data>
   <data name="ErrorSavingXml" xml:space="preserve">
-    <value></value>
+    <value>Une erreur s’est produite lors de l’enregistrement des données de caractères dans le fichier XML à {0}</value>
   </data>
   <data name="OpenLogFileDirTooltip" xml:space="preserve">
-    <value></value>
+    <value>Ouvrir le répertoire des fichiers journaux.</value>
   </data>
   <data name="BuildingOldFormatNotSupported" xml:space="preserve">
-    <value></value>
+    <value>Les livres numériques KFX ne peuvent pas être utilisés pour créer des fichiers X-Ray dans l'ancien format</value>
   </data>
   <data name="Extras" xml:space="preserve">
-    <value></value>
+    <value>Extras</value>
   </data>
   <data name="AliasesOptionsTitle" xml:space="preserve">
-    <value></value>
+    <value>Options d'alias</value>
   </data>
   <data name="ViewPreviewOfGeneratedFiles" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AutomaticallySplitAliasesTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="InvalidOrNoFileSelected" xml:space="preserve">
-    <value></value>
+    <value>Fichier invalide ou non sélectionné.</value>
   </data>
   <data name="PreBuiltSettingsDescription" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="OverwriteStartActionsTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="MinimumQuoteLength" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="UnableToOpenHelpDocument" xml:space="preserve">
-    <value></value>
+    <value>Impossible d'ouvrir le document d'aide fourni.</value>
   </data>
   <data name="ExportingTermsFrom" xml:space="preserve">
-    <value></value>
+    <value>Exportation de termes depuis {0}…</value>
   </data>
   <data name="BuildFromEndActions" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="LogDirectoryNotFoundTitle" xml:space="preserve">
-    <value></value>
+    <value>Répertoire des journaux introuvable</value>
   </data>
   <data name="BuildExtrasTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="EnableEditTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="RealName" xml:space="preserve">
-    <value></value>
+    <value>Vrai nom :</value>
   </data>
   <data name="SourceUrl" xml:space="preserve">
-    <value></value>
+    <value>URL {0}</value>
   </data>
   <data name="OpenKindleFile" xml:space="preserve">
-    <value></value>
+    <value>Ouvrir un fichier Kindle {0}…</value>
   </data>
   <data name="PlaySoundTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Title" xml:space="preserve">
-    <value></value>
+    <value>Titre</value>
   </data>
   <data name="ActionCannotBeUndone" xml:space="preserve">
-    <value></value>
+    <value>Cette action ne peut pas être annulée.</value>
   </data>
   <data name="UseNewFormatTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="OverwriteEndActionsTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ReviewSettingsForSource" xml:space="preserve">
-    <value></value>
+    <value>Si vous ne souhaitez pas utiliser {0}, vous pouvez modifier la source de données dans les Paramètres.</value>
   </data>
   <data name="FailedCoverImageDownload" xml:space="preserve">
-    <value></value>
+    <value>Échec du téléchargement de l'image de couverture</value>
   </data>
   <data name="ErrorDeletingLogFiles" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="VisitForumTooltip" xml:space="preserve">
-    <value></value>
+    <value>Visitez le forum MobileRead pour obtenir de l'aide, signaler des erreurs ou poser des questions.</value>
   </data>
   <data name="Show ASIN prompt" xml:space="preserve">
-    <value></value>
+    <value>Afficher l'invite ASIN</value>
   </data>
   <data name="OpenKindleBook" xml:space="preserve">
-    <value></value>
+    <value>Ouvrir un livre numérique Kindle.</value>
   </data>
   <data name="UseSidecarDirectory" xml:space="preserve">
-    <value></value>
+    <value>Utiliser le répertoire sidecar</value>
   </data>
   <data name="AmazonSearchResultTitle" xml:space="preserve">
-    <value></value>
+    <value>Résultat de recherche Amazon</value>
   </data>
   <data name="Format" xml:space="preserve">
-    <value></value>
+    <value>Format</value>
   </data>
   <data name="RestartRequiredTitle" xml:space="preserve">
-    <value></value>
+    <value>Redémarrage nécessaire</value>
   </data>
   <data name="BuildForAndroidTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="InvalidXRayFile" xml:space="preserve">
-    <value></value>
+    <value>Fichier X-Ray invalide.</value>
   </data>
   <data name="OpenXRayFile" xml:space="preserve">
-    <value></value>
+    <value>Ouvrir un fichier Kindle X-Ray…</value>
   </data>
   <data name="MultipleResultsFromSource" xml:space="preserve">
-    <value></value>
+    <value>Avertissement : plusieurs résultats renvoyés par {0}…</value>
   </data>
   <data name="Language" xml:space="preserve">
-    <value></value>
+    <value>Langue</value>
   </data>
   <data name="UseSubdirectories" xml:space="preserve">
-    <value></value>
+    <value>Utiliser les sous-répertoires</value>
   </data>
   <data name="CreateXmlTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="EbookUnpackingTitle" xml:space="preserve">
-    <value></value>
+    <value>Déballage du livre numérique</value>
   </data>
   <data name="InvalidSourceLinkTitle" xml:space="preserve">
-    <value></value>
+    <value>Lien {0} invalide</value>
   </data>
   <data name="HelpDocumentNotFoundTitle" xml:space="preserve">
-    <value></value>
+    <value>Document d'aide introuvable</value>
   </data>
   <data name="AllExtrasExistNoOverwrite" xml:space="preserve">
-    <value></value>
+    <value>Tous les fichiers supplémentaires existent déjà et aucun des paramètres « écraser » n'est activé !</value>
   </data>
   <data name="OverwriteChaptersTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Author" xml:space="preserve">
-    <value></value>
+    <value>Auteur·e</value>
   </data>
   <data name="IgnoreSoftHyphensTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="PromptAsinTooltip" xml:space="preserve">
-    <value></value>
+    <value>Autoriser l'entrée ASIN si le livre numérique suivant ou précédent dans une série ne peut pas être trouvé automatiquement.</value>
   </data>
   <data name="Forum" xml:space="preserve">
-    <value></value>
+    <value>Forum</value>
   </data>
   <data name="SaveAuthorBiography" xml:space="preserve">
-    <value></value>
+    <value>Enregistrer la biographie de l'auteur·e</value>
   </data>
   <data name="EditBioTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="TitleByAuthor" xml:space="preserve">
-    <value></value>
+    <value>{0} de {1}</value>
   </data>
   <data name="OneClickTooltip" xml:space="preserve">
-    <value></value>
+    <value>Bouton à un clic pour essayer de construire les fichiers Actions de début, Profil de l'auteur·e, Actions de fin et X-Ray.</value>
   </data>
   <data name="ErrorCreatingExtras" xml:space="preserve">
-    <value></value>
+    <value>Une erreur s'est produite lors de la création des nouveaux fichiers Profil de l'auteur, Actions de début et/ou Actions de fin</value>
   </data>
   <data name="UnableToFindBookOnSource" xml:space="preserve">
-    <value></value>
+    <value>Impossible de trouver ce livre sur {0}.</value>
   </data>
   <data name="RequiresNewFormat" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Directories" xml:space="preserve">
-    <value></value>
+    <value>Répertoires</value>
   </data>
   <data name="SaveRawMlTooltip" xml:space="preserve">
-    <value></value>
+    <value>Enregistrez le RAWML (balisage brut) du livre numérique dans le répertoire de sortie afin de pouvoir le réviser.</value>
   </data>
   <data name="AmazonRegionTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Roentgen" xml:space="preserve">
-    <value></value>
+    <value>Roentgen</value>
   </data>
   <data name="IgnoreSoftHyphensTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="EndActions" xml:space="preserve">
-    <value></value>
+    <value>Actions de fin</value>
   </data>
   <data name="RestartRequired" xml:space="preserve">
-    <value></value>
+    <value>L'application doit être redémarrée pour que les changements soient pris en compte !</value>
   </data>
   <data name="DeleteLogFilesConfirmation" xml:space="preserve">
-    <value></value>
+    <value>Êtes-vous sûr·e de vouloir supprimer tous les fichiers journaux ?</value>
   </data>
   <data name="FilesInAndroidFolder" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="FoundBookAmazon" xml:space="preserve">
-    <value></value>
+    <value>Le livre numérique suivant a été trouvé sur Amazon</value>
   </data>
   <data name="OpenChaptersFileNotepad" xml:space="preserve">
-    <value></value>
+    <value>Voulez-vous ouvrir le fichier des chapitres dans le bloc-notes pour le modifier ?</value>
   </data>
   <data name="ClearLogsTitle" xml:space="preserve">
-    <value></value>
+    <value>Effacer les journaux</value>
   </data>
   <data name="DownloadFromRoentgen" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Chapters" xml:space="preserve">
-    <value></value>
+    <value>Chapitres</value>
   </data>
   <data name="PreBuiltDownloadsTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ConfigureXRayBuilder" xml:space="preserve">
-    <value></value>
+    <value>Configurer X-Ray Builder.</value>
   </data>
   <data name="DownloadAliasesTooltip" xml:space="preserve">
-    <value></value>
+    <value>Tente de télécharger des alias préfabriqués si aucun n'existe encore localement. Si « Écraser les alias » est activé, les alias locaux seront écrasés par ceux téléchargés.</value>
   </data>
   <data name="WriteXRayNewFormatTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Settings" xml:space="preserve">
-    <value></value>
+    <value>Paramètres</value>
   </data>
   <data name="FilesDownloadedInSelectedLanguage" xml:space="preserve">
-    <value></value>
+    <value>Les fichiers seront téléchargés dans la langue de la région sélectionnée, si possible.</value>
   </data>
   <data name="Region" xml:space="preserve">
-    <value></value>
+    <value>Région :</value>
   </data>
   <data name="UnableToAutomaticallyFindAsinOnAmazon" xml:space="preserve">
-    <value></value>
+    <value>Impossible de trouver automatiquement un ASIN correspondant pour ce livre numérique sur Amazon :(</value>
   </data>
   <data name="NotableClipsTitle" xml:space="preserve">
-    <value></value>
+    <value>Extraits notables</value>
   </data>
   <data name="NoLinkTitle" xml:space="preserve">
-    <value></value>
+    <value>Lien manquant</value>
   </data>
   <data name="PenName" xml:space="preserve">
-    <value></value>
+    <value>Nom de plume :</value>
   </data>
   <data name="MinimumLength" xml:space="preserve">
-    <value></value>
+    <value>Longueur minimale :</value>
   </data>
   <data name="SaveBioTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="InvalidSourceLink" xml:space="preserve">
-    <value></value>
+    <value>Un lien {0} invalide a été spécifié.</value>
   </data>
   <data name="BuildXRayForAndroidTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="InvalidAsinShouldFix" xml:space="preserve">
-    <value></value>
+    <value>ASIN Amazon invalide détecté : {0} !
+Kindle ne peut pas afficher un X-Ray pour ce livre numérique.
+Voulez-vous le corriger ?
+(Ceci modifiera le livre, ce qui signifie qu'il devra être recopié sur votre appareil Kindle).
+CETTE FONCTION EST EXPÉRIMENTALE ET POURRAIT DÉTRUIRE VOTRE LIVRE NUMÉRIQUE !</value>
   </data>
   <data name="SkipNoLikes" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="RequiredDuringEndActionsCreation" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="VisitUrl" xml:space="preserve">
-    <value></value>
+    <value>Vous pouvez visiter l'URL pour vous assurer qu'elle est correcte.</value>
   </data>
   <data name="SaveToSidecarSubdirTooltip" xml:space="preserve">
-    <value></value>
+    <value>Enregistre les fichiers générés dans un sous-répertoire « sidecar » basé sur le nom du fichier.</value>
   </data>
   <data name="InvalidAsinWarning" xml:space="preserve">
-    <value></value>
+    <value>ASIN Amazon invalide détecté : {0} !
+Il se peut que Kindle ne parvienne pas à afficher un X-Ray pour ce livre numérique.
+Voulez-vous continuer ?</value>
   </data>
   <data name="EstimatePageCountTitle" xml:space="preserve">
-    <value></value>
+    <value>Estimation du nombre de pages</value>
   </data>
   <data name="InclueTopics" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="BookFoundOnSource" xml:space="preserve">
-    <value></value>
+    <value>Livre trouvé sur {0} !</value>
   </data>
   <data name="NoLinkSpecified" xml:space="preserve">
-    <value></value>
+    <value>Aucun lien n'a été spécifié.</value>
   </data>
   <data name="UnableToDeleteLogFilesCaption" xml:space="preserve">
-    <value></value>
+    <value>Impossible de supprimer les fichiers journaux</value>
   </data>
   <data name="AmazonCustomerDetailsTitle" xml:space="preserve">
-    <value></value>
+    <value>Détails du client Amazon</value>
   </data>
   <data name="ExtractXRayToXml" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AutoBuildAuthorProfileTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="OverwriteAuthorProfileTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="OpenXmlOrTxt" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="EstimatePageCountTooltip" xml:space="preserve">
-    <value></value>
+    <value>Essayez d'estimer le nombre de pages du livre numérique s'il n'y en a pas en ligne (sur la base du projet de génération APNX de user_none).</value>
   </data>
   <data name="StartActions" xml:space="preserve">
-    <value></value>
+    <value>Actions de démarrage</value>
   </data>
   <data name="UseLinkAsDataSource" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="UpdatedAsin" xml:space="preserve">
-    <value></value>
+    <value>ASIN mis à jour à {0} ! Assurez-vous de copier cette nouvelle version du livre numérique sur votre appareil Kindle.</value>
   </data>
   <data name="ShownAsinUsed" xml:space="preserve">
-    <value></value>
+    <value>Si c'est le cas, l'ASIN indiqué sera utilisé.</value>
   </data>
   <data name="EnableEditingAliases" xml:space="preserve">
-    <value></value>
+    <value>Activer la modification des alias</value>
   </data>
   <data name="AuthorProfile" xml:space="preserve">
-    <value></value>
+    <value>Profil de l'auteur·e</value>
   </data>
   <data name="ExtractedToPath" xml:space="preserve">
-    <value></value>
+    <value>Extrait de {0} !</value>
   </data>
   <data name="DownloadAliases" xml:space="preserve">
-    <value></value>
+    <value>Télécharger les alias</value>
   </data>
   <data name="BooksSourceUrl" xml:space="preserve">
-    <value></value>
+    <value>URL {0} du livre numérique</value>
   </data>
   <data name="TryToBuildXRay" xml:space="preserve">
-    <value></value>
+    <value>Essayez de construire le fichier X-Ray pour ce livre numérique.</value>
   </data>
   <data name="SaveRawmlTitle" xml:space="preserve">
-    <value></value>
+    <value>Enregistrer RAWML</value>
   </data>
   <data name="CharacterDataSavedTo" xml:space="preserve">
-    <value></value>
+    <value>Les données de caractères ont été sauvegardées avec succès sur {0}</value>
   </data>
   <data name="OverwriteOptionsTitle" xml:space="preserve">
-    <value></value>
+    <value>Options d'écrasement</value>
   </data>
   <data name="InvalidKindleFile" xml:space="preserve">
-    <value></value>
+    <value>Fichier {0} invalide.</value>
   </data>
   <data name="SaveToAuthorSubdirTooltip" xml:space="preserve">
-    <value></value>
+    <value>Enregistrez les fichiers générés dans un sous-répertoire « Author\Filename ».</value>
   </data>
   <data name="SecondarySourceTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="DownloadingActions" xml:space="preserve">
-    <value></value>
+    <value>Tentative de téléchargement de {0} Actions…</value>
   </data>
   <data name="OutputDirectoryTitle" xml:space="preserve">
-    <value></value>
+    <value>Répertoire de sortie</value>
   </data>
   <data name="LoadTermsFromFile" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="DataProviderTitle" xml:space="preserve">
-    <value></value>
+    <value>Fournisseur de données</value>
   </data>
   <data name="IncorrectAsinTitle" xml:space="preserve">
-    <value></value>
+    <value>ASIN incorrect</value>
   </data>
   <data name="ExtractingRawMl" xml:space="preserve">
-    <value></value>
+    <value>Extraction du balisage brut…</value>
   </data>
   <data name="OpenOutputDirectory" xml:space="preserve">
-    <value></value>
+    <value>Ouvrir un dossier dans le répertoire du programme.</value>
   </data>
   <data name="EditAuthorBiography" xml:space="preserve">
-    <value></value>
+    <value>Modifier la biographie de l'auteur·e</value>
   </data>
   <data name="CantExportFromFile" xml:space="preserve">
-    <value></value>
+    <value>Impossible d'exporter les termes d'un fichier XML/TXT…</value>
   </data>
   <data name="DoesThisSeemCorrect" xml:space="preserve">
-    <value></value>
+    <value>Ceci vous semble-t-il correct ?</value>
   </data>
   <data name="OverwriteAliasesTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="EbookProcessingTitle" xml:space="preserve">
-    <value></value>
+    <value>Traitement des livres numériques</value>
   </data>
   <data name="TermsOptions" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AutomaticallySplitAliases" xml:space="preserve">
-    <value></value>
+    <value>Diviser automatiquement les alias</value>
   </data>
   <data name="IncludeTopicsTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Save" xml:space="preserve">
-    <value></value>
+    <value>Enregistrer</value>
   </data>
   <data name="General" xml:space="preserve">
-    <value></value>
+    <value>Général</value>
   </data>
   <data name="Logs" xml:space="preserve">
-    <value></value>
+    <value>Journaux</value>
   </data>
   <data name="XRay" xml:space="preserve">
-    <value></value>
+    <value>X-Ray</value>
   </data>
   <data name="GoodForFilteringQuotes" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ErrorSearching" xml:space="preserve">
-    <value></value>
+    <value>Une erreur s'est produite lors de la recherche</value>
   </data>
   <data name="SearchingAmazonForTitleAuthor" xml:space="preserve">
-    <value></value>
+    <value>Recherche de {0} de {1} sur Amazon…</value>
   </data>
   <data name="DownloadCancelled" xml:space="preserve">
-    <value></value>
+    <value>Téléchargement annulé.</value>
   </data>
   <data name="CharacterDataExtractedSavedToPath" xml:space="preserve">
-    <value></value>
+    <value>Les données de caractères ont été extraites avec succès et sauvegardées dans {0}</value>
   </data>
   <data name="Sounds" xml:space="preserve">
-    <value></value>
+    <value>Sons</value>
   </data>
   <data name="AreYouSure" xml:space="preserve">
-    <value></value>
+    <value>Êtes-vous sûr·e ?</value>
   </data>
   <data name="Error" xml:space="preserve">
-    <value></value>
+    <value>Erreur</value>
   </data>
   <data name="Preferences" xml:space="preserve">
-    <value></value>
+    <value>Préférences</value>
   </data>
   <data name="LogDirectoryDoesNotExist" xml:space="preserve">
-    <value></value>
+    <value>Le répertoire de journalisation n'existe pas.</value>
   </data>
   <data name="Amazon" xml:space="preserve">
-    <value></value>
+    <value>Amazon</value>
   </data>
 </root>

@@ -64,10 +64,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             //Generate Author search URL from author's name
             var newAuthor = Functions.FixAuthor(author);
             var plusAuthorName = newAuthor.Replace(" ", "+");
-            //Updated to match Search "all" Amazon
-            var amazonAuthorSearchUrl = $"https://www.amazon.{TLD}/s/ref=nb_sb_noss_2?url=search-alias%3Dstripbooks&field-keywords={plusAuthorName}";
-
-            // Changed to Amazon Kindle store only search
+            // Amazon Kindle store only search
             var amazonKindleAuthorSearchUrl = $"https://www.amazon.{TLD}/s?k={plusAuthorName}&i=digital-text&ref=nb_sb_noss";
 
             if(enableLog)
@@ -100,7 +97,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 if (possibleNodes == null || (node = possibleNodes.FirstOrDefault()) == null)
                 {
                     if (enableLog)
-                        _logger.Log($"An error occurred finding author's page on Amazon.{TLD}.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at {amazonAuthorSearchUrl}\r\nSometimes Amazon just doesn't return the author and trying a few times will work.");
+                        _logger.Log($"An error occurred finding author's page on Amazon.{TLD}.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at {amazonKindleAuthorSearchUrl}\r\nSometimes Amazon just doesn't return the author and trying a few times will work.");
                     return null;
                 }
             }
@@ -130,7 +127,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             if (node == null || string.IsNullOrEmpty(properAuthor) || properAuthor.IndexOf('/', 1) < 3 || string.IsNullOrEmpty(authorAsin))
             {
                 if (enableLog)
-                    _logger.Log($"Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: {amazonAuthorSearchUrl}");
+                    _logger.Log($"Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: {amazonKindleAuthorSearchUrl}");
                 return null;
             }
             properAuthor = properAuthor.Substring(1, properAuthor.IndexOf('/', 1) - 1);

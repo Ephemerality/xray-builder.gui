@@ -13,6 +13,7 @@ using Ephemerality.Unpack;
 using Ephemerality.Unpack.KFX;
 using Ephemerality.Unpack.Mobi;
 using Newtonsoft.Json;
+using XRayBuilder.Core.Database;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Logic;
 using XRayBuilder.Core.DataSources.Roentgen.Logic;
@@ -64,6 +65,7 @@ namespace XRayBuilderGUI.UI
         private readonly IRoentgenClient _roentgenClient;
         private readonly IEndActionsAuthorConverter _endActionsAuthorConverter;
         private readonly IDirectoryService _directoryService;
+        private readonly DatabaseMigrator _databaseMigrator;
 
         public frmMain(
             ILogger logger,
@@ -82,7 +84,8 @@ namespace XRayBuilderGUI.UI
             IEndActionsArtifactService endActionsArtifactService,
             IRoentgenClient roentgenClient,
             IEndActionsAuthorConverter endActionsAuthorConverter,
-            IDirectoryService directoryService)
+            IDirectoryService directoryService,
+            DatabaseMigrator databaseMigrator)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
@@ -103,6 +106,7 @@ namespace XRayBuilderGUI.UI
             _roentgenClient = roentgenClient;
             _endActionsAuthorConverter = endActionsAuthorConverter;
             _directoryService = directoryService;
+            _databaseMigrator = databaseMigrator;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
 
@@ -817,6 +821,9 @@ namespace XRayBuilderGUI.UI
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            // Ensure the database is up to date
+            _databaseMigrator.Migrate();
+
             ActiveControl = lblGoodreads;
             btnBrowseMobi.ToolTipText = MainStrings.OpenKindleBook;
             btnBrowseFolders.ToolTipText = MainStrings.OpenOutputDirectory;

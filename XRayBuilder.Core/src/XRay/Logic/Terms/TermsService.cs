@@ -8,14 +8,14 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Ephemerality.Unpack;
+using Ephemerality.Unpack.KFX;
+using Ephemerality.Unpack.Mobi;
 using Newtonsoft.Json.Linq;
 using XRayBuilder.Core.Config;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
-using XRayBuilder.Core.Unpack;
-using XRayBuilder.Core.Unpack.KFX;
-using XRayBuilder.Core.Unpack.Mobi;
 using XRayBuilder.Core.XRay.Artifacts;
 using XRayBuilder.Core.XRay.Logic.Parsing;
 using XRayBuilder.Core.XRay.Model;
@@ -154,7 +154,7 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
 
             return metadata switch
             {
-                Metadata _ => FindOccurrencesLegacy(term, paragraph),
+                MobiMetadata _ => FindOccurrencesLegacy(term, paragraph),
                 KfxContainer _ => FindOccurrences(term, paragraph),
                 _ => FindOccurrencesLegacy(term, paragraph)
             };

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Ephemerality.Unpack;
 using HtmlAgilityPack;
 using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Amazon;
@@ -19,7 +20,6 @@ using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Logic.PageCount;
 using XRayBuilder.Core.Logic.ReadingTime;
 using XRayBuilder.Core.Model;
-using XRayBuilder.Core.Unpack;
 
 namespace XRayBuilder.Core.Extras.EndActions
 {

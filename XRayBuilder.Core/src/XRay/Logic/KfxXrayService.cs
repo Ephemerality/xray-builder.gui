@@ -1,8 +1,8 @@
 using System.Linq;
 using System.Threading;
+using Ephemerality.Unpack.KFX;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Progress;
-using XRayBuilder.Core.Unpack.KFX;
 using XRayBuilder.Core.XRay.Logic.Parsing;
 using XRayBuilder.Core.XRay.Logic.Terms;
 using XRayBuilder.Core.XRay.Model;

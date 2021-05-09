@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using Ephemerality.Unpack;
 using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Secondary.Model;
 using XRayBuilder.Core.Libraries;
-using XRayBuilder.Core.Unpack;
 
 namespace XRayBuilder.Core.Model
 {

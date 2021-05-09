@@ -2,6 +2,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Ephemerality.Unpack;
 using NUnit.Framework;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Secondary;
@@ -12,7 +13,6 @@ using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Logic.PageCount;
 using XRayBuilder.Core.Logic.ReadingTime;
 using XRayBuilder.Core.Model;
-using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Logic.Parsing;
 
 namespace XRayBuilder.Test.Extras.EndActions
@@ -50,7 +50,7 @@ namespace XRayBuilder.Test.Extras.EndActions
         // [Test]
         public async Task Test()
         {
-            var metadata = MetadataLoader.Load(@"testfiles\A Storm of Swords - George R. R. Martin.mobi");
+            var metadata = MetadataReader.Load(@"testfiles\A Storm of Swords - George R. R. Martin.mobi");
             var book = new BookInfo(metadata, "https://www.goodreads.com/book/show/62291.A_Storm_of_Swords");
             var authorProfileResponse = await _authorProfileGenerator.GenerateAsync(new AuthorProfileGenerator.Request
             {

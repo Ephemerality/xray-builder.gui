@@ -8,6 +8,10 @@
 
     <ItemGroup>
         <PackageReference Include="AsyncEnumerator" Version="4.0.2" />
+        <PackageReference Include="Dapper" Version="2.0.78" />
+        <PackageReference Include="FluentMigrator" Version="3.2.11" />
+        <PackageReference Include="FluentMigrator.Runner" Version="3.2.11" />
+        <PackageReference Include="FluentMigrator.Runner.SQLite" Version="3.2.11" />
         <PackageReference Include="HtmlAgilityPack" Version="1.11.29" />
         <PackageReference Include="JetBrains.Annotations" Version="2020.3.0" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
@@ -16,10 +20,6 @@
         <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.7" />
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
         <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\IonDotnet\Amazon.IonDotnet\Amazon.IonDotnet.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -35,6 +35,10 @@
         <AutoGen>True</AutoGen>
         <DependentUpon>CoreStrings.resx</DependentUpon>
       </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\lib\Ephemerality.Unpack\Ephemerality.Unpack.csproj" />
     </ItemGroup>
 
     <Choose>

@@ -39,7 +39,6 @@
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IonDotnet\Amazon.IonDotnet\Amazon.IonDotnet.csproj" />
     <ProjectReference Include="..\XRayBuilder.Core\XRayBuilder.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -57,6 +56,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Amazon.IonDotnet.Ephemerality, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\lib\Ephemerality.Unpack\Amazon.IonDotnet.Ephemerality.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net.Http" />
   </ItemGroup>
 </Project>

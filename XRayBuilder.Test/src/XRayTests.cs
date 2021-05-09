@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Ephemerality.Unpack;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
@@ -12,7 +13,6 @@ using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.IO.Extensions;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Logic;
-using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Logic;
 using XRayBuilder.Core.XRay.Logic.Aliases;
 using XRayBuilder.Core.XRay.Logic.Chapters;

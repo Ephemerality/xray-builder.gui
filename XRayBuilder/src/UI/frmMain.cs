@@ -9,7 +9,11 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Ephemerality.Unpack;
+using Ephemerality.Unpack.KFX;
+using Ephemerality.Unpack.Mobi;
 using Newtonsoft.Json;
+using XRayBuilder.Core.Database;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Logic;
 using XRayBuilder.Core.DataSources.Roentgen.Logic;
@@ -26,9 +30,6 @@ using XRayBuilder.Core.Libraries.Serialization.Json.Util;
 using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
 using XRayBuilder.Core.Logic;
 using XRayBuilder.Core.Model;
-using XRayBuilder.Core.Unpack;
-using XRayBuilder.Core.Unpack.KFX;
-using XRayBuilder.Core.Unpack.Mobi;
 using XRayBuilder.Core.XRay;
 using XRayBuilder.Core.XRay.Logic;
 using XRayBuilder.Core.XRay.Logic.Aliases;
@@ -64,6 +65,7 @@ namespace XRayBuilderGUI.UI
         private readonly IRoentgenClient _roentgenClient;
         private readonly IEndActionsAuthorConverter _endActionsAuthorConverter;
         private readonly IDirectoryService _directoryService;
+        private readonly DatabaseMigrator _databaseMigrator;
 
         public frmMain(
             ILogger logger,
@@ -82,7 +84,8 @@ namespace XRayBuilderGUI.UI
             IEndActionsArtifactService endActionsArtifactService,
             IRoentgenClient roentgenClient,
             IEndActionsAuthorConverter endActionsAuthorConverter,
-            IDirectoryService directoryService)
+            IDirectoryService directoryService,
+            DatabaseMigrator databaseMigrator)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
@@ -103,6 +106,7 @@ namespace XRayBuilderGUI.UI
             _roentgenClient = roentgenClient;
             _endActionsAuthorConverter = endActionsAuthorConverter;
             _directoryService = directoryService;
+            _databaseMigrator = databaseMigrator;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
 
@@ -174,7 +178,7 @@ namespace XRayBuilderGUI.UI
             _logger.Log(MainStrings.ExtractingMetadata);
             try
             {
-                var metadata = MetadataLoader.Load(mobiFile);
+                var metadata = MetadataReader.Load(mobiFile);
                 UIFunctions.EbokTagPromptOrThrow(metadata, mobiFile);
                 try
                 {
@@ -302,7 +306,7 @@ namespace XRayBuilderGUI.UI
                 Task buildTask;
                 switch (metadata)
                 {
-                    case Metadata _:
+                    case MobiMetadata _:
                         bool EditChaptersCallback()
                         {
                             if (xray.Unattended || !_settings.enableEdit)
@@ -689,7 +693,7 @@ namespace XRayBuilderGUI.UI
                     try
                     {
                         _logger.Log(string.Format(MainStrings.ExportingTermsFrom, "Roentgen"));
-                        using var metadata = MetadataLoader.Load(txtMobi.Text);
+                        using var metadata = MetadataReader.Load(txtMobi.Text);
                         await Task.Run(() => _termsService.DownloadAndSaveAsync(_diContainer.GetInstance<SecondarySourceRoentgen>(), null, path, metadata.Asin, _settings.roentgenRegion, _settings.includeTopics, _progress, _cancelTokens.Token));
                     }
                     catch (Exception ex) when (ex.Message.Contains("No terms"))
@@ -818,6 +822,9 @@ namespace XRayBuilderGUI.UI
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            // Ensure the database is up to date
+            _databaseMigrator.Migrate();
+
             ActiveControl = lblGoodreads;
             btnBrowseMobi.ToolTipText = MainStrings.OpenKindleBook;
             btnBrowseFolders.ToolTipText = MainStrings.OpenOutputDirectory;
@@ -1047,8 +1054,8 @@ namespace XRayBuilderGUI.UI
             _tooltip.SetToolTip(txtAsin, _amazonClient.Url(_settings.amazonTLD, txtAsin.Text));
 
             CheckFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text), metadata.DbName, metadata.Guid);
-            btnBuild.Enabled = metadata.XRaySupported;
-            btnOneClick.Enabled = metadata.XRaySupported;
+            btnBuild.Enabled = true;
+            btnOneClick.Enabled = true;
             btnUnpack.Enabled = metadata.RawMlSupported;
 
             //TODO: Check ASIN matches selected Amazon region.
@@ -1129,7 +1136,7 @@ namespace XRayBuilderGUI.UI
             }
 
             _logger.Log(MainStrings.ExtractingRawMl);
-            using var metadata = MetadataLoader.Load(txtMobi.Text);
+            using var metadata = MetadataReader.Load(txtMobi.Text);
             var rawMlPath = _directoryService.GetRawmlPath(txtMobi.Text);
             metadata.SaveRawMl(rawMlPath);
             _logger.Log(string.Format(MainStrings.ExtractedToPath, rawMlPath));

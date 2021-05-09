@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text;
+using Ephemerality.Unpack;
+using Ephemerality.Unpack.KFX;
+using Ephemerality.Unpack.Mobi;
 using HtmlAgilityPack;
-using XRayBuilder.Core.Unpack;
-using XRayBuilder.Core.Unpack.KFX;
-using XRayBuilder.Core.Unpack.Mobi;
 
 namespace XRayBuilder.Core.XRay.Logic.Parsing
 {
@@ -17,7 +17,7 @@ namespace XRayBuilder.Core.XRay.Logic.Parsing
         public IEnumerable<Paragraph> GetParagraphs(IMetadata metadata)
             => metadata switch
             {
-                Metadata _ => GetRegular(metadata),
+                MobiMetadata _ => GetRegular(metadata),
                 KfxContainer kfx => GetKfx(kfx),
                 _ => GetRegular(metadata)
             };

@@ -2,10 +2,10 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Ephemerality.Unpack;
 using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Progress;
-using XRayBuilder.Core.Unpack;
 
 namespace XRayBuilder.Core.XRay.Logic
 {

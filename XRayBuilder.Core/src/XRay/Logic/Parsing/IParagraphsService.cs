@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using Ephemerality.Unpack;
 using JetBrains.Annotations;
-using XRayBuilder.Core.Unpack;
 
 namespace XRayBuilder.Core.XRay.Logic.Parsing
 {

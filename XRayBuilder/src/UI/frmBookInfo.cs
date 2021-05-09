@@ -7,12 +7,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Ephemerality.Unpack;
 using SimpleInjector;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Logic;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Http;
-using XRayBuilder.Core.Unpack;
 using XRayBuilderGUI.Localization.Main;
 using XRayBuilderGUI.Properties;
 

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Ephemerality.Unpack;
 using HtmlAgilityPack;
 using XRayBuilder.Core.DataSources.Secondary.Model;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Model;
-using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Artifacts;
 
 namespace XRayBuilder.Core.DataSources.Secondary

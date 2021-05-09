@@ -4,13 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Ephemerality.Unpack;
 using HtmlAgilityPack;
 using XRayBuilder.Core.DataSources.Secondary.Model;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
 using XRayBuilder.Core.Model;
-using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Artifacts;
 using XRayBuilder.Core.XRay.Logic.Terms;
 

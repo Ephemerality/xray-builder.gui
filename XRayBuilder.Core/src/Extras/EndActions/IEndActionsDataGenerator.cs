@@ -1,11 +1,11 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Ephemerality.Unpack;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Extras.AuthorProfile;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Model;
-using XRayBuilder.Core.Unpack;
 
 namespace XRayBuilder.Core.Extras.EndActions
 {

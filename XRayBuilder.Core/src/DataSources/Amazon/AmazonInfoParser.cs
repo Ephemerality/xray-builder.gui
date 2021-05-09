@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +18,9 @@ namespace XRayBuilder.Core.DataSources.Amazon
         private readonly IHttpClient _httpClient;
 
         private readonly Regex _numbersRegex = new(@"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)", RegexOptions.Compiled);
-        private readonly Regex _regex404 = new(@"(cs_404_logo|cs_404_link)", RegexOptions.Compiled);
+        private readonly Regex _regex404 = new(@"(cs_404_logo|cs_404_link|Page Not Found)", RegexOptions.Compiled);
+
+        private readonly Regex _dirtyParas = new(@"^<[^>]+>.*<[^>]+>$|^&apos;|&apos;$|\*|_", RegexOptions.Compiled);
 
         public AmazonInfoParser(ILogger logger, IHttpClient httpClient)
         {
@@ -111,7 +114,28 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-size-medium series-detail-description-text']");
             if (descNode != null && descNode.InnerText != "")
             {
-                var description = descNode.InnerText.Trim();
+                // TODO: If this proves better than InnerHtml.Clean(), and is reliable, use in other places instead of Clean()?
+                // Match all p nodes in the description node.
+                // Filter out any node starting and ending with a html style tag
+                // "Should" remove single bold, italic and heading lines to leave a cleaner description.
+                // Then replace known entities with characters using HtmlEntity.DeEntitize and join strings to form description.
+                var nodes = descNode.SelectNodes(".//p/text()[normalize-space(.) != '']") ?? descNode.SelectNodes(".//div/text()[normalize-space(.) != '']");
+
+                string description;
+                if (nodes != null)
+                {
+                    var filteredNodes = nodes
+                        .Where(node => !_dirtyParas.IsMatch(node.InnerHtml.Trim()))
+                        .Select(node => HtmlEntity.DeEntitize(node.InnerText.Trim()))
+                        .ToArray();
+
+                    description = filteredNodes.Any()
+                        ? string.Join(" ", filteredNodes)
+                        : descNode.InnerHtml.Clean();
+                }
+                else
+                    description = descNode.InnerHtml.Clean();
+
                 // Following the example of Amazon, cut off desc around 1000 characters.
                 // If conveniently trimmed at the end of the sentence, let it end with the punctuation.
                 // If the sentence continues, cut it off and replace the space with an ellipsis
@@ -123,10 +147,14 @@ namespace XRayBuilder.Core.DataSources.Amazon
                     if (lastPunc > lastSpace)
                         description = description.Substring(0, lastPunc + 1);
                     else
-                        description = $"{description.Substring(0, lastSpace)}{'\u2026'}";
+                        description = $"{description.Substring(0, lastSpace - 1)}{'\u2026'}";
                 }
-                description = System.Net.WebUtility.HtmlDecode(description);
-                response.Description = description.Clean();
+
+                // Used to test output from Amazon description parsing
+                //var descsCheckFile = AppDomain.CurrentDomain.BaseDirectory + @"\descs.txt";
+                //File.AppendAllText(descsCheckFile, description + Environment.NewLine + Environment.NewLine);
+
+                response.Description = description;
             }
             #endregion
 

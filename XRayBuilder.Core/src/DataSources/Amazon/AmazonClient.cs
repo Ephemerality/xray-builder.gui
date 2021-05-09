@@ -64,13 +64,14 @@ namespace XRayBuilder.Core.DataSources.Amazon
             //Generate Author search URL from author's name
             var newAuthor = Functions.FixAuthor(author);
             var plusAuthorName = newAuthor.Replace(" ", "+");
-            //Updated to match Search "all" Amazon
-            var amazonAuthorSearchUrl = $"https://www.amazon.{TLD}/s/ref=nb_sb_noss_2?url=search-alias%3Dstripbooks&field-keywords={plusAuthorName}";
+            // Amazon Kindle store only search
+            var amazonKindleAuthorSearchUrl = $"https://www.amazon.{TLD}/s?k={plusAuthorName}&i=digital-text&ref=nb_sb_noss";
+
             if(enableLog)
                 _logger.Log($"Searching for author's page on Amazon.{TLD}...");
 
             // Search Amazon for Author
-            var authorSearchDoc = await _httpClient.GetPageAsync(amazonAuthorSearchUrl, cancellationToken);
+            var authorSearchDoc = await _httpClient.GetPageAsync(amazonKindleAuthorSearchUrl, cancellationToken);
 
             // Check for captcha
             try
@@ -96,7 +97,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 if (possibleNodes == null || (node = possibleNodes.FirstOrDefault()) == null)
                 {
                     if (enableLog)
-                        _logger.Log($"An error occurred finding author's page on Amazon.{TLD}.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at {amazonAuthorSearchUrl}\r\nSometimes Amazon just doesn't return the author and trying a few times will work.");
+                        _logger.Log($"An error occurred finding author's page on Amazon.{TLD}.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at {amazonKindleAuthorSearchUrl}\r\nSometimes Amazon just doesn't return the author and trying a few times will work.");
                     return null;
                 }
             }
@@ -126,7 +127,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             if (node == null || string.IsNullOrEmpty(properAuthor) || properAuthor.IndexOf('/', 1) < 3 || string.IsNullOrEmpty(authorAsin))
             {
                 if (enableLog)
-                    _logger.Log($"Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: {amazonAuthorSearchUrl}");
+                    _logger.Log($"Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: {amazonKindleAuthorSearchUrl}");
                 return null;
             }
             properAuthor = properAuthor.Substring(1, properAuthor.IndexOf('/', 1) - 1);
@@ -206,7 +207,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                    ?? authorHtmlDoc.DocumentNode.SelectSingleNode("//span[@id='author_biography']")
                    ?? throw new FormatChangedException(nameof(AmazonClient), "author bio");
 
-            return bioNode.InnerText;
+            return bioNode.InnerHtml.Clean();
         }
 
         private string GetAuthorImageUrl(HtmlDocument authorHtmlDoc)
@@ -240,7 +241,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                     continue;
                 var bookNodes = result.SelectNodes(".//div[@class='a-fixed-right-grid-inner']/div/div")
                     ?? throw new FormatChangedException(nameof(AmazonClient), "book results - title nodes");
-                var name = bookNodes.FirstOrDefault()?.SelectSingleNode("./a")?.InnerText.Trim()
+                var name = HtmlEntity.DeEntitize(bookNodes.FirstOrDefault()?.SelectSingleNode("./a")?.InnerText.Trim())
                     ?? throw new FormatChangedException(nameof(AmazonClient), "book results - title");
 
                 // Skip known-bad things like lists and series and stuff
@@ -282,7 +283,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 // Skip known-bad things like lists and series and stuff
                 if (_regexIgnoreHeaders.IsMatch(otherBook.InnerText))
                     continue;
-                var name = otherBook.InnerText.Trim().ToTitleCase();
+                var name = HtmlEntity.DeEntitize(otherBook.InnerText.Trim().ToTitleCase());
                 otherBook = result.SelectSingleNode(".//*[@title='Kindle Edition']");
                 if (otherBook == null)
                     continue;

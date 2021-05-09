@@ -48,10 +48,11 @@ namespace XRayBuilder.Core.Extras.EndActions
                 Asin = request.BookAsin,
                 ContentType = "EBOK",
                 Timestamp = Functions.UnixTimestampMilliseconds(),
-                RefTagSuffix = "AAATAAB",
+                RefTagSuffix = "AAATAAA",
                 ImageUrl = request.BookImageUrl,
                 EmbeddedID = $"{request.BookDatabaseName}:{request.BookGuid}",
-                Erl = request.BookErl
+                FictionStatus = "unknown",
+                Erl = -1 //request.BookErl
             };
             endActions.Data.FollowSubscriptions = new Extras.Artifacts.EndActions.AuthorSubscriptions
             {
@@ -93,6 +94,19 @@ namespace XRayBuilder.Core.Extras.EndActions
                     }
                 }
             };
+            endActions.Data.AuthorBiosBSE = new AuthorBios
+            {
+                Authors = new[]
+                {
+                    new Author
+                    {
+                        Asin = request.AuthorAsin,
+                        Name = request.Author,
+                        Bio = request.AuthorBiography,
+                        ImageUrl = request.AuthorImageUrl
+                    }
+                }
+            };
             endActions.Data.AuthorRecs = new Recs
             {
                 Class = "featuredRecommendationList",
@@ -109,6 +123,8 @@ namespace XRayBuilder.Core.Extras.EndActions
                     .Select(bk => Extensions.BookInfoToBook(bk, true))
                     .ToArray()
             };
+
+            endActions.BottomSheetEnabled = false;
 
             try
             {

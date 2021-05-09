@@ -11,5 +11,6 @@ namespace XRayBuilder.Core.Config
         /// When the old version is being built, enables excerpt shortening
         /// </summary>
         bool ShortenExcerptsLegacy { get; }
+        string AmazonTld { get; }
     }
 }

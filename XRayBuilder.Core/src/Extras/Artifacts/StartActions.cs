@@ -17,6 +17,9 @@ namespace XRayBuilder.Core.Extras.Artifacts
         [JsonProperty("data")]
         public DataJson Data { get; set; }
 
+        [JsonProperty("bottomSheetEnabled")]
+        public bool? BottomSheetEnabled { get; set; }
+
         public sealed class BookInformation
         {
             [JsonProperty("class")]
@@ -312,6 +315,9 @@ namespace XRayBuilder.Core.Extras.Artifacts
 
             [JsonProperty("followSubscriptions")]
             public AuthorSubscriptions FollowSubscriptions { get; set; }
+
+            [JsonProperty("authorBiosBSE")]
+            public AuthorBios AuthorBiosBSE { get; set; }
 
             [JsonProperty("welcomeText")]
             public WelcomeText WelcomeText { get; set; }

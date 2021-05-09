@@ -229,6 +229,7 @@ namespace XRayBuilder.Core.Extras.EndActions
         {
             if (!string.IsNullOrEmpty(book.Asin))
             {
+                _logger.Log($"Searching for {book.Title} on Amazon.{settings.AmazonTld}…");
                 var response = await _amazonInfoParser.GetAndParseAmazonDocument($"https://www.amazon.{settings.AmazonTld}/dp/{book.Asin}", cancellationToken);
                 if (string.IsNullOrEmpty(response.Description))
                 {
@@ -348,7 +349,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             }
 
             // TODO: Refactor next/previous series stuff
-            if (curBook.Series?.Next == null)
+            if (curBook.Series?.Next == null && settings.DownloadNis)
             {
                 try
                 {
@@ -451,6 +452,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             public bool EstimatePageCount { get; set; }
             public bool SaveHtml { get; set; }
             public bool EditDescription { get; set; }
+            public bool DownloadNis  { get; set; }
         }
     }
 }

@@ -246,7 +246,9 @@ namespace XRayBuilder.Core.Libraries.Http
                 };
                 request.RequestUri = builder.Uri;
                 var response = await base.SendAsync(request, cancellationToken);
-                Logger?.Log($"Not available from {originalHost}, but found on Amazon US ({request.RequestUri})");
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                    return response;
+                Logger?.Log($"Not available from {originalHost}, but found on Amazon.com ({request.RequestUri})");
                 return response;
             }
         }

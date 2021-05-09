@@ -390,26 +390,59 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
             //Add rating and reviews count if missing from Amazon book info
             var metaNode = grDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
-            if (metaNode != null && !curBook.AmazonRating.HasValue)
+            if (metaNode != null && curBook.AmazonRating == 0)
             {
-                var goodreadsRating = metaNode.SelectSingleNode("//span[@class='value rating']")
+                var ratingNode = metaNode.SelectSingleNode("//span[@class='value rating']")
                     ?? metaNode.SelectSingleNode(".//span[@itemprop='ratingValue']");
-                if (goodreadsRating != null)
-                    curBook.AmazonRating = Math.Round(float.Parse(goodreadsRating.InnerText), 2);
-                var passagesNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite votes' and @href='#other_reviews']")
-                    ?? metaNode.SelectSingleNode(".//span[@class='count value-title']");
-                if (passagesNode != null)
+                if (ratingNode != null)
+                    curBook.AmazonRating = Math.Round(float.Parse(ratingNode.InnerText), 2);
+                var reviewsNode = metaNode.SelectSingleNode(".//a[@class='actionLinkLite votes' and @href='#other_reviews']")
+                    ?? metaNode.SelectSingleNode(".//span[@class='count value-title']")
+                    ?? metaNode.SelectSingleNode(".//a[@href='#other_reviews']");
+                if (reviewsNode != null)
                 {
-                    var match = Regex.Match(passagesNode.InnerText, @"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)");
+                    var match = Regex.Match(reviewsNode.InnerText, @"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)");
                     if (match.Success)
                         curBook.Reviews = int.Parse(match.Value.Replace(",", "").Replace(".", ""));
                 }
-                passagesNode = metaNode.SelectSingleNode(".//meta[@itemprop='reviewCount']");
-                if (passagesNode != null && int.TryParse(passagesNode.GetAttributeValue("content", null), out var reviews))
+                reviewsNode = metaNode.SelectSingleNode(".//meta[@itemprop='reviewCount']");
+                if (reviewsNode != null && int.TryParse(reviewsNode.GetAttributeValue("content", null), out var reviews))
                 {
-                    curBook.Reviews = reviews;
+                    curBook.Reviews += reviews;
                 }
             }
+        }
+
+        /// <summary>
+        /// Scrape author info from Goodreads
+        /// </summary>
+        public async Task<AuthorSearchResults> GetAuthorAsync(string dataUrl, CancellationToken cancellationToken = default)
+        {
+            var result = new AuthorSearchResults();
+
+            var grDoc = await _httpClient.GetPageAsync(dataUrl, cancellationToken);
+
+            var aboutNode = grDoc.DocumentNode.SelectSingleNode("//div[@class='bookAuthorProfile']");
+            if (aboutNode == null)
+                return result;
+
+            var bioNodes = aboutNode.SelectNodes("//div[@class='bookAuthorProfile__about']/span/text()[normalize-space(.) != '']");
+            if (bioNodes != null)
+            {
+                var nodes = bioNodes.Select(n => HtmlEntity.DeEntitize(n.InnerText.Trim())).ToList();
+                result.Biography = string.Join(" ", nodes);
+            }
+
+            var imgNode = aboutNode.SelectSingleNode(".//div[@class='bookAuthorProfile__photo']");
+            if (imgNode != null)
+            {
+                var attr = imgNode.GetAttributeValue("style", "");
+                var match = Regex.Match(attr, @"background-image: url\((.*)\)");
+                if (match.Success)
+                    result.ImageUrl = match.Groups[1].Value.Replace("p3/", "p8/");
+            }
+
+            return result;
         }
     }
 }

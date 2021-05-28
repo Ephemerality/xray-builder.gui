@@ -41,6 +41,7 @@ SELECT {nameof(BookAuthorMapModel.BookId)} FROM {Table}
 WHERE {nameof(BookAuthorMapModel.AuthorId)} = @{nameof(parameters.authorId)}", parameters, cancellationToken);
         }
 
+        // TODO handle empty authorIds better
         public async Task UpdateAuthorsForBookAsync(long bookId, long[] authorIds, CancellationToken cancellationToken)
         {
             // Upsert authors for the book

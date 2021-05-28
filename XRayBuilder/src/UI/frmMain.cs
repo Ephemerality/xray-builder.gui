@@ -1083,6 +1083,12 @@ namespace XRayBuilderGUI.UI
             btnOneClick.Enabled = metadata.XRaySupported;
             btnUnpack.Enabled = metadata.RawMlSupported;
 
+            await _bookRepository.AddOrUpdateAsync(new Book
+            {
+                Asin = _openedMetadata.Asin,
+                Title = _openedMetadata.Title
+            }, _cancelTokens.Token);
+
             //TODO: Check ASIN matches selected Amazon region.
             //try
             //{

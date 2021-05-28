@@ -78,7 +78,9 @@ namespace XRayBuilder.Core.Database.Repository
                     await yield.ReturnAsync(await _authorRepository.AddOrUpdateAsync(author, yield.CancellationToken));
             }).ToArrayAsync(cancellationToken);
 
-            await _bookAuthorMapOrm.UpdateAuthorsForBookAsync(bookId, authorIds, cancellationToken);
+            // Only update the authors if they were present
+            if (authorIds.Any())
+                await _bookAuthorMapOrm.UpdateAuthorsForBookAsync(bookId, authorIds, cancellationToken);
 
             transaction.Commit();
         }

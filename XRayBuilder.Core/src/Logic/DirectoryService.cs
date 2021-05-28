@@ -24,6 +24,11 @@ namespace XRayBuilder.Core.Logic
 #endif
         }
 
+        public void CreateDirectoryForFile(string file)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(file));
+        }
+
         public string GetAliasPath(string asin)
             => Path.Combine(_baseDirectory, "ext", $"{asin}.aliases");
 

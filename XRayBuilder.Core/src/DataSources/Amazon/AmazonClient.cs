@@ -73,7 +73,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 _logger.Log($"Searching for author's page on the Amazon.{TLD} Kindle store…");
 
             // Search Amazon for Author
-            var authorSearchDoc = await _httpClient.GetPageAsync(amazonKindleAuthorSearchUrl, cancellationToken);
+            var authorSearchDoc = await GetPageWithCaptchaCheckAsync(amazonKindleAuthorSearchUrl, TLD, enableLog, cancellationToken);
 
             // Try to find Author's page from Amazon search
             var properAuthor = "";
@@ -84,19 +84,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 if(enableLog)
                     _logger.Log($"Warning: No results found in the Amazon.{TLD} Kindle store. Trying all departments…");
 
-                authorSearchDoc = await _httpClient.GetPageAsync(amazonAuthorSearchUrl, cancellationToken);
-
-                // Check for captcha
-                try
-                {
-                    _amazonInfoParser.CheckCaptcha(authorSearchDoc);
-                }
-                catch (AmazonCaptchaException)
-                {
-                    if(enableLog)
-                        _logger.Log($"Warning: Amazon.{TLD} is requesting a captcha.\r\nYou can try visiting Amazon.{TLD} in a real browser first, try another region, or try again later.");
-                    return null;
-                }
+                authorSearchDoc = await GetPageWithCaptchaCheckAsync(amazonAuthorSearchUrl, TLD, enableLog, cancellationToken);
 
                 // If the wrong format of search page is returned, try to find author in the small links under book titles
                 possibleNodes = authorSearchDoc.DocumentNode.SelectNodes(".//a[@class='a-size-base a-link-normal']")
@@ -435,6 +423,25 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
                 yield return book;
             }
+        }
+
+        [ItemCanBeNull]
+        private async Task<HtmlDocument> GetPageWithCaptchaCheckAsync(string url, string tld, bool enableLog, CancellationToken cancellationToken)
+        {
+            var doc = await _httpClient.GetPageAsync(url, cancellationToken);
+
+            try
+            {
+                _amazonInfoParser.CheckCaptcha(doc);
+            }
+            catch (AmazonCaptchaException)
+            {
+                if(enableLog)
+                    _logger.Log($"Warning: Amazon.{tld} is requesting a captcha.\r\nYou can try visiting Amazon.{tld} in a real browser first, try another region, or try again later.");
+                return null;
+            }
+
+            return doc;
         }
     }
 }

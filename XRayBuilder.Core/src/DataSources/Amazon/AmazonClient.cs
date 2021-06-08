@@ -64,38 +64,48 @@ namespace XRayBuilder.Core.DataSources.Amazon
             //Generate Author search URL from author's name
             var newAuthor = Functions.FixAuthor(author);
             var plusAuthorName = newAuthor.Replace(" ", "+");
+            //Updated to match Search "all" Amazon
+            var amazonAuthorSearchUrl = $"https://www.amazon.{TLD}/s?k={plusAuthorName}&ref=nb_sb_noss";
             // Amazon Kindle store only search
             var amazonKindleAuthorSearchUrl = $"https://www.amazon.{TLD}/s?k={plusAuthorName}&i=digital-text&ref=nb_sb_noss";
 
             if(enableLog)
-                _logger.Log($"Searching for author's page on Amazon.{TLD}...");
+                _logger.Log($"Searching for author's page on the Amazon.{TLD} Kindle store…");
 
             // Search Amazon for Author
             var authorSearchDoc = await _httpClient.GetPageAsync(amazonKindleAuthorSearchUrl, cancellationToken);
 
-            // Check for captcha
-            try
-            {
-                _amazonInfoParser.CheckCaptcha(authorSearchDoc);
-            }
-            catch (AmazonCaptchaException)
-            {
-                if(enableLog)
-                    _logger.Log($"Warning: Amazon.{TLD} is requesting a captcha.\r\nYou can try visiting Amazon.{TLD} in a real browser first, try another region, or try again later.");
-                return null;
-            }
             // Try to find Author's page from Amazon search
             var properAuthor = "";
             HtmlNode[] possibleNodes = null;
             var node = authorSearchDoc.DocumentNode.SelectSingleNode("//*[@id='result_1']");
             if (node == null || !node.OuterHtml.Contains("/e/B"))
             {
+                if(enableLog)
+                    _logger.Log($"Warning: No results found in the Amazon.{TLD} Kindle store. Trying all departments…");
+
+                authorSearchDoc = await _httpClient.GetPageAsync(amazonAuthorSearchUrl, cancellationToken);
+
+                // Check for captcha
+                try
+                {
+                    _amazonInfoParser.CheckCaptcha(authorSearchDoc);
+                }
+                catch (AmazonCaptchaException)
+                {
+                    if(enableLog)
+                        _logger.Log($"Warning: Amazon.{TLD} is requesting a captcha.\r\nYou can try visiting Amazon.{TLD} in a real browser first, try another region, or try again later.");
+                    return null;
+                }
+
                 // If the wrong format of search page is returned, try to find author in the small links under book titles
                 possibleNodes = authorSearchDoc.DocumentNode.SelectNodes(".//a[@class='a-size-base a-link-normal']")
                     ?.Where(possibleNode => possibleNode.InnerText != null && possibleNode.InnerText.Trim().Equals(newAuthor, StringComparison.InvariantCultureIgnoreCase))
                     .ToArray();
+
                 if (possibleNodes == null || (node = possibleNodes.FirstOrDefault()) == null)
                 {
+
                     if (enableLog)
                         _logger.Log($"An error occurred finding author's page on Amazon.{TLD}.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at {amazonKindleAuthorSearchUrl}\r\nSometimes Amazon just doesn't return the author and trying a few times will work.");
                     return null;

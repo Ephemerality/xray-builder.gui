@@ -46,7 +46,8 @@ namespace XRayBuilder.Core.Database.Orm
 
         public Task<AuthorModel> InsertAsync([NotNull] AuthorModel authorModel, CancellationToken cancellationToken)
         {
-            
+            // todo
+            throw new NotSupportedException();
         }
 
         public async Task<long> UpdateAsync([NotNull] AuthorModel authorModel, CancellationToken cancellationToken)

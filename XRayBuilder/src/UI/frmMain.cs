@@ -465,7 +465,7 @@ namespace XRayBuilderGUI.UI
                     }
                     catch (Exception e)
                     {
-                        _logger.Log($@"{MainStrings.NoPremadeActionsAvailable}:{Environment.NewLine}{e.Message}");
+                        _logger.Log($@"{string.Format(MainStrings.NoPremadeActionsAvailable, type)}:{Environment.NewLine}{e.Message}");
                         return null;
                     }
                 }

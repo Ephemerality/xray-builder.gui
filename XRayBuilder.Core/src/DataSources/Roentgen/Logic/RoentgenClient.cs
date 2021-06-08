@@ -54,18 +54,51 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
         {
             return HandleDownloadExceptionsAsync(async () =>
             {
-                var response = await _httpClient.GetStringAsync($"{BaseUrl}{StartActionsEndpoint(asin)}", cancellationToken);
-                return JsonUtil.Deserialize<StartActions>(response, false);
+                var requestContent = new StringContent(JsonUtil.Serialize(new DownloadRequest
+                {
+                    Asin = asin,
+                    RegionTld = regionTld
+                }), Encoding.UTF8, "application/json");
+                var request = new HttpRequestMessage(HttpMethod.Post, $"{BaseUrl}{StartActionsEndpoint(asin)}")
+                {
+                    Content = requestContent
+                };
+                var response = await _httpClient.SendAsync(request, cancellationToken);
+                var responseStream = await response.Content.ReadAsStreamAsync();
+                var responseString = await new StreamReader(responseStream, Encoding.UTF8).ReadToEndAsync();
+                return JsonUtil.Deserialize<StartActions>(responseString);
             });
+
+            //return HandleDownloadExceptionsAsync(async () =>
+            //{
+            //    var response = await _httpClient.GetStringAsync($"{BaseUrl}{StartActionsEndpoint(asin)}", cancellationToken);
+            //    return JsonUtil.Deserialize<StartActions>(response, false);
+            //});
         }
 
         public Task<NextBookResult> DownloadNextInSeriesAsync(string asin, CancellationToken cancellationToken)
         {
             return HandleDownloadExceptionsAsync(async () =>
             {
-                var response = await _httpClient.GetStringAsync($"{BaseUrl}{SeriesEndpoint(asin)}", cancellationToken);
-                return JsonConvert.DeserializeObject<NextBookResult>(response);
+                var requestContent = new StringContent(JsonUtil.Serialize(new DownloadRequest
+                {
+                    Asin = asin,
+                }), Encoding.UTF8, "application/json");
+                var request = new HttpRequestMessage(HttpMethod.Post, $"{BaseUrl}{SeriesEndpoint(asin)}")
+                {
+                    Content = requestContent
+                };
+                var response = await _httpClient.SendAsync(request, cancellationToken);
+                var responseStream = await response.Content.ReadAsStreamAsync();
+                var responseString = await new StreamReader(responseStream, Encoding.UTF8).ReadToEndAsync();
+                return JsonUtil.Deserialize<NextBookResult>(responseString);
             });
+
+            //return HandleDownloadExceptionsAsync(async () =>
+            //{
+            //    var response = await _httpClient.GetStringAsync($"{BaseUrl}{SeriesEndpoint(asin)}", cancellationToken);
+            //    return JsonConvert.DeserializeObject<NextBookResult>(response);
+            //});
         }
 
         public async Task PreloadAsync(string asin, string regionTld, CancellationToken cancellationToken)

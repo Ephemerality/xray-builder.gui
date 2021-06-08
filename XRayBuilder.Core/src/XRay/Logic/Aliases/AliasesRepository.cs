@@ -116,6 +116,7 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
         public string SaveCharactersToFile(IEnumerable<Term> terms, string asin, bool splitAliases)
         {
             var aliasPath = _directoryService.GetAliasPath(asin);
+            _directoryService.CreateDirectoryForFile(aliasPath);
             using var streamWriter = new StreamWriter(aliasPath, false, Encoding.UTF8);
 
             var sortedTerms = terms

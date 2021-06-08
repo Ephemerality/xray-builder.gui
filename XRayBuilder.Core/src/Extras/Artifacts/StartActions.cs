@@ -126,6 +126,9 @@ namespace XRayBuilder.Core.Extras.Artifacts
 
             [JsonProperty("showBadges", NullValueHandling = NullValueHandling.Ignore)]
             public bool? ShowBadges { get; set; }
+
+            [JsonProperty("BSEDataKey", NullValueHandling = NullValueHandling.Ignore)]
+            public string BseDataKey { get; set; }
         }
 
         public sealed class WidgetStrings
@@ -150,6 +153,15 @@ namespace XRayBuilder.Core.Extras.Artifacts
 
             [JsonProperty("panelRowTitle", NullValueHandling = NullValueHandling.Ignore)]
             public Dictionary<string, string> PanelRowTitle { get; set; }
+
+            [JsonProperty("BSE_series_text", NullValueHandling = NullValueHandling.Ignore)]
+            public Dictionary<string, string> BseSeriesText { get; set; }
+
+            [JsonProperty("BSE_text", NullValueHandling = NullValueHandling.Ignore)]
+            public Dictionary<string, string> BseText { get; set; }
+
+            [JsonProperty("BSE_title", NullValueHandling = NullValueHandling.Ignore)]
+            public Dictionary<string, string> BseTitle { get; set; }
         }
 
         public sealed class Widget

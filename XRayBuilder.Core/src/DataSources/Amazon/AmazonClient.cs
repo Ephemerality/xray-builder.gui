@@ -78,7 +78,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             // Try to find Author's page from Amazon search
             var properAuthor = "";
             HtmlNode[] possibleNodes = null;
-            var node = authorSearchDoc.DocumentNode.SelectSingleNode("//*[@id='result_1']");
+            var node = authorSearchDoc?.DocumentNode.SelectSingleNode("//*[@id='result_1']");
             if (node == null || !node.OuterHtml.Contains("/e/B"))
             {
                 if(enableLog)
@@ -87,7 +87,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 authorSearchDoc = await GetPageWithCaptchaCheckAsync(amazonAuthorSearchUrl, TLD, enableLog, cancellationToken);
 
                 // If the wrong format of search page is returned, try to find author in the small links under book titles
-                possibleNodes = authorSearchDoc.DocumentNode.SelectNodes(".//a[@class='a-size-base a-link-normal']")
+                possibleNodes = authorSearchDoc?.DocumentNode.SelectNodes(".//a[@class='a-size-base a-link-normal']")
                     ?.Where(possibleNode => possibleNode.InnerText != null && possibleNode.InnerText.Trim().Equals(newAuthor, StringComparison.InvariantCultureIgnoreCase))
                     .ToArray();
 

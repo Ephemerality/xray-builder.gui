@@ -8,10 +8,10 @@
 
     <ItemGroup>
         <PackageReference Include="AsyncEnumerator" Version="4.0.2" />
-        <PackageReference Include="Dapper" Version="2.0.78" />
-        <PackageReference Include="FluentMigrator" Version="3.2.11" />
-        <PackageReference Include="FluentMigrator.Runner" Version="3.2.11" />
-        <PackageReference Include="FluentMigrator.Runner.SQLite" Version="3.2.11" />
+        <PackageReference Include="Dapper" Version="2.0.90" />
+        <PackageReference Include="FluentMigrator" Version="3.2.16" />
+        <PackageReference Include="FluentMigrator.Runner" Version="3.2.16" />
+        <PackageReference Include="FluentMigrator.Runner.SQLite" Version="3.2.16" />
         <PackageReference Include="HtmlAgilityPack" Version="1.11.29" />
         <PackageReference Include="JetBrains.Annotations" Version="2020.3.0" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
@@ -54,7 +54,7 @@
         </When>
         <Otherwise>
             <ItemGroup>
-                <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.1" />
+                <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.2" />
                 <PackageReference Include="Pluralize.NET.Core" Version="1.0.0" />
                 <PackageReference Include="JTForks.MiscUtil" Version="1.285.0" />
             </ItemGroup>

@@ -58,7 +58,6 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
         public string Url(string tld, string asin) => $"https://www.amazon.{tld}/dp/{asin}";
 
-        // TODO fix the need to have an enableLog param
         public async Task<AuthorSearchResults> SearchAuthor(string author, string TLD, CancellationToken cancellationToken, bool enableLog = true)
         {
             //Generate Author search URL from author's name
@@ -78,7 +77,8 @@ namespace XRayBuilder.Core.DataSources.Amazon
             // Try to find Author's page from Amazon search
             var properAuthor = "";
             HtmlNode[] possibleNodes = null;
-            var node = authorSearchDoc?.DocumentNode.SelectSingleNode("//*[@id='result_1']");
+            var node = authorSearchDoc?.DocumentNode.SelectSingleNode("//*[@id='result_1']")
+                ?? authorSearchDoc?.DocumentNode.SelectSingleNode(".//div/div[@data-index='0']");
             if (node == null || !node.OuterHtml.Contains("/e/B"))
             {
                 if(enableLog)
@@ -101,36 +101,44 @@ namespace XRayBuilder.Core.DataSources.Amazon
             }
 
             string authorAsin = null;
+            string authorUrl = null;
+            var authorNode =  node.Descendants("a").FirstOrDefault(d => d.Attributes["href"].Value.Contains("/e/B"));
+
             if (possibleNodes != null && possibleNodes.Any())
             {
                 // TODO Present a list of these to choose from
                 node = possibleNodes.First();
-                properAuthor = node.GetAttributeValue("href", "");
-                authorAsin = ParseAsinFromUrl(properAuthor);
+                authorUrl = node.GetAttributeValue("href", "");
+                authorAsin = ParseAsinFromUrl(authorUrl);
             }
             // Check for typical search results, second item is the author page
+            else if (authorNode != null)
+            {
+                authorUrl = authorNode.GetAttributeValue("href", "");
+                authorAsin = ParseAsinFromUrl(authorUrl);
+            }
             else if ((node = node.SelectSingleNode("//*[@id='result_1']/div/div/div/div/a")) != null)
             {
-                properAuthor = node.GetAttributeValue("href", "");
+                authorUrl = node.GetAttributeValue("href", "");
                 authorAsin = node.GetAttributeValue("data-asin", null)
-                    ?? ParseAsinFromUrl(properAuthor);
+                    ?? ParseAsinFromUrl(authorUrl);
             }
             // otherwise check for "by so-and-so" text beneath the titles for a possible match
             else if ((node = authorSearchDoc.DocumentNode.SelectSingleNode($"//div[@id='resultsCol']//li[@class='s-result-item celwidget  ']//a[text()=\"{newAuthor}\"]")) != null)
             {
-                properAuthor = node.GetAttributeValue("href", "");
-                authorAsin = ParseAsinFromUrl(properAuthor);
+                authorUrl = node.GetAttributeValue("href", "");
+                authorAsin = ParseAsinFromUrl(authorUrl);
             }
 
-            if (node == null || string.IsNullOrEmpty(properAuthor) || properAuthor.IndexOf('/', 1) < 3 || string.IsNullOrEmpty(authorAsin))
+            if (node == null || string.IsNullOrEmpty(authorUrl) || authorUrl.IndexOf('/', 1) < 3 || string.IsNullOrEmpty(authorAsin))
             {
                 if (enableLog)
                     _logger.Log($"Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: {amazonKindleAuthorSearchUrl}");
                 return null;
             }
-            properAuthor = properAuthor.Substring(1, properAuthor.IndexOf('/', 1) - 1);
+            properAuthor = authorUrl.Substring(1, authorUrl.IndexOf('/', 1) - 1);
             var authorAmazonWebsiteLocationLog = $"https://www.amazon.{TLD}/{properAuthor}/e/{authorAsin}";
-            var authorAmazonWebsiteLocation = $"https://www.amazon.{TLD}{node.GetAttributeValue("href", "")}";
+            var authorAmazonWebsiteLocation = $"https://www.amazon.{TLD}{authorUrl}";
 
             if(enableLog)
                 _logger.Log($"Author page found on Amazon!\r\nAuthor's Amazon Page URL: {authorAmazonWebsiteLocationLog}");
@@ -194,7 +202,8 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 Biography = biography,
                 ImageUrl = authorImageUrl,
                 Books = bookList.ToArray(),
-                Url = authorAmazonWebsiteLocationLog
+                Url = authorAmazonWebsiteLocationLog,
+                Name = newAuthor
             };
         }
 
@@ -202,10 +211,10 @@ namespace XRayBuilder.Core.DataSources.Amazon
         private string GetAuthorBiography(HtmlDocument authorHtmlDoc)
         {
             var bioNode = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-bio' and @class='a-row']/div/div/span")
-                   ?? authorHtmlDoc.DocumentNode.SelectSingleNode("//span[@id='author_biography']")
-                   ?? throw new FormatChangedException(nameof(AmazonClient), "author bio");
+                   ?? authorHtmlDoc.DocumentNode.SelectSingleNode("//span[@id='author_biography']");
+                   //?? throw new FormatChangedException(nameof(AmazonClient), "author bio");
 
-            return bioNode.InnerHtml.Clean();
+            return bioNode != null ? bioNode.InnerHtml.Clean() : string.Empty;
         }
 
         private string GetAuthorImageUrl(HtmlDocument authorHtmlDoc)

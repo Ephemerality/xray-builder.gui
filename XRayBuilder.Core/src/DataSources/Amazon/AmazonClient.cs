@@ -202,8 +202,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 Biography = biography,
                 ImageUrl = authorImageUrl,
                 Books = bookList.ToArray(),
-                Url = authorAmazonWebsiteLocationLog,
-                Name = newAuthor
+                Url = authorAmazonWebsiteLocationLog
             };
         }
 

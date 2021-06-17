@@ -558,9 +558,14 @@ namespace XRayBuilderGUI.UI
                 {
                     try
                     {
-                        var authorProfileOutput = JsonConvert.SerializeObject(AuthorProfileGenerator.CreateAp(authorProfileResponse, bookInfo.Asin));
-                        File.WriteAllText(apPath, authorProfileOutput);
-                        _logger.Log($@"{MainStrings.AuthorProfileCreated}{Environment.NewLine}{string.Format(MainStrings.SavedTo, apPath)}");
+                        if (authorProfileResponse.OtherBooks.Length != 0)
+                        {
+                            var authorProfileOutput = JsonConvert.SerializeObject(AuthorProfileGenerator.CreateAp(authorProfileResponse, bookInfo.Asin));
+                            File.WriteAllText(apPath, authorProfileOutput);
+                            _logger.Log($@"{MainStrings.AuthorProfileCreated}{Environment.NewLine}{string.Format(MainStrings.SavedTo, apPath)}");
+                        }
+                        else
+                            _logger.Log($@"Base author profile created…");
                     }
                     catch (Exception ex)
                     {
@@ -617,7 +622,7 @@ namespace XRayBuilderGUI.UI
                             authorAsin: authorProfileResponse.Asin,
                             authorImageUrl: authorProfileResponse.ImageUrl,
                             authorBiography: authorProfileResponse.Biography,
-                            authorOtherBooks: authorProfileResponse.OtherBooks,
+                            authorOtherBooks: authorProfileResponse.OtherBooks.Length == 0 ? endActionsResponse.CustomerAlsoBought.Where(x => x.Author == bookInfo.Author).ToArray() : authorProfileResponse.OtherBooks,
                             userPenName: _settings.penName,
                             userRealName: _settings.realName,
                             customerAlsoBought: endActionsResponse.CustomerAlsoBought);
@@ -629,6 +634,22 @@ namespace XRayBuilderGUI.UI
                         _logger.Log(MainStrings.WritingEndActionsFile);
                         File.WriteAllText(eaPath, endActionsContent);
                         _logger.Log($@"{MainStrings.EndActionsCreated}{Environment.NewLine}{string.Format(MainStrings.SavedTo, eaPath)}");
+                    }
+
+                    if (authorProfileResponse.OtherBooks.Length == 0)
+                    {
+                        try
+                        {
+                            authorProfileResponse.OtherBooks = endActionsResponse.CustomerAlsoBought.Where(x => x.Author == bookInfo.Author).ToArray();
+                            var authorProfileOutput = JsonConvert.SerializeObject(AuthorProfileGenerator.CreateAp(authorProfileResponse, bookInfo.Asin));
+                            File.WriteAllText(apPath, authorProfileOutput);
+                            _logger.Log($@"{MainStrings.AuthorProfileCreated}{Environment.NewLine}{string.Format(MainStrings.SavedTo, apPath)}");
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.Log($@"{MainStrings.ErrorWritingAuthorProfile}: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                            return;
+                        }
                     }
 
                     if (needSa)

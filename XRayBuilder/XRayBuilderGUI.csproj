@@ -110,7 +110,13 @@
     <Compile Update="src\UI\frmASIN.Designer.cs">
       <DependentUpon>frmASIN.cs</DependentUpon>
     </Compile>
-    <Compile Update="src\UI\frmCreateXR.cs">
+	<Compile Update="src\UI\frmAuthorList.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Update="src\UI\frmAuthorList.Designer.cs">
+	  <DependentUpon>frmAuthorList.cs</DependentUpon>
+	</Compile>
+	<Compile Update="src\UI\frmCreateXR.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="src\UI\frmCreateXR.designer.cs">
@@ -196,6 +202,9 @@
     </EmbeddedResource>
     <EmbeddedResource Update="src\UI\frmASIN.resx">
       <DependentUpon>frmASIN.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="src\UI\frmAuthorList.resx">
+	    <DependentUpon>frmAuthorList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Update="src\UI\frmBookInfo.resx">
       <DependentUpon>frmBookInfo.cs</DependentUpon>

@@ -173,6 +173,9 @@ namespace XRayBuilder.Core.Extras.EndActions
         {
             foreach (var book in books.Where(item => item != null))
             {
+                if (!book.InnerHtml.Contains("Kindle Edition"))
+                    continue;
+
                 string author = null;
                 string title = null;
 

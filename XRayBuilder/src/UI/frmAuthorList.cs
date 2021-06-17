@@ -49,7 +49,7 @@ namespace XRayBuilderGUI.UI
             lblMessage1.Text = $@"{PluralUtil.Pluralize($"{_authorList.Count:author}")} were found on Amazon with this name.";
             cbResults.Items.Clear();
             foreach (var author in _authorList)
-                cbResults.Items.Add(author.Name);
+                cbResults.Items.Add(author.Asin);
             cbResults.SelectedIndex = 0;
             _tooltip.SetToolTip(linkStore, "Visit this author's page on Amazon.");
         }

@@ -38,7 +38,7 @@ Content can be unpacked in the form of RAWML for Mobi/AZW3 and plain text for KF
         </When>
         <Otherwise>
             <ItemGroup>
-                <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.1" />
+                <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.2" />
                 <PackageReference Include="JTForks.MiscUtil" Version="1.285.0" />
             </ItemGroup>
         </Otherwise>
@@ -57,7 +57,7 @@ Content can be unpacked in the form of RAWML for Mobi/AZW3 and plain text for KF
     <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
         <ItemGroup>
             <!-- Output all references with CopyLocal = true to package directory. E.g. IonDotnet above. -->
-            <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('CopyLocal', 'true'))" />
+            <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('CopyLocal', 'true'))" />
         </ItemGroup>
     </Target>
 

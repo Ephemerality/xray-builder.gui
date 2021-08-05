@@ -61,12 +61,12 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AsyncEnumerator" Version="4.0.2" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.29" />
-    <PackageReference Include="JetBrains.Annotations" Version="2020.3.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.34" />
+    <PackageReference Include="JetBrains.Annotations" Version="2021.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Pluralize.NET" Version="1.0.2" />
-    <PackageReference Include="SimpleInjector" Version="5.2.0" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.7" />
+    <PackageReference Include="SimpleInjector" Version="5.3.0" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114.2" />
   </ItemGroup>
 
   <Choose>
@@ -110,7 +110,13 @@
     <Compile Update="src\UI\frmASIN.Designer.cs">
       <DependentUpon>frmASIN.cs</DependentUpon>
     </Compile>
-    <Compile Update="src\UI\frmCreateXR.cs">
+	<Compile Update="src\UI\frmAuthorList.cs">
+	  <SubType>Form</SubType>
+	</Compile>
+	<Compile Update="src\UI\frmAuthorList.Designer.cs">
+	  <DependentUpon>frmAuthorList.cs</DependentUpon>
+	</Compile>
+	<Compile Update="src\UI\frmCreateXR.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="src\UI\frmCreateXR.designer.cs">
@@ -197,6 +203,9 @@
     <EmbeddedResource Update="src\UI\frmASIN.resx">
       <DependentUpon>frmASIN.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Update="src\UI\frmAuthorList.resx">
+	    <DependentUpon>frmAuthorList.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Update="src\UI\frmBookInfo.resx">
       <DependentUpon>frmBookInfo.cs</DependentUpon>
     </EmbeddedResource>
@@ -263,6 +272,6 @@
     <Compile Remove="src\HTTPDownloader.cs" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="; Move all assemblies and related files to lib folder&#xD;&#xA;ROBOCOPY &quot;$(TargetDir) &quot; &quot;$(TargetDir)lib\ &quot; *.dll *.xml *.pdb /IS /MOV&#xD;&#xA;ROBOCOPY &quot;$(TargetDir)x86 &quot; &quot;$(TargetDir)lib\x86 &quot; /E /IS /MOVE&#xD;&#xA;ROBOCOPY &quot;$(TargetDir)x64 &quot; &quot;$(TargetDir)lib\x64 &quot; /E /IS /MOVE&#xD;&#xA;&#xD;&#xA;exit 0" />
+    <Exec Command="; Move all assemblies and related files to lib folder&#xD;&#xA;ROBOCOPY &quot;$(TargetDir) &quot; &quot;$(TargetDir)lib\ &quot; *.dll *.xml *.pdb /IS /MOV&#xD;&#xA;exit 0" />
   </Target>
 </Project>

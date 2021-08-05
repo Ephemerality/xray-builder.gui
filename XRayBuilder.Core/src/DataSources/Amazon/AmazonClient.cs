@@ -58,44 +58,42 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
         public string Url(string tld, string asin) => $"https://www.amazon.{tld}/dp/{asin}";
 
-        // TODO fix the need to have an enableLog param
         public async Task<AuthorSearchResults> SearchAuthor(string author, string TLD, CancellationToken cancellationToken, bool enableLog = true)
         {
             //Generate Author search URL from author's name
             var newAuthor = Functions.FixAuthor(author);
             var plusAuthorName = newAuthor.Replace(" ", "+");
+            //Updated to match Search "all" Amazon
+            var amazonAuthorSearchUrl = $"https://www.amazon.{TLD}/s?k={plusAuthorName}&ref=nb_sb_noss";
             // Amazon Kindle store only search
             var amazonKindleAuthorSearchUrl = $"https://www.amazon.{TLD}/s?k={plusAuthorName}&i=digital-text&ref=nb_sb_noss";
 
             if(enableLog)
-                _logger.Log($"Searching for author's page on Amazon.{TLD}...");
+                _logger.Log($"Searching for author's page on the Amazon.{TLD} Kindle store…");
 
             // Search Amazon for Author
-            var authorSearchDoc = await _httpClient.GetPageAsync(amazonKindleAuthorSearchUrl, cancellationToken);
+            var authorSearchDoc = await GetPageWithCaptchaCheckAsync(amazonKindleAuthorSearchUrl, TLD, enableLog, cancellationToken);
 
-            // Check for captcha
-            try
-            {
-                _amazonInfoParser.CheckCaptcha(authorSearchDoc);
-            }
-            catch (AmazonCaptchaException)
-            {
-                if(enableLog)
-                    _logger.Log($"Warning: Amazon.{TLD} is requesting a captcha.\r\nYou can try visiting Amazon.{TLD} in a real browser first, try another region, or try again later.");
-                return null;
-            }
             // Try to find Author's page from Amazon search
             var properAuthor = "";
             HtmlNode[] possibleNodes = null;
-            var node = authorSearchDoc.DocumentNode.SelectSingleNode("//*[@id='result_1']");
+            var node = authorSearchDoc?.DocumentNode.SelectSingleNode("//*[@id='result_1']")
+                ?? authorSearchDoc?.DocumentNode.SelectSingleNode(".//div/div[@data-index='0']");
             if (node == null || !node.OuterHtml.Contains("/e/B"))
             {
+                if(enableLog)
+                    _logger.Log($"Warning: No results found in the Amazon.{TLD} Kindle store. Trying all departments…");
+
+                authorSearchDoc = await GetPageWithCaptchaCheckAsync(amazonAuthorSearchUrl, TLD, enableLog, cancellationToken);
+
                 // If the wrong format of search page is returned, try to find author in the small links under book titles
-                possibleNodes = authorSearchDoc.DocumentNode.SelectNodes(".//a[@class='a-size-base a-link-normal']")
+                possibleNodes = authorSearchDoc?.DocumentNode.SelectNodes(".//a[@class='a-size-base a-link-normal']")
                     ?.Where(possibleNode => possibleNode.InnerText != null && possibleNode.InnerText.Trim().Equals(newAuthor, StringComparison.InvariantCultureIgnoreCase))
                     .ToArray();
+
                 if (possibleNodes == null || (node = possibleNodes.FirstOrDefault()) == null)
                 {
+
                     if (enableLog)
                         _logger.Log($"An error occurred finding author's page on Amazon.{TLD}.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at {amazonKindleAuthorSearchUrl}\r\nSometimes Amazon just doesn't return the author and trying a few times will work.");
                     return null;
@@ -103,36 +101,44 @@ namespace XRayBuilder.Core.DataSources.Amazon
             }
 
             string authorAsin = null;
+            string authorUrl = null;
+            var authorNode =  node.Descendants("a").FirstOrDefault(d => d.Attributes["href"].Value.Contains("/e/B"));
+
             if (possibleNodes != null && possibleNodes.Any())
             {
                 // TODO Present a list of these to choose from
                 node = possibleNodes.First();
-                properAuthor = node.GetAttributeValue("href", "");
-                authorAsin = ParseAsinFromUrl(properAuthor);
+                authorUrl = node.GetAttributeValue("href", "");
+                authorAsin = ParseAsinFromUrl(authorUrl);
             }
             // Check for typical search results, second item is the author page
+            else if (authorNode != null)
+            {
+                authorUrl = authorNode.GetAttributeValue("href", "");
+                authorAsin = ParseAsinFromUrl(authorUrl);
+            }
             else if ((node = node.SelectSingleNode("//*[@id='result_1']/div/div/div/div/a")) != null)
             {
-                properAuthor = node.GetAttributeValue("href", "");
+                authorUrl = node.GetAttributeValue("href", "");
                 authorAsin = node.GetAttributeValue("data-asin", null)
-                    ?? ParseAsinFromUrl(properAuthor);
+                    ?? ParseAsinFromUrl(authorUrl);
             }
             // otherwise check for "by so-and-so" text beneath the titles for a possible match
             else if ((node = authorSearchDoc.DocumentNode.SelectSingleNode($"//div[@id='resultsCol']//li[@class='s-result-item celwidget  ']//a[text()=\"{newAuthor}\"]")) != null)
             {
-                properAuthor = node.GetAttributeValue("href", "");
-                authorAsin = ParseAsinFromUrl(properAuthor);
+                authorUrl = node.GetAttributeValue("href", "");
+                authorAsin = ParseAsinFromUrl(authorUrl);
             }
 
-            if (node == null || string.IsNullOrEmpty(properAuthor) || properAuthor.IndexOf('/', 1) < 3 || string.IsNullOrEmpty(authorAsin))
+            if (node == null || string.IsNullOrEmpty(authorUrl) || authorUrl.IndexOf('/', 1) < 3 || string.IsNullOrEmpty(authorAsin))
             {
                 if (enableLog)
                     _logger.Log($"Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: {amazonKindleAuthorSearchUrl}");
                 return null;
             }
-            properAuthor = properAuthor.Substring(1, properAuthor.IndexOf('/', 1) - 1);
+            properAuthor = authorUrl.Substring(1, authorUrl.IndexOf('/', 1) - 1);
             var authorAmazonWebsiteLocationLog = $"https://www.amazon.{TLD}/{properAuthor}/e/{authorAsin}";
-            var authorAmazonWebsiteLocation = $"https://www.amazon.{TLD}{node.GetAttributeValue("href", "")}";
+            var authorAmazonWebsiteLocation = $"https://www.amazon.{TLD}{authorUrl}";
 
             if(enableLog)
                 _logger.Log($"Author page found on Amazon!\r\nAuthor's Amazon Page URL: {authorAmazonWebsiteLocationLog}");
@@ -204,10 +210,10 @@ namespace XRayBuilder.Core.DataSources.Amazon
         private string GetAuthorBiography(HtmlDocument authorHtmlDoc)
         {
             var bioNode = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-bio' and @class='a-row']/div/div/span")
-                   ?? authorHtmlDoc.DocumentNode.SelectSingleNode("//span[@id='author_biography']")
-                   ?? throw new FormatChangedException(nameof(AmazonClient), "author bio");
+                   ?? authorHtmlDoc.DocumentNode.SelectSingleNode("//span[@id='author_biography']");
+                   //?? throw new FormatChangedException(nameof(AmazonClient), "author bio");
 
-            return bioNode.InnerHtml.Clean();
+            return bioNode != null ? bioNode.InnerHtml.Clean() : string.Empty;
         }
 
         private string GetAuthorImageUrl(HtmlDocument authorHtmlDoc)
@@ -425,6 +431,25 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
                 yield return book;
             }
+        }
+
+        [ItemCanBeNull]
+        private async Task<HtmlDocument> GetPageWithCaptchaCheckAsync(string url, string tld, bool enableLog, CancellationToken cancellationToken)
+        {
+            var doc = await _httpClient.GetPageAsync(url, cancellationToken);
+
+            try
+            {
+                _amazonInfoParser.CheckCaptcha(doc);
+            }
+            catch (AmazonCaptchaException)
+            {
+                if(enableLog)
+                    _logger.Log($"Warning: Amazon.{tld} is requesting a captcha.\r\nYou can try visiting Amazon.{tld} in a real browser first, try another region, or try again later.");
+                return null;
+            }
+
+            return doc;
         }
     }
 }

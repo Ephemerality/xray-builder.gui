@@ -390,7 +390,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
             //Add rating and reviews count if missing from Amazon book info
             var metaNode = grDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
-            if (metaNode != null && curBook.AmazonRating == 0)
+            if (metaNode != null && curBook.AmazonRating is 0 or null)
             {
                 var ratingNode = metaNode.SelectSingleNode("//span[@class='value rating']")
                     ?? metaNode.SelectSingleNode(".//span[@itemprop='ratingValue']");

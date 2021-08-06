@@ -21,8 +21,8 @@ namespace XRayBuilder.Core.DataSources.Logic
                 return results;
 
             return results
-                .OrderByDescending(book => book.Editions)
-                .ThenByDescending(book => book.Reviews)
+                .OrderByDescending(book => book.Reviews)
+                .ThenByDescending(book => book.Editions)
                 .ToArray();
         }
     }

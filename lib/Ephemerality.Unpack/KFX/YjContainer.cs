@@ -202,7 +202,7 @@ namespace Ephemerality.Unpack.KFX
             {
                 var pendingStoryNames = new List<string>();
 
-                void ExtractPositionData(IIonValue value, int? currentEid, string contentKey, int? listIndex, object listMax, bool advance)
+                void ExtractPositionData(IIonValue value, int? currentEid, string contentKey, int? listIndex, int? listMax, bool advance)
                 {
                     void HaveContent(int? eid, int length, bool _advance, string contentName = null, string contentText = null, bool allowZero = true, bool matchZeroLen = false)
                     {
@@ -380,8 +380,12 @@ namespace Ephemerality.Unpack.KFX
                         }
                         case IonSexp:
                             throw new NotSupportedException();
-                        case IonString:
-                            throw new NotSupportedException();
+                        case IonString ionString:
+                            var ionStringLength = ionString.StringValue.Length;
+                            if (contentKey == KfxSymbols.ContentList && listIndex == 0)
+                                ionStringLength = -1;
+                            HaveContent(currentEid, ionStringLength, advance, allowZero: listIndex.HasValue && listMax.HasValue && listIndex.Value < listMax.Value, contentText: ionString.StringValue);
+                            break;
                     }
                 }
 

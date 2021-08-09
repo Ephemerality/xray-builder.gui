@@ -46,7 +46,7 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             {
                 var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dist", "BaseSplitIgnore.txt");
                 using var streamReader = new StreamReader(path, Encoding.UTF8);
-                var customSplitIgnore = streamReader.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.None)
+                var customSplitIgnore = streamReader.ReadToEnd().Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
                     .Where(r => !r.StartsWith("//")).ToArray();
                 if (customSplitIgnore.Length >= 1)
                     _commonTitles = customSplitIgnore;
@@ -76,6 +76,7 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
                 // Filter out any already-existing aliases from other terms
                 var dedupedAliases = GenerateAliasesForTerm(character)
                     .Where(alias => !aliasesByTermName.Values.SelectMany(existingAliases => existingAliases).Contains(alias))
+                    .Where(alias => !string.IsNullOrWhiteSpace(alias))
                     .ToArray();
 
                 if (dedupedAliases.Length > 0)
@@ -87,6 +88,10 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
 
         public IEnumerable<string> GenerateAliasesForTerm(Term term)
         {
+            // Short-circuit
+            if (!term.TermName.Contains(" ") || term.Type != "character")
+                return Array.Empty<string>();
+
             var aliases = new List<string>();
             var textInfo = new CultureInfo("en-US", false).TextInfo;
 
@@ -116,7 +121,7 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             }
 
             // also remove any entries that are also in the ignore list
-            return aliases.Where(alias => !_commonTitles.Contains(alias));
+            return aliases.Where(alias => !_commonTitles.Contains(alias) && !string.IsNullOrWhiteSpace(alias));
         }
     }
 }

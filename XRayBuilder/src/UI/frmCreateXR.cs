@@ -287,16 +287,23 @@ namespace XRayBuilderGUI.UI
             if (row == null)
                 return;
 
-            rdoCharacter.Checked = ImageUtil.AreEqual((Bitmap)row.Cells[1].FormattedValue, Resources.character);
-            rdoTopic.Checked = ImageUtil.AreEqual((Bitmap)row.Cells[1].FormattedValue, Resources.setting);
-            txtName.Text = row.Cells[2].Value?.ToString() ?? "";
-            txtAliases.Text = row.Cells[3].FormattedValue?.ToString() ?? "";
-            txtDescription.Text = row.Cells[4].Value?.ToString() ?? "";
-            chkMatch.Checked = (bool?)row.Cells[5].Value ?? false;
-            chkCase.Checked = (bool?)row.Cells[6].Value ?? false;
-            chkRegex.Checked = (bool?)row.Cells[7].Value ?? false;
+            rdoCharacter.Checked = ImageUtil.AreEqual((Bitmap)GetCellByColumnName(row, nameof(Term.Type)).FormattedValue, Resources.character);
+            rdoTopic.Checked = ImageUtil.AreEqual((Bitmap)GetCellByColumnName(row, nameof(Term.Type)).FormattedValue, Resources.setting);
+            txtName.Text = GetCellByColumnName(row, nameof(Term.TermName)).Value?.ToString() ?? "";
+            txtAliases.Text = GetCellByColumnName(row, nameof(Term.Aliases)).FormattedValue?.ToString() ?? "";
+            txtDescription.Text = GetCellByColumnName(row, nameof(Term.Desc)).Value?.ToString() ?? "";
+            chkMatch.Checked = (bool?)GetCellByColumnName(row, nameof(Term.Match)).Value ?? false;
+            chkCase.Checked = (bool?)GetCellByColumnName(row, nameof(Term.MatchCase)).Value ?? false;
+            chkRegex.Checked = (bool?)GetCellByColumnName(row, nameof(Term.RegexAliases)).Value ?? false;
             dgvTerms.Rows.Remove(row);
         }
+
+        [NotNull]
+        private DataGridViewCell GetCellByColumnName(DataGridViewRow row, string columnName)
+            => row.Cells
+                   .OfType<DataGridViewCell>()
+                   .FirstOrDefault(cell => cell.OwningColumn.DataPropertyName == columnName)
+               ?? throw new InvalidOperationException($"Could not find cell for column {columnName}");
 
         private void btnOpenXml_Click(object sender, EventArgs e)
         {
@@ -465,7 +472,7 @@ namespace XRayBuilderGUI.UI
 
         private void frmCreateXR_Load(object sender, EventArgs e)
         {
-            dgvTerms.AutoGenerateColumns = true;
+            dgvTerms.AutoGenerateColumns = false;
             dgvTerms.AutoSize = true;
             dgvTerms.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
             dgvTerms.DataSource = _terms;

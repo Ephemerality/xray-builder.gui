@@ -118,13 +118,15 @@ namespace XRayBuilderGUI.UI
                     DataPropertyName = nameof(Term.Type),
                     ReadOnly = true,
                     Width = 39,
-                    SortMode = DataGridViewColumnSortMode.NotSortable
+                    Resizable = DataGridViewTriState.False,
+                    SortMode = DataGridViewColumnSortMode.Automatic
                 },
                 new DataGridViewTextBoxColumn
                 {
                     HeaderText = "Name",
                     DataPropertyName = nameof(Term.TermName),
-                    AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells,
+                    AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells,
+                    Resizable = DataGridViewTriState.True,
                     SortMode = DataGridViewColumnSortMode.Automatic
                 },
                 new DataGridViewTextBoxColumn
@@ -137,7 +139,7 @@ namespace XRayBuilderGUI.UI
                     {
                         WrapMode = DataGridViewTriState.True
                     },
-                    SortMode = DataGridViewColumnSortMode.NotSortable
+                    SortMode = DataGridViewColumnSortMode.Automatic
                 },
                 new DataGridViewTextBoxColumn
                 {
@@ -146,8 +148,9 @@ namespace XRayBuilderGUI.UI
                     AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
                     DefaultCellStyle = new DataGridViewCellStyle
                     {
-                        WrapMode = DataGridViewTriState.True
+                        WrapMode = DataGridViewTriState.False
                     },
+                    MinimumWidth = 50,
                     SortMode = DataGridViewColumnSortMode.NotSortable
                 },
                 new DataGridViewCheckBoxColumn
@@ -156,6 +159,7 @@ namespace XRayBuilderGUI.UI
                     ToolTipText = "Match",
                     DataPropertyName = nameof(Term.Match),
                     SortMode = DataGridViewColumnSortMode.NotSortable,
+                    Resizable = DataGridViewTriState.False,
                     Width = 27
                 },
                 new DataGridViewCheckBoxColumn
@@ -164,6 +168,7 @@ namespace XRayBuilderGUI.UI
                     ToolTipText = "Case-sensitive",
                     DataPropertyName = nameof(Term.MatchCase),
                     SortMode = DataGridViewColumnSortMode.NotSortable,
+                    Resizable = DataGridViewTriState.False,
                     Width = 29
                 },
                 new DataGridViewCheckBoxColumn
@@ -172,6 +177,7 @@ namespace XRayBuilderGUI.UI
                     ToolTipText = "Regular expression mode.",
                     DataPropertyName = nameof(Term.RegexAliases),
                     SortMode = DataGridViewColumnSortMode.NotSortable,
+                    Resizable = DataGridViewTriState.False,
                     Width = 23
                 }
             };
@@ -384,7 +390,13 @@ namespace XRayBuilderGUI.UI
                 foreach (var term in _terms)
                 {
                     if (d.TryGetValue(term.TermName, out var aliases))
-                        term.Aliases = aliases.Split(',').OrderByDescending(a => a.Length).ToList();
+                    {
+                        term.Aliases = aliases
+                            .Split(',')
+                            .Where(s => !string.IsNullOrWhiteSpace(s))
+                            .OrderByDescending(a => a.Length)
+                            .ToList();
+                    }
                 }
             }
             finally

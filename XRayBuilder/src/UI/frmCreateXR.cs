@@ -389,7 +389,8 @@ namespace XRayBuilderGUI.UI
 
         private void btnRemoveTerm_Click(object sender, EventArgs e)
         {
-            _terms.Clear();
+            if (dgvTerms.CurrentRow != null)
+                dgvTerms.Rows.Remove(dgvTerms.CurrentRow);
         }
 
         private void btnSaveXML_Click(object sender, EventArgs e)

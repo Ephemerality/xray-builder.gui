@@ -480,6 +480,7 @@ namespace XRayBuilderGUI.UI
             {
                 Width = settings.Width;
                 Height = settings.Height;
+                SetWrapDescriptionsState(settings.WrapDescription);
             }
 
             txtName.Text = "";
@@ -641,7 +642,38 @@ namespace XRayBuilderGUI.UI
             Settings.Default.TermsCreatorSettings ??= new TermsCreatorSettings();
             Settings.Default.TermsCreatorSettings.Width = Width;
             Settings.Default.TermsCreatorSettings.Height = Height;
+            Settings.Default.TermsCreatorSettings.WrapDescription = chkWrapDescriptions.Checked;
+            Settings.Default.TermsCreatorSettings.AllowResizeNameColumn = chkAllowResizeName.Checked;
         }
+
+        private void chkWrapDescriptions_CheckedChanged(object sender, EventArgs e)
+        {
+            SetWrapDescriptionsState(chkWrapDescriptions.Checked);
+        }
+
+        private void chkAllowResizeName_CheckedChanged(object sender, EventArgs e)
+        {
+            SetAllowResizeNameState(chkAllowResizeName.Checked);
+        }
+
+        private void SetWrapDescriptionsState(bool wrapDescriptions)
+        {
+            var descriptionColumn = dgvTerms.Columns
+                .OfType<DataGridViewTextBoxColumn>()
+                .First(def => def.DataPropertyName == nameof(Term.Desc));
+            descriptionColumn.DefaultCellStyle.WrapMode = wrapDescriptions
+                ? DataGridViewTriState.True
+                : DataGridViewTriState.False;
+        }
+
+        private void SetAllowResizeNameState(bool allowResize)
+        {
+            var nameColumn= dgvTerms.Columns
+                .OfType<DataGridViewTextBoxColumn>()
+                .First(def => def.DataPropertyName == nameof(Term.TermName));
+            nameColumn.AutoSizeMode = allowResize
+                ? DataGridViewAutoSizeColumnMode.None
+                : DataGridViewAutoSizeColumnMode.AllCells;
         }
     }
 }

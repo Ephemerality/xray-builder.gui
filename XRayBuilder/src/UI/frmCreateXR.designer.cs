@@ -33,12 +33,12 @@
             this.lblName = new System.Windows.Forms.Label();
             this.lblAliases = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.rdoTopic = new System.Windows.Forms.RadioButton();
-            this.rdoCharacter = new System.Windows.Forms.RadioButton();
             this.txtDescription = new System.Windows.Forms.TextBox();
             this.lblDescription = new System.Windows.Forms.Label();
             this.txtAliases = new System.Windows.Forms.TextBox();
             this.txtName = new System.Windows.Forms.TextBox();
+            this.rdoTopic = new System.Windows.Forms.RadioButton();
+            this.rdoCharacter = new System.Windows.Forms.RadioButton();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.chkRegex = new System.Windows.Forms.CheckBox();
             this.chkMatch = new System.Windows.Forms.CheckBox();
@@ -64,6 +64,8 @@
             this.btnGenerateAliases = new System.Windows.Forms.Button();
             this.btnClearAliases = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.chkWrapDescriptions = new System.Windows.Forms.CheckBox();
+            this.chkAllowResizeName = new System.Windows.Forms.CheckBox();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -108,28 +110,6 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Details";
             // 
-            // rdoTopic
-            // 
-            this.rdoTopic.AutoSize = true;
-            this.rdoTopic.Location = new System.Drawing.Point(13, 43);
-            this.rdoTopic.Name = "rdoTopic";
-            this.rdoTopic.Size = new System.Drawing.Size(62, 19);
-            this.rdoTopic.TabIndex = 3;
-            this.rdoTopic.Text = "Setting";
-            this.rdoTopic.UseVisualStyleBackColor = true;
-            // 
-            // rdoCharacter
-            // 
-            this.rdoCharacter.AutoSize = true;
-            this.rdoCharacter.Checked = true;
-            this.rdoCharacter.Location = new System.Drawing.Point(13, 18);
-            this.rdoCharacter.Name = "rdoCharacter";
-            this.rdoCharacter.Size = new System.Drawing.Size(76, 19);
-            this.rdoCharacter.TabIndex = 2;
-            this.rdoCharacter.TabStop = true;
-            this.rdoCharacter.Text = "Character";
-            this.rdoCharacter.UseVisualStyleBackColor = true;
-            // 
             // txtDescription
             // 
             this.txtDescription.Location = new System.Drawing.Point(86, 91);
@@ -162,6 +142,28 @@
             this.txtName.Name = "txtName";
             this.txtName.Size = new System.Drawing.Size(526, 23);
             this.txtName.TabIndex = 1;
+            // 
+            // rdoTopic
+            // 
+            this.rdoTopic.AutoSize = true;
+            this.rdoTopic.Location = new System.Drawing.Point(13, 43);
+            this.rdoTopic.Name = "rdoTopic";
+            this.rdoTopic.Size = new System.Drawing.Size(62, 19);
+            this.rdoTopic.TabIndex = 3;
+            this.rdoTopic.Text = "Setting";
+            this.rdoTopic.UseVisualStyleBackColor = true;
+            // 
+            // rdoCharacter
+            // 
+            this.rdoCharacter.AutoSize = true;
+            this.rdoCharacter.Checked = true;
+            this.rdoCharacter.Location = new System.Drawing.Point(13, 18);
+            this.rdoCharacter.Name = "rdoCharacter";
+            this.rdoCharacter.Size = new System.Drawing.Size(76, 19);
+            this.rdoCharacter.TabIndex = 2;
+            this.rdoCharacter.TabStop = true;
+            this.rdoCharacter.Text = "Character";
+            this.rdoCharacter.UseVisualStyleBackColor = true;
             // 
             // groupBox2
             // 
@@ -218,7 +220,7 @@
             this.groupBox4.Controls.Add(this.dgvTerms);
             this.groupBox4.Location = new System.Drawing.Point(12, 187);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(756, 436);
+            this.groupBox4.Size = new System.Drawing.Size(756, 459);
             this.groupBox4.TabIndex = 46;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Terms";
@@ -241,7 +243,7 @@
             this.dgvTerms.RowHeadersVisible = false;
             this.dgvTerms.RowTemplate.DefaultCellStyle.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             this.dgvTerms.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvTerms.Size = new System.Drawing.Size(729, 401);
+            this.dgvTerms.Size = new System.Drawing.Size(729, 432);
             this.dgvTerms.TabIndex = 0;
             this.dgvTerms.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvTerms_CellContentClick);
             this.dgvTerms.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvTerms_CellMouseDoubleClick);
@@ -258,7 +260,7 @@
             this.groupBox5.Controls.Add(this.lblTitle);
             this.groupBox5.Controls.Add(this.txtAuthor);
             this.groupBox5.Controls.Add(this.lblAuthor);
-            this.groupBox5.Location = new System.Drawing.Point(12, 626);
+            this.groupBox5.Location = new System.Drawing.Point(12, 652);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(709, 58);
             this.groupBox5.TabIndex = 48;
@@ -320,7 +322,7 @@
             // 
             this.btnOpenXml.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnOpenXml.Image = ((System.Drawing.Image)(resources.GetObject("btnOpenXml.Image")));
-            this.btnOpenXml.Location = new System.Drawing.Point(732, 640);
+            this.btnOpenXml.Location = new System.Drawing.Point(731, 665);
             this.btnOpenXml.Name = "btnOpenXml";
             this.btnOpenXml.Size = new System.Drawing.Size(37, 37);
             this.btnOpenXml.TabIndex = 47;
@@ -342,7 +344,7 @@
             // 
             this.btnSaveXML.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnSaveXML.Image = ((System.Drawing.Image)(resources.GetObject("btnSaveXML.Image")));
-            this.btnSaveXML.Location = new System.Drawing.Point(779, 640);
+            this.btnSaveXML.Location = new System.Drawing.Point(778, 665);
             this.btnSaveXML.Name = "btnSaveXML";
             this.btnSaveXML.Size = new System.Drawing.Size(37, 37);
             this.btnSaveXML.TabIndex = 43;
@@ -443,11 +445,37 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Term Type";
             // 
+            // chkWrapDescriptions
+            // 
+            this.chkWrapDescriptions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.chkWrapDescriptions.AutoSize = true;
+            this.chkWrapDescriptions.Location = new System.Drawing.Point(12, 716);
+            this.chkWrapDescriptions.Name = "chkWrapDescriptions";
+            this.chkWrapDescriptions.Size = new System.Drawing.Size(121, 19);
+            this.chkWrapDescriptions.TabIndex = 56;
+            this.chkWrapDescriptions.Text = "Wrap descriptions";
+            this.chkWrapDescriptions.UseVisualStyleBackColor = true;
+            this.chkWrapDescriptions.CheckedChanged += new System.EventHandler(this.chkWrapDescriptions_CheckedChanged);
+            // 
+            // chkAllowResizeName
+            // 
+            this.chkAllowResizeName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.chkAllowResizeName.AutoSize = true;
+            this.chkAllowResizeName.Location = new System.Drawing.Point(139, 716);
+            this.chkAllowResizeName.Name = "chkAllowResizeName";
+            this.chkAllowResizeName.Size = new System.Drawing.Size(176, 19);
+            this.chkAllowResizeName.TabIndex = 57;
+            this.chkAllowResizeName.Text = "Allow resizing name column";
+            this.chkAllowResizeName.UseVisualStyleBackColor = true;
+            this.chkAllowResizeName.CheckedChanged += new System.EventHandler(this.chkAllowResizeName_CheckedChanged);
+            // 
             // frmCreateXR
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(827, 695);
+            this.ClientSize = new System.Drawing.Size(827, 739);
+            this.Controls.Add(this.chkAllowResizeName);
+            this.Controls.Add(this.chkWrapDescriptions);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnClearAliases);
             this.Controls.Add(this.btnGenerateAliases);
@@ -466,7 +494,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(717, 589);
+            this.MinimumSize = new System.Drawing.Size(843, 778);
             this.Name = "frmCreateXR";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "X-Ray Terms Creator";
@@ -484,6 +512,7 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -524,5 +553,7 @@
         #endregion
 
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.CheckBox chkWrapDescriptions;
+        private System.Windows.Forms.CheckBox chkAllowResizeName;
     }
 }

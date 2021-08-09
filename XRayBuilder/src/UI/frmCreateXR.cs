@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Ephemerality.Unpack;
+using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Roentgen.Logic;
 using XRayBuilder.Core.Libraries.Enumerables;
@@ -23,6 +24,7 @@ using XRayBuilder.Core.XRay.Logic.Parsing;
 using XRayBuilder.Core.XRay.Logic.Terms;
 using XRayBuilder.Core.XRay.Model;
 using XRayBuilderGUI.Properties;
+using XRayBuilderGUI.UI.Model;
 
 namespace XRayBuilderGUI.UI
 {
@@ -473,6 +475,13 @@ namespace XRayBuilderGUI.UI
             if (_activeMetadata != null)
                 dgvTerms.Columns[nameof(Term.Occurrences)]!.Visible = true;
 
+            var settings = Settings.Default.TermsCreatorSettings;
+            if (settings != null)
+            {
+                Width = settings.Width;
+                Height = settings.Height;
+            }
+
             txtName.Text = "";
             txtAliases.Text = "";
             txtDescription.Text = "";
@@ -628,6 +637,11 @@ namespace XRayBuilderGUI.UI
         private void frmCreateXR_FormClosing(object sender, FormClosingEventArgs e)
         {
             _cts.Cancel();
+
+            Settings.Default.TermsCreatorSettings ??= new TermsCreatorSettings();
+            Settings.Default.TermsCreatorSettings.Width = Width;
+            Settings.Default.TermsCreatorSettings.Height = Height;
+        }
         }
     }
 }

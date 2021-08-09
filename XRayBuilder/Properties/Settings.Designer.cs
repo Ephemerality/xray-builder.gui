@@ -514,5 +514,16 @@ namespace XRayBuilderGUI.Properties {
                 this["downloadNIS"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::XRayBuilderGUI.UI.Model.TermsCreatorSettings TermsCreatorSettings {
+            get {
+                return ((global::XRayBuilderGUI.UI.Model.TermsCreatorSettings)(this["TermsCreatorSettings"]));
+            }
+            set {
+                this["TermsCreatorSettings"] = value;
+            }
+        }
     }
 }

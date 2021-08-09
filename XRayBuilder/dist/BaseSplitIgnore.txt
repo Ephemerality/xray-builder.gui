@@ -1,5 +1,7 @@
 // Used as a template when splitting alias names automatically, add your custom terms here
 A V M
+Abbott
+Abt
 Admiraal
 Admiral
 Air Cdre
@@ -17,6 +19,7 @@ Brig General
 Brigadier
 Brigadier General
 Brother
+Bruder
 Canon
 Capt
 Captain
@@ -116,6 +119,8 @@ Judge
 Justice
 Khun Ying
 Kolonel
+König
+Königin
 Lady
 Lcda
 Lic
@@ -151,6 +156,8 @@ Prince
 Princess
 Princesse
 Prinses
+Prinz
+Prinzessin
 Prof
 Prof Dr
 Prof Sir
@@ -165,6 +172,7 @@ Rev Dr
 Rev Mother
 Reverend
 Rva
+Schwester
 Senator
 Sergeant
 Sheikh

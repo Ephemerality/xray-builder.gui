@@ -125,5 +125,8 @@
     <Setting Name="downloadNIS" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="TermsCreatorSettings" Type="XRayBuilderGUI.UI.Model.TermsCreatorSettings" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

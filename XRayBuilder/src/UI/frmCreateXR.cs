@@ -331,6 +331,13 @@ namespace XRayBuilderGUI.UI
                         MessageBox.Show($"Error: Bad file type \"{filetype}\"");
                         return;
                 }
+                // Fix terms that may contain any invalid aliases from a previous bug
+                foreach (var term in _terms)
+                {
+                    if (term.Aliases == null)
+                        continue;
+                    term.Aliases = term.Aliases.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                }
                 dgvTerms.DataSource = _terms;
                 ReloadTerms();
             }
@@ -542,7 +549,9 @@ namespace XRayBuilderGUI.UI
                     var aliases = e.Value.ToString()
                         .Split(',')
                         .Select(s => s.Trim())
-                        .OrderByDescending(s => s.Length).ToList();
+                        .Where(s => !string.IsNullOrWhiteSpace(s))
+                        .OrderByDescending(s => s.Length)
+                        .ToList();
                     e.Value = aliases;
                     e.ParsingApplied = true;
                     break;

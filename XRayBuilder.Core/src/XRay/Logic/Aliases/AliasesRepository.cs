@@ -126,14 +126,13 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             {
                 var aliasesByTermName = splitAliases
                     ? _aliasesService.GenerateAliases(sortedTerms)
-                    : sortedTerms.ToDictionary(character => character.TermName,
-                        character => character.Aliases.ToArray());
+                    : sortedTerms.ToDictionary(character => character, character => character.Aliases.ToArray());
 
-                foreach (var (name, aliases) in aliasesByTermName)
+                foreach (var (term, aliases) in aliasesByTermName)
                 {
                     // Aliases must be sorted by length, descending, to ensure they are matched properly
                     var sortedAliases = aliases.OrderByDescending(alias => alias.Length);
-                    streamWriter.WriteLine($"{name}|{string.Join(",", sortedAliases)}");
+                    streamWriter.WriteLine($"{term.TermName}|{string.Join(",", sortedAliases)}");
                 }
             }
             catch (Exception ex)

@@ -14,6 +14,7 @@ using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Roentgen.Logic;
 using XRayBuilder.Core.Libraries.Enumerables;
+using XRayBuilder.Core.Libraries.Enumerables.Extensions;
 using XRayBuilder.Core.Libraries.Images.Util;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
@@ -642,9 +643,10 @@ namespace XRayBuilderGUI.UI
 
         private void btnGenerateAliases_Click(object sender, EventArgs e)
         {
-            foreach (var term in _terms)
+            var aliasesByTerm = _aliasesService.GenerateAliases(_terms);
+            foreach (var (term, aliases) in aliasesByTerm)
             {
-                term.Aliases = _aliasesService.GenerateAliasesForTerm(term).ToList();
+                term.Aliases = aliases.ToList();
                 EnqueueTermOccurrencesRefresh(term);
             }
         }

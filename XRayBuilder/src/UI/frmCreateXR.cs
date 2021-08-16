@@ -517,7 +517,7 @@ namespace XRayBuilderGUI.UI
 
             _toolTip1.SetToolTip(btnAddTerm, "Add this character or\r\ntopic to the term list.");
             _toolTip1.SetToolTip(btnEditTerm, "Edit the selected term. It will be removed from\r\nthe list and used to fill in the information\r\nabove. Don't forget to add to the list when done!");
-            _toolTip1.SetToolTip(btnRemoveTerm, "Remove the selected term from the\r\nterm list. This action is irreversible");
+            _toolTip1.SetToolTip(btnRemoveTerm, "Remove the selected term from the\r\nterm list. This action is irreversible"!);
             _toolTip1.SetToolTip(btnClear, "Clear the term list.");
             _toolTip1.SetToolTip(btnOpenXml, "Open an existing term XML of TXT file. If\r\nan alias file with a matching ASIN is found,\r\naliases wil automatically be populated.");
             _toolTip1.SetToolTip(btnSaveXML, "Save the term list to an XML file. Any\r\nassociated aliases will be saved to an\r\nASIN.aliases file in the /ext folder.");
@@ -531,6 +531,9 @@ namespace XRayBuilderGUI.UI
 
             _toolTip1.SetToolTip(rdoCharacter, "A character is an individual, fictional or\r\nreal, in your book. Examples of characters include\r\n\"Don Quixote\", \"Warren Buffett\", and \"Darth Vader\".");
             _toolTip1.SetToolTip(rdoTopic, "Terms are places, organizations, or phrases, and can\r\nalso be fictional or real. Examples of terms include\r\n\"Westeros\", \"IBM\", and \"deadlock\".");
+
+            _toolTip1.SetToolTip(chkAllowResizeName,"Allow resizing of the term name column\r\nso that the entire name is visible.");
+            _toolTip1.SetToolTip(chkWrapDescriptions, "Resize term rows so that the\r\nentire description is visible.");
         }
 
         private void dgvTerms_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -602,13 +605,19 @@ namespace XRayBuilderGUI.UI
         {
             foreach (var c in Controls.OfType<Button>())
                 c.Enabled = enabled;
+            chkAllowResizeName.Enabled = enabled;
+            chkWrapDescriptions.Enabled = enabled;
         }
 
         private async void btnDownloadTerms_Click(object sender, EventArgs e)
         {
             if (!AmazonClient.IsAsin(txtAsin.Text))
             {
-                MessageBox.Show($"'{txtAsin.Text}' is not a valid ASIN.\r\nRoentgen requires one!");
+                MessageBox.Show(
+                    string.IsNullOrEmpty(txtAsin.Text) ? "ASIN is missing.\r\nRoentgen requires one!" : $"'{txtAsin.Text}' is not a valid ASIN.\r\nRoentgen requires one!",
+                    "Invalid ASIN",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
                 return;
             }
 
@@ -624,7 +633,7 @@ namespace XRayBuilderGUI.UI
                 var terms = await _roentgenClient.DownloadTermsAsync(asin, Settings.Default.roentgenRegion, CancellationToken.None);
                 if (terms == null)
                 {
-                    MessageBox.Show("No terms were available for this book :(");
+                    MessageBox.Show("No terms were available for this book :(", "X-Ray Terms Creator", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
@@ -633,11 +642,11 @@ namespace XRayBuilderGUI.UI
                     _terms.Add(term);
                 var trueCount = _terms.Count;
                 ReloadTerms();
-                MessageBox.Show($"Successfully downloaded {trueCount} terms from Roentgen!");
+                MessageBox.Show($"Successfully downloaded {trueCount} terms from Roentgen!", "X-Ray Terms Creator", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception e)
             {
-                MessageBox.Show($"Failed to download terms: {e.Message}");
+                MessageBox.Show($"Failed to download terms: {e.Message}", "X-Ray Terms Creator", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 

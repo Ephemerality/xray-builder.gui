@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmCreateXR));
             this.lblName = new System.Windows.Forms.Label();
             this.lblAliases = new System.Windows.Forms.Label();
@@ -230,9 +229,7 @@
             // 
             // groupBox4
             // 
-            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.Controls.Add(this.dgvTerms);
             this.groupBox4.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox4.Location = new System.Drawing.Point(12, 187);
@@ -247,20 +244,10 @@
             this.dgvTerms.AllowUserToAddRows = false;
             this.dgvTerms.AllowUserToDeleteRows = false;
             this.dgvTerms.AllowUserToResizeRows = false;
-            this.dgvTerms.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgvTerms.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvTerms.BackgroundColor = System.Drawing.SystemColors.Window;
             this.dgvTerms.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dgvTerms.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvTerms.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dgvTerms.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvTerms.Location = new System.Drawing.Point(13, 21);
             this.dgvTerms.MultiSelect = false;
@@ -408,8 +395,7 @@
             // 
             this.cmsTerms.AutoSize = false;
             this.cmsTerms.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.cmsTerms.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsmDelete});
+            this.cmsTerms.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.tsmDelete });
             this.cmsTerms.Name = "cmsTerms";
             this.cmsTerms.Size = new System.Drawing.Size(80, 48);
             // 
@@ -480,6 +466,7 @@
             // 
             // chkWrapDescriptions
             // 
+            this.chkWrapDescriptions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkWrapDescriptions.Appearance = System.Windows.Forms.Appearance.Button;
             this.chkWrapDescriptions.Image = ((System.Drawing.Image)(resources.GetObject("chkWrapDescriptions.Image")));
             this.chkWrapDescriptions.Location = new System.Drawing.Point(778, 316);
@@ -491,6 +478,7 @@
             // 
             // chkAllowResizeName
             // 
+            this.chkAllowResizeName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkAllowResizeName.Appearance = System.Windows.Forms.Appearance.Button;
             this.chkAllowResizeName.Image = ((System.Drawing.Image)(resources.GetObject("chkAllowResizeName.Image")));
             this.chkAllowResizeName.Location = new System.Drawing.Point(778, 267);
@@ -502,6 +490,7 @@
             // 
             // lblSep1
             // 
+            this.lblSep1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblSep1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.lblSep1.Location = new System.Drawing.Point(779, 487);
             this.lblSep1.Name = "lblSep1";
@@ -510,6 +499,7 @@
             // 
             // lblSep2
             // 
+            this.lblSep2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblSep2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.lblSep2.Location = new System.Drawing.Point(779, 255);
             this.lblSep2.Name = "lblSep2";
@@ -561,7 +551,6 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
-
         }
 
         private System.Windows.Forms.Button btnAddTerm;

@@ -47,7 +47,7 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             {
                 var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dist", "BaseSplitIgnore.txt");
                 using var streamReader = new StreamReader(path, Encoding.UTF8);
-                var customSplitIgnore = streamReader.ReadToEnd().Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
+                var customSplitIgnore = streamReader.ReadToEnd().Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries)
                     .Where(r => !r.StartsWith("//")).ToArray();
                 if (customSplitIgnore.Length >= 1)
                     _commonTitles = customSplitIgnore;

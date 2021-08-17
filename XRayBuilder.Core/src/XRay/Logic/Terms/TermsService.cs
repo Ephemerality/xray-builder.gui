@@ -299,7 +299,7 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
                     ? new Occurrence
                     {
                         Excerpt = new IndexLength(newLoc, newLenQuote),
-                        Highlight = occurrence.Highlight with { Index = newLocHighlight }
+                        Highlight = new IndexLength(newLocHighlight, occurrence.Highlight.Length)
                     }
                     : occurrence;
             }

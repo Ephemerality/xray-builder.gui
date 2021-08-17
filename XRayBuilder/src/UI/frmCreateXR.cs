@@ -517,7 +517,7 @@ namespace XRayBuilderGUI.UI
 
             _toolTip1.SetToolTip(btnAddTerm, "Add this character or\r\ntopic to the term list.");
             _toolTip1.SetToolTip(btnEditTerm, "Edit the selected term. It will be removed from\r\nthe list and used to fill in the information\r\nabove. Don't forget to add to the list when done!");
-            _toolTip1.SetToolTip(btnRemoveTerm, "Remove the selected term from the\r\nterm list. This action is irreversible"!);
+            _toolTip1.SetToolTip(btnRemoveTerm, "Remove the selected term from the\r\nterm list. This action is irreversible!");
             _toolTip1.SetToolTip(btnClear, "Clear the term list.");
             _toolTip1.SetToolTip(btnOpenXml, "Open an existing term XML of TXT file. If\r\nan alias file with a matching ASIN is found,\r\naliases wil automatically be populated.");
             _toolTip1.SetToolTip(btnSaveXML, "Save the term list to an XML file. Any\r\nassociated aliases will be saved to an\r\nASIN.aliases file in the /ext folder.");
@@ -614,7 +614,9 @@ namespace XRayBuilderGUI.UI
             if (!AmazonClient.IsAsin(txtAsin.Text))
             {
                 MessageBox.Show(
-                    string.IsNullOrEmpty(txtAsin.Text) ? "ASIN is missing.\r\nRoentgen requires one!" : $"'{txtAsin.Text}' is not a valid ASIN.\r\nRoentgen requires one!",
+                    string.IsNullOrEmpty(txtAsin.Text)
+                        ? "ASIN is missing.\r\nRoentgen requires one!"
+                        : $"'{txtAsin.Text}' is not a valid ASIN.\r\nRoentgen requires one!",
                     "Invalid ASIN",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Exclamation);
@@ -633,7 +635,7 @@ namespace XRayBuilderGUI.UI
                 var terms = await _roentgenClient.DownloadTermsAsync(asin, Settings.Default.roentgenRegion, CancellationToken.None);
                 if (terms == null)
                 {
-                    MessageBox.Show("No terms were available for this book :(", "X-Ray Terms Creator", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("No terms were available for this book :(", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
@@ -642,11 +644,11 @@ namespace XRayBuilderGUI.UI
                     _terms.Add(term);
                 var trueCount = _terms.Count;
                 ReloadTerms();
-                MessageBox.Show($"Successfully downloaded {trueCount} terms from Roentgen!", "X-Ray Terms Creator", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"Successfully downloaded {trueCount} terms from Roentgen!", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception e)
             {
-                MessageBox.Show($"Failed to download terms: {e.Message}", "X-Ray Terms Creator", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"Failed to download terms: {e.Message}", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 

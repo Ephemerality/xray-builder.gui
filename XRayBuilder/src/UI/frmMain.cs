@@ -1210,7 +1210,17 @@ namespace XRayBuilderGUI.UI
                     frmCreateXr.SetMetadata(metadata);
             }
 
-            frmCreateXr.ShowDialog();
+            try
+            {
+                frmCreateXr.ShowDialog();
+            }
+            catch (InvalidOperationException ex) when (ex.Message.Contains("due to the current state"))
+            {
+                MessageBox.Show("You have encountered an error that sometimes occurs when scrolling through the terms list.\r\nThis is a .NET framework issue and has no workaround at the moment.\r\nThis message just prevents the entire application from exiting.\r\nHopefully you didn't lose much work :(",
+                    frmCreateXr.Text,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
         }
 
         private void CheckFiles(string author, string title, string asin, string fileName, string databaseName, string guid)

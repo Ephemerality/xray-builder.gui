@@ -1,27 +1,69 @@
 version: 2.1.{build}
-skip_non_tags: false
-image: Visual Studio 2017
+pull_requests:
+  do_not_increment_build_number: true
+branches:
+  only:
+  - master
+skip_tags: true
+image: Visual Studio 2019
 configuration: Debug
-platform: x86
+platform: Any CPU
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
   assembly_version: '{version}'
   assembly_file_version: '{version}'
   assembly_informational_version: '{version}'
+environment:
+  SENTRY_AUTH_TOKEN:
+    secure: 9tqnekcnixF1PGmABNun/FmzDkULxQH6wB3g8DmvteGl0kNYOdI6DZzys//PbEp0w+8ObjmV3gXIoHZC86cVmRTL08F1dHEj5x7W25jAbtc=
+  TEST_FILES_PATH:
+    secure: nNs2jDncG35MAS2GlaoO1uqSOopN/y1tidWdrfPN7xMJ2X+gvKvM3GCypxInwg8+CQ5EKuu8XFWZp3yi8AgUkQPIaOhP/pal3v+gd5qeqL4=
 before_build:
-- cmd: nuget restore
+- cmd: >-
+    git submodule update --init
+
+    nuget restore
 build:
   project: XRayBuilderGUI.sln
   verbosity: normal
 after_build:
-- cmd: 7z a xray-builder-gui-v%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\bin\Debug\*.exe %APPVEYOR_BUILD_FOLDER%\bin\Debug\*.dll %APPVEYOR_BUILD_FOLDER%\bin\Debug\*.pdb %APPVEYOR_BUILD_FOLDER%\bin\Debug\x86 %APPVEYOR_BUILD_FOLDER%\bin\Debug\x64 %APPVEYOR_BUILD_FOLDER%\bin\Debug\dist %APPVEYOR_BUILD_FOLDER%\bin\Debug\doc
+- cmd: 7z a xray-builder-gui-v%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\*.exe "%APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\X-Ray Builder GUI.exe.config" %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\lib %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\*.pdb %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\x86 %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\x64 %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\dist %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\doc
+before_test:
+- cmd: >-
+    appveyor DownloadFile %TEST_FILES_PATH%
+
+    7z e xray-testfiles.zip -oc:\projects\xray-builder-gui\XRayBuilder.Test\bin\Debug\testfiles\
+after_test:
+- cmd: del /Q xray-testfiles.zip
 artifacts:
 - path: '*.zip'
   name: X-Ray Builder GUI
 deploy:
 - provider: GitHub
   auth_token:
-    secure: A5MafI3gk/NJ0J5SmEOGGNV5wxKZKOgxjEph6LsLdvFiSV+6KLOx2G5lPfn9nECJ
+    secure: LgWDoEaRVDmFphZ9ye1jk2jbMP+o4xHbdFfJY7PtimB+wwkXjcH5LOdUpszhFPIX
   artifact: /.*\.zip/
   draft: false
+after_deploy:
+- sh: >-
+    npm install @sentry/cli
+
+    ./node_modules/.bin/sentry-cli
+
+    export SENTRY_ORG=revensoftware
+
+    # Create a release
+
+    ./node_modules/.bin/sentry-cli releases new --finalize -p xray-builder APPVEYOR_BUILD_VERSION
+
+    # Associate commits with the release
+
+    ./node_modules/.bin/sentry-cli releases set-commits --auto APPVEYOR_BUILD_VERSION
+notifications:
+- provider: Slack
+  incoming_webhook:
+    secure: Z4JrOxDraMiMjqGyjuIScGiRuOD4vB4Tj6pxBLXV+xQJxAT1muKaFzqfIBhyvmF+o7qT6YjzusmaARJYSd/fjADC63ir2KrbgC49+52yhAg/7MYvpgbeDWiIul0LaSY9
+  on_build_success: true
+  on_build_failure: true
+  on_build_status_changed: true

@@ -33,7 +33,7 @@ after_build:
 
     dotnet build %APPVEYOR_BUILD_FOLDER%\XRayBuilder.Console\XRayBuilder.Console.csproj --runtime linux-x64 --output %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\linux-x64\
 
-    7z a xray-builder-gui-v%APPVEYOR_BUILD_VERSION%_linux-x64.zip %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\linux-x64\*
+    7z a xray-builder-console-v%APPVEYOR_BUILD_VERSION%_linux-x64.zip %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\linux-x64\*
 before_test:
 - cmd: >-
     appveyor DownloadFile %TEST_FILES_PATH%

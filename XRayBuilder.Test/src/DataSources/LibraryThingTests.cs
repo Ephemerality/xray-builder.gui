@@ -65,8 +65,8 @@ namespace XRayBuilder.Test.DataSources
             Assert.AreEqual("The Fellowship of the Ring", results[0].Title);
         }
 
-        [TestCase(true, 159)]
-        [TestCase(false, 143)]
+        [TestCase(true, 166)]
+        [TestCase(false, 150)]
         public async Task GetTermsTest(bool includeTopics, int expectedCount)
         {
             var results = (await _libraryThing.GetTermsAsync("https://www.librarything.com/work/3203347", null, null, includeTopics, null, CancellationToken.None)).ToArray();

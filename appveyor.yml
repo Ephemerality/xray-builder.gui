@@ -28,7 +28,12 @@ build:
   project: XRayBuilderGUI.sln
   verbosity: normal
 after_build:
-- cmd: 7z a xray-builder-gui-v%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\*.exe "%APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\X-Ray Builder GUI.exe.config" %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\lib %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\*.pdb %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\x86 %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\x64 %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\dist %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\doc
+- cmd: >-
+    7z a xray-builder-gui-v%APPVEYOR_BUILD_VERSION%.zip %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\*.exe "%APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\X-Ray Builder GUI.exe.config" %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\lib %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\*.pdb %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\x86 %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\x64 %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\dist %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\Debug\doc
+
+    dotnet build %APPVEYOR_BUILD_FOLDER%\XRayBuilder.Console\XRayBuilder.Console.csproj --runtime linux-x64 --output %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\linux-x64\
+
+    7z a xray-builder-gui-v%APPVEYOR_BUILD_VERSION%_linux-x64.zip %APPVEYOR_BUILD_FOLDER%\XRayBuilder\bin\linux-x64\*
 before_test:
 - cmd: >-
     appveyor DownloadFile %TEST_FILES_PATH%

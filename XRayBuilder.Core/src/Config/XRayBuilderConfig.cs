@@ -9,5 +9,6 @@ namespace XRayBuilder.Core.Config
         public bool UseNewVersion { get; set; }
         public bool ShortenExcerptsLegacy { get; set; }
         public string AmazonTld { get; set; }
+        public bool SaveRawl { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Ephemerality.Unpack;
+using XRayBuilder.Core.Model;
 
 namespace XRayBuilderGUI.UI
 {
@@ -50,23 +50,23 @@ namespace XRayBuilderGUI.UI
             return new string(filename.Where(x => !fileChars.Contains(x)).ToArray());
         }
 
-        public static void EbokTagPromptOrThrow(IMetadata md, string bookPath)
+        public static PromptResultYesNoCancel PromptHandlerYesNoCancel(string title, string message, PromptType type)
         {
-            if (md.CdeContentType == "EBOK")
-                return;
-            if (DialogResult.Yes != MessageBox.Show($"The document type is not set to EBOK. Would you like this to be updated?{Environment.NewLine}Caution: This feature is experimental and could potentially ruin your book file.", "Incorrect Content Type", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
-                return;
+            var icon = type switch
+            {
+                PromptType.Info => MessageBoxIcon.Information,
+                PromptType.Warning => MessageBoxIcon.Warning,
+                PromptType.Error => MessageBoxIcon.Error,
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+            };
 
-            try
+            return MessageBox.Show(message, title, MessageBoxButtons.YesNoCancel, icon, MessageBoxDefaultButton.Button3) switch
             {
-                using var fs = new FileStream(bookPath, FileMode.Create);
-                md.UpdateCdeContentType();
-                md.Save(fs);
-            }
-            catch (IOException)
-            {
-                MessageBox.Show($"Failed to update Content Type, could not open with write access.{Environment.NewLine}Is the book open in another application?", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
+                DialogResult.Cancel => PromptResultYesNoCancel.Cancel,
+                DialogResult.Yes => PromptResultYesNoCancel.Yes,
+                DialogResult.No => PromptResultYesNoCancel.No,
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
     }
 

@@ -66,6 +66,7 @@ namespace XRayBuilderGUI.UI
         private readonly IEndActionsAuthorConverter _endActionsAuthorConverter;
         private readonly IDirectoryService _directoryService;
         private readonly DatabaseMigrator _databaseMigrator;
+        private readonly IMetadataService _metadataService;
 
         public frmMain(
             ILogger logger,
@@ -85,7 +86,8 @@ namespace XRayBuilderGUI.UI
             IRoentgenClient roentgenClient,
             IEndActionsAuthorConverter endActionsAuthorConverter,
             IDirectoryService directoryService,
-            DatabaseMigrator databaseMigrator)
+            DatabaseMigrator databaseMigrator,
+            IMetadataService metadataService)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
@@ -107,6 +109,7 @@ namespace XRayBuilderGUI.UI
             _endActionsAuthorConverter = endActionsAuthorConverter;
             _directoryService = directoryService;
             _databaseMigrator = databaseMigrator;
+            _metadataService = metadataService;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
 
@@ -173,45 +176,6 @@ namespace XRayBuilderGUI.UI
             ToggleInterface(true);
         }
 
-        private async Task<IMetadata> GetAndValidateMetadataAsync(string mobiFile, bool saveRawMl, CancellationToken cancellationToken)
-        {
-            _logger.Log(MainStrings.ExtractingMetadata);
-            try
-            {
-                var metadata = MetadataReader.Load(mobiFile);
-                UIFunctions.EbokTagPromptOrThrow(metadata, mobiFile);
-                try
-                {
-                    await CheckAndFixIncorrectAsinOrThrowAsync(metadata, mobiFile, cancellationToken);
-                }
-                catch (Exception ex)
-                {
-                    _logger.Log($@"{MainStrings.FailedToValidateAsin}: {ex.Message}\r\n{MainStrings.ContinuingAnyway}...", LogLevel.Error);
-                }
-
-                if (!Settings.Default.useNewVersion && metadata.DbName.Length == 31)
-                {
-                    MessageBox.Show(string.Format(MainStrings.DatabaseNameLengthWarning, metadata.DbName), "Database Name", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-
-                if (saveRawMl && metadata.RawMlSupported)
-                {
-                    _logger.Log(MainStrings.SavingRawml);
-                    metadata.SaveRawMl(_directoryService.GetRawmlPath(mobiFile));
-                }
-                _logger.Log($@"{MainStrings.GotMetadata}{Environment.NewLine}{MainStrings.Asin}: {metadata.Asin}");
-
-                _openedMetadata = metadata;
-                return metadata;
-            }
-            catch (Exception ex)
-            {
-                _logger.Log($@"{MainStrings.ErrorExtractingMetadata}: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
-            }
-
-            return null;
-        }
-
         private async Task btnBuild_Run()
         {
             //Check current settings
@@ -246,7 +210,7 @@ namespace XRayBuilderGUI.UI
 
             prgBar.Value = 0;
 
-            using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, _settings.saverawml, _cancelTokens.Token);
+            using var metadata = await _metadataService.GetAndValidateMetadataAsync(txtMobi.Text, UIFunctions.PromptHandlerYesNoCancel, _cancelTokens.Token);
             if (metadata == null)
                 return;
 
@@ -420,7 +384,7 @@ namespace XRayBuilderGUI.UI
                 return;
             }
 
-            using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, _settings.saverawml, _cancelTokens.Token);
+            using var metadata = await _metadataService.GetAndValidateMetadataAsync(txtMobi.Text, UIFunctions.PromptHandlerYesNoCancel, _cancelTokens.Token);
             if (metadata == null)
                 return;
 
@@ -750,7 +714,7 @@ namespace XRayBuilderGUI.UI
             }
 
             //this.TopMost = true;
-            using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
+            using var metadata = await _metadataService.GetAndValidateMetadataAsync(txtMobi.Text, UIFunctions.PromptHandlerYesNoCancel, _cancelTokens.Token);
             if (metadata == null)
                 return;
 
@@ -1038,7 +1002,7 @@ namespace XRayBuilderGUI.UI
 
             ToggleInterface(false);
 
-            using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
+            using var metadata = await _metadataService.GetAndValidateMetadataAsync(txtMobi.Text, UIFunctions.PromptHandlerYesNoCancel, _cancelTokens.Token);
             if (metadata == null)
             {
                 txtMobi.Text = "";
@@ -1205,7 +1169,7 @@ namespace XRayBuilderGUI.UI
             using var frmCreateXr = _diContainer.GetInstance<frmCreateXR>();
             if (File.Exists(txtMobi.Text))
             {
-                using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
+                using var metadata = await _metadataService.GetAndValidateMetadataAsync(txtMobi.Text, UIFunctions.PromptHandlerYesNoCancel, _cancelTokens.Token);
                 if (metadata != null)
                     frmCreateXr.SetMetadata(metadata);
             }
@@ -1278,46 +1242,6 @@ namespace XRayBuilderGUI.UI
             {
                 _logger.Log($@"{MainStrings.Error}:{Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
             }
-        }
-
-        private async Task CheckAndFixIncorrectAsinOrThrowAsync(IMetadata metadata, string bookPath, CancellationToken cancellationToken)
-        {
-            if (AmazonClient.IsAsin(metadata.Asin))
-                return;
-
-            if (!metadata.CanModify && DialogResult.No == MessageBox.Show(string.Format(MainStrings.InvalidAsinWarning, metadata.Asin), MainStrings.IncorrectAsinTitle, MessageBoxButtons.YesNo))
-            {
-                throw new Exception($"Invalid Amazon ASIN detected: {metadata.Asin}!\r\nKindle may not display an X-Ray for this book.\r\nYou must either use Calibre's Quality Check plugin (Fix ASIN for Kindle Fire) or a MOBI editor (exth 113 and optionally 504) to change this.");
-            }
-
-            var dialogResult = MessageBox.Show(string.Format(MainStrings.InvalidAsinShouldFix, metadata.Asin), MainStrings.IncorrectAsinTitle, MessageBoxButtons.YesNo);
-            if (dialogResult == DialogResult.No)
-                return;
-
-            _logger.Log(string.Format(MainStrings.SearchingAmazonForTitleAuthor, metadata.Title, metadata.Author));
-            var amazonSearchResult = await _amazonClient.SearchBook(metadata.Title, metadata.Author, _settings.amazonTLD, cancellationToken);
-            if (amazonSearchResult != null)
-            {
-                // Prompt if book is correct. If not, prompt for manual entry
-                dialogResult = MessageBox.Show($@"{MainStrings.FoundBookAmazon}:{Environment.NewLine}{MainStrings.Title}: {amazonSearchResult.Title}{Environment.NewLine}{MainStrings.Author}: {amazonSearchResult.Author}{Environment.NewLine}{MainStrings.Asin}: {amazonSearchResult.Asin}{Environment.NewLine}{Environment.NewLine}{MainStrings.DoesThisSeemCorrect} {MainStrings.ShownAsinUsed}", MainStrings.AmazonSearchResultTitle, MessageBoxButtons.YesNoCancel);
-                switch (dialogResult)
-                {
-                    case DialogResult.Cancel:
-                        return;
-                    case DialogResult.Yes:
-                    {
-                        metadata.SetAsin(amazonSearchResult.Asin);
-                        using var fs = new FileStream(bookPath, FileMode.Create);
-                        metadata.Save(fs);
-                        _logger.Log(string.Format(MainStrings.UpdatedAsin, metadata.Asin));
-                        return;
-                    }
-                }
-            }
-            else
-                _logger.Log(MainStrings.UnableToAutomaticallyFindAsinOnAmazon);
-
-            // TODO: manual entry
         }
 
         private void btnBrowseOutput_Click(object sender, EventArgs e)

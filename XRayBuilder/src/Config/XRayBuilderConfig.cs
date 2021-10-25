@@ -11,5 +11,6 @@ namespace XRayBuilderGUI.Config
         public bool UseNewVersion => Properties.Settings.Default.useNewVersion;
         public bool ShortenExcerptsLegacy => false;
         public string AmazonTld => Properties.Settings.Default.amazonTLD;
+        public bool SaveRawl => Properties.Settings.Default.saverawml;
     }
 }

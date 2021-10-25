@@ -41,4 +41,70 @@
 	<data name="NoLocationsFoundForTerm" xml:space="preserve">
 		<value>No locations were found for the term "{0}"</value>
 	</data>
+	<data name="IncorrectAsinTitle" xml:space="preserve">
+    <value>Incorrect ASIN</value>
+  </data>
+	<data name="ExtractingMetadata" xml:space="preserve">
+    <value>Extracting metadata…</value>
+  </data>
+	<data name="DatabaseNameLengthWarning" xml:space="preserve">
+    <value>WARNING: The database name is at its maximum length. If "{0}" is the full e-book title, this should not be an issue.
+If the title is supposed to be longer than that, you might get an error on your Kindle (WG on firmware before 5.6).
+Shorten the title in Calibre or change the database name manually.
+</value>
+  </data>
+	<data name="GotMetadata" xml:space="preserve">
+    <value>Got metadata!</value>
+  </data>
+	<data name="ErrorExtractingMetadata" xml:space="preserve">
+    <value>An error occurred while extracting metadata</value>
+  </data>
+	<data name="ContinuingAnyway" xml:space="preserve">
+    <value>Continuing anyway</value>
+  </data>
+	<data name="FailedToValidateAsin" xml:space="preserve">
+    <value>Failed to validate/fix ASIN</value>
+  </data>
+	<data name="SearchingAmazonForTitleAuthor" xml:space="preserve">
+    <value>Searching Amazon for {0} by {1}…</value>
+  </data>
+	<data name="InvalidAsinWarning" xml:space="preserve">
+    <value>Invalid Amazon ASIN detected: {0}!
+Kindle may fail to display an X-Ray for this e-book.
+Do you wish to continue?</value>
+  </data>
+	<data name="InvalidAsinShouldFix" xml:space="preserve">
+    <value>Invalid Amazon ASIN detected: {0}!
+Kindle may not display an X-Ray for this e-book.
+Do you want to fix it?
+(This will modify the e-book, meaning it will need to be re-copied to your Kindle device.)
+THIS FEATURE IS EXPERIMENTAL AND COULD DESTROY YOUR E-BOOK!</value>
+  </data>
+	<data name="UpdatedAsin" xml:space="preserve">
+    <value>ASIN updated to {0}! Make sure to copy this new version of the e-book to your Kindle device.</value>
+  </data>
+	<data name="AmazonSearchResultTitle" xml:space="preserve">
+    <value>Amazon Search Result</value>
+  </data>
+	<data name="DoesThisSeemCorrect" xml:space="preserve">
+    <value>Does this seem correct?</value>
+  </data>
+	<data name="ShownAsinUsed" xml:space="preserve">
+    <value>If so, the shown ASIN will be used.</value>
+  </data>
+	<data name="Author" xml:space="preserve">
+    <value>Author</value>
+  </data>
+	<data name="Title" xml:space="preserve">
+    <value>Title</value>
+  </data>
+	<data name="FoundBookAmazon" xml:space="preserve">
+    <value>Found the following e-book on Amazon</value>
+  </data>
+	<data name="UnableToAutomaticallyFindAsinOnAmazon" xml:space="preserve">
+    <value>Could not find a matching ASIN automatically for this e-book on Amazon :(</value>
+  </data>
+	<data name="SavingRawml" xml:space="preserve">
+    <value>Saving raw markup to the dmp directory…</value>
+  </data>
 </root>

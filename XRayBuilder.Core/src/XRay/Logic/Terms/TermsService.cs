@@ -250,7 +250,7 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
                 return occurrences;
 
             // Shortening is only useful for the old format
-            if (!_config.UseNewVersion && _config.ShortenExcerptsLegacy)
+            if (_config.ShortenExcerptsLegacy)
                 occurrences = ShortenHighlightsInParagraph(paragraph.ContentHtml, occurrences).ToHashSet();
 
             return occurrences;

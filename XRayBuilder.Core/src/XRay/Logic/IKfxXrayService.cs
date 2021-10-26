@@ -1,5 +1,6 @@
 using System.Threading;
 using Ephemerality.Unpack.KFX;
+using JetBrains.Annotations;
 using XRayBuilder.Core.Libraries.Progress;
 
 namespace XRayBuilder.Core.XRay.Logic
@@ -8,9 +9,7 @@ namespace XRayBuilder.Core.XRay.Logic
     {
         void AddLocations(XRay xray,
             KfxContainer kfx,
-            bool skipNoLikes,
-            int minClipLen,
-            IProgressBar progress,
+            [CanBeNull] IProgressBar progress,
             CancellationToken token);
     }
 }

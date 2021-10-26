@@ -95,8 +95,8 @@ namespace XRayBuilder.Core.XRay.Logic.Build
             var aliasPath = _directoryService.GetAliasPath(xray.Asin);
             _xrayService.ExportAndDisplayTerms(xray, request.DataSource, _config.OverwriteAliases, _config.SplitAliases);
 
-            if (_config.EnableEdit && yesNoPrompt != null && PromptResultYesNo.Yes == yesNoPrompt(CoreStrings.Aliases, $@"{CoreStrings.TermsExportedOrAlreadyExist}{Environment.NewLine}{CoreStrings.OpenForEditing}{Environment.NewLine}{CoreStrings.SeeMobilereads}", PromptType.Question))
-                return null;
+            if (_config.EnableEdit && yesNoPrompt != null && editCallback != null && PromptResultYesNo.Yes == yesNoPrompt(CoreStrings.Aliases, $@"{CoreStrings.TermsExportedOrAlreadyExist}{Environment.NewLine}{CoreStrings.OpenForEditing}{Environment.NewLine}{CoreStrings.SeeMobilereads}", PromptType.Question))
+                editCallback(aliasPath);
 
             if (xray.Terms.Any(term => term.Aliases?.Count > 0))
                 _logger.Log(CoreStrings.AliasesReadFromXml);

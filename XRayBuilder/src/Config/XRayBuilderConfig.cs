@@ -12,5 +12,12 @@ namespace XRayBuilderGUI.Config
         public bool ShortenExcerptsLegacy => false;
         public string AmazonTld => Properties.Settings.Default.amazonTLD;
         public bool SaveRawl => Properties.Settings.Default.saverawml;
+        public bool OverwriteChapters => Properties.Settings.Default.overwriteChapters;
+        public bool OverwriteAliases => Properties.Settings.Default.overwriteAliases;
+        public bool SplitAliases => Properties.Settings.Default.splitAliases;
+        public bool EnableEdit => Properties.Settings.Default.enableEdit;
+        public bool SkipNoLikes => Properties.Settings.Default.skipNoLikes;
+        public int MinimumClipLength => Properties.Settings.Default.minClipLen;
+        public bool IgnoreSoftHyphen => Properties.Settings.Default.ignoresofthyphen;
     }
 }

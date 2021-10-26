@@ -107,4 +107,52 @@ THIS FEATURE IS EXPERIMENTAL AND COULD DESTROY YOUR E-BOOK!</value>
 	<data name="SavingRawml" xml:space="preserve">
     <value>Saving raw markup to the dmp directory…</value>
   </data>
+	<data name="Chapters" xml:space="preserve">
+    <value>Chapters</value>
+  </data>
+	<data name="OpenChaptersFile" xml:space="preserve">
+    <value>Would you like to open the chapters file for editing?</value>
+  </data>
+	<data name="BooksSourceUrl" xml:space="preserve">
+    <value>E-book's {0} URL</value>
+  </data>
+	<data name="AttemptingBuildXRay" xml:space="preserve">
+    <value>Attempting to build X-Ray…</value>
+  </data>
+	<data name="NoTermsAvailable" xml:space="preserve">
+    <value>No terms were available. Do you want to continue building anyway?</value>
+  </data>
+	<data name="NoTermsTitle" xml:space="preserve">
+    <value>No Terms</value>
+  </data>
+	<data name="Aliases" xml:space="preserve">
+    <value>Aliases</value>
+  </data>
+	<data name="AliasesReadFromXml" xml:space="preserve">
+    <value>Character aliases read from the XML file.</value>
+  </data>
+	<data name="AliasesFileNotFound" xml:space="preserve">
+    <value>Aliases file not found.</value>
+  </data>
+	<data name="AliasesReadFrom" xml:space="preserve">
+    <value>Character aliases read from {0}.</value>
+  </data>
+	<data name="InitialXRayBuiltAddingChapters" xml:space="preserve">
+    <value>Initial X-Ray built, adding locations and chapters…</value>
+  </data>
+	<data name="BuildCancelled" xml:space="preserve">
+    <value>Build cancelled.</value>
+  </data>
+	<data name="TermsExportedOrAlreadyExist" xml:space="preserve">
+    <value>Terms have been exported to an alias file or already exist in that file.</value>
+  </data>
+	<data name="OpenForEditing" xml:space="preserve">
+    <value>Would you like to open the file for editing?</value>
+  </data>
+	<data name="SeeMobilereads" xml:space="preserve">
+    <value>See the MobileRead forum thread (link in Settings) for more information on building aliases.</value>
+  </data>
+	<data name="BuildingOldFormatNotSupported" xml:space="preserve">
+    <value>KFX e-books cannot be used to build X-Ray files in the old format</value>
+  </data>
 </root>

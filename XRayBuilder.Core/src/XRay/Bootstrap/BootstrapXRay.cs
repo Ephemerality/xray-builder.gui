@@ -3,6 +3,7 @@ using XRayBuilder.Core.Libraries.Bootstrap.Model;
 using XRayBuilder.Core.Libraries.SimpleInjector.Extensions;
 using XRayBuilder.Core.XRay.Logic;
 using XRayBuilder.Core.XRay.Logic.Aliases;
+using XRayBuilder.Core.XRay.Logic.Build;
 using XRayBuilder.Core.XRay.Logic.Chapters;
 using XRayBuilder.Core.XRay.Logic.Export;
 using XRayBuilder.Core.XRay.Logic.Parsing;
@@ -29,6 +30,7 @@ namespace XRayBuilder.Core.XRay.Bootstrap
             container.RegisterSingleton<ChaptersService>();
             container.RegisterSingleton<XRayExporterFactory>();
             container.RegisterSingleton<IParagraphsService, ParagraphsService>();
+            container.RegisterSingleton<IXRayBuildService, XRayBuildService>();
         }
     }
 }

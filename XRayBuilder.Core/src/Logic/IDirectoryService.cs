@@ -1,4 +1,4 @@
-using XRayBuilder.Core.Unpack;
+using Ephemerality.Unpack;
 
 namespace XRayBuilder.Core.Logic
 {
@@ -10,5 +10,9 @@ namespace XRayBuilder.Core.Logic
         string GetArtifactFilename(ArtifactType artifactType, string asin, string databaseName, string guid);
         string GetArtifactPath(ArtifactType artifactType, IMetadata metadata, string bookFilename, bool create);
         string GetArtifactPath(ArtifactType artifactType, string author, string title, string asin, string bookFilename, string databaseName, string guid, bool create);
+        /// <summary>
+        /// Creates all directories in the path leading to <paramref name="file"/> if any do not exist.
+        /// </summary>
+        void CreateDirectoryForFile(string file);
     }
 }

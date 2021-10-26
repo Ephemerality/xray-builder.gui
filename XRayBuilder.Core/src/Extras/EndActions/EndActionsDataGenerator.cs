@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Ephemerality.Unpack;
 using HtmlAgilityPack;
 using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Amazon;
@@ -19,7 +20,6 @@ using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Logic.PageCount;
 using XRayBuilder.Core.Logic.ReadingTime;
 using XRayBuilder.Core.Model;
-using XRayBuilder.Core.Unpack;
 
 namespace XRayBuilder.Core.Extras.EndActions
 {
@@ -173,6 +173,9 @@ namespace XRayBuilder.Core.Extras.EndActions
         {
             foreach (var book in books.Where(item => item != null))
             {
+                if (!book.InnerHtml.Contains("Kindle Edition"))
+                    continue;
+
                 string author = null;
                 string title = null;
 
@@ -229,6 +232,7 @@ namespace XRayBuilder.Core.Extras.EndActions
         {
             if (!string.IsNullOrEmpty(book.Asin))
             {
+                _logger.Log($"Searching for {book.Title} on Amazon.{settings.AmazonTld}…");
                 var response = await _amazonInfoParser.GetAndParseAmazonDocument($"https://www.amazon.{settings.AmazonTld}/dp/{book.Asin}", cancellationToken);
                 if (string.IsNullOrEmpty(response.Description))
                 {
@@ -348,7 +352,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             }
 
             // TODO: Refactor next/previous series stuff
-            if (curBook.Series?.Next == null)
+            if (curBook.Series?.Next == null && settings.DownloadNis)
             {
                 try
                 {
@@ -451,6 +455,7 @@ namespace XRayBuilder.Core.Extras.EndActions
             public bool EstimatePageCount { get; set; }
             public bool SaveHtml { get; set; }
             public bool EditDescription { get; set; }
+            public bool DownloadNis  { get; set; }
         }
     }
 }

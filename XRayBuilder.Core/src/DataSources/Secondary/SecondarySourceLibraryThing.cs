@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Dasync.Collections;
+using Ephemerality.Unpack;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
 using XRayBuilder.Core.DataSources.Secondary.Model;
@@ -20,7 +21,6 @@ using XRayBuilder.Core.Libraries.Primitives.Extensions;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Libraries.Serialization.Json.Util;
 using XRayBuilder.Core.Model;
-using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Artifacts;
 
 namespace XRayBuilder.Core.DataSources.Secondary

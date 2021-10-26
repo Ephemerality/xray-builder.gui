@@ -5,8 +5,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Ephemerality.Unpack;
 using HtmlAgilityPack;
 using JetBrains.Annotations;
+using XRayBuilder.Core.Config;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Logging;
@@ -14,7 +16,7 @@ using XRayBuilder.Core.Libraries.Primitives.Extensions;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Localization.Core;
 using XRayBuilder.Core.Logic;
-using XRayBuilder.Core.Unpack;
+using XRayBuilder.Core.Model;
 using XRayBuilder.Core.XRay.Logic.Aliases;
 using XRayBuilder.Core.XRay.Logic.Chapters;
 using XRayBuilder.Core.XRay.Logic.Parsing;
@@ -33,8 +35,16 @@ namespace XRayBuilder.Core.XRay.Logic
         private readonly IDirectoryService _directoryService;
         private readonly ITermsService _termsService;
         private readonly IParagraphsService _paragraphsService;
+        private readonly IXRayBuilderConfig _config;
 
-        public XRayService(ILogger logger, ChaptersService chaptersService, IAliasesRepository aliasesRepository, IDirectoryService directoryService, ITermsService termsService, IParagraphsService paragraphsService)
+        public XRayService(
+            ILogger logger,
+            ChaptersService chaptersService,
+            IAliasesRepository aliasesRepository,
+            IDirectoryService directoryService,
+            ITermsService termsService,
+            IParagraphsService paragraphsService,
+            IXRayBuilderConfig config)
         {
             _logger = logger;
             _chaptersService = chaptersService;
@@ -42,13 +52,19 @@ namespace XRayBuilder.Core.XRay.Logic
             _directoryService = directoryService;
             _termsService = termsService;
             _paragraphsService = paragraphsService;
+            _config = config;
         }
+
+        public Task<XRay> CreateXRayAsync(string dataLocation, IMetadata metadata, string tld, bool includeTopics, ISecondarySource dataSource, IProgressBar progress, CancellationToken cancellationToken)
+            => CreateXRayAsync(dataLocation, metadata.DbName, metadata.UniqueId, metadata.Asin, metadata.Author, metadata.Title, tld, includeTopics, dataSource, progress, cancellationToken);
 
         public async Task<XRay> CreateXRayAsync(
             string dataLocation,
             string db,
             string guid,
             string asin,
+            string author,
+            string title,
             string tld,
             bool includeTopics,
             ISecondarySource dataSource,
@@ -68,7 +84,9 @@ namespace XRayBuilder.Core.XRay.Logic
                 Guid = Functions.ConvertGuid(guid),
                 Asin = asin,
                 DataUrl = dataLocation,
-                Terms = terms
+                Terms = terms,
+                Author = author,
+                Title = title
             };
 
 
@@ -126,18 +144,13 @@ namespace XRayBuilder.Core.XRay.Logic
             XRay xray,
             IMetadata metadata,
             Stream rawMlStream,
-            bool useNewVersion,
-            bool skipNoLikes,
-            int minClipLen,
-            bool overwriteChapters,
-            Func<bool> editChaptersCallback,
+            YesNoPrompt yesNoPrompt,
+            EditCallback editCallback,
             IProgressBar progress,
-            CancellationToken token,
-            bool ignoreSoftHypen = false,
-            bool shortEx = true)
+            CancellationToken token)
         {
             // Only load chapters when building the old format
-            if (!useNewVersion)
+            if (!_config.UseNewVersion)
             {
                 rawMlStream.Seek(0, SeekOrigin.Begin);
                 // TODO: passing stream, doc, and contents probably not necessary)
@@ -146,7 +159,7 @@ namespace XRayBuilder.Core.XRay.Logic
                 var utf8Doc = new HtmlDocument();
                 utf8Doc.LoadHtml(readContents);
 
-                _chaptersService.HandleChapters(xray, xray.Asin, rawMlStream.Length, utf8Doc, readContents, overwriteChapters, editChaptersCallback);
+                _chaptersService.HandleChapters(xray, xray.Asin, rawMlStream.Length, utf8Doc, readContents, yesNoPrompt, editCallback);
             }
             else
             {
@@ -173,7 +186,7 @@ namespace XRayBuilder.Core.XRay.Logic
                     continue;
 
                 var noSoftHypen = "";
-                if (ignoreSoftHypen)
+                if (_config.IgnoreSoftHyphen)
                 {
                     noSoftHypen = paragraph.ContentText;
                     noSoftHypen = noSoftHypen.Replace("\u00C2\u00AD", "");
@@ -199,7 +212,7 @@ namespace XRayBuilder.Core.XRay.Logic
                     {
                         if (search.Any(r => Regex.Match(paragraph.ContentText, r).Success)
                             || search.Any(r => Regex.Match(paragraph.ContentHtml!, r).Success)
-                            || (ignoreSoftHypen && search.Any(r => Regex.Match(noSoftHypen, r).Success)))
+                            || (_config.IgnoreSoftHyphen && search.Any(r => Regex.Match(noSoftHypen, r).Success)))
                             termFound = true;
                     }
                     else
@@ -214,7 +227,7 @@ namespace XRayBuilder.Core.XRay.Logic
                         // TODO consider removing this "termfound" section 'cause it might be redundant and pointless now
                         if ((character.MatchCase && (search.Any(paragraph.ContentText.Contains) || search.Any(paragraph.ContentHtml.Contains)))
                             || (!character.MatchCase && (search.Any(paragraph.ContentText.ContainsIgnorecase) || search.Any(paragraph.ContentHtml.ContainsIgnorecase)))
-                                || (ignoreSoftHypen && (character.MatchCase && search.Any(noSoftHypen.Contains))
+                                || (_config.IgnoreSoftHyphen && (character.MatchCase && search.Any(noSoftHypen.Contains))
                                     || (!character.MatchCase && search.Any(noSoftHypen.ContainsIgnorecase))))
                             termFound = true;
                     }
@@ -235,8 +248,8 @@ namespace XRayBuilder.Core.XRay.Logic
                 }
 
                 // Attempt to match downloaded notable clips, not worried if no matches occur as some will be added later anyway
-                if (useNewVersion && xray.NotableClips != null)
-                    ExcerptHelper.ProcessNotablesForParagraph(paragraph.ContentText, paragraph.Location, xray.NotableClips, xray.Excerpts, skipNoLikes, minClipLen);
+                if (_config.UseNewVersion && xray.NotableClips != null)
+                    ExcerptHelper.ProcessNotablesForParagraph(paragraph.ContentText, paragraph.Location, xray.NotableClips, xray.Excerpts, _config.SkipNoLikes, _config.MinimumClipLength);
 
                 progress?.Add(1);
             }

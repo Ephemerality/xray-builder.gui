@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Ephemerality.Unpack;
 using NSubstitute;
 using NUnit.Framework;
 using XRayBuilder.Core.DataSources.Amazon;
@@ -10,7 +11,6 @@ using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Logic.ReadingTime;
 using XRayBuilder.Core.Model;
-using XRayBuilder.Core.Unpack;
 
 namespace XRayBuilder.Test.DataSources
 {
@@ -60,28 +60,24 @@ namespace XRayBuilder.Test.DataSources
         }
 
         [Test]
-        // TODO Goodreads is currently showing the wrong primary series, will need to fix this test once they fix it
-        // The book has a second numbering variation where each book has 2 parts
-        // Because they are displaying the wrong series info for books in the standard series, these are all wrong
-        // (but the code technically works)
         public async Task GetSeriesInfoTest()
         {
             var result = await _goodreads.GetSeriesInfoAsync("https://www.goodreads.com/book/show/13497");
             Assert.IsNotNull(result);
-            Assert.AreEqual("A Song of Ice and Fire (1-in-2)", result.Name);
+            Assert.AreEqual("A Song of Ice and Fire", result.Name);
             Assert.False(string.IsNullOrEmpty(result.Url));
-            Assert.AreEqual("8", result.Position);
+            Assert.AreEqual("4", result.Position);
             Assert.Greater(result.Total, 0);
 
             Assert.IsNotNull(result.Next);
             Assert.AreEqual(result.Next.Author, "George R.R. Martin");
-            Assert.AreEqual("13337715", result.Next.GoodreadsId);
-            Assert.AreEqual("A Dance with Dragons: Dreams and Dust", result.Next.Title);
+            Assert.AreEqual("10664113", result.Next.GoodreadsId);
+            Assert.AreEqual("A Dance with Dragons", result.Next.Title);
 
             Assert.IsNotNull(result.Previous);
             Assert.AreEqual(result.Previous.Author, "George R.R. Martin");
-            Assert.AreEqual("6383644", result.Previous.GoodreadsId);
-            Assert.AreEqual("O Festim dos Corvos", result.Previous.Title);
+            Assert.AreEqual("62291", result.Previous.GoodreadsId);
+            Assert.AreEqual("A Storm of Swords", result.Previous.Title);
         }
 
         [Test]
@@ -123,7 +119,10 @@ namespace XRayBuilder.Test.DataSources
         [Test]
         public async Task GetExtrasTest()
         {
-            var book = new BookInfo("", "", "") { DataUrl = "https://www.goodreads.com/book/show/13497.A_Feast_for_Crows" };
+            var book = new BookInfo("", "", "")
+            {
+                DataUrl = "https://www.goodreads.com/book/show/13497.A_Feast_for_Crows"
+            };
             await _goodreads.GetExtrasAsync(book);
             Assert.Greater(book.AmazonRating, 0);
             Assert.GreaterOrEqual(book.NotableClips.Count, 500);

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using XRayBuilder.Core.Libraries.Enumerables.Extensions;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.XRay.Artifacts;
 
@@ -46,7 +47,7 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             {
                 var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dist", "BaseSplitIgnore.txt");
                 using var streamReader = new StreamReader(path, Encoding.UTF8);
-                var customSplitIgnore = streamReader.ReadToEnd().Split(new[] { "\r\n" }, StringSplitOptions.None)
+                var customSplitIgnore = streamReader.ReadToEnd().Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries)
                     .Where(r => !r.StartsWith("//")).ToArray();
                 if (customSplitIgnore.Length >= 1)
                     _commonTitles = customSplitIgnore;
@@ -60,33 +61,63 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             _sanitizePattern = new Regex($@"( ?({string.Join("|", _commonTitles)})\.? )|(^[A-Z]\. )|( [A-Z]\.)|("")|(“)|(”)|(,)|(')");
         }
 
-        public IEnumerable<KeyValuePair<string, string[]>> GenerateAliases(IEnumerable<Term> characters)
+        public Dictionary<Term, string[]> GenerateAliases(IEnumerable<Term> characters)
         {
-            var aliasesByTermName = new Dictionary<string, string[]>();
+            var aliasesByTerm = new Dictionary<Term, List<string>>();
 
             foreach (var character in characters)
             {
                 // Short-circuit if no alias is possible, if this isn't a character, or if aliases already exist (manually added or pre-built)
                 if (!character.TermName.Contains(" ") || character.Type != "character" || character.Aliases.Count > 0)
                 {
-                    aliasesByTermName.Add(character.TermName, character.Aliases.ToArray());
+                    aliasesByTerm.Add(character, character.Aliases.ToList());
                     continue;
                 }
 
                 // Filter out any already-existing aliases from other terms
-                var dedupedAliases = GenerateAliasesForTerm(character)
-                    .Where(alias => !aliasesByTermName.Values.SelectMany(existingAliases => existingAliases).Contains(alias))
-                    .ToArray();
+                // If there are any duplicates, remove them from the other terms as well
+                // e.g. if there are 2 characters named Kira, keeping one of them would still cause issues with matching the other one
+                IEnumerable<string> DedupeAliases(IEnumerable<string> aliases)
+                {
+                    foreach (var alias in aliases)
+                    {
+                        var dupe = false;
+                        foreach (var (existingTerm, existingAliases) in aliasesByTerm)
+                        {
+                            if (existingTerm == character)
+                                continue;
+                            var matchCase = character.MatchCase && existingTerm.MatchCase;
+                            if (existingAliases.Contains(alias, matchCase ? StringComparer.InvariantCulture : StringComparer.InvariantCultureIgnoreCase))
+                            {
+                                existingAliases.Remove(alias);
+                                dupe = true;
+                            }
+                        }
 
-                if (dedupedAliases.Length > 0)
-                    aliasesByTermName.Add(character.TermName, dedupedAliases);
+                        if (!dupe)
+                            yield return alias;
+                    }
+                }
+
+                var aliases = GenerateAliasesForTerm(character);
+                var dedupedAliases = DedupeAliases(aliases)
+                    .Where(alias => !string.IsNullOrWhiteSpace(alias))
+                    .ToList();
+
+
+                if (dedupedAliases.Count> 0)
+                    aliasesByTerm.Add(character, dedupedAliases);
             }
 
-            return aliasesByTermName;
+            return aliasesByTerm.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToArray());
         }
 
         public IEnumerable<string> GenerateAliasesForTerm(Term term)
         {
+            // Short-circuit
+            if (!term.TermName.Contains(" ") || term.Type != "character")
+                return Array.Empty<string>();
+
             var aliases = new List<string>();
             var textInfo = new CultureInfo("en-US", false).TextInfo;
 
@@ -116,7 +147,7 @@ namespace XRayBuilder.Core.XRay.Logic.Aliases
             }
 
             // also remove any entries that are also in the ignore list
-            return aliases.Where(alias => !_commonTitles.Contains(alias));
+            return aliases.Where(alias => !_commonTitles.Contains(alias) && !string.IsNullOrWhiteSpace(alias));
         }
     }
 }

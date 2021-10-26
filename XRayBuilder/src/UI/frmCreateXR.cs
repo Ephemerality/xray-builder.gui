@@ -9,20 +9,23 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Ephemerality.Unpack;
+using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Roentgen.Logic;
 using XRayBuilder.Core.Libraries.Enumerables;
+using XRayBuilder.Core.Libraries.Enumerables.Extensions;
 using XRayBuilder.Core.Libraries.Images.Util;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
 using XRayBuilder.Core.Logic;
-using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Artifacts;
 using XRayBuilder.Core.XRay.Logic.Aliases;
 using XRayBuilder.Core.XRay.Logic.Parsing;
 using XRayBuilder.Core.XRay.Logic.Terms;
 using XRayBuilder.Core.XRay.Model;
 using XRayBuilderGUI.Properties;
+using XRayBuilderGUI.UI.Model;
 
 namespace XRayBuilderGUI.UI
 {
@@ -116,13 +119,15 @@ namespace XRayBuilderGUI.UI
                     DataPropertyName = nameof(Term.Type),
                     ReadOnly = true,
                     Width = 39,
-                    SortMode = DataGridViewColumnSortMode.NotSortable
+                    Resizable = DataGridViewTriState.False,
+                    SortMode = DataGridViewColumnSortMode.Automatic
                 },
                 new DataGridViewTextBoxColumn
                 {
                     HeaderText = "Name",
                     DataPropertyName = nameof(Term.TermName),
-                    AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells,
+                    AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells,
+                    Resizable = DataGridViewTriState.True,
                     SortMode = DataGridViewColumnSortMode.Automatic
                 },
                 new DataGridViewTextBoxColumn
@@ -135,7 +140,7 @@ namespace XRayBuilderGUI.UI
                     {
                         WrapMode = DataGridViewTriState.True
                     },
-                    SortMode = DataGridViewColumnSortMode.NotSortable
+                    SortMode = DataGridViewColumnSortMode.Automatic
                 },
                 new DataGridViewTextBoxColumn
                 {
@@ -144,8 +149,9 @@ namespace XRayBuilderGUI.UI
                     AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
                     DefaultCellStyle = new DataGridViewCellStyle
                     {
-                        WrapMode = DataGridViewTriState.True
+                        WrapMode = DataGridViewTriState.False
                     },
+                    MinimumWidth = 50,
                     SortMode = DataGridViewColumnSortMode.NotSortable
                 },
                 new DataGridViewCheckBoxColumn
@@ -154,6 +160,7 @@ namespace XRayBuilderGUI.UI
                     ToolTipText = "Match",
                     DataPropertyName = nameof(Term.Match),
                     SortMode = DataGridViewColumnSortMode.NotSortable,
+                    Resizable = DataGridViewTriState.False,
                     Width = 27
                 },
                 new DataGridViewCheckBoxColumn
@@ -162,6 +169,7 @@ namespace XRayBuilderGUI.UI
                     ToolTipText = "Case-sensitive",
                     DataPropertyName = nameof(Term.MatchCase),
                     SortMode = DataGridViewColumnSortMode.NotSortable,
+                    Resizable = DataGridViewTriState.False,
                     Width = 29
                 },
                 new DataGridViewCheckBoxColumn
@@ -170,6 +178,7 @@ namespace XRayBuilderGUI.UI
                     ToolTipText = "Regular expression mode.",
                     DataPropertyName = nameof(Term.RegexAliases),
                     SortMode = DataGridViewColumnSortMode.NotSortable,
+                    Resizable = DataGridViewTriState.False,
                     Width = 23
                 }
             };
@@ -285,16 +294,23 @@ namespace XRayBuilderGUI.UI
             if (row == null)
                 return;
 
-            rdoCharacter.Checked = ImageUtil.AreEqual((Bitmap)row.Cells[1].FormattedValue, Resources.character);
-            rdoTopic.Checked = ImageUtil.AreEqual((Bitmap)row.Cells[1].FormattedValue, Resources.setting);
-            txtName.Text = row.Cells[2].Value?.ToString() ?? "";
-            txtAliases.Text = row.Cells[3].FormattedValue?.ToString() ?? "";
-            txtDescription.Text = row.Cells[4].Value?.ToString() ?? "";
-            chkMatch.Checked = (bool?)row.Cells[5].Value ?? false;
-            chkCase.Checked = (bool?)row.Cells[6].Value ?? false;
-            chkRegex.Checked = (bool?)row.Cells[7].Value ?? false;
+            rdoCharacter.Checked = ImageUtil.AreEqual((Bitmap)GetCellByColumnName(row, nameof(Term.Type)).FormattedValue, Resources.character);
+            rdoTopic.Checked = ImageUtil.AreEqual((Bitmap)GetCellByColumnName(row, nameof(Term.Type)).FormattedValue, Resources.setting);
+            txtName.Text = GetCellByColumnName(row, nameof(Term.TermName)).Value?.ToString() ?? "";
+            txtAliases.Text = GetCellByColumnName(row, nameof(Term.Aliases)).FormattedValue?.ToString() ?? "";
+            txtDescription.Text = GetCellByColumnName(row, nameof(Term.Desc)).Value?.ToString() ?? "";
+            chkMatch.Checked = (bool?)GetCellByColumnName(row, nameof(Term.Match)).Value ?? false;
+            chkCase.Checked = (bool?)GetCellByColumnName(row, nameof(Term.MatchCase)).Value ?? false;
+            chkRegex.Checked = (bool?)GetCellByColumnName(row, nameof(Term.RegexAliases)).Value ?? false;
             dgvTerms.Rows.Remove(row);
         }
+
+        [NotNull]
+        private DataGridViewCell GetCellByColumnName(DataGridViewRow row, string columnName)
+            => row.Cells
+                   .OfType<DataGridViewCell>()
+                   .FirstOrDefault(cell => cell.OwningColumn.DataPropertyName == columnName)
+               ?? throw new InvalidOperationException($"Could not find cell for column {columnName}");
 
         private void btnOpenXml_Click(object sender, EventArgs e)
         {
@@ -321,6 +337,13 @@ namespace XRayBuilderGUI.UI
                     default:
                         MessageBox.Show($"Error: Bad file type \"{filetype}\"");
                         return;
+                }
+                // Fix terms that may contain any invalid aliases from a previous bug
+                foreach (var term in _terms)
+                {
+                    if (term.Aliases == null)
+                        continue;
+                    term.Aliases = term.Aliases.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
                 }
                 dgvTerms.DataSource = _terms;
                 ReloadTerms();
@@ -368,7 +391,13 @@ namespace XRayBuilderGUI.UI
                 foreach (var term in _terms)
                 {
                     if (d.TryGetValue(term.TermName, out var aliases))
-                        term.Aliases = aliases.Split(',').OrderByDescending(a => a.Length).ToList();
+                    {
+                        term.Aliases = aliases
+                            .Split(',')
+                            .Where(s => !string.IsNullOrWhiteSpace(s))
+                            .OrderByDescending(a => a.Length)
+                            .ToList();
+                    }
                 }
             }
             finally
@@ -380,7 +409,8 @@ namespace XRayBuilderGUI.UI
 
         private void btnRemoveTerm_Click(object sender, EventArgs e)
         {
-            _terms.Clear();
+            if (dgvTerms.CurrentRow != null)
+                dgvTerms.Rows.Remove(dgvTerms.CurrentRow);
         }
 
         private void btnSaveXML_Click(object sender, EventArgs e)
@@ -463,7 +493,7 @@ namespace XRayBuilderGUI.UI
 
         private void frmCreateXR_Load(object sender, EventArgs e)
         {
-            dgvTerms.AutoGenerateColumns = true;
+            dgvTerms.AutoGenerateColumns = false;
             dgvTerms.AutoSize = true;
             dgvTerms.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
             dgvTerms.DataSource = _terms;
@@ -473,13 +503,21 @@ namespace XRayBuilderGUI.UI
             if (_activeMetadata != null)
                 dgvTerms.Columns[nameof(Term.Occurrences)]!.Visible = true;
 
+            var settings = Settings.Default.TermsCreatorSettings;
+            if (settings != null)
+            {
+                Width = settings.Width;
+                Height = settings.Height;
+                SetWrapDescriptionsState(settings.WrapDescription);
+            }
+
             txtName.Text = "";
             txtAliases.Text = "";
             txtDescription.Text = "";
 
             _toolTip1.SetToolTip(btnAddTerm, "Add this character or\r\ntopic to the term list.");
             _toolTip1.SetToolTip(btnEditTerm, "Edit the selected term. It will be removed from\r\nthe list and used to fill in the information\r\nabove. Don't forget to add to the list when done!");
-            _toolTip1.SetToolTip(btnRemoveTerm, "Remove the selected term from the\r\nterm list. This action is irreversible");
+            _toolTip1.SetToolTip(btnRemoveTerm, "Remove the selected term from the\r\nterm list. This action is irreversible!");
             _toolTip1.SetToolTip(btnClear, "Clear the term list.");
             _toolTip1.SetToolTip(btnOpenXml, "Open an existing term XML of TXT file. If\r\nan alias file with a matching ASIN is found,\r\naliases wil automatically be populated.");
             _toolTip1.SetToolTip(btnSaveXML, "Save the term list to an XML file. Any\r\nassociated aliases will be saved to an\r\nASIN.aliases file in the /ext folder.");
@@ -493,6 +531,9 @@ namespace XRayBuilderGUI.UI
 
             _toolTip1.SetToolTip(rdoCharacter, "A character is an individual, fictional or\r\nreal, in your book. Examples of characters include\r\n\"Don Quixote\", \"Warren Buffett\", and \"Darth Vader\".");
             _toolTip1.SetToolTip(rdoTopic, "Terms are places, organizations, or phrases, and can\r\nalso be fictional or real. Examples of terms include\r\n\"Westeros\", \"IBM\", and \"deadlock\".");
+
+            _toolTip1.SetToolTip(chkAllowResizeName,"Allow resizing of the term name column\r\nso that the entire name is visible.");
+            _toolTip1.SetToolTip(chkWrapDescriptions, "Resize term rows so that the\r\nentire description is visible.");
         }
 
         private void dgvTerms_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -524,7 +565,9 @@ namespace XRayBuilderGUI.UI
                     var aliases = e.Value.ToString()
                         .Split(',')
                         .Select(s => s.Trim())
-                        .OrderByDescending(s => s.Length).ToList();
+                        .Where(s => !string.IsNullOrWhiteSpace(s))
+                        .OrderByDescending(s => s.Length)
+                        .ToList();
                     e.Value = aliases;
                     e.ParsingApplied = true;
                     break;
@@ -562,13 +605,21 @@ namespace XRayBuilderGUI.UI
         {
             foreach (var c in Controls.OfType<Button>())
                 c.Enabled = enabled;
+            chkAllowResizeName.Enabled = enabled;
+            chkWrapDescriptions.Enabled = enabled;
         }
 
         private async void btnDownloadTerms_Click(object sender, EventArgs e)
         {
             if (!AmazonClient.IsAsin(txtAsin.Text))
             {
-                MessageBox.Show($"'{txtAsin.Text}' is not a valid ASIN.\r\nRoentgen requires one!");
+                MessageBox.Show(
+                    string.IsNullOrEmpty(txtAsin.Text)
+                        ? "ASIN is missing.\r\nRoentgen requires one!"
+                        : $"'{txtAsin.Text}' is not a valid ASIN.\r\nRoentgen requires one!",
+                    "Invalid ASIN",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
                 return;
             }
 
@@ -584,7 +635,7 @@ namespace XRayBuilderGUI.UI
                 var terms = await _roentgenClient.DownloadTermsAsync(asin, Settings.Default.roentgenRegion, CancellationToken.None);
                 if (terms == null)
                 {
-                    MessageBox.Show("No terms were available for this book :(");
+                    MessageBox.Show("No terms were available for this book :(", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
@@ -593,19 +644,20 @@ namespace XRayBuilderGUI.UI
                     _terms.Add(term);
                 var trueCount = _terms.Count;
                 ReloadTerms();
-                MessageBox.Show($"Successfully downloaded {trueCount} terms from Roentgen!");
+                MessageBox.Show($"Successfully downloaded {trueCount} terms from Roentgen!", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception e)
             {
-                MessageBox.Show($"Failed to download terms: {e.Message}");
+                MessageBox.Show($"Failed to download terms: {e.Message}", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
         private void btnGenerateAliases_Click(object sender, EventArgs e)
         {
-            foreach (var term in _terms)
+            var aliasesByTerm = _aliasesService.GenerateAliases(_terms);
+            foreach (var (term, aliases) in aliasesByTerm)
             {
-                term.Aliases = _aliasesService.GenerateAliasesForTerm(term).ToList();
+                term.Aliases = aliases.ToList();
                 EnqueueTermOccurrencesRefresh(term);
             }
         }
@@ -628,6 +680,42 @@ namespace XRayBuilderGUI.UI
         private void frmCreateXR_FormClosing(object sender, FormClosingEventArgs e)
         {
             _cts.Cancel();
+
+            Settings.Default.TermsCreatorSettings ??= new TermsCreatorSettings();
+            Settings.Default.TermsCreatorSettings.Width = Width;
+            Settings.Default.TermsCreatorSettings.Height = Height;
+            Settings.Default.TermsCreatorSettings.WrapDescription = chkWrapDescriptions.Checked;
+            Settings.Default.TermsCreatorSettings.AllowResizeNameColumn = chkAllowResizeName.Checked;
+        }
+
+        private void chkWrapDescriptions_CheckedChanged(object sender, EventArgs e)
+        {
+            SetWrapDescriptionsState(chkWrapDescriptions.Checked);
+        }
+
+        private void chkAllowResizeName_CheckedChanged(object sender, EventArgs e)
+        {
+            SetAllowResizeNameState(chkAllowResizeName.Checked);
+        }
+
+        private void SetWrapDescriptionsState(bool wrapDescriptions)
+        {
+            var descriptionColumn = dgvTerms.Columns
+                .OfType<DataGridViewTextBoxColumn>()
+                .First(def => def.DataPropertyName == nameof(Term.Desc));
+            descriptionColumn.DefaultCellStyle.WrapMode = wrapDescriptions
+                ? DataGridViewTriState.True
+                : DataGridViewTriState.False;
+        }
+
+        private void SetAllowResizeNameState(bool allowResize)
+        {
+            var nameColumn= dgvTerms.Columns
+                .OfType<DataGridViewTextBoxColumn>()
+                .First(def => def.DataPropertyName == nameof(Term.TermName));
+            nameColumn.AutoSizeMode = allowResize
+                ? DataGridViewAutoSizeColumnMode.None
+                : DataGridViewAutoSizeColumnMode.AllCells;
         }
     }
 }

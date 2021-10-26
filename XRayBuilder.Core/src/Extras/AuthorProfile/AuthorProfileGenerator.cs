@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dasync.Collections;
 using XRayBuilder.Core.DataSources.Amazon;
+using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Images.Extensions;
@@ -156,6 +157,21 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
 
             if (searchResults.Biography != null)
                 biography = searchResults.Biography;
+
+            // Parse author details from books goodreads page if missing from Amazon
+            if (searchResults.Biography == null || searchResults.ImageUrl == null || searchResults.ImageUrl.Contains("placeholder") && !File.Exists(bioFile))
+            {
+                _logger.Log("Attempting to fill missing author information from Goodreads…");
+                var goodreads = new SecondarySourceGoodreads(_logger, _httpClient, _amazonClient, null);
+                var grAuthor = await goodreads.GetAuthorAsync(request.Book.DataUrl, cancellationToken);
+                if (grAuthor != null)
+                {
+                    searchResults.Biography ??= grAuthor.Biography;
+                    if (searchResults.ImageUrl == null || searchResults.ImageUrl.Contains("placeholder"))
+                        searchResults.ImageUrl = grAuthor.ImageUrl;
+                }
+                biography = searchResults.Biography;
+            }
 
             if (File.Exists(bioFile) && request.Settings.SaveBio)
             {

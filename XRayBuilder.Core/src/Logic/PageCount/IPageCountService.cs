@@ -1,4 +1,4 @@
-using XRayBuilder.Core.Unpack;
+using Ephemerality.Unpack;
 
 namespace XRayBuilder.Core.Logic.PageCount
 {

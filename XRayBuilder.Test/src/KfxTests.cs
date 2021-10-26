@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Ephemerality.Unpack.KFX;
 using NUnit.Framework;
-using XRayBuilder.Core.Unpack.KFX;
 
 namespace XRayBuilder.Test
 {

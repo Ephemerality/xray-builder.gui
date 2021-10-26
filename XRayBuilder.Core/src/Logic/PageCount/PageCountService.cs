@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using XRayBuilder.Core.Unpack;
+using Ephemerality.Unpack;
 using XRayBuilder.Core.XRay.Logic.Parsing;
 
 namespace XRayBuilder.Core.Logic.PageCount

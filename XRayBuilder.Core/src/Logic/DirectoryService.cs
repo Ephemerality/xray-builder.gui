@@ -1,9 +1,9 @@
 using System;
 using System.IO;
+using Ephemerality.Unpack;
 using XRayBuilder.Core.Config;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Logging;
-using XRayBuilder.Core.Unpack;
 
 namespace XRayBuilder.Core.Logic
 {
@@ -24,6 +24,11 @@ namespace XRayBuilder.Core.Logic
 #endif
         }
 
+        public void CreateDirectoryForFile(string file)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(file));
+        }
+
         public string GetAliasPath(string asin)
             => Path.Combine(_baseDirectory, "ext", $"{asin}.aliases");
 
@@ -34,7 +39,7 @@ namespace XRayBuilder.Core.Logic
             => artifactType switch
             {
                 ArtifactType.XRay => _config.BuildForAndroid
-                    ? $"XRAY.{asin}.{(databaseName == null ? "" : $"{databaseName}_")}{guid ?? ""}.db"
+                    ? $"XRAY.{asin}.{(databaseName == null ? "" : $"{databaseName}")}{$"_{guid}" ?? ""}.db"
                     : $"XRAY.entities.{asin}.asc",
                 ArtifactType.XRayPreview => $"XRAY.{asin}.previewData",
                 ArtifactType.AuthorProfile => $"AuthorProfile.profile.{asin}.asc",

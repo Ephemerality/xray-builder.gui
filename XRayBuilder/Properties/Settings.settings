@@ -122,7 +122,10 @@
     <Setting Name="editDescription" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="Language" Type="System.String" Scope="User">
+    <Setting Name="downloadNIS" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="TermsCreatorSettings" Type="XRayBuilderGUI.UI.Model.TermsCreatorSettings" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

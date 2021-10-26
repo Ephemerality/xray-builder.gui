@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.Drawing;
@@ -9,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Ephemerality.Unpack;
 using Newtonsoft.Json;
 using XRayBuilder.Core.Database;
 using XRayBuilder.Core.DataSources.Amazon;
@@ -27,12 +27,8 @@ using XRayBuilder.Core.Libraries.Serialization.Json.Util;
 using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
 using XRayBuilder.Core.Logic;
 using XRayBuilder.Core.Model;
-using XRayBuilder.Core.Unpack;
-using XRayBuilder.Core.Unpack.KFX;
-using XRayBuilder.Core.Unpack.Mobi;
 using XRayBuilder.Core.XRay;
-using XRayBuilder.Core.XRay.Logic;
-using XRayBuilder.Core.XRay.Logic.Aliases;
+using XRayBuilder.Core.XRay.Logic.Build;
 using XRayBuilder.Core.XRay.Logic.Export;
 using XRayBuilder.Core.XRay.Logic.Terms;
 using XRayBuilder.Core.XRay.Model.Export;
@@ -52,20 +48,18 @@ namespace XRayBuilderGUI.UI
         private readonly IAmazonClient _amazonClient;
         private readonly IAuthorProfileGenerator _authorProfileGenerator;
         private readonly PreviewProviderFactory _previewProviderFactory;
-        private readonly IAliasesRepository _aliasesRepository;
-        private readonly IXRayService _xrayService;
         private readonly XRayExporterFactory _xrayExporterFactory;
         private readonly IPreviewDataExporter _previewDataExporter;
         private readonly ITermsService _termsService;
         private readonly Container _diContainer;
-        // TODO Different type handling should come from some sort of factory or whatever
-        private readonly IKfxXrayService _kfxXrayService;
         private readonly IStartActionsArtifactService _startActionsArtifactService;
         private readonly IEndActionsArtifactService _endActionsArtifactService;
         private readonly IRoentgenClient _roentgenClient;
         private readonly IEndActionsAuthorConverter _endActionsAuthorConverter;
         private readonly IDirectoryService _directoryService;
         private readonly DatabaseMigrator _databaseMigrator;
+        private readonly IMetadataService _metadataService;
+        private readonly IXRayBuildService _xrayBuildService;
 
         public frmMain(
             ILogger logger,
@@ -74,18 +68,17 @@ namespace XRayBuilderGUI.UI
             IAuthorProfileGenerator authorProfileGenerator,
             IAmazonClient amazonClient,
             PreviewProviderFactory previewProviderFactory,
-            IAliasesRepository aliasesRepository,
             IPreviewDataExporter previewDataExporter,
             XRayExporterFactory xrayExporterFactory,
-            IXRayService xrayService,
             ITermsService termsService,
-            IKfxXrayService kfxXrayService,
             IStartActionsArtifactService startActionsArtifactService,
             IEndActionsArtifactService endActionsArtifactService,
             IRoentgenClient roentgenClient,
             IEndActionsAuthorConverter endActionsAuthorConverter,
             IDirectoryService directoryService,
-            DatabaseMigrator databaseMigrator)
+            DatabaseMigrator databaseMigrator,
+            IMetadataService metadataService,
+            IXRayBuildService xrayBuildService)
         {
             InitializeComponent();
             _progress = new ProgressBarCtrl(prgBar);
@@ -95,18 +88,17 @@ namespace XRayBuilderGUI.UI
             _authorProfileGenerator = authorProfileGenerator;
             _amazonClient = amazonClient;
             _previewProviderFactory = previewProviderFactory;
-            _aliasesRepository = aliasesRepository;
             _previewDataExporter = previewDataExporter;
             _xrayExporterFactory = xrayExporterFactory;
-            _xrayService = xrayService;
             _termsService = termsService;
-            _kfxXrayService = kfxXrayService;
             _startActionsArtifactService = startActionsArtifactService;
             _endActionsArtifactService = endActionsArtifactService;
             _roentgenClient = roentgenClient;
             _endActionsAuthorConverter = endActionsAuthorConverter;
             _directoryService = directoryService;
             _databaseMigrator = databaseMigrator;
+            _metadataService = metadataService;
+            _xrayBuildService = xrayBuildService;
             _logger.LogEvent += rtfLogger.Log;
             _httpClient = httpClient;
 
@@ -123,11 +115,6 @@ namespace XRayBuilderGUI.UI
         private ISecondarySource _dataSource;
 
         private IMetadata _openedMetadata;
-
-        private DialogResult SafeShow([Localizable(true)] string msg, [Localizable(true)] string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton def)
-        {
-            return (DialogResult)Invoke(new Func<DialogResult>(() => MessageBox.Show(this, msg, caption, buttons, icon, def)));
-        }
 
         private void ToggleInterface(bool enabled)
         {
@@ -173,45 +160,6 @@ namespace XRayBuilderGUI.UI
             ToggleInterface(true);
         }
 
-        private async Task<IMetadata> GetAndValidateMetadataAsync(string mobiFile, bool saveRawMl, CancellationToken cancellationToken)
-        {
-            _logger.Log(MainStrings.ExtractingMetadata);
-            try
-            {
-                var metadata = MetadataLoader.Load(mobiFile);
-                UIFunctions.EbokTagPromptOrThrow(metadata, mobiFile);
-                try
-                {
-                    await CheckAndFixIncorrectAsinOrThrowAsync(metadata, mobiFile, cancellationToken);
-                }
-                catch (Exception ex)
-                {
-                    _logger.Log($@"{MainStrings.FailedToValidateAsin}: {ex.Message}\r\n{MainStrings.ContinuingAnyway}...", LogLevel.Error);
-                }
-
-                if (!Settings.Default.useNewVersion && metadata.DbName.Length == 31)
-                {
-                    MessageBox.Show(string.Format(MainStrings.DatabaseNameLengthWarning, metadata.DbName), "Database Name", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-
-                if (saveRawMl && metadata.RawMlSupported)
-                {
-                    _logger.Log(MainStrings.SavingRawml);
-                    metadata.SaveRawMl(_directoryService.GetRawmlPath(mobiFile));
-                }
-                _logger.Log($@"{MainStrings.GotMetadata}{Environment.NewLine}{MainStrings.Asin}: {metadata.Asin}");
-
-                _openedMetadata = metadata;
-                return metadata;
-            }
-            catch (Exception ex)
-            {
-                _logger.Log($@"{MainStrings.ErrorExtractingMetadata}: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
-            }
-
-            return null;
-        }
-
         private async Task btnBuild_Run()
         {
             //Check current settings
@@ -246,89 +194,39 @@ namespace XRayBuilderGUI.UI
 
             prgBar.Value = 0;
 
-            using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, _settings.saverawml, _cancelTokens.Token);
-            if (metadata == null)
-                return;
-
-            // Added author name to log output
-            _logger.Log($@"{string.Format(MainStrings.BooksSourceUrl, _dataSource.Name)}: {txtGoodreads.Text}");
-            if (_cancelTokens.IsCancellationRequested) return;
-            _logger.Log(MainStrings.AttemptingBuildXRay);
-
-            //Create X-Ray and attempt to create the base file (essentially the same as the site)
             XRay xray;
             SetDatasourceLabels(); // Reset the dataSource for the new build process
             try
             {
-                var selectedSource = _dataSource;
-                Task<XRay> xrayTask;
-                if (rdoGoodreads.Checked)
-                    xrayTask = _xrayService.CreateXRayAsync(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.amazonTLD, _settings.includeTopics, selectedSource, _progress, _cancelTokens.Token);
-                else if (rdoRoentgen.Checked)
-                {
-                    selectedSource = _diContainer.GetInstance<SecondarySourceRoentgen>();
-                    xrayTask = _xrayService.CreateXRayAsync(txtGoodreads.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.roentgenRegion, _settings.includeTopics, selectedSource, _progress, _cancelTokens.Token);
-                }
-                else
-                {
-                    // TODO Set datasource properly
-                    selectedSource = _diContainer.GetInstance<SecondaryDataSourceFactory>().Get(SecondaryDataSourceFactory.Enum.File);
-                    xrayTask = _xrayService.CreateXRayAsync(txtXMLFile.Text, metadata.DbName, metadata.UniqueId, metadata.Asin, _settings.amazonTLD, _settings.includeTopics, selectedSource, _progress, _cancelTokens.Token);
-                }
+                // TODO set the source properly
+                var selectedSource = rdoRoentgen.Checked
+                    ? _diContainer.GetInstance<SecondarySourceRoentgen>()
+                    : !rdoGoodreads.Checked
+                        ? _diContainer.GetInstance<SecondaryDataSourceFactory>().Get(SecondaryDataSourceFactory.Enum.File)
+                        : _dataSource;
+                var dataUrl = rdoGoodreads.Checked || rdoRoentgen.Checked ? txtGoodreads.Text : txtXMLFile.Text;
+                var tld = rdoRoentgen.Checked ? _settings.roentgenRegion : _settings.amazonTLD;
 
-                xray = await Task.Run(() => xrayTask).ConfigureAwait(false);
-
-                if (xray.Terms.Count == 0 && DialogResult.No == MessageBox.Show(MainStrings.NoTermsAvailable, MainStrings.NoTermsTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2))
+                bool EditCallback(string path)
                 {
-                    _logger.Log(MainStrings.Cancelling);
-                    return;
+                    Functions.RunNotepad(path);
+                    return true;
                 }
 
-                var aliasPath = _directoryService.GetAliasPath(xray.Asin);
-                _xrayService.ExportAndDisplayTerms(xray, selectedSource, _settings.overwriteAliases, _settings.splitAliases);
+                xray = await _xrayBuildService.BuildAsync(
+                    new XRayBuildService.Request(txtMobi.Text, dataUrl, _settings.includeTopics, tld, selectedSource),
+                    (title, message, type) => UIFunctions.PromptHandlerYesNo(title, message, type, this),
+                    (title, message, type) => UIFunctions.PromptHandlerYesNoCancel(title, message, type, this),
+                    EditCallback,
+                    _progress,
+                    _cancelTokens.Token
+                );
 
-                if (_settings.enableEdit && DialogResult.Yes == MessageBox.Show($@"{MainStrings.TermsExportedOrAlreadyExist}\r\n{MainStrings.OpenInNotepad}\r\n{MainStrings.SeeMobilereads}", MainStrings.Aliases, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2))
-                {
-                    Functions.RunNotepad(aliasPath);
-                }
-                if (xray.Terms.Any(term => term.Aliases?.Count > 0))
-                    _logger.Log(MainStrings.AliasesReadFromXml);
-                else if (!File.Exists(aliasPath))
-                    _logger.Log(MainStrings.AliasesFileNotFound);
-                else
-                {
-                    _aliasesRepository.LoadAliasesForXRay(xray);
-                    _logger.Log(string.Format(MainStrings.AliasesReadFrom, aliasPath));
-                }
-
-                _logger.Log(MainStrings.InitialXRayBuiltAddingChapters);
-                //Expand the X-Ray file from the unpacked mobi
-                Task buildTask;
-                switch (metadata)
-                {
-                    case Metadata _:
-                        bool EditChaptersCallback()
-                        {
-                            if (xray.Unattended || !_settings.enableEdit)
-                                return false;
-
-                            return DialogResult.Yes == SafeShow(MainStrings.OpenChaptersFileNotepad, MainStrings.Chapters,
-                                MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
-                        }
-                        // ReSharper disable twice AccessToDisposedClosure
-                        // todo just pass metadata instead of calling getrawmlstream
-                        buildTask = Task.Run(() => _xrayService.ExpandFromRawMl(xray, metadata, metadata.GetRawMlStream(), _settings.useNewVersion, _settings.skipNoLikes, _settings.minClipLen, _settings.overwriteChapters, EditChaptersCallback, _progress, _cancelTokens.Token, _settings.ignoresofthyphen, !_settings.useNewVersion));
-                        break;
-                    case KfxContainer kfx:
-                        if (!_settings.useNewVersion)
-                            throw new Exception(MainStrings.BuildingOldFormatNotSupported);
-
-                        buildTask = Task.Run(() => _kfxXrayService.AddLocations(xray, kfx, _settings.skipNoLikes, _settings.minClipLen, _progress, _cancelTokens.Token));
-                        break;
-                    default:
-                        throw new NotSupportedException();
-                }
-                await buildTask.ConfigureAwait(false);
+                _logger.Log(MainStrings.SavingXRay);
+                var xrayPath = _directoryService.GetArtifactPath(ArtifactType.XRay, xray.Author, xray.Title, xray.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text), xray.DatabaseName, xray.Guid, true);
+                var xrayExporter = _xrayExporterFactory.Get(_settings.useNewVersion ? XRayExporterFactory.Enum.Sqlite : XRayExporterFactory.Enum.Json);
+                xrayExporter.Export(xray, xrayPath, _progress, _cancelTokens.Token);
+                _logger.Log($@"{MainStrings.XRayCreated}{Environment.NewLine}{string.Format(MainStrings.SavedTo, xrayPath)}");
             }
             catch (OperationCanceledException)
             {
@@ -341,32 +239,12 @@ namespace XRayBuilderGUI.UI
                 return;
             }
 
-            _logger.Log(MainStrings.SavingXRay);
-            var xrayPath = _directoryService.GetArtifactPath(ArtifactType.XRay, metadata, Path.GetFileNameWithoutExtension(txtMobi.Text), true);
-
-            try
-            {
-                var xrayExporter = _xrayExporterFactory.Get(_settings.useNewVersion ? XRayExporterFactory.Enum.Sqlite : XRayExporterFactory.Enum.Json);
-                xrayExporter.Export(xray, xrayPath, _progress, _cancelTokens.Token);
-            }
-            catch (OperationCanceledException)
-            {
-                _logger.Log(MainStrings.BuildCancelled);
-                return;
-            }
-            catch (Exception ex)
-            {
-                // TODO: Add option to retry maybe?
-                _logger.Log($@"{MainStrings.ErrorBuildingXRay}. {MainStrings.OpenedInAnotherProgram}{Environment.NewLine}{ex.Message}");
-                return;
-            }
-
             if (_settings.useNewVersion)
             {
                 //Save the new XRAY.ASIN.previewData file
                 try
                 {
-                    var pdPath = _directoryService.GetArtifactPath(ArtifactType.XRayPreview, metadata, Path.GetFileNameWithoutExtension(txtMobi.Text), true);
+                    var pdPath = _directoryService.GetArtifactPath(ArtifactType.XRayPreview, xray.Author, xray.Title, xray.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text), xray.DatabaseName, xray.Guid, true);
                     _previewDataExporter.Export(xray, pdPath);
                     _logger.Log($@"{MainStrings.PreviewData}\r\n{string.Format(MainStrings.SavedTo, pdPath)}");
                 }
@@ -376,17 +254,13 @@ namespace XRayBuilderGUI.UI
                 }
             }
 
-            _logger.Log($@"{MainStrings.XRayCreated}{Environment.NewLine}{string.Format(MainStrings.SavedTo, xrayPath)}");
-
-            CheckFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text), metadata.DbName, metadata.Guid);
+            CheckFiles(xray.Author, xray.Title, xray.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text), xray.DatabaseName, xray.Guid);
 
             if (_settings.playSound)
             {
                 var player = new System.Media.SoundPlayer($@"{Environment.CurrentDirectory}\done.wav");
                 player.Play();
             }
-
-            metadata.Dispose();
         }
 
         private async void btnKindleExtras_Click(object sender, EventArgs e)
@@ -420,7 +294,7 @@ namespace XRayBuilderGUI.UI
                 return;
             }
 
-            using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, _settings.saverawml, _cancelTokens.Token);
+            using var metadata = await _metadataService.GetAndValidateMetadataAsync(txtMobi.Text, (title, message, type) => UIFunctions.PromptHandlerYesNoCancel(title, message, type, this), _cancelTokens.Token);
             if (metadata == null)
                 return;
 
@@ -453,6 +327,7 @@ namespace XRayBuilderGUI.UI
                     _logger.Log(string.Format(MainStrings.DownloadingActions, type));
                     try
                     {
+                        // ReSharper disable once AccessToDisposedClosure
                         var actions = await download(metadata.Asin, _settings.roentgenRegion, _cancelTokens.Token);
                         if (actions == null)
                         {
@@ -465,7 +340,7 @@ namespace XRayBuilderGUI.UI
                     }
                     catch (Exception e)
                     {
-                        _logger.Log($@"{MainStrings.NoPremadeActionsAvailable}:{Environment.NewLine}{e.Message}");
+                        _logger.Log($@"{string.Format(MainStrings.NoPremadeActionsAvailable, type)}:{Environment.NewLine}{e.Message}");
                         return null;
                     }
                 }
@@ -554,21 +429,6 @@ namespace XRayBuilderGUI.UI
                         return;
                 }
 
-                if (needAp)
-                {
-                    try
-                    {
-                        var authorProfileOutput = JsonConvert.SerializeObject(AuthorProfileGenerator.CreateAp(authorProfileResponse, bookInfo.Asin));
-                        File.WriteAllText(apPath, authorProfileOutput);
-                        _logger.Log($@"{MainStrings.AuthorProfileCreated}{Environment.NewLine}{string.Format(MainStrings.SavedTo, apPath)}");
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Log($@"{MainStrings.ErrorWritingAuthorProfile}: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
-                        return;
-                    }
-                }
-
                 if (needSa || needEa)
                 {
                     _logger.Log(MainStrings.BuildingStartEndActions);
@@ -590,7 +450,8 @@ namespace XRayBuilderGUI.UI
                         UseNewVersion = _settings.useNewVersion,
                         PromptAsin = _settings.promptASIN,
                         EstimatePageCount = _settings.pageCount,
-                        EditDescription = _settings.editDescription
+                        EditDescription = _settings.editDescription,
+                        DownloadNis = _settings.downloadNIS
                     };
 
                     var endActionsDataGenerator = _diContainer.GetInstance<IEndActionsDataGenerator>();
@@ -616,7 +477,9 @@ namespace XRayBuilderGUI.UI
                             authorAsin: authorProfileResponse.Asin,
                             authorImageUrl: authorProfileResponse.ImageUrl,
                             authorBiography: authorProfileResponse.Biography,
-                            authorOtherBooks: authorProfileResponse.OtherBooks,
+                            authorOtherBooks: authorProfileResponse.OtherBooks.Length == 0
+                                ? endActionsResponse.CustomerAlsoBought.Where(x => x.Author == bookInfo.Author).ToArray()
+                                : authorProfileResponse.OtherBooks,
                             userPenName: _settings.penName,
                             userRealName: _settings.realName,
                             customerAlsoBought: endActionsResponse.CustomerAlsoBought);
@@ -629,6 +492,9 @@ namespace XRayBuilderGUI.UI
                         File.WriteAllText(eaPath, endActionsContent);
                         _logger.Log($@"{MainStrings.EndActionsCreated}{Environment.NewLine}{string.Format(MainStrings.SavedTo, eaPath)}");
                     }
+
+                    if (authorProfileResponse.OtherBooks.Length == 0)
+                        authorProfileResponse.OtherBooks = endActionsResponse.CustomerAlsoBought.Where(x => x.Author == bookInfo.Author).ToArray();
 
                     if (needSa)
                     {
@@ -645,6 +511,22 @@ namespace XRayBuilderGUI.UI
                         }
 
                         _logger.Log($@"{MainStrings.StartActionsCreated}{Environment.NewLine}{string.Format(MainStrings.SavedTo, saPath)}");
+                    }
+                }
+
+                // Finally write author profile - delayed in case the otherbooks section was enhanced by the end actions response
+                if (needAp)
+                {
+                    try
+                    {
+                        var authorProfileOutput = JsonConvert.SerializeObject(AuthorProfileGenerator.CreateAp(authorProfileResponse, bookInfo.Asin));
+                        File.WriteAllText(apPath, authorProfileOutput);
+                        _logger.Log($@"{MainStrings.AuthorProfileCreated}{Environment.NewLine}{string.Format(MainStrings.SavedTo, apPath)}");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Log($@"{MainStrings.ErrorWritingAuthorProfile}: {ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                        return;
                     }
                 }
 
@@ -692,7 +574,7 @@ namespace XRayBuilderGUI.UI
                     try
                     {
                         _logger.Log(string.Format(MainStrings.ExportingTermsFrom, "Roentgen"));
-                        using var metadata = MetadataLoader.Load(txtMobi.Text);
+                        using var metadata = MetadataReader.Load(txtMobi.Text);
                         await Task.Run(() => _termsService.DownloadAndSaveAsync(_diContainer.GetInstance<SecondarySourceRoentgen>(), null, path, metadata.Asin, _settings.roentgenRegion, _settings.includeTopics, _progress, _cancelTokens.Token));
                     }
                     catch (Exception ex) when (ex.Message.Contains("No terms"))
@@ -743,7 +625,7 @@ namespace XRayBuilderGUI.UI
             }
 
             //this.TopMost = true;
-            using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
+            using var metadata = await _metadataService.GetAndValidateMetadataAsync(txtMobi.Text, (title, message, type) => UIFunctions.PromptHandlerYesNoCancel(title, message, type, this), _cancelTokens.Token);
             if (metadata == null)
                 return;
 
@@ -1031,7 +913,7 @@ namespace XRayBuilderGUI.UI
 
             ToggleInterface(false);
 
-            using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
+            using var metadata = await _metadataService.GetAndValidateMetadataAsync(txtMobi.Text, (title, message, type) => UIFunctions.PromptHandlerYesNoCancel(title, message, type, this), _cancelTokens.Token);
             if (metadata == null)
             {
                 txtMobi.Text = "";
@@ -1053,8 +935,8 @@ namespace XRayBuilderGUI.UI
             _tooltip.SetToolTip(txtAsin, _amazonClient.Url(_settings.amazonTLD, txtAsin.Text));
 
             CheckFiles(metadata.Author, metadata.Title, metadata.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text), metadata.DbName, metadata.Guid);
-            btnBuild.Enabled = metadata.XRaySupported;
-            btnOneClick.Enabled = metadata.XRaySupported;
+            btnBuild.Enabled = true;
+            btnOneClick.Enabled = true;
             btnUnpack.Enabled = metadata.RawMlSupported;
 
             //TODO: Check ASIN matches selected Amazon region.
@@ -1077,6 +959,7 @@ namespace XRayBuilderGUI.UI
                 {
                     // Fire and forget
                     #pragma warning disable 4014
+                    // ReSharper disable once AccessToDisposedClosure
                     Task.Run(() => _roentgenClient.PreloadAsync(metadata.Asin, _settings.roentgenRegion, _cancelTokens.Token)).ConfigureAwait(false);
                     #pragma warning restore 4014
                 }
@@ -1135,7 +1018,7 @@ namespace XRayBuilderGUI.UI
             }
 
             _logger.Log(MainStrings.ExtractingRawMl);
-            using var metadata = MetadataLoader.Load(txtMobi.Text);
+            using var metadata = MetadataReader.Load(txtMobi.Text);
             var rawMlPath = _directoryService.GetRawmlPath(txtMobi.Text);
             metadata.SaveRawMl(rawMlPath);
             _logger.Log(string.Format(MainStrings.ExtractedToPath, rawMlPath));
@@ -1198,12 +1081,22 @@ namespace XRayBuilderGUI.UI
             using var frmCreateXr = _diContainer.GetInstance<frmCreateXR>();
             if (File.Exists(txtMobi.Text))
             {
-                using var metadata = await GetAndValidateMetadataAsync(txtMobi.Text, false, _cancelTokens.Token);
+                using var metadata = await _metadataService.GetAndValidateMetadataAsync(txtMobi.Text, (title, message, type) => UIFunctions.PromptHandlerYesNoCancel(title, message, type, this), _cancelTokens.Token);
                 if (metadata != null)
                     frmCreateXr.SetMetadata(metadata);
             }
 
-            frmCreateXr.ShowDialog();
+            try
+            {
+                frmCreateXr.ShowDialog();
+            }
+            catch (InvalidOperationException ex) when (ex.Message.Contains("due to the current state"))
+            {
+                MessageBox.Show("You have encountered an error that sometimes occurs when scrolling through the terms list.\r\nThis is a .NET framework issue and has no workaround at the moment.\r\nThis message just prevents the entire application from exiting.\r\nHopefully you didn't lose much work :(",
+                    frmCreateXr.Text,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
         }
 
         private void CheckFiles(string author, string title, string asin, string fileName, string databaseName, string guid)
@@ -1261,46 +1154,6 @@ namespace XRayBuilderGUI.UI
             {
                 _logger.Log($@"{MainStrings.Error}:{Environment.NewLine}{ex.Message}{Environment.NewLine}{ex.StackTrace}");
             }
-        }
-
-        private async Task CheckAndFixIncorrectAsinOrThrowAsync(IMetadata metadata, string bookPath, CancellationToken cancellationToken)
-        {
-            if (AmazonClient.IsAsin(metadata.Asin))
-                return;
-
-            if (!metadata.CanModify && DialogResult.No == MessageBox.Show(string.Format(MainStrings.InvalidAsinWarning, metadata.Asin), MainStrings.IncorrectAsinTitle, MessageBoxButtons.YesNo))
-            {
-                throw new Exception($"Invalid Amazon ASIN detected: {metadata.Asin}!\r\nKindle may not display an X-Ray for this book.\r\nYou must either use Calibre's Quality Check plugin (Fix ASIN for Kindle Fire) or a MOBI editor (exth 113 and optionally 504) to change this.");
-            }
-
-            var dialogResult = MessageBox.Show(string.Format(MainStrings.InvalidAsinShouldFix, metadata.Asin), MainStrings.IncorrectAsinTitle, MessageBoxButtons.YesNo);
-            if (dialogResult == DialogResult.No)
-                return;
-
-            _logger.Log(string.Format(MainStrings.SearchingAmazonForTitleAuthor, metadata.Title, metadata.Author));
-            var amazonSearchResult = await _amazonClient.SearchBook(metadata.Title, metadata.Author, _settings.amazonTLD, cancellationToken);
-            if (amazonSearchResult != null)
-            {
-                // Prompt if book is correct. If not, prompt for manual entry
-                dialogResult = MessageBox.Show($@"{MainStrings.FoundBookAmazon}:{Environment.NewLine}{MainStrings.Title}: {amazonSearchResult.Title}{Environment.NewLine}{MainStrings.Author}: {amazonSearchResult.Author}{Environment.NewLine}{MainStrings.Asin}: {amazonSearchResult.Asin}{Environment.NewLine}{Environment.NewLine}{MainStrings.DoesThisSeemCorrect} {MainStrings.ShownAsinUsed}", MainStrings.AmazonSearchResultTitle, MessageBoxButtons.YesNoCancel);
-                switch (dialogResult)
-                {
-                    case DialogResult.Cancel:
-                        return;
-                    case DialogResult.Yes:
-                    {
-                        metadata.SetAsin(amazonSearchResult.Asin);
-                        using var fs = new FileStream(bookPath, FileMode.Create);
-                        metadata.Save(fs);
-                        _logger.Log(string.Format(MainStrings.UpdatedAsin, metadata.Asin));
-                        return;
-                    }
-                }
-            }
-            else
-                _logger.Log(MainStrings.UnableToAutomaticallyFindAsinOnAmazon);
-
-            // TODO: manual entry
         }
 
         private void btnBrowseOutput_Click(object sender, EventArgs e)

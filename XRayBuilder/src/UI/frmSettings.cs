@@ -90,6 +90,7 @@ namespace XRayBuilderGUI.UI
             chkRoentgenStartActions.Checked = Settings.Default.downloadSA;
             chkRoentgenEndActions.Checked = Settings.Default.downloadEA;
             chkRoentgenAuthorProfile.Checked = Settings.Default.downloadAP;
+            chkRoentgenNextInSeries.Checked = Settings.Default.downloadNIS;
 
             chkIncludeTopics.Checked = Settings.Default.includeTopics;
 
@@ -205,6 +206,7 @@ namespace XRayBuilderGUI.UI
             Settings.Default.downloadSA = chkRoentgenStartActions.Checked;
             Settings.Default.downloadEA = chkRoentgenEndActions.Checked;
             Settings.Default.downloadAP = chkRoentgenAuthorProfile.Checked;
+            Settings.Default.downloadNIS = chkRoentgenNextInSeries.Checked;
             Settings.Default.roentgenRegion = cmbRoentgenRegion.SelectedValue.ToString();
             Settings.Default.includeTopics = chkIncludeTopics.Checked;
             Settings.Default.Save();

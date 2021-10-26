@@ -2,7 +2,7 @@
 
 namespace XRayBuilder.Test.DataSources
 {
-    [TestFixture()]
+    // [TestFixture]
     public class AmazonTests
     {
         //[TestCase("B123456789")]

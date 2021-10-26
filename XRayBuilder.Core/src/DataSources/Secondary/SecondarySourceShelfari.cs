@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Ephemerality.Unpack;
 using HtmlAgilityPack;
 using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Secondary.Model;
@@ -13,7 +14,6 @@ using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Logic.ReadingTime;
 using XRayBuilder.Core.Model;
-using XRayBuilder.Core.Unpack;
 using XRayBuilder.Core.XRay.Artifacts;
 
 namespace XRayBuilder.Core.DataSources.Secondary

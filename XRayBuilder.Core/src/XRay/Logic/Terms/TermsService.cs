@@ -8,14 +8,14 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Ephemerality.Unpack;
+using Ephemerality.Unpack.KFX;
+using Ephemerality.Unpack.Mobi;
 using Newtonsoft.Json.Linq;
 using XRayBuilder.Core.Config;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
-using XRayBuilder.Core.Unpack;
-using XRayBuilder.Core.Unpack.KFX;
-using XRayBuilder.Core.Unpack.Mobi;
 using XRayBuilder.Core.XRay.Artifacts;
 using XRayBuilder.Core.XRay.Logic.Parsing;
 using XRayBuilder.Core.XRay.Model;
@@ -154,7 +154,7 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
 
             return metadata switch
             {
-                Metadata _ => FindOccurrencesLegacy(term, paragraph),
+                MobiMetadata _ => FindOccurrencesLegacy(term, paragraph),
                 KfxContainer _ => FindOccurrences(term, paragraph),
                 _ => FindOccurrencesLegacy(term, paragraph)
             };
@@ -250,7 +250,7 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
                 return occurrences;
 
             // Shortening is only useful for the old format
-            if (!_config.UseNewVersion && _config.ShortenExcerptsLegacy)
+            if (_config.ShortenExcerptsLegacy)
                 occurrences = ShortenHighlightsInParagraph(paragraph.ContentHtml, occurrences).ToHashSet();
 
             return occurrences;
@@ -299,7 +299,7 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
                     ? new Occurrence
                     {
                         Excerpt = new IndexLength(newLoc, newLenQuote),
-                        Highlight = occurrence.Highlight with { Index = newLocHighlight }
+                        Highlight = new IndexLength(newLocHighlight, occurrence.Highlight.Length)
                     }
                     : occurrence;
             }

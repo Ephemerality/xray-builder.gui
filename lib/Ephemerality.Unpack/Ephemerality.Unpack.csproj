@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <PackageVersion>0.0.4</PackageVersion>
+        <Title>Ephemerality.Unpack</Title>
+        <Authors>Ephemerality</Authors>
+        <PackageProjectUrl>https://github.com/Ephemerality/xray-builder.gui/tree/master/lib/Ephemerality.Unpack</PackageProjectUrl>
+        <Description>Opens Mobi, AZW3, and KFX-formatted e-books.
+Basic metadata is accessible such as ASIN, title, author, etc.
+Content can be unpacked in the form of RAWML for Mobi/AZW3 and plain text for KFX (converting to full markup not supported).</Description>
+        <RepositoryUrl>https://github.com/Ephemerality/xray-builder.gui</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>Mobi,AZW3,KFX,Kindle,Ebook</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="JetBrains.Annotations" Version="2020.3.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+        <PackageReference Include="System.Memory" Version="4.5.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Amazon.IonDotnet.Ephemerality, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>Amazon.IonDotnet.Ephemerality.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <Choose>
+        <When Condition="$(TargetFramework.StartsWith('net4'))">
+            <ItemGroup>
+                <Reference Include="Microsoft.CSharp" />
+                <PackageReference Include="JonSkeet.MiscUtil" Version="0.2.0" />
+            </ItemGroup>
+        </When>
+        <Otherwise>
+            <ItemGroup>
+                <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.2" />
+                <PackageReference Include="JTForks.MiscUtil" Version="1.285.0" />
+            </ItemGroup>
+        </Otherwise>
+    </Choose>
+
+    <!--
+    The following solves the problem that 'dotnet pack' does not include the DLLs from referenced projects.
+    See https://github.com/NuGet/Home/issues/3891 for a description of the problem
+    and for newer versions / workarounds / built-in methods.
+    -->
+    <PropertyGroup>
+        <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+        <!-- include PDBs in the NuGet package -->
+        <!--<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>-->
+    </PropertyGroup>
+    <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
+        <ItemGroup>
+            <!-- Output all references with CopyLocal = true to package directory. E.g. IonDotnet above. -->
+            <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('CopyLocal', 'true'))" />
+        </ItemGroup>
+    </Target>
+
+</Project>

@@ -33,12 +33,12 @@
             this.lblName = new System.Windows.Forms.Label();
             this.lblAliases = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.rdoTopic = new System.Windows.Forms.RadioButton();
-            this.rdoCharacter = new System.Windows.Forms.RadioButton();
             this.txtDescription = new System.Windows.Forms.TextBox();
             this.lblDescription = new System.Windows.Forms.Label();
             this.txtAliases = new System.Windows.Forms.TextBox();
             this.txtName = new System.Windows.Forms.TextBox();
+            this.rdoTopic = new System.Windows.Forms.RadioButton();
+            this.rdoCharacter = new System.Windows.Forms.RadioButton();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.chkRegex = new System.Windows.Forms.CheckBox();
             this.chkMatch = new System.Windows.Forms.CheckBox();
@@ -64,6 +64,10 @@
             this.btnGenerateAliases = new System.Windows.Forms.Button();
             this.btnClearAliases = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.chkWrapDescriptions = new System.Windows.Forms.CheckBox();
+            this.chkAllowResizeName = new System.Windows.Forms.CheckBox();
+            this.lblSep1 = new System.Windows.Forms.Label();
+            this.lblSep2 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -76,6 +80,7 @@
             // lblName
             // 
             this.lblName.AutoSize = true;
+            this.lblName.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblName.Location = new System.Drawing.Point(37, 24);
             this.lblName.Name = "lblName";
             this.lblName.Size = new System.Drawing.Size(42, 15);
@@ -86,6 +91,7 @@
             // lblAliases
             // 
             this.lblAliases.AutoSize = true;
+            this.lblAliases.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAliases.Location = new System.Drawing.Point(32, 59);
             this.lblAliases.Name = "lblAliases";
             this.lblAliases.Size = new System.Drawing.Size(46, 15);
@@ -101,6 +107,7 @@
             this.groupBox3.Controls.Add(this.txtName);
             this.groupBox3.Controls.Add(this.lblName);
             this.groupBox3.Controls.Add(this.lblAliases);
+            this.groupBox3.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox3.Location = new System.Drawing.Point(12, 10);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(625, 174);
@@ -108,9 +115,47 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Details";
             // 
+            // txtDescription
+            // 
+            this.txtDescription.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtDescription.Location = new System.Drawing.Point(86, 91);
+            this.txtDescription.Multiline = true;
+            this.txtDescription.Name = "txtDescription";
+            this.txtDescription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtDescription.Size = new System.Drawing.Size(526, 69);
+            this.txtDescription.TabIndex = 7;
+            // 
+            // lblDescription
+            // 
+            this.lblDescription.AutoSize = true;
+            this.lblDescription.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDescription.Location = new System.Drawing.Point(9, 94);
+            this.lblDescription.Name = "lblDescription";
+            this.lblDescription.Size = new System.Drawing.Size(70, 15);
+            this.lblDescription.TabIndex = 6;
+            this.lblDescription.Text = "Description:";
+            this.lblDescription.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // txtAliases
+            // 
+            this.txtAliases.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtAliases.Location = new System.Drawing.Point(85, 56);
+            this.txtAliases.Name = "txtAliases";
+            this.txtAliases.Size = new System.Drawing.Size(526, 23);
+            this.txtAliases.TabIndex = 5;
+            // 
+            // txtName
+            // 
+            this.txtName.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtName.Location = new System.Drawing.Point(85, 21);
+            this.txtName.Name = "txtName";
+            this.txtName.Size = new System.Drawing.Size(526, 23);
+            this.txtName.TabIndex = 1;
+            // 
             // rdoTopic
             // 
             this.rdoTopic.AutoSize = true;
+            this.rdoTopic.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rdoTopic.Location = new System.Drawing.Point(13, 43);
             this.rdoTopic.Name = "rdoTopic";
             this.rdoTopic.Size = new System.Drawing.Size(62, 19);
@@ -122,6 +167,7 @@
             // 
             this.rdoCharacter.AutoSize = true;
             this.rdoCharacter.Checked = true;
+            this.rdoCharacter.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rdoCharacter.Location = new System.Drawing.Point(13, 18);
             this.rdoCharacter.Name = "rdoCharacter";
             this.rdoCharacter.Size = new System.Drawing.Size(76, 19);
@@ -130,44 +176,12 @@
             this.rdoCharacter.Text = "Character";
             this.rdoCharacter.UseVisualStyleBackColor = true;
             // 
-            // txtDescription
-            // 
-            this.txtDescription.Location = new System.Drawing.Point(86, 91);
-            this.txtDescription.Multiline = true;
-            this.txtDescription.Name = "txtDescription";
-            this.txtDescription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtDescription.Size = new System.Drawing.Size(526, 69);
-            this.txtDescription.TabIndex = 7;
-            // 
-            // lblDescription
-            // 
-            this.lblDescription.AutoSize = true;
-            this.lblDescription.Location = new System.Drawing.Point(9, 94);
-            this.lblDescription.Name = "lblDescription";
-            this.lblDescription.Size = new System.Drawing.Size(70, 15);
-            this.lblDescription.TabIndex = 6;
-            this.lblDescription.Text = "Description:";
-            this.lblDescription.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // txtAliases
-            // 
-            this.txtAliases.Location = new System.Drawing.Point(85, 56);
-            this.txtAliases.Name = "txtAliases";
-            this.txtAliases.Size = new System.Drawing.Size(526, 23);
-            this.txtAliases.TabIndex = 5;
-            // 
-            // txtName
-            // 
-            this.txtName.Location = new System.Drawing.Point(85, 21);
-            this.txtName.Name = "txtName";
-            this.txtName.Size = new System.Drawing.Size(526, 23);
-            this.txtName.TabIndex = 1;
-            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.chkRegex);
             this.groupBox2.Controls.Add(this.chkMatch);
             this.groupBox2.Controls.Add(this.chkCase);
+            this.groupBox2.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.Location = new System.Drawing.Point(649, 86);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(119, 98);
@@ -179,6 +193,7 @@
             // 
             this.chkRegex.AutoSize = true;
             this.chkRegex.Enabled = false;
+            this.chkRegex.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkRegex.Location = new System.Drawing.Point(13, 69);
             this.chkRegex.Name = "chkRegex";
             this.chkRegex.Size = new System.Drawing.Size(58, 19);
@@ -191,6 +206,7 @@
             this.chkMatch.AutoSize = true;
             this.chkMatch.Checked = true;
             this.chkMatch.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkMatch.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkMatch.Location = new System.Drawing.Point(13, 44);
             this.chkMatch.Name = "chkMatch";
             this.chkMatch.Size = new System.Drawing.Size(60, 19);
@@ -203,6 +219,7 @@
             this.chkCase.AutoSize = true;
             this.chkCase.Checked = true;
             this.chkCase.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkCase.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chkCase.Location = new System.Drawing.Point(13, 19);
             this.chkCase.Name = "chkCase";
             this.chkCase.Size = new System.Drawing.Size(100, 19);
@@ -212,13 +229,12 @@
             // 
             // groupBox4
             // 
-            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.Controls.Add(this.dgvTerms);
+            this.groupBox4.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox4.Location = new System.Drawing.Point(12, 187);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(756, 436);
+            this.groupBox4.Size = new System.Drawing.Size(755, 456);
             this.groupBox4.TabIndex = 46;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Terms";
@@ -228,9 +244,7 @@
             this.dgvTerms.AllowUserToAddRows = false;
             this.dgvTerms.AllowUserToDeleteRows = false;
             this.dgvTerms.AllowUserToResizeRows = false;
-            this.dgvTerms.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgvTerms.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvTerms.BackgroundColor = System.Drawing.SystemColors.Window;
             this.dgvTerms.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.dgvTerms.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
@@ -241,7 +255,7 @@
             this.dgvTerms.RowHeadersVisible = false;
             this.dgvTerms.RowTemplate.DefaultCellStyle.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             this.dgvTerms.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvTerms.Size = new System.Drawing.Size(729, 401);
+            this.dgvTerms.Size = new System.Drawing.Size(729, 421);
             this.dgvTerms.TabIndex = 0;
             this.dgvTerms.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvTerms_CellContentClick);
             this.dgvTerms.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvTerms_CellMouseDoubleClick);
@@ -258,7 +272,8 @@
             this.groupBox5.Controls.Add(this.lblTitle);
             this.groupBox5.Controls.Add(this.txtAuthor);
             this.groupBox5.Controls.Add(this.lblAuthor);
-            this.groupBox5.Location = new System.Drawing.Point(12, 626);
+            this.groupBox5.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox5.Location = new System.Drawing.Point(12, 652);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(709, 58);
             this.groupBox5.TabIndex = 48;
@@ -267,6 +282,7 @@
             // 
             // txtAsin
             // 
+            this.txtAsin.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtAsin.Location = new System.Drawing.Point(594, 21);
             this.txtAsin.Name = "txtAsin";
             this.txtAsin.Size = new System.Drawing.Size(102, 23);
@@ -275,6 +291,7 @@
             // lblAsin
             // 
             this.lblAsin.AutoSize = true;
+            this.lblAsin.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAsin.Location = new System.Drawing.Point(551, 25);
             this.lblAsin.Name = "lblAsin";
             this.lblAsin.Size = new System.Drawing.Size(36, 15);
@@ -284,6 +301,7 @@
             // 
             // txtTitle
             // 
+            this.txtTitle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtTitle.Location = new System.Drawing.Point(327, 21);
             this.txtTitle.Name = "txtTitle";
             this.txtTitle.Size = new System.Drawing.Size(215, 23);
@@ -292,6 +310,7 @@
             // lblTitle
             // 
             this.lblTitle.AutoSize = true;
+            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTitle.Location = new System.Drawing.Point(288, 25);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(32, 15);
@@ -301,6 +320,7 @@
             // 
             // txtAuthor
             // 
+            this.txtAuthor.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtAuthor.Location = new System.Drawing.Point(64, 21);
             this.txtAuthor.Name = "txtAuthor";
             this.txtAuthor.Size = new System.Drawing.Size(215, 23);
@@ -309,6 +329,7 @@
             // lblAuthor
             // 
             this.lblAuthor.AutoSize = true;
+            this.lblAuthor.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAuthor.Location = new System.Drawing.Point(10, 25);
             this.lblAuthor.Name = "lblAuthor";
             this.lblAuthor.Size = new System.Drawing.Size(47, 15);
@@ -320,7 +341,7 @@
             // 
             this.btnOpenXml.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnOpenXml.Image = ((System.Drawing.Image)(resources.GetObject("btnOpenXml.Image")));
-            this.btnOpenXml.Location = new System.Drawing.Point(732, 640);
+            this.btnOpenXml.Location = new System.Drawing.Point(731, 665);
             this.btnOpenXml.Name = "btnOpenXml";
             this.btnOpenXml.Size = new System.Drawing.Size(37, 37);
             this.btnOpenXml.TabIndex = 47;
@@ -331,7 +352,7 @@
             // 
             this.btnEditTerm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnEditTerm.Image = ((System.Drawing.Image)(resources.GetObject("btnEditTerm.Image")));
-            this.btnEditTerm.Location = new System.Drawing.Point(779, 443);
+            this.btnEditTerm.Location = new System.Drawing.Point(778, 499);
             this.btnEditTerm.Name = "btnEditTerm";
             this.btnEditTerm.Size = new System.Drawing.Size(37, 37);
             this.btnEditTerm.TabIndex = 44;
@@ -342,7 +363,7 @@
             // 
             this.btnSaveXML.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnSaveXML.Image = ((System.Drawing.Image)(resources.GetObject("btnSaveXML.Image")));
-            this.btnSaveXML.Location = new System.Drawing.Point(779, 640);
+            this.btnSaveXML.Location = new System.Drawing.Point(778, 665);
             this.btnSaveXML.Name = "btnSaveXML";
             this.btnSaveXML.Size = new System.Drawing.Size(37, 37);
             this.btnSaveXML.TabIndex = 43;
@@ -353,7 +374,7 @@
             // 
             this.btnRemoveTerm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRemoveTerm.Image = ((System.Drawing.Image)(resources.GetObject("btnRemoveTerm.Image")));
-            this.btnRemoveTerm.Location = new System.Drawing.Point(779, 490);
+            this.btnRemoveTerm.Location = new System.Drawing.Point(778, 546);
             this.btnRemoveTerm.Name = "btnRemoveTerm";
             this.btnRemoveTerm.Size = new System.Drawing.Size(37, 37);
             this.btnRemoveTerm.TabIndex = 42;
@@ -374,8 +395,7 @@
             // 
             this.cmsTerms.AutoSize = false;
             this.cmsTerms.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.cmsTerms.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tsmDelete});
+            this.cmsTerms.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.tsmDelete });
             this.cmsTerms.Name = "cmsTerms";
             this.cmsTerms.Size = new System.Drawing.Size(80, 48);
             // 
@@ -392,7 +412,7 @@
             // 
             this.btnClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClear.Image = ((System.Drawing.Image)(resources.GetObject("btnClear.Image")));
-            this.btnClear.Location = new System.Drawing.Point(779, 573);
+            this.btnClear.Location = new System.Drawing.Point(778, 593);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(37, 37);
             this.btnClear.TabIndex = 49;
@@ -403,7 +423,7 @@
             // 
             this.btnDownloadTerms.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnDownloadTerms.Image = ((System.Drawing.Image)(resources.GetObject("btnDownloadTerms.Image")));
-            this.btnDownloadTerms.Location = new System.Drawing.Point(779, 207);
+            this.btnDownloadTerms.Location = new System.Drawing.Point(778, 207);
             this.btnDownloadTerms.Name = "btnDownloadTerms";
             this.btnDownloadTerms.Size = new System.Drawing.Size(37, 37);
             this.btnDownloadTerms.TabIndex = 50;
@@ -414,7 +434,7 @@
             // 
             this.btnGenerateAliases.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnGenerateAliases.Image = ((System.Drawing.Image)(resources.GetObject("btnGenerateAliases.Image")));
-            this.btnGenerateAliases.Location = new System.Drawing.Point(779, 290);
+            this.btnGenerateAliases.Location = new System.Drawing.Point(778, 392);
             this.btnGenerateAliases.Name = "btnGenerateAliases";
             this.btnGenerateAliases.Size = new System.Drawing.Size(37, 37);
             this.btnGenerateAliases.TabIndex = 53;
@@ -425,7 +445,7 @@
             // 
             this.btnClearAliases.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClearAliases.Image = ((System.Drawing.Image)(resources.GetObject("btnClearAliases.Image")));
-            this.btnClearAliases.Location = new System.Drawing.Point(779, 337);
+            this.btnClearAliases.Location = new System.Drawing.Point(778, 439);
             this.btnClearAliases.Name = "btnClearAliases";
             this.btnClearAliases.Size = new System.Drawing.Size(37, 37);
             this.btnClearAliases.TabIndex = 54;
@@ -436,6 +456,7 @@
             // 
             this.groupBox1.Controls.Add(this.rdoTopic);
             this.groupBox1.Controls.Add(this.rdoCharacter);
+            this.groupBox1.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox1.Location = new System.Drawing.Point(649, 10);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(119, 73);
@@ -443,11 +464,57 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Term Type";
             // 
+            // chkWrapDescriptions
+            // 
+            this.chkWrapDescriptions.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkWrapDescriptions.Appearance = System.Windows.Forms.Appearance.Button;
+            this.chkWrapDescriptions.Image = ((System.Drawing.Image)(resources.GetObject("chkWrapDescriptions.Image")));
+            this.chkWrapDescriptions.Location = new System.Drawing.Point(778, 316);
+            this.chkWrapDescriptions.Name = "chkWrapDescriptions";
+            this.chkWrapDescriptions.Size = new System.Drawing.Size(37, 37);
+            this.chkWrapDescriptions.TabIndex = 56;
+            this.chkWrapDescriptions.UseVisualStyleBackColor = true;
+            this.chkWrapDescriptions.CheckedChanged += new System.EventHandler(this.chkWrapDescriptions_CheckedChanged);
+            // 
+            // chkAllowResizeName
+            // 
+            this.chkAllowResizeName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkAllowResizeName.Appearance = System.Windows.Forms.Appearance.Button;
+            this.chkAllowResizeName.Image = ((System.Drawing.Image)(resources.GetObject("chkAllowResizeName.Image")));
+            this.chkAllowResizeName.Location = new System.Drawing.Point(778, 267);
+            this.chkAllowResizeName.Name = "chkAllowResizeName";
+            this.chkAllowResizeName.Size = new System.Drawing.Size(37, 37);
+            this.chkAllowResizeName.TabIndex = 57;
+            this.chkAllowResizeName.UseVisualStyleBackColor = true;
+            this.chkAllowResizeName.CheckedChanged += new System.EventHandler(this.chkAllowResizeName_CheckedChanged);
+            // 
+            // lblSep1
+            // 
+            this.lblSep1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblSep1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.lblSep1.Location = new System.Drawing.Point(779, 487);
+            this.lblSep1.Name = "lblSep1";
+            this.lblSep1.Size = new System.Drawing.Size(36, 2);
+            this.lblSep1.TabIndex = 58;
+            // 
+            // lblSep2
+            // 
+            this.lblSep2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblSep2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.lblSep2.Location = new System.Drawing.Point(779, 255);
+            this.lblSep2.Name = "lblSep2";
+            this.lblSep2.Size = new System.Drawing.Size(36, 2);
+            this.lblSep2.TabIndex = 59;
+            // 
             // frmCreateXR
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(827, 695);
+            this.ClientSize = new System.Drawing.Size(827, 739);
+            this.Controls.Add(this.lblSep2);
+            this.Controls.Add(this.lblSep1);
+            this.Controls.Add(this.chkAllowResizeName);
+            this.Controls.Add(this.chkWrapDescriptions);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnClearAliases);
             this.Controls.Add(this.btnGenerateAliases);
@@ -466,7 +533,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(717, 589);
+            this.MinimumSize = new System.Drawing.Size(843, 778);
             this.Name = "frmCreateXR";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "X-Ray Terms Creator";
@@ -484,7 +551,6 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
-
         }
 
         private System.Windows.Forms.Button btnAddTerm;
@@ -524,5 +590,9 @@
         #endregion
 
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.CheckBox chkWrapDescriptions;
+        private System.Windows.Forms.CheckBox chkAllowResizeName;
+        private System.Windows.Forms.Label lblSep1;
+        private System.Windows.Forms.Label lblSep2;
     }
 }

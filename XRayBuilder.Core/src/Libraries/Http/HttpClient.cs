@@ -100,7 +100,7 @@ namespace XRayBuilder.Core.Libraries.Http
         private static void SetDefaultSettings(HttpRequestMessage request)
         {
             request.Headers.Add(KnownHeaders.UserAgent, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36");
-            request.Headers.Add(KnownHeaders.AcceptEncoding,"gzip, deflate, br");
+            request.Headers.Add(KnownHeaders.AcceptEncoding,"gzip, deflate");
         }
     }
 
@@ -246,7 +246,9 @@ namespace XRayBuilder.Core.Libraries.Http
                 };
                 request.RequestUri = builder.Uri;
                 var response = await base.SendAsync(request, cancellationToken);
-                Logger?.Log($"Not available from {originalHost}, but found on Amazon US ({request.RequestUri})");
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                    return response;
+                Logger?.Log($"Not available from {originalHost}, but found on Amazon.com ({request.RequestUri})");
                 return response;
             }
         }

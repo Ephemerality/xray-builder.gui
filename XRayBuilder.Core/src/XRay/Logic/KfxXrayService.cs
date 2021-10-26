@@ -1,8 +1,9 @@
 using System.Linq;
 using System.Threading;
+using Ephemerality.Unpack.KFX;
+using XRayBuilder.Core.Config;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Progress;
-using XRayBuilder.Core.Unpack.KFX;
 using XRayBuilder.Core.XRay.Logic.Parsing;
 using XRayBuilder.Core.XRay.Logic.Terms;
 using XRayBuilder.Core.XRay.Model;
@@ -18,18 +19,18 @@ namespace XRayBuilder.Core.XRay.Logic
         private readonly ILogger _logger;
         private readonly ITermsService _termsService;
         private readonly IParagraphsService _paragraphsService;
+        private readonly IXRayBuilderConfig _config;
 
-        public KfxXrayService(ILogger logger, ITermsService termsService, IParagraphsService paragraphsService)
+        public KfxXrayService(ILogger logger, ITermsService termsService, IParagraphsService paragraphsService, IXRayBuilderConfig config)
         {
             _logger = logger;
             _termsService = termsService;
             _paragraphsService = paragraphsService;
+            _config = config;
         }
 
         public void AddLocations(XRay xray,
             KfxContainer kfx,
-            bool skipNoLikes,
-            int minClipLen,
             IProgressBar progress,
             CancellationToken token)
         {
@@ -61,7 +62,7 @@ namespace XRayBuilder.Core.XRay.Logic
 
                 // Attempt to match downloaded notable clips, not worried if no matches occur as some will be added later anyway
                 if (xray.NotableClips != null)
-                    ExcerptHelper.ProcessNotablesForParagraph(paragraph.ContentText, paragraph.Location, xray.NotableClips, xray.Excerpts, skipNoLikes, minClipLen);
+                    ExcerptHelper.ProcessNotablesForParagraph(paragraph.ContentText, paragraph.Location, xray.NotableClips, xray.Excerpts, _config.SkipNoLikes, _config.MinimumClipLength);
 
                 progress?.Add(1);
             }

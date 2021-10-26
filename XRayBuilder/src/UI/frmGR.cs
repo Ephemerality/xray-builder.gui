@@ -25,7 +25,7 @@ namespace XRayBuilderGUI.UI
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            if (keyData != Keys.Enter)
+            if (keyData != Keys.Escape)
                 return base.ProcessCmdKey(ref msg, keyData);
             Close();
             return true;

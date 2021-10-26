@@ -22,6 +22,7 @@ namespace XRayBuilder.Core.Bootstrap
             container.RegisterSingleton<IReadingTimeService, ReadingTimeService>();
             container.RegisterSingleton<IPageCountService, PageCountService>();
             container.AutoregisterConcreteCollectionFromInterface<ILanguage>(Lifestyle.Singleton);
+            container.RegisterSingleton<IMetadataService, MetadataService>();
         }
     }
 }

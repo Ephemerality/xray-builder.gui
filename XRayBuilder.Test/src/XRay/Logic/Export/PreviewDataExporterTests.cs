@@ -30,19 +30,23 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         [SetUp]
         public void Setup()
         {
+            var config = new XRayBuilderConfig
+            {
+                UseNewVersion = true
+            };
             _logger = new Logger();
-            _termsService = new TermsService(new XRayBuilderConfig());
+            _termsService = new TermsService(config);
             _file = new SecondarySourceFile(_logger, _termsService);
             _previewDataExporter = new PreviewDataExporter();
-            _chaptersService = new ChaptersService(_logger);
+            _chaptersService = new ChaptersService(_logger, config);
             _directoryService = new DirectoryService(_logger, null);
-            _xrayService = new XRayService(_logger, _chaptersService, new AliasesRepository(_logger, new AliasesService(_logger), _directoryService), _directoryService, _termsService, new ParagraphsService());
+            _xrayService = new XRayService(_logger, _chaptersService, new AliasesRepository(_logger, new AliasesService(_logger), _directoryService), _directoryService, _termsService, new ParagraphsService(), config);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXmlPreviewDataTest(Book book)
         {
-            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, "com", true, _file, null, CancellationToken.None);
+            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, book.Author, book.Title, "com", true, _file, null, CancellationToken.None);
             string outpath = Path.Combine(Environment.CurrentDirectory, "out", $"XRAY.{book.Asin}.previewData");
             _previewDataExporter.Export(xray, outpath);
             FileAssert.AreEqual($"testfiles\\XRAY.{book.Asin}.previewData", outpath);

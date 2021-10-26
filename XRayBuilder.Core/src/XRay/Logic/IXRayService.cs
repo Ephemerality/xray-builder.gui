@@ -2,10 +2,11 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Ephemerality.Unpack;
 using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Progress;
-using XRayBuilder.Core.Unpack;
+using XRayBuilder.Core.Model;
 
 namespace XRayBuilder.Core.XRay.Logic
 {
@@ -13,15 +14,19 @@ namespace XRayBuilder.Core.XRay.Logic
     {
         void ExportAndDisplayTerms(XRay xray, ISecondarySource dataSource, bool overwriteAliases, bool splitAliases);
 
+        Task<XRay> CreateXRayAsync(string dataLocation, IMetadata metadata, string tld, bool includeTopics, ISecondarySource dataSource, [CanBeNull] IProgressBar progress, CancellationToken cancellationToken);
+
         Task<XRay> CreateXRayAsync(
             string dataLocation,
             string db,
             string guid,
             string asin,
+            string author,
+            string title,
             string tld,
             bool includeTopics,
             ISecondarySource dataSource,
-            IProgressBar progress,
+            [CanBeNull] IProgressBar progress,
             CancellationToken token = default);
 
         /// <summary>
@@ -32,14 +37,9 @@ namespace XRayBuilder.Core.XRay.Logic
             XRay xray,
             IMetadata metadata,
             Stream rawMlStream,
-            bool useNewVersion,
-            bool skipNoLikes,
-            int minClipLen,
-            bool overwriteChapters,
-            [CanBeNull] Func<bool> editChaptersCallback,
-            IProgressBar progress,
-            CancellationToken token,
-            bool ignoreSoftHypen = false,
-            bool shortEx = true);
+            [CanBeNull] YesNoPrompt yesNoPrompt,
+            [CanBeNull] EditCallback editCallback,
+            [CanBeNull] IProgressBar progress,
+            CancellationToken token);
     }
 }

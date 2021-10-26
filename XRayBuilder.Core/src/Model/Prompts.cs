@@ -1,8 +1,10 @@
-﻿namespace XRayBuilder.Core.Model
-{
-    public delegate PromptResultYesNo YesNoPrompt(string title, string message, PromptType type);
+﻿using System.ComponentModel;
 
-    public delegate PromptResultYesNoCancel YesNoCancelPrompt(string title, string message, PromptType type);
+namespace XRayBuilder.Core.Model
+{
+    public delegate PromptResultYesNo YesNoPrompt([Localizable(true)] string title, [Localizable(true)] string message, PromptType type);
+
+    public delegate PromptResultYesNoCancel YesNoCancelPrompt([Localizable(true)] string title, [Localizable(true)] string message, PromptType type);
 
     public enum PromptResultYesNo
     {
@@ -21,6 +23,7 @@
     {
         Info,
         Warning,
-        Error
+        Error,
+        Question
     }
 }

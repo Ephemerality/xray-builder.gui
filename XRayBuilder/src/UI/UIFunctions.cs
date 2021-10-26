@@ -50,17 +50,19 @@ namespace XRayBuilderGUI.UI
             return new string(filename.Where(x => !fileChars.Contains(x)).ToArray());
         }
 
-        public static PromptResultYesNoCancel PromptHandlerYesNoCancel(string title, string message, PromptType type)
+        public static PromptResultYesNo PromptHandlerYesNo(string title, string message, PromptType type, Form owner)
         {
-            var icon = type switch
+            return owner.MessageBoxShowSafe(message, title, MessageBoxButtons.YesNo, type.ToMessageBoxIcon(), MessageBoxDefaultButton.Button2) switch
             {
-                PromptType.Info => MessageBoxIcon.Information,
-                PromptType.Warning => MessageBoxIcon.Warning,
-                PromptType.Error => MessageBoxIcon.Error,
-                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+                DialogResult.Yes => PromptResultYesNo.Yes,
+                DialogResult.No => PromptResultYesNo.No,
+                _ => throw new ArgumentOutOfRangeException()
             };
+        }
 
-            return MessageBox.Show(message, title, MessageBoxButtons.YesNoCancel, icon, MessageBoxDefaultButton.Button3) switch
+        public static PromptResultYesNoCancel PromptHandlerYesNoCancel(string title, string message, PromptType type, Form owner)
+        {
+            return owner.MessageBoxShowSafe(message, title, MessageBoxButtons.YesNoCancel, type.ToMessageBoxIcon(), MessageBoxDefaultButton.Button3) switch
             {
                 DialogResult.Cancel => PromptResultYesNoCancel.Cancel,
                 DialogResult.Yes => PromptResultYesNoCancel.Yes,
@@ -73,6 +75,16 @@ namespace XRayBuilderGUI.UI
     // ReSharper disable once InconsistentNaming
     public static class UIExtensionMethods
     {
+        public static MessageBoxIcon ToMessageBoxIcon(this PromptType promptType)
+            => promptType switch
+            {
+                PromptType.Info => MessageBoxIcon.Information,
+                PromptType.Warning => MessageBoxIcon.Warning,
+                PromptType.Error => MessageBoxIcon.Error,
+                PromptType.Question => MessageBoxIcon.Question,
+                _ => throw new ArgumentOutOfRangeException(nameof(promptType), promptType, null)
+            };
+
         public static void SetPropertyThreadSafe(this Control ctrl, string name, object value)
         {
             if (ctrl.InvokeRequired)
@@ -86,6 +98,14 @@ namespace XRayBuilderGUI.UI
             return ctrl.InvokeRequired
                 ? ctrl.Invoke(new Func<object>(() => ctrl.GetPropertyThreadSafe(name)))
                 : ctrl.GetType().InvokeMember(name, System.Reflection.BindingFlags.GetProperty, null, ctrl, null);
+        }
+
+        /// <summary>
+        /// Thread-safe MessageBox.Show - invokes the messagebox on <paramref name="form"/>
+        /// </summary>
+        public static DialogResult MessageBoxShowSafe(this Form form, [Localizable(true)] string msg, [Localizable(true)] string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton def)
+        {
+            return (DialogResult) form.Invoke(new Func<DialogResult>(() => MessageBox.Show(form, msg, caption, buttons, icon, def)));
         }
     }
 }

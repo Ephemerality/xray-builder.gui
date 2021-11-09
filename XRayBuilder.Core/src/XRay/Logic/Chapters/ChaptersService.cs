@@ -9,6 +9,7 @@ using JetBrains.Annotations;
 using XRayBuilder.Core.Config;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Primitives.Extensions;
+using XRayBuilder.Core.Libraries.Prompt;
 using XRayBuilder.Core.Localization.Core;
 using XRayBuilder.Core.Model;
 using XRayBuilder.Core.XRay.Artifacts;

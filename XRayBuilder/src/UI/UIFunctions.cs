@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using XRayBuilder.Core.Libraries.Prompt;
 using XRayBuilder.Core.Model;
 
 namespace XRayBuilderGUI.UI

@@ -6,6 +6,7 @@ using Ephemerality.Unpack;
 using XRayBuilder.Core.Config;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.Libraries.Logging;
+using XRayBuilder.Core.Libraries.Prompt;
 using XRayBuilder.Core.Localization.Core;
 using XRayBuilder.Core.Model;
 

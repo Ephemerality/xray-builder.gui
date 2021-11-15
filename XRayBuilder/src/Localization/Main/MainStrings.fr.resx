@@ -254,22 +254,22 @@ Réduisez le titre dans l'application Calibre ou changez le nom de la base de do
     <value>Options d'alias</value>
   </data>
   <data name="ViewPreviewOfGeneratedFiles" xml:space="preserve">
-    <value />
+    <value>Afficher un aperçu des fichiers générés.</value>
   </data>
   <data name="AutomaticallySplitAliasesTooltip" xml:space="preserve">
-    <value />
+    <value>Un caractère pour diviser automatiquement le nom en raccourcis est utilisé. Cela peut avoir des effets indésirables, veillez à l'utiliser prudemment !</value>
   </data>
   <data name="InvalidOrNoFileSelected" xml:space="preserve">
     <value>Fichier invalide ou non sélectionné.</value>
   </data>
   <data name="PreBuiltSettingsDescription" xml:space="preserve">
-    <value />
+    <value>Quand ces préférences sont actives, les versions pré-compilées des fichiers seront téléchargés si disponibles. Nécessite un ASIN valide.</value>
   </data>
   <data name="OverwriteStartActionsTooltip" xml:space="preserve">
-    <value />
+    <value>Remplacer les fichiers des actions initiales existants.</value>
   </data>
   <data name="MinimumQuoteLength" xml:space="preserve">
-    <value />
+    <value>Taille minimale pour clips populaires.</value>
   </data>
   <data name="UnableToOpenHelpDocument" xml:space="preserve">
     <value>Impossible d'ouvrir le document d'aide fourni.</value>
@@ -278,16 +278,16 @@ Réduisez le titre dans l'application Calibre ou changez le nom de la base de do
     <value>Exportation de termes depuis {0}…</value>
   </data>
   <data name="BuildFromEndActions" xml:space="preserve">
-    <value />
+    <value>Compiler grâce aux actions finales téléchargées quand disponibles</value>
   </data>
   <data name="LogDirectoryNotFoundTitle" xml:space="preserve">
     <value>Répertoire des journaux introuvable</value>
   </data>
   <data name="BuildExtrasTooltip" xml:space="preserve">
-    <value />
+    <value>Essayer de compiler fichier des actions initiales, du profil de l'auteur, et des actions finales.</value>
   </data>
   <data name="EnableEditTooltip" xml:space="preserve">
-    <value />
+    <value>Active la possibilité de modifier les fichiers avec Notepad durant la compilation.</value>
   </data>
   <data name="RealName" xml:space="preserve">
     <value>Vrai nom :</value>
@@ -299,7 +299,7 @@ Réduisez le titre dans l'application Calibre ou changez le nom de la base de do
     <value>Ouvrir un fichier Kindle {0}…</value>
   </data>
   <data name="PlaySoundTooltip" xml:space="preserve">
-    <value />
+    <value>Jouer un son une fois la compilation terminée.</value>
   </data>
   <data name="Title" xml:space="preserve">
     <value>Titre</value>
@@ -308,10 +308,10 @@ Réduisez le titre dans l'application Calibre ou changez le nom de la base de do
     <value>Cette action ne peut pas être annulée.</value>
   </data>
   <data name="UseNewFormatTitle" xml:space="preserve">
-    <value />
+    <value>Utiliser le nouveau format X-Ray</value>
   </data>
   <data name="OverwriteEndActionsTooltip" xml:space="preserve">
-    <value />
+    <value>Remplacer les fichiers des actions finales existants.</value>
   </data>
   <data name="ReviewSettingsForSource" xml:space="preserve">
     <value>Si vous ne souhaitez pas utiliser {0}, vous pouvez modifier la source de données dans les Paramètres.</value>
@@ -320,7 +320,7 @@ Réduisez le titre dans l'application Calibre ou changez le nom de la base de do
     <value>Échec du téléchargement de l'image de couverture</value>
   </data>
   <data name="ErrorDeletingLogFiles" xml:space="preserve">
-    <value />
+    <value>Une erreur est survenue en essayant de supprimer un journal.</value>
   </data>
   <data name="VisitForumTooltip" xml:space="preserve">
     <value>Visitez le forum MobileRead pour obtenir de l'aide, signaler des erreurs ou poser des questions.</value>
@@ -344,7 +344,7 @@ Réduisez le titre dans l'application Calibre ou changez le nom de la base de do
     <value>Redémarrage nécessaire</value>
   </data>
   <data name="BuildForAndroidTitle" xml:space="preserve">
-    <value />
+    <value>Compilé pour Android</value>
   </data>
   <data name="InvalidXRayFile" xml:space="preserve">
     <value>Fichier X-Ray invalide.</value>
@@ -362,7 +362,7 @@ Réduisez le titre dans l'application Calibre ou changez le nom de la base de do
     <value>Utiliser les sous-répertoires</value>
   </data>
   <data name="CreateXmlTooltip" xml:space="preserve">
-    <value />
+    <value>Créez un fichier XML contenant les caractères et préférences, ou modifier un fichier XML déjà existant.</value>
   </data>
   <data name="EbookUnpackingTitle" xml:space="preserve">
     <value>Déballage du livre numérique</value>
@@ -377,13 +377,13 @@ Réduisez le titre dans l'application Calibre ou changez le nom de la base de do
     <value>Tous les fichiers supplémentaires existent déjà et aucun des paramètres « écraser » n'est activé !</value>
   </data>
   <data name="OverwriteChaptersTooltip" xml:space="preserve">
-    <value />
+    <value>Remplacer les fichiers de chapitrage existants.</value>
   </data>
   <data name="Author" xml:space="preserve">
     <value>Auteur·e</value>
   </data>
   <data name="IgnoreSoftHyphensTooltip" xml:space="preserve">
-    <value />
+    <value>Ignorer les liaisons souples (Unicode U+00AD) durant la recherche.</value>
   </data>
   <data name="PromptAsinTooltip" xml:space="preserve">
     <value>Autoriser l'entrée ASIN si le livre numérique suivant ou précédent dans une série ne peut pas être trouvé automatiquement.</value>
@@ -395,7 +395,7 @@ Réduisez le titre dans l'application Calibre ou changez le nom de la base de do
     <value>Enregistrer la biographie de l'auteur·e</value>
   </data>
   <data name="EditBioTooltip" xml:space="preserve">
-    <value />
+    <value>Si actif, il sera possible de modifier la biographie de l'auteur avec qu'elle soit utilisée.</value>
   </data>
   <data name="TitleByAuthor" xml:space="preserve">
     <value>{0} de {1}</value>
@@ -410,7 +410,7 @@ Réduisez le titre dans l'application Calibre ou changez le nom de la base de do
     <value>Impossible de trouver ce livre sur {0}.</value>
   </data>
   <data name="RequiresNewFormat" xml:space="preserve">
-    <value />
+    <value>Nécessite de compiler dans le nouveau format.</value>
   </data>
   <data name="Directories" xml:space="preserve">
     <value>Répertoires</value>
@@ -419,13 +419,13 @@ Réduisez le titre dans l'application Calibre ou changez le nom de la base de do
     <value>Enregistrez le RAWML (balisage brut) du livre numérique dans le répertoire de sortie afin de pouvoir le réviser.</value>
   </data>
   <data name="AmazonRegionTooltip" xml:space="preserve">
-    <value />
+    <value>La page par défaut pour la recherche sur Amazon. Les résultats de Amazon.com (USA) seront utilisés si aucun résultat n'est trouvé.</value>
   </data>
   <data name="Roentgen" xml:space="preserve">
     <value>Roentgen</value>
   </data>
   <data name="IgnoreSoftHyphensTitle" xml:space="preserve">
-    <value />
+    <value>Ignorer les liaisons simples</value>
   </data>
   <data name="EndActions" xml:space="preserve">
     <value>Actions de fin</value>
@@ -437,7 +437,7 @@ Réduisez le titre dans l'application Calibre ou changez le nom de la base de do
     <value>Êtes-vous sûr·e de vouloir supprimer tous les fichiers journaux ?</value>
   </data>
   <data name="FilesInAndroidFolder" xml:space="preserve">
-    <value />
+    <value>Les fichiers seront placés dans le dossier final à l'intérieur du dossier 'Android'.</value>
   </data>
   <data name="FoundBookAmazon" xml:space="preserve">
     <value>Le livre numérique suivant a été trouvé sur Amazon</value>
@@ -449,13 +449,13 @@ Réduisez le titre dans l'application Calibre ou changez le nom de la base de do
     <value>Effacer les journaux</value>
   </data>
   <data name="DownloadFromRoentgen" xml:space="preserve">
-    <value />
+    <value>Télécharger les termes depuis Roentgen si disponibles.</value>
   </data>
   <data name="Chapters" xml:space="preserve">
     <value>Chapitres</value>
   </data>
   <data name="PreBuiltDownloadsTitle" xml:space="preserve">
-    <value />
+    <value>Téléchargements pré-compilés</value>
   </data>
   <data name="ConfigureXRayBuilder" xml:space="preserve">
     <value>Configurer X-Ray Builder.</value>
@@ -464,7 +464,7 @@ Réduisez le titre dans l'application Calibre ou changez le nom de la base de do
     <value>Tente de télécharger des alias préfabriqués si aucun n'existe encore localement. Si « Écraser les alias » est activé, les alias locaux seront écrasés par ceux téléchargés.</value>
   </data>
   <data name="WriteXRayNewFormatTooltip" xml:space="preserve">
-    <value />
+    <value>Sauvegarder le fichier X-Ray dans le nouveau format pour Paperwhite 2 ou Voyage avec un firmware en version 5.6 ou plus.</value>
   </data>
   <data name="Settings" xml:space="preserve">
     <value>Paramètres</value>
@@ -491,13 +491,14 @@ Réduisez le titre dans l'application Calibre ou changez le nom de la base de do
     <value>Longueur minimale :</value>
   </data>
   <data name="SaveBioTooltip" xml:space="preserve">
-    <value />
+    <value>Si actif, les biographies des auteurs seront enregistrés puis ouverts dans Notepad avant de continuer la compilation des profiles des auteurs.
+Nécessite d'être actif pour qu'une biographie enregistrée puisse être chargée.</value>
   </data>
   <data name="InvalidSourceLink" xml:space="preserve">
     <value>Un lien {0} invalide a été spécifié.</value>
   </data>
   <data name="BuildXRayForAndroidTooltip" xml:space="preserve">
-    <value />
+    <value>Change la convention utilisée pour le nom du fichier X-Ray pour celle de l'appli Kindle pour Android.</value>
   </data>
   <data name="InvalidAsinShouldFix" xml:space="preserve">
     <value>ASIN Amazon invalide détecté : {0} !
@@ -507,10 +508,10 @@ Voulez-vous le corriger ?
 CETTE FONCTION EST EXPÉRIMENTALE ET POURRAIT DÉTRUIRE VOTRE LIVRE NUMÉRIQUE !</value>
   </data>
   <data name="SkipNoLikes" xml:space="preserve">
-    <value />
+    <value>Passer les clips populaires sans appréciations.</value>
   </data>
   <data name="RequiredDuringEndActionsCreation" xml:space="preserve">
-    <value />
+    <value>Requis pendant la création des fichiers End Actions.</value>
   </data>
   <data name="VisitUrl" xml:space="preserve">
     <value>Vous pouvez visiter l'URL pour vous assurer qu'elle est correcte.</value>
@@ -527,7 +528,7 @@ Voulez-vous continuer ?</value>
     <value>Estimation du nombre de pages</value>
   </data>
   <data name="InclueTopics" xml:space="preserve">
-    <value />
+    <value>Inclure les termes des sujets/emplacements</value>
   </data>
   <data name="BookFoundOnSource" xml:space="preserve">
     <value>Livre trouvé sur {0} !</value>
@@ -542,16 +543,16 @@ Voulez-vous continuer ?</value>
     <value>Détails du client Amazon</value>
   </data>
   <data name="ExtractXRayToXml" xml:space="preserve">
-    <value />
+    <value>Transformer un fichier X-Ray existant en fichier XML.</value>
   </data>
   <data name="AutoBuildAuthorProfileTooltip" xml:space="preserve">
-    <value />
+    <value>Quand actif, le profil de l'auteur sera compilé en téléchargeant les actions finales plutôt qu'en le récupérant sur Amazon, si disponible.</value>
   </data>
   <data name="OverwriteAuthorProfileTooltip" xml:space="preserve">
-    <value />
+    <value>Remplacer les fichiers profil des auteurs existants.</value>
   </data>
   <data name="OpenXmlOrTxt" xml:space="preserve">
-    <value />
+    <value>Ouvrir un fichier XML ou TXT supporté contenant les caractères et les sujets.</value>
   </data>
   <data name="EstimatePageCountTooltip" xml:space="preserve">
     <value>Essayez d'estimer le nombre de pages du livre numérique s'il n'y en a pas en ligne (sur la base du projet de génération APNX de user_none).</value>
@@ -560,7 +561,7 @@ Voulez-vous continuer ?</value>
     <value>Actions de démarrage</value>
   </data>
   <data name="UseLinkAsDataSource" xml:space="preserve">
-    <value />
+    <value>Utiliser le lien au-dessus comme source pour les termes.</value>
   </data>
   <data name="UpdatedAsin" xml:space="preserve">
     <value>ASIN mis à jour à {0} ! Assurez-vous de copier cette nouvelle version du livre numérique sur votre appareil Kindle.</value>
@@ -602,7 +603,7 @@ Voulez-vous continuer ?</value>
     <value>Enregistrez les fichiers générés dans un sous-répertoire « Author\Filename ».</value>
   </data>
   <data name="SecondarySourceTooltip" xml:space="preserve">
-    <value />
+    <value>Détermine quelle source des termes et méta-données ne venant pas d'Amazon sera téléchargée.</value>
   </data>
   <data name="DownloadingActions" xml:space="preserve">
     <value>Tentative de téléchargement de {0} Actions…</value>
@@ -611,7 +612,7 @@ Voulez-vous continuer ?</value>
     <value>Répertoire de sortie</value>
   </data>
   <data name="LoadTermsFromFile" xml:space="preserve">
-    <value />
+    <value>Charger les termes depuis le fichier sélectionné.</value>
   </data>
   <data name="DataProviderTitle" xml:space="preserve">
     <value>Fournisseur de données</value>
@@ -635,19 +636,19 @@ Voulez-vous continuer ?</value>
     <value>Ceci vous semble-t-il correct ?</value>
   </data>
   <data name="OverwriteAliasesTooltip" xml:space="preserve">
-    <value />
+    <value>Remplacer les raccourcis existants.</value>
   </data>
   <data name="EbookProcessingTitle" xml:space="preserve">
     <value>Traitement des livres numériques</value>
   </data>
   <data name="TermsOptions" xml:space="preserve">
-    <value />
+    <value>Préférences des termes</value>
   </data>
   <data name="AutomaticallySplitAliases" xml:space="preserve">
     <value>Diviser automatiquement les alias</value>
   </data>
   <data name="IncludeTopicsTooltip" xml:space="preserve">
-    <value />
+    <value>Lors du téléchargement des termes, inclure tous ce qui n'est pas des caractères (sujets, emplacements, etc.).</value>
   </data>
   <data name="Save" xml:space="preserve">
     <value>Enregistrer</value>
@@ -662,7 +663,7 @@ Voulez-vous continuer ?</value>
     <value>X-Ray</value>
   </data>
   <data name="GoodForFilteringQuotes" xml:space="preserve">
-    <value />
+    <value>utile pour filtrer les citations vaines depuis Goodreads ou autres</value>
   </data>
   <data name="ErrorSearching" xml:space="preserve">
     <value>Une erreur s'est produite lors de la recherche</value>

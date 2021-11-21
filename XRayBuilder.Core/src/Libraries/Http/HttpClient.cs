@@ -228,28 +228,27 @@ namespace XRayBuilder.Core.Libraries.Http
             try
             {
                 var response = await base.SendAsync(request, cancellationToken);
-                if (!response.IsSuccessStatusCode)
-                    throw new HttpClientException(response.StatusCode.ToString())
+                if (!response.IsSuccessStatusCode
+                    && request.RequestUri.Host.Contains(".amazon.")
+                    && !request.RequestUri.Host.EndsWith(".com"))
+                {
+                    var originalHost = request.RequestUri.Host;
+                    var builder = new UriBuilder(request.RequestUri)
                     {
-                        Response = response
+                        Host = "www.amazon.com"
                     };
+                    request.RequestUri = builder.Uri;
+                    response = await base.SendAsync(request, cancellationToken);
+                    if (response.StatusCode == HttpStatusCode.NotFound)
+                        return response;
+                    Logger?.Log($"Not available from {originalHost}, but found on Amazon.com ({request.RequestUri})");
+                    return response;
+                }
                 return response;
             }
-            catch (HttpClientException ex) when (ex.Response.StatusCode == HttpStatusCode.NotFound
-                && request.RequestUri.Host.Contains(".amazon.")
-                && !request.RequestUri.Host.EndsWith(".com"))
+            catch (HttpClientException)
             {
-                var originalHost = request.RequestUri.Host;
-                var builder = new UriBuilder(request.RequestUri)
-                {
-                    Host = "www.amazon.com"
-                };
-                request.RequestUri = builder.Uri;
-                var response = await base.SendAsync(request, cancellationToken);
-                if (response.StatusCode == HttpStatusCode.NotFound)
-                    return response;
-                Logger?.Log($"Not available from {originalHost}, but found on Amazon.com ({request.RequestUri})");
-                return response;
+                return new HttpResponseMessage();
             }
         }
     }

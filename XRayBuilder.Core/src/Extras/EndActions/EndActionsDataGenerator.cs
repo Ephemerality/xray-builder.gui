@@ -236,50 +236,29 @@ namespace XRayBuilder.Core.Extras.EndActions
                 var response = await _amazonInfoParser.GetAndParseAmazonDocument($"https://www.amazon.{settings.AmazonTld}/dp/{book.Asin}", cancellationToken);
                 if (string.IsNullOrEmpty(response.Description))
                 {
-                    var localAmazonBook = await _amazonClient.SearchBook(book.Title, book.Author, settings.AmazonTld,
-                        cancellationToken);
-                    if (localAmazonBook != null)
+                    _logger.Log($"No book was found on Amazon.{settings.AmazonTld} matching this ASIN…\r\nSearching for {book.Title} on Amazon.{settings.AmazonTld}…");
+                    var newBook = await _amazonClient.SearchBook(book.Title, book.Author, settings.AmazonTld, cancellationToken);
+                    if (newBook == null && settings.PromptAsin && asinPrompt != null)
                     {
-                        response = await _amazonInfoParser.GetAndParseAmazonDocument(localAmazonBook.AmazonUrl, cancellationToken);
-                        response.ApplyToBookInfo(localAmazonBook);
-                        localAmazonBook.Title = book.Title;
-                        return localAmazonBook;
+                        _logger.Log($"ASIN prompt for {book.Title}…");
+                        var asin = asinPrompt(book.Title, book.Author);
+                        if (string.IsNullOrWhiteSpace(asin))
+                            return null;
+                        _logger.Log($"ASIN supplied: {asin}.");
+                        newBook = new BookInfo(book.Title, book.Author, asin);
                     }
-                    response = await _amazonInfoParser.GetAndParseAmazonDocument($"https://www.amazon.com/dp/{book.Asin}", cancellationToken);
+                    if (newBook != null)
+                    {
+                        response = await _amazonInfoParser.GetAndParseAmazonDocument(newBook.AmazonUrl, cancellationToken);
+                        response.ApplyToBookInfo(newBook);
+                    }
+                    return newBook;
                 }
-                response.ApplyToBookInfo(book);
 
+                response.ApplyToBookInfo(book);
                 return book;
             }
-
-            BookInfo newBook;
-            try
-            {
-
-                newBook = await _amazonClient.SearchBook(book.Title, book.Author, settings.AmazonTld, cancellationToken);
-                if (newBook == null && settings.PromptAsin && asinPrompt != null)
-                {
-                    _logger.Log($"ASIN prompt for {book.Title}…");
-                    var asin = asinPrompt(book.Title, book.Author);
-                    if (string.IsNullOrWhiteSpace(asin))
-                        return null;
-                    _logger.Log($"ASIN supplied: {asin}");
-                    newBook = new BookInfo(book.Title, book.Author, asin);
-                }
-            }
-            catch
-            {
-                _logger.Log($"Failed to find {book.Title} on Amazon.{settings.AmazonTld}, trying again with Amazon.com.");
-                newBook = await _amazonClient.SearchBook(book.Title, book.Author, "com", cancellationToken);
-            }
-
-            if (newBook != null)
-            {
-                var response = await _amazonInfoParser.GetAndParseAmazonDocument(newBook.AmazonUrl, cancellationToken);
-                response.ApplyToBookInfo(newBook);
-            }
-
-            return newBook;
+            return book;
         }
 
         private async Task ExpandSeriesMetadata(AuthorProfileGenerator.Response authorProfile, SeriesInfo series, Settings settings, Func<string, string, string> asinPrompt, CancellationToken cancellationToken = default)

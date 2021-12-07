@@ -1,5 +1,8 @@
+using System.Diagnostics;
+
 namespace Ephemerality.Unpack.KFX
 {
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public sealed class ContentChunk
     {
         public string Name { get; set; }
@@ -13,5 +16,7 @@ namespace Ephemerality.Unpack.KFX
         public int Eid { get; set; }
         public int EidOffset { get; set; }
         public int Length { get; set; }
+
+        private string DebuggerDisplay => $"pid={Pid}  eid={Eid}{(EidOffset > 0 ? $"+{EidOffset}" : "")}  len={Length}  sect={Name}  content-name={ContentName}  content-text={ContentText}";
     }
 }

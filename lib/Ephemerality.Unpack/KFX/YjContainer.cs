@@ -383,7 +383,7 @@ namespace Ephemerality.Unpack.KFX
                         case IonString ionString:
                             var ionStringLength = ionString.StringValue.Length;
                             if (contentKey == KfxSymbols.ContentList && listIndex == 0)
-                                ionStringLength = -1;
+                                ionStringLength--;
                             HaveContent(currentEid, ionStringLength, advance, allowZero: listIndex.HasValue && listMax.HasValue && listIndex.Value < listMax.Value, contentText: ionString.StringValue);
                             break;
                     }

@@ -639,9 +639,28 @@ namespace XRayBuilderGUI.UI
                     return;
                 }
 
-                _terms.Clear();
-                foreach (var term in terms.Where(term => term.Type == "character" || Settings.Default.includeTopics))
+                if (_terms.Count > 0)
+                {
+                    var result = MessageBox.Show(
+                        $"Would you like to merge the downloaded terms into your existing ones?{Environment.NewLine}If not, the terms list will be cleared and any unsaved changes will be lost.",
+                        "Download Terms",
+                        MessageBoxButtons.YesNoCancel,
+                        MessageBoxIcon.Question);
+                    switch (result)
+                    {
+                        case DialogResult.Cancel:
+                            return;
+                        case DialogResult.No:
+                            _terms.Clear();
+                            break;
+                    }
+                }
+
+                var desiredTerms = terms.Where(term => (term.Type == "character" || Settings.Default.includeTopics)
+                    && !_terms.Any(t => t.TermName == term.TermName || !t.MatchCase && string.Equals(t.TermName, term.TermName, StringComparison.InvariantCultureIgnoreCase)));
+                foreach (var term in desiredTerms)
                     _terms.Add(term);
+
                 var trueCount = _terms.Count;
                 ReloadTerms();
                 MessageBox.Show($"Successfully downloaded {trueCount} terms from Roentgen!", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);

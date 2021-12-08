@@ -675,6 +675,8 @@ namespace XRayBuilderGUI.UI
                 term.Aliases.Clear();
                 EnqueueTermOccurrencesRefresh(term);
             }
+
+            dgvTerms.Refresh();
         }
 
         private void frmCreateXR_FormClosing(object sender, FormClosingEventArgs e)

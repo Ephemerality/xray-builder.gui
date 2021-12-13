@@ -111,6 +111,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
             #region Description
             var descNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='bookDescription_feature_div']/noscript")
+                ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='bookDescription_feature_div']/div[@data-a-expander-name='book_description_expander']")
                 ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-size-medium series-detail-description-text']");
             if (descNode != null && descNode.InnerText != "")
             {

@@ -6,9 +6,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using JetBrains.Annotations;
-using XRayBuilder.Core.Libraries;
+using XRayBuilder.Core.Config;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Primitives.Extensions;
+using XRayBuilder.Core.Libraries.Prompt;
+using XRayBuilder.Core.Localization.Core;
+using XRayBuilder.Core.Model;
 using XRayBuilder.Core.XRay.Artifacts;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
@@ -17,21 +20,23 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
     public class ChaptersService
     {
         private readonly ILogger _logger;
+        private readonly IXRayBuilderConfig _config;
 
-        public ChaptersService(ILogger logger)
+        public ChaptersService(ILogger logger, IXRayBuilderConfig config)
         {
             _logger = logger;
+            _config = config;
         }
 
         /// <summary>
         /// Read the chapters or search for them and apply them to the given <param name="xray"></param>
         /// </summary>
-        public void HandleChapters(XRay xray, string asin, long mlLen, HtmlDocument doc, string rawMl, bool overwriteChapters, [CanBeNull] Func<bool> editChaptersCallback)
+        public void HandleChapters(XRay xray, string asin, long mlLen, HtmlDocument doc, string rawMl, [CanBeNull] YesNoPrompt yesNoPrompt, [CanBeNull] EditCallback editCallback)
         {
             //Similar to aliases, if chapters definition exists, load it. Otherwise, attempt to build it from the book
             // todo directory service
             var chapterFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext", $"{asin}.chapters");
-            if (File.Exists(chapterFile) && !overwriteChapters)
+            if (File.Exists(chapterFile) && !_config.OverwriteChapters)
             {
                 try
                 {
@@ -65,9 +70,9 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
                     _logger.Log($"No chapters detected.\r\nYou can create a file at {chapterFile} if you want to define chapters manually.");
             }
 
-            if (editChaptersCallback != null && editChaptersCallback())
+            // TODO Get rid of Unattended from XRay
+            if (!xray.Unattended && _config.EnableEdit && yesNoPrompt != null && editCallback != null && yesNoPrompt(CoreStrings.Chapters, CoreStrings.OpenChaptersFile, PromptType.Question) == PromptResultYesNo.Yes && editCallback(chapterFile))
             {
-                Functions.RunNotepad(chapterFile);
                 xray.Chapters.Clear();
 
                 try

@@ -34,7 +34,7 @@ namespace XRayBuilder.Console.Command
                 IncludeTopics = cli.Option("--topics", "When set, topics will be included with the set of imported terms. Default is false.", CommandOptionType.NoValue),
                 SplitAliases = cli.Option("--splitaliases", "When set, aliases will be automatically split apart using a set of common titles, prefixes, etc.", CommandOptionType.NoValue)
             };
-            cli.OnExecuteAsync(cancellationToken => ConsoleHost.WaitForShutdownAsync(ct => OnExecute(baseOptions, xrayOptions, ct)));
+            cli.OnExecuteAsync(_ => ConsoleHost.WaitForShutdownAsync(ct => OnExecute(baseOptions, xrayOptions, ct)));
         }
 
         private sealed class XRayBuildOptions
@@ -54,26 +54,26 @@ namespace XRayBuilder.Console.Command
                     ? baseOptions.BaseOutputDirectory.Value()
                     : $"{AppDomain.CurrentDomain.BaseDirectory ?? Environment.CurrentDirectory}out",
                 BuildForAndroid = baseOptions.Android.HasValue(),
-                OutputToSidecar = baseOptions.OutputToSidecar.HasValue()
+                OutputToSidecar = baseOptions.OutputToSidecar.HasValue(),
+                SplitAliases = xrayBuildOptions.SplitAliases.HasValue(),
+                AmazonTld = baseOptions.AmazonTld.Value(),
             };
             await using var container = _bootstrap(config);
             var logger = container.GetInstance<ILogger>();
 
-            var bookPath = (string) baseOptions.Book.Value;
-            if (bookPath == null || !File.Exists(bookPath))
+            if (baseOptions.Book?.Value == null || !File.Exists(baseOptions.Book.Value))
             {
-                logger.Log($"Book not found: {bookPath}");
+                logger.Log($"Book not found: {baseOptions.Book?.Value ?? "no book specified"}");
                 return 1;
             }
 
-            var xrayBuildService = container.GetInstance<XRay>();
+            var xrayService = container.GetInstance<XRay>();
             var request = new XRay.Request(
-                bookPath: bookPath,
+                bookPath: baseOptions.Book.Value,
                 dataUrl: xrayBuildOptions.DataUrl.Value() ?? SecondarySourceRoentgen.FakeUrl,
                 includeTopics: xrayBuildOptions.IncludeTopics.HasValue(),
-                splitAliases: xrayBuildOptions.SplitAliases.HasValue(),
                 amazonTld: baseOptions.AmazonTld.Value());
-            var xrayPath = await xrayBuildService.BuildAsync(request, cancellationToken);
+            await xrayService.BuildAsync(request, cancellationToken);
 
             return 0;
         }

@@ -12,5 +12,16 @@ namespace XRayBuilder.Core.Config
         /// </summary>
         bool ShortenExcerptsLegacy { get; }
         string AmazonTld { get; }
+        /// <summary>
+        /// Save RAWML during extraction if possible
+        /// </summary>
+        bool SaveRawl { get; }
+        bool OverwriteChapters { get; }
+        bool OverwriteAliases { get; }
+        bool SplitAliases { get; }
+        bool EnableEdit { get; }
+        bool SkipNoLikes { get; }
+        int MinimumClipLength { get; }
+        bool IgnoreSoftHyphen { get; }
     }
 }

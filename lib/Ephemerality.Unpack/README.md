@@ -3,7 +3,7 @@ Opens Mobi, AZW3, and KFX-formatted e-books.
 Basic metadata is accessible such as ASIN, title, author, etc.
 Content can be unpacked in the form of RAWML for Mobi/AZW3 and plain text for KFX (converting to full markup not supported).
 
-
+To publish for NuGet: `dotnet publish -c Release`
 
 ## Acknowledgements
 * [Limey's original C# mobi metadata reader](http://www.mobileread.com/forums/showthread.php?t=185565)

@@ -31,27 +31,31 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         [OneTimeSetUp]
         public void Setup()
         {
+            var config = new XRayBuilderConfig
+            {
+                UseNewVersion = false
+            };
             _logger = new Logger();
-            _termsService = new TermsService(new XRayBuilderConfig());
+            _termsService = new TermsService(config);
             _file = new SecondarySourceFile(_logger, _termsService);
             _directoryService = new DirectoryService(_logger, new XRayBuilderConfig());
             _aliasesRepository = new AliasesRepository(_logger, new AliasesService(_logger), _directoryService);
             _xrayExporter = new XRayExporterJson();
-            _chaptersService = new ChaptersService(_logger);
-            _xrayService = new XRayService(_logger, _chaptersService, _aliasesRepository, _directoryService, _termsService, new ParagraphsService());
+            _chaptersService = new ChaptersService(_logger, config);
+            _xrayService = new XRayService(_logger, _chaptersService, _aliasesRepository, _directoryService, _termsService, new ParagraphsService(), config);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
         public async Task XRayXmlSaveOldTest(Book book)
         {
-            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, "com", true, _file, null, CancellationToken.None);
+            var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, book.Author, book.Title, "com", true, _file, null, CancellationToken.None);
             xray.Unattended = true;
             _xrayService.ExportAndDisplayTerms(xray, _file, true, false);
             using var fs = new FileStream(book.Bookpath, FileMode.Open, FileAccess.Read);
             var metadata = new MobiMetadata(fs);
             _aliasesRepository.LoadAliasesForXRay(xray);
             using var bookFs = new FileStream(book.Rawml, FileMode.Open);
-            _xrayService.ExpandFromRawMl(xray, metadata, bookFs, false, true, 0, true, null, null, CancellationToken.None, false, false);
+            _xrayService.ExpandFromRawMl(xray, metadata, bookFs, null, null, null, CancellationToken.None);
             var filename = _directoryService.GetArtifactFilename(ArtifactType.XRay, book.Asin, book.Db, book.Guid);
             var outpath = Path.Combine(Environment.CurrentDirectory, "out", filename);
             xray.CreatedAt = new DateTime(2019, 11, 2, 13, 19, 18, DateTimeKind.Utc);

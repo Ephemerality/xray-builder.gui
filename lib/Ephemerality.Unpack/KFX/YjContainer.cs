@@ -294,7 +294,7 @@ namespace Ephemerality.Unpack.KFX
 
                             if (new[] {KfxSymbols.Image, KfxSymbols.Kvg, KfxSymbols.Plugin, KfxSymbols.HorizontalRule}.Contains(type?.StringValue))
                                 HaveContent(currentEid, 1, advance);
-                            else if (new[] {KfxSymbols.Text, KfxSymbols.Container, KfxSymbols.ListItem}.Contains(type?.StringValue))
+                            else if (new[] {KfxSymbols.Text, KfxSymbols.Container, KfxSymbols.ListItem, KfxSymbols.Header}.Contains(type?.StringValue))
                             {
                                 if (new[] {KfxSymbols.Content, KfxSymbols.ContentList, KfxSymbols.StoryName}.All(ct => !ionStruct.ContainsField(ct)))
                                     HaveContent(currentEid, 1, advance); // todo matchZeroLen: isKpr321 && type?.StringValue == KfxSymbols.Text
@@ -383,7 +383,7 @@ namespace Ephemerality.Unpack.KFX
                         case IonString ionString:
                             var ionStringLength = ionString.StringValue.Length;
                             if (contentKey == KfxSymbols.ContentList && listIndex == 0)
-                                ionStringLength = -1;
+                                ionStringLength--;
                             HaveContent(currentEid, ionStringLength, advance, allowZero: listIndex.HasValue && listMax.HasValue && listIndex.Value < listMax.Value, contentText: ionString.StringValue);
                             break;
                     }

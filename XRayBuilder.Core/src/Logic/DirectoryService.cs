@@ -39,7 +39,7 @@ namespace XRayBuilder.Core.Logic
             => artifactType switch
             {
                 ArtifactType.XRay => _config.BuildForAndroid
-                    ? $"XRAY.{asin}.{(databaseName == null ? "" : $"{databaseName}")}{$"_{guid}" ?? ""}.db"
+                    ? $"XRAY.{asin}.{(databaseName == null ? "" : $"{databaseName}")}{(string.IsNullOrEmpty(guid) ? "" : $"_{guid}")}.db"
                     : $"XRAY.entities.{asin}.asc",
                 ArtifactType.XRayPreview => $"XRAY.{asin}.previewData",
                 ArtifactType.AuthorProfile => $"AuthorProfile.profile.{asin}.asc",

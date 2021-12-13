@@ -61,11 +61,119 @@ namespace XRayBuilder.Core.Localization.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Aliases.
+        /// </summary>
+        internal static string Aliases {
+            get {
+                return ResourceManager.GetString("Aliases", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Aliases file not found..
+        /// </summary>
+        internal static string AliasesFileNotFound {
+            get {
+                return ResourceManager.GetString("AliasesFileNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character aliases read from {0}..
+        /// </summary>
+        internal static string AliasesReadFrom {
+            get {
+                return ResourceManager.GetString("AliasesReadFrom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character aliases read from the XML file..
+        /// </summary>
+        internal static string AliasesReadFromXml {
+            get {
+                return ResourceManager.GetString("AliasesReadFromXml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Amazon Search Result.
+        /// </summary>
+        internal static string AmazonSearchResultTitle {
+            get {
+                return ResourceManager.GetString("AmazonSearchResultTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attempting to build X-Ray….
+        /// </summary>
+        internal static string AttemptingBuildXRay {
+            get {
+                return ResourceManager.GetString("AttemptingBuildXRay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Author.
+        /// </summary>
+        internal static string Author {
+            get {
+                return ResourceManager.GetString("Author", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to E-book&apos;s {0} URL.
+        /// </summary>
+        internal static string BooksSourceUrl {
+            get {
+                return ResourceManager.GetString("BooksSourceUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Build cancelled..
+        /// </summary>
+        internal static string BuildCancelled {
+            get {
+                return ResourceManager.GetString("BuildCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to KFX e-books cannot be used to build X-Ray files in the old format.
+        /// </summary>
+        internal static string BuildingOldFormatNotSupported {
+            get {
+                return ResourceManager.GetString("BuildingOldFormatNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chapters.
+        /// </summary>
+        internal static string Chapters {
+            get {
+                return ResourceManager.GetString("Chapters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Consider adding aliases for this term..
         /// </summary>
         internal static string ConsiderAddingAliases {
             get {
                 return ResourceManager.GetString("ConsiderAddingAliases", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Continuing anyway.
+        /// </summary>
+        internal static string ContinuingAnyway {
+            get {
+                return ResourceManager.GetString("ContinuingAnyway", resourceCulture);
             }
         }
         
@@ -88,11 +196,164 @@ namespace XRayBuilder.Core.Localization.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to WARNING: The database name is at its maximum length. If &quot;{0}&quot; is the full e-book title, this should not be an issue.
+        ///If the title is supposed to be longer than that, you might get an error on your Kindle (WG on firmware before 5.6).
+        ///Shorten the title in Calibre or change the database name manually.
+        ///.
+        /// </summary>
+        internal static string DatabaseNameLengthWarning {
+            get {
+                return ResourceManager.GetString("DatabaseNameLengthWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Does this seem correct?.
+        /// </summary>
+        internal static string DoesThisSeemCorrect {
+            get {
+                return ResourceManager.GetString("DoesThisSeemCorrect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred while extracting metadata.
+        /// </summary>
+        internal static string ErrorExtractingMetadata {
+            get {
+                return ResourceManager.GetString("ErrorExtractingMetadata", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Extracting metadata….
+        /// </summary>
+        internal static string ExtractingMetadata {
+            get {
+                return ResourceManager.GetString("ExtractingMetadata", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to validate/fix ASIN.
+        /// </summary>
+        internal static string FailedToValidateAsin {
+            get {
+                return ResourceManager.GetString("FailedToValidateAsin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Found the following e-book on Amazon.
+        /// </summary>
+        internal static string FoundBookAmazon {
+            get {
+                return ResourceManager.GetString("FoundBookAmazon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Got metadata!.
+        /// </summary>
+        internal static string GotMetadata {
+            get {
+                return ResourceManager.GetString("GotMetadata", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Incorrect ASIN.
+        /// </summary>
+        internal static string IncorrectAsinTitle {
+            get {
+                return ResourceManager.GetString("IncorrectAsinTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initial X-Ray built, adding locations and chapters….
+        /// </summary>
+        internal static string InitialXRayBuiltAddingChapters {
+            get {
+                return ResourceManager.GetString("InitialXRayBuiltAddingChapters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid Amazon ASIN detected: {0}!
+        ///Kindle may not display an X-Ray for this e-book.
+        ///Do you want to fix it?
+        ///(This will modify the e-book, meaning it will need to be re-copied to your Kindle device.)
+        ///THIS FEATURE IS EXPERIMENTAL AND COULD DESTROY YOUR E-BOOK!.
+        /// </summary>
+        internal static string InvalidAsinShouldFix {
+            get {
+                return ResourceManager.GetString("InvalidAsinShouldFix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid Amazon ASIN detected: {0}!
+        ///Kindle may fail to display an X-Ray for this e-book.
+        ///Do you wish to continue?.
+        /// </summary>
+        internal static string InvalidAsinWarning {
+            get {
+                return ResourceManager.GetString("InvalidAsinWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No locations were found for the term &quot;{0}&quot;.
         /// </summary>
         internal static string NoLocationsFoundForTerm {
             get {
                 return ResourceManager.GetString("NoLocationsFoundForTerm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No terms were available. Do you want to continue building anyway?.
+        /// </summary>
+        internal static string NoTermsAvailable {
+            get {
+                return ResourceManager.GetString("NoTermsAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Terms.
+        /// </summary>
+        internal static string NoTermsTitle {
+            get {
+                return ResourceManager.GetString("NoTermsTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Would you like to open the chapters file for editing?.
+        /// </summary>
+        internal static string OpenChaptersFile {
+            get {
+                return ResourceManager.GetString("OpenChaptersFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Would you like to open the file for editing?.
+        /// </summary>
+        internal static string OpenForEditing {
+            get {
+                return ResourceManager.GetString("OpenForEditing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saving raw markup to the dmp directory….
+        /// </summary>
+        internal static string SavingRawml {
+            get {
+                return ResourceManager.GetString("SavingRawml", resourceCulture);
             }
         }
         
@@ -120,6 +381,69 @@ namespace XRayBuilder.Core.Localization.Core {
         internal static string SearchingAllDivs {
             get {
                 return ResourceManager.GetString("SearchingAllDivs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Searching Amazon for {0} by {1}….
+        /// </summary>
+        internal static string SearchingAmazonForTitleAuthor {
+            get {
+                return ResourceManager.GetString("SearchingAmazonForTitleAuthor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to See the MobileRead forum thread (link in Settings) for more information on building aliases..
+        /// </summary>
+        internal static string SeeMobilereads {
+            get {
+                return ResourceManager.GetString("SeeMobilereads", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If so, the shown ASIN will be used..
+        /// </summary>
+        internal static string ShownAsinUsed {
+            get {
+                return ResourceManager.GetString("ShownAsinUsed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Terms have been exported to an alias file or already exist in that file..
+        /// </summary>
+        internal static string TermsExportedOrAlreadyExist {
+            get {
+                return ResourceManager.GetString("TermsExportedOrAlreadyExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Title.
+        /// </summary>
+        internal static string Title {
+            get {
+                return ResourceManager.GetString("Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find a matching ASIN automatically for this e-book on Amazon :(.
+        /// </summary>
+        internal static string UnableToAutomaticallyFindAsinOnAmazon {
+            get {
+                return ResourceManager.GetString("UnableToAutomaticallyFindAsinOnAmazon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ASIN updated to {0}! Make sure to copy this new version of the e-book to your Kindle device..
+        /// </summary>
+        internal static string UpdatedAsin {
+            get {
+                return ResourceManager.GetString("UpdatedAsin", resourceCulture);
             }
         }
         

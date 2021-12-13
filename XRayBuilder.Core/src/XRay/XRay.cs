@@ -8,6 +8,8 @@ namespace XRayBuilder.Core.XRay
 {
     public sealed class XRay
     {
+        public string Author { get; set; }
+        public string Title { get; set; }
         public string DataUrl { get; set; }
         public string DatabaseName { get; set; }
         public string Guid { get; set; }

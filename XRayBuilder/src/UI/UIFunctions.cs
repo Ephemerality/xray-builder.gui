@@ -4,7 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Ephemerality.Unpack;
+using XRayBuilder.Core.Libraries.Prompt;
+using XRayBuilder.Core.Model;
 
 namespace XRayBuilderGUI.UI
 {
@@ -50,29 +51,41 @@ namespace XRayBuilderGUI.UI
             return new string(filename.Where(x => !fileChars.Contains(x)).ToArray());
         }
 
-        public static void EbokTagPromptOrThrow(IMetadata md, string bookPath)
+        public static PromptResultYesNo PromptHandlerYesNo(string title, string message, PromptType type, Form owner)
         {
-            if (md.CdeContentType == "EBOK")
-                return;
-            if (DialogResult.Yes != MessageBox.Show($"The document type is not set to EBOK. Would you like this to be updated?{Environment.NewLine}Caution: This feature is experimental and could potentially ruin your book file.", "Incorrect Content Type", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
-                return;
+            return owner.MessageBoxShowSafe(message, title, MessageBoxButtons.YesNo, type.ToMessageBoxIcon(), MessageBoxDefaultButton.Button2) switch
+            {
+                DialogResult.Yes => PromptResultYesNo.Yes,
+                DialogResult.No => PromptResultYesNo.No,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
 
-            try
+        public static PromptResultYesNoCancel PromptHandlerYesNoCancel(string title, string message, PromptType type, Form owner)
+        {
+            return owner.MessageBoxShowSafe(message, title, MessageBoxButtons.YesNoCancel, type.ToMessageBoxIcon(), MessageBoxDefaultButton.Button3) switch
             {
-                using var fs = new FileStream(bookPath, FileMode.Create);
-                md.UpdateCdeContentType();
-                md.Save(fs);
-            }
-            catch (IOException)
-            {
-                MessageBox.Show($"Failed to update Content Type, could not open with write access.{Environment.NewLine}Is the book open in another application?", "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
+                DialogResult.Cancel => PromptResultYesNoCancel.Cancel,
+                DialogResult.Yes => PromptResultYesNoCancel.Yes,
+                DialogResult.No => PromptResultYesNoCancel.No,
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
     }
 
     // ReSharper disable once InconsistentNaming
     public static class UIExtensionMethods
     {
+        public static MessageBoxIcon ToMessageBoxIcon(this PromptType promptType)
+            => promptType switch
+            {
+                PromptType.Info => MessageBoxIcon.Information,
+                PromptType.Warning => MessageBoxIcon.Warning,
+                PromptType.Error => MessageBoxIcon.Error,
+                PromptType.Question => MessageBoxIcon.Question,
+                _ => throw new ArgumentOutOfRangeException(nameof(promptType), promptType, null)
+            };
+
         public static void SetPropertyThreadSafe(this Control ctrl, string name, object value)
         {
             if (ctrl.InvokeRequired)
@@ -86,6 +99,14 @@ namespace XRayBuilderGUI.UI
             return ctrl.InvokeRequired
                 ? ctrl.Invoke(new Func<object>(() => ctrl.GetPropertyThreadSafe(name)))
                 : ctrl.GetType().InvokeMember(name, System.Reflection.BindingFlags.GetProperty, null, ctrl, null);
+        }
+
+        /// <summary>
+        /// Thread-safe MessageBox.Show - invokes the messagebox on <paramref name="form"/>
+        /// </summary>
+        public static DialogResult MessageBoxShowSafe(this Form form, [Localizable(true)] string msg, [Localizable(true)] string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton def)
+        {
+            return (DialogResult) form.Invoke(new Func<DialogResult>(() => MessageBox.Show(form, msg, caption, buttons, icon, def)));
         }
     }
 }

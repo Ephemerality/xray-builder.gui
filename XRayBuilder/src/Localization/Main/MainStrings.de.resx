@@ -71,618 +71,621 @@
     <value>Initialisierung der Anwendung fehlgeschlagen</value>
   </data>
   <data name="ErrorSearching" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="HelpDocumentNotFoundTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="OpenXmlOrTxt" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="LoadedExistingEndActions" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="PromptAsinTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="NoTermsAvailable" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="PlaySoundTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AliasesOptionsTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ExportingTermsFrom" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="GoodForFilteringQuotes" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="PreMadeActionsDownloaded" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="DownloadAliasesTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="StartActionsCreated" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="EbookProcessingTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Author" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="InvalidSourceLinkTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="InformationAllowsRatingOnAmazon" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="WritingStartActionsFile" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="OpenOutputDirectory" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Aliases" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ReviewSettingsPage" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="FailedCoverImageDownload" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Logs" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="SaveRawMlTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Directories" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="PenNamesRequired" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="LoadTermsFromFile" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="BuildFromEndActions" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="OverwriteAuthorProfileTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="BooksSourceUrl" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AutomaticallySplitAliases" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="BuildXRayForAndroidTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Cancelling" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ShownAsinUsed" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="SecondarySourceTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="FilesInAndroidFolder" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="NoTermsTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AuthorProfileCreated" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="BuildCancelled" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="DatabaseNameLengthWarning" xml:space="preserve">
-    <value></value>
+    <value>ACHTUNG: Der Name der Datenbank hat die maximale Länge. Wenn "{0}" der vollständige Titel des e-books ist, sollte das kein Problem sein
+Wenn der Titel länger werden sollte, könnte auf Ihrem Kindle-Gerät einen Fehler angezeigt werden (WG mit einer Firmware vor Version 5.6)
+Kürzen Sie den Titel innerhalb von Calibre oder verändern Sie den Datenbank-Namen manuell.
+</value>
   </data>
   <data name="Settings" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="EstimatePageCountTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="NotableClipsTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ContinuingAnyway" xml:space="preserve">
-    <value></value>
+    <value>Trotzdem fortfahren</value>
   </data>
   <data name="ViewPreviewOfGeneratedFiles" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="OpenInNotepad" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AreYouSure" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AliasesFileNotFound" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="EditAuthorBiography" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="BuildForAndroidTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AmazonCustomerDetailsTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="EbookUnpackingTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AllExtrasDownloadedStopping" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="FailedToValidateAsin" xml:space="preserve">
-    <value></value>
+    <value>ASIN-Validierung/-Korrektur nicht erfolgreich</value>
   </data>
   <data name="BookNotFound" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="UniqueID" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="OverwriteStartActionsTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="SourceUrl" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Biography" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="EndActions" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ClearLogsTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="UnableToOpenHelpDocument" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AutomaticallySplitAliasesTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="DoesThisSeemCorrect" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="SavingRawml" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ErrorExtractingMetadata" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="XRayCreated" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="RequiresNewFormat" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AllExtrasExistNoOverwrite" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="FilesDownloadedInSelectedLanguage" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="SaveToAuthorSubdirTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="CreateXmlTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="OneClickTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ReviewSettingsForSource" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="LogDirectoryNotFoundTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="IgnoreSoftHyphensTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="NoPremadeActionsAvailable" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="RestartRequired" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="GotMetadata" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Show ASIN prompt" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AmazonRegionTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="BookFoundOnSource" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ExtractingRawMl" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="BuildingOldFormatNotSupported" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Save" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="EnableEditingAliases" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="VisitUrl" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ErrorWritingAuthorProfile" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AmazonSearchResultTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ErrorBuildingXRay" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="UseSubdirectories" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="General" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="WritingEndActionsFile" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Sounds" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="TermsExportedOrAlreadyExist" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ExtractXRayToXml" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="TryToBuildXRay" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="SkipNoLikes" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="OpenedInAnotherProgram" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AliasesReadFromXml" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="UseNewFormatTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="FoundBookAmazon" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="PenName" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="PreBuiltSettingsDescription" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="SaveToSidecarSubdirTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="UnableToAutomaticallyFindAsinOnAmazon" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="SavedTo" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="TitleByAuthor" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ErrorSavingXml" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Region" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="EnableEditTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="CantExportFromFile" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ErrorCreatingStartActions" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="UseSidecarDirectory" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="InvalidXRayFile" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="InvalidAsinShouldFix" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Language" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AliasesReadFrom" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="SpecifiedOutputDirectoryDoesNotExist" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="UnableToDeleteLogFilesCaption" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="InclueTopics" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Format" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="MultipleResultsFromSource" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="OpenKindleBook" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="SearchingAmazonForTitleAuthor" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ErrorCreatingExtras" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="RealName" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="OverwriteEndActionsTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="SavingXRay" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="OverwriteAliasesTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AttemptingBuildXRay" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="OutputDirectoryTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="VisitForumTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="PreviewData" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="SeeMobilereads" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="InvalidSourceLink" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="PreBuiltDownloadsTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Chapters" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="OpenChaptersFileNotepad" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="OpenKindleFile" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ActionCannotBeUndone" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="OverwriteOptionsTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="WriteXRayNewFormatTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="BuiltAuthorProfileFromExisting" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="EditBioTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="SaveRawmlTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="OpenXRayFile" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="UseLinkAsDataSource" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Amazon" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AmazonCustomerDetailsNotFoundTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="DataProviderTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="IgnoreSoftHyphensTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ErrorPreviewData" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Asin" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="BuildingAuthorProfile" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="SaveAuthorBiography" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="EstimatePageCountTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Forum" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Title" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="UpdatedAsin" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Extras" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="DownloadAliases" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AutoBuildAuthorProfileTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="XRay" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="InitialXRayBuiltAddingChapters" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="AuthorProfile" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ExtractedToPath" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Preferences" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="InvalidAsinWarning" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="NoLinkTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="IncorrectAsinTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="DownloadingActions" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="RequiredDuringEndActionsCreation" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="NoSourceLinkTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="CharacterDataExtractedSavedToPath" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Error" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="TermsOptions" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="InvalidKindleFile" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="OverwriteChaptersTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="BookNotFoundTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="StartActions" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="Roentgen" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="OpenLogFileDirTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="SeriesInformation" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="MinimumQuoteLength" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="UnableToFindBookOnSource" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="DeleteLogFilesConfirmation" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="DownloadCancelled" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="InvalidOrNoFileSelected" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="DatabaseName" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="EndActionsCreated" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ConfigureXRayBuilder" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="SaveBioTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="LogDirectoryDoesNotExist" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="NoLinkSpecified" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="MinimumLength" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="RestartRequiredTitle" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="BuildingStartEndActions" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="NoSourceLinkSpecified" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="CharacterDataSavedTo" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="DownloadFromRoentgen" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ErrorEndActions" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="ErrorDeletingLogFiles" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="IncludeTopicsTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
   <data name="BuildExtrasTooltip" xml:space="preserve">
-    <value></value>
+    <value />
   </data>
 </root>

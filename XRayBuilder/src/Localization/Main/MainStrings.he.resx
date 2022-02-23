@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
@@ -58,4 +58,103 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AmazonCustomerDetailsNotFoundTitle" xml:space="preserve">
+    <value>פרטי צרכן אמזון לא נמצאו</value>
+  </data>
+  <data name="InformationAllowsRatingOnAmazon" xml:space="preserve">
+    <value>מידע זה מאפשר לכם לדרג ספר זה באמזון.</value>
+  </data>
+  <data name="PenNamesRequired" xml:space="preserve">
+    <value>גם שמות "אמיתיים" וגם שמות "עט" נדרשים ליצירת קבצי End Actions.</value>
+  </data>
+  <data name="NoTermsTitle" xml:space="preserve">
+    <value>אין מונחים</value>
+  </data>
+  <data name="Cancelling" xml:space="preserve">
+    <value>מבטל…</value>
+  </data>
+  <data name="AttemptingBuildXRay" xml:space="preserve">
+    <value>מנסה לבנות X-Ray…</value>
+  </data>
+  <data name="UniqueID" xml:space="preserve">
+    <value>ID יחודי</value>
+  </data>
+  <data name="ErrorExtractingMetadata" xml:space="preserve">
+    <value>התרחשה שגיאה בעת חילוץ מטא-נתונים</value>
+  </data>
+  <data name="BookNotFoundTitle" xml:space="preserve">
+    <value>ספר לא נמצא</value>
+  </data>
+  <data name="BookNotFound" xml:space="preserve">
+    <value>לא הצליח למצוא את הספר האלקטרוני הזה.</value>
+  </data>
+  <data name="NoTermsAvailable" xml:space="preserve">
+    <value>אין מונחים זמינים. האם ברצונכם להמשיך לבנות בכל מקרה?</value>
+  </data>
+  <data name="SpecifiedOutputDirectoryDoesNotExist" xml:space="preserve">
+    <value>תיקיית הייצוא שהוגדרה לא קיימת.</value>
+  </data>
+  <data name="ReviewSettingsPage" xml:space="preserve">
+    <value>אנא עיינו בעמוד ההגדרות.</value>
+  </data>
+  <data name="InitializeFailed" xml:space="preserve">
+    <value>אתחול התוכנה נכשל</value>
+  </data>
+  <data name="FailedToValidateAsin" xml:space="preserve">
+    <value>תיקוף/תיקון ASIN נכשל</value>
+  </data>
+  <data name="OutputDirNotFoundTitle" xml:space="preserve">
+    <value>תיקיית הייצוא לא נמצאה</value>
+  </data>
+  <data name="OutputDirNotFoundReviewSettings" xml:space="preserve">
+    <value>תיקיית הייצוא שהוגדרה אינה קיימת. אנא עיינו בעמוד ההגדרות.</value>
+  </data>
+  <data name="DatabaseNameLengthWarning" xml:space="preserve">
+    <value>אזהרה: שם מאגר הנתונים הוא הגיע לאורכו המקסימלי. אם "{0}" הוא כותרתו המלאה של הספר האלקטרוני, זה לא אמור להוות בעיה.
+אם הכותרת אמורה להיות אורכה יותר, אתם עלולים לקבל שגיאה בקינדל שלכם (WG בקושחה מלפני 5.6).
+קצרו את הכותרת ב-Calibre או שנו את שם מאגר הנתונים ידנית.
+</value>
+  </data>
+  <data name="ContinuingAnyway" xml:space="preserve">
+    <value>ממשיך בכל מקרה</value>
+  </data>
+  <data name="DatabaseName" xml:space="preserve">
+    <value>שם מאגר הנתונים</value>
+  </data>
+  <data name="TermsExportedOrAlreadyExist" xml:space="preserve">
+    <value>מונחים יוצאו לקובץ כינויים או שכבר קיימים בקובץ.</value>
+  </data>
+  <data name="OpenInNotepad" xml:space="preserve">
+    <value>האם תרצו לפתוח קובץ זה לעריכה ב-Notepad?</value>
+  </data>
+  <data name="NoSourceLinkTitle" xml:space="preserve">
+    <value>קישור {0} חסר</value>
+  </data>
+  <data name="SeeMobilereads" xml:space="preserve">
+    <value>ראו את השרשור בפורום MobileRead (קישור בהגדרות) בשביל עוד מידע על בניית כינויים.</value>
+  </data>
+  <data name="NoSourceLinkSpecified" xml:space="preserve">
+    <value>אף קישור {0} לא הוגדר.</value>
+  </data>
+  <data name="AliasesReadFromXml" xml:space="preserve">
+    <value>כינויי דמויות שנקראו מקובץ ה-XML.</value>
+  </data>
+  <data name="AliasesReadFrom" xml:space="preserve">
+    <value>כינויי דמויות נקראו מתוך {0}.</value>
+  </data>
+  <data name="ExtractingMetadata" xml:space="preserve">
+    <value>מחלץ מטא-נתונים…</value>
+  </data>
+  <data name="SavingRawml" xml:space="preserve">
+    <value>שומר סימון גולמי לתיקיית ה-dmp…</value>
+  </data>
+  <data name="GotMetadata" xml:space="preserve">
+    <value>מטא-נתונים הושגו!</value>
+  </data>
+  <data name="Aliases" xml:space="preserve">
+    <value>כינויים</value>
+  </data>
+  <data name="AliasesFileNotFound" xml:space="preserve">
+    <value>כינויים לא נמצאו.</value>
+  </data>
 </root>

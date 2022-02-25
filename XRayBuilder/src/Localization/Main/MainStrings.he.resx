@@ -157,4 +157,109 @@
   <data name="AliasesFileNotFound" xml:space="preserve">
     <value>כינויים לא נמצאו.</value>
   </data>
+  <data name="InitialXRayBuiltAddingChapters" xml:space="preserve">
+    <value>X-Ray התחלתי נבנה, מוסיף מיקומים ופרקים…</value>
+  </data>
+  <data name="BuildCancelled" xml:space="preserve">
+    <value>בנייה בוטלה.</value>
+  </data>
+  <data name="ErrorBuildingXRay" xml:space="preserve">
+    <value>אירעה שגיאה בזמן בניית ה-X-Ray</value>
+  </data>
+  <data name="SavingXRay" xml:space="preserve">
+    <value>שומר X-Ray לקובץ…</value>
+  </data>
+  <data name="OpenedInAnotherProgram" xml:space="preserve">
+    <value>האם זה פתוח בתוכנה אחרת?</value>
+  </data>
+  <data name="PreviewData" xml:space="preserve">
+    <value>קובץ X-Ray previewData נוצר בהצלחה!</value>
+  </data>
+  <data name="ErrorPreviewData" xml:space="preserve">
+    <value>אירעה שגיאה בזמן שמירת קובץ ה-X-Ray previewData</value>
+  </data>
+  <data name="SavedTo" xml:space="preserve">
+    <value>נשמר ל-{0}</value>
+  </data>
+  <data name="XRayCreated" xml:space="preserve">
+    <value>קובץ X-Ray נוצר בהצלחה!</value>
+  </data>
+  <data name="NoPremadeActionsAvailable" xml:space="preserve">
+    <value>אין קובץ {0} Actions מוכן-מראש זמין, אחד ייבנה במקומו.</value>
+  </data>
+  <data name="StartActionsCreated" xml:space="preserve">
+    <value>קובץ Start Actions נוצר בהצלחה!</value>
+  </data>
+  <data name="PreMadeActionsDownloaded" xml:space="preserve">
+    <value>קובץ {0} Actions מוכן-מראש הורד בהצלחה!</value>
+  </data>
+  <data name="ErrorCreatingStartActions" xml:space="preserve">
+    <value>אירעה שגיאה בזמן יצירת קובץ ה-Start Actions</value>
+  </data>
+  <data name="WritingEndActionsFile" xml:space="preserve">
+    <value>כותב קובץ End Actions…</value>
+  </data>
+  <data name="EndActionsCreated" xml:space="preserve">
+    <value>קובץ End Actions נוצר בהצלחה!</value>
+  </data>
+  <data name="ErrorEndActions" xml:space="preserve">
+    <value>אירעה שגיאה בזמן יצירת קובץ ה-End Actions</value>
+  </data>
+  <data name="AllExtrasDownloadedStopping" xml:space="preserve">
+    <value>כל התוספות הורדו/נבנו ואף אחת מהן לא צריכה להיכתב מחדש, עוצר כאן!</value>
+  </data>
+  <data name="LoadedExistingEndActions" xml:space="preserve">
+    <value>נטענו End Actions קיימים מ-{0}</value>
+  </data>
+  <data name="BuiltAuthorProfileFromExisting" xml:space="preserve">
+    <value>פרופיל סופר נבנה מקובץ ה-End Actions הקיים!</value>
+  </data>
+  <data name="Biography" xml:space="preserve">
+    <value>ביוגרפיה</value>
+  </data>
+  <data name="AuthorProfileCreated" xml:space="preserve">
+    <value>קובץ פרופיל סופר נוצר בהצלחה!</value>
+  </data>
+  <data name="ErrorWritingAuthorProfile" xml:space="preserve">
+    <value>אירעה שגיאה בזמן כתיבת קובץ פרופיל הסופר</value>
+  </data>
+  <data name="BuildingStartEndActions" xml:space="preserve">
+    <value>מנסה לבנות Start Actions ו/או End Actions…</value>
+  </data>
+  <data name="SeriesInformation" xml:space="preserve">
+    <value>מידע על סידרה</value>
+  </data>
+  <data name="ErrorCreatingExtras" xml:space="preserve">
+    <value>אירעה שגיאה בזמן יצירת קבצי פרופיל סופר, Start Actions, ו/או End Actions חדשים</value>
+  </data>
+  <data name="NoLinkSpecified" xml:space="preserve">
+    <value>לא הוגדר קישור.</value>
+  </data>
+  <data name="NoLinkTitle" xml:space="preserve">
+    <value>קישור חסר</value>
+  </data>
+  <data name="CantExportFromFile" xml:space="preserve">
+    <value>לא מצליח לייצא מונחים מקובץ XML/TXT…</value>
+  </data>
+  <data name="DownloadCancelled" xml:space="preserve">
+    <value>הורדה בוטלה.</value>
+  </data>
+  <data name="BuildingAuthorProfile" xml:space="preserve">
+    <value>מנסה לבנות פרופיל סופר…</value>
+  </data>
+  <data name="WritingStartActionsFile" xml:space="preserve">
+    <value>כותב קובץ Start Actions…</value>
+  </data>
+  <data name="InvalidSourceLinkTitle" xml:space="preserve">
+    <value>קישור {0} לא תקין</value>
+  </data>
+  <data name="ExportingTermsFrom" xml:space="preserve">
+    <value>מייצא מונחים מתוך {0}…</value>
+  </data>
+  <data name="InvalidSourceLink" xml:space="preserve">
+    <value>הוגדר קישור {0} לא תקין.</value>
+  </data>
+  <data name="CharacterDataSavedTo" xml:space="preserve">
+    <value>מידע דמויות נשמר בהצלחה ל-{0}</value>
+  </data>
 </root>

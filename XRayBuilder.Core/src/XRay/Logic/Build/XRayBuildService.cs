@@ -10,6 +10,7 @@ using XRayBuilder.Core.Config;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Progress;
+using XRayBuilder.Core.Libraries.Prompt;
 using XRayBuilder.Core.Localization.Core;
 using XRayBuilder.Core.Logic;
 using XRayBuilder.Core.Model;

@@ -14,6 +14,7 @@ using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Primitives.Extensions;
 using XRayBuilder.Core.Libraries.Progress;
+using XRayBuilder.Core.Libraries.Prompt;
 using XRayBuilder.Core.Localization.Core;
 using XRayBuilder.Core.Logic;
 using XRayBuilder.Core.Model;
@@ -125,18 +126,11 @@ namespace XRayBuilder.Core.XRay.Logic
                     _logger.Log($"Characters exported to {aliasPath} for adding aliases.");
             }
 
-            var termsFound = $"{xray.Terms.Count} {(xray.Terms.Count > 1 ? "terms" : "term")} found";
-            _logger.Log($"{termsFound} on {dataSource.Name}:");
-            var str = new StringBuilder(xray.Terms.Count * 32); // Assume that most names will be less than 32 chars
-            var termId = 1;
-            foreach (var t in xray.Terms)
-            {
-                str.Append(t.TermName).Append(", ");
-                // todo don't set the IDs here...
-                t.Id = termId++;
-            }
+            for (var i = 0; i < xray.Terms.Count; i++)
+                xray.Terms[i].Id = i + 1;
 
-            _logger.Log(str.ToString());
+            var termsFound = $"{xray.Terms.Count} {(xray.Terms.Count > 1 ? "terms" : "term")} found";
+            _logger.Log($"{termsFound} on {dataSource.Name}:{Environment.NewLine}{string.Join(", ", xray.Terms.Select(t => t.TermName))}");
         }
 
         // TODO split this up, possible return a result instead of modifying xray

@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace XRayBuilder.Core.Model
+namespace XRayBuilder.Core.Libraries.Prompt
 {
     /// <summary>
     /// Given the <paramref name="path"/> to a file, allows the file to be opened/edited/closed if desired.

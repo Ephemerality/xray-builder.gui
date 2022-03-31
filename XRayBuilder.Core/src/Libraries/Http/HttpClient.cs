@@ -94,7 +94,7 @@ namespace XRayBuilder.Core.Libraries.Http
             }
             SetDefaultSettings(request);
             var response = await SendAsync(request, cancellationToken);
-            return await response.Content.ReadAsStreamAsync();
+            return await response.Content.ReadAsStreamAsync(cancellationToken);
         }
 
         private static void SetDefaultSettings(HttpRequestMessage request)

@@ -38,7 +38,7 @@ Content can be unpacked in the form of RAWML for Mobi/AZW3 and plain text for KF
         </When>
         <Otherwise>
             <ItemGroup>
-                <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.2" />
+                <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
                 <PackageReference Include="JTForks.MiscUtil" Version="1.285.0" />
             </ItemGroup>
         </Otherwise>

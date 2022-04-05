@@ -25,7 +25,7 @@ Content can be unpacked in the form of RAWML for Mobi/AZW3 and plain text for KF
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="Amazon.IonDotnet.Ephemerality, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <Reference Include="Amazon.IonDotnet, Version=1.0.1.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>Amazon.IonDotnet.Ephemerality.dll</HintPath>
       </Reference>
     </ItemGroup>

@@ -56,7 +56,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Amazon.IonDotnet.Ephemerality, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="Amazon.IonDotnet, Version=1.0.1.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\lib\Ephemerality.Unpack\Amazon.IonDotnet.Ephemerality.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http" />

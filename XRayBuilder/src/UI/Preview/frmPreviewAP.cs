@@ -3,8 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilder.Core.Extras.Artifacts;
+using XRayBuilder.Core.Libraries.Images.Extensions;
 using XRayBuilder.Core.Libraries.Images.Util;
 using XRayBuilder.Core.Libraries.Serialization.Json.Util;
+using XRayBuilderGUI.Extensions;
 
 namespace XRayBuilderGUI.UI.Preview
 {
@@ -35,7 +37,7 @@ namespace XRayBuilderGUI.UI.Preview
                 Text = $"About {author.Name}";
                 lblBiography.Text = author.Bio ?? "";
                 if (author.Picture != null)
-                    pbAuthorImage.Image = ImageUtil.Base64ToImage(author.Picture);
+                    pbAuthorImage.Image = author.Picture.Base64ToImage().ToBitmap();
             }
 
             if (authorProfile.OtherBooks != null)

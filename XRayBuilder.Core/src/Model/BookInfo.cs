@@ -5,6 +5,7 @@ using Ephemerality.Unpack;
 using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Secondary.Model;
 using XRayBuilder.Core.Libraries;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace XRayBuilder.Core.Model
 {
@@ -44,7 +45,8 @@ namespace XRayBuilder.Core.Model
         /// <summary>
         /// Used to store the cover image once downloaded (manually)
         /// </summary>
-        public Bitmap CoverImage { get; set; }
+        [CanBeNull]
+        public Image CoverImage { get; set; }
 
         // List of clips and their highlight/like count
         public List<NotableClip> NotableClips;

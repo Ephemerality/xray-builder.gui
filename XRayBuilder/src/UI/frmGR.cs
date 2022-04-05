@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Language.Pluralization;
 using XRayBuilder.Core.Model;
+using XRayBuilderGUI.Extensions;
 using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI.UI
@@ -39,7 +40,7 @@ namespace XRayBuilderGUI.UI
         private void cbResults_SelectedIndexChanged(object sender, EventArgs e)
         {
             var i = cbResults.SelectedIndex == -1 ? 0 : cbResults.SelectedIndex;
-            pbCover.Image = _bookList[i].CoverImage ?? Resources.missing_cover_small;
+            pbCover.Image = _bookList[i].CoverImage?.ToBitmap() ?? Resources.missing_cover_small;
             lblTitle.Text = _bookList[i].Title;
             lblAuthor.Text = $"by {_bookList[i].Author}";
             lblRating.Text = $"{_bookList[i].AmazonRating:#.#} average rating " + PluralUtil.Pluralize($"({_bookList[i].Reviews:rating})");

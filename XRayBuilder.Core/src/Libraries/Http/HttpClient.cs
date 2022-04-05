@@ -10,8 +10,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
-using XRayBuilder.Core.Libraries.Images.Extensions;
+using SixLabors.ImageSharp.Processing;
 using XRayBuilder.Core.Libraries.Logging;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace XRayBuilder.Core.Libraries.Http
 {
@@ -57,26 +58,22 @@ namespace XRayBuilder.Core.Libraries.Http
             return htmlDoc;
         }
 
-        // TODO should this return image not bitmap?
-        public async Task<Bitmap> GetImageAsync(string url, int maxWidthHeight = -1, bool greyscale = false, CancellationToken cancellationToken = default)
+        public async Task<Image> GetImageAsync(string url, int maxWidthHeight = -1, bool grayscale = false, CancellationToken cancellationToken = default)
         {
             var response = await GetStreamAsync(url, cancellationToken);
-            var image = new Bitmap(response);
+            var image = await Image.LoadAsync(response, cancellationToken);
 
             if (maxWidthHeight > -1 && (image.Height > maxWidthHeight || image.Width > maxWidthHeight))
-            {
-                var scaledImage = image.Scale(maxWidthHeight, maxWidthHeight, false);
-                image = (Bitmap) scaledImage;
-            }
+                image.Mutate(i => i.Resize(maxWidthHeight, maxWidthHeight));
 
-            image = greyscale
-                ? (Bitmap) image.ToGrayscale3()
-                : image;
+            if (grayscale)
+                image.Mutate(i => i.Grayscale());
 
             return image;
         }
 
-        public async IAsyncEnumerable<Bitmap> GetImages(IEnumerable<string> urls, int maxWidthHeight = -1, bool greyscale = false, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        // todo parallel
+        public async IAsyncEnumerable<Image> GetImages(IEnumerable<string> urls, int maxWidthHeight = -1, bool greyscale = false, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             foreach (var url in urls.Where(url => !string.IsNullOrEmpty(url)))
             {
@@ -91,6 +88,7 @@ namespace XRayBuilder.Core.Libraries.Http
             if (url.Contains("amazon.com"))
             {
                 request.Headers.Add(KnownHeaders.Accept, "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
+                request.Headers.Add(KnownHeaders.UpgradeInsecureRequests, "1");
             }
             SetDefaultSettings(request);
             var response = await SendAsync(request, cancellationToken);
@@ -109,6 +107,7 @@ namespace XRayBuilder.Core.Libraries.Http
         public const string UserAgent = "User-Agent";
         public const string Accept = "Accept";
         public const string AcceptEncoding = "Accept-Encoding";
+        public const string UpgradeInsecureRequests = "Upgrade-Insecure-Requests";
     }
 
     // https://www.thomaslevesque.com/2018/02/25/better-timeout-handling-with-httpclient/

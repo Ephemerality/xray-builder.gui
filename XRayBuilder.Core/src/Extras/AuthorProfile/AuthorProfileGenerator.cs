@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Dasync.Collections;
+using JetBrains.Annotations;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
-using XRayBuilder.Core.Libraries.Images.Extensions;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Model;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace XRayBuilder.Core.Extras.AuthorProfile
 {
@@ -257,7 +258,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             // Try to download Author image
             request.Book.AuthorImageUrl = searchResults.ImageUrl;
 
-            Bitmap ApAuthorImage = null;
+            Image ApAuthorImage = null;
             try
             {
                 _logger.Log("Downloading author image…");
@@ -331,14 +332,20 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
 
         }
 
-        public sealed class Response
+        public sealed class Response : IDisposable
         {
             public string Asin { get; set; }
             public string Name { get; set; }
             public string Biography { get; set; }
-            public Bitmap Image { get; set; }
+            [CanBeNull]
+            public Image Image { get; set; }
             public string ImageUrl { get; set; }
             public BookInfo[] OtherBooks { get; set; }
+
+            public void Dispose()
+            {
+                Image?.Dispose();
+            }
         }
 
         public static Artifacts.AuthorProfile CreateAp(Response response, string bookAsin)
@@ -364,7 +371,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                         ImageHeight = response.Image?.Height ?? 0,
                         Name = response.Name,
                         OtherBookAsins = response.OtherBooks.Select(book => book.Asin).ToArray(),
-                        Picture = response.Image?.ToBase64(ImageFormat.Jpeg)
+                        Picture = response.Image?.ToBase64String(JpegFormat.Instance)
                     }
                 }
             };

@@ -271,7 +271,4 @@
   <ItemGroup>
     <Compile Remove="src\HTTPDownloader.cs" />
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="; Move all assemblies and related files to lib folder&#xD;&#xA;ROBOCOPY &quot;$(TargetDir) &quot; &quot;$(TargetDir)lib\ &quot; *.dll *.xml *.pdb /IS /MOV&#xD;&#xA;exit 0" />
-  </Target>
 </Project>

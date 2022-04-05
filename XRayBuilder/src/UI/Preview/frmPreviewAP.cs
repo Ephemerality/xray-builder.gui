@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using XRayBuilder.Core.Extras.Artifacts;
 using XRayBuilder.Core.Libraries.Images.Extensions;
-using XRayBuilder.Core.Libraries.Images.Util;
 using XRayBuilder.Core.Libraries.Serialization.Json.Util;
 using XRayBuilderGUI.Extensions;
 

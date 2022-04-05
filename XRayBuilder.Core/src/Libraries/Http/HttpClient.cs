@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -44,12 +43,6 @@ namespace XRayBuilder.Core.Libraries.Http
             Timeout = System.Threading.Timeout.InfiniteTimeSpan;
         }
 
-        public async Task<string> GetStringAsync(string url, CancellationToken cancellationToken = default)
-        {
-            var response = await GetStreamAsync(url, cancellationToken);
-            return await new StreamReader(response, Encoding.UTF8).ReadToEndAsync();
-        }
-
         public async Task<HtmlDocument> GetPageAsync(string url, CancellationToken cancellationToken = default)
         {
             var htmlDoc = new HtmlDocument {OptionAutoCloseOnEnd = true};
@@ -81,7 +74,7 @@ namespace XRayBuilder.Core.Libraries.Http
             }
         }
 
-        public async Task<Stream> GetStreamAsync(string url, CancellationToken cancellationToken = default)
+        public new async Task<Stream> GetStreamAsync(string url, CancellationToken cancellationToken = default)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, url);
             // TODO Put this somewhere else
@@ -120,7 +113,10 @@ namespace XRayBuilder.Core.Libraries.Http
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            request.Properties[TimeoutPropertyKey] = timeout;
+            if (timeout == null)
+                return;
+
+            request.Options.Set(new HttpRequestOptionsKey<TimeSpan>(TimeoutPropertyKey), timeout.Value);
         }
 
         public static TimeSpan? GetTimeout(this HttpRequestMessage request)
@@ -128,8 +124,8 @@ namespace XRayBuilder.Core.Libraries.Http
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            if (request.Properties.TryGetValue(TimeoutPropertyKey, out var value) && value is TimeSpan timeout)
-                return timeout;
+            if (request.Options.TryGetValue(new HttpRequestOptionsKey<TimeSpan>(TimeoutPropertyKey), out var value))
+                return value;
 
             return null;
         }

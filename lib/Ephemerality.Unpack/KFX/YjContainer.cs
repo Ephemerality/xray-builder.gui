@@ -2,13 +2,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using Amazon.IonDotnet.Tree;
 using Amazon.IonDotnet.Tree.Impl;
 using Ephemerality.Unpack.Exceptions;
 using JetBrains.Annotations;
+using SixLabors.ImageSharp;
 
 namespace Ephemerality.Unpack.KFX
 {
@@ -53,8 +53,7 @@ namespace Ephemerality.Unpack.KFX
 
                 try
                 {
-                    using var ms = new MemoryStream(blob.Bytes().ToArray());
-                    return new Bitmap(ms);
+                    return Image.Load(blob.Bytes());
                 }
                 catch (Exception e)
                 {

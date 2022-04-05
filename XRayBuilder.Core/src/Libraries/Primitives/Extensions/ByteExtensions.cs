@@ -25,7 +25,7 @@ namespace XRayBuilder.Core.Libraries.Primitives.Extensions
 
         public static byte[] Sha1(this byte[] bytes)
         {
-            using var sha1 = new SHA1Managed();
+            using var sha1 = SHA1.Create();
             return sha1.ComputeHash(bytes);
         }
 

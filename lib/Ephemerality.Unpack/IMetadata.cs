@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Drawing;
 using System.IO;
 using Ephemerality.Unpack.Exceptions;
+using SixLabors.ImageSharp;
 
 namespace Ephemerality.Unpack
 {

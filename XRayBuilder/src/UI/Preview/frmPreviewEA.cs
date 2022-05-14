@@ -11,6 +11,7 @@ using XRayBuilder.Core.Extras.Artifacts;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Serialization.Json.Util;
+using XRayBuilderGUI.Extensions;
 using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI.UI.Preview
@@ -84,7 +85,7 @@ namespace XRayBuilderGUI.UI.Preview
                     lblAuthor.Text = author.Name;
                     lblAuthorRecs.Text = $@"More by {author.Name}";
                     if (!string.IsNullOrEmpty(author.ImageUrl))
-                        pbAuthor.Image = await _httpClient.GetImageAsync(author.ImageUrl, MaxImageSize, false, cancellationToken);
+                        pbAuthor.Image = (await _httpClient.GetImageAsync(author.ImageUrl, MaxImageSize, true, cancellationToken)).ToBitmap();
                 }
 
                 if (endActions.Data.PublicSharedRating != null)
@@ -118,7 +119,7 @@ namespace XRayBuilderGUI.UI.Preview
                     lblNextAuthor.Text = nextBook.Authors.FirstOrDefault();
                     _asin = nextBook.Asin;
                     if (!string.IsNullOrEmpty(nextBook.ImageUrl))
-                        pbNextCover.Image = await _httpClient.GetImageAsync(nextBook.ImageUrl, MaxImageSize, false, cancellationToken);
+                        pbNextCover.Image = (await _httpClient.GetImageAsync(nextBook.ImageUrl, MaxImageSize, false, cancellationToken)).ToBitmap();
                 }
                 else
                 {
@@ -157,7 +158,7 @@ namespace XRayBuilderGUI.UI.Preview
                 };
 
                 listView.Items.Add(item);
-                imageList.Images.Add(image);
+                imageList.Images.Add(image.ToBitmap());
             }
         }
 

@@ -15,7 +15,7 @@ namespace XRayBuilderGUI.UI
             var built = new FileInfo(assembly.Location).LastWriteTime;
             var title = assembly.GetCustomAttribute<AssemblyTitleAttribute>()?.Title ?? "";
             if (string.IsNullOrEmpty(title))
-                title = Path.GetFileNameWithoutExtension(assembly.CodeBase);
+                title = Path.GetFileNameWithoutExtension(assembly.Location);
 
             lblName.Text = assembly.GetCustomAttribute<AssemblyProductAttribute>()?.Product ?? "";
             lblVersion.Text = $"Version {assembly.GetName().Version}";

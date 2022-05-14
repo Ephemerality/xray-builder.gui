@@ -14,8 +14,6 @@ using JetBrains.Annotations;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Roentgen.Logic;
 using XRayBuilder.Core.Libraries.Enumerables;
-using XRayBuilder.Core.Libraries.Enumerables.Extensions;
-using XRayBuilder.Core.Libraries.Images.Util;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Serialization.Xml.Util;
 using XRayBuilder.Core.Logic;
@@ -24,6 +22,7 @@ using XRayBuilder.Core.XRay.Logic.Aliases;
 using XRayBuilder.Core.XRay.Logic.Parsing;
 using XRayBuilder.Core.XRay.Logic.Terms;
 using XRayBuilder.Core.XRay.Model;
+using XRayBuilderGUI.Extensions;
 using XRayBuilderGUI.Properties;
 using XRayBuilderGUI.UI.Model;
 
@@ -294,8 +293,8 @@ namespace XRayBuilderGUI.UI
             if (row == null)
                 return;
 
-            rdoCharacter.Checked = ImageUtil.AreEqual((Bitmap)GetCellByColumnName(row, nameof(Term.Type)).FormattedValue, Resources.character);
-            rdoTopic.Checked = ImageUtil.AreEqual((Bitmap)GetCellByColumnName(row, nameof(Term.Type)).FormattedValue, Resources.setting);
+            rdoCharacter.Checked = ((Bitmap)GetCellByColumnName(row, nameof(Term.Type)).FormattedValue).IsPixelMatch(Resources.character);
+            rdoTopic.Checked = ((Bitmap)GetCellByColumnName(row, nameof(Term.Type)).FormattedValue).IsPixelMatch(Resources.setting);
             txtName.Text = GetCellByColumnName(row, nameof(Term.TermName)).Value?.ToString() ?? "";
             txtAliases.Text = GetCellByColumnName(row, nameof(Term.Aliases)).FormattedValue?.ToString() ?? "";
             txtDescription.Text = GetCellByColumnName(row, nameof(Term.Desc)).Value?.ToString() ?? "";

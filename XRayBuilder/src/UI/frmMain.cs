@@ -37,6 +37,7 @@ using XRayBuilder.Core.XRay.Logic.Export;
 using XRayBuilder.Core.XRay.Logic.Terms;
 using XRayBuilder.Core.XRay.Model.Export;
 using XRayBuilder.Core.XRay.Util;
+using XRayBuilderGUI.Extensions;
 using XRayBuilderGUI.Properties;
 using XRayBuilderGUI.Localization.Main;
 using XRayBuilderGUI.UI.Preview.Model;
@@ -946,7 +947,7 @@ namespace XRayBuilderGUI.UI
                 return;
             }
             metadata.CheckDrm();
-            pbCover.Image = (Image) metadata.CoverImage?.Clone();
+            pbCover.Image = metadata.CoverImage?.ToBitmap();
 
             lblTitle.Visible = true;
             lblAuthor.Visible = true;

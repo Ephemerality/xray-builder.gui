@@ -12,6 +12,7 @@ using XRayBuilder.Core.Libraries.Enumerables.Extensions;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Language.Pluralization;
 using XRayBuilder.Core.Libraries.Serialization.Json.Util;
+using XRayBuilderGUI.Extensions;
 using XRayBuilderGUI.Properties;
 
 namespace XRayBuilderGUI.UI.Preview
@@ -99,7 +100,7 @@ namespace XRayBuilderGUI.UI.Preview
             {
                 var imageUrl = author.ImageUrl;
                 if (!string.IsNullOrEmpty(imageUrl))
-                    pbAuthorImage.Image = await _httpClient.GetImageAsync(imageUrl, MaxImageSize, false, cancellationToken);
+                    pbAuthorImage.Image = (await _httpClient.GetImageAsync(imageUrl, MaxImageSize, false, cancellationToken)).ToBitmap();
                 lblBiography.Text = author.Bio;
             }
 
@@ -111,7 +112,7 @@ namespace XRayBuilderGUI.UI.Preview
                 {
                     var imageUrl = rec.ImageUrl;
                     if (!string.IsNullOrEmpty(imageUrl))
-                        ilOtherBooks.Images.Add(await _httpClient.GetImageAsync(imageUrl, MaxImageSize, false, cancellationToken));
+                        ilOtherBooks.Images.Add((await _httpClient.GetImageAsync(imageUrl, MaxImageSize, false, cancellationToken)).ToBitmap());
                 }
                 ListViewItem_SetSpacing(lvOtherBooks, 60 + 10, 90 + 10);
                 for (var i = 0; i < ilOtherBooks.Images.Count; i++)
@@ -133,7 +134,7 @@ namespace XRayBuilderGUI.UI.Preview
                 lblPreviousTitle.Text = startActions.Data.PreviousBookInTheSeries.Title;
                 var imageUrl = startActions.Data.PreviousBookInTheSeries.ImageUrl;
                 if (!string.IsNullOrEmpty(imageUrl))
-                    pbPreviousCover.Image = await _httpClient.GetImageAsync(imageUrl, MaxImageSize, false, cancellationToken);
+                    pbPreviousCover.Image = (await _httpClient.GetImageAsync(imageUrl, MaxImageSize, false, cancellationToken)).ToBitmap();
             }
         }
 

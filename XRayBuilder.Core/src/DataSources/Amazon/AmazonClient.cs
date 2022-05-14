@@ -63,8 +63,6 @@ namespace XRayBuilder.Core.DataSources.Amazon
             //Generate Author search URL from author's name
             var newAuthor = Functions.FixAuthor(author);
             var plusAuthorName = newAuthor.Replace(" ", "+");
-            //Updated to match Search "all" Amazon
-            var amazonAuthorSearchUrl = $"https://www.amazon.{TLD}/s?k={plusAuthorName}&ref=nb_sb_noss";
             // Amazon Kindle store only search
             var amazonKindleAuthorSearchUrl = $"https://www.amazon.{TLD}/s?k={plusAuthorName}&i=digital-text&ref=nb_sb_noss";
 
@@ -84,16 +82,27 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 if(enableLog)
                     _logger.Log($"Warning: No results found in the Amazon.{TLD} Kindle store. Trying all departments…");
 
+                //Updated to match Search "all" Amazon
+                var amazonAuthorSearchUrl = $"https://www.amazon.{TLD}/s?k={plusAuthorName}&ref=nb_sb_noss";
                 authorSearchDoc = await GetPageWithCaptchaCheckAsync(amazonAuthorSearchUrl, TLD, enableLog, cancellationToken);
 
+                if (authorSearchDoc == null)
+                {
+                    if (enableLog)
+                        _logger.Log($"An error occurred finding author's page on Amazon.{TLD}.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at {amazonKindleAuthorSearchUrl}\r\nSometimes Amazon just doesn't return the author and trying a few times will work.");
+                    return null;
+                }
+
                 // If the wrong format of search page is returned, try to find author in the small links under book titles
-                possibleNodes = authorSearchDoc?.DocumentNode.SelectNodes(".//a[@class='a-size-base a-link-normal']")
+                possibleNodes = authorSearchDoc.DocumentNode.SelectNodes(".//a[@class='a-size-base a-link-normal s-underline-text s-underline-link-text s-link-style']")?.ToArray();
+                if (possibleNodes == null || !possibleNodes.Any())
+                    possibleNodes = authorSearchDoc.DocumentNode.SelectNodes(".//a[@class='a-size-base a-link-normal']")?.ToArray();
+                possibleNodes = possibleNodes
                     ?.Where(possibleNode => possibleNode.InnerText != null && possibleNode.InnerText.Trim().Equals(newAuthor, StringComparison.InvariantCultureIgnoreCase))
                     .ToArray();
 
                 if (possibleNodes == null || (node = possibleNodes.FirstOrDefault()) == null)
                 {
-
                     if (enableLog)
                         _logger.Log($"An error occurred finding author's page on Amazon.{TLD}.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at {amazonKindleAuthorSearchUrl}\r\nSometimes Amazon just doesn't return the author and trying a few times will work.");
                     return null;

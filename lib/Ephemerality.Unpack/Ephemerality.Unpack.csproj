@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <LangVersion>latest</LangVersion>
-        <PackageVersion>0.0.6</PackageVersion>
+        <PackageVersion>0.0.7</PackageVersion>
         <Title>Ephemerality.Unpack</Title>
         <Authors>Ephemerality</Authors>
         <PackageProjectUrl>https://github.com/Ephemerality/xray-builder.gui/tree/master/lib/Ephemerality.Unpack</PackageProjectUrl>

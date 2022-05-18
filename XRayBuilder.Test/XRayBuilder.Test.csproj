@@ -13,7 +13,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AssemblyTitle>XRayBuilderTests</AssemblyTitle>
     <Product>XRayBuilderTests</Product>
-    <Copyright>Copyright ©  2021</Copyright>
+    <Copyright>Copyright ©  2022</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>

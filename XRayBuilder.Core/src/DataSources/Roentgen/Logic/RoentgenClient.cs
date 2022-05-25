@@ -104,7 +104,7 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
                 // Increase timeout for terms requests
                 request.SetTimeout(TimeSpan.FromSeconds(30));
                 var response = await _httpClient.SendAsync(request, cancellationToken);
-                var responseStream = await response.Content.ReadAsStreamAsync();
+                var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken);
                 var responseString = await new StreamReader(responseStream, Encoding.UTF8).ReadToEndAsync();
                 return XmlUtil.Deserialize<Term[]>(responseString);
             });
@@ -132,7 +132,7 @@ namespace XRayBuilder.Core.DataSources.Roentgen.Logic
                 RegionTld = regionTld
             }), Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync($"{BaseUrl}{DownloadEndpoint}", request, cancellationToken);
-            var responseStream = await response.Content.ReadAsStreamAsync();
+            var responseStream = await response.Content.ReadAsStreamAsync(cancellationToken);
             var responseString = await new StreamReader(responseStream, Encoding.UTF8).ReadToEndAsync();
             return JsonUtil.Deserialize<T>(responseString, false);
         }

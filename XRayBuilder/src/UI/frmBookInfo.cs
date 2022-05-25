@@ -137,8 +137,7 @@ namespace XRayBuilderGUI.UI
                     foreach (var book in books.Where(book => !string.IsNullOrEmpty(book.ImageUrl)))
                         try
                         {
-                            book.CoverImage = await _httpClient.GetImageAsync(book.ImageUrl,
-                                cancellationToken: _cancelTokens.Token);
+                            book.CoverImage = await _httpClient.GetImageAsync(book.ImageUrl, cancellationToken: _cancelTokens.Token);
                         }
                         catch (Exception)
                         {

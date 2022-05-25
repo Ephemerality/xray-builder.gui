@@ -355,7 +355,7 @@ Krever gyldig ASIN.</value>
     <value>Besøk nettadressen for å forsikre at den stemmer.</value>
   </data>
   <data name="UnableToFindBookOnSource" xml:space="preserve">
-    <value>Klarte ikke å finne denne boken på {0}. Sjekk at bokens tittel ({1}) stemmer.</value>
+    <value>Klarte ikke å finne denne boken på {0}.</value>
   </data>
   <data name="ErrorSavingXml" xml:space="preserve">
     <value>Klarte ikke å lagre tegndata til XML-fil på {0}</value>

@@ -6,7 +6,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,6 +15,7 @@ using Ephemerality.Unpack.Mobi.Decompress;
 using Ephemerality.Unpack.Util;
 using MiscUtil.Conversion;
 using MiscUtil.IO;
+using SixLabors.ImageSharp;
 
 namespace Ephemerality.Unpack.Mobi
 {
@@ -86,8 +86,7 @@ namespace Ephemerality.Unpack.Mobi
                         firstImage = i;
                     if (i != firstImage + coverOffset)
                         continue;
-                    using var ms = new MemoryStream(buffer);
-                    CoverImage = new Bitmap(ms);
+                    CoverImage = Image.Load(buffer);
                 }
                 else if (Encoding.ASCII.GetString(buffer, 0, 8) == "BOUNDARY")
                 {

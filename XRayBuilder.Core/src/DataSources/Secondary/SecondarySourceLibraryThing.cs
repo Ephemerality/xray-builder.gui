@@ -88,7 +88,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
             }
 
             var result = await GetAsync($"{BaseUrl}{SearchEndpoint(metadata.Author, metadata.Title)}", cancellationToken);
-            var response = JsonUtil.Deserialize<SearchResultPayload>(await result.Content.ReadAsStringAsync());
+            var response = JsonUtil.Deserialize<SearchResultPayload>(await result.Content.ReadAsStringAsync(cancellationToken));
             var htmlPayload = Encoding.UTF8.GetString(Convert.FromBase64String(response.Text));
 
             var htmlDoc = new HtmlDocument();
@@ -300,7 +300,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
                 OptionAutoCloseOnEnd = true
             };
             var result = await GetAsync(url, cancellationToken);
-            var stream = await result.Content.ReadAsStreamAsync();
+            var stream = await result.Content.ReadAsStreamAsync(cancellationToken);
             htmlDoc.Load(stream, Encoding.UTF8);
             return htmlDoc;
         }

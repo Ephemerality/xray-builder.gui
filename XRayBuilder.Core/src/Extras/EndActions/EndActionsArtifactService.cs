@@ -41,7 +41,7 @@ namespace XRayBuilder.Core.Extras.EndActions
 
         public string GenerateNew(Request request)
         {
-            var endActions = _baseEndActions.Clone();
+            var endActions = _baseEndActions.DeepCopy();
 
             endActions.BookInfo = new Extras.Artifacts.EndActions.BookInformation
             {

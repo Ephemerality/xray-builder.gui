@@ -8,8 +8,8 @@ It will also build some extra metadata files:
 * End Actions - Pops up when you're done reading the book to provide recommendations on what to read next
 
 ## Requirements
-* Windows 7+  
-* .NET Framework 4.8  
+* Windows 10+ (for GUI) or any OS that supports .NET 6 (for CLI)  
+* .NET 6.0
   
 ## Instructions and Binary Downloads
 * Further instructions are available within the application's help button.

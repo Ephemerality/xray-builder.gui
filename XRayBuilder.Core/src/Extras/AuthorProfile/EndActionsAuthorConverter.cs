@@ -1,11 +1,11 @@
 using System;
-using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Model;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace XRayBuilder.Core.Extras.AuthorProfile
 {
@@ -43,7 +43,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                     });
             }
 
-            Bitmap authorImage = null;
+            Image authorImage = null;
             if (!string.IsNullOrEmpty(imageUrl))
             {
                 try

@@ -36,7 +36,7 @@ namespace XRayBuilder.Core.Extras.StartActions
 
         public Artifacts.StartActions GenerateStartActions(BookInfo curBook, AuthorProfileGenerator.Response authorProfile)
         {
-            var startActions = _baseStartActions.Clone();
+            var startActions = _baseStartActions.DeepCopy();
 
             startActions.BookInfo = new Artifacts.StartActions.BookInformation
             {

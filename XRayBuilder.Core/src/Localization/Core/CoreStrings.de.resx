@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="FailedToValidateAsin" xml:space="preserve">
+    <value>ASIN-Validierung/-Korrektur nicht erfolgreich</value>
+  </data>
+  <data name="ContinuingAnyway" xml:space="preserve">
+    <value>Trotzdem fortfahren</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Warnung</value>
+  </data>
+  <data name="CouldNotLocateParagraphsNormally" xml:space="preserve">
+    <value>Es konnten auf regulärem Weg keine bekannten Absatzmarken gefunden werden (p-Elemente oder divs mit der Klasse 'paragraph').</value>
+  </data>
+  <data name="SearchingAllDivs" xml:space="preserve">
+    <value>Durchsuchen den gesamten Buchinhalt (alle div-Elemente) nach Zeichenketten, die zu unerwünschten Ergebnissen führen könnten.</value>
+  </data>
+  <data name="ScanTime" xml:space="preserve">
+    <value>Zum Durchsuchen benötigte Zeit: {0}</value>
+  </data>
+  <data name="CouldNotLocateAnyParagraphs" xml:space="preserve">
+    <value>Es konnten mit keiner bekannten Methode Absatzmarken im Buch gefunden werden.</value>
+  </data>
+  <data name="ConsiderAddingAliases" xml:space="preserve">
+    <value>Für diesen Begriff können Aliasnamen angelegt werden.</value>
+  </data>
+  <data name="ExtractingMetadata" xml:space="preserve">
+    <value>Metadaten extrahieren…</value>
+  </data>
+  <data name="ErrorExtractingMetadata" xml:space="preserve">
+    <value>Beim auslesen der Metadaten ist ein Fehler aufgetreten</value>
+  </data>
+  <data name="ScanningEbookContent" xml:space="preserve">
+    <value>Durchsuche Buchinhalt…</value>
+  </data>
+  <data name="NoLocationsFoundForTerm" xml:space="preserve">
+    <value>Es wurden keine Vorkommen des Begriffs "{0}" gefunden</value>
+  </data>
+  <data name="IncorrectAsinTitle" xml:space="preserve">
+    <value>Ungültige ASIN</value>
+  </data>
+  <data name="DatabaseNameLengthWarning" xml:space="preserve">
+    <value>ACHTUNG: Der Name der Datenbank hat die maximal mögliche Länge. Wenn "{0}" der vollständige Titel des E-books ist, sollte das kein Problem darstellen.
+Sollte der Titel allerdings länger sein, kann es passieren, dass auf dem Kindle-Gerät eine Fehlermeldung erscheint (Bei Firmware Versionen unter 5.6)
+Kürzen Sie den Titel in Calibre oder ändern Sie den Datenbanknamen manuell.
+</value>
+  </data>
+  <data name="GotMetadata" xml:space="preserve">
+    <value>Metadaten erhalten!</value>
+  </data>
+  <data name="DoesThisSeemCorrect" xml:space="preserve">
+    <value>Sieht das richtig aus?</value>
+  </data>
+  <data name="SearchingAmazonForTitleAuthor" xml:space="preserve">
+    <value>Durchsuche Amazon nach {0} von {1}…</value>
+  </data>
+  <data name="OpenChaptersFile" xml:space="preserve">
+    <value>Kapiteldatei zur Bearbeitung öffnen?</value>
+  </data>
+  <data name="AliasesReadFromXml" xml:space="preserve">
+    <value>Aliasnamen aus der XML-Datei eingelesen.</value>
+  </data>
+  <data name="InvalidAsinWarning" xml:space="preserve">
+    <value>Ungültige Amazon ASIN erkannt: {0}!
+Kindle könnte möglicherweise für dieses E-Book keine X-Ray Informationen anzeigen.
+Trotzdem Fortfahren?</value>
+  </data>
+  <data name="InvalidAsinShouldFix" xml:space="preserve">
+    <value>Ungültige Amazon ASIN erkannt: {0}!
+Kindle könnte möglicherweise für dieses E-Book keine X-Ray Informationen anzeigen.
+Problembehebung versuchen?
+(Die E-Book Datei wird bei dem Vorgang modifiziert. Sie muss deshalb im Anschluss erneut auf das Gerät kopiert werden.)
+DIESES FEATURE IST EXPERIMENTELL UND KÖNNTE DIE E-BOOK DATEI BESCHÄDIGEN!</value>
+  </data>
+  <data name="UpdatedAsin" xml:space="preserve">
+    <value>ASIN geändert nach {0}. Diese neue E-Book Datei muss erneut auf den Kindle kopiert werden.</value>
+  </data>
+  <data name="AmazonSearchResultTitle" xml:space="preserve">
+    <value>Amazon Suchergebnis</value>
+  </data>
+  <data name="ShownAsinUsed" xml:space="preserve">
+    <value>Falls ja, wird die angezeigte ASIN verwendet.</value>
+  </data>
+  <data name="Author" xml:space="preserve">
+    <value>Autor</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="FoundBookAmazon" xml:space="preserve">
+    <value>Die folgenden E-Book Informationen wurden auf Amazon gefunden</value>
+  </data>
+  <data name="UnableToAutomaticallyFindAsinOnAmazon" xml:space="preserve">
+    <value>Für dieses E-Book konnte beim automatischen Suchlauf keine passende ASIN auf Amazon gefunden werden :(</value>
+  </data>
+  <data name="SavingRawml" xml:space="preserve">
+    <value>Speichere das unbearbeitete Markup im dmp Verzeichnis…</value>
+  </data>
+  <data name="AttemptingBuildXRay" xml:space="preserve">
+    <value>Versuche die X-Ray Datei zu erstellen…</value>
+  </data>
+  <data name="NoTermsTitle" xml:space="preserve">
+    <value>Kein Begriff</value>
+  </data>
+  <data name="Chapters" xml:space="preserve">
+    <value>Kapitel</value>
+  </data>
+  <data name="Aliases" xml:space="preserve">
+    <value>Aliasnamen</value>
+  </data>
+  <data name="TermsExportedOrAlreadyExist" xml:space="preserve">
+    <value>Begriffe wurden in die Alias-Datei exportiert oder sind in der Datei bereits vorhanden.</value>
+  </data>
+  <data name="BooksSourceUrl" xml:space="preserve">
+    <value>{0} URL des E-Books</value>
+  </data>
+  <data name="NoTermsAvailable" xml:space="preserve">
+    <value>Keine Begriffe verfügbar. Soll das Erstellen trotzdem fortgesetzt werden?</value>
+  </data>
+  <data name="AliasesFileNotFound" xml:space="preserve">
+    <value>Alias-Datei nicht gefunden.</value>
+  </data>
+  <data name="AliasesReadFrom" xml:space="preserve">
+    <value>Aliasnamen aus {0} eingelesen.</value>
+  </data>
+  <data name="InitialXRayBuiltAddingChapters" xml:space="preserve">
+    <value>Vorläufige X-Ray Datei wurde erstellt. Füge Standorte und Kapitel hinzu…</value>
+  </data>
+  <data name="BuildCancelled" xml:space="preserve">
+    <value>Erstellung abgebrochen.</value>
+  </data>
+  <data name="OpenForEditing" xml:space="preserve">
+    <value>Datei zum Bearbeiten öffnen?</value>
+  </data>
+  <data name="SeeMobilereads" xml:space="preserve">
+    <value>Weitere Informationen zum Verwenden von Aliasnamen findest Du im Forum von MobileRead (Link zum Thema in den Einstellungen).</value>
+  </data>
+  <data name="BuildingOldFormatNotSupported" xml:space="preserve">
+    <value>KFX E-Books können nicht genutzt werden, um X-Ray Dateien im alten Format zu erstellen</value>
+  </data>
+</root>

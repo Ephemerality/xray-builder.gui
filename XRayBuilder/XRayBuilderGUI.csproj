@@ -5,7 +5,7 @@
     <ProjectGuid>{8AA950E7-5FEE-4130-9D30-18B8397E1DD8}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AssemblyName>X-Ray Builder GUI</AssemblyName>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
@@ -30,67 +30,24 @@
     <AssemblyVersion>2.1.1.0</AssemblyVersion>
     <FileVersion>2.1.1.0</FileVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>full</DebugType>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-    <Prefer32Bit>true</Prefer32Bit>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <DebugType>pdbonly</DebugType>
-  </PropertyGroup>
-  <PropertyGroup>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <DebugType>full</DebugType>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <DebugType>pdbonly</DebugType>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <RootNamespace>XRayBuilderGUI</RootNamespace>
     <LangVersion>latest</LangVersion>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AsyncEnumerator" Version="4.0.2" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.34" />
-    <PackageReference Include="JetBrains.Annotations" Version="2021.1.0" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.42" />
+    <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Pluralize.NET" Version="1.0.2" />
-    <PackageReference Include="SimpleInjector" Version="5.3.0" />
+    <PackageReference Include="SimpleInjector" Version="5.3.3" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.114.2" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
+    <PackageReference Include="Pluralize.NET.Core" Version="1.0.0" />
   </ItemGroup>
-
-  <Choose>
-    <When Condition="$(TargetFramework.StartsWith('net4'))">
-      <ItemGroup>
-        <Reference Include="System.ComponentModel.DataAnnotations" />
-        <Reference Include="System.Data.Entity.Design" />
-        <Reference Include="System.Net.Http" />
-        <Reference Include="System.Data.DataSetExtensions" />
-        <Reference Include="Microsoft.CSharp" />
-        <Reference Include="System.Deployment" />
-        <Reference Include="System.Windows.Forms" />
-      </ItemGroup>
-    </When>
-    <Otherwise>
-      <PropertyGroup>
-        <UseWindowsForms>true</UseWindowsForms>
-      </PropertyGroup>
-      <ItemGroup>
-        <PackageReference Include="Microsoft.Windows.Compatibility" Version="2.0.1" />
-        <PackageReference Include="Pluralize.NET.Core" Version="1.0.0" />
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
 
   <ItemGroup>
     <Compile Update="src\Localization\Main\MainStrings.Designer.cs">
@@ -271,7 +228,4 @@
   <ItemGroup>
     <Compile Remove="src\HTTPDownloader.cs" />
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="; Move all assemblies and related files to lib folder&#xD;&#xA;ROBOCOPY &quot;$(TargetDir) &quot; &quot;$(TargetDir)lib\ &quot; *.dll *.xml *.pdb /IS /MOV&#xD;&#xA;exit 0" />
-  </Target>
 </Project>

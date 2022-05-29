@@ -51,7 +51,7 @@ namespace XRayBuilderGUI.UI
 
         private void linkID_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start(_toolTip1.GetToolTip(linkID));
+            Process.Start(new ProcessStartInfo(_toolTip1.GetToolTip(linkID)) { UseShellExecute = true });
         }
 
         private void frmGR_Load(object sender, EventArgs e)

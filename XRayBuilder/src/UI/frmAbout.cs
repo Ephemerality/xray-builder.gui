@@ -37,7 +37,7 @@ namespace XRayBuilderGUI.UI
         {
             try
             {
-                Process.Start("https://icons8.com");
+                Process.Start(new ProcessStartInfo("https://icons8.com") { UseShellExecute = true });
             }
             catch
             {

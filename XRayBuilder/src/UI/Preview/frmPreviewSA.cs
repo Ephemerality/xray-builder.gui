@@ -174,7 +174,7 @@ namespace XRayBuilderGUI.UI.Preview
         private void linkStore_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             if (!string.IsNullOrEmpty(_asin))
-                Process.Start($"http://www.amazon.{Settings.Default.amazonTLD}/dp/{_asin}");
+                Process.Start(new ProcessStartInfo($"http://www.amazon.{Settings.Default.amazonTLD}/dp/{_asin}") { UseShellExecute = true });
         }
     }
 }

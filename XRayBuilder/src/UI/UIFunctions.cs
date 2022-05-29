@@ -23,7 +23,7 @@ namespace XRayBuilderGUI.UI
             if (!Directory.Exists(dir))
                 MessageBox.Show("Specified directory does not exist.", "Directory Not Found...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             else
-                Process.Start(dir);
+                Process.Start(new ProcessStartInfo(dir) { UseShellExecute = true });
         }
 
         public static string GetFile([Localizable(true)] string title, string defaultFile, string filter = "All files (*.*)|*.*", string initialDir = "")

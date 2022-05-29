@@ -56,13 +56,13 @@ namespace XRayBuilderGUI.UI
 
         private void linkStore_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start(_authorList[cbResults.SelectedIndex].Url);
+            Process.Start(new ProcessStartInfo(_authorList[cbResults.SelectedIndex].Url) { UseShellExecute = true });
         }
 
         private void dgvOtherBooks_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && _authorList[cbResults.SelectedIndex].Books != null)
-                Process.Start(_authorList[cbResults.SelectedIndex].Books[e.RowIndex].AmazonUrl);
+                Process.Start(new ProcessStartInfo(_authorList[cbResults.SelectedIndex].Books[e.RowIndex].AmazonUrl) { UseShellExecute = true });
         }
     }
 }

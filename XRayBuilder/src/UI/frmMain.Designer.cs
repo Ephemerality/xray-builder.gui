@@ -98,6 +98,7 @@
             this.pbFile2 = new System.Windows.Forms.PictureBox();
             this.pbFile1 = new System.Windows.Forms.PictureBox();
             this.pbCover = new System.Windows.Forms.PictureBox();
+            this.btnVisitGithub = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.cmsLog.SuspendLayout();
@@ -114,7 +115,7 @@
             // lblGoodreads
             // 
             this.lblGoodreads.AutoSize = true;
-            this.lblGoodreads.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblGoodreads.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.lblGoodreads.Location = new System.Drawing.Point(9, 24);
             this.lblGoodreads.Name = "lblGoodreads";
             this.lblGoodreads.Size = new System.Drawing.Size(91, 15);
@@ -126,7 +127,7 @@
             // 
             this.txtMobi.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtMobi.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtMobi.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txtMobi.Location = new System.Drawing.Point(13, 21);
             this.txtMobi.Name = "txtMobi";
             this.txtMobi.Size = new System.Drawing.Size(927, 23);
@@ -139,7 +140,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.lblGoodreads);
             this.groupBox1.Controls.Add(this.txtGoodreads);
-            this.groupBox1.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox1.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.groupBox1.Location = new System.Drawing.Point(12, 143);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(953, 58);
@@ -151,7 +152,7 @@
             // 
             this.txtGoodreads.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtGoodreads.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtGoodreads.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txtGoodreads.Location = new System.Drawing.Point(107, 21);
             this.txtGoodreads.Name = "txtGoodreads";
             this.txtGoodreads.Size = new System.Drawing.Size(833, 23);
@@ -163,7 +164,7 @@
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox3.Controls.Add(this.txtMobi);
-            this.groupBox3.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox3.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.groupBox3.Location = new System.Drawing.Point(12, 82);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(953, 58);
@@ -248,7 +249,7 @@
             // 
             this.lblFiles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblFiles.AutoSize = true;
-            this.lblFiles.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblFiles.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.lblFiles.Location = new System.Drawing.Point(771, 639);
             this.lblFiles.Name = "lblFiles";
             this.lblFiles.Size = new System.Drawing.Size(33, 13);
@@ -261,7 +262,7 @@
             this.txtAsin.ActiveLinkColor = System.Drawing.Color.MediumBlue;
             this.txtAsin.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.txtAsin.AutoSize = true;
-            this.txtAsin.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtAsin.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txtAsin.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
             this.txtAsin.LinkColor = System.Drawing.Color.MediumBlue;
             this.txtAsin.Location = new System.Drawing.Point(851, 603);
@@ -276,7 +277,7 @@
             // txtAuthor
             // 
             this.txtAuthor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtAuthor.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtAuthor.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txtAuthor.Location = new System.Drawing.Point(851, 585);
             this.txtAuthor.Name = "txtAuthor";
             this.txtAuthor.Size = new System.Drawing.Size(120, 13);
@@ -288,7 +289,7 @@
             // txtTitle
             // 
             this.txtTitle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtTitle.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtTitle.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txtTitle.Location = new System.Drawing.Point(851, 567);
             this.txtTitle.Name = "txtTitle";
             this.txtTitle.Size = new System.Drawing.Size(120, 13);
@@ -301,7 +302,7 @@
             // 
             this.lblAsin.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblAsin.AutoSize = true;
-            this.lblAsin.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAsin.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.lblAsin.Location = new System.Drawing.Point(772, 603);
             this.lblAsin.Name = "lblAsin";
             this.lblAsin.Size = new System.Drawing.Size(36, 13);
@@ -313,7 +314,7 @@
             // 
             this.lblAuthor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblAuthor.AutoSize = true;
-            this.lblAuthor.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblAuthor.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.lblAuthor.Location = new System.Drawing.Point(772, 585);
             this.lblAuthor.Name = "lblAuthor";
             this.lblAuthor.Size = new System.Drawing.Size(47, 13);
@@ -325,7 +326,7 @@
             // 
             this.lblTitle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblTitle.AutoSize = true;
-            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.lblTitle.Location = new System.Drawing.Point(772, 567);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(32, 13);
@@ -341,7 +342,7 @@
             this.groupBox4.Controls.Add(this.rdoFile);
             this.groupBox4.Controls.Add(this.rdoGoodreads);
             this.groupBox4.Controls.Add(this.txtXMLFile);
-            this.groupBox4.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox4.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.groupBox4.Location = new System.Drawing.Point(12, 204);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(953, 58);
@@ -352,7 +353,7 @@
             // rdoRoentgen
             // 
             this.rdoRoentgen.AutoSize = true;
-            this.rdoRoentgen.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rdoRoentgen.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.rdoRoentgen.Location = new System.Drawing.Point(113, 22);
             this.rdoRoentgen.Name = "rdoRoentgen";
             this.rdoRoentgen.Size = new System.Drawing.Size(76, 19);
@@ -364,7 +365,7 @@
             // rdoFile
             // 
             this.rdoFile.AutoSize = true;
-            this.rdoFile.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rdoFile.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.rdoFile.Location = new System.Drawing.Point(213, 22);
             this.rdoFile.Name = "rdoFile";
             this.rdoFile.Size = new System.Drawing.Size(43, 19);
@@ -377,7 +378,7 @@
             // 
             this.rdoGoodreads.AutoSize = true;
             this.rdoGoodreads.Checked = true;
-            this.rdoGoodreads.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rdoGoodreads.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.rdoGoodreads.Location = new System.Drawing.Point(13, 22);
             this.rdoGoodreads.Name = "rdoGoodreads";
             this.rdoGoodreads.Size = new System.Drawing.Size(82, 19);
@@ -392,7 +393,7 @@
             this.txtXMLFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtXMLFile.Enabled = false;
-            this.txtXMLFile.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtXMLFile.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txtXMLFile.Location = new System.Drawing.Point(262, 21);
             this.txtXMLFile.Name = "txtXMLFile";
             this.txtXMLFile.Size = new System.Drawing.Size(678, 23);
@@ -593,28 +594,28 @@
             // tmiAuthorProfile
             // 
             this.tmiAuthorProfile.Name = "tmiAuthorProfile";
-            this.tmiAuthorProfile.Size = new System.Drawing.Size(180, 22);
+            this.tmiAuthorProfile.Size = new System.Drawing.Size(148, 22);
             this.tmiAuthorProfile.Text = "Author Profile";
             this.tmiAuthorProfile.Click += new System.EventHandler(this.tmiAuthorProfile_Click);
             // 
             // tmiEndAction
             // 
             this.tmiEndAction.Name = "tmiEndAction";
-            this.tmiEndAction.Size = new System.Drawing.Size(180, 22);
+            this.tmiEndAction.Size = new System.Drawing.Size(148, 22);
             this.tmiEndAction.Text = "End Actions";
             this.tmiEndAction.Click += new System.EventHandler(this.tmiEndAction_Click);
             // 
             // tmiStartAction
             // 
             this.tmiStartAction.Name = "tmiStartAction";
-            this.tmiStartAction.Size = new System.Drawing.Size(180, 22);
+            this.tmiStartAction.Size = new System.Drawing.Size(148, 22);
             this.tmiStartAction.Text = "Start Actions";
             this.tmiStartAction.Click += new System.EventHandler(this.tmiStartAction_Click);
             // 
             // tmiXray
             // 
             this.tmiXray.Name = "tmiXray";
-            this.tmiXray.Size = new System.Drawing.Size(180, 22);
+            this.tmiXray.Size = new System.Drawing.Size(148, 22);
             this.tmiXray.Text = "X-Ray";
             this.tmiXray.Click += new System.EventHandler(this.tmiXray_Click);
             // 
@@ -726,6 +727,7 @@
             this.btnHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnViewHelp,
             this.btnVisitForum,
+            this.btnVisitGithub,
             this.toolStripSeparator6,
             this.btnAbout});
             this.btnHelp.Image = ((System.Drawing.Image)(resources.GetObject("btnHelp.Image")));
@@ -769,7 +771,7 @@
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.Enabled = false;
-            this.btnCancel.Font = new System.Drawing.Font("Segoe UI", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCancel.Font = new System.Drawing.Font("Segoe UI", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.btnCancel.Location = new System.Drawing.Point(774, 661);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(192, 23);
@@ -783,7 +785,7 @@
             this.txtDatasource.ActiveLinkColor = System.Drawing.Color.MediumBlue;
             this.txtDatasource.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.txtDatasource.AutoSize = true;
-            this.txtDatasource.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtDatasource.Font = new System.Drawing.Font("Segoe UI", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.txtDatasource.LinkBehavior = System.Windows.Forms.LinkBehavior.NeverUnderline;
             this.txtDatasource.LinkColor = System.Drawing.Color.MediumBlue;
             this.txtDatasource.Location = new System.Drawing.Point(851, 621);
@@ -799,7 +801,7 @@
             // 
             this.lblDatasource.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblDatasource.AutoSize = true;
-            this.lblDatasource.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblDatasource.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.lblDatasource.Location = new System.Drawing.Point(771, 621);
             this.lblDatasource.Name = "lblDatasource";
             this.lblDatasource.Size = new System.Drawing.Size(68, 13);
@@ -876,6 +878,13 @@
             this.pbCover.MouseEnter += new System.EventHandler(this.pbCover_MouseEnter);
             this.pbCover.MouseLeave += new System.EventHandler(this.pbCover_MouseLeave);
             // 
+            // btnVisitGithub
+            // 
+            this.btnVisitGithub.Name = "btnVisitGithub";
+            this.btnVisitGithub.Size = new System.Drawing.Size(180, 22);
+            this.btnVisitGithub.Text = "Visit Github";
+            this.btnVisitGithub.Click += new System.EventHandler(this.btnVisitGithub_Click);
+            // 
             // frmMain
             // 
             this.AllowDrop = true;
@@ -904,7 +913,7 @@
             this.Controls.Add(this.pbCover);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.prgBar);
-            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -1003,6 +1012,7 @@
         private System.Windows.Forms.ToolStripMenuItem btnViewHelp;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripMenuItem btnAbout;
+        private System.Windows.Forms.ToolStripMenuItem btnVisitGithub;
     }
 }
 

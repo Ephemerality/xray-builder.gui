@@ -807,6 +807,7 @@ namespace XRayBuilderGUI.UI
             if (string.IsNullOrEmpty(url))
             {
                 txtDatasource.Text = "Search datasource...";
+                _tooltip.SetToolTip(txtDatasource, null);
                 return;
             }
 
@@ -898,6 +899,7 @@ namespace XRayBuilderGUI.UI
             txtXMLFile.Text = "";
             // todo another copy
             txtDatasource.Text = "Search datasource...";
+            _tooltip.SetToolTip(txtDatasource, null);
             prgBar.Value = 0;
             _openedMetadata = null;
             CheckFiles("","","","","","");
@@ -1027,7 +1029,7 @@ namespace XRayBuilderGUI.UI
 
         private void txtOutput_LinkClicked(object sender, LinkClickedEventArgs e)
         {
-            Process.Start(e.LinkText);
+            Process.Start(new ProcessStartInfo(e.LinkText) { UseShellExecute = true });
         }
 
         private async void btnOneClick_Click(object sender, EventArgs e)
@@ -1042,7 +1044,7 @@ namespace XRayBuilderGUI.UI
         {
             if (string.Equals(txtAsin.Text, "ASIN"))
                 return;
-            Process.Start(_amazonClient.Url(_settings.amazonTLD, txtAsin.Text));
+            Process.Start(new ProcessStartInfo(_amazonClient.Url(_settings.amazonTLD, txtAsin.Text)) { UseShellExecute = true });
         }
 
         private void btnExtractTerms_Click(object sender, EventArgs e)
@@ -1207,11 +1209,16 @@ namespace XRayBuilderGUI.UI
             txtOutput.Text = string.Empty;
         }
 
-        private void txtDatasource_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private async void txtDatasource_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            if (txtDatasource.Text.Contains("Search"))
-                return;
-            Process.Start(txtGoodreads.Text);
+            if (!Regex.IsMatch(txtDatasource.Text, "\\d+"))
+            {
+                ToggleInterface(false);
+                await btnSearchGoodreads_Run();
+                ToggleInterface(true);
+            }
+            else
+                Process.Start(new ProcessStartInfo(txtGoodreads.Text) { UseShellExecute = true });
         }
 
         private void txtGoodreads_TextChanged(object sender, EventArgs e)
@@ -1246,7 +1253,8 @@ namespace XRayBuilderGUI.UI
         {
             try
             {
-                Process.Start(Environment.CurrentDirectory + @"\doc\help.pdf");
+                Process.Start(new ProcessStartInfo(Environment.CurrentDirectory + @"\doc\help.pdf") { UseShellExecute = true });
+
             }
             catch
             {
@@ -1256,12 +1264,17 @@ namespace XRayBuilderGUI.UI
 
         private void btnVisitForum_Click(object sender, EventArgs e)
         {
-            Process.Start("http://www.mobileread.com/forums/showthread.php?t=245754");
+            Process.Start(new ProcessStartInfo("http://www.mobileread.com/forums/showthread.php?t=245754") { UseShellExecute = true });
         }
 
         private void btnAbout_Click(object sender, EventArgs e)
         {
             new frmAbout().ShowDialog();
+        }
+
+        private void btnVisitGithub_Click(object sender, EventArgs e)
+        {
+            Process.Start(new ProcessStartInfo("https://github.com/Ephemerality/xray-builder.gui") { UseShellExecute = true });
         }
     }
 }

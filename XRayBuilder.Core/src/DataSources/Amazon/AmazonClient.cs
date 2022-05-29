@@ -75,8 +75,9 @@ namespace XRayBuilder.Core.DataSources.Amazon
             // Try to find Author's page from Amazon search
             var properAuthor = "";
             HtmlNode[] possibleNodes = null;
-            var node = authorSearchDoc?.DocumentNode.SelectSingleNode("//*[@id='result_1']")
-                ?? authorSearchDoc?.DocumentNode.SelectSingleNode(".//div/div[@data-index='0']");
+            var node = authorSearchDoc?.DocumentNode.SelectSingleNode(".//div[@data-asin and @data-index and @data-component-type]")
+                       ?? authorSearchDoc?.DocumentNode.SelectSingleNode("//*[@id='result_1']")
+                       ?? authorSearchDoc?.DocumentNode.SelectSingleNode(".//div/div[@data-index='0']");
             if (node == null || !node.OuterHtml.Contains("/e/B"))
             {
                 if(enableLog)

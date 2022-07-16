@@ -24,7 +24,7 @@ namespace XRayBuilder.Core.Libraries
             (string[] searches, string replace)[] replacements =
             {
                 (new[] {"&#169;", "&amp;#169;", "&#174;", "&amp;#174;", "&mdash;", @"</?[a-z]+>", @"(<a.*?>.*?</a>)", "@", @"#(?!\d+)", @"\$", "%", "_", "<b></b>", @"\*" }, ""),
-                (new[] { "&#133;", "&amp;#133;", @" \. \. \.", @"\.\.\." }, "…"),
+                (new[] { "&#133;", "&amp;#133;", @" \. \. \. ?", @"\.\.\." }, "…"),
                 (new[] { @"\t|\n|\r|•", @"\s+", "<br><br>"}, " "),
                 (new[] { "“", "”", "\"", "&quot;" }, "'"),
                 (new[] { " - ", "--" }, "—"),
@@ -182,6 +182,14 @@ namespace XRayBuilder.Core.Libraries
         public static long UnixTimestampMilliseconds()
         {
             return (long) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+        }
+
+        public static void ShellExecute(string path)
+        {
+            Process.Start(new ProcessStartInfo(path)
+            {
+                UseShellExecute = true
+            });
         }
     }
 

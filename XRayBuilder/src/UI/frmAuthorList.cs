@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
 using XRayBuilder.Core.DataSources.Amazon;
+using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilder.Core.Libraries.Language.Pluralization;
 
@@ -56,13 +57,13 @@ namespace XRayBuilderGUI.UI
 
         private void linkStore_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start(_authorList[cbResults.SelectedIndex].Url);
+            Functions.ShellExecute(_authorList[cbResults.SelectedIndex].Url);
         }
 
         private void dgvOtherBooks_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && _authorList[cbResults.SelectedIndex].Books != null)
-                Process.Start(_authorList[cbResults.SelectedIndex].Books[e.RowIndex].AmazonUrl);
+                Functions.ShellExecute(_authorList[cbResults.SelectedIndex].Books[e.RowIndex].AmazonUrl);
         }
     }
 }

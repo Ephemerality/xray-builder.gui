@@ -20,8 +20,6 @@ namespace XRayBuilder.Core.DataSources.Amazon
         private readonly Regex _numbersRegex = new(@"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)", RegexOptions.Compiled);
         private readonly Regex _regex404 = new(@"(cs_404_logo|cs_404_link|Page Not Found)", RegexOptions.Compiled);
 
-        private readonly Regex _dirtyParas = new(@"^<[^>]+>.*<[^>]+>$|^&apos;|&apos;$|\*|_", RegexOptions.Compiled);
-
         public AmazonInfoParser(ILogger logger, IHttpClient httpClient)
         {
             _logger = logger;
@@ -72,11 +70,12 @@ namespace XRayBuilder.Core.DataSources.Amazon
             CheckCaptcha(bookDoc);
 
             #region Image URL
+
             var bookImageLoc = bookDoc.DocumentNode.SelectSingleNode("//*[@id='imgBlkFront']")
                 ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='imageBlock']")
                 ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='series-detail-product-image']")
                 ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='ebooksImgBlkFront']") //co.uk seems to use this id sometimes
-                                                                                         // for more generic matching, such as on audiobooks (which apparently have BXXXXXXXX asins also)
+                // for more generic matching, such as on audiobooks (which apparently have BXXXXXXXX asins also)
                 ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='main-image']");
 
             if (bookImageLoc == null)
@@ -110,7 +109,9 @@ namespace XRayBuilder.Core.DataSources.Amazon
             #endregion
 
             #region Description
+
             var descNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='bookDescription_feature_div']/noscript")
+                ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='bookDescription_feature_div']/div[@data-a-expander-name='book_description_expander']")
                 ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-size-medium series-detail-description-text']");
             if (descNode != null && descNode.InnerText != "")
             {
@@ -118,37 +119,21 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 // Match all p nodes in the description node.
                 // Filter out any node starting and ending with a html style tag
                 // "Should" remove single bold, italic and heading lines to leave a cleaner description.
-                // Then replace known entities with characters using HtmlEntity.DeEntitize and join strings to form description.
-                var nodes = descNode.SelectNodes(".//p/text()[normalize-space(.) != '']") ?? descNode.SelectNodes(".//div/text()[normalize-space(.) != '']");
+                // Then replace known entities with characters using HtmlEntity.DeEntitize and join strings (with spaces if needed) to form description.
+                var nodes = descNode.SelectNodes(".//p/span[not(contains(@class,'bold'))]") ?? descNode.SelectNodes(".//div/span[not(contains(@class,'bold'))]");
 
                 string description;
                 if (nodes != null)
                 {
                     var filteredNodes = nodes
-                        .Where(node => !_dirtyParas.IsMatch(node.InnerHtml.Trim()))
                         .Select(node => HtmlEntity.DeEntitize(node.InnerText.Trim()))
+                        .Where(node => node.Length > 1)
                         .ToArray();
 
-                    description = filteredNodes.Any()
-                        ? string.Join(" ", filteredNodes)
-                        : descNode.InnerHtml.Clean();
+                    description = string.Concat(filteredNodes.Select(node => char.IsUpper(node[0]) ? $" {node}" : node)).Clean();
                 }
                 else
-                    description = descNode.InnerHtml.Clean();
-
-                // Following the example of Amazon, cut off desc around 1000 characters.
-                // If conveniently trimmed at the end of the sentence, let it end with the punctuation.
-                // If the sentence continues, cut it off and replace the space with an ellipsis
-                if (description.Length > 1000)
-                {
-                    description = description.Substring(0, 1000);
-                    var lastPunc = description.LastIndexOfAny(new[] { '.', '!', '?' });
-                    var lastSpace = description.LastIndexOf(' ');
-                    if (lastPunc > lastSpace)
-                        description = description.Substring(0, lastPunc + 1);
-                    else
-                        description = $"{description.Substring(0, lastSpace - 1)}{'\u2026'}";
-                }
+                    description = descNode.InnerText.Clean();
 
                 // Used to test output from Amazon description parsing
                 //var descsCheckFile = AppDomain.CurrentDomain.BaseDirectory + @"\descs.txt";
@@ -156,9 +141,11 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
                 response.Description = description;
             }
+
             #endregion
 
             #region Reviews
+
             try
             {
                 var ratingNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='acrPopover']")
@@ -181,6 +168,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             {
                 throw new AggregateException($"Error finding book ratings. If you want, you can report the book's Amazon URL to help with parsing.\r\nError: {ex.Message}\r\n{ex.StackTrace}", ex);
             }
+
             #endregion
 
             #region Pages

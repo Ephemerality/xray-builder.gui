@@ -1,7 +1,7 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+using XRayBuilder.Core.Libraries;
 
 namespace XRayBuilderGUI.UI
 {
@@ -37,7 +37,7 @@ namespace XRayBuilderGUI.UI
         {
             try
             {
-                Process.Start("https://icons8.com");
+                Functions.ShellExecute("https://icons8.com");
             }
             catch
             {

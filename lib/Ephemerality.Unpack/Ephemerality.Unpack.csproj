@@ -30,6 +30,12 @@ Content can be unpacked in the form of RAWML for Mobi/AZW3 and plain text for KF
       </Reference>
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Amazon.IonDotnet.Ephemerality.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
     <Choose>
         <When Condition="$(TargetFramework.StartsWith('net4'))">
             <ItemGroup>

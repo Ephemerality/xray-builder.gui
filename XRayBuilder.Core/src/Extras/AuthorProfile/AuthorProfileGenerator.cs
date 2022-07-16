@@ -263,7 +263,6 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             {
                 _logger.Log("Downloading author image…");
                 ApAuthorImage = await _httpClient.GetImageAsync(request.Book.AuthorImageUrl, cancellationToken: cancellationToken);
-                _logger.Log("Grayscale base64-encoded author image created!");
             }
             catch (Exception ex)
             {
@@ -357,6 +356,10 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                 Title = book.Title
             }).ToArray();
 
+            var base64String = response.Image == null
+                ? ""
+                : response.Image.ToBase64String(JpegFormat.Instance).Split(',', 2)[1];
+
             return new Artifacts.AuthorProfile
             {
                 Asin = bookAsin,
@@ -371,7 +374,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                         ImageHeight = response.Image?.Height ?? 0,
                         Name = response.Name,
                         OtherBookAsins = response.OtherBooks.Select(book => book.Asin).ToArray(),
-                        Picture = response.Image?.ToBase64String(JpegFormat.Instance)
+                        Picture = base64String
                     }
                 }
             };

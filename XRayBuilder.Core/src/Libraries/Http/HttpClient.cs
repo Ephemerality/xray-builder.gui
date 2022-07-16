@@ -220,18 +220,9 @@ namespace XRayBuilder.Core.Libraries.Http
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var response = await base.SendAsync(request, cancellationToken);
-                if (!response.IsSuccessStatusCode)
-                    throw new HttpClientException(response.StatusCode.ToString())
-                    {
-                        Response = response
-                    };
-                return response;
-            }
-            catch (HttpClientException ex) when (ex.Response.StatusCode == HttpStatusCode.NotFound
-                && request.RequestUri.Host.Contains(".amazon.")
+            var response = await base.SendAsync(request, cancellationToken);
+            if (!response.IsSuccessStatusCode
+                && request.RequestUri!.Host.Contains(".amazon.")
                 && !request.RequestUri.Host.EndsWith(".com"))
             {
                 var originalHost = request.RequestUri.Host;
@@ -240,12 +231,12 @@ namespace XRayBuilder.Core.Libraries.Http
                     Host = "www.amazon.com"
                 };
                 request.RequestUri = builder.Uri;
-                var response = await base.SendAsync(request, cancellationToken);
-                if (response.StatusCode == HttpStatusCode.NotFound)
-                    return response;
-                Logger?.Log($"Not available from {originalHost}, but found on Amazon.com ({request.RequestUri})");
-                return response;
+                response = await base.SendAsync(request, cancellationToken);
+                if (response.StatusCode != HttpStatusCode.NotFound)
+                    Logger?.Log($"Not available from {originalHost}, but found on Amazon.com ({request.RequestUri})");
             }
+
+            return response;
         }
     }
 

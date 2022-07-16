@@ -72,15 +72,19 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
         public override async Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
         {
-            // Try by ASIN first, then fall back on author/title
-            if (!string.IsNullOrEmpty(metadata.Asin))
-            {
-                return ParseSearchResults(await _httpClient.GetPageAsync(SearchUrlAsin(Uri.EscapeDataString(metadata.Asin)), cancellationToken));
-            }
-
             var title = Uri.EscapeDataString(metadata.Title);
             var author = Uri.EscapeDataString(Functions.FixAuthor(metadata.Author));
 
+            // Try by ASIN first, then fall back on author/title
+            if (!string.IsNullOrEmpty(metadata.Asin))
+            {
+                _logger.Log("Searching by ASIN...");
+                var bookList = ParseSearchResults(await _httpClient.GetPageAsync(SearchUrlAsin(Uri.EscapeDataString(metadata.Asin)), cancellationToken)).ToArray();
+                if (bookList.Any())
+                    return bookList;
+            }
+
+            _logger.Log("Searching by author and title...");
             return ParseSearchResults(await _httpClient.GetPageAsync(SearchUrl(author, title), cancellationToken));
         }
 

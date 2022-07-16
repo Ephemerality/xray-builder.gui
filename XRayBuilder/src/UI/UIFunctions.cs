@@ -1,11 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Prompt;
-using XRayBuilder.Core.Model;
 
 namespace XRayBuilderGUI.UI
 {
@@ -23,7 +22,7 @@ namespace XRayBuilderGUI.UI
             if (!Directory.Exists(dir))
                 MessageBox.Show("Specified directory does not exist.", "Directory Not Found...", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             else
-                Process.Start(dir);
+                Functions.ShellExecute(dir);
         }
 
         public static string GetFile([Localizable(true)] string title, string defaultFile, string filter = "All files (*.*)|*.*", string initialDir = "")

@@ -1211,7 +1211,7 @@ namespace XRayBuilderGUI.UI
 
         private async void txtDatasource_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            if (!Regex.IsMatch(txtDatasource.Text, "\\d+"))
+            if (!Regex.IsMatch(txtDatasource.Text, @"^\d+$"))
             {
                 ToggleInterface(false);
                 await btnSearchGoodreads_Run();

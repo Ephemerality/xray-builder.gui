@@ -20,8 +20,6 @@ namespace XRayBuilder.Core.DataSources.Amazon
         private readonly Regex _numbersRegex = new(@"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)", RegexOptions.Compiled);
         private readonly Regex _regex404 = new(@"(cs_404_logo|cs_404_link|Page Not Found)", RegexOptions.Compiled);
 
-        private readonly Regex _dirtyParas = new(@"^<[^>]+>.*<[^>]+>$|^&apos;|&apos;$|\*|_", RegexOptions.Compiled);
-
         public AmazonInfoParser(ILogger logger, IHttpClient httpClient)
         {
             _logger = logger;
@@ -128,7 +126,6 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 if (nodes != null)
                 {
                     var filteredNodes = nodes
-                        //.Where(node => !_dirtyParas.IsMatch(node.InnerHtml.Trim()))
                         .Select(node => HtmlEntity.DeEntitize(node.InnerText.Trim()))
                         .Where(node => node.Length > 1)
                         .ToArray();

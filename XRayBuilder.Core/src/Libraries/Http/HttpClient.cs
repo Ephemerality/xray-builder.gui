@@ -220,31 +220,23 @@ namespace XRayBuilder.Core.Libraries.Http
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            try
+            var response = await base.SendAsync(request, cancellationToken);
+            if (!response.IsSuccessStatusCode
+                && request.RequestUri!.Host.Contains(".amazon.")
+                && !request.RequestUri.Host.EndsWith(".com"))
             {
-                var response = await base.SendAsync(request, cancellationToken);
-                if (!response.IsSuccessStatusCode
-                    && request.RequestUri.Host.Contains(".amazon.")
-                    && !request.RequestUri.Host.EndsWith(".com"))
+                var originalHost = request.RequestUri.Host;
+                var builder = new UriBuilder(request.RequestUri)
                 {
-                    var originalHost = request.RequestUri.Host;
-                    var builder = new UriBuilder(request.RequestUri)
-                    {
-                        Host = "www.amazon.com"
-                    };
-                    request.RequestUri = builder.Uri;
-                    response = await base.SendAsync(request, cancellationToken);
-                    if (response.StatusCode == HttpStatusCode.NotFound)
-                        return response;
+                    Host = "www.amazon.com"
+                };
+                request.RequestUri = builder.Uri;
+                response = await base.SendAsync(request, cancellationToken);
+                if (response.StatusCode != HttpStatusCode.NotFound)
                     Logger?.Log($"Not available from {originalHost}, but found on Amazon.com ({request.RequestUri})");
-                    return response;
-                }
-                return response;
             }
-            catch (HttpClientException)
-            {
-                return new HttpResponseMessage();
-            }
+
+            return response;
         }
     }
 

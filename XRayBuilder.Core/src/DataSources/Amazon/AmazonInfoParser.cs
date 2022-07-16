@@ -74,16 +74,14 @@ namespace XRayBuilder.Core.DataSources.Amazon
             #region Image URL
 
             var bookImageLoc = bookDoc.DocumentNode.SelectSingleNode("//*[@id='imgBlkFront']")
-                               ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='imageBlock']")
-                               ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='series-detail-product-image']")
-                               ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='ebooksImgBlkFront']") //co.uk seems to use this id sometimes
-                               // for more generic matching, such as on audiobooks (which apparently have BXXXXXXXX asins also)
-                               ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='main-image']");
+                ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='imageBlock']")
+                ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='series-detail-product-image']")
+                ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='ebooksImgBlkFront']") //co.uk seems to use this id sometimes
+                // for more generic matching, such as on audiobooks (which apparently have BXXXXXXXX asins also)
+                ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='main-image']");
 
             if (bookImageLoc == null)
-            {
                 _logger.Log("Error finding book image.");
-            }
             else
             {
                 var imageUrl = Regex.Replace(bookImageLoc.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
@@ -115,8 +113,8 @@ namespace XRayBuilder.Core.DataSources.Amazon
             #region Description
 
             var descNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='bookDescription_feature_div']/noscript")
-                           ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='bookDescription_feature_div']/div[@data-a-expander-name='book_description_expander']")
-                           ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-size-medium series-detail-description-text']");
+                ?? bookDoc.DocumentNode.SelectSingleNode("//*[@id='bookDescription_feature_div']/div[@data-a-expander-name='book_description_expander']")
+                ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-size-medium series-detail-description-text']");
             if (descNode != null && descNode.InnerText != "")
             {
                 // TODO: If this proves better than InnerHtml.Clean(), and is reliable, use in other places instead of Clean()?
@@ -124,8 +122,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 // Filter out any node starting and ending with a html style tag
                 // "Should" remove single bold, italic and heading lines to leave a cleaner description.
                 // Then replace known entities with characters using HtmlEntity.DeEntitize and join strings (with spaces if needed) to form description.
-                var nodes = descNode.SelectNodes(".//p/span[not(contains(@class,'bold'))]")
-                            ?? descNode.SelectNodes(".//div/span[not(contains(@class,'bold'))]");
+                var nodes = descNode.SelectNodes(".//p/span[not(contains(@class,'bold'))]") ?? descNode.SelectNodes(".//div/span[not(contains(@class,'bold'))]");
 
                 var description = string.Empty;
                 if (nodes != null)
@@ -181,13 +178,13 @@ namespace XRayBuilder.Core.DataSources.Amazon
             try
             {
                 var ratingNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='acrPopover']")
-                                 ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='fl acrStars']/span");
+                    ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='fl acrStars']/span");
                 if (ratingNode != null)
                 {
                     var aRating = ratingNode.GetAttributeValue("title", "0");
                     response.Rating = float.Parse(ratingNode.GetAttributeValue("title", "0").Substring(0, aRating.IndexOf(' ')));
                     var reviewsNode = bookDoc.DocumentNode.SelectSingleNode("//*[@id='acrCustomerReviewText']")
-                                      ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-link-normal']");
+                        ?? bookDoc.DocumentNode.SelectSingleNode("//*[@class='a-link-normal']");
                     if (reviewsNode != null)
                     {
                         var match = Regex.Match(reviewsNode.InnerText, @"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)");

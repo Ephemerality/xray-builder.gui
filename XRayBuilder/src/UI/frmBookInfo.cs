@@ -12,6 +12,7 @@ using SimpleInjector;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Logic;
 using XRayBuilder.Core.DataSources.Secondary;
+using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
 using XRayBuilderGUI.Localization.Main;
 using XRayBuilderGUI.Properties;
@@ -242,7 +243,7 @@ namespace XRayBuilderGUI.UI
 
             try
             {
-                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                Functions.ShellExecute(url);
             }
             catch (Exception ex)
             {

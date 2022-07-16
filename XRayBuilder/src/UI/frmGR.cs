@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using XRayBuilder.Core.DataSources.Secondary;
+using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Language.Pluralization;
 using XRayBuilder.Core.Model;
 using XRayBuilderGUI.Extensions;
@@ -51,7 +52,7 @@ namespace XRayBuilderGUI.UI
 
         private void linkID_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo(_toolTip1.GetToolTip(linkID)) { UseShellExecute = true });
+            Functions.ShellExecute(_toolTip1.GetToolTip(linkID));
         }
 
         private void frmGR_Load(object sender, EventArgs e)

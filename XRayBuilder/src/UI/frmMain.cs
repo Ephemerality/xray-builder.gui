@@ -1029,7 +1029,7 @@ namespace XRayBuilderGUI.UI
 
         private void txtOutput_LinkClicked(object sender, LinkClickedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo(e.LinkText) { UseShellExecute = true });
+            Functions.ShellExecute(e.LinkText);
         }
 
         private async void btnOneClick_Click(object sender, EventArgs e)
@@ -1044,7 +1044,7 @@ namespace XRayBuilderGUI.UI
         {
             if (string.Equals(txtAsin.Text, "ASIN"))
                 return;
-            Process.Start(new ProcessStartInfo(_amazonClient.Url(_settings.amazonTLD, txtAsin.Text)) { UseShellExecute = true });
+            Functions.ShellExecute(_amazonClient.Url(_settings.amazonTLD, txtAsin.Text));
         }
 
         private void btnExtractTerms_Click(object sender, EventArgs e)
@@ -1218,7 +1218,7 @@ namespace XRayBuilderGUI.UI
                 ToggleInterface(true);
             }
             else
-                Process.Start(new ProcessStartInfo(txtGoodreads.Text) { UseShellExecute = true });
+                Functions.ShellExecute(txtGoodreads.Text);
         }
 
         private void txtGoodreads_TextChanged(object sender, EventArgs e)
@@ -1253,7 +1253,7 @@ namespace XRayBuilderGUI.UI
         {
             try
             {
-                Process.Start(new ProcessStartInfo(Environment.CurrentDirectory + @"\doc\help.pdf") { UseShellExecute = true });
+                Functions.ShellExecute(Environment.CurrentDirectory + @"\doc\help.pdf");
 
             }
             catch
@@ -1264,7 +1264,7 @@ namespace XRayBuilderGUI.UI
 
         private void btnVisitForum_Click(object sender, EventArgs e)
         {
-            Process.Start(new ProcessStartInfo("http://www.mobileread.com/forums/showthread.php?t=245754") { UseShellExecute = true });
+            Functions.ShellExecute("http://www.mobileread.com/forums/showthread.php?t=245754");
         }
 
         private void btnAbout_Click(object sender, EventArgs e)
@@ -1274,7 +1274,7 @@ namespace XRayBuilderGUI.UI
 
         private void btnVisitGithub_Click(object sender, EventArgs e)
         {
-            Process.Start(new ProcessStartInfo("https://github.com/Ephemerality/xray-builder.gui") { UseShellExecute = true });
+            Functions.ShellExecute("https://github.com/Ephemerality/xray-builder.gui");
         }
     }
 }

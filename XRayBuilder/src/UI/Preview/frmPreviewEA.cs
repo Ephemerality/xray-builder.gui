@@ -171,13 +171,13 @@ namespace XRayBuilderGUI.UI.Preview
         private void btnFollow_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(_authorUrl)) return;
-            Process.Start(new ProcessStartInfo(_authorUrl) { UseShellExecute = true });
+            Functions.ShellExecute(_authorUrl);
         }
 
         private void linkStore_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             if (!string.IsNullOrEmpty(_asin))
-                Process.Start(new ProcessStartInfo($"http://www.amazon.{Settings.Default.amazonTLD}/dp/{_asin}") { UseShellExecute = true });
+                Functions.ShellExecute($"http://www.amazon.{Settings.Default.amazonTLD}/dp/{_asin}");
         }
     }
 }

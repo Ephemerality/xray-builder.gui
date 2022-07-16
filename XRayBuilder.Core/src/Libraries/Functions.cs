@@ -183,6 +183,14 @@ namespace XRayBuilder.Core.Libraries
         {
             return (long) DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
         }
+
+        public static void ShellExecute(string path)
+        {
+            Process.Start(new ProcessStartInfo(path)
+            {
+                UseShellExecute = true
+            });
+        }
     }
 
     public static class NativeMethods

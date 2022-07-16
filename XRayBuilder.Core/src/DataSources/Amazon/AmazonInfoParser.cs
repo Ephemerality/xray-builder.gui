@@ -135,20 +135,6 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 else
                     description = descNode.InnerText.Clean();
 
-                // Following the example of Amazon, cut off desc around 1000 characters.
-                // If conveniently trimmed at the end of the sentence, let it end with the punctuation.
-                // If the sentence continues, cut it off and replace the space with an ellipsis
-                //if (description.Length > 1000)
-                //{
-                //    description = description.Substring(0, 1000);
-                //    var lastPunc = description.LastIndexOfAny(new[] { '.', '!', '?' });
-                //    var lastSpace = description.LastIndexOf(' ');
-                //    if (lastPunc > lastSpace)
-                //        description = description.Substring(0, lastPunc + 1);
-                //    else
-                //        description = $"{description.Substring(0, lastSpace - 1)}{'\u2026'}";
-                //}
-
                 // Used to test output from Amazon description parsing
                 //var descsCheckFile = AppDomain.CurrentDomain.BaseDirectory + @"\descs.txt";
                 //File.AppendAllText(descsCheckFile, description + Environment.NewLine + Environment.NewLine);

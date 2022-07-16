@@ -78,14 +78,13 @@ namespace XRayBuilder.Core.DataSources.Secondary
             // Try by ASIN first, then fall back on author/title
             if (!string.IsNullOrEmpty(metadata.Asin))
             {
-                _logger.Log($"Searching by ASIN...");
-                var bookList = ParseSearchResults(await _httpClient.GetPageAsync(SearchUrlAsin(Uri.EscapeDataString(metadata.Asin)), cancellationToken));
-                var searchBookAsync = bookList as BookInfo[] ?? bookList.ToArray();
-                if (searchBookAsync.Any())
-                    return searchBookAsync;
+                _logger.Log("Searching by ASIN...");
+                var bookList = ParseSearchResults(await _httpClient.GetPageAsync(SearchUrlAsin(Uri.EscapeDataString(metadata.Asin)), cancellationToken)).ToArray();
+                if (bookList.Any())
+                    return bookList;
             }
 
-            _logger.Log($"Searching by Author and Title...");
+            _logger.Log("Searching by author and title...");
             return ParseSearchResults(await _httpClient.GetPageAsync(SearchUrl(author, title), cancellationToken));
         }
 

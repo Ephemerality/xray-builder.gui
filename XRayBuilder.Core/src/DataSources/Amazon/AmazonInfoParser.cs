@@ -124,7 +124,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 // Then replace known entities with characters using HtmlEntity.DeEntitize and join strings (with spaces if needed) to form description.
                 var nodes = descNode.SelectNodes(".//p/span[not(contains(@class,'bold'))]") ?? descNode.SelectNodes(".//div/span[not(contains(@class,'bold'))]");
 
-                var description = string.Empty;
+                string description;
                 if (nodes != null)
                 {
                     var filteredNodes = nodes
@@ -133,22 +133,10 @@ namespace XRayBuilder.Core.DataSources.Amazon
                         .Where(node => node.Length > 1)
                         .ToArray();
 
-                    foreach (var node in filteredNodes)
-                        if (char.IsUpper(node[0])) // | (description.Length != 0 && char.IsLower(description[^1])))
-                            description += " " + node;
-                        else
-                            description += node;
-
-                    description = description.Clean();
-
-                    //description = filteredNodes.Any()
-                    //    ? filteredNodes.Aggregate(description, (current, s) => current + (char.IsLower(s[0]) ? s : s + " ")).Trim()
-                    //    : descNode.InnerHtml.Clean();
+                    description = string.Concat(filteredNodes.Select(node => char.IsUpper(node[0]) ? $" {node}" : node)).Clean();
                 }
                 else
-                {
                     description = descNode.InnerText.Clean();
-                }
 
                 // Following the example of Amazon, cut off desc around 1000 characters.
                 // If conveniently trimmed at the end of the sentence, let it end with the punctuation.

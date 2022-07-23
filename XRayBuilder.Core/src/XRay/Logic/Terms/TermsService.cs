@@ -152,12 +152,26 @@ namespace XRayBuilder.Core.XRay.Logic.Terms
             if (!term.Match)
                 return new HashSet<Occurrence>();
 
-            return metadata switch
+            var occurrences = metadata switch
             {
                 MobiMetadata _ => FindOccurrencesLegacy(term, paragraph),
                 KfxContainer _ => FindOccurrences(term, paragraph),
                 _ => FindOccurrencesLegacy(term, paragraph)
             };
+
+            // De-dupe any highlights that are subsets of another
+            // e.g. if there is an occurrence for Severus Snape but there's an alias of Snape also, there would be a duplicate highlight inside the first one
+            occurrences
+                .RemoveWhere(occurrence =>
+                {
+                    return occurrences.Any(existing => !existing.Equals(occurrence)
+                       // Excerpts should always be the same but we'll check anyway
+                       && occurrence.Excerpt.Equals(existing.Excerpt)
+                       && occurrence.Highlight.Index >= existing.Highlight.Index
+                       && occurrence.Highlight.Index + occurrence.Highlight.Length <= existing.Highlight.Index + existing.Highlight.Length);
+                });
+
+            return occurrences;
         }
 
         private HashSet<Occurrence> FindOccurrences(Term term, Paragraph paragraph)

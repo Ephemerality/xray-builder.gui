@@ -195,6 +195,14 @@ namespace XRayBuilder.Core.Libraries.Http
                             continue;
                     }
 
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new HttpClientException(response.StatusCode.ToString())
+                        {
+                            Response = response
+                        };
+                    }
+
                     // Not something we can retry, return the response as is
                     return response;
                 }

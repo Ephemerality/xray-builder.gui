@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using SimpleInjector;
 using SimpleInjector.Diagnostics;
 using XRayBuilder.Core.Libraries.Reflection.Util;

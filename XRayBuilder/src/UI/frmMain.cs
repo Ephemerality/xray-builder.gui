@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data.SQLite;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;

@@ -13,7 +13,6 @@ using XRayBuilder.Core.Libraries.Progress;
 using XRayBuilder.Core.Libraries.Prompt;
 using XRayBuilder.Core.Localization.Core;
 using XRayBuilder.Core.Logic;
-using XRayBuilder.Core.Model;
 using XRayBuilder.Core.XRay.Logic.Aliases;
 
 namespace XRayBuilder.Core.XRay.Logic.Build

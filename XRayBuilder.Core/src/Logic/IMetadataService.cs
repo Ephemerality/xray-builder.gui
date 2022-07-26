@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Ephemerality.Unpack;
 using JetBrains.Annotations;
 using XRayBuilder.Core.Libraries.Prompt;
-using XRayBuilder.Core.Model;
 
 namespace XRayBuilder.Core.Logic
 {

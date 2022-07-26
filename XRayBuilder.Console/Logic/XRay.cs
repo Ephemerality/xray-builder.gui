@@ -80,6 +80,8 @@ namespace XRayBuilder.Console.Logic
                     _progress,
                     cancellationToken
                 );
+                if (xray == null)
+                    return null;
 
                 _logger.Log("Saving X-Ray to file...");
                 var xrayPath = _directoryService.GetArtifactPath(ArtifactType.XRay, xray.Author, xray.Title, xray.Asin, Path.GetFileNameWithoutExtension(request.BookPath), xray.DatabaseName, xray.Guid, true);

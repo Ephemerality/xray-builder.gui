@@ -222,6 +222,8 @@ namespace XRayBuilderGUI.UI
                     _progress,
                     _cancelTokens.Token
                 );
+                if (xray == null)
+                    return;
 
                 _logger.Log(MainStrings.SavingXRay);
                 var xrayPath = _directoryService.GetArtifactPath(ArtifactType.XRay, xray.Author, xray.Title, xray.Asin, Path.GetFileNameWithoutExtension(txtMobi.Text), xray.DatabaseName, xray.Guid, true);

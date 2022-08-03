@@ -24,6 +24,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
         public string Asin { get; set; }
         public string Biography { get; set; }
         public string ImageUrl { get; set; }
+        public string Name { get; set; }
         /// <summary>
         /// First page of books from author's page
         /// </summary>
@@ -73,36 +74,20 @@ namespace XRayBuilder.Core.DataSources.Amazon
             var authorSearchDoc = await GetPageWithCaptchaCheckAsync(amazonKindleAuthorSearchUrl, TLD, enableLog, cancellationToken);
 
             // Try to find Author's page from Amazon search
-            var properAuthor = "";
-            HtmlNode[] possibleNodes = null;
-            var node = authorSearchDoc?.DocumentNode.SelectSingleNode(".//div[@data-asin and @data-index and @data-component-type]")
-                       ?? authorSearchDoc?.DocumentNode.SelectSingleNode("//*[@id='result_1']")
-                       ?? authorSearchDoc?.DocumentNode.SelectSingleNode(".//div/div[@data-index='0']");
-            if (node == null || !node.OuterHtml.Contains("/e/B"))
+            var results = new List<AuthorSearchResults>();
+
+            var authorNodes = authorSearchDoc?.DocumentNode.SelectNodes(".//a[contains(@href,'/e/B')]");
+            if (authorNodes == null)
             {
-                if(enableLog)
+                if (enableLog)
                     _logger.Log($"Warning: No results found in the Amazon.{TLD} Kindle store. Trying all departments…");
 
                 //Updated to match Search "all" Amazon
                 var amazonAuthorSearchUrl = $"https://www.amazon.{TLD}/s?k={plusAuthorName}&ref=nb_sb_noss";
                 authorSearchDoc = await GetPageWithCaptchaCheckAsync(amazonAuthorSearchUrl, TLD, enableLog, cancellationToken);
+                authorNodes = authorSearchDoc?.DocumentNode.SelectNodes(".//a[contains(@href,'/e/B')]");
 
-                if (authorSearchDoc == null)
-                {
-                    if (enableLog)
-                        _logger.Log($"An error occurred finding author's page on Amazon.{TLD}.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at {amazonKindleAuthorSearchUrl}\r\nSometimes Amazon just doesn't return the author and trying a few times will work.");
-                    return null;
-                }
-
-                // If the wrong format of search page is returned, try to find author in the small links under book titles
-                possibleNodes = authorSearchDoc.DocumentNode.SelectNodes(".//a[@class='a-size-base a-link-normal s-underline-text s-underline-link-text s-link-style']")?.ToArray();
-                if (possibleNodes == null || !possibleNodes.Any())
-                    possibleNodes = authorSearchDoc.DocumentNode.SelectNodes(".//a[@class='a-size-base a-link-normal']")?.ToArray();
-                possibleNodes = possibleNodes
-                    ?.Where(possibleNode => possibleNode.InnerText != null && possibleNode.InnerText.Trim().Equals(newAuthor, StringComparison.InvariantCultureIgnoreCase))
-                    .ToArray();
-
-                if (possibleNodes == null || (node = possibleNodes.FirstOrDefault()) == null)
+                if (authorSearchDoc == null || authorNodes == null)
                 {
                     if (enableLog)
                         _logger.Log($"An error occurred finding author's page on Amazon.{TLD}.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at {amazonKindleAuthorSearchUrl}\r\nSometimes Amazon just doesn't return the author and trying a few times will work.");
@@ -110,47 +95,36 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 }
             }
 
-            string authorAsin = null;
-            string authorUrl = null;
-            var authorNode =  node.Descendants("a").FirstOrDefault(d => d.Attributes["href"].Value.Contains("/e/B"));
+            foreach (var a in authorNodes)
+            {
+                var foundAuthor = new AuthorSearchResults();
 
-            if (possibleNodes != null && possibleNodes.Any())
-            {
-                // TODO Present a list of these to choose from
-                node = possibleNodes.First();
-                authorUrl = node.GetAttributeValue("href", "");
-                authorAsin = ParseAsinFromUrl(authorUrl);
-            }
-            // Check for typical search results, second item is the author page
-            else if (authorNode != null)
-            {
-                authorUrl = authorNode.GetAttributeValue("href", "");
-                authorAsin = ParseAsinFromUrl(authorUrl);
-            }
-            else if ((node = node.SelectSingleNode("//*[@id='result_1']/div/div/div/div/a")) != null)
-            {
-                authorUrl = node.GetAttributeValue("href", "");
-                authorAsin = node.GetAttributeValue("data-asin", null)
-                    ?? ParseAsinFromUrl(authorUrl);
-            }
-            // otherwise check for "by so-and-so" text beneath the titles for a possible match
-            else if ((node = authorSearchDoc.DocumentNode.SelectSingleNode($"//div[@id='resultsCol']//li[@class='s-result-item celwidget  ']//a[text()=\"{newAuthor}\"]")) != null)
-            {
-                authorUrl = node.GetAttributeValue("href", "");
-                authorAsin = ParseAsinFromUrl(authorUrl);
+                var url = a.GetAttributeValue("href", "");
+                foundAuthor.Name = a.InnerText.Trim();
+                foundAuthor.Url = $"https://www.amazon.{TLD}{url}";
+                foundAuthor.Asin = ParseAsinFromUrl(url);
+
+                // Check if results already contain author with this ASIN
+                if (results.Any(n => n.Asin == foundAuthor.Asin)) continue;
+
+                results.Add(foundAuthor);
             }
 
-            if (node == null || string.IsNullOrEmpty(authorUrl) || authorUrl.IndexOf('/', 1) < 3 || string.IsNullOrEmpty(authorAsin))
+            if (results.Count == 0)
             {
                 if (enableLog)
-                    _logger.Log($"Unable to parse author's page URL properly. Try again later or report this URL on the MobileRead thread: {amazonKindleAuthorSearchUrl}");
+                    _logger.Log($"An error occurred finding author's page on Amazon.{TLD}.\r\nUnable to create Author Profile.\r\nEnsure the author metadata field matches the author's name exactly.\r\nSearch results can be viewed at {amazonKindleAuthorSearchUrl}\r\nSometimes Amazon just doesn't return the author and trying a few times will work.");
                 return null;
             }
-            properAuthor = authorUrl.Substring(1, authorUrl.IndexOf('/', 1) - 1);
-            var authorAmazonWebsiteLocationLog = $"https://www.amazon.{TLD}/{properAuthor}/e/{authorAsin}";
-            var authorAmazonWebsiteLocation = $"https://www.amazon.{TLD}{authorUrl}";
 
-            if(enableLog)
+            // TODO Present a list of these to choose from
+            var resultGuess = results.Where(n => n.Name.Equals(newAuthor, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+            var result = resultGuess.Length == 1 ? resultGuess[0] : results[0];
+
+            var authorAmazonWebsiteLocationLog = result.Url.Remove(result.Url.IndexOf("?", StringComparison.Ordinal));
+            var authorAmazonWebsiteLocation = result.Url;
+
+            if (enableLog)
                 _logger.Log($"Author page found on Amazon!\r\nAuthor's Amazon Page URL: {authorAmazonWebsiteLocationLog}");
 
             // Load Author's Amazon page
@@ -158,43 +132,19 @@ namespace XRayBuilder.Core.DataSources.Amazon
             var authorPage = await _httpClient.GetStreamAsync(authorAmazonWebsiteLocation, cancellationToken);
             authorHtmlDoc.Load(authorPage, Encoding.UTF8);
 
-            // Try to find the Kindle Edition link
-            // Either use the new one w/ only Kindle editions or the original
-            // TODO: don't handle individual regions here...
-            if (TLD == "com")
-            {
-                var kindleNode = authorHtmlDoc.DocumentNode.SelectSingleNode(".//a[@class='a-link-normal formatSelector']");
-                if (kindleNode != null && kindleNode.InnerText.Trim() == "Kindle Edition")
-                {
-                    authorPage = await _httpClient.GetStreamAsync($"https://www.amazon.com{kindleNode.GetAttributeValue("href", "")}", cancellationToken);
-                    authorHtmlDoc.Load(authorPage);
-                }
-            }
-            else if (TLD == "co.uk")
-            {
-                var kindleNode = authorHtmlDoc.DocumentNode.SelectSingleNode(".//a[@class='a-link-normal']");
-                if (kindleNode != null && kindleNode.InnerText.Trim() == "Kindle Books")
-                {
-                    authorPage = await _httpClient.GetStreamAsync($"https://www.amazon.co.uk{kindleNode.GetAttributeValue("href", "")}", cancellationToken);
-                    authorHtmlDoc.Load(authorPage);
-                }
-            }
-
-            string biography = null;
             try
             {
-                biography = GetAuthorBiography(authorHtmlDoc);
+                result.Biography = GetAuthorBiography(authorHtmlDoc);
             }
             catch (FormatChangedException)
             {
-                if(enableLog)
+                if (enableLog)
                     _logger.Log("Warning: Amazon biography format changed or no biography available for this author.", LogLevel.Warn);
             }
 
-            string authorImageUrl = null;
             try
             {
-                authorImageUrl = GetAuthorImageUrl(authorHtmlDoc);
+                result.ImageUrl = GetAuthorImageUrl(authorHtmlDoc);
             }
             catch (FormatChangedException)
             {
@@ -205,15 +155,10 @@ namespace XRayBuilder.Core.DataSources.Amazon
             var bookList = GetAuthorBooks(authorHtmlDoc, author, TLD);
             if (!bookList.Any())
                 bookList = GetAuthorBooksNew(authorHtmlDoc, author, TLD);
+            result.Books = bookList.ToArray();
 
-            return new AuthorSearchResults
-            {
-                Asin = authorAsin,
-                Biography = biography,
-                ImageUrl = authorImageUrl,
-                Books = bookList.ToArray(),
-                Url = authorAmazonWebsiteLocationLog
-            };
+
+            return result;
         }
 
         // Get biography from results page; TLD included in case different Amazon sites have different formatting

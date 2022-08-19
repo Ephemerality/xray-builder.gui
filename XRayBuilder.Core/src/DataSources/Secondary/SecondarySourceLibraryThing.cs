@@ -54,11 +54,10 @@ namespace XRayBuilder.Core.DataSources.Secondary
         private const int MaxConcurrentRequests = 10;
 
         private string SearchEndpoint(string author, string title)
-        {
-            title = Uri.EscapeDataString(title);
-            author = Uri.EscapeDataString(Functions.FixAuthor(author));
-            return $"/ajax_newsearch.php?search={author}%20{title}&searchtype=newwork_titles&page=1&sortchoice=0&optionidpotential=0&optionidreal=0&randomnumber={_random.Next()}";
-        }
+            => SearchEndpoint($"{Functions.FixAuthor(author)} {title}");
+
+        private string SearchEndpoint(string search)
+            => $"/ajax_newsearch.php?search={Uri.EscapeDataString(search)}&searchtype=newwork_titles&page=1&sortchoice=0&optionidpotential=0&optionidreal=0&randomnumber={_random.Next()}";
 
         private string GetCookies()
             => $"LTAnonSessionID={_random.Next()}; LTUnifiedCookie=%7B%22areyouhuman%22%3A1%7D; cookie_from=https%3A%2F%2Fwww.librarything.com%2F; canuseStaticDomain=0; gdpr_notice_clicked=1";
@@ -78,16 +77,21 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
         public override async Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
         {
-            if (!string.IsNullOrEmpty(metadata.Isbn))
-            {
-                var isbnResult = await SearchIsbnAsync(metadata.Isbn, cancellationToken);
-                if (isbnResult != null)
-                {
-                    return new[] {isbnResult};
-                }
-            }
+            // LibraryThing API has been disabled temporarily
+            // if (!string.IsNullOrEmpty(metadata.Isbn))
+            // {
+            //     var isbnResult = await SearchIsbnAsync(metadata.Isbn, cancellationToken);
+            //     if (isbnResult != null)
+            //     {
+            //         return new[] {isbnResult};
+            //     }
+            // }
 
-            var result = await GetAsync($"{BaseUrl}{SearchEndpoint(metadata.Author, metadata.Title)}", cancellationToken);
+            var searchEndpoint = string.IsNullOrEmpty(metadata.Isbn)
+                ? SearchEndpoint(metadata.Author, metadata.Title)
+                : SearchEndpoint(metadata.Isbn);
+
+            var result = await GetAsync($"{BaseUrl}{searchEndpoint}", cancellationToken);
             var response = JsonUtil.Deserialize<SearchResultPayload>(await result.Content.ReadAsStringAsync(cancellationToken));
             var htmlPayload = Encoding.UTF8.GetString(Convert.FromBase64String(response.Text));
 
@@ -96,7 +100,8 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
             IEnumerable<BookInfo> ParseResults()
             {
-                var resultNodes = htmlDoc.DocumentNode.SelectNodes("//table/p/tr");
+                var resultNodes = htmlDoc.DocumentNode.SelectNodes("//table/p/tr")
+                    ?? throw new Exception($"Failed to get results from LibraryThing for {metadata.Author}/{metadata.Title}/{metadata.Isbn}");
                 foreach (var node in resultNodes)
                 {
                     var dataUrl = node.SelectSingleNode(".//a").GetAttributeValue("href", null);

@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Ephemerality.Unpack;
 using Newtonsoft.Json;
-using XRayBuilder.Core.Database;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Logic;
 using XRayBuilder.Core.DataSources.Roentgen.Logic;
@@ -57,7 +56,6 @@ namespace XRayBuilderGUI.UI
         private readonly IRoentgenClient _roentgenClient;
         private readonly IEndActionsAuthorConverter _endActionsAuthorConverter;
         private readonly IDirectoryService _directoryService;
-        private readonly DatabaseMigrator _databaseMigrator;
         private readonly IMetadataService _metadataService;
         private readonly IXRayBuildService _xrayBuildService;
 
@@ -76,7 +74,6 @@ namespace XRayBuilderGUI.UI
             IRoentgenClient roentgenClient,
             IEndActionsAuthorConverter endActionsAuthorConverter,
             IDirectoryService directoryService,
-            DatabaseMigrator databaseMigrator,
             IMetadataService metadataService,
             IXRayBuildService xrayBuildService)
         {
@@ -96,7 +93,6 @@ namespace XRayBuilderGUI.UI
             _roentgenClient = roentgenClient;
             _endActionsAuthorConverter = endActionsAuthorConverter;
             _directoryService = directoryService;
-            _databaseMigrator = databaseMigrator;
             _metadataService = metadataService;
             _xrayBuildService = xrayBuildService;
             _logger.LogEvent += rtfLogger.Log;
@@ -705,9 +701,6 @@ namespace XRayBuilderGUI.UI
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // Ensure the database is up to date
-            _databaseMigrator.Migrate();
-
             ActiveControl = lblGoodreads;
             btnBrowseMobi.ToolTipText = MainStrings.OpenKindleBook;
             btnBrowseFolders.ToolTipText = MainStrings.OpenOutputDirectory;

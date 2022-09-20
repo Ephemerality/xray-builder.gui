@@ -15,46 +15,46 @@ namespace Ephemerality.Unpack.Mobi
 {
     public sealed class PdbHeader
     {
-        private readonly byte[] _dbName = new byte[32];
-        private readonly byte[] _attributeBits = new byte[2];
-        private readonly byte[] _version = new byte[2];
-        private readonly byte[] _creationDate = new byte[4];
-        private readonly byte[] _modificationDate = new byte[4];
-        private readonly byte[] _lastBackupDate = new byte[4];
-        private readonly byte[] _modificationNumber = new byte[4];
-        private readonly byte[] _appInfoId = new byte[4];
-        private readonly byte[] _sortInfoId = new byte[4];
-        private readonly byte[] _type = new byte[4];
-        private readonly byte[] _creator = new byte[4];
-        private readonly byte[] _uniqueSeed = new byte[4];
-        private readonly byte[] _nextRecordListId = new byte[4];
-        private readonly byte[] _numRecords = new byte[2];
-        private readonly byte[] _unknown = new byte[2];
+        private readonly byte[] _dbName;
+        private readonly byte[] _attributeBits;
+        private readonly byte[] _version;
+        private readonly byte[] _creationDate;
+        private readonly byte[] _modificationDate;
+        private readonly byte[] _lastBackupDate;
+        private readonly byte[] _modificationNumber;
+        private readonly byte[] _appInfoId;
+        private readonly byte[] _sortInfoId;
+        private readonly byte[] _type;
+        private readonly byte[] _creator;
+        private readonly byte[] _uniqueSeed;
+        private readonly byte[] _nextRecordListId;
+        private readonly byte[] _numRecords;
+        private readonly byte[] _unknown;
 
         public readonly RecordInfo[] RecordMetadata;
 
         public PdbHeader(Stream fs)
         {
-            fs.Read(_dbName, 0, 32);
-            fs.Read(_attributeBits, 0, 2);
-            fs.Read(_version, 0, 2);
-            fs.Read(_creationDate, 0, 4);
-            fs.Read(_modificationDate, 0, 4);
-            fs.Read(_lastBackupDate, 0, 4);
-            fs.Read(_modificationNumber, 0, 4);
-            fs.Read(_appInfoId, 0, 4);
-            fs.Read(_sortInfoId, 0, 4);
-            fs.Read(_type, 0, 4);
-            fs.Read(_creator, 0, 4);
-            fs.Read(_uniqueSeed, 0, 4);
-            fs.Read(_nextRecordListId, 0, 4);
-            fs.Read(_numRecords, 0, 2);
+            _dbName = fs.ReadBytes(32);
+            _attributeBits = fs.ReadBytes(2);
+            _version = fs.ReadBytes(2);
+            _creationDate = fs.ReadBytes(4);
+            _modificationDate = fs.ReadBytes(4);
+            _lastBackupDate = fs.ReadBytes(4);
+            _modificationNumber = fs.ReadBytes(4);
+            _appInfoId = fs.ReadBytes(4);
+            _sortInfoId = fs.ReadBytes(4);
+            _type = fs.ReadBytes(4);
+            _creator = fs.ReadBytes(4);
+            _uniqueSeed = fs.ReadBytes(4);
+            _nextRecordListId = fs.ReadBytes(4);
+            _numRecords = fs.ReadBytes(2);
 
             var numRecords = NumRecords;
             RecordMetadata = new RecordInfo[numRecords];
             for (var i = 0; i < numRecords; i++)
                 RecordMetadata[i] = new RecordInfo(new EndianBinaryReader(EndianBitConverter.Big, fs));
-            fs.Read(_unknown, 0, 2);
+            _unknown = fs.ReadBytes(2);
         }
 
         public string DbName => Encoding.UTF8.GetString(_dbName).Trim('\0');

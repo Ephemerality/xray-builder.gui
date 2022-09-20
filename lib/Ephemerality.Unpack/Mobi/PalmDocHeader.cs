@@ -12,23 +12,23 @@ namespace Ephemerality.Unpack.Mobi
 {
     public sealed class PalmDocHeader
     {
-        private readonly byte[] _compression = new byte[2];
-        private readonly byte[] _unused = new byte[2];
-        private readonly byte[] _textLength = new byte[4];
-        private readonly byte[] _recordCount = new byte[2];
-        private readonly byte[] _recordSize = new byte[2];
-        private readonly byte[] _encryptionType = new byte[2];
-        private readonly byte[] _unknown = new byte[2];
+        private readonly byte[] _compression;
+        private readonly byte[] _unused;
+        private readonly byte[] _textLength;
+        private readonly byte[] _recordCount;
+        private readonly byte[] _recordSize;
+        private readonly byte[] _encryptionType;
+        private readonly byte[] _unknown;
 
         public PalmDocHeader(Stream fs)
         {
-            fs.Read(_compression, 0, _compression.Length);
-            fs.Read(_unused, 0, _unused.Length);
-            fs.Read(_textLength, 0, _textLength.Length);
-            fs.Read(_recordCount, 0, _recordCount.Length);
-            fs.Read(_recordSize, 0, _recordSize.Length);
-            fs.Read(_encryptionType, 0, _encryptionType.Length);
-            fs.Read(_unknown, 0, _unknown.Length);
+            _compression = fs.ReadBytes(2);
+            _unused = fs.ReadBytes(2);
+            _textLength = fs.ReadBytes(4);
+            _recordCount = fs.ReadBytes(2);
+            _recordSize = fs.ReadBytes(2);
+            _encryptionType = fs.ReadBytes(2);
+            _unknown = fs.ReadBytes(2);
         }
 
         public byte[] HeaderBytes()

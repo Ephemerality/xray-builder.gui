@@ -88,7 +88,7 @@ namespace XRayBuilderGUI.UI
         public static void SetPropertyThreadSafe(this Control ctrl, string name, object value)
         {
             if (ctrl.InvokeRequired)
-                ctrl.BeginInvoke(new Action(() => SetPropertyThreadSafe(ctrl, name, value)));
+                ctrl.BeginInvoke(() => SetPropertyThreadSafe(ctrl, name, value));
             else
                 ctrl.GetType().InvokeMember(name, System.Reflection.BindingFlags.SetProperty, null, ctrl, new[] { value });
         }
@@ -96,7 +96,7 @@ namespace XRayBuilderGUI.UI
         public static object GetPropertyThreadSafe(this Control ctrl, string name)
         {
             return ctrl.InvokeRequired
-                ? ctrl.Invoke(new Func<object>(() => ctrl.GetPropertyThreadSafe(name)))
+                ? ctrl.Invoke(() => ctrl.GetPropertyThreadSafe(name))
                 : ctrl.GetType().InvokeMember(name, System.Reflection.BindingFlags.GetProperty, null, ctrl, null);
         }
 
@@ -105,7 +105,7 @@ namespace XRayBuilderGUI.UI
         /// </summary>
         public static DialogResult MessageBoxShowSafe(this Form form, [Localizable(true)] string msg, [Localizable(true)] string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton def)
         {
-            return (DialogResult) form.Invoke(new Func<DialogResult>(() => MessageBox.Show(form, msg, caption, buttons, icon, def)));
+            return form.Invoke(() => MessageBox.Show(form, msg, caption, buttons, icon, def));
         }
     }
 }

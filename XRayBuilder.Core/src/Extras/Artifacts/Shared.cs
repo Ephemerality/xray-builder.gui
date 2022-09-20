@@ -20,7 +20,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
                 ImageUrl = bookInfo.ImageUrl,
                 Description = featured ? bookInfo.Description : null,
                 AmazonRating = featured ? bookInfo.AmazonRating : null,
-                NumberOfReviews = featured ? (int?)bookInfo.Reviews : null
+                NumberOfReviews = featured ? bookInfo.Reviews : null
             };
         }
     }
@@ -90,7 +90,7 @@ namespace XRayBuilder.Core.Extras.Artifacts
         [JsonProperty("amazonRating", NullValueHandling = NullValueHandling.Ignore)]
         public double? AmazonRating
         {
-            get => _amazonRating.HasValue ? (double?) Math.Round(_amazonRating.Value, 1) : null;
+            get => _amazonRating.HasValue ? Math.Round(_amazonRating.Value, 1) : null;
             set => _amazonRating = value;
         }
 

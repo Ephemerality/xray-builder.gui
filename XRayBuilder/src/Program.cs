@@ -64,7 +64,7 @@ namespace XRayBuilderGUI
             language.CultureInfo.SetAsThreadCulture();
 
             // Hack to load the right DLL until the actual issue resolving the assembly is figured out
-            AppDomain.CurrentDomain.AssemblyResolve += (sender, args)
+            AppDomain.CurrentDomain.AssemblyResolve += (_, args)
                 => args.Name.StartsWith("Amazon.IonDotnet")
                     ? Assembly.LoadFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Amazon.IonDotnet.Ephemerality.dll"))
                     : null;

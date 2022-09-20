@@ -1,4 +1,3 @@
-using System;
 using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
@@ -21,7 +20,7 @@ namespace XRayBuilderGUI.UI
         public static void ClearAllSelections(this ToolStrip toolstrip)
         {
             if (toolstrip.InvokeRequired)
-                toolstrip.BeginInvoke(new Action(() => ClearAllSelections(toolstrip)));
+                toolstrip.BeginInvoke(() => ClearAllSelections(toolstrip));
             else
                 ClearAllSelectionsMethod.Invoke(toolstrip, null);
         }

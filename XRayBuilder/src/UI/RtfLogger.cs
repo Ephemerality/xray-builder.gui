@@ -36,7 +36,7 @@ namespace XRayBuilderGUI.UI
         public static void SafeAppendText(this RichTextBox rtfBox, string message)
         {
             if (rtfBox.InvokeRequired)
-                rtfBox.BeginInvoke(new Action(() => SafeAppendText(rtfBox, message)));
+                rtfBox.BeginInvoke(() => SafeAppendText(rtfBox, message));
             else
             {
 
@@ -73,7 +73,7 @@ namespace XRayBuilderGUI.UI
 
         public static void SafeClearText(this RichTextBox rtfBox)
         {
-            rtfBox.BeginInvoke((Action)rtfBox.Clear);
+            rtfBox.BeginInvoke(rtfBox.Clear);
         }
     }
 }

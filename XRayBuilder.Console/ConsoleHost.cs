@@ -107,7 +107,7 @@ namespace XRayBuilder.Console
             }
 
             AppDomain.CurrentDomain.ProcessExit += delegate { ShutDown(); };
-            System.Console.CancelKeyPress += (sender, eventArgs) =>
+            System.Console.CancelKeyPress += (_, eventArgs) =>
             {
                 ShutDown();
                 //Don't terminate the process immediately, wait for the Main thread to exit gracefully.

@@ -39,7 +39,7 @@ namespace XRayBuilder.Core.Libraries.Primitives.Extensions
         public static int? TryParseInt(this string s, NumberStyles style, IFormatProvider provider)
         {
             return int.TryParse(s, style, provider, out var result)
-                ? (int?) result
+                ? result
                 : null;
         }
 

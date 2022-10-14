@@ -119,7 +119,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
             // TODO Present a list of these to choose from
             var resultGuess = results.Where(n => n.Name.Equals(newAuthor, StringComparison.InvariantCultureIgnoreCase)).ToArray();
-            var result = resultGuess.Length == 1 ? resultGuess[0] : results[0];
+            var result = resultGuess.Length >= 1 ? resultGuess[0] : results[0];
 
             var authorAmazonWebsiteLocationLog = result.Url.Remove(result.Url.IndexOf("?", StringComparison.Ordinal));
             var authorAmazonWebsiteLocation = result.Url;
@@ -176,6 +176,13 @@ namespace XRayBuilder.Core.DataSources.Amazon
             var imageNode = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-image']/img")
                    ?? authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='authorImage']/img")
                    ?? throw new FormatChangedException(nameof(AmazonClient), "author image");
+
+            // Check for image in Author Updates section
+            if (imageNode.GetAttributeValue("src", "").Contains(".png"))
+            {
+                imageNode = authorHtmlDoc.DocumentNode.SelectSingleNode("//img[@class='ap-author-image']");
+                if (imageNode == null) return string.Empty;
+            }
 
             var authorImageUrl = Regex.Replace(imageNode.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
 

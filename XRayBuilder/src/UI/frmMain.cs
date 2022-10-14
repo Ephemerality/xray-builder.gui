@@ -3,6 +3,7 @@ using System.Data.SQLite;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -699,26 +700,45 @@ namespace XRayBuilderGUI.UI
             Application.Exit();
         }
 
+        private string ShortcutText(Shortcut shortcut)
+        {
+            var (_, keys) = _keyMapping.First(mapping => mapping.Shortcut == shortcut);
+            var result = new StringBuilder();
+            if ((keys & Keys.Control) == Keys.Control)
+                result.Append("Ctrl");
+
+            if ((keys & Keys.Alt) == Keys.Alt)
+                result.Append("Alt");
+
+            if (result.Length > 0)
+                result.Append('+');
+
+            keys = keys & ~Keys.Control & ~Keys.Alt;
+            result.Append(keys.ToString());
+
+            return result.ToString();
+        }
+
         private void Form1_Load(object sender, EventArgs e)
         {
             ActiveControl = lblGoodreads;
-            btnBrowseMobi.ToolTipText = MainStrings.OpenKindleBook;
-            btnBrowseFolders.ToolTipText = MainStrings.OpenOutputDirectory;
-            btnOneClick.ToolTipText = MainStrings.OneClickTooltip;
-            btnBrowseXML.ToolTipText = MainStrings.OpenXmlOrTxt;
-            btnKindleExtras.ToolTipText = MainStrings.BuildExtrasTooltip;
-            btnBuild.ToolTipText = MainStrings.TryToBuildXRay;
-            btnSettings.ToolTipText = MainStrings.ConfigureXRayBuilder;
-            btnPreview.ToolTipText = MainStrings.ViewPreviewOfGeneratedFiles;
-            btnUnpack.ToolTipText = MainStrings.SaveRawMlTooltip;
-            btnExtractTerms.ToolTipText = MainStrings.ExtractXRayToXml;
-            btnCreate.ToolTipText = MainStrings.CreateXmlTooltip;
+            btnBrowseMobi.ToolTipText = $"{MainStrings.OpenKindleBook} ({ShortcutText(Shortcut.OpenBook)})";
+            btnBrowseFolders.ToolTipText = $"{MainStrings.OpenOutputDirectory} ({ShortcutText(Shortcut.Folders)})";
+            btnOneClick.ToolTipText = $"{MainStrings.OneClickTooltip} ({ShortcutText(Shortcut.OneClick)})";
+            btnBrowseXML.ToolTipText = $"{MainStrings.OpenXmlOrTxt} ({ShortcutText(Shortcut.XRayDownload)})";
+            btnKindleExtras.ToolTipText = $"{MainStrings.BuildExtrasTooltip} ({ShortcutText(Shortcut.KindleExtras)})";
+            btnBuild.ToolTipText = $"{MainStrings.TryToBuildXRay} ({ShortcutText(Shortcut.XRay)})";
+            btnSettings.ToolTipText = $"{MainStrings.ConfigureXRayBuilder} ({ShortcutText(Shortcut.Settings)})";
+            btnPreview.ToolTipText = $"{MainStrings.ViewPreviewOfGeneratedFiles} ({ShortcutText(Shortcut.Preview)})";
+            btnUnpack.ToolTipText = $"{MainStrings.SaveRawMlTooltip} ({ShortcutText(Shortcut.Unpack)})";
+            btnExtractTerms.ToolTipText = $"{MainStrings.ExtractXRayToXml} ({ShortcutText(Shortcut.XRayExtract)})";
+            btnCreate.ToolTipText = $"{MainStrings.CreateXmlTooltip} ({ShortcutText(Shortcut.XRayCreate)})";
 
             _tooltip.SetToolTip(pbCover, "Double-click to open\r\nthe book details window");
 
-            _tooltip.SetToolTip(rdoGoodreads, MainStrings.UseLinkAsDataSource);
-            _tooltip.SetToolTip(rdoRoentgen, MainStrings.DownloadFromRoentgen);
-            _tooltip.SetToolTip(rdoFile, MainStrings.LoadTermsFromFile);
+            _tooltip.SetToolTip(rdoGoodreads, $"{MainStrings.UseLinkAsDataSource} ({ShortcutText(Shortcut.XRayTermsSourceGoodreads)})");
+            _tooltip.SetToolTip(rdoRoentgen, $"{MainStrings.DownloadFromRoentgen} ({ShortcutText(Shortcut.XRayTermsSourceRoentgen)})");
+            _tooltip.SetToolTip(rdoFile, $"{MainStrings.LoadTermsFromFile} ({ShortcutText(Shortcut.XRayTermsSourceFile)})");
 
             _tooltip.SetToolTip(pbFile1, MainStrings.StartActions);
             _tooltip.SetToolTip(pbFile2, MainStrings.AuthorProfile);
@@ -780,11 +800,11 @@ namespace XRayBuilderGUI.UI
         {
             if (rdoGoodreads.Checked)
             {
-                btnDownloadTerms.ToolTipText = $"Save {_dataSource.Name} terms to an XML file.";
+                btnDownloadTerms.ToolTipText = $"Save {_dataSource.Name} terms to an XML file. ({ShortcutText(Shortcut.XRayDownload)})";
             }
             else if (rdoRoentgen.Checked)
             {
-                btnDownloadTerms.ToolTipText = "Save Roentgen terms to an XML file.";
+                btnDownloadTerms.ToolTipText = $"Save Roentgen terms to an XML file. ({ShortcutText(Shortcut.XRayDownload)})";
             }
 
             _settings.buildSource = rdoGoodreads.Checked
@@ -824,11 +844,11 @@ namespace XRayBuilderGUI.UI
             rdoGoodreads.Text = _dataSource.Name;
             lblGoodreads.Text = $@"{string.Format(MainStrings.SourceUrl, _dataSource.Name)}:";
             if (rdoGoodreads.Checked)
-                btnDownloadTerms.ToolTipText = $"Save {_dataSource.Name} terms to an XML file.";
+                btnDownloadTerms.ToolTipText = $"Save {_dataSource.Name} terms to an XML file. ({ShortcutText(Shortcut.XRayDownload)})";
             else if (rdoRoentgen.Checked)
-                btnDownloadTerms.ToolTipText = "Save Roentgen terms to an XML file.";
+                btnDownloadTerms.ToolTipText = $"Save Roentgen terms to an XML file. ({ShortcutText(Shortcut.XRayDownload)})";
             btnSearchGoodreads.ToolTipText = _dataSource.SearchEnabled
-                ? $"Try to search for this book on {_dataSource.Name}."
+                ? $"Try to search for this book on {_dataSource.Name}. ({ShortcutText(Shortcut.SearchBook)})"
                 : $"Search is disabled when {_dataSource.Name} is selected as a data source.";
 
             lblDatasource.Text = $"{_dataSource.Name}:";
@@ -1269,6 +1289,121 @@ namespace XRayBuilderGUI.UI
         private void btnVisitGithub_Click(object sender, EventArgs e)
         {
             Functions.ShellExecute("https://github.com/Ephemerality/xray-builder.gui");
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            var shortcut = _keyMapping
+                .Where(mapping => mapping.Keys == e.KeyData)
+                .Select(mapping => (Shortcut?) mapping.Shortcut)
+                .FirstOrDefault();
+            if (shortcut == null)
+                return;
+
+            switch (shortcut)
+            {
+                case Shortcut.OpenBook:
+                    btnBrowseMobi_Click(null, null);
+                    break;
+                case Shortcut.SearchBook:
+                    btnSearchGoodreads_Click(null, null);
+                    break;
+                case Shortcut.KindleExtras:
+                    btnKindleExtras_Click(null, null);
+                    break;
+                case Shortcut.XRay:
+                    btnBuild_Click(null, null);
+                    break;
+                case Shortcut.OneClick:
+                    btnOneClick_Click(null, null);
+                    break;
+                case Shortcut.XRayCreate:
+                    btnCreate_Click(null, null);
+                    break;
+                case Shortcut.XRayDownload:
+                    btnBrowseXML_Click(null, null);
+                    break;
+                case Shortcut.XRayExtract:
+                    btnExtractTerms_Click(null, null);
+                    break;
+                case Shortcut.Preview:
+                    btnPreview.ShowDropDown();
+                    break;
+                case Shortcut.Unpack:
+                    btnUnpack_Click(null, null);
+                    break;
+                case Shortcut.Folders:
+                    btnBrowseFolders.ShowDropDown();
+                    break;
+                case Shortcut.Settings:
+                    btnSettings_Click(null, null);
+                    break;
+                case Shortcut.Help:
+                    btnViewHelp_Click(null, null);
+                    break;
+                case Shortcut.BookPath:
+                    txtMobi.Focus();
+                    break;
+                case Shortcut.MetadataProvider:
+                    txtGoodreads.Focus();
+                    break;
+                case Shortcut.XRayTermsSourceGoodreads:
+                    rdoGoodreads.Checked = true;
+                    break;
+                case Shortcut.XRayTermsSourceRoentgen:
+                    rdoRoentgen.Checked = true;
+                    break;
+                case Shortcut.XRayTermsSourceFile:
+                    rdoFile.Checked = true;
+                    break;
+            }
+
+            e.Handled = true;
+            e.SuppressKeyPress = true;
+        }
+
+        private readonly (Shortcut Shortcut, Keys Keys)[] _keyMapping =
+        {
+            (Shortcut.OpenBook, Keys.Control | Keys.O),
+            (Shortcut.SearchBook, Keys.Control | Keys.F),
+            (Shortcut.KindleExtras, Keys.Control | Keys.K),
+            (Shortcut.XRay, Keys.Control | Keys.R),
+            (Shortcut.OneClick, Keys.Control | Keys.L),
+            (Shortcut.XRayCreate, Keys.Control | Keys.N),
+            (Shortcut.XRayDownload, Keys.Control | Keys.I),
+            (Shortcut.XRayExtract, Keys.Control | Keys.E),
+            (Shortcut.Preview, Keys.Control | Keys.P),
+            (Shortcut.Unpack, Keys.Control | Keys.U),
+            (Shortcut.Folders, Keys.Control | Keys.D),
+            (Shortcut.Settings, Keys.Control | Keys.G),
+            (Shortcut.Help, Keys.F1),
+            (Shortcut.BookPath, Keys.Alt | Keys.B),
+            (Shortcut.MetadataProvider, Keys.Alt | Keys.M),
+            (Shortcut.XRayTermsSourceGoodreads, Keys.Alt | Keys.G),
+            (Shortcut.XRayTermsSourceRoentgen, Keys.Alt | Keys.R),
+            (Shortcut.XRayTermsSourceFile, Keys.Alt | Keys.F),
+        };
+
+        public enum Shortcut
+        {
+            OpenBook,
+            SearchBook,
+            KindleExtras,
+            XRay,
+            OneClick,
+            XRayCreate,
+            XRayDownload,
+            XRayExtract,
+            Preview,
+            Unpack,
+            Folders,
+            Settings,
+            Help,
+            BookPath,
+            MetadataProvider,
+            XRayTermsSourceGoodreads,
+            XRayTermsSourceRoentgen,
+            XRayTermsSourceFile
         }
     }
 }

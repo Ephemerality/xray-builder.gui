@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Prompt;
@@ -69,6 +70,27 @@ namespace XRayBuilderGUI.UI
                 DialogResult.No => PromptResultYesNoCancel.No,
                 _ => throw new ArgumentOutOfRangeException()
             };
+        }
+
+        public static string ShortcutText(Keys keys)
+        {
+            var result = new StringBuilder();
+            if ((keys & Keys.Control) == Keys.Control)
+                result.Append("Ctrl");
+
+            if ((keys & Keys.Alt) == Keys.Alt)
+                result.Append("Alt");
+
+            if ((keys & Keys.Shift) == Keys.Shift)
+                result.Append("Shift");
+
+            if (result.Length > 0)
+                result.Append('+');
+
+            keys = keys & ~Keys.Control & ~Keys.Alt;
+            result.Append(keys.ToString());
+
+            return result.ToString();
         }
     }
 

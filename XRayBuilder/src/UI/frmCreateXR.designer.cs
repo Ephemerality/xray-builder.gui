@@ -85,7 +85,7 @@
             this.lblName.Name = "lblName";
             this.lblName.Size = new System.Drawing.Size(42, 15);
             this.lblName.TabIndex = 1;
-            this.lblName.Text = "Name:";
+            this.lblName.Text = "N̲ame:";
             this.lblName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lblAliases
@@ -96,7 +96,7 @@
             this.lblAliases.Name = "lblAliases";
             this.lblAliases.Size = new System.Drawing.Size(46, 15);
             this.lblAliases.TabIndex = 4;
-            this.lblAliases.Text = "Aliases:";
+            this.lblAliases.Text = "A̲liases:";
             this.lblAliases.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // groupBox3
@@ -133,7 +133,7 @@
             this.lblDescription.Name = "lblDescription";
             this.lblDescription.Size = new System.Drawing.Size(70, 15);
             this.lblDescription.TabIndex = 6;
-            this.lblDescription.Text = "Description:";
+            this.lblDescription.Text = "D̲escription:";
             this.lblDescription.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // txtAliases
@@ -160,7 +160,7 @@
             this.rdoTopic.Name = "rdoTopic";
             this.rdoTopic.Size = new System.Drawing.Size(62, 19);
             this.rdoTopic.TabIndex = 3;
-            this.rdoTopic.Text = "Setting";
+            this.rdoTopic.Text = "S̲etting";
             this.rdoTopic.UseVisualStyleBackColor = true;
             // 
             // rdoCharacter
@@ -173,7 +173,7 @@
             this.rdoCharacter.Size = new System.Drawing.Size(76, 19);
             this.rdoCharacter.TabIndex = 2;
             this.rdoCharacter.TabStop = true;
-            this.rdoCharacter.Text = "Character";
+            this.rdoCharacter.Text = "C̲haracter";
             this.rdoCharacter.UseVisualStyleBackColor = true;
             // 
             // groupBox2
@@ -211,7 +211,7 @@
             this.chkMatch.Name = "chkMatch";
             this.chkMatch.Size = new System.Drawing.Size(60, 19);
             this.chkMatch.TabIndex = 1;
-            this.chkMatch.Text = "Match";
+            this.chkMatch.Text = "M̲atch";
             this.chkMatch.UseVisualStyleBackColor = true;
             // 
             // chkCase
@@ -224,7 +224,7 @@
             this.chkCase.Name = "chkCase";
             this.chkCase.Size = new System.Drawing.Size(100, 19);
             this.chkCase.TabIndex = 0;
-            this.chkCase.Text = "Case Sensitive";
+            this.chkCase.Text = "Case̲ Sensitive";
             this.chkCase.UseVisualStyleBackColor = true;
             // 
             // groupBox4
@@ -296,7 +296,7 @@
             this.lblAsin.Name = "lblAsin";
             this.lblAsin.Size = new System.Drawing.Size(36, 15);
             this.lblAsin.TabIndex = 7;
-            this.lblAsin.Text = "ASIN:";
+            this.lblAsin.Text = "ASI̲N:";
             this.lblAsin.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // txtTitle
@@ -315,7 +315,7 @@
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(32, 15);
             this.lblTitle.TabIndex = 5;
-            this.lblTitle.Text = "Title:";
+            this.lblTitle.Text = "T̲itle:";
             this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // txtAuthor
@@ -334,7 +334,7 @@
             this.lblAuthor.Name = "lblAuthor";
             this.lblAuthor.Size = new System.Drawing.Size(47, 15);
             this.lblAuthor.TabIndex = 3;
-            this.lblAuthor.Text = "Author:";
+            this.lblAuthor.Text = "Au̲thor:";
             this.lblAuthor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // btnOpenXml
@@ -531,6 +531,7 @@
             this.Controls.Add(this.groupBox3);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.KeyPreview = true;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(843, 778);

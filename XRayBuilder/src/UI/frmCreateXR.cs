@@ -245,7 +245,7 @@ namespace XRayBuilderGUI.UI
         private void SetOccurrencesThreadsafe(Term term, HashSet<Occurrence> occurrences)
         {
             if (dgvTerms.InvokeRequired)
-                dgvTerms.BeginInvoke(new Action(() => SetOccurrencesThreadsafe(term, occurrences)));
+                dgvTerms.BeginInvoke(() => SetOccurrencesThreadsafe(term, occurrences));
             else
                 term.Occurrences = occurrences;
         }
@@ -514,25 +514,25 @@ namespace XRayBuilderGUI.UI
             txtAliases.Text = "";
             txtDescription.Text = "";
 
-            _toolTip1.SetToolTip(btnAddTerm, "Add this character or\r\ntopic to the term list.");
-            _toolTip1.SetToolTip(btnEditTerm, "Edit the selected term. It will be removed from\r\nthe list and used to fill in the information\r\nabove. Don't forget to add to the list when done!");
-            _toolTip1.SetToolTip(btnRemoveTerm, "Remove the selected term from the\r\nterm list. This action is irreversible!");
-            _toolTip1.SetToolTip(btnClear, "Clear the term list.");
-            _toolTip1.SetToolTip(btnOpenXml, "Open an existing term XML of TXT file. If\r\nan alias file with a matching ASIN is found,\r\naliases wil automatically be populated.");
-            _toolTip1.SetToolTip(btnSaveXML, "Save the term list to an XML file. Any\r\nassociated aliases will be saved to an\r\nASIN.aliases file in the /ext folder.");
-            _toolTip1.SetToolTip(btnDownloadTerms, "Download terms from Roentgen if any are\r\navailable. Existing terms will be cleared!");
-            _toolTip1.SetToolTip(btnGenerateAliases, "Automatically split character\r\nnames into aliases.");
-            _toolTip1.SetToolTip(btnClearAliases, "Clear all aliases.");
+            _toolTip1.SetToolTip(btnAddTerm, $"Add this character or\r\ntopic to the term list. ({ShortcutText(Shortcut.Submit)})");
+            _toolTip1.SetToolTip(btnEditTerm, $"Edit the selected term. It will be removed from\r\nthe list and used to fill in the information\r\nabove. Don't forget to add to the list when done! ({ShortcutText(Shortcut.Edit)})");
+            _toolTip1.SetToolTip(btnRemoveTerm, $"Remove the selected term from the\r\nterm list. This action is irreversible! ({ShortcutText(Shortcut.Delete)})");
+            _toolTip1.SetToolTip(btnClear, $"Clear the term list. ({ShortcutText(Shortcut.ClearTerms)})");
+            _toolTip1.SetToolTip(btnOpenXml, $"Open an existing term XML of TXT file. If\r\nan alias file with a matching ASIN is found,\r\naliases wil automatically be populated. ({ShortcutText(Shortcut.Open)})");
+            _toolTip1.SetToolTip(btnSaveXML, $"Save the term list to an XML file. Any\r\nassociated aliases will be saved to an\r\nASIN.aliases file in the /ext folder. ({ShortcutText(Shortcut.Save)})");
+            _toolTip1.SetToolTip(btnDownloadTerms, $"Download terms from Roentgen if any are\r\navailable. Existing terms will be cleared! ({ShortcutText(Shortcut.Roentgen)})");
+            _toolTip1.SetToolTip(btnGenerateAliases, $"Automatically split character\r\nnames into aliases. ({ShortcutText(Shortcut.AutomaticallySplit)})");
+            _toolTip1.SetToolTip(btnClearAliases, $"Clear all aliases. ({ShortcutText(Shortcut.ClearAllAliases)})");
 
-            _toolTip1.SetToolTip(chkMatch, "Usually enabled. Disabling this option is useful\r\nwhen you want a character to be displayed but\r\ntheir name doesn't work well for matching.");
-            _toolTip1.SetToolTip(chkCase, "Whether or not to match this term in\r\ncase-sensitive mode. In general, characters\r\nwill use this and others will not.");
-            _toolTip1.SetToolTip(chkRegex, "When enabled, the aliases will be treated\r\nas a set of regular expressions.");
+            _toolTip1.SetToolTip(chkMatch, $"Usually enabled. Disabling this option is useful\r\nwhen you want a character to be displayed but\r\ntheir name doesn't work well for matching. ({ShortcutText(Shortcut.Match)})");
+            _toolTip1.SetToolTip(chkCase, $"Whether or not to match this term in\r\ncase-sensitive mode. In general, characters\r\nwill use this and others will not. ({ShortcutText(Shortcut.CaseSensitive)})");
+            _toolTip1.SetToolTip(chkRegex, $"When enabled, the aliases will be treated\r\nas a set of regular expressions.");
 
-            _toolTip1.SetToolTip(rdoCharacter, "A character is an individual, fictional or\r\nreal, in your book. Examples of characters include\r\n\"Don Quixote\", \"Warren Buffett\", and \"Darth Vader\".");
-            _toolTip1.SetToolTip(rdoTopic, "Terms are places, organizations, or phrases, and can\r\nalso be fictional or real. Examples of terms include\r\n\"Westeros\", \"IBM\", and \"deadlock\".");
+            _toolTip1.SetToolTip(rdoCharacter, $"A character is an individual, fictional or\r\nreal, in your book. Examples of characters include\r\n\"Don Quixote\", \"Warren Buffett\", and \"Darth Vader\". ({ShortcutText(Shortcut.TypeCharacter)})");
+            _toolTip1.SetToolTip(rdoTopic, $"Terms are places, organizations, or phrases, and can\r\nalso be fictional or real. Examples of terms include\r\n\"Westeros\", \"IBM\", and \"deadlock\". ({ShortcutText(Shortcut.TypeSetting)})");
 
-            _toolTip1.SetToolTip(chkAllowResizeName,"Allow resizing of the term name column\r\nso that the entire name is visible.");
-            _toolTip1.SetToolTip(chkWrapDescriptions, "Resize term rows so that the\r\nentire description is visible.");
+            _toolTip1.SetToolTip(chkAllowResizeName,$"Allow resizing of the term name column\r\nso that the entire name is visible. ({ShortcutText(Shortcut.ResizeName)})");
+            _toolTip1.SetToolTip(chkWrapDescriptions, $"Resize term rows so that the\r\nentire description is visible. ({ShortcutText(Shortcut.WrapDescription)})");
         }
 
         private void dgvTerms_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
@@ -736,6 +736,142 @@ namespace XRayBuilderGUI.UI
             nameColumn.AutoSizeMode = allowResize
                 ? DataGridViewAutoSizeColumnMode.None
                 : DataGridViewAutoSizeColumnMode.AllCells;
+        }
+
+        private string ShortcutText(Shortcut shortcut)
+        {
+            var (_, keys) = _keyMapping.First(mapping => mapping.Shortcut == shortcut);
+            return UIFunctions.ShortcutText(keys);
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            var shortcut = _keyMapping
+                .Where(mapping => mapping.Keys == e.KeyData)
+                .Select(mapping => (Shortcut?) mapping.Shortcut)
+                .FirstOrDefault();
+            if (shortcut == null)
+                return;
+
+            switch (shortcut)
+            {
+                case Shortcut.NameField:
+                    txtName.Focus();
+                    break;
+                case Shortcut.AliasesField:
+                    txtAliases.Focus();
+                    break;
+                case Shortcut.DescriptionField:
+                    txtDescription.Focus();
+                    break;
+                case Shortcut.TypeCharacter:
+                    rdoCharacter.Checked = !rdoCharacter.Checked;
+                    break;
+                case Shortcut.TypeSetting:
+                    rdoTopic.Checked = !rdoTopic.Checked;
+                    break;
+                case Shortcut.CaseSensitive:
+                    chkCase.Checked = !chkCase.Checked;
+                    break;
+                case Shortcut.Match:
+                    chkMatch.Checked = !chkMatch.Checked;
+                    break;
+                case Shortcut.Submit:
+                    btnAddTerm_Click(null, null);
+                    break;
+                case Shortcut.Roentgen:
+                    btnDownloadTerms_Click(null, null);
+                    break;
+                case Shortcut.ResizeName:
+                    chkAllowResizeName.Checked = !chkAllowResizeName.Checked;
+                    break;
+                case Shortcut.WrapDescription:
+                    chkWrapDescriptions.Checked = !chkWrapDescriptions.Checked;
+                    break;
+                case Shortcut.AutomaticallySplit:
+                    btnGenerateAliases_Click(null, null);
+                    break;
+                case Shortcut.ClearAllAliases:
+                    btnClearAliases_Click(null, null);
+                    break;
+                case Shortcut.Edit:
+                    btnEditTerm_Click(null, null);
+                    break;
+                case Shortcut.Delete:
+                    btnRemoveTerm_Click(null, null);
+                    break;
+                case Shortcut.ClearTerms:
+                    btnClear_Click(null, null);
+                    break;
+                case Shortcut.AuthorField:
+                    txtAuthor.Focus();
+                    break;
+                case Shortcut.TitleField:
+                    txtTitle.Focus();
+                    break;
+                case Shortcut.AsinField:
+                    txtAsin.Focus();
+                    break;
+                case Shortcut.Open:
+                    btnOpenXml_Click(null, null);
+                    break;
+                case Shortcut.Save:
+                    btnSaveXML_Click(null, null);
+                    break;
+            }
+
+            e.Handled = true;
+            e.SuppressKeyPress = true;
+        }
+
+        private readonly (Shortcut Shortcut, Keys Keys)[] _keyMapping =
+        {
+            (Shortcut.NameField, Keys.Alt | Keys.N),
+            (Shortcut.AliasesField, Keys.Alt | Keys.A),
+            (Shortcut.DescriptionField, Keys.Alt | Keys.D),
+            (Shortcut.TypeCharacter, Keys.Alt | Keys.C),
+            (Shortcut.TypeSetting, Keys.Alt | Keys.S),
+            (Shortcut.CaseSensitive, Keys.Alt | Keys.E),
+            (Shortcut.Match, Keys.Alt | Keys.M),
+            (Shortcut.Submit, Keys.Control | Keys.Enter),
+            (Shortcut.Roentgen, Keys.Control | Keys.D),
+            (Shortcut.ResizeName, Keys.Control | Keys.R),
+            (Shortcut.WrapDescription, Keys.Control | Keys.T),
+            (Shortcut.AutomaticallySplit, Keys.Control | Keys.Q),
+            (Shortcut.ClearAllAliases, Keys.Control | Keys.L),
+            (Shortcut.Edit, Keys.Control | Keys.E),
+            (Shortcut.Delete, Keys.Control | Keys.Delete),
+            (Shortcut.ClearTerms, Keys.Control | Keys.Shift | Keys.Delete),
+            (Shortcut.AuthorField, Keys.Alt | Keys.U),
+            (Shortcut.TitleField, Keys.Alt | Keys.T),
+            (Shortcut.AsinField, Keys.Alt | Keys.I),
+            (Shortcut.Open, Keys.Control | Keys.O),
+            (Shortcut.Save, Keys.Control | Keys.S),
+        };
+
+        public enum Shortcut
+        {
+            NameField,
+            AliasesField,
+            DescriptionField,
+            TypeCharacter,
+            TypeSetting,
+            CaseSensitive,
+            Match,
+            Submit,
+            Roentgen,
+            ResizeName,
+            WrapDescription,
+            AutomaticallySplit,
+            ClearAllAliases,
+            Edit,
+            Delete,
+            ClearTerms,
+            AuthorField,
+            TitleField,
+            AsinField,
+            Open,
+            Save
         }
     }
 }

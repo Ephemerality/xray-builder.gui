@@ -703,20 +703,7 @@ namespace XRayBuilderGUI.UI
         private string ShortcutText(Shortcut shortcut)
         {
             var (_, keys) = _keyMapping.First(mapping => mapping.Shortcut == shortcut);
-            var result = new StringBuilder();
-            if ((keys & Keys.Control) == Keys.Control)
-                result.Append("Ctrl");
-
-            if ((keys & Keys.Alt) == Keys.Alt)
-                result.Append("Alt");
-
-            if (result.Length > 0)
-                result.Append('+');
-
-            keys = keys & ~Keys.Control & ~Keys.Alt;
-            result.Append(keys.ToString());
-
-            return result.ToString();
+            return UIFunctions.ShortcutText(keys);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -1348,13 +1335,13 @@ namespace XRayBuilderGUI.UI
                     txtGoodreads.Focus();
                     break;
                 case Shortcut.XRayTermsSourceGoodreads:
-                    rdoGoodreads.Checked = true;
+                    rdoGoodreads.Checked = !rdoGoodreads.Checked;
                     break;
                 case Shortcut.XRayTermsSourceRoentgen:
-                    rdoRoentgen.Checked = true;
+                    rdoRoentgen.Checked = !rdoRoentgen.Checked;
                     break;
                 case Shortcut.XRayTermsSourceFile:
-                    rdoFile.Checked = true;
+                    rdoFile.Checked = !rdoFile.Checked;
                     break;
             }
 

@@ -90,123 +90,99 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             string biography = null;
             var bioFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext", $"{authorAsin}.bio");
             var readFromFile = false;
-            var newBioFile = false;
+
             string ReadBio(string file)
             {
                 try
                 {
                     var fileText = Functions.ReadFromFile(file);
-                    if (string.IsNullOrEmpty(fileText))
+                    if (string.IsNullOrEmpty(fileText) || fileText.Contains("No author biography found locally or on Amazon!"))
+                    {
                         _logger.Log($"Found biography file, but it is empty!\r\n{file}");
-                    else if(!string.Equals(biography, fileText))
-                        _logger.Log($"Using biography from {file}.");
+                        return string.Empty;
+                    }
 
-                    // todo fix this
-                    if (fileText != null && fileText.Contains("No author biography found locally or on Amazon!"))
-                        _logger.Log($"Warning: Local biography file contains an empty default biography.{Environment.NewLine}Delete {file} and try again");
-
+                    readFromFile = true;
                     return fileText;
                 }
                 catch (Exception ex)
                 {
                     _logger.Log($"An error occurred while opening {file}\r\n{ex.Message}\r\n{ex.StackTrace}");
+                    readFromFile = false;
+                    return string.Empty;
                 }
-
-                return null;
             }
 
-            string TrimBio(string bio)
+            if (File.Exists(bioFile) && (request.Settings.SaveBio || request.Settings.EditBiography))
             {
-                try
+                biography = ReadBio(bioFile);
+                if (readFromFile)
                 {
-                    //Trim author biography to less than 1000 characters and/or replace more problematic characters.
-                    if (string.IsNullOrWhiteSpace(bio))
-                        return null;
-
-                    if (bio.Length > 1000)
-                    {
-                        // todo culture invariant
-                        var lastPunc = bio.LastIndexOfAny(new[] {'.', '!', '?'});
-                        var lastSpace = bio.LastIndexOf(' ');
-
-                        bio = lastPunc > lastSpace
-                            ? bio.Substring(0, lastPunc + 1)
-                            : $"{bio.Substring(0, lastSpace)}{'\u2026'}";
-                    }
-
-                    return bio.Clean();
+                    _logger.Log($"Using biography from {bioFile}.");
+                    searchResults.Biography = biography;
                 }
-                catch (Exception ex)
-                {
-                    _logger.Log($"An error occurred while trimming the biography\r\n{ex.Message}\r\n{ex.StackTrace}");
-                }
-
-                return bio;
             }
 
-            if (searchResults.Biography == null && !File.Exists(bioFile))
+            if (string.IsNullOrEmpty(searchResults.Biography) && request.Settings.AmazonTld != "com")
             {
-                if (request.Settings.AmazonTld != "com")
-                {
-                    _logger.Log(@"Searching for biography on Amazon.com…");
-                    request.Settings.AmazonTld = "com";
-                    var tempSearchResults = await _amazonClient.SearchAuthor(request.Book.Author, request.Settings.AmazonTld, cancellationToken, false);
-                    if (tempSearchResults?.Biography != null)
-                        searchResults.Biography = tempSearchResults.Biography;
-                }
+                _logger.Log(@"Searching for biography on Amazon.com…");
+                request.Settings.AmazonTld = "com";
+                var tempSearchResults = await _amazonClient.SearchAuthor(request.Book.Author, request.Settings.AmazonTld, cancellationToken, false);
+                if (!string.IsNullOrEmpty(tempSearchResults?.Biography))
+                    searchResults.Biography = tempSearchResults.Biography;
             }
 
-            if (searchResults.Biography != null)
-                biography = searchResults.Biography;
-
-            // Parse author details from books goodreads page if missing from Amazon
-            if (searchResults.Biography == null || searchResults.ImageUrl == null || searchResults.ImageUrl.Contains("placeholder") && !File.Exists(bioFile))
+            // Parse author biography and image URL from books goodreads page if missing from Amazon
+            if (string.IsNullOrEmpty(searchResults.Biography) || string.IsNullOrEmpty(searchResults.ImageUrl) || searchResults.ImageUrl.Contains("placeholder"))
             {
                 _logger.Log("Attempting to fill missing author information from Goodreads…");
                 var goodreads = new SecondarySourceGoodreads(_logger, _httpClient, _amazonClient, null);
                 var grAuthor = await goodreads.GetAuthorAsync(request.Book.DataUrl, cancellationToken);
                 if (grAuthor != null)
                 {
-                    searchResults.Biography ??= grAuthor.Biography;
-                    if (searchResults.ImageUrl == null || searchResults.ImageUrl.Contains("placeholder"))
+                    if (!string.IsNullOrEmpty(grAuthor.Biography))
+                    {
+                        searchResults.Biography = grAuthor.Biography;
+                        _logger.Log("Missing author biography found on from Goodreads.");
+                    }
+
+                    if (string.IsNullOrEmpty(searchResults.ImageUrl) || searchResults.ImageUrl.Contains("placeholder"))
+                    {
                         searchResults.ImageUrl = grAuthor.ImageUrl;
+                        _logger.Log("Missing author image found on from Goodreads.");
+                    }
                 }
-                biography = searchResults.Biography;
             }
 
-            if (File.Exists(bioFile) && request.Settings.SaveBio)
-            {
-                biography = ReadBio(bioFile);
-                // if it's null, there was an error. if it's just empty, we'll parse it out instead
-                if (biography == null)
-                    return null;
-                if (!string.IsNullOrEmpty(biography))
-                    readFromFile = true;
-            }
+            if (!string.IsNullOrEmpty(searchResults.Biography))
+                biography = searchResults.Biography;
 
             if (!string.IsNullOrEmpty(biography) && (request.Settings.SaveBio || request.Settings.EditBiography))
             {
-                if(!readFromFile)
-                    biography = TrimBio(biography);
-
-                if (!File.Exists(bioFile) && !string.IsNullOrEmpty(biography))
+                if (!readFromFile)
                 {
-                    File.WriteAllText(bioFile, biography);
-                    newBioFile = true;
-                    _logger.Log(@"Author biography found!");
+                    try
+                    {
+                        _logger.Log($"Saving biography to {bioFile}");
+                        await File.WriteAllTextAsync(bioFile, TrimBio(biography), cancellationToken);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Log($"An error occurred while writing biography.\r\n{ex.Message}\r\n{ex.StackTrace}");
+                        return null;
+                    }
                 }
             }
 
-            var message = biography == null
-                ? $"No author biography found on Amazon!{Environment.NewLine}Would you like to create one?"
+            var message = string.IsNullOrEmpty(biography)
+                ? $"No author biography found!{Environment.NewLine}Would you like to create one?"
                 : readFromFile
                     ? "Would you like to edit the existing biography?"
-                    : $"Author biography found on Amazon!{Environment.NewLine}Would you like to edit it?";
+                    : $"Author biography found!{Environment.NewLine}Would you like to edit it?";
 
             if (editBioCallback != null && editBioCallback(message))
             {
-                if (!File.Exists(bioFile))
-                    File.WriteAllText(bioFile, string.Empty);
+                await File.WriteAllTextAsync(bioFile, TrimBio(biography), cancellationToken);
                 Functions.RunNotepad(bioFile);
                 biography = ReadBio(bioFile);
             }
@@ -215,42 +191,6 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             {
                 biography = "No author biography found locally or on Amazon!";
                 _logger.Log("An error occurred finding the author biography.");
-            }
-
-            if (request.Settings.SaveBio)
-            {
-                if (!File.Exists(bioFile))
-                {
-                    try
-                    {
-                        _logger.Log($"Saving biography to {bioFile}");
-                        using var streamWriter = new StreamWriter(bioFile, false, System.Text.Encoding.UTF8);
-                        await streamWriter.WriteAsync(biography);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Log($"An error occurred while writing biography.\r\n{ex.Message}\r\n{ex.StackTrace}");
-                        return null;
-                    }
-                }
-
-                if (newBioFile)
-                {
-                    _logger.Log(@"New biography file opened in notepad for editing…");
-                    Functions.RunNotepad(bioFile);
-                    biography = ReadBio(bioFile);
-                    if (string.IsNullOrEmpty(biography))
-                        return null;
-                    searchResults.Biography = biography;
-                }
-
-                if (!readFromFile && editBioCallback != null && editBioCallback("Would you like to open the biography file in notepad for editing?"))
-                {
-                    Functions.RunNotepad(bioFile);
-                    biography = ReadBio(bioFile);
-                    if (string.IsNullOrEmpty(biography))
-                        return null;
-                }
             }
 
             searchResults.Biography = biography;
@@ -266,7 +206,7 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             }
             catch (Exception ex)
             {
-                _logger.Log($"An error occurred downloading the author image: {ex.Message}");
+                _logger.Log($"An error occurred downloading the author image: {ex.Message}\r\n{ex.StackTrace}");
             }
 
             var bookBag = new ConcurrentBag<BookInfo>();
@@ -314,6 +254,35 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
                 Image = ApAuthorImage,
                 ImageUrl = searchResults.ImageUrl
             };
+        }
+
+        private string TrimBio(string bio)
+        {
+            try
+            {
+                //Trim author biography to less than 1000 characters and/or replace more problematic characters.
+                if (string.IsNullOrEmpty(bio))
+                    return bio;
+
+                if (bio.Length > 1000)
+                {
+                    // todo culture invariant
+                    var lastPunc = bio.LastIndexOfAny(new[] { '.', '!', '?' });
+                    var lastSpace = bio.LastIndexOf(' ');
+
+                    bio = lastPunc > lastSpace
+                        ? bio.Substring(0, lastPunc + 1)
+                        : $"{bio.Substring(0, lastSpace)}{'\u2026'}";
+                }
+
+                return bio.Clean();
+            }
+            catch (Exception ex)
+            {
+                _logger.Log($"An error occurred while trimming the biography\r\n{ex.Message}\r\n{ex.StackTrace}");
+            }
+
+            return bio;
         }
 
         public sealed class Settings

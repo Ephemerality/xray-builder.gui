@@ -104,6 +104,15 @@ namespace XRayBuilderGUI.UI
             _httpClient = httpClient;
 
             toolStrip.Renderer = ToolStripTheme.Renderer();
+
+            var ddPreview = (ToolStripDropDownMenu)btnPreview.DropDown;
+            ddPreview.ShowCheckMargin = ddPreview.ShowImageMargin = false;
+
+            var ddFolders = (ToolStripDropDownMenu)btnBrowseFolders.DropDown;
+            ddFolders.ShowCheckMargin = ddFolders.ShowImageMargin = false;
+
+            var ddHelp = (ToolStripDropDownMenu)btnHelp.DropDown;
+            ddHelp.ShowCheckMargin = ddHelp.ShowImageMargin = false;
         }
 
         private readonly ToolTip _tooltip = new();
@@ -833,6 +842,8 @@ namespace XRayBuilderGUI.UI
                 btnDownloadTerms.ToolTipText = $"Save {_dataSource.Name} terms to an XML file.";
             else if (rdoRoentgen.Checked)
                 btnDownloadTerms.ToolTipText = "Save Roentgen terms to an XML file.";
+            if(!rdoFile.Checked)
+                txtXMLFile.Text = string.Empty;
             btnSearchGoodreads.ToolTipText = _dataSource.SearchEnabled
                 ? $"Try to search for this book on {_dataSource.Name}."
                 : $"Search is disabled when {_dataSource.Name} is selected as a data source.";
@@ -869,12 +880,23 @@ namespace XRayBuilderGUI.UI
                 txtXMLFile.Enabled = true;
                 btnBrowseXML.Visible = true;
                 btnDownloadTerms.Visible = false;
+
+                if (!string.IsNullOrEmpty(txtMobi.Text))
+                {
+                    var xmlFile = $@"{Environment.CurrentDirectory}\xml\{Path.GetFileNameWithoutExtension(txtMobi.Text)}.xml";
+                    if (Directory.Exists($@"{Environment.CurrentDirectory}\xml\"))
+                    {
+                        if (File.Exists(xmlFile))
+                            txtXMLFile.Text = xmlFile;
+                    }
+                }
             }
             else
             {
                 txtXMLFile.Enabled = false;
                 btnBrowseXML.Visible = false;
                 btnDownloadTerms.Visible = true;
+                txtXMLFile.Text = string.Empty;
             }
             SetDatasourceLabels();
         }

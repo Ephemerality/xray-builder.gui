@@ -32,6 +32,9 @@ namespace XRayBuilder.Core.Logic
         public string GetAliasPath(string asin)
             => Path.Combine(_baseDirectory, "ext", $"{asin}.aliases");
 
+        public string GetChaptersPath(string asin)
+            => Path.Combine(_baseDirectory, "ext", $"{asin}.chapters");
+
         public string GetRawmlPath(string filePath)
             => Path.Combine(_baseDirectory, "dmp", $"{Path.GetFileNameWithoutExtension(filePath)}.rawml");
 

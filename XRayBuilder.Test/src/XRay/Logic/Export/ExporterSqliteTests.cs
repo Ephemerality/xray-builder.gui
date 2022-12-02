@@ -43,7 +43,7 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             _xrayExporter = new XRayExporterSqlite(_logger);
             _directoryService = new DirectoryService(_logger, new XRayBuilderConfig());
             _aliasesRepository = new AliasesRepository(_logger, new AliasesService(_logger), _directoryService);
-            _chaptersService = new ChaptersService(_logger, config);
+            _chaptersService = new ChaptersService(_logger, config, _directoryService);
             _xrayService = new XRayService(_logger, _chaptersService, _aliasesRepository, _directoryService, _termsService, new ParagraphsService(), config);
         }
 

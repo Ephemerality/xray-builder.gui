@@ -11,6 +11,7 @@ using XRayBuilder.Core.Libraries.Logging;
 using XRayBuilder.Core.Libraries.Primitives.Extensions;
 using XRayBuilder.Core.Libraries.Prompt;
 using XRayBuilder.Core.Localization.Core;
+using XRayBuilder.Core.Logic;
 using XRayBuilder.Core.XRay.Artifacts;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
@@ -20,11 +21,13 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
     {
         private readonly ILogger _logger;
         private readonly IXRayBuilderConfig _config;
+        private readonly IDirectoryService _directoryService;
 
-        public ChaptersService(ILogger logger, IXRayBuilderConfig config)
+        public ChaptersService(ILogger logger, IXRayBuilderConfig config, IDirectoryService directoryService)
         {
             _logger = logger;
             _config = config;
+            _directoryService = directoryService;
         }
 
         /// <summary>
@@ -33,8 +36,7 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
         public void HandleChapters(XRay xray, string asin, long mlLen, HtmlDocument doc, string rawMl, [CanBeNull] YesNoPrompt yesNoPrompt, [CanBeNull] EditCallback editCallback)
         {
             //Similar to aliases, if chapters definition exists, load it. Otherwise, attempt to build it from the book
-            // todo directory service
-            var chapterFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext", $"{asin}.chapters");
+            var chapterFile = _directoryService.GetChaptersPath(asin);
             if (File.Exists(chapterFile) && !_config.OverwriteChapters)
             {
                 try
@@ -115,17 +117,14 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
 
         private void SaveChapters(XRay xray)
         {
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext");
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            using var streamWriter = new StreamWriter(Path.Combine(path, $"{xray.Asin}.chapters"), false, Encoding.UTF8);
+            using var streamWriter = new StreamWriter(_directoryService.GetChaptersPath(xray.Asin), false, Encoding.UTF8);
             foreach (var chapter in xray.Chapters)
                 streamWriter.WriteLine($"{chapter.Name}|{chapter.Start}|{chapter.End}");
         }
 
         private IEnumerable<Chapter> LoadChapters(string asin)
         {
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ext", $"{asin}.chapters");
+            var path = _directoryService.GetChaptersPath(asin);
             if (!File.Exists(path))
                 throw new Exception($"Chapters file does not exist: {path}");
             using var streamReader = new StreamReader(path, Encoding.UTF8);

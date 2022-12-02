@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -84,10 +85,8 @@ namespace XRayBuilder.Core.Libraries
 
         public static string TimeStamp()
         {
-            var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            var time = $"{DateTime.Now:HH:mm:ss}";
-            var date = $"{DateTime.Now:dd/MM/yyyy}";
-            return $"Running X-Ray Builder GUI v{version}. Log started on {date} at {time}.\r\n";
+            var assemblyName = (Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly()).GetName();
+            return $"Running {assemblyName.Name} v{assemblyName.Version}. Log started on {DateTime.Now:dd/MM/yyyy} at {DateTime.Now:HH:mm:ss}.\r\n";
         }
 
         public static void RunNotepad(string filename)

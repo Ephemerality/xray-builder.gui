@@ -40,7 +40,7 @@ namespace XRayBuilderGUI.UI
             else
             {
 
-                if (!rtfBox.Text.StartsWith("Running X-Ray Builder GUI"))
+                if (!rtfBox.Text.StartsWith($"Running {Application.ProductName}"))
                     rtfBox.AppendText(Functions.TimeStamp());
 
                 if (message.ContainsIgnorecase("successfully"))

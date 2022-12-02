@@ -115,7 +115,6 @@ namespace XRayBuilder.Core.XRay.Logic.Build
             {
                 case MobiMetadata _:
                     // ReSharper disable twice AccessToDisposedClosure
-                    // todo just pass metadata instead of calling getrawmlstream
                     buildTask = Task.Run(() => _xrayService.ExpandFromRawMl(xray, metadata, metadata.GetRawMlStream(), yesNoPrompt, editCallback, progress, cancellationToken), cancellationToken);
                     break;
                 case KfxContainer kfx:

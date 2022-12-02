@@ -488,7 +488,7 @@ namespace XRayBuilderGUI.UI
                             : _endActionsArtifactService.GenerateOld(endActionsRequest);
 
                         _logger.Log(MainStrings.WritingEndActionsFile);
-                        File.WriteAllText(eaPath, endActionsContent);
+                        await File.WriteAllTextAsync(eaPath, endActionsContent);
                         _logger.Log($@"{MainStrings.EndActionsCreated}{Environment.NewLine}{string.Format(MainStrings.SavedTo, eaPath)}");
                     }
 
@@ -502,7 +502,7 @@ namespace XRayBuilderGUI.UI
                         _logger.Log(MainStrings.WritingStartActionsFile);
                         try
                         {
-                            File.WriteAllText(saPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(startActions)));
+                            await File.WriteAllTextAsync(saPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(startActions)));
                         }
                         catch (Exception ex)
                         {
@@ -519,7 +519,7 @@ namespace XRayBuilderGUI.UI
                     try
                     {
                         var authorProfileOutput = JsonConvert.SerializeObject(AuthorProfileGenerator.CreateAp(authorProfileResponse, bookInfo.Asin));
-                        File.WriteAllText(apPath, authorProfileOutput);
+                        await File.WriteAllTextAsync(apPath, authorProfileOutput);
                         _logger.Log($@"{MainStrings.AuthorProfileCreated}{Environment.NewLine}{string.Format(MainStrings.SavedTo, apPath)}");
                     }
                     catch (Exception ex)
@@ -858,6 +858,8 @@ namespace XRayBuilderGUI.UI
 
         private void frmMain_DragEnter(object sender, DragEventArgs e)
         {
+            if (e.Data == null)
+                return;
             e.Effect = e.Data.GetDataPresent(DataFormats.FileDrop)
                 ? DragDropEffects.Copy
                 : DragDropEffects.None;
@@ -884,13 +886,12 @@ namespace XRayBuilderGUI.UI
         {
             if (!bookOpened)
             {
-                // todo centralized name (should the app name be localized?)
-                Text = "X-Ray Builder GUI";
+                Text = Application.ProductName;
                 txtMobi.Text = "";
                 txtOutput.Clear();
             }
             else
-                Text = $"X-Ray Builder GUI - {txtMobi.Text}";
+                Text = $"{Application.ProductName} - {txtMobi.Text}";
 
             txtGoodreads.Text = "";
             pbCover.Image = Resources.missing_cover;

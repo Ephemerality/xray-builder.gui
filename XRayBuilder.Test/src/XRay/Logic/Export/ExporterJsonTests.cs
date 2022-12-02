@@ -41,7 +41,11 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             _directoryService = new DirectoryService(_logger, new XRayBuilderConfig());
             _aliasesRepository = new AliasesRepository(_logger, new AliasesService(_logger), _directoryService);
             _xrayExporter = new XRayExporterJson();
-            _chaptersService = new ChaptersService(_logger, config);
+            var appConfig = new ApplicationConfig
+            {
+                Unattended = true
+            };
+            _chaptersService = new ChaptersService(_logger, config, _directoryService, appConfig);
             _xrayService = new XRayService(_logger, _chaptersService, _aliasesRepository, _directoryService, _termsService, new ParagraphsService(), config);
         }
 
@@ -49,12 +53,11 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         public async Task XRayXmlSaveOldTest(Book book)
         {
             var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, book.Author, book.Title, "com", true, _file, null, CancellationToken.None);
-            xray.Unattended = true;
             _xrayService.ExportAndDisplayTerms(xray, _file, true, false);
-            using var fs = new FileStream(book.Bookpath, FileMode.Open, FileAccess.Read);
+            await using var fs = new FileStream(book.Bookpath, FileMode.Open, FileAccess.Read);
             var metadata = new MobiMetadata(fs);
             _aliasesRepository.LoadAliasesForXRay(xray);
-            using var bookFs = new FileStream(book.Rawml, FileMode.Open);
+            await using var bookFs = new FileStream(book.Rawml, FileMode.Open);
             _xrayService.ExpandFromRawMl(xray, metadata, bookFs, null, null, null, CancellationToken.None);
             var filename = _directoryService.GetArtifactFilename(ArtifactType.XRay, book.Asin, book.Db, book.Guid);
             var outpath = Path.Combine(Environment.CurrentDirectory, "out", filename);

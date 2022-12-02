@@ -19,7 +19,6 @@ namespace XRayBuilder.Core.XRay
         public List<Excerpt> Excerpts { get; } = new List<Excerpt>();
         public long Srl { get; set; }
         public long Erl { get; set; }
-        public bool Unattended { get; set; }
         public List<NotableClip> NotableClips { get; set; }
         public DateTime? CreatedAt { get; set; }
     }

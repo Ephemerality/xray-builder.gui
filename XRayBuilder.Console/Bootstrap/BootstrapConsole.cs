@@ -1,6 +1,7 @@
 using SimpleInjector;
 using XRayBuilder.Console.Logic;
 using XRayBuilder.Core.Bootstrap;
+using XRayBuilder.Core.Config;
 using XRayBuilder.Core.DataSources.Amazon.Bootstrap;
 using XRayBuilder.Core.DataSources.Roentgen.Bootstrap;
 using XRayBuilder.Core.DataSources.Secondary.Bootstrap;
@@ -27,6 +28,10 @@ namespace XRayBuilder.Console.Bootstrap
             container.RegisterSingleton<XRay>();
             container.RegisterSingleton<IProgressBar, ProgressConsole>();
             container.RegisterSingleton<ILogger, ConsoleLogger>();
+            container.RegisterInstance(new ApplicationConfig
+            {
+                Unattended = true
+            });
         }
     }
 }

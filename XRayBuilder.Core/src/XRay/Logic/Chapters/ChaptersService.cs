@@ -22,12 +22,14 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
         private readonly ILogger _logger;
         private readonly IXRayBuilderConfig _config;
         private readonly IDirectoryService _directoryService;
+        private readonly ApplicationConfig _applicationConfig;
 
-        public ChaptersService(ILogger logger, IXRayBuilderConfig config, IDirectoryService directoryService)
+        public ChaptersService(ILogger logger, IXRayBuilderConfig config, IDirectoryService directoryService, ApplicationConfig applicationConfig)
         {
             _logger = logger;
             _config = config;
             _directoryService = directoryService;
+            _applicationConfig = applicationConfig;
         }
 
         /// <summary>
@@ -71,8 +73,7 @@ namespace XRayBuilder.Core.XRay.Logic.Chapters
                     _logger.Log($"No chapters detected.\r\nYou can create a file at {chapterFile} if you want to define chapters manually.");
             }
 
-            // TODO Get rid of Unattended from XRay
-            if (!xray.Unattended && _config.EnableEdit && yesNoPrompt != null && editCallback != null && yesNoPrompt(CoreStrings.Chapters, CoreStrings.OpenChaptersFile, PromptType.Question) == PromptResultYesNo.Yes && editCallback(chapterFile))
+            if (!_applicationConfig.Unattended && _config.EnableEdit && yesNoPrompt != null && editCallback != null && yesNoPrompt(CoreStrings.Chapters, CoreStrings.OpenChaptersFile, PromptType.Question) == PromptResultYesNo.Yes && editCallback(chapterFile))
             {
                 xray.Chapters.Clear();
 

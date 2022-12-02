@@ -38,8 +38,12 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             _termsService = new TermsService(config);
             _file = new SecondarySourceFile(_logger, _termsService);
             _previewDataExporter = new PreviewDataExporter();
-            _chaptersService = new ChaptersService(_logger, config);
             _directoryService = new DirectoryService(_logger, null);
+            var appConfig = new ApplicationConfig
+            {
+                Unattended = true
+            };
+            _chaptersService = new ChaptersService(_logger, config, _directoryService, appConfig);
             _xrayService = new XRayService(_logger, _chaptersService, new AliasesRepository(_logger, new AliasesService(_logger), _directoryService), _directoryService, _termsService, new ParagraphsService(), config);
         }
 

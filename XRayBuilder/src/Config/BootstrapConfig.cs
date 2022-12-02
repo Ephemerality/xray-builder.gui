@@ -13,6 +13,10 @@ namespace XRayBuilderGUI.Config
         public void Register(Container container)
         {
             container.RegisterSingleton<IXRayBuilderConfig, XRayBuilderConfig>();
+            container.RegisterInstance(new ApplicationConfig
+            {
+                Unattended = false
+            });
         }
     }
 }

@@ -43,7 +43,11 @@ namespace XRayBuilder.Test.XRay.Logic.Export
             _xrayExporter = new XRayExporterSqlite(_logger);
             _directoryService = new DirectoryService(_logger, new XRayBuilderConfig());
             _aliasesRepository = new AliasesRepository(_logger, new AliasesService(_logger), _directoryService);
-            _chaptersService = new ChaptersService(_logger, config, _directoryService);
+            var appConfig = new ApplicationConfig
+            {
+                Unattended = true
+            };
+            _chaptersService = new ChaptersService(_logger, config, _directoryService, appConfig);
             _xrayService = new XRayService(_logger, _chaptersService, _aliasesRepository, _directoryService, _termsService, new ParagraphsService(), config);
         }
 
@@ -51,9 +55,8 @@ namespace XRayBuilder.Test.XRay.Logic.Export
         public async Task XRayXMLSaveNewTest(Book book)
         {
             var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, book.Author, book.Title, "com", true, _file, null, CancellationToken.None);
-            xray.Unattended = true;
             _xrayService.ExportAndDisplayTerms(xray, _file, true, false);
-            using var fs = new FileStream(book.Rawml, FileMode.Open);
+            await using var fs = new FileStream(book.Rawml, FileMode.Open);
             var fakeMetadata = Substitute.For<IMetadata>();
             fakeMetadata.IsAzw3.Returns(false);
             fakeMetadata.GetRawMlStream().Returns(new MemoryStream(fs.ReadToEnd()));

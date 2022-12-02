@@ -44,8 +44,12 @@ namespace XRayBuilder.Test
             _logger = new Logger();
             _termsService = new TermsService(_config);
             _file = new SecondarySourceFile(_logger, _termsService);
-            _chaptersService = new ChaptersService(_logger, _config);
             _directoryService = new DirectoryService(_logger, null);
+            var appConfig = new ApplicationConfig
+            {
+                Unattended = true
+            };
+            _chaptersService = new ChaptersService(_logger, _config, _directoryService, appConfig);
             _xrayService = new XRayService(_logger, _chaptersService, new AliasesRepository(_logger, new AliasesService(_logger), _directoryService), _directoryService, _termsService, new ParagraphsService(), _config);
         }
 
@@ -68,9 +72,8 @@ namespace XRayBuilder.Test
         public async Task XRayXMLExpandRawMLNewVersionTest(Book book)
         {
             var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, book.Author, book.Title, "com", true, _file, null, CancellationToken.None);
-            xray.Unattended = true;
             // todo refactor this substitute
-            using var fs = new FileStream(book.Rawml, FileMode.Open);
+            await using var fs = new FileStream(book.Rawml, FileMode.Open);
             var fakeMetadata = Substitute.For<IMetadata>();
             fakeMetadata.IsAzw3.Returns(false);
             fakeMetadata.GetRawMlStream().Returns(new MemoryStream(fs.ReadToEnd()));
@@ -83,8 +86,7 @@ namespace XRayBuilder.Test
         public async Task XRayXMLExpandRawMLOldVersionTest(Book book)
         {
             var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, book.Author, book.Title, "com", true, _file, null, CancellationToken.None);
-            xray.Unattended = true;
-            using var fs = new FileStream(book.Rawml, FileMode.Open);
+            await using var fs = new FileStream(book.Rawml, FileMode.Open);
             var fakeMetadata = Substitute.For<IMetadata>();
             fakeMetadata.IsAzw3.Returns(false);
             fakeMetadata.GetRawMlStream().Returns(new MemoryStream(fs.ReadToEnd()));

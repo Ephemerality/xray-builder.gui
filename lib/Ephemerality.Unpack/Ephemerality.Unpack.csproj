@@ -18,10 +18,10 @@ Content can be unpacked in the form of RAWML for Mobi/AZW3 and plain text for KF
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-        <PackageReference Include="SixLabors.ImageSharp" Version="2.1.0" />
-        <PackageReference Include="System.Memory" Version="4.5.4" />
+        <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+        <PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
+        <PackageReference Include="System.Memory" Version="4.5.5" />
     </ItemGroup>
 
     <ItemGroup>

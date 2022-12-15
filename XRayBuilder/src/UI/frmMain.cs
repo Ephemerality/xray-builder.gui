@@ -352,7 +352,7 @@ namespace XRayBuilderGUI.UI
                         if (startActions != null)
                         {
                             _logger.Log(MainStrings.WritingStartActionsFile);
-                            File.WriteAllText(saPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(startActions)));
+                            await File.WriteAllTextAsync(saPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(startActions)));
                             _logger.Log($@"{MainStrings.StartActionsCreated}{Environment.NewLine}{string.Format(MainStrings.SavedTo, saPath)}");
                             needSa = false;
                         }
@@ -373,7 +373,7 @@ namespace XRayBuilderGUI.UI
                         if (endActions != null)
                         {
                             _logger.Log(MainStrings.WritingEndActionsFile);
-                            File.WriteAllText(eaPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(endActions)));
+                            await File.WriteAllTextAsync(eaPath, Functions.ExpandUnicode(JsonConvert.SerializeObject(endActions)));
                             _logger.Log($@"{MainStrings.EndActionsCreated}{Environment.NewLine}{string.Format(MainStrings.SavedTo, eaPath)}");
                             needEa = false;
                         }

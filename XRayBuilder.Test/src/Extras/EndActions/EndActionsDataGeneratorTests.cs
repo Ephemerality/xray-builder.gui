@@ -95,8 +95,8 @@ namespace XRayBuilder.Test.Extras.EndActions
                 userRealName: "Anonymous",
                 customerAlsoBought: endActionsResponse.CustomerAlsoBought));
 
-            var expected = File.ReadAllText(@"testfiles\EndActions.data.B000FBFN1U.asc", Encoding.UTF8);
-            File.WriteAllText(@"testfiles\sampleendactions.txt", content);
+            var expected = await File.ReadAllTextAsync(@"testfiles\EndActions.data.B000FBFN1U.asc", Encoding.UTF8);
+            await File.WriteAllTextAsync(@"testfiles\sampleendactions.txt", content);
             Assert.AreEqual(expected, content);
         }
     }

@@ -778,8 +778,8 @@ namespace XRayBuilderGUI.UI
 
         private void AdjustUi()
         {
-            txtGoodreads.Location = new Point(lblGoodreads.Location.X + lblGoodreads.Width + 11, txtGoodreads.Location.Y);
-            txtGoodreads.Size = new Size(groupBox1.Width - txtGoodreads.Location.X - 13, txtGoodreads.Size.Height);
+            txtGoodreads.Location = txtGoodreads.Location with { X = lblGoodreads.Location.X + lblGoodreads.Width + 11 };
+            txtGoodreads.Size = txtGoodreads.Size with { Width = groupBox1.Width - txtGoodreads.Location.X - 13 };
         }
 
         private void SetSelectedDatasource()

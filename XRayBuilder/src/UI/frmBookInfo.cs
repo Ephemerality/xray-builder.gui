@@ -293,7 +293,7 @@ namespace XRayBuilderGUI.UI
 
         private void AdjustUi()
         {
-            lblDataProviderUrl.Location = new Point(txtDataProviderUrl.Location.X - lblDataProviderUrl.Width - 7, lblDataProviderUrl.Location.Y);
+            lblDataProviderUrl.Location = lblDataProviderUrl.Location with { X = txtDataProviderUrl.Location.X - lblDataProviderUrl.Width - 7 };
         }
 
         private void cmbSecondaryDataSource_SelectedIndexChanged(object sender, EventArgs e)

@@ -19,7 +19,7 @@ namespace XRayBuilderGUI.UI
             InitializeComponent();
             _bookList = bookList;
             lblID.Text = $"{source.Name} ID:";
-            linkID.Location = new Point(lblID.Location.X + lblID.Width - 4, linkID.Location.Y);
+            linkID.Location = linkID.Location with { X = lblID.Location.X + lblID.Width - 4 };
         }
 
         private readonly ToolTip _toolTip1 = new ToolTip();

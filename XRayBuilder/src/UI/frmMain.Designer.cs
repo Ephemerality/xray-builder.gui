@@ -1,4 +1,6 @@
-﻿namespace XRayBuilderGUI.UI
+﻿using XRayBuilderGUI.Localization.Main;
+
+namespace XRayBuilderGUI.UI
 {
     partial class frmMain
     {
@@ -793,7 +795,7 @@
             this.txtDatasource.Size = new System.Drawing.Size(110, 13);
             this.txtDatasource.TabIndex = 76;
             this.txtDatasource.TabStop = true;
-            this.txtDatasource.Text = "Search datasource...";
+            this.txtDatasource.Text = $"{MainStrings.SearchDatasource}...";
             this.txtDatasource.Visible = false;
             this.txtDatasource.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.txtDatasource_LinkClicked);
             // 

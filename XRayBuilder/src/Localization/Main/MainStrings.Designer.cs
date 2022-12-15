@@ -1628,6 +1628,15 @@ namespace XRayBuilderGUI.Localization.Main {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Search datasource.
+        /// </summary>
+        internal static string SearchDatasource {
+            get {
+                return ResourceManager.GetString("SearchDatasource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Searching Amazon for {0} by {1}….
         /// </summary>
         internal static string SearchingAmazonForTitleAuthor {

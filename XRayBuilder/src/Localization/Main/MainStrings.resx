@@ -754,4 +754,7 @@ Must be enabled for a saved biography to be loaded.</value>
   <data name="RestartRequired" xml:space="preserve">
     <value>Application must be restarted for changes to take effect!</value>
   </data>
+  <data name="SearchDatasource" xml:space="preserve">
+    <value>Search datasource</value>
+  </data>
 </root>

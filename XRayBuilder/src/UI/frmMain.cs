@@ -806,7 +806,7 @@ namespace XRayBuilderGUI.UI
             txtDatasource.Visible = true;
             if (_dataSource == null || string.IsNullOrEmpty(url))
             {
-                txtDatasource.Text = "Search datasource...";
+                txtDatasource.Text = $"{MainStrings.SearchDatasource}...";
                 _tooltip.SetToolTip(txtDatasource, null);
                 return;
             }
@@ -898,8 +898,7 @@ namespace XRayBuilderGUI.UI
             txtAuthor.Text = "";
             txtAsin.Text = "";
             txtXMLFile.Text = "";
-            // todo another copy
-            txtDatasource.Text = "Search datasource...";
+            txtDatasource.Text = $"{MainStrings.SearchDatasource}...";
             _tooltip.SetToolTip(txtDatasource, null);
             prgBar.Value = 0;
             _openedMetadata = null;

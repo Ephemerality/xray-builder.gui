@@ -25,7 +25,7 @@ using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilder.Core.DataSources.Secondary
 {
-    public sealed class SecondarySourceGoodreads : SecondarySource
+    public sealed class SecondarySourceGoodreads : ISecondarySource
     {
         private readonly ILogger _logger;
         private readonly IHttpClient _httpClient;
@@ -34,12 +34,12 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
         private const int MaxConcurrentRequests = 10;
 
-        public override string Name => "Goodreads";
-        public override bool SearchEnabled { get; } = true;
-        public override int UrlLabelPosition { get; } = 9;
-        public override bool SupportsNotableClips { get; } = true;
+        public string Name => "Goodreads";
+        public bool SearchEnabled => true;
+        public int UrlLabelPosition => 9;
+        public bool SupportsNotableClips => true;
 
-        private readonly Regex _regexBookId = new Regex(@"/book/show/(?<id>[0-9]+)", RegexOptions.Compiled);
+        private readonly Regex _regexBookId = new Regex(@"/book/(show|work)/(?<id>[0-9]+)", RegexOptions.Compiled);
         private readonly Regex _regexEditions = new(@"editions/(?<editions>[0-9]*)-", RegexOptions.Compiled);
         private readonly Regex _regexPages = new(@"(?<pages>(\d+)|(\d+,\d+)) pages", RegexOptions.Compiled);
 
@@ -51,12 +51,11 @@ namespace XRayBuilder.Core.DataSources.Secondary
             _readingTimeService = readingTimeService;
         }
 
-        private string ParseBookIdFromUrl(string input) => _regexBookId.Match(input).Groups["id"].Value;
         private string BookUrl(string id) => string.IsNullOrEmpty(id) ? null : $"https://www.goodreads.com/book/show/{id}";
         private string SearchUrl(string author, string title) => $"https://www.goodreads.com/search?q={author}%20{title}";
         private string SearchUrlAsin(string asin) => $"https://www.goodreads.com/search?q={asin}";
 
-        public override bool IsMatchingUrl(string url)
+        public bool IsMatchingUrl(string url)
         {
             try
             {
@@ -69,7 +68,13 @@ namespace XRayBuilder.Core.DataSources.Secondary
             }
         }
 
-        public override async Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
+        public string GetIdFromUrl(string url)
+        {
+            var match = _regexBookId.Match(url);
+            return match.Success ? match.Groups["id"].Value : null;
+        }
+
+        public async Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
         {
             var title = Uri.EscapeDataString(metadata.Title);
             var author = Uri.EscapeDataString(Functions.FixAuthor(metadata.Author));
@@ -110,7 +115,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
 
                 var newBook = new BookInfo(cleanTitle, authorNode.InnerText.Trim(), null)
                 {
-                    GoodreadsId = ParseBookIdFromUrl(link.OuterHtml)
+                    GoodreadsId = GetIdFromUrl(link.OuterHtml)
                 };
 
                 newBook.DataUrl = BookUrl(newBook.GoodreadsId);
@@ -137,7 +142,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
         /// <summary>
         /// Searches for the next and previous books in a series, if it is part of one.
         /// </summary>
-        public override async Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
+        public async Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
         {
             var series = new SeriesInfo();
             //Search Goodreads for series info
@@ -182,7 +187,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
                     return null;
                 var title = Regex.Replace(titleNode.InnerText.Trim(), @" \(.*\)", "", RegexOptions.Compiled);
                 title = WebUtility.HtmlDecode(title);
-                var goodreadsId = ParseBookIdFromUrl(titleNode.GetAttributeValue("href", ""));
+                var goodreadsId = GetIdFromUrl(titleNode.GetAttributeValue("href", ""));
                 // TODO: move this ASIN search somewhere else
                 if (string.IsNullOrEmpty(goodreadsId))
                     return null;
@@ -244,7 +249,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
         }
 
         // TODO: This shouldn't modify curbook
-        public override async Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
+        public async Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
         {
             var bookPage = await _httpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
             var pagesNode = bookPage.DocumentNode.SelectSingleNode("//div[@id='details']");
@@ -269,7 +274,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
             return true;
         }
 
-        public override async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
         {
             _logger.Log("Downloading Goodreads page...");
             var grDoc = await _httpClient.GetPageAsync(dataUrl, cancellationToken);
@@ -337,7 +342,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
         /// <summary>
         /// Gather the list of quotes & number of times they've been liked -- close enough to "x paragraphs have been highlighted y times" from Amazon
         /// </summary>
-        public override async Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             srcDoc ??= await _httpClient.GetPageAsync(url, cancellationToken);
             var quoteNode = srcDoc.DocumentNode.SelectSingleNode("//div[@class='h2Container gradientHeaderContainer']/h2/a[starts-with(.,'Quotes from')]");
@@ -386,7 +391,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
         /// Scrape any notable quotes from Goodreads and grab ratings if missing from book info
         /// Modifies curBook.
         /// </summary>
-        public override async Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
+        public async Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             var grDoc = await _httpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
             curBook.NotableClips ??= (await GetNotableClipsAsync("", grDoc, progress, cancellationToken).ConfigureAwait(false))?.ToList();

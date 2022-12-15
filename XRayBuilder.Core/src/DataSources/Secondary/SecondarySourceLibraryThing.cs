@@ -25,7 +25,7 @@ using XRayBuilder.Core.XRay.Artifacts;
 
 namespace XRayBuilder.Core.DataSources.Secondary
 {
-    public sealed class SecondarySourceLibraryThing : SecondarySource
+    public sealed class SecondarySourceLibraryThing : ISecondarySource
     {
         private readonly ILogger _logger;
         private readonly IHttpClient _httpClient;
@@ -38,18 +38,19 @@ namespace XRayBuilder.Core.DataSources.Secondary
             _random = new Random();
         }
 
-        public override string Name { get; } = "LibraryThing";
-        public override bool SearchEnabled { get; } = true;
-        public override int UrlLabelPosition { get; } = 9;
-        public override bool SupportsNotableClips { get; } = false;
+        public string Name => "LibraryThing";
+        public bool SearchEnabled => true;
+        public int UrlLabelPosition => 9;
+        public bool SupportsNotableClips => false;
 
         private const string BaseUrl = "https://www.librarything.com";
         private string IsbnSearchEndpoint(string isbn) => $"/isbn/{isbn}";
 
-        private readonly Regex _metadataRegex = new Regex(@"((?<reviews>\d+(,\d+)?) reviews?, )?((?<editions>\d+(,\d+)?) editions?, )?.+((?<rating>\d+(\.\d+)?) stars?)?", RegexOptions.Compiled);
-        private readonly Regex _idRegex = new Regex(@"(?<id>\d+)", RegexOptions.Compiled);
-        private readonly Regex _seriesRegex = new Regex(@"(?<name>.+) \((?<index>\d+)\)$", RegexOptions.Compiled);
-        private readonly Regex _orderRegex = new Regex(@"Order: (?<index>\d+)$", RegexOptions.Compiled);
+        private readonly Regex _metadataRegex = new(@"((?<reviews>\d+(,\d+)?) reviews?, )?((?<editions>\d+(,\d+)?) editions?, )?.+((?<rating>\d+(\.\d+)?) stars?)?", RegexOptions.Compiled);
+        private readonly Regex _idRegex = new(@"(?<id>\d+)", RegexOptions.Compiled);
+        private readonly Regex _idUrlRegex = new(@"/work/(?<id>[0-9]+)", RegexOptions.Compiled);
+        private readonly Regex _seriesRegex = new(@"(?<name>.+) \((?<index>\d+)\)$", RegexOptions.Compiled);
+        private readonly Regex _orderRegex = new(@"Order: (?<index>\d+)$", RegexOptions.Compiled);
 
         private const int MaxConcurrentRequests = 10;
 
@@ -62,7 +63,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
         private string GetCookies()
             => $"LTAnonSessionID={_random.Next()}; LTUnifiedCookie=%7B%22areyouhuman%22%3A1%7D; cookie_from=https%3A%2F%2Fwww.librarything.com%2F; canuseStaticDomain=0; gdpr_notice_clicked=1";
 
-        public override bool IsMatchingUrl(string url)
+        public bool IsMatchingUrl(string url)
         {
             try
             {
@@ -75,7 +76,13 @@ namespace XRayBuilder.Core.DataSources.Secondary
             }
         }
 
-        public override async Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
+        public string GetIdFromUrl(string url)
+        {
+            var match = _idUrlRegex.Match(url);
+            return match.Success ? match.Groups["id"].Value : null;
+        }
+
+        public async Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
         {
             // LibraryThing API has been disabled temporarily
             // if (!string.IsNullOrEmpty(metadata.Isbn))
@@ -161,7 +168,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
             return null;
         }
 
-        public override async Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
+        public async Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
         {
             var page = await GetPageAsync(dataUrl, cancellationToken);
             var seriesNode = page.DocumentNode
@@ -221,13 +228,13 @@ namespace XRayBuilder.Core.DataSources.Secondary
             };
         }
 
-        public override Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
+        public Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
             => Task.FromResult(false);
 
-        public override Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
+        public Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
             => Task.CompletedTask;
 
-        public override async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
         {
             _logger.Log($"Downloading {Name} page...");
             var page = await GetPageAsync(dataUrl, cancellationToken);
@@ -293,7 +300,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
             };
         }
 
-        public override Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }

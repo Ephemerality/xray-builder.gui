@@ -16,7 +16,7 @@ using XRayBuilder.Core.XRay.Logic.Terms;
 
 namespace XRayBuilder.Core.DataSources.Secondary
 {
-    public sealed class SecondarySourceFile : SecondarySource
+    public sealed class SecondarySourceFile : ISecondarySource
     {
         private readonly ILogger _logger;
         private readonly ITermsService _termsService;
@@ -27,13 +27,13 @@ namespace XRayBuilder.Core.DataSources.Secondary
             _termsService = termsService;
         }
 
-        public override string Name { get; } = "file";
-        public override bool SearchEnabled { get; } = false;
-        public override int UrlLabelPosition { get; } = 0;
-        public override bool SupportsNotableClips { get; } = false;
-        public override string SanitizeDataLocation(string dataLocation) => dataLocation;
+        public string Name => "file";
+        public bool SearchEnabled => false;
+        public int UrlLabelPosition => 0;
+        public bool SupportsNotableClips => false;
+        public string SanitizeDataLocation(string dataLocation) => dataLocation;
 
-        public override Task<IEnumerable<Term>> GetTermsAsync(string xmlFile, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<Term>> GetTermsAsync(string xmlFile, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
         {
             _logger.Log("Loading terms from file...");
             var filetype = Path.GetExtension(xmlFile);
@@ -51,35 +51,37 @@ namespace XRayBuilder.Core.DataSources.Secondary
             return Task.FromResult(Enumerable.Empty<Term>());
         }
 
-        #region Unsupported
-
-        public override bool IsMatchingUrl(string url)
+        public bool IsMatchingUrl(string url)
         {
             var lower = url.ToLowerInvariant();
             return File.Exists(url) && (lower.EndsWith(".xml") || lower.EndsWith(".txt"));
         }
 
-        public override Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
+        public string GetIdFromUrl(string url) => null;
+
+        #region Unsupported
+
+        public Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }
 
-        public override Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
+        public Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }
 
-        public override Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
+        public Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }
 
-        public override Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
+        public Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }
 
-        public override Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
+        public Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }

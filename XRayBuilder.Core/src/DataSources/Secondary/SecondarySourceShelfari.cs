@@ -19,7 +19,7 @@ using XRayBuilder.Core.XRay.Artifacts;
 namespace XRayBuilder.Core.DataSources.Secondary
 {
     [UsedImplicitly]
-    public sealed class SecondarySourceShelfari : SecondarySource
+    public sealed class SecondarySourceShelfari : ISecondarySource
     {
         private readonly ILogger _logger;
         private readonly IHttpClient _httpClient;
@@ -34,10 +34,10 @@ namespace XRayBuilder.Core.DataSources.Secondary
             _readingTimeService = readingTimeService;
         }
 
-        public override string Name => "Shelfari";
-        public override bool SearchEnabled { get; } = false;
-        public override int UrlLabelPosition { get; } = 9;
-        public override bool SupportsNotableClips { get; } = true;
+        public string Name => "Shelfari";
+        public bool SearchEnabled => false;
+        public int UrlLabelPosition => 9;
+        public bool SupportsNotableClips => true;
 
         // private string FindShelfariURL(HtmlDocument shelfariHtmlDoc, string author, string title)
         // {
@@ -84,20 +84,22 @@ namespace XRayBuilder.Core.DataSources.Secondary
         //     return "";
         // }
 
-        public override bool IsMatchingUrl(string url)
+        public bool IsMatchingUrl(string url)
         {
             return false;
         }
 
-        public override Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
+        public string GetIdFromUrl(string url) => null;
+
+        public Task<IEnumerable<BookInfo>> SearchBookAsync(IMetadata metadata, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }
 
-        public override Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
+        public Task<SeriesInfo> GetSeriesInfoAsync(string dataUrl, CancellationToken cancellationToken = default)
             => Task.FromResult((SeriesInfo) null);
 
-        public override async Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
+        public async Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
         {
             sourceHtmlDoc ??= await _httpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
             var pageNode = sourceHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='WikiModule_FirstEdition']");
@@ -125,12 +127,12 @@ namespace XRayBuilder.Core.DataSources.Secondary
             return false;
         }
 
-        public override Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
+        public Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }
 
-        public override async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<Term>> GetTermsAsync(string dataUrl, string asin, string tld, bool includeTopics, IProgressBar progress, CancellationToken cancellationToken = default)
         {
             _logger.Log("Downloading Shelfari page...");
             var terms = new List<Term>();
@@ -183,7 +185,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
             return terms;
         }
 
-        public override async Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             srcDoc ??= await _httpClient.GetPageAsync(url, cancellationToken);
             var quoteNodes = srcDoc.DocumentNode.SelectNodes("//div[@id='WikiModule_Quotations']/div/ul[@class='li_6']/li");

@@ -3,7 +3,6 @@ using System.Data.SQLite;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -805,19 +804,19 @@ namespace XRayBuilderGUI.UI
         private void SetDatasourceLink(string url)
         {
             txtDatasource.Visible = true;
-            if (string.IsNullOrEmpty(url))
+            if (_dataSource == null || string.IsNullOrEmpty(url))
             {
                 txtDatasource.Text = "Search datasource...";
                 _tooltip.SetToolTip(txtDatasource, null);
                 return;
             }
 
-            // todo this is weird
-            var matchId = Regex.Match(url, @"(show|work)/(\d+)");
-            if (!matchId.Success)
+            var id = _dataSource.GetIdFromUrl(url);
+            if (string.IsNullOrEmpty(id))
                 return;
+
             _tooltip.SetToolTip(txtDatasource, url);
-            txtDatasource.Text = matchId.Groups[2].Value;
+            txtDatasource.Text = id;
         }
 
         private void SetDatasourceLabels()
@@ -846,7 +845,7 @@ namespace XRayBuilderGUI.UI
 
         private void frmMain_DragDrop(object sender, DragEventArgs e)
         {
-            if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+            if (e.Data == null || !e.Data.GetDataPresent(DataFormats.FileDrop))
                 return;
             var filePaths = (string[]) e.Data.GetData(DataFormats.FileDrop);
             foreach (var fileLoc in filePaths.Where(File.Exists))

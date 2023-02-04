@@ -124,8 +124,11 @@ namespace XRayBuilder.Test.DataSources
                 DataUrl = "https://www.goodreads.com/book/show/13497.A_Feast_for_Crows"
             };
             await _goodreads.GetExtrasAsync(book);
+            Assert.NotNull(book.AmazonRating);
             Assert.Greater(book.AmazonRating, 0);
+            Assert.NotNull(book.NotableClips);
             Assert.GreaterOrEqual(book.NotableClips.Count, 500);
+            Assert.NotNull(book.Reviews);
             Assert.GreaterOrEqual(book.Reviews, 1);
         }
 

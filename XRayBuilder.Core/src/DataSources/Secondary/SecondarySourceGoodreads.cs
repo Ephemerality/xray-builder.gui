@@ -393,12 +393,19 @@ namespace XRayBuilder.Core.DataSources.Secondary
         /// </summary>
         public async Task GetExtrasAsync(BookInfo curBook, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
+            var ratingsRegex = new Regex(@"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)", RegexOptions.Compiled);
             var grDoc = await _httpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
             curBook.NotableClips ??= (await GetNotableClipsAsync("", grDoc, progress, cancellationToken).ConfigureAwait(false))?.ToList();
 
+            if (curBook.AmazonRating > 0)
+                return;
+
+            // TODO better way to handle different sets of page formats
+            // hard to tell if/when it's safe to stop using an old parsing format
+
             //Add rating and reviews count if missing from Amazon book info
             var metaNode = grDoc.DocumentNode.SelectSingleNode("//div[@id='bookMeta']");
-            if (metaNode != null && curBook.AmazonRating is 0 or null)
+            if (metaNode != null)
             {
                 var ratingNode = metaNode.SelectSingleNode("//span[@class='value rating']")
                     ?? metaNode.SelectSingleNode(".//span[@itemprop='ratingValue']");
@@ -409,7 +416,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
                     ?? metaNode.SelectSingleNode(".//a[@href='#other_reviews']");
                 if (reviewsNode != null)
                 {
-                    var match = Regex.Match(reviewsNode.InnerText, @"(\d+|\d{1,3}([,\.]\d{3})*)(?=\s)");
+                    var match = ratingsRegex.Match(reviewsNode.InnerText);
                     if (match.Success)
                         curBook.Reviews = int.Parse(match.Value.Replace(",", "").Replace(".", ""));
                 }
@@ -417,6 +424,23 @@ namespace XRayBuilder.Core.DataSources.Secondary
                 if (reviewsNode != null && int.TryParse(reviewsNode.GetAttributeValue("content", null), out var reviews))
                 {
                     curBook.Reviews += reviews;
+                }
+            }
+
+            // 2023-02-04 - new page format
+            metaNode = grDoc.DocumentNode.SelectSingleNode("//div[@class='BookPageMetadataSection']");
+            if (metaNode != null)
+            {
+                var ratineNode = metaNode.SelectSingleNode(".//div[@class='RatingStatistics__rating']");
+                if (ratineNode != null)
+                    curBook.AmazonRating = Math.Round(float.Parse(ratineNode.InnerText), 2);
+
+                var reviewsNode = metaNode.SelectSingleNode(".//div[@class='RatingStatistics__meta']/span[@data-testid='ratingsCount']");
+                if (reviewsNode != null)
+                {
+                    var match = ratingsRegex.Match(reviewsNode.InnerText);
+                    if (match.Success && int.TryParse(match.Value, NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var parsedReviews))
+                        curBook.Reviews = parsedReviews;
                 }
             }
         }

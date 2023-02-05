@@ -25,6 +25,7 @@ using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilder.Core.DataSources.Secondary
 {
+    // TODO There's a block of JSON with ratings/pages/etc details at the top of the page, might be good to try using that
     public sealed class SecondarySourceGoodreads : ISecondarySource
     {
         private readonly ILogger _logger;
@@ -252,7 +253,8 @@ namespace XRayBuilder.Core.DataSources.Secondary
         public async Task<bool> GetPageCountAsync(BookInfo curBook, CancellationToken cancellationToken = default)
         {
             var bookPage = await _httpClient.GetPageAsync(curBook.DataUrl, cancellationToken);
-            var pagesNode = bookPage.DocumentNode.SelectSingleNode("//div[@id='details']");
+            var pagesNode = bookPage.DocumentNode.SelectSingleNode("//div[@id='details']")
+                ?? bookPage.DocumentNode.SelectSingleNode("//p[@data-testid='pagesFormat']");
             if (pagesNode == null)
                 return false;
             var match = _regexPages.Match(pagesNode.InnerText);

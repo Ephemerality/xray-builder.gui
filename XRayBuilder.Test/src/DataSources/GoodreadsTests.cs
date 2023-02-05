@@ -31,8 +31,8 @@ namespace XRayBuilder.Test.DataSources
             _httpClient = new HttpClient(_logger);
             _amazonInfoParser = new AmazonInfoParser(_logger, _httpClient);
             _amazonClient = new AmazonClient(_httpClient, _amazonInfoParser, _logger);
-            _goodreads = new SecondarySourceGoodreads(_logger, _httpClient, _amazonClient, _readingTimeService);
             _readingTimeService = new ReadingTimeService();
+            _goodreads = new SecondarySourceGoodreads(_logger, _httpClient, _amazonClient, _readingTimeService);
         }
 
         [Test]

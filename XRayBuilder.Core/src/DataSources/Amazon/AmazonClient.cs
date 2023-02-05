@@ -230,6 +230,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
         {
             var imageNode = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-image']/img")
                    ?? authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='authorImage']/img")
+                   ?? authorHtmlDoc.DocumentNode.SelectSingleNode("//img[@alt='Author Logo']")
                    ?? throw new FormatChangedException(nameof(AmazonClient), "author image");
 
             var authorImageUrl = Regex.Replace(imageNode.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);

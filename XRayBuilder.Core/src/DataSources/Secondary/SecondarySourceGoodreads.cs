@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using Dasync.Collections;
 using Ephemerality.Unpack;
 using HtmlAgilityPack;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Secondary.Model;
 using XRayBuilder.Core.Libraries;
@@ -25,7 +27,6 @@ using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace XRayBuilder.Core.DataSources.Secondary
 {
-    // TODO There's a block of JSON with ratings/pages/etc details at the top of the page, might be good to try using that
     public sealed class SecondarySourceGoodreads : ISecondarySource
     {
         private readonly ILogger _logger;
@@ -280,45 +281,54 @@ namespace XRayBuilder.Core.DataSources.Secondary
         {
             _logger.Log("Downloading Goodreads page...");
             var grDoc = await _httpClient.GetPageAsync(dataUrl, cancellationToken);
-            var charNodes = grDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/a");
-            if (charNodes == null) return new List<Term>();
-            // Check if ...more link exists on Goodreads page
-            var moreCharNodes = grDoc.DocumentNode.SelectNodes("//div[@class='infoBoxRowTitle' and text()='Characters']/../div[@class='infoBoxRowItem']/span[@class='toggleContent']/a");
-            var allChars = moreCharNodes == null ? charNodes : charNodes.Concat(moreCharNodes);
-            var termCount = moreCharNodes == null ? charNodes.Count : charNodes.Count + moreCharNodes.Count;
-            _logger.Log($"Gathering term information from Goodreads... ({termCount})");
-            progress?.Set(0, termCount);
-            if (termCount > 20)
+
+            var nextData = grDoc.DocumentNode.SelectSingleNode("//script[@id='__NEXT_DATA__']");
+            var characters = JsonConvert.DeserializeObject<JObject>(nextData.InnerText)
+                .SelectToken("props.pageProps.apolloState")
+                ?.Value<JObject>()
+                .Properties()
+                .FirstOrDefault(prop => prop.Name.StartsWith("Work"))
+                ?.Value.Value<JObject>()
+                ?.SelectToken("details.characters")
+                ?.Value<JArray>()
+                ?.ToObject<GoodreadsCharacter[]>();
+
+            if (characters == null || !characters.Any())
+                return Array.Empty<Term>();
+
+            // TODO see if there are any books than have a "..more" type thing for characters now or if they're always in __NEXT_DATA__
+            _logger.Log($"Gathering term information from Goodreads... ({characters.Length})");
+            progress?.Set(0, characters.Length);
+            if (characters.Length > 20)
                 _logger.Log("More than 20 characters found. Consider using the 'download to XML' option if you need to build repeatedly.");
+
             var terms = new ConcurrentBag<Term>();
-            await allChars.ParallelForEachAsync(async charNode =>
+            await characters.ParallelForEachAsync(async character =>
             {
                 try
                 {
-                    terms.AddNotNull(await GetTermAsync(dataUrl, charNode.GetAttributeValue("href", ""), cancellationToken).ConfigureAwait(false));
+                    terms.AddNotNull(await GetTermAsync(character.WebUrl, cancellationToken).ConfigureAwait(false));
                     progress?.Add(1);
                 }
                 catch (Exception ex)
                 {
                     if (ex.Message.Contains("(404)"))
-                        _logger.Log($"Error getting page for character. URL: https://www.goodreads.com{charNode.GetAttributeValue("href", "")}\r\nMessage: {ex.Message}\r\n{ex.StackTrace}");
+                        _logger.Log($"Error getting page for character. URL: {character.WebUrl}\r\nMessage: {ex.Message}\r\n{ex.StackTrace}");
                 }
             }, MaxConcurrentRequests, cancellationToken);
-            return terms.ToList();
+
+            return terms.ToArray();
         }
 
-        // Are there actually any goodreads pages that aren't at goodreads.com for other languages??
-        private async Task<Term> GetTermAsync(string baseUrl, string relativeUrl, CancellationToken cancellationToken = default)
+        private async Task<Term> GetTermAsync(string webUrl, CancellationToken cancellationToken = default)
         {
             var result = new Term
             {
-                Type = "character"
+                Type = "character",
+                DescSrc = "Goodreads",
+                DescUrl = webUrl
             };
-            var tempUri = new Uri(baseUrl);
-            tempUri = new Uri(new Uri(tempUri.GetLeftPart(UriPartial.Authority)), relativeUrl);
-            result.DescSrc = "Goodreads";
-            result.DescUrl = tempUri.ToString();
-            var charDoc = await _httpClient.GetPageAsync(tempUri.ToString(), cancellationToken);
+            var charDoc = await _httpClient.GetPageAsync(webUrl, cancellationToken);
             var mainNode = charDoc.DocumentNode.SelectSingleNode("//div[@class='mainContentFloat']")
                 ?? charDoc.DocumentNode.SelectSingleNode("//div[@class='mainContentFloat ']");
             result.TermName = mainNode.SelectSingleNode("./h1").InnerText;

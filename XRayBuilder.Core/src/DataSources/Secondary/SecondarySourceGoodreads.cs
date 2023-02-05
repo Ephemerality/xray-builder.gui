@@ -42,7 +42,7 @@ namespace XRayBuilder.Core.DataSources.Secondary
         public bool SupportsNotableClips => true;
 
         private readonly Regex _regexBookId = new Regex(@"/book/(show|work)/(?<id>[0-9]+)", RegexOptions.Compiled);
-        private readonly Regex _regexEditions = new(@"editions/(?<editions>[0-9]*)-", RegexOptions.Compiled);
+        private readonly Regex _regexEditions = new(@"/editions/(?<editions>[0-9]*)(?:-|"")", RegexOptions.Compiled);
         private readonly Regex _regexPages = new(@"(?<pages>(\d+)|(\d+,\d+)) pages", RegexOptions.Compiled);
 
         public SecondarySourceGoodreads(ILogger logger, IHttpClient httpClient, IAmazonClient amazonClient, IReadingTimeService readingTimeService)
@@ -149,20 +149,24 @@ namespace XRayBuilder.Core.DataSources.Secondary
             var series = new SeriesInfo();
             //Search Goodreads for series info
             var seriesPage = await _httpClient.GetPageAsync(dataUrl, cancellationToken);
-            var metaNode = seriesPage.DocumentNode.SelectSingleNode("//div[@id='metacol']");
-            var seriesNode = metaNode?.SelectSingleNode("//h2[@id='bookSeries']/a");
+            var seriesNode = seriesPage?.DocumentNode.SelectSingleNode("//div[@id='metacol']//h2[@id='bookSeries']/a")
+                ?? seriesPage?.DocumentNode.SelectSingleNode("//a[contains(@href, '/series/')]");
             if (seriesNode == null)
                 return null;
             var match = Regex.Match(seriesNode.OuterHtml, @"/series/([0-9]*)");
             if (!match.Success)
                 return null;
             series.Url = $"https://www.goodreads.com/series/{match.Groups[1].Value}";
-            match = Regex.Match(seriesNode.InnerText, @"\((.*) #?([0-9]*([.,][0-9])?)\)");
+            match = Regex.Match(seriesNode.InnerText, @"\((?<name>.*) #?(?<position>[0-9]*([.,][0-9])?)\)");
             if (!match.Success)
-                return null;
+            {
+                match = Regex.Match(seriesNode.GetAttributeValue("aria-label", ""), @"^Book (?<position>\d+) in the (?<name>.+) series$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                if (!match.Success)
+                    return null;
+            }
 
-            series.Name = match.Groups[1].Value.Trim();
-            series.Position = match.Groups[2].Value;
+            series.Name = match.Groups["name"].Value.Trim();
+            series.Position = match.Groups["position"].Value;
 
             var seriesHtmlDoc = await _httpClient.GetPageAsync(series.Url, cancellationToken);
 
@@ -227,8 +231,11 @@ namespace XRayBuilder.Core.DataSources.Secondary
             try
             {
                 var bookHtmlDoc = await _httpClient.GetPageAsync(BookUrl(id), cancellationToken);
-                var link = bookHtmlDoc.DocumentNode.SelectSingleNode("//div[@class='otherEditionsActions']/a");
-                var match = _regexEditions.Match(link.GetAttributeValue("href", ""));
+                var link = bookHtmlDoc.DocumentNode.SelectSingleNode("//div[@class='otherEditionsActions']/a")
+                           ?? bookHtmlDoc.DocumentNode.SelectSingleNode("//div[@class='MoreEditions']//a[contains(@href, '/editions/')]");
+                var match = link != null
+                    ? _regexEditions.Match(link.GetAttributeValue("href", ""))
+                    : _regexEditions.Match(bookHtmlDoc.DocumentNode.OuterHtml);
                 if (match.Success)
                 {
                     var kindleEditionsUrl = $"https://www.goodreads.com/work/editions/{match.Groups["editions"].Value}?utf8=%E2%9C%93&sort=num_ratings&filter_by_format=Kindle+Edition";

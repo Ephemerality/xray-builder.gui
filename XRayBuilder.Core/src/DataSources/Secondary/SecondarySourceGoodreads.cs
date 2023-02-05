@@ -345,9 +345,16 @@ namespace XRayBuilder.Core.DataSources.Secondary
         public async Task<IEnumerable<NotableClip>> GetNotableClipsAsync(string url, HtmlDocument srcDoc = null, IProgressBar progress = null, CancellationToken cancellationToken = default)
         {
             srcDoc ??= await _httpClient.GetPageAsync(url, cancellationToken);
-            var quoteNode = srcDoc.DocumentNode.SelectSingleNode("//div[@class='h2Container gradientHeaderContainer']/h2/a[starts-with(.,'Quotes from')]");
-            if (quoteNode == null) return null;
-            var quoteURL = $"https://www.goodreads.com{quoteNode.GetAttributeValue("href", "")}?page={{0}}";
+            var quoteNode = srcDoc.DocumentNode.SelectSingleNode("//div[@class='h2Container gradientHeaderContainer']/h2/a[starts-with(.,'Quotes from')]")
+                ?? srcDoc.DocumentNode.SelectSingleNode("//a[@class='DiscussionCard']");
+            if (quoteNode == null || !quoteNode.InnerHtml.Contains("quotes"))
+                return null;
+            var href = quoteNode.GetAttributeValue("href", "");
+            if (string.IsNullOrEmpty(href))
+                return null;
+            var quoteURL = href.StartsWith("http")
+                ? $"{href}?page={{0}}"
+                : $"https://www.goodreads.com{quoteNode.GetAttributeValue("href", "")}?page={{0}}";
             progress?.Set(0, 1);
 
             var quoteBag = new ConcurrentBag<IEnumerable<NotableClip>>();
@@ -431,9 +438,9 @@ namespace XRayBuilder.Core.DataSources.Secondary
             metaNode = grDoc.DocumentNode.SelectSingleNode("//div[@class='BookPageMetadataSection']");
             if (metaNode != null)
             {
-                var ratineNode = metaNode.SelectSingleNode(".//div[@class='RatingStatistics__rating']");
-                if (ratineNode != null)
-                    curBook.AmazonRating = Math.Round(float.Parse(ratineNode.InnerText), 2);
+                var ratingNode = metaNode.SelectSingleNode(".//div[@class='RatingStatistics__rating']");
+                if (ratingNode != null)
+                    curBook.AmazonRating = Math.Round(float.Parse(ratingNode.InnerText), 2);
 
                 var reviewsNode = metaNode.SelectSingleNode(".//div[@class='RatingStatistics__meta']/span[@data-testid='ratingsCount']");
                 if (reviewsNode != null)

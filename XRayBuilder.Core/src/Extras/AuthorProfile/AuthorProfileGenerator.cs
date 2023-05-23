@@ -270,15 +270,13 @@ namespace XRayBuilder.Core.Extras.AuthorProfile
             }
 
             var bookBag = new ConcurrentBag<BookInfo>();
-            if (searchResults.Books != null && request.Settings.UseNewVersion)
+            if (searchResults.Books != null && searchResults.Books.Any() && request.Settings.UseNewVersion)
             {
-                if (searchResults.Books.Length != 0)
-                {
-                    // todo pluralize
-                    _logger.Log(searchResults.Books.Length > 1
-                        ? $"Gathering metadata for {searchResults.Books.Length} other books by {request.Book.Author}…"
-                        : $"Gathering metadata for another book by {request.Book.Author}…");
-                }
+                // todo pluralize
+                _logger.Log(searchResults.Books.Length > 1
+                    ? $"Gathering metadata for {searchResults.Books.Length} other books by {request.Book.Author}…"
+                    : $"Gathering metadata for another book by {request.Book.Author}…");
+
                 try
                 {
                     progress?.Set(0, searchResults.Books.Length);

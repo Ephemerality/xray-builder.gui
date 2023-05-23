@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using JetBrains.Annotations;
+using Newtonsoft.Json;
 using XRayBuilder.Core.DataSources.Amazon.Model;
 using XRayBuilder.Core.Libraries;
 using XRayBuilder.Core.Libraries.Http;
@@ -205,6 +206,8 @@ namespace XRayBuilder.Core.DataSources.Amazon
             var bookList = GetAuthorBooks(authorHtmlDoc, author, TLD);
             if (!bookList.Any())
                 bookList = GetAuthorBooksNew(authorHtmlDoc, author, TLD);
+            if (!bookList.Any())
+                bookList = GetAuthorBooksNew2023(authorHtmlDoc, TLD).ToList();
 
             return new AuthorSearchResults
             {
@@ -279,6 +282,37 @@ namespace XRayBuilder.Core.DataSources.Amazon
                 });
             }
             return bookList;
+        }
+
+        private IEnumerable<BookInfo> GetAuthorBooksNew2023(HtmlDocument authorHtmlDoc, string tld)
+        {
+            var productGrid = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@data-widgettype='ProductGrid']");
+            if (productGrid == null)
+                yield break;
+
+            var pageConfig = Regex.Match(productGrid.InnerHtml, @"var config = (?<payload>.+);\r*$", RegexOptions.Compiled | RegexOptions.Multiline);
+            if (!pageConfig.Success)
+                yield break;
+
+            var payload = JsonConvert.DeserializeObject<AmazonAuthorPayload>(pageConfig.Groups["payload"].Value);
+
+            foreach (var book in payload.Content.Products)
+            {
+                if (!_regexAsin.IsMatch(book.Asin))
+                    continue;
+
+                var authorName = book.ByLine.Contributors
+                    .FirstOrDefault(contributor => contributor.Roles.Any(role => role.Type.Equals("author", StringComparison.InvariantCultureIgnoreCase)))
+                    ?.Name;
+
+                if (authorName == null)
+                    continue;
+
+                yield return new BookInfo(book.Title.DisplayString, authorName, book.Asin)
+                {
+                    Tld = tld
+                };
+            }
         }
 
         [NotNull]

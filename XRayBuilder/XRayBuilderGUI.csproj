@@ -26,7 +26,7 @@
     <Company>X-Ray Builder GUI</Company>
     <Product>X-Ray Builder GUI</Product>
     <Description>Generate X-Ray, Start Action, Author Profile, and End Action files for use on your Amazon Kindle.</Description>
-    <Copyright>Copyright © 2021</Copyright>
+    <Copyright>Copyright © 2023</Copyright>
     <AssemblyVersion>2.1.1.0</AssemblyVersion>
     <FileVersion>2.1.1.0</FileVersion>
     <OutputPath>bin\$(Configuration)\</OutputPath>

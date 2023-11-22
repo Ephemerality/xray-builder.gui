@@ -44,11 +44,11 @@ namespace XRayBuilder.Core.XRay.Logic
                 var excerpt = excerpts.FirstOrDefault(e => e.Start == index);
                 if (excerpt == null)
                 {
-                    if (skipNoLikes && quote.Likes == 0 || quote.Text.Length < minClipLength)
+                    if ((skipNoLikes && quote.Likes == 0) || quote.Text.Length < minClipLength)
                         continue;
                     excerpt = new Excerpt
                     {
-                        Id = excerpts.Max(e => e.Id) + 1,
+                        Id = excerpts.Count > 0 ? excerpts.Max(e => e.Id) + 1 : 0,
                         Start = offset + index,
                         Length = paragraph.Length,
                         Notable = true,

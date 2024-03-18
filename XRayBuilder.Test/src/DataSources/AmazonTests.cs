@@ -6,37 +6,37 @@
         //[TestCase("B123456789")]
         //public void MatchAsinTest(string asin)
         //{
-        //    Assert.True(Amazon.IsAsin(asin));
+        //    ClassicAssert.True(Amazon.IsAsin(asin));
         //}
 
         //[Test()]
         //public void SearchAuthorTest()
         //{
-        //    Assert.Fail();
+        //    ClassicAssert.Fail();
         //}
 
         //[Test()]
         //public void GetBioNodeTest()
         //{
-        //    Assert.Fail();
+        //    ClassicAssert.Fail();
         //}
 
         //[Test()]
         //public void GetAuthorImageNodeTest()
         //{
-        //    Assert.Fail();
+        //    ClassicAssert.Fail();
         //}
 
         //[Test()]
         //public void GetAuthorBooksTest()
         //{
-        //    Assert.Fail();
+        //    ClassicAssert.Fail();
         //}
 
         //[Test()]
         //public void SearchBookTest()
         //{
-        //    Assert.Fail();
+        //    ClassicAssert.Fail();
         //}
     }
 }

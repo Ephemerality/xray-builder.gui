@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Ephemerality.Unpack;
 using NSubstitute;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Logic;
 using XRayBuilder.Core.DataSources.Secondary;
@@ -38,7 +39,7 @@ namespace XRayBuilder.Test.DataSources
         [Test]
         public void NameTest()
         {
-            Assert.AreEqual("Goodreads", _goodreads.Name);
+            ClassicAssert.AreEqual("Goodreads", _goodreads.Name);
         }
 
         // Todo separate test for goodreads search book vs booksearchservice
@@ -50,34 +51,34 @@ namespace XRayBuilder.Test.DataSources
             testMetadata.Title.Returns("A Feast for Crows");
             var bookSearchService = new BookSearchService();
             var results = await bookSearchService.SearchSecondarySourceAsync(_goodreads, testMetadata, CancellationToken.None);
-            Assert.GreaterOrEqual(results.Length, 1);
+            ClassicAssert.GreaterOrEqual(results.Length, 1);
             var first = results.First();
-            Assert.AreEqual(first.Author, "George R.R. Martin");
-            Assert.AreEqual("13497", first.GoodreadsId);
-            Assert.False(string.IsNullOrEmpty(first.ImageUrl));
-            Assert.AreEqual("A Feast for Crows (A Song of Ice and Fire, #4)", first.Title);
-            Assert.Greater(first.Editions, 0);
+            ClassicAssert.AreEqual(first.Author, "George R.R. Martin");
+            ClassicAssert.AreEqual("13497", first.GoodreadsId);
+            ClassicAssert.False(string.IsNullOrEmpty(first.ImageUrl));
+            ClassicAssert.AreEqual("A Feast for Crows (A Song of Ice and Fire, #4)", first.Title);
+            ClassicAssert.Greater(first.Editions, 0);
         }
 
         [Test]
         public async Task GetSeriesInfoTest()
         {
             var result = await _goodreads.GetSeriesInfoAsync("https://www.goodreads.com/book/show/13497");
-            Assert.IsNotNull(result);
-            Assert.AreEqual("A Song of Ice and Fire", result.Name);
-            Assert.False(string.IsNullOrEmpty(result.Url));
-            Assert.AreEqual("4", result.Position);
-            Assert.Greater(result.Total, 0);
+            ClassicAssert.IsNotNull(result);
+            ClassicAssert.AreEqual("A Song of Ice and Fire", result.Name);
+            ClassicAssert.False(string.IsNullOrEmpty(result.Url));
+            ClassicAssert.AreEqual("4", result.Position);
+            ClassicAssert.Greater(result.Total, 0);
 
-            Assert.IsNotNull(result.Next);
-            Assert.AreEqual(result.Next.Author, "George R.R. Martin");
-            Assert.AreEqual("10664113", result.Next.GoodreadsId);
-            Assert.AreEqual("A Dance with Dragons", result.Next.Title);
+            ClassicAssert.IsNotNull(result.Next);
+            ClassicAssert.AreEqual(result.Next.Author, "George R.R. Martin");
+            ClassicAssert.AreEqual("10664113", result.Next.GoodreadsId);
+            ClassicAssert.AreEqual("A Dance with Dragons", result.Next.Title);
 
-            Assert.IsNotNull(result.Previous);
-            Assert.AreEqual(result.Previous.Author, "George R.R. Martin");
-            Assert.AreEqual("62291", result.Previous.GoodreadsId);
-            Assert.AreEqual("A Storm of Swords", result.Previous.Title);
+            ClassicAssert.IsNotNull(result.Previous);
+            ClassicAssert.AreEqual(result.Previous.Author, "George R.R. Martin");
+            ClassicAssert.AreEqual("62291", result.Previous.GoodreadsId);
+            ClassicAssert.AreEqual("A Storm of Swords", result.Previous.Title);
         }
 
         [Test]
@@ -85,7 +86,7 @@ namespace XRayBuilder.Test.DataSources
         {
             var result = await _goodreads.SearchBookASINById("13497");
             var possibleAsins = new[] {"B000FCKGPC", "BINU9MFSUG"};
-            Assert.IsTrue(possibleAsins.Contains(result), $"{result} was not expected");
+            ClassicAssert.IsTrue(possibleAsins.Contains(result), $"{result} was not expected");
         }
 
         [Test]
@@ -96,24 +97,24 @@ namespace XRayBuilder.Test.DataSources
                 DataUrl = "https://www.goodreads.com/book/show/13497.A_Feast_for_Crows"
             };
             var result = await _goodreads.GetPageCountAsync(book);
-            Assert.True(result);
-            Assert.AreEqual(1061, book.PageCount);
-            Assert.AreEqual(19, book.ReadingHours);
-            Assert.AreEqual(25, book.ReadingMinutes);
+            ClassicAssert.True(result);
+            ClassicAssert.AreEqual(1061, book.PageCount);
+            ClassicAssert.AreEqual(19, book.ReadingHours);
+            ClassicAssert.AreEqual(25, book.ReadingMinutes);
         }
 
         [Test]
         public async Task GetTermsTest()
         {
             var results = (await _goodreads.GetTermsAsync("https://www.goodreads.com/book/show/13497.A_Feast_for_Crows", null, "com", true, null)).ToArray();
-            Assert.AreEqual(15, results.Length);
+            ClassicAssert.AreEqual(15, results.Length);
         }
 
         [Test]
         public async Task GetNotableClipsTest()
         {
             var results = (await _goodreads.GetNotableClipsAsync("https://www.goodreads.com/book/show/13497.A_Feast_for_Crows")).ToArray();
-            Assert.GreaterOrEqual(results.Length, 500);
+            ClassicAssert.GreaterOrEqual(results.Length, 500);
         }
 
         [Test]
@@ -124,12 +125,12 @@ namespace XRayBuilder.Test.DataSources
                 DataUrl = "https://www.goodreads.com/book/show/13497.A_Feast_for_Crows"
             };
             await _goodreads.GetExtrasAsync(book);
-            Assert.NotNull(book.AmazonRating);
-            Assert.Greater(book.AmazonRating, 0);
-            Assert.NotNull(book.NotableClips);
-            Assert.GreaterOrEqual(book.NotableClips.Count, 500);
-            Assert.NotNull(book.Reviews);
-            Assert.GreaterOrEqual(book.Reviews, 1);
+            ClassicAssert.NotNull(book.AmazonRating);
+            ClassicAssert.Greater(book.AmazonRating, 0);
+            ClassicAssert.NotNull(book.NotableClips);
+            ClassicAssert.GreaterOrEqual(book.NotableClips.Count, 500);
+            ClassicAssert.NotNull(book.Reviews);
+            ClassicAssert.GreaterOrEqual(book.Reviews, 1);
         }
 
         [TestCase("https://www.goodreads.com/book/show/4214.Life_of_Pi", true)]
@@ -137,7 +138,7 @@ namespace XRayBuilder.Test.DataSources
         [TestCase("/usr/home/something/file.txt", false)]
         public void IsMatchingUrlTest(string url, bool expected)
         {
-            Assert.AreEqual(expected, _goodreads.IsMatchingUrl(url));
+            ClassicAssert.AreEqual(expected, _goodreads.IsMatchingUrl(url));
         }
     }
 }

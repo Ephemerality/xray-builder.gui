@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Ephemerality.Unpack;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using XRayBuilder.Core.DataSources.Amazon;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Extras.AuthorProfile;
@@ -76,7 +77,7 @@ namespace XRayBuilder.Test.Extras.EndActions
             };
 
             var endActionsResponse = await endActionsDataGenerator.GenerateNewFormatData(book, settings, _secondarySourceGoodreads, authorProfileResponse, null, metadata, null, CancellationToken.None);
-            Assert.NotNull(endActionsResponse);
+            ClassicAssert.NotNull(endActionsResponse);
 
             var content = _endActionsArtifactService.GenerateNew(new EndActionsArtifactService.Request(
                 bookAsin: endActionsResponse.Book.Asin,
@@ -97,7 +98,7 @@ namespace XRayBuilder.Test.Extras.EndActions
 
             var expected = await File.ReadAllTextAsync(@"testfiles\EndActions.data.B000FBFN1U.asc", Encoding.UTF8);
             await File.WriteAllTextAsync(@"testfiles\sampleendactions.txt", content);
-            Assert.AreEqual(expected, content);
+            ClassicAssert.AreEqual(expected, content);
         }
     }
 }

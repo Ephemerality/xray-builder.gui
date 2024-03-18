@@ -6,6 +6,7 @@ using Ephemerality.Unpack;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using XRayBuilder.Core.Config;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Extras.Artifacts;
@@ -57,7 +58,7 @@ namespace XRayBuilder.Test
         public async Task XRayXMLTest(Book book)
         {
             var xray = await _xrayService.CreateXRayAsync(book.Xml, book.Db, book.Guid, book.Asin, book.Author, book.Title, "com", true, _file, null, CancellationToken.None);
-            Assert.NotNull(xray);
+            ClassicAssert.NotNull(xray);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
@@ -124,7 +125,7 @@ namespace XRayBuilder.Test
 
         //    using (StreamReader streamReader = new StreamReader(@"out\AuthorProfile.profile.B000FBFN1U.asc", Encoding.UTF8))
         //    using (StreamReader streamReader2 = new StreamReader(@"testfiles\AuthorProfile.profile.B000FBFN1U.asc", Encoding.UTF8))
-        //        Assert.AreEqual(streamReader.ReadToEnd(), streamReader2.ReadToEnd());
+        //        ClassicAssert.AreEqual(streamReader.ReadToEnd(), streamReader2.ReadToEnd());
         //}
 
         [Test]

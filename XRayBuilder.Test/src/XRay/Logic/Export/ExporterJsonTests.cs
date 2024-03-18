@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Ephemerality.Unpack.Mobi;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using XRayBuilder.Core.Config;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Logging;

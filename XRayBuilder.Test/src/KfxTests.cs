@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Ephemerality.Unpack.KFX;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace XRayBuilder.Test
 {
@@ -16,19 +17,19 @@ namespace XRayBuilder.Test
             var fs = new FileStream(kfxFile, FileMode.Open, FileAccess.Read);
             var kfx = new KfxContainer(fs);
 
-            Assert.AreEqual("B018LJYLS8", kfx.Asin);
-            Assert.AreEqual("Shelley, Mary W.", kfx.Author);
-            Assert.AreEqual("EBOK", kfx.CdeContentType);
-            Assert.AreEqual(4096, kfx.ContainerInfo.ChunkSize);
-            Assert.AreEqual(0, kfx.ContainerInfo.CompressionType);
-            Assert.AreEqual(YjContainer.ContainerFormat.KfxMain, kfx.ContainerInfo.ContainerFormat);
-            Assert.AreEqual("CR!ZLWPJZFVMQ5HGT49NILVDTAKVNRN", kfx.ContainerInfo.ContainerId);
-            Assert.AreEqual(0, kfx.ContainerInfo.DrmScheme);
-            Assert.AreEqual("CONT", kfx.ContainerInfo.Header.Signature);
-            Assert.AreEqual(2, kfx.ContainerInfo.Header.Version);
-            Assert.AreEqual("KPR-3.28.1", kfx.ContainerInfo.KfxGenApplicationVersion);
-            Assert.AreEqual("kfxlib-20181220", kfx.ContainerInfo.KfxGenPackageVersion);
-            Assert.AreEqual("Frankenstein", kfx.Title);
+            ClassicAssert.AreEqual("B018LJYLS8", kfx.Asin);
+            ClassicAssert.AreEqual("Shelley, Mary W.", kfx.Author);
+            ClassicAssert.AreEqual("EBOK", kfx.CdeContentType);
+            ClassicAssert.AreEqual(4096, kfx.ContainerInfo.ChunkSize);
+            ClassicAssert.AreEqual(0, kfx.ContainerInfo.CompressionType);
+            ClassicAssert.AreEqual(YjContainer.ContainerFormat.KfxMain, kfx.ContainerInfo.ContainerFormat);
+            ClassicAssert.AreEqual("CR!ZLWPJZFVMQ5HGT49NILVDTAKVNRN", kfx.ContainerInfo.ContainerId);
+            ClassicAssert.AreEqual(0, kfx.ContainerInfo.DrmScheme);
+            ClassicAssert.AreEqual("CONT", kfx.ContainerInfo.Header.Signature);
+            ClassicAssert.AreEqual(2, kfx.ContainerInfo.Header.Version);
+            ClassicAssert.AreEqual("KPR-3.28.1", kfx.ContainerInfo.KfxGenApplicationVersion);
+            ClassicAssert.AreEqual("kfxlib-20181220", kfx.ContainerInfo.KfxGenPackageVersion);
+            ClassicAssert.AreEqual("Frankenstein", kfx.Title);
         }
 
         [TestCase(@"testfiles\Fire & Blood (A Song of Ice and - George R. R. Martin.kfx", 33)]
@@ -38,8 +39,8 @@ namespace XRayBuilder.Test
             var fs = new FileStream(kfxFile, FileMode.Open, FileAccess.Read);
             var kfx = new KfxContainer(fs);
             var toc = kfx.GetDefaultToc();
-            Assert.NotNull(toc);
-            Assert.AreEqual(tocLength, toc.Count);
+            ClassicAssert.NotNull(toc);
+            ClassicAssert.AreEqual(tocLength, toc.Count);
         }
 
         [TestCase(@"testfiles\Fire & Blood (A Song of Ice and - George R. R. Martin.kfx", 738)]
@@ -48,8 +49,8 @@ namespace XRayBuilder.Test
             var fs = new FileStream(kfxFile, FileMode.Open, FileAccess.Read);
             var kfx = new KfxContainer(fs);
             var pageCount = kfx.GetPageCount();
-            Assert.NotNull(pageCount);
-            Assert.AreEqual(pages, pageCount);
+            ClassicAssert.NotNull(pageCount);
+            ClassicAssert.AreEqual(pages, pageCount);
         }
 
         [TestCase(@"testfiles\Fire & Blood (A Song of Ice and - George R. R. Martin.kfx", 1920, 1263)]
@@ -59,9 +60,9 @@ namespace XRayBuilder.Test
             var fs = new FileStream(kfxFile, FileMode.Open, FileAccess.Read);
             var kfx = new KfxContainer(fs);
             var coverImage = kfx.CoverImage;
-            Assert.NotNull(coverImage);
-            Assert.AreEqual(height, coverImage.Height);
-            Assert.AreEqual(width, coverImage.Width);
+            ClassicAssert.NotNull(coverImage);
+            ClassicAssert.AreEqual(height, coverImage.Height);
+            ClassicAssert.AreEqual(width, coverImage.Width);
         }
 
         [TestCase(@"testfiles\Fire & Blood (A Song of Ice and - George R. R. Martin.kfx", "Baelon", 6213, 799606, 3274, 34956246)]
@@ -73,10 +74,10 @@ namespace XRayBuilder.Test
             var contentChunks = kfx.GetContentChunks();
             var testSearch = FindInChunks(contentChunks, search).ToArray();
 
-            Assert.AreEqual(chunkCount, contentChunks.Count);
-            Assert.AreEqual(firstOffset, testSearch.First());
-            Assert.AreEqual(lastOffset, testSearch.Last());
-            Assert.AreEqual(sum, testSearch.Sum());
+            ClassicAssert.AreEqual(chunkCount, contentChunks.Count);
+            ClassicAssert.AreEqual(firstOffset, testSearch.First());
+            ClassicAssert.AreEqual(lastOffset, testSearch.Last());
+            ClassicAssert.AreEqual(sum, testSearch.Sum());
         }
 
         private IEnumerable<long> FindInChunks(IEnumerable<ContentChunk> chunks, string search)

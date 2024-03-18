@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Ephemerality.Unpack;
 using NSubstitute;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using XRayBuilder.Core.DataSources.Secondary;
 using XRayBuilder.Core.Libraries.Logging;
 
@@ -27,18 +28,18 @@ namespace XRayBuilder.Test.DataSources
         {
             var result = await _libraryThing.GetSeriesInfoAsync("https://www.librarything.com/work/3203350");
 
-            Assert.AreEqual("The Lord of the Rings", result.Name);
-            Assert.AreEqual("2", result.Position);
-            Assert.NotNull(result.Next);
-            Assert.AreEqual("J. R. R. Tolkien", result.Next.Author);
-            Assert.AreEqual("The Return of The King", result.Next.Title);
-            Assert.AreEqual("https://www.librarything.com/work/3203356", result.Next.DataUrl);
-            Assert.NotNull(result.Previous);
-            Assert.AreEqual("J. R. R. Tolkien", result.Previous.Author);
-            Assert.AreEqual("The Fellowship of the Ring", result.Previous.Title);
-            Assert.AreEqual("https://www.librarything.com/work/3203347", result.Previous.DataUrl);
-            Assert.AreEqual(3, result.Total);
-            Assert.AreEqual("https://www.librarything.com/nseries/2/The-Lord-of-the-Rings", result.Url);
+            ClassicAssert.AreEqual("The Lord of the Rings", result.Name);
+            ClassicAssert.AreEqual("2", result.Position);
+            ClassicAssert.NotNull(result.Next);
+            ClassicAssert.AreEqual("J. R. R. Tolkien", result.Next.Author);
+            ClassicAssert.AreEqual("The Return of The King", result.Next.Title);
+            ClassicAssert.AreEqual("https://www.librarything.com/work/3203356", result.Next.DataUrl);
+            ClassicAssert.NotNull(result.Previous);
+            ClassicAssert.AreEqual("J. R. R. Tolkien", result.Previous.Author);
+            ClassicAssert.AreEqual("The Fellowship of the Ring", result.Previous.Title);
+            ClassicAssert.AreEqual("https://www.librarything.com/work/3203347", result.Previous.DataUrl);
+            ClassicAssert.AreEqual(3, result.Total);
+            ClassicAssert.AreEqual("https://www.librarything.com/nseries/2/The-Lord-of-the-Rings", result.Url);
         }
 
         [Test]
@@ -48,7 +49,7 @@ namespace XRayBuilder.Test.DataSources
             testMetadata.Isbn.Returns("9780061952838");
             var result = await _libraryThing.SearchBookAsync(testMetadata, CancellationToken.None);
 
-            Assert.AreEqual("https://www.librarything.com/work/3203347", result.Single().DataUrl);
+            ClassicAssert.AreEqual("https://www.librarything.com/work/3203347", result.Single().DataUrl);
         }
 
         [Test]
@@ -59,10 +60,10 @@ namespace XRayBuilder.Test.DataSources
             testMetadata.Title.Returns("The Fellowship of the Ring");
             var results = (await _libraryThing.SearchBookAsync(testMetadata, CancellationToken.None)).ToArray();
 
-            Assert.Greater(results.Length, 0);
-            Assert.AreEqual("https://www.librarything.com/work/3203347", results[0].DataUrl);
-            Assert.AreEqual("J. R. R. Tolkien", results[0].Author);
-            Assert.AreEqual("The Fellowship of the Ring", results[0].Title);
+            ClassicAssert.Greater(results.Length, 0);
+            ClassicAssert.AreEqual("https://www.librarything.com/work/3203347", results[0].DataUrl);
+            ClassicAssert.AreEqual("J. R. R. Tolkien", results[0].Author);
+            ClassicAssert.AreEqual("The Fellowship of the Ring", results[0].Title);
         }
 
         [TestCase(true, 166)]
@@ -71,7 +72,7 @@ namespace XRayBuilder.Test.DataSources
         {
             var results = (await _libraryThing.GetTermsAsync("https://www.librarything.com/work/3203347", null, null, includeTopics, null, CancellationToken.None)).ToArray();
 
-            Assert.AreEqual(expectedCount, results.Length);
+            ClassicAssert.AreEqual(expectedCount, results.Length);
         }
 
         [TestCase("http://www.librarything.com/work/3203347", true)]
@@ -79,7 +80,7 @@ namespace XRayBuilder.Test.DataSources
         [TestCase("/usr/home/something/file.txt", false)]
         public void IsMatchingUrlTest(string url, bool expected)
         {
-            Assert.AreEqual(expected, _libraryThing.IsMatchingUrl(url));
+            ClassicAssert.AreEqual(expected, _libraryThing.IsMatchingUrl(url));
         }
     }
 }

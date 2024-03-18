@@ -1,6 +1,7 @@
 using System.IO;
 using Ephemerality.Unpack;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using XRayBuilder.Test.XRay;
 
 namespace XRayBuilder.Test.Unpack
@@ -12,11 +13,11 @@ namespace XRayBuilder.Test.Unpack
         public void GetMetaDataTest(Book book)
         {
             var md = MetadataReader.Load(book.Bookpath);
-            Assert.AreEqual(book.Asin, md.Asin);
-            Assert.AreEqual(book.Guid, md.UniqueId);
-            Assert.AreEqual(book.Db, md.DbName);
-            Assert.AreEqual(book.Author, md.Author);
-            Assert.AreEqual(book.Title, md.Title);
+            ClassicAssert.AreEqual(book.Asin, md.Asin);
+            ClassicAssert.AreEqual(book.Guid, md.UniqueId);
+            ClassicAssert.AreEqual(book.Db, md.DbName);
+            ClassicAssert.AreEqual(book.Author, md.Author);
+            ClassicAssert.AreEqual(book.Title, md.Title);
         }
 
         [Test, TestCaseSource(typeof(TestData), nameof(TestData.Books))]
@@ -24,7 +25,7 @@ namespace XRayBuilder.Test.Unpack
         {
             var metadata = MetadataReader.Load(book.Bookpath);
             var expected = File.ReadAllBytes(book.Rawml);
-            Assert.AreEqual(expected, metadata.GetRawMl());
+            ClassicAssert.AreEqual(expected, metadata.GetRawMl());
         }
     }
 }

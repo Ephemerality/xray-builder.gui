@@ -1,7 +1,6 @@
 ﻿using System.Drawing;
 using System.IO;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using Image = SixLabors.ImageSharp.Image;
@@ -18,7 +17,7 @@ public static class ImageExtensions
     public static Bitmap ToBitmap(this Image image)
     {
         using var memoryStream = new MemoryStream();
-        var imageEncoder = image.GetConfiguration().ImageFormatsManager.FindEncoder(PngFormat.Instance);
+        var imageEncoder = image.Configuration.ImageFormatsManager.GetEncoder(PngFormat.Instance);
         image.Save(memoryStream, imageEncoder);
 
         memoryStream.Seek(0, SeekOrigin.Begin);

@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -15,7 +14,7 @@ namespace XRayBuilder.Core.Libraries.Images.Extensions
         public static byte[] ToArray<TPixel>(this Image<TPixel> image, IImageFormat imageFormat) where TPixel : unmanaged, IPixel<TPixel>
         {
             using var memoryStream = new MemoryStream();
-            var imageEncoder = image.GetConfiguration().ImageFormatsManager.FindEncoder(imageFormat);
+            var imageEncoder = image.Configuration.ImageFormatsManager.GetEncoder(imageFormat);
             image.Save(memoryStream, imageEncoder);
             return memoryStream.ToArray();
         }

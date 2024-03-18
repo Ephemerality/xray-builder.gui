@@ -226,7 +226,8 @@ namespace XRayBuilder.Core.DataSources.Amazon
         // Get biography from results page; TLD included in case different Amazon sites have different formatting
         private string GetAuthorBiography(HtmlDocument authorHtmlDoc)
         {
-            var bioNode = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-bio' and @class='a-row']/div/div/span")
+            var bioNode = authorHtmlDoc.DocumentNode.SelectSingleNode("//p[@data-testid='aboutAuthorText']")
+                   ?? authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-bio' and @class='a-row']/div/div/span")
                    ?? authorHtmlDoc.DocumentNode.SelectSingleNode("//span[@id='author_biography']");
                    //?? throw new FormatChangedException(nameof(AmazonClient), "author bio");
 

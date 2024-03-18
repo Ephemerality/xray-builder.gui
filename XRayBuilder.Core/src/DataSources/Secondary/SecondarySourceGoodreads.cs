@@ -339,6 +339,10 @@ namespace XRayBuilder.Core.DataSources.Secondary
             var mainNode = charDoc.DocumentNode.SelectSingleNode("//div[@class='mainContentFloat']")
                 ?? charDoc.DocumentNode.SelectSingleNode("//div[@class='mainContentFloat ']");
             result.TermName = mainNode.SelectSingleNode("./h1").InnerText;
+            // If the character has an AKA section in the name itself, strip it away
+            var akaMatch = Regex.Match(result.TermName, @"(?<termname>[^(]+)\(aka");
+            if (akaMatch.Success)
+                result.TermName = akaMatch.Groups["termname"].Value.Trim();
             mainNode = mainNode.SelectSingleNode("//div[@class='grey500BoxContent']");
             var tempNodes = mainNode.SelectNodes("//div[@class='floatingBox']");
             if (tempNodes == null) return result;
@@ -347,8 +351,9 @@ namespace XRayBuilder.Core.DataSources.Secondary
                 if (tempNode.Id.Contains("_aliases")) // If present, add any aliases found
                 {
                     var aliasStr = tempNode.InnerText.Replace("[close]", "").Trim();
-                    var newAliases = aliasStr.Split(new[] {", "}, StringSplitOptions.RemoveEmptyEntries)
+                    var newAliases = aliasStr.Split(new[] {", ", "(aka "}, StringSplitOptions.RemoveEmptyEntries)
                         .Where(alias => alias != result.TermName)
+                        .Select(alias => alias.Replace(")", ""))
                         .ToHashSet();
                     result.Aliases.AddRange(newAliases);
                 }

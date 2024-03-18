@@ -76,7 +76,8 @@ namespace XRayBuilder.Core.DataSources.Amazon
             // Try to find Author's page from Amazon search
             var properAuthor = "";
             HtmlNode[] possibleNodes = null;
-            var node = authorSearchDoc?.DocumentNode.SelectSingleNode(".//div[@data-asin and @data-index and @data-component-type]")
+            var node = authorSearchDoc?.DocumentNode.SelectSingleNode(".//div[contains(@class, 's-search-results')]")
+                       ?? authorSearchDoc?.DocumentNode.SelectSingleNode(".//div[@data-asin and @data-index and @data-component-type]")
                        ?? authorSearchDoc?.DocumentNode.SelectSingleNode("//*[@id='result_1']")
                        ?? authorSearchDoc?.DocumentNode.SelectSingleNode(".//div/div[@data-index='0']");
             if (node == null || !node.OuterHtml.Contains("/e/B"))
@@ -113,7 +114,10 @@ namespace XRayBuilder.Core.DataSources.Amazon
 
             string authorAsin = null;
             string authorUrl = null;
-            var authorNode =  node.Descendants("a").FirstOrDefault(d => d.Attributes["href"].Value.Contains("/e/B"));
+            var authorNode =  node
+                .Descendants("a")
+                .Where(d => !d.Ancestors("div").Any(ancestor => ancestor.HasClass("AdHolder")))
+                .FirstOrDefault(d => d.Attributes["href"].Value.Contains("/e/B"));
 
             if (possibleNodes != null && possibleNodes.Any())
             {
@@ -234,6 +238,7 @@ namespace XRayBuilder.Core.DataSources.Amazon
             var imageNode = authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='ap-image']/img")
                    ?? authorHtmlDoc.DocumentNode.SelectSingleNode("//div[@id='authorImage']/img")
                    ?? authorHtmlDoc.DocumentNode.SelectSingleNode("//img[@alt='Author Logo']")
+                   ?? authorHtmlDoc.DocumentNode.SelectSingleNode("//div[starts-with(@class, 'Header__author-logo')]/a/img")
                    ?? throw new FormatChangedException(nameof(AmazonClient), "author image");
 
             var authorImageUrl = Regex.Replace(imageNode.GetAttributeValue("src", ""), @"_.*?_\.", string.Empty);
